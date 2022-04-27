@@ -1,0 +1,59 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    branches: [main]
+env:
+  environment: dev
+  organization: bcgov
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: checkout the repo and building the Backend
+        uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: building the backend
+        run: |
+          cd server/lambda
+          npm install
+
+      - name: Deploying back-end using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform plan
+
+      - name: Building front-end and deploying Frontend using terraform
+        run: |
+          cd server
+          terraform output > ../client/.env
+          cd ../client
+          npm install
+
+          CI=false npm run build
+
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform plan
