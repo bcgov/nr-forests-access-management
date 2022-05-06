@@ -1,0 +1,1 @@
+This directory is for storing draw.io diagrams created for the project (and the wiki)
