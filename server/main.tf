@@ -273,8 +273,20 @@ module "cors" {
 
 }
 
+# All the following added to get RDS to work
+
 data "aws_vpc" "selected" {
   state = "available"
+}
+
+variable "subnet_a" {
+  description = "Value of the name tag for the subnet in AZ a"
+  default     = "App_Sandbox_aza_net"
+}
+
+variable "subnet_b" {
+  description = "Value of the name tag for the subnet in AZ b"
+  default     = "App_Sandbox_azb_net"
 }
 
 data "aws_subnet" "a" {
@@ -311,6 +323,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
+/*
 # this modules documented outputs all need a prefix of this_
 module "db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
@@ -346,13 +359,15 @@ module "db" {
     timeout_action           = "ForceApplyCapacityChange"
   }
 
-  /*create_random_password = false
-  username               = var.db_username
-  password               = random_password.db_password.result
-  database_name          = var.db_name
-  */
+  # create_random_password = false
+  # username               = var.db_username
+  # password               = random_password.db_password.result
+  # database_name          = var.db_name
+  
 
   tags = {
     "managed-by" = "terraform"
   }
+  
 }
+*/
