@@ -301,6 +301,18 @@ data "aws_subnet" "b" {
   }
 }
 
+variable "aws_security_group_a" {
+  description = "Value of the name tag for the security group in AZ a"
+  default     = "Data_sg"
+}
+
+data "aws_security_group" "a" {
+  filter {
+    name   = "tag:Name"
+    values = [var.aws_security_group_a]
+  }
+}
+
 # resource "aws_security_group" "rds_sg" {
 #   name        = "rds_sg"
 #   description = "Security group for AWS lambda and AWS RDS connection"
@@ -332,10 +344,10 @@ module "db" {
   engine_mode    = "serverless"
 
   vpc_id                 = data.aws_vpc.selected.id
-  vpc_security_group_ids = [aws_security_group.Data_sg.id]
+  vpc_security_group_ids = [data.aws_security_group.a.id]
   subnets                = [data.aws_subnet.a.id, data.aws_subnet.b.id]
 
-  allowed_security_groups = [aws_security_group.Data_sg.id]
+  allowed_security_groups = [data.aws_security_group.a.id]
 
   replica_scale_enabled = false
   replica_count         = 0
