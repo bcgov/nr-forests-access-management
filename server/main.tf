@@ -269,8 +269,6 @@ module "cors" {
 
   api_id          = aws_api_gateway_rest_api.apiLambda.id
   api_resource_id = aws_api_gateway_resource.proxy.id
-
-
 }
 
 # All the following added to get RDS to work
@@ -303,25 +301,25 @@ data "aws_subnet" "b" {
   }
 }
 
-resource "aws_security_group" "rds_sg" {
-  name        = "rds_sg"
-  description = "Security group for AWS lambda and AWS RDS connection"
-  vpc_id      = data.aws_vpc.selected.id
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["127.0.0.1/32"]
-    self        = true
-  }
+# resource "aws_security_group" "rds_sg" {
+#   name        = "rds_sg"
+#   description = "Security group for AWS lambda and AWS RDS connection"
+#   vpc_id      = data.aws_vpc.selected.id
+#   ingress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["127.0.0.1/32"]
+#     self        = true
+#   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
 # this modules documented outputs all need a prefix of this_
 module "db" {
@@ -334,10 +332,10 @@ module "db" {
   engine_mode    = "serverless"
 
   vpc_id                 = data.aws_vpc.selected.id
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids = [aws_security_group.Data_sg.id]
   subnets                = [data.aws_subnet.a.id, data.aws_subnet.b.id]
 
-  allowed_security_groups = [aws_security_group.rds_sg.id]
+  allowed_security_groups = [aws_security_group.Data_sg.id]
 
   replica_scale_enabled = false
   replica_count         = 0
