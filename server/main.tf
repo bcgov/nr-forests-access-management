@@ -281,12 +281,12 @@ data "aws_vpc" "selected" {
 
 variable "subnet_a" {
   description = "Value of the name tag for the subnet in AZ a"
-  default     = "App_Sandbox_aza_net"
+  default     = "Data_Dev_aza_net"
 }
 
 variable "subnet_b" {
   description = "Value of the name tag for the subnet in AZ b"
-  default     = "App_Sandbox_azb_net"
+  default     = "Data_Dev_azb_net"
 }
 
 data "aws_subnet" "a" {
@@ -323,7 +323,6 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-/*
 # this modules documented outputs all need a prefix of this_
 module "db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
@@ -370,4 +369,3 @@ module "db" {
   }
   
 }
-*/
