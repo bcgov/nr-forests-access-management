@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "db-migrations" {
   filename      = "lambda-db-migrations.zip"
   function_name = "lambda-db-migrations"
-  role          = aws_iam_role.iam_for_lambda.arn
+  role          = aws_iam_role.lambda_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "index.handler"
 
