@@ -277,16 +277,6 @@ data "aws_vpc" "selected" {
   state = "available"
 }
 
-variable "subnet_a" {
-  description = "Value of the name tag for the subnet in AZ a"
-  default     = "Data_Dev_aza_net"
-}
-
-variable "subnet_b" {
-  description = "Value of the name tag for the subnet in AZ b"
-  default     = "Data_Dev_azb_net"
-}
-
 data "aws_subnet" "a" {
   filter {
     name   = "tag:Name"
@@ -301,37 +291,12 @@ data "aws_subnet" "b" {
   }
 }
 
-variable "aws_security_group_a" {
-  description = "Value of the name tag for the security group in AZ a"
-  default     = "Data_sg"
-}
-
 data "aws_security_group" "a" {
   filter {
     name   = "tag:Name"
     values = [var.aws_security_group_a]
   }
 }
-
-# resource "aws_security_group" "rds_sg" {
-#   name        = "rds_sg"
-#   description = "Security group for AWS lambda and AWS RDS connection"
-#   vpc_id      = data.aws_vpc.selected.id
-#   ingress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["127.0.0.1/32"]
-#     self        = true
-#   }
-
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
 
 # this modules documented outputs all need a prefix of this_
 module "db" {
@@ -368,11 +333,10 @@ module "db" {
     timeout_action           = "ForceApplyCapacityChange"
   }
 
-  # create_random_password = false
-  # username               = var.db_username
-  # password               = random_password.db_password.result
-  # database_name          = var.db_name
-  
+  create_random_password = false
+  username               = var.db_username
+  password               = var.db_password
+  database_name          = var.db_name
 
   tags = {
     "managed-by" = "terraform"
