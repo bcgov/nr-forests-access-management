@@ -41,9 +41,9 @@ variable "db_username" {
   sensitive   = true
 }
 
-# variable "db_password" {
-#   description = "The password for the DB master user"
-#   type        = string
-#   default     = environment.
-#   sensitive   = true
-# }
+variable "db_password" {
+  description = "The password for the DB master user"
+  type        = string
+  default     = "password"
+  sensitive   = true
+}
