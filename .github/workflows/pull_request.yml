@@ -35,6 +35,7 @@ jobs:
           cd server
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
+          db-password = "${{ secrets.DB_PASSWORD }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
           EOF
 
