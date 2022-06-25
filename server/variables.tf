@@ -40,10 +40,3 @@ variable "db_username" {
   default     = "sysadmin"
   sensitive   = true
 }
-
-variable "db_password" {
-  description = "The password for the DB master user"
-  type        = string
-  default     = "password"
-  sensitive   = true
-}

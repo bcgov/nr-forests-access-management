@@ -41,8 +41,6 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
-        env:
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
           
       - name: Building front-end and deploying Frontend using terraform
         run: |
