@@ -12,7 +12,7 @@ resource "aws_secretsmanager_secret_version" "sversion" {
   secret_id = aws_secretsmanager_secret.secretmasterDB.id
   secret_string = <<EOF
    {
-    "username": "sysadmin",
+    "username": "${var.db_username}",
     "password": "${random_password.db_password.result}"
    }
 EOF
