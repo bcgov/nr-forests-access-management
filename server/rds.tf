@@ -35,7 +35,7 @@ module "db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "~> 3.0"
 
-  name           = "fam_aurora-db-postgres"
+  name           = "fam-aurora-db-postgres"
   engine         = "aurora-postgresql"
   engine_version = "11.9"
   engine_mode    = "serverless"
