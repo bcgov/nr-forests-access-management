@@ -39,7 +39,7 @@ jobs:
           EOF
 
           terraform init -backend-config=backend.hcl
-          terraform plan -var db_password='${{ secrets.DB_PASSWORD }}'
+          terraform plan
 
       - name: Building front-end and deploying Frontend using terraform
         run: |

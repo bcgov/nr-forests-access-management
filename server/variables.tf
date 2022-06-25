@@ -27,20 +27,3 @@ variable "subnet_b" {
   description = "Value of the name tag for the subnet in AZ b"
   default     = "Data_Dev_azb_net"
 }
-
-variable "db_name" {
-  description = "The name of the database"
-  type        = string
-  default     = "famdb"
-}
-
-variable "db_username" {
-  description = "The username for the DB master user"
-  type        = string
-  default     = "sysadmin"
-  sensitive   = true
-}
-
-variable "db_password" {
-  sensitive   = true
-}
