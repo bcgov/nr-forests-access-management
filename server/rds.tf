@@ -75,3 +75,19 @@ module "db" {
   }
   
 }
+
+provider "postgresql" {
+  host            = "${module.db.cluster_endpoint}"
+  port            = "${module.db.cluster_port}"
+  database        = "${var.db_name}"
+  username        = "${local.db_creds.username}"
+  password        = "${local.db_creds.password}"
+  sslmode         = "require"
+  connect_timeout = 15
+}
+
+resource "postgresql_role" "flywaydb" {
+  name     = "flywaydb"
+  login    = true
+  password = "mypass"
+}
