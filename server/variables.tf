@@ -40,3 +40,10 @@ variable "db_username" {
   default     = "sysadmin"
   sensitive   = true
 }
+
+variable "db_master_creds_secretname" {
+  description = "The name of the AWS Secret that holds the master db username/password"
+  type        = string
+  default     = "fam_db_master_account"
+  sensitive   = true
+}
