@@ -1,3 +1,10 @@
+resource "aws_iam_role" "lambda_exec_flyway" {
+  name = "flyway_lambda"
+
+  assume_role_policy = data.aws_iam_policy_document.lambda_exec_policydoc.json
+}
+
+
 resource "aws_lambda_function" "db-migrations" {
   filename      = "lambda-db-migrations.zip"
   function_name = "lambda-db-migrations"
@@ -18,6 +25,12 @@ resource "aws_lambda_function" "db-migrations" {
   }
 
   timeout = 45
+
+  environment {
+    variables = {
+      DB_SECRET = "${var.db_master_creds_secretname}"
+    }
+  }
 
   tags = {
     "managed-by" = "terraform"
