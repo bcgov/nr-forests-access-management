@@ -12,11 +12,12 @@ resource "aws_iam_role_policy" "secretmasterDB_access_policy" {
           "secretsmanager:GetSecretValue"
         ],
         "Resource": "${aws_secretsmanager_secret.secretmasterDB.arn}"
-      },
+      }
     ]
   }
   EOF
 }
+
 
 data "aws_iam_policy_document" "flyway_lambda_exec_policydoc" {
   statement {
