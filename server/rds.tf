@@ -5,7 +5,7 @@ resource "random_password" "db_password" {
 }
 
 resource "aws_secretsmanager_secret" "secretmasterDB" {
-   name = "fam_db_master_account"
+   name = var.db_master_creds_secretname
 }
 
 resource "aws_secretsmanager_secret_version" "sversion" {
@@ -74,20 +74,4 @@ module "db" {
     "managed-by" = "terraform"
   }
   
-}
-
-provider "postgresql" {
-  host            = "${module.db.cluster_endpoint}"
-  port            = "${module.db.cluster_port}"
-  database        = "${var.db_name}"
-  username        = "${local.db_creds.username}"
-  password        = "${local.db_creds.password}"
-  sslmode         = "require"
-  connect_timeout = 15
-}
-
-resource "postgresql_role" "flywaydb" {
-  name     = "flywaydb"
-  login    = true
-  password = "mypass"
 }
