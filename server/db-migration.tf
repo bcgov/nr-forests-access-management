@@ -39,7 +39,7 @@ resource "aws_iam_role" "flyway_lambda_exec" {
 resource "aws_lambda_function" "db-migrations" {
   filename      = "db-migrations/lambda/flyway-0.0.4.zip"
   function_name = "lambda-db-migrations"
-  role          = aws_iam_role.flyway_lambda_exec.arn
+#  role          = aws_iam_role.flyway_lambda_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "index.handler"
 
