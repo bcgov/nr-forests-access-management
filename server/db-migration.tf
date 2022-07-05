@@ -73,6 +73,7 @@ resource "aws_lambda_function" "db-migrations" {
   environment {
     variables = {
       DB_SECRET = "${var.db_master_creds_secretname}"
+      DB_CONNECTION_STRING = "${module.db.cluster_endpoint}"
     }
   }
 
