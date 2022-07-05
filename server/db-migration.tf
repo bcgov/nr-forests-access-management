@@ -50,16 +50,16 @@ resource "aws_iam_role" "flyway_lambda_exec" {
 }
 
 resource "aws_lambda_function" "db-migrations" {
-  filename      = "db-migrations/lambda/flyway-0.0.4.zip"
+  filename      = "db-migrations/lambda/flyway-all.jar"
   function_name = "lambda-db-migrations"
   role          = aws_iam_role.flyway_lambda_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
-  handler = "index.handler"
+  handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-  source_code_hash = filebase64sha256("db-migrations/lambda/flyway-0.0.4.zip")
+  source_code_hash = filebase64sha256("db-migrations/lambda/flyway-all.jar")
 
   runtime = "java11"
 
@@ -73,9 +73,10 @@ resource "aws_lambda_function" "db-migrations" {
   environment {
     variables = {
       DB_SECRET = "${var.db_master_creds_secretname}"
-      DB_CONNECTION_STRING = "${var.rds_endpoint}"
     }
   }
+
+  memory_size = 512
 
   tags = {
     "managed-by" = "terraform"
