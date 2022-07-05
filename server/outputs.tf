@@ -26,3 +26,7 @@ output "REACT_APP_API_GW_BASE_URL" {
   description = "Base URL for API Gateway stage."
   value       = aws_api_gateway_deployment.apideploy.invoke_url
 }
+
+output "rds_endpoint" {
+  value = "${module.db.cluster_endpoint}"
+}
