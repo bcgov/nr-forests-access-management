@@ -1,0 +1,4 @@
+The following commands can be used to invoke flyway lambda from aws cli. You need to "click for credentials" first!
+
+PAYLOAD=$(cat /home/conrad/repos/nr-forests-access-management/server/db-migrations/lambda/request.json | base64)
+aws lambda invoke --function-name lambda-db-migrations --payload $PAYLOAD out.json
