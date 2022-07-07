@@ -3,9 +3,7 @@
         "flywayMethod": "info"
     },
     "dbRequest": {
-        "username": "sysadmin",
-        "password": "***",
-        "connectionString": "fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com"
+        "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
     },
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",

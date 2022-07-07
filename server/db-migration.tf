@@ -68,15 +68,14 @@ resource "aws_lambda_function" "db-migrations" {
     security_group_ids = [data.aws_security_group.a.id]
   }
 
-  timeout = 45
+  memory_size = 512
+  timeout = 120
 
   environment {
     variables = {
       DB_SECRET = "${var.db_master_creds_secretname}"
     }
   }
-
-  memory_size = 512
 
   tags = {
     "managed-by" = "terraform"
