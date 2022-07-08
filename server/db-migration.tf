@@ -83,28 +83,28 @@ resource "aws_lambda_function" "db-migrations" {
   tags = {
     "managed-by" = "terraform"
   }
-
-  data "aws_lambda_invocation" "invoke_flyway" {
-    function_name = aws_lambda_function.db-migrations.function_name
-
-    input = <<JSON
-    {
-      "flywayRequest": {
-          "flywayMethod": "info"
-      },
-      "dbRequest": {
-          "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
-      },
-      "gitRequest": {
-          "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-          "gitBranch": "feat/51-integrate-flyway-into-pipeline",
-          "folders": "server/db-migrations/sql"
-      }
-    }
-    JSON
-  }
-
-  output "db_migrations_result" {
-    value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
-  }
 }
+
+# data "aws_lambda_invocation" "invoke_flyway" {
+#   function_name = aws_lambda_function.db-migrations.function_name
+
+#   input = <<JSON
+#   {
+#     "flywayRequest": {
+#         "flywayMethod": "info"
+#     },
+#     "dbRequest": {
+#         "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
+#     },
+#     "gitRequest": {
+#         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
+#         "gitBranch": "feat/51-integrate-flyway-into-pipeline",
+#         "folders": "server/db-migrations/sql"
+#     }
+#   }
+#   JSON
+# }
+
+# output "db_migrations_result" {
+#   value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
+# }
