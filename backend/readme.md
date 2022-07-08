@@ -24,5 +24,8 @@ docker-compose up db
 # create env vars
 set -o allexport; source env-db-dev.env; set +o allexport
 
+# activate the virtualenv
+. ./venv/bin/activate
+
 uvicorn api.app.main:app --reload
 ```

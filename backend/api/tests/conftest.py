@@ -9,6 +9,7 @@ import os
 
 from api.app.database import Base
 import api.app.routers.fam_router as fam_router
+import api.app.models.model as model
 
 
 import pytest
@@ -25,8 +26,8 @@ def dbEngine():
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
+    model.Base.metadata.create_all(bind=engine)
     yield engine
-
 
 @pytest.fixture(scope="module")
 def sessionObjects(dbEngine):

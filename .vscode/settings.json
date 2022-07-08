@@ -4,8 +4,9 @@
         120
     ],
     "python.testing.pytestArgs": [
-        "api"
+        "backend"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "./backend/venv/bin/python"
 }
