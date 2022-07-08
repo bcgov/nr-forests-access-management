@@ -1,6 +1,6 @@
 {
     "flywayRequest": {
-        "flywayMethod": "clean"
+        "flywayMethod": "MIGRATE"
     },
     "dbRequest": {
         "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
