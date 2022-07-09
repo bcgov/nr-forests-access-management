@@ -98,7 +98,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
     },
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-        "gitBranch": "feat/51-c-integrate-flyway-into-pipeline",
+        "gitBranch": "dev",
         "folders": "server/db-migrations/sql"
     }
   }
