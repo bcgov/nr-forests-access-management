@@ -47,3 +47,17 @@ variable "db_master_creds_secretname" {
   default     = "fam_db_master_account2"
   sensitive   = true
 }
+
+variable "api_db_username" {
+  description = "The username for the DB api user"
+  type        = string
+  default     = "fam_proxy_api"
+  sensitive   = true
+}
+
+variable "db_api_creds_secretname" {
+  description = "The name of the AWS Secret that holds the FAM api db username/password"
+  type        = string
+  default     = "fam_api_db_creds"
+  sensitive   = true
+}

@@ -1,0 +1,13 @@
+{
+    "flywayRequest": {
+        "flywayMethod": "MIGRATE"
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
+    },
+    "gitRequest": {
+        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
+        "gitBranch": "feat/51-c-integrate-flyway-into-pipeline",
+        "folders": "server/db-migrations/sql"
+    }
+}
