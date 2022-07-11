@@ -102,12 +102,4 @@ resource "aws_secretsmanager_secret_version" "sversion-api" {
   EOF
 }
 
-data "aws_secretsmanager_secret" "secret_api_DB" {
-  arn = aws_secretsmanager_secret.secret_api_DB.arn
-}
-
-data "aws_secretsmanager_secret_version" "creds" {
-  secret_id = data.aws_secretsmanager_secret.secret_api_DB.arn
-}
-
 # End Create DB Secret for the API database user
