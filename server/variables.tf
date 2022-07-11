@@ -28,6 +28,12 @@ variable "subnet_b" {
   default     = "Data_Dev_azb_net"
 }
 
+variable "db_instance_name" {
+  description = "The name of the database cluster instance"
+  type        = string
+  default     = "fam-aurora-db-postgres"
+}
+
 variable "db_name" {
   description = "The name of the database"
   type        = string
