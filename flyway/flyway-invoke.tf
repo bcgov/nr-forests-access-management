@@ -31,8 +31,8 @@ locals {
 
 # Also need to get the connection string to the Aurora instance
 
-data "aws_db_instance" "database" {
-  db_instance_identifier = var.db_instance_name
+data "aws_db_cluster" "database" {
+  cluster_identifier = var.db_cluster_identifier
 }
 
 # Invoke the lambda function
@@ -47,7 +47,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "placeholders": "api_db_username=${local.api_db_creds.username},api_db_password=${local.api_db_creds.password}"
     },
     "dbRequest": {
-        "connectionString": "jdbc:postgresql://${data.aws_db_instance.database.endpoint}/${var.db_name}"
+        "connectionString": "jdbc:postgresql://${data.aws_db_cluster.database.endpoint}/${var.db_name}"
     },
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",

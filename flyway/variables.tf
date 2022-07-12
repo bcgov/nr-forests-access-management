@@ -13,8 +13,8 @@ variable "aws_region" {
   default = "ca-central-1"
 }
 
-variable "db_instance_name" {
-  description = "The name of the database cluster instance"
+variable "db_cluster_identifier" {
+  description = "The idsentifier of the database cluster"
   type        = string
   default     = "fam-aurora-db-postgres"
 }
