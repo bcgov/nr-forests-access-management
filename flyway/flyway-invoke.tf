@@ -32,7 +32,7 @@ locals {
 # Also need to get the connection string to the Aurora instance
 
 data "aws_db_instance" "database" {
-  name = var.db_instance_name
+  db_instance_identifier = var.db_instance_name
 }
 
 # Invoke the lambda function
