@@ -89,7 +89,7 @@ resource "random_password" "api_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "secret_api_DB" {
-   name = var.db_master_creds_secretname
+   name = var.db_api_creds_secretname
 }
 
 resource "aws_secretsmanager_secret_version" "sversion-api" {
