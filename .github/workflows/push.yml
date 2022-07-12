@@ -44,7 +44,7 @@ jobs:
 
       - name: Running flyway database migrations using terraform
         run: |
-          cd server
+          cd flyway
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
