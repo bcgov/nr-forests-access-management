@@ -41,6 +41,16 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
+
+      - name: Running flyway database migrations using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve
           
       - name: Building front-end and deploying Frontend using terraform
         run: |

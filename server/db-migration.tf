@@ -40,7 +40,6 @@ data "aws_iam_policy_document" "flyway_lambda_exec_policydoc" {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
-
   }
 }
 
@@ -50,7 +49,7 @@ resource "aws_iam_role" "flyway_lambda_exec" {
 }
 
 resource "aws_lambda_function" "db-migrations" {
-  filename      = "db-migrations/lambda/flyway-all.jar"
+  filename      = "${path.module}/flyway/flyway-all.jar"
   function_name = "lambda-db-migrations"
   role          = aws_iam_role.flyway_lambda_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
@@ -59,7 +58,7 @@ resource "aws_lambda_function" "db-migrations" {
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-  source_code_hash = filebase64sha256("db-migrations/lambda/flyway-all.jar")
+  source_code_hash = filebase64sha256("${path.module}/flyway/flyway-all.jar")
 
   runtime = "java11"
 
@@ -83,28 +82,4 @@ resource "aws_lambda_function" "db-migrations" {
   tags = {
     "managed-by" = "terraform"
   }
-}
-
-data "aws_lambda_invocation" "invoke_flyway" {
-  function_name = aws_lambda_function.db-migrations.function_name
-
-  input = <<JSON
-  {
-    "flywayRequest": {
-        "flywayMethod": "info"
-    },
-    "dbRequest": {
-        "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
-    },
-    "gitRequest": {
-        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-        "gitBranch": "feat/51-c-integrate-flyway-into-pipeline",
-        "folders": "server/db-migrations/sql"
-    }
-  }
-  JSON
-}
-
-output "db_migrations_result" {
-  value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
 }
