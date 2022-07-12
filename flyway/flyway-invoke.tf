@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 4.14.0"
     }
+    postgresql = {
+      source = "cyrilgdn/postgresql"
+      version = "1.16.0"
+    }
   }
 }
 
@@ -13,6 +17,16 @@ provider "aws" {
   assume_role {
     role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
   }
+}
+
+provider "postgresql" {
+  scheme   = "awspostgres"
+  host     = "${data.aws_rds_cluster.database.endpoint}"
+  username = "${local.master_db_creds.username}"
+  port     = data.aws_rds_cluster.database.port
+  password = "${local.master_db_creds.password}"
+
+  superuser = true
 }
 
 # First need to grab the username and password from the database so they can go into the scripts
@@ -46,15 +60,6 @@ data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
 }
 
-provider "postgresql" {
-  scheme   = "awspostgres"
-  host     = "${data.aws_rds_cluster.database.endpoint}"
-  username = "${local.master_db_creds.username}"
-  port     = data.aws_rds_cluster.database.port
-  password = "${local.master_db_creds.password}"
-
-  superuser = true
-}
 
 resource "postgresql_role" "my_role" {
   name     = "${local.api_db_creds.username}"
