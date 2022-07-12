@@ -47,7 +47,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "placeholders": "api_db_username=${local.api_db_creds.username},api_db_password=${local.api_db_creds.password}"
     },
     "dbRequest": {
-        "connectionString": "jdbc:postgresql://${data.aws_db_cluster.database.endpoint}/${var.db_name}"
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
     },
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
