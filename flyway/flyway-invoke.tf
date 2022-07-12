@@ -31,7 +31,7 @@ locals {
 
 # Also need to get the connection string to the Aurora instance
 
-data "aws_db_cluster" "database" {
+data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
 }
 
