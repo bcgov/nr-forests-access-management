@@ -37,7 +37,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
   {
     "flywayRequest": {
         "flywayMethod": "info",
-        "placeholders": "api_db_username=${local.db_api_creds.username},api_db_password=${local.db_api_creds.password}"
+        "placeholders": "api_db_username=${local.api_db_creds.username},api_db_password=${local.api_db_creds.password}"
     },
     "dbRequest": {
         "connectionString": "jdbc:postgresql://${data.aws_db_instance.database.endpoint}/${var.db_name}"
