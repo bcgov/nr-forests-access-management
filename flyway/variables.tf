@@ -36,6 +36,6 @@ variable "github_repository" {
   type = string
 }
 
-variable "git_branch" {
+variable "github_branch" {
   type = string
 }
