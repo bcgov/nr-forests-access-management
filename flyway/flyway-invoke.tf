@@ -5,28 +5,7 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 4.14.0"
     }
-    postgresql = {
-      source = "cyrilgdn/postgresql"
-      version = "1.16.0"
-    }
   }
-}
-
-provider "aws" {
-  region = var.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
-  }
-}
-
-provider "postgresql" {
-  scheme   = "awspostgres"
-  host     = "${data.aws_rds_cluster.database.endpoint}"
-  username = "${local.master_db_creds.username}"
-  port     = data.aws_rds_cluster.database.port
-  password = "${local.master_db_creds.password}"
-
-  superuser = true
 }
 
 # First need to grab the username and password from the database so they can go into the scripts
@@ -39,19 +18,9 @@ data "aws_secretsmanager_secret_version" "api_current" {
   secret_id = data.aws_secretsmanager_secret.db_api_creds.id
 }
 
-# Also need to grab the username and password for the master db user to run the postgres provider
-
-data "aws_secretsmanager_secret" "db_master_creds" {
-  name = var.db_master_creds_secretname
-}
-
-data "aws_secretsmanager_secret_version" "master_current" {
-  secret_id = data.aws_secretsmanager_secret.db_api_creds.id
-}
 
 locals {
   api_db_creds = jsondecode(data.aws_secretsmanager_secret_version.api_current.secret_string)
-  master_db_creds = jsondecode(data.aws_secretsmanager_secret_version.master_current.secret_string)
 }
 
 # Also need to get the connection string to the Aurora instance
@@ -60,39 +29,35 @@ data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
 }
 
-
-resource "postgresql_role" "my_role" {
-  name     = "${local.api_db_creds.username}"
-  login    = true
-  password = "${local.api_db_creds.password}"
-}
-
 # Invoke the lambda function
 
-# data "aws_lambda_invocation" "invoke_flyway" {
-#   function_name = "lambda-db-migrations"
+data "aws_lambda_invocation" "invoke_flyway" {
+  function_name = "lambda-db-migrations"
 
-#   input = <<JSON
-#   {
-#     "flywayRequest": {
-#         "flywayMethod": "info",
-#         "placeholders": "api_db_username=${local.api_db_creds.username},api_db_password=${local.api_db_creds.password}"
-#     },
-#     "dbRequest": {
-#         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
-#     },
-#     "gitRequest": {
-#         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-#         "gitBranch": "dev",
-#         "folders": "server/flyway/sql"
-#     }
-#   }
-#   JSON
-# }
+  input = <<JSON
+  {
+    "flywayRequest": {
+        "flywayMethod": "info",
+        "placeholders": {
+          "api_db_username" : "${local.api_db_creds.username}",
+          "api_db_password" : "${local.api_db_creds.password}"
+        }
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
+    },
+    "gitRequest": {
+        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
+        "gitBranch": "dev",
+        "folders": "server/flyway/sql"
+    }
+  }
+  JSON
+}
 
-# output "db_migrations_result" {
-#   value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
-# }
+output "db_migrations_result" {
+  value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
+}
 
 
 
