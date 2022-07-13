@@ -50,7 +50,7 @@ jobs:
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
           EOF
           cat > github.auto.tfvars <<EOF
-          github_repository = "${{ github.repository }}"
+          github_repository = "https://github.com/${{ github.repository }}"
           github_branch = "${{ github.ref_name }}"
           EOF
           terraform init -backend-config=backend.hcl
