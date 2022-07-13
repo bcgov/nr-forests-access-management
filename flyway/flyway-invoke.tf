@@ -44,7 +44,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
   input = <<JSON
   {
     "flywayRequest": {
-        "flywayMethod": "info",
+        "flywayMethod": "MIGRATE",
         "placeholders": {
           "api_db_username" : "${local.api_db_creds.username}",
           "api_db_password" : "${local.api_db_creds.password}"
