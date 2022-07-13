@@ -8,6 +8,13 @@ terraform {
   }
 }
 
+provider "aws" {
+  region = var.aws_region
+  assume_role {
+    role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
+  }
+}
+
 # First need to grab the username and password from the database so they can go into the scripts
 
 data "aws_secretsmanager_secret" "db_api_creds" {
