@@ -56,7 +56,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
         "gitBranch": "dev",
-        "folders": "server/flyway/sql"
+        "folders": "flyway/sql"
     }
   }
   JSON

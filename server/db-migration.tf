@@ -74,7 +74,7 @@ resource "aws_lambda_function" "db-migrations" {
     variables = {
       DB_SECRET = "${var.db_master_creds_secretname}"
       FLYWAY_MIXED = "true"
-      FLYWAY_SCHEMAS = "flyway, app_fam"
+      FLYWAY_SCHEMAS = "flyway,app_fam"
       FLYWAY_TABLESPACE = "flyway"
     }
   }
