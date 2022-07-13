@@ -1,2 +1,2 @@
-DROP USER fam_proxy_api;
+DROP USER ${api_db_username};
 DROP SCHEMA app_fam CASCADE;
