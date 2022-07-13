@@ -7,7 +7,7 @@
     },
     "gitRequest": {
         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-        "gitBranch": "feat/51-c-integrate-flyway-into-pipeline",
-        "folders": "server/db-migrations/sql"
+        "gitBranch": "dev",
+        "folders": "flyway/sql"
     }
 }
