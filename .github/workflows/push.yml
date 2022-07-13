@@ -42,15 +42,19 @@ jobs:
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
 
-      # - name: Running flyway database migrations using terraform
-      #   run: |
-      #     cd flyway
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
-      #     EOF
-      #     terraform init -backend-config=backend.hcl
-      #     terraform apply -auto-approve
+      - name: Running flyway database migrations using terraform
+        run: |
+          cd flyway
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
+          EOF
+          cat > github.auto.tfvars <<EOF
+          github_repository = "${{ github.repository }}"
+          git_branch = ${{ github.ref_name }}
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve
           
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |

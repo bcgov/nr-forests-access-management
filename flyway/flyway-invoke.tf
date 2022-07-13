@@ -54,8 +54,8 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
     },
     "gitRequest": {
-        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-        "gitBranch": "dev",
+        "gitRepository": "${var.github_repository}",
+        "gitBranch": "${var.github_branch}",
         "folders": "flyway/sql"
     }
   }
