@@ -87,71 +87,71 @@ provider "aws" {
 
 
 
-resource "aws_iam_role_policy" "lambda_policy" {
-  name   = "lambda_policy"
-  role   = aws_iam_role.lambda_exec.id
-  policy = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-          "Effect": "Allow",
-          "Action": [
-              "dynamodb:BatchGet*",
-              "dynamodb:DescribeStream",
-              "dynamodb:DescribeTable",
-              "dynamodb:Get*",
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:BatchWrite*",
-              "dynamodb:CreateTable",
-              "dynamodb:Delete*",
-              "dynamodb:Update*",
-              "dynamodb:PutItem"
-          ],
-          "Resource": "${aws_dynamodb_table.ssp-greetings.arn}"
-        },
-        {
-          "Effect": "Allow",
-           "Action": [
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                   "kms:*",
-                  "logs:PutLogEvents",
-                  "logs:DescribeLogStreams"
-              ],
-          "Resource": "*"
-      },
-       {
-            "Sid": "VisualEditor1",
-            "Effect": "Allow",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:PutBucketCORS"
-            ],
-            "Resource": [
-                "${aws_s3_bucket.upload_bucket.arn}",
-                "${aws_s3_bucket.upload_bucket.arn}/*"
-            ]
-        },
-        {
-            "Sid": "VisualEditor2",
-            "Effect": "Allow",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:PutBucketCORS"
-            ],
-            "Resource": [
-                "arn:aws:s3:::api-testing-bucket-kiran",
-                "arn:aws:s3:::api-testing-bucket-kiran/*"
-            ]
-        }
-    ]
-  }
-  EOF
-}
+# resource "aws_iam_role_policy" "lambda_policy" {
+#   name   = "lambda_policy"
+#   role   = aws_iam_role.lambda_exec.id
+#   policy = <<-EOF
+#   {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#       {
+#           "Effect": "Allow",
+#           "Action": [
+#               "dynamodb:BatchGet*",
+#               "dynamodb:DescribeStream",
+#               "dynamodb:DescribeTable",
+#               "dynamodb:Get*",
+#               "dynamodb:Query",
+#               "dynamodb:Scan",
+#               "dynamodb:BatchWrite*",
+#               "dynamodb:CreateTable",
+#               "dynamodb:Delete*",
+#               "dynamodb:Update*",
+#               "dynamodb:PutItem"
+#           ],
+#           "Resource": "${aws_dynamodb_table.ssp-greetings.arn}"
+#         },
+#         {
+#           "Effect": "Allow",
+#            "Action": [
+#                   "logs:CreateLogGroup",
+#                   "logs:CreateLogStream",
+#                    "kms:*",
+#                   "logs:PutLogEvents",
+#                   "logs:DescribeLogStreams"
+#               ],
+#           "Resource": "*"
+#       },
+#        {
+#             "Sid": "VisualEditor1",
+#             "Effect": "Allow",
+#             "Action": [
+#                 "s3:PutObject",
+#                 "s3:GetObject",
+#                 "s3:PutBucketCORS"
+#             ],
+#             "Resource": [
+#                 "${aws_s3_bucket.upload_bucket.arn}",
+#                 "${aws_s3_bucket.upload_bucket.arn}/*"
+#             ]
+#         },
+#         {
+#             "Sid": "VisualEditor2",
+#             "Effect": "Allow",
+#             "Action": [
+#                 "s3:PutObject",
+#                 "s3:GetObject",
+#                 "s3:PutBucketCORS"
+#             ],
+#             "Resource": [
+#                 "arn:aws:s3:::api-testing-bucket-kiran",
+#                 "arn:aws:s3:::api-testing-bucket-kiran/*"
+#             ]
+#         }
+#     ]
+#   }
+#   EOF
+# }
 
 
 # data "aws_iam_policy_document" "lambda_exec_policydoc" {

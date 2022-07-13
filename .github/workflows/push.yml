@@ -27,10 +27,10 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      - name: building the backend
-        run: |
-          cd server/lambda
-          npm install
+      # - name: building the backend
+      #   run: |
+      #     cd server/lambda
+      #     npm install
 
       - name: Deploying back-end using terraform
         run: |
@@ -42,15 +42,15 @@ jobs:
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
 
-      - name: Running flyway database migrations using terraform
-        run: |
-          cd flyway
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
-          EOF
-          terraform init -backend-config=backend.hcl
-          terraform apply -auto-approve
+      # - name: Running flyway database migrations using terraform
+      #   run: |
+      #     cd flyway
+      #     cat <<EOF > backend.hcl
+      #     organization = "${{ env.organization }}"
+      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
+      #     EOF
+      #     terraform init -backend-config=backend.hcl
+      #     terraform apply -auto-approve
           
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
