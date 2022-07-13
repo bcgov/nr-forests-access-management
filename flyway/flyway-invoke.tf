@@ -63,7 +63,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
 }
 
 output "db_migrations_result" {
-  value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
+  value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)
 }
 
 
