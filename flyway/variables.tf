@@ -28,6 +28,6 @@ variable "db_name" {
 variable "db_api_creds_secretname" {
   description = "The name of the AWS Secret that holds the FAM api db username/password"
   type        = string
-  default     = "fam_api_db_creds"
+  default     = "fam_api_db_creds2"
   sensitive   = true
 }

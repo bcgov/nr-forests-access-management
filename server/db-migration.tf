@@ -1,5 +1,5 @@
-resource "aws_iam_role_policy" "secretmasterDB_access_policy" {
-  name   = "secretmasterDB_access_policy"
+resource "aws_iam_role_policy" "flyway_lambda_access_policy" {
+  name   = "flyway_lambda_access_policy"
   role   = aws_iam_role.flyway_lambda_exec.id
   policy = <<-EOF
   {
