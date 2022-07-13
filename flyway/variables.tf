@@ -31,3 +31,13 @@ variable "db_api_creds_secretname" {
   default     = "fam_api_db_creds2"
   sensitive   = true
 }
+
+variable "github_repository" {
+  type = string
+  sensitive = true
+}
+
+variable "git_branch" {
+  type = string
+  sensitive = true
+}
