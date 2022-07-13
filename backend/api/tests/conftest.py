@@ -1,33 +1,68 @@
+""" setup for testing
+
+based loosely on this:
+https://fastapi.tiangolo.com/advanced/testing-database/
+
+:return: _description_
+:rtype: _type_
+:yield: _description_
+:rtype: _type_
+"""
+
 from typing import Generator
 from typing import Any
 
+from starlette.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import os
+import logging
 
 from api.app.database import Base
 import api.app.routers.fam_router as fam_router
 import api.app.models.model as model
+import api.app.dependencies as dependencies
+from api.app.main import app
 
 
 import pytest
 
+# global placeholder to be populated by fixtures for database test
+# sessions, required to override the get_db method.
+testSession = None
 
-@pytest.fixture
-def test_fixture():
-    var = 20
-    yield var
+LOGGER = logging.getLogger(__name__)
 
-@pytest.fixture(scope="module")
-def dbEngine():
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-    model.Base.metadata.create_all(bind=engine)
-    yield engine
+
+
+@pytest.fixture(scope="function")
+def getApp(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
+    """
+    Create a fresh database on each test case.
+    """
+    Base.metadata.create_all(dbEngine)  # Create the tables.
+    global testSession
+    testSession = sessionObjects
+    global app
+    app.dependency_overrides[dependencies.get_db] = override_get_db
+    yield app
+
+
+
+@pytest.fixture(scope="function")
+def testClient_fixture(getApp: FastAPI):
+    """returns a requests object of the current app backed by a test
+    database, with the objects defined in the model created in it.
+
+    :param getApp: the FastAPI app
+    :type getApp: FastAPI
+    :yield: a requests client backed by the app in this directory.
+    :rtype: starlette.testclient
+    """
+    client = TestClient(getApp)
+    yield client
 
 @pytest.fixture(scope="module")
 def sessionObjects(dbEngine):
@@ -35,20 +70,28 @@ def sessionObjects(dbEngine):
     SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=dbEngine)
     yield SessionTesting
     if os.path.exists('./test_db.db'):
-        os.remove('./test_db.db')
+        LOGGER.debug("remove the database: ./test_db.db'")
+        # TODO: once get working uncomment below
+        #os.remove('./test_db.db')
+
+
+@pytest.fixture(scope="module")
+def dbEngine():
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
+    LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
+
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    )
+    model.Base.metadata.create_all(bind=engine)
+
+    yield engine
+
+    # TODO: uncomment once working
+    #model.Base.metadata.drop_all(dbEngine)
 
 @pytest.fixture(scope="function")
-def app(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
-    """
-    Create a fresh database on each test case.
-    """
-    Base.metadata.create_all(dbEngine)  # Create the tables.
-    _app = start_application()
-    yield _app
-    Base.metadata.drop_all(dbEngine)
-
-@pytest.fixture(scope="function")
-def dbSession(app: FastAPI, dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
+def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
 
     connection = dbEngine.connect()
     transaction = connection.begin()
@@ -59,8 +102,11 @@ def dbSession(app: FastAPI, dbEngine, sessionObjects) -> Generator[sessionObject
     transaction.rollback()
     connection.close()
 
-def start_application():
-    # not a fixture
-    app = FastAPI()
-    app.include_router(fam_router.router)
-    return app
+
+
+def override_get_db():
+    try:
+        db = testSession()
+        yield db
+    finally:
+        db.close()

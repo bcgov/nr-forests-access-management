@@ -14,4 +14,6 @@ def test_getFamApplications(dbSession):
     famApps = crud.getFamApplications(dbSession)
     assert famApps == []
     LOGGER.debug(f'famApps: {famApps}')
+
+    # add an app and verify its returned.
     pass

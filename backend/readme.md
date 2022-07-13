@@ -21,6 +21,10 @@ cd backend
 # run the backend postgres db
 docker-compose up db
 
+# run the migrations
+cd api
+alembic upgrade head
+
 # create env vars
 set -o allexport; source env-db-dev.env; set +o allexport
 

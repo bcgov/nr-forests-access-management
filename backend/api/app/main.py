@@ -19,7 +19,7 @@ logging.config.fileConfig(
     disable_existing_loggers=False
 )
 
-LOGGER = logging.getLogger('main')
+LOGGER = logging.getLogger('api.app.main')
 
 tags_metadata = [{
         "name": "Forest Access Management - FAM",

@@ -13,16 +13,45 @@ LOGGER = logging.getLogger(__name__)
 
 from api.app.main import app
 
-client = TestClient(app)
+# client = TestClient(app)
 
 
-def test_get_fam_users(test_fixture):
+def test_get_fam_users_nodata(testClient_fixture):
     LOGGER.debug("here here here")
-    response = client.get("/fam_users")
+    response = testClient_fixture.get("/api/v1/fam_users")
     LOGGER.debug(f"response: {response}")
-    LOGGER.debug(f"response {test_fixture}")
-    #assert response.status_code == 200
-    #assert response.json() == {"ping": "pong!"}
+    LOGGER.debug(f"response {response}")
+    assert response.status_code == 404
+    data = response.json()
+    LOGGER.debug(f"data: {data}")
+    assert data == {"detail": "Not Found"}
+    testClient_fixture.post()
+
+
+def test_get_fam_users_withdata(user_client_withUsers):
+    response = user_client_withUsers.get("/api/v1/fam_users")
+    LOGGER.debug(f"response: {response}")
+    data = response.json()
+    LOGGER.debug(f"data: {data}")
+
+
 
 # follow this article.. best article I've found on testing
 # https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/testing/
+
+
+@pytest.fixture(scope="function")
+def user_client_withUsers(testClient_fixture):
+    user1 = {
+        "user_type": "a",
+        "cognito_user_id": "xyz123",
+        "user_name": "Bill",
+        "user_guid": "zzzuptop",
+        "create_user": "Bill",
+        "create_date": "2022-07-13T21:24:15.385Z",
+        "update_user": "Bill",
+        "update_date": "2022-07-13T21:24:15.385Z",
+    }
+    resp = testClient_fixture.post("/api/v1/fam_users", data=user1)
+    LOGGER.debug(f"resp: {resp}")
+    yield testClient_fixture

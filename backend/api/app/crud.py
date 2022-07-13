@@ -97,9 +97,9 @@ def createFamUser(famUser: schemas.FamUser,
     return db_item
 
 def getFamUser(db: Session):
+    LOGGER.debug(f"db session: {db}")
     famUsers = db.query(models.FamUser).all()
     return famUsers
-
 
 if __name__ == '__main__':
     import database
