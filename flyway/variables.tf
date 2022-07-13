@@ -34,10 +34,8 @@ variable "db_api_creds_secretname" {
 
 variable "github_repository" {
   type = string
-  sensitive = true
 }
 
 variable "git_branch" {
   type = string
-  sensitive = true
 }
