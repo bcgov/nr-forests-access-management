@@ -21,6 +21,8 @@ CREATE SCHEMA IF NOT EXISTS app_fam;
 
 CREATE USER ${api_db_username} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${api_db_password}';
 
+GRANT USAGE ON SCHEMA app_fam TO us${api_db_username};
+
 GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA app_fam TO ${api_db_username};
 
 -- 
