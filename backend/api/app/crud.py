@@ -1,10 +1,9 @@
 import logging
 from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, delete
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session, joinedload, load_only, selectinload
-
 from .models import model as models
 
 from . import schemas
@@ -96,10 +95,20 @@ def createFamUser(famUser: schemas.FamUser,
     db.refresh(db_item)
     return db_item
 
-def getFamUser(db: Session):
+def getFamUsers(db: Session):
     LOGGER.debug(f"db session: {db}")
     famUsers = db.query(models.FamUser).all()
     return famUsers
+
+def getFamUser(db: Session, user_id: int):
+    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id)
+    return famUser
+
+def deleteUser(db: Session, user_id: int):
+    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id).one()
+    db.delete(famUser)
+    db.commit()
+    return famUser
 
 if __name__ == '__main__':
     import database

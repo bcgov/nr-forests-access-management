@@ -54,9 +54,12 @@ class FamUser(BaseModel):
     @validator('user_type')
     def user_type_length(cls, v):
         if len(v) > 1:
-            raise ValueError('user type cannot exceed a single character')
+            raise ValueError(f'value for user_type provided was {v}, user_type length cannot exceed 1 character')
         return v.title()
 
     class Config:
         orm_mode = True
+
+class FamUserGet(FamUser):
+    user_id: int
 

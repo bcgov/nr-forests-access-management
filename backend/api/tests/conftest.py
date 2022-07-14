@@ -49,8 +49,6 @@ def getApp(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
     app.dependency_overrides[dependencies.get_db] = override_get_db
     yield app
 
-
-
 @pytest.fixture(scope="function")
 def testClient_fixture(getApp: FastAPI):
     """returns a requests object of the current app backed by a test
