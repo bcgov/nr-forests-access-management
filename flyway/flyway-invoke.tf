@@ -36,7 +36,9 @@ data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
 }
 
-# Invoke the lambda function
+variable "api_password" {
+  type = string
+}
 
 data "aws_lambda_invocation" "invoke_flyway" {
   function_name = "lambda-db-migrations"
@@ -47,7 +49,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "flywayMethod": "MIGRATE",
         "placeholders": {
           "api_db_username" : "${local.api_db_creds.username}",
-          "api_db_password" : "md5${md5(local.api_db_creds.password + local.api_db_creds.username)}"
+          "api_db_password" : "md5${md5(join("", local.api_db_creds.password + local.api_db_creds.username))}"
         }
     },
     "dbRequest": {
