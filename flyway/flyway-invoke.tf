@@ -45,7 +45,7 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "flywayMethod": "MIGRATE",
         "placeholders": {
           "api_db_username" : "${local.api_db_creds.username}",
-          "api_db_password" : "md5${md5(join("", [tostring(local.api_db_creds.password), tostring(local.api_db_creds.username)]))}"
+          "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
         }
     },
     "dbRequest": {
@@ -59,10 +59,6 @@ data "aws_lambda_invocation" "invoke_flyway" {
   }
   JSON
 
-  depends_on = [
-    data.aws_rds_cluster.database,
-    data.aws_secretsmanager_secret_version.api_current
-  ]
 }
 
 output "db_migrations_result" {
