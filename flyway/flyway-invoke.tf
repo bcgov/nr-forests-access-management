@@ -36,10 +36,6 @@ data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
 }
 
-variable "api_password" {
-  type = string
-}
-
 data "aws_lambda_invocation" "invoke_flyway" {
   function_name = "lambda-db-migrations"
 
