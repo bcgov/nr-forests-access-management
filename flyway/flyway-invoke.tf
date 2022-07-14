@@ -46,7 +46,8 @@ data "aws_lambda_invocation" "invoke_flyway" {
         "placeholders": {
           "api_db_username" : "${local.api_db_creds.username}",
           "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
-        }
+        },
+        "target": "latest"
     },
     "dbRequest": {
         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
