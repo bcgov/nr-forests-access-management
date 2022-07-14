@@ -15,15 +15,6 @@
 
 CREATE SCHEMA IF NOT EXISTS app_fam;
 
--- 
--- USER: FAM_PROXY_API 
---
-
-CREATE USER ${api_db_username} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${api_db_password}';
-
-GRANT USAGE ON SCHEMA app_fam TO ${api_db_username};
-
-GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA app_fam TO ${api_db_username};
 
 -- 
 -- TABLE: app_fam.fam_application 
@@ -597,4 +588,12 @@ ALTER TABLE app_fam.fam_user_role_xref ADD CONSTRAINT Reffam_role12
     REFERENCES app_fam.fam_role(role_id)
 ;
 
+-- USER: FAM_PROXY_API 
+--
+
+CREATE USER ${api_db_username} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${api_db_password}';
+
+GRANT USAGE ON SCHEMA app_fam TO ${api_db_username};
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA app_fam TO ${api_db_username};
 
