@@ -4,7 +4,8 @@
         "placeholders": {
             "api_db_username" : "fam_proxy_api",
             "api_db_password" : "paste pw here (but do not check in this file!!)"
-        }
+        },
+        "target": "latest"
     },
     "dbRequest": {
         "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"

@@ -31,3 +31,4 @@ server/backend.hcl
 server/.terraform.lock.hcl
 server/lambda/node_modules
 out.json
+flyway/request.json
