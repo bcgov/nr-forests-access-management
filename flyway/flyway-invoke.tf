@@ -58,6 +58,11 @@ data "aws_lambda_invocation" "invoke_flyway" {
     }
   }
   JSON
+
+  depends_on = [
+    data.aws_rds_cluster.database,
+    data.aws_secretsmanager_secret_version.api_current
+  ]
 }
 
 output "db_migrations_result" {
