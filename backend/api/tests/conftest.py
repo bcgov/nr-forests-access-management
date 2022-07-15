@@ -9,25 +9,22 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 :rtype: _type_
 """
 
-from typing import Generator
-from typing import Any
+import logging
+import os
+import uuid
+from typing import Any, Generator
 
-from starlette.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import api.app.dependencies as dependencies
+import api.app.models.model as model
+import api.app.routers.fam_router as fam_router
+import pytest
+from api.app.database import Base
+from api.app.main import app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-import os
-import logging
-
-from api.app.database import Base
-import api.app.routers.fam_router as fam_router
-import api.app.models.model as model
-import api.app.dependencies as dependencies
-from api.app.main import app
-
-
-import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from starlette.testclient import TestClient
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
@@ -92,15 +89,28 @@ def dbEngine():
 def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
 
     connection = dbEngine.connect()
-    transaction = connection.begin()
+    #transaction = connection.begin()
     session = sessionObjects(bind=connection)
     yield session  # use the session in tests.
 
     session.close()
-    transaction.rollback()
+    #transaction.rollback()
     connection.close()
 
+@pytest.fixture(scope="function")
+def testUserData() -> dict:
 
+    userData = {
+        "user_type": "a",
+        "cognito_user_id": "xyz123",
+        "user_name": "Bill",
+        "user_guid": str(uuid.uuid4()),
+        "create_user": "Bill",
+        "create_date": "2022-07-13T21:24:15.385Z",
+        "update_user": "Bill",
+        "update_date": "2022-07-13T21:24:15.385Z",
+    }
+    yield userData
 
 def override_get_db():
     try:

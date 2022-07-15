@@ -63,3 +63,7 @@ class FamUser(BaseModel):
 class FamUserGet(FamUser):
     user_id: int
 
+    class Config:
+        """ allows serialization of orm data struct"""
+        orm_mode = True
+

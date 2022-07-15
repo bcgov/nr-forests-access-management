@@ -68,8 +68,8 @@ app.add_middleware(
 def main():
     return RedirectResponse(url="/docs/")
 
-
-app.include_router(fam_router.router, prefix='/api/v1')
+apiPrefix = '/api/v1'
+app.include_router(fam_router.router, prefix=apiPrefix)
 
 if __name__  == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

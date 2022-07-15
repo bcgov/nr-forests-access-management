@@ -101,7 +101,8 @@ def getFamUsers(db: Session):
     return famUsers
 
 def getFamUser(db: Session, user_id: int):
-    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id)
+    # get a single user based on user_id
+    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id).one()
     return famUser
 
 def deleteUser(db: Session, user_id: int):
