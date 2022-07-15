@@ -1,12 +1,11 @@
 import logging
-from datetime import datetime
 
-from sqlalchemy import func, delete
+from sqlalchemy import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session, joinedload, load_only, selectinload
-from .models import model as models
+from sqlalchemy.orm import Session
 
 from . import schemas
+from .models import model as models
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +21,11 @@ def getFamApplications(db: Session):
     """
     LOGGER.debug("running getFamApplications")
     LOGGER.debug(f"db: {type(db)}")
-    #LOGGER.debug(f"db parameters {db.parameters}")
+    # LOGGER.debug(f"db parameters {db.parameters}")
     famApps = db.query(models.FamApplication).all()
     LOGGER.debug(f"famApplications: {famApps}, {type(famApps)}")
     return famApps
+
 
 def getPrimaryKey(model):
     """recieves a declarative base model and returns the primary key that
@@ -42,7 +42,7 @@ def getPrimaryKey(model):
 
 
 def getNext(model, db: Session):
-    """ calculates the next increment for the given model.  This is
+    """calculates the next increment for the given model.  This is
     created because in development the autoincrement / populate feature
     for sqllite databases does not always work.
 
@@ -62,8 +62,8 @@ def getNext(model, db: Session):
     else:
         return queryResult[0] + 1
 
-def createFamApplication(famApplication: schemas.FamApplication,
-                         db: Session):
+
+def createFamApplication(famApplication: schemas.FamApplication, db: Session):
     LOGGER.debug(f"famApplication: {famApplication}")
     LOGGER.debug(f"famApplication as dict: {famApplication.dict()}")
     pkColName = getPrimaryKey(models.FamApplication)
@@ -79,8 +79,8 @@ def createFamApplication(famApplication: schemas.FamApplication,
     db.refresh(db_item)
     return db_item
 
-def createFamUser(famUser: schemas.FamUser,
-                  db: Session):
+
+def createFamUser(famUser: schemas.FamUser, db: Session):
     LOGGER.debug(f"Fam user: {famUser}")
     pkColName = getPrimaryKey(models.FamUser)
     nextVal = getNext(models.FamUser, db)
@@ -95,23 +95,30 @@ def createFamUser(famUser: schemas.FamUser,
     db.refresh(db_item)
     return db_item
 
+
 def getFamUsers(db: Session):
     LOGGER.debug(f"db session: {db}")
     famUsers = db.query(models.FamUser).all()
     return famUsers
 
+
 def getFamUser(db: Session, user_id: int):
     # get a single user based on user_id
-    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id).one()
+    famUser = db.query(models.FamUser).filter(
+        models.FamUser.user_id == user_id).one()
     return famUser
 
+
 def deleteUser(db: Session, user_id: int):
-    famUser = db.query(models.FamUser).filter(models.FamUser.user_id==user_id).one()
+    famUser = db.query(models.FamUser).filter(
+        models.FamUser.user_id == user_id).one()
     db.delete(famUser)
     db.commit()
     return famUser
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import database
+
     db = database.SessionLocal
     getFamApplications(db, 5)

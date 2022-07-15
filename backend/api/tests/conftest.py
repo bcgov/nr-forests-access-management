@@ -16,7 +16,6 @@ from typing import Any, Generator
 
 import api.app.dependencies as dependencies
 import api.app.models.model as model
-import api.app.routers.fam_router as fam_router
 import pytest
 from api.app.database import Base
 from api.app.main import app
@@ -24,14 +23,12 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from starlette.testclient import TestClient
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
 testSession = None
 
 LOGGER = logging.getLogger(__name__)
-
 
 
 @pytest.fixture(scope="function")
@@ -42,9 +39,9 @@ def getApp(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
     Base.metadata.create_all(dbEngine)  # Create the tables.
     global testSession
     testSession = sessionObjects
-    global app
     app.dependency_overrides[dependencies.get_db] = override_get_db
     yield app
+
 
 @pytest.fixture(scope="function")
 def testClient_fixture(getApp: FastAPI):
@@ -59,15 +56,17 @@ def testClient_fixture(getApp: FastAPI):
     client = TestClient(getApp)
     yield client
 
+
 @pytest.fixture(scope="module")
 def sessionObjects(dbEngine):
     # Use connect_args parameter only with sqlite
-    SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=dbEngine)
+    SessionTesting = sessionmaker(autocommit=False, autoflush=False,
+                                  bind=dbEngine)
     yield SessionTesting
-    if os.path.exists('./test_db.db'):
+    if os.path.exists("./test_db.db"):
         LOGGER.debug("remove the database: ./test_db.db'")
         # TODO: once get working uncomment below
-        #os.remove('./test_db.db')
+        # os.remove('./test_db.db')
 
 
 @pytest.fixture(scope="module")
@@ -83,19 +82,22 @@ def dbEngine():
     yield engine
 
     # TODO: uncomment once working
-    #model.Base.metadata.drop_all(dbEngine)
+    # model.Base.metadata.drop_all(dbEngine)
+
 
 @pytest.fixture(scope="function")
-def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
+def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects,
+                                                     Any, None]:
 
     connection = dbEngine.connect()
-    #transaction = connection.begin()
+    # transaction = connection.begin()
     session = sessionObjects(bind=connection)
     yield session  # use the session in tests.
 
     session.close()
-    #transaction.rollback()
+    # transaction.rollback()
     connection.close()
+
 
 @pytest.fixture(scope="function")
 def testUserData() -> dict:
@@ -111,6 +113,7 @@ def testUserData() -> dict:
         "update_date": "2022-07-13T21:24:15.385Z",
     }
     yield userData
+
 
 def override_get_db():
     try:

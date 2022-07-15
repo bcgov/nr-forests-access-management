@@ -24,15 +24,15 @@ LOGGER = logging.getLogger('api.app.main')
 tags_metadata = [{
         "name": "Forest Access Management - FAM",
         "description": "Controls the user access to different Forest based" +
-                       "applications and what roles different users will have " +
-                       "once logged in"
+                       "applications and what roles different users will " +
+                       "have once logged in"
     },
 ]
 
 description = """
-Forest Access Management API used by the Forest Access Management application to
-Define who has access to what apps, and what roles they will operate under once
-access is granted.
+Forest Access Management API used by the Forest Access Management application
+to Define who has access to what apps, and what roles they will operate under
+ once access is granted.
 """
 
 app = FastAPI(
@@ -68,8 +68,10 @@ app.add_middleware(
 def main():
     return RedirectResponse(url="/docs/")
 
+
 apiPrefix = '/api/v1'
 app.include_router(fam_router.router, prefix=apiPrefix)
 
-if __name__  == '__main__':
+
+if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)
