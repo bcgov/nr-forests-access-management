@@ -39,3 +39,7 @@ variable "github_repository" {
 variable "github_branch" {
   type = string
 }
+
+variable "github_commit" {
+  type = string
+}

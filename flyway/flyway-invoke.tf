@@ -15,7 +15,18 @@ provider "aws" {
   }
 }
 
-# First need to grab the username and password from the database so they can go into the scripts
+# Need to get the connection string to the Aurora instance
+
+data "aws_rds_cluster" "database" {
+  cluster_identifier = var.db_cluster_identifier
+}
+
+resource "aws_db_cluster_snapshot" "fam_snapshot" {
+  db_cluster_identifier          = aws_rds_cluster.database.id
+  db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
+}
+
+# Need to grab the username and password from the database so they can go into the scripts
 
 data "aws_secretsmanager_secret" "db_api_creds" {
   name = var.db_api_creds_secretname
@@ -25,16 +36,11 @@ data "aws_secretsmanager_secret_version" "api_current" {
   secret_id = data.aws_secretsmanager_secret.db_api_creds.id
 }
 
-
 locals {
   api_db_creds = jsondecode(data.aws_secretsmanager_secret_version.api_current.secret_string)
 }
 
-# Also need to get the connection string to the Aurora instance
-
-data "aws_rds_cluster" "database" {
-  cluster_identifier = var.db_cluster_identifier
-}
+# Run flyway to update the database
 
 data "aws_lambda_invocation" "invoke_flyway" {
   function_name = "lambda-db-migrations"
@@ -59,6 +65,10 @@ data "aws_lambda_invocation" "invoke_flyway" {
     }
   }
   JSON
+
+  depends_on = [
+    aws_db_cluster_snapshot.fam_snapshot
+  ]
 
 }
 
