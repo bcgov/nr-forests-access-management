@@ -32,15 +32,15 @@ jobs:
       #     cd server/lambda
       #     npm install
 
-      # - name: Deploying back-end using terraform
-      #   run: |
-      #     cd server
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
-      #     EOF
-      #     terraform init -backend-config=backend.hcl
-      #     terraform apply -auto-approve
+      - name: Deploying back-end using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve
 
       - name: Running flyway database migrations using terraform
         run: |
