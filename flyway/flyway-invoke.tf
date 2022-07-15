@@ -22,7 +22,7 @@ data "aws_rds_cluster" "database" {
 }
 
 resource "aws_db_cluster_snapshot" "fam_snapshot" {
-  db_cluster_identifier          = aws_rds_cluster.database.id
+  db_cluster_identifier          = data.aws_rds_cluster.database.id
   db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
 }
 
