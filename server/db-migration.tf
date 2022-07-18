@@ -143,8 +143,3 @@ data "aws_lambda_invocation" "invoke_flyway" {
 
   count = var.github_event == "push" ? 1 : 0
 }
-
-output "db_migrations_result" {
-  value = jsondecode(data.aws_lambda_invocation.invoke_flyway[count.index].result)
-  count = var.github_event == "push" ? 1 : 0
-}
