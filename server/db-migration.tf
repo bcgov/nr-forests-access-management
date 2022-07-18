@@ -89,11 +89,10 @@ resource "aws_lambda_function" "db-migrations" {
 
 data "aws_rds_cluster" "database" {
   cluster_identifier = var.db_cluster_identifier
-  count = var.github_event == "push" ? 1 : 0
 }
 
 resource "aws_db_cluster_snapshot" "fam_snapshot" {
-  db_cluster_identifier          = data.aws_rds_cluster.database.id
+  db_cluster_identifier          = data.aws_rds_cluster.database[count.index].id
   db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
   count = var.github_event == "push" ? 1 : 0
 }
@@ -102,17 +101,14 @@ resource "aws_db_cluster_snapshot" "fam_snapshot" {
 
 data "aws_secretsmanager_secret" "db_api_creds" {
   name = var.db_api_creds_secretname
-  count = var.github_event == "push" ? 1 : 0
 }
 
 data "aws_secretsmanager_secret_version" "api_current" {
-  secret_id = data.aws_secretsmanager_secret.db_api_creds.id
-  count = var.github_event == "push" ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.db_api_creds[count.index].id
 }
 
 locals {
-  api_db_creds = jsondecode(data.aws_secretsmanager_secret_version.api_current.secret_string)
-  count = var.github_event == "push" ? 1 : 0
+  api_db_creds = jsondecode(data.aws_secretsmanager_secret_version[count.index].api_current.secret_string)
 }
 
 # Run flyway to update the database
@@ -149,5 +145,6 @@ data "aws_lambda_invocation" "invoke_flyway" {
 }
 
 output "db_migrations_result" {
-  value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)
+  value = jsondecode(data.aws_lambda_invocation.invoke_flyway[count.index].result)
+  count = var.github_event == "push" ? 1 : 0
 }
