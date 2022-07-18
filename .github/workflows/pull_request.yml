@@ -37,7 +37,12 @@ jobs:
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
           EOF
-
+          cat > github.auto.tfvars <<EOF
+          github_repository = "https://github.com/${{ github.repository }}"
+          github_branch = "${{ github.ref_name }}"
+          github_commit = "${{ github.sha }}"
+          github_event = "${{ github.event_name }}"
+          EOF
           terraform init -backend-config=backend.hcl
           terraform plan
 
