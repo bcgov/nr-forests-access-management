@@ -28,7 +28,7 @@ variable "subnet_b" {
   default     = "Data_Dev_azb_net"
 }
 
-variable "db_instance_name" {
+variable "db_cluster_identifier" {
   description = "The name of the database cluster instance"
   type        = string
   default     = "fam-aurora-db-postgres"
@@ -66,4 +66,20 @@ variable "db_api_creds_secretname" {
   type        = string
   default     = "fam_api_db_creds2"
   sensitive   = true
+}
+
+variable "github_repository" {
+  type = string
+}
+
+variable "github_branch" {
+  type = string
+}
+
+variable "github_commit" {
+  type = string
+}
+
+variable "github_event" {
+  type = string
 }

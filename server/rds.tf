@@ -64,7 +64,7 @@ module "db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "~> 3.0"
 
-  name           = var.db_instance_name
+  name           = var.db_cluster_identifier
   engine         = "aurora-postgresql"
   engine_version = "11.9"
   engine_mode    = "serverless"
