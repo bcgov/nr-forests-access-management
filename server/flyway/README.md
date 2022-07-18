@@ -7,6 +7,7 @@ Using the [flyway-lambda](https://github.com/Geekoosh/flyway-lambda) open source
 * SQL Scripts live in /flyway/db-migrations
 * The lambda can be run from the command-line (for rollbacks if necessary)
 * The lambda is pre-configured to use AWS Secrets to get username and password to connect to the DB
+* UNDO is not a supported flyway operation
 
 The following commands can be used to invoke flyway lambda from aws cli. You need to "click for credentials" first!
 You also have to make sure the paths and the db connection string in request.json are correct.
