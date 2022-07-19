@@ -1,5 +1,5 @@
-resource "aws_iam_role_policy" "secretmasterDB_access_policy" {
-  name   = "secretmasterDB_access_policy"
+resource "aws_iam_role_policy" "flyway_lambda_access_policy" {
+  name   = "flyway_lambda_access_policy"
   role   = aws_iam_role.flyway_lambda_exec.id
   policy = <<-EOF
   {
@@ -40,7 +40,6 @@ data "aws_iam_policy_document" "flyway_lambda_exec_policydoc" {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
-
   }
 }
 
@@ -50,7 +49,7 @@ resource "aws_iam_role" "flyway_lambda_exec" {
 }
 
 resource "aws_lambda_function" "db-migrations" {
-  filename      = "db-migrations/lambda/flyway-all.jar"
+  filename      = "${path.module}/flyway/flyway-all.jar"
   function_name = "lambda-db-migrations"
   role          = aws_iam_role.flyway_lambda_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
@@ -59,7 +58,7 @@ resource "aws_lambda_function" "db-migrations" {
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-  source_code_hash = filebase64sha256("db-migrations/lambda/flyway-all.jar")
+  source_code_hash = filebase64sha256("${path.module}/flyway/flyway-all.jar")
 
   runtime = "java11"
 
@@ -74,9 +73,8 @@ resource "aws_lambda_function" "db-migrations" {
   environment {
     variables = {
       DB_SECRET = "${var.db_master_creds_secretname}"
-      FLYWAY_MIXED = "true"
-      FLYWAY_SCHEMAS = "app_fam,flyway"
-      FLYWAY_TABLESPACE = "flyway"
+      FLYWAY_MIXED = "false"
+      FLYWAY_SCHEMAS = "flyway,app_fam"
     }
   }
 
@@ -85,26 +83,63 @@ resource "aws_lambda_function" "db-migrations" {
   }
 }
 
-# data "aws_lambda_invocation" "invoke_flyway" {
-#   function_name = aws_lambda_function.db-migrations.function_name
+# Everything below here is for invoking flyway. It only happens if there is a push
 
-#   input = <<JSON
-#   {
-#     "flywayRequest": {
-#         "flywayMethod": "info"
-#     },
-#     "dbRequest": {
-#         "connectionString": "jdbc:postgresql://fam-aurora-db-postgres.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
-#     },
-#     "gitRequest": {
-#         "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-#         "gitBranch": "feat/51-integrate-flyway-into-pipeline",
-#         "folders": "server/db-migrations/sql"
-#     }
-#   }
-#   JSON
-# }
+# Need to get the connection string to the Aurora instance
 
-# output "db_migrations_result" {
-#   value = jsondecode(data.aws_lambda_invocation.invoke_flyway.result)["key1"]
-# }
+data "aws_rds_cluster" "database" {
+  cluster_identifier = var.db_cluster_identifier
+}
+
+resource "aws_db_cluster_snapshot" "fam_snapshot" {
+  db_cluster_identifier          = data.aws_rds_cluster.database.id
+  db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
+  count = var.github_event == "push" ? 1 : 0
+}
+
+# Need to grab the username and password from the database so they can go into the scripts
+
+data "aws_secretsmanager_secret" "db_api_creds" {
+  name = var.db_api_creds_secretname
+}
+
+data "aws_secretsmanager_secret_version" "api_current" {
+  secret_id = data.aws_secretsmanager_secret.db_api_creds.id
+}
+
+locals {
+  api_db_creds = jsondecode(data.aws_secretsmanager_secret_version.api_current.secret_string)
+}
+
+# Run flyway to update the database
+
+data "aws_lambda_invocation" "invoke_flyway" {
+  function_name = "lambda-db-migrations"
+
+  input = <<JSON
+  {
+    "flywayRequest": {
+        "flywayMethod": "MIGRATE",
+        "placeholders": {
+          "api_db_username" : "${local.api_db_creds.username}",
+          "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
+        },
+        "target": "latest"
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
+    },
+    "gitRequest": {
+        "gitRepository": "${var.github_repository}",
+        "gitBranch": "${var.github_branch}",
+        "folders": "server/flyway/sql"
+    }
+  }
+  JSON
+
+  depends_on = [
+    aws_db_cluster_snapshot.fam_snapshot
+  ]
+
+  count = var.github_event == "push" ? 1 : 0
+}

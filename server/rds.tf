@@ -1,3 +1,30 @@
+data "aws_vpc" "selected" {
+  state = "available"
+}
+
+data "aws_subnet" "a" {
+  filter {
+    name   = "tag:Name"
+    values = [var.subnet_a]
+  }
+}
+
+data "aws_subnet" "b" {
+  filter {
+    name   = "tag:Name"
+    values = [var.subnet_b]
+  }
+}
+
+data "aws_security_group" "a" {
+  filter {
+    name   = "tag:Name"
+    values = [var.aws_security_group_a]
+  }
+}
+
+# BEGIN CREATE RANDOM PASSWORD FOR RDS MASTER USER
+
 resource "random_password" "db_password" {
   length           = 16
   special          = true
@@ -30,12 +57,14 @@ locals {
   db_creds = jsondecode(data.aws_secretsmanager_secret_version.creds.secret_string)
 }
 
-# this modules documented outputs all need a prefix of this_
+# END CREATE RANDOM PASSWORD FOR RDS MASTER USER
+
+# Create RDS database
 module "db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "~> 3.0"
 
-  name           = "fam-aurora-db-postgres"
+  name           = var.db_cluster_identifier
   engine         = "aurora-postgresql"
   engine_version = "11.9"
   engine_mode    = "serverless"
@@ -75,3 +104,27 @@ module "db" {
   }
   
 }
+
+# Begin Create DB Secret for the API database user
+
+resource "random_password" "api_db_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "aws_secretsmanager_secret" "secret_api_DB" {
+   name = var.db_api_creds_secretname
+}
+
+resource "aws_secretsmanager_secret_version" "sversion-api" {
+  secret_id = aws_secretsmanager_secret.secret_api_DB.id
+  secret_string = <<EOF
+   {
+    "username": "${var.api_db_username}",
+    "password": "${random_password.api_db_password.result}"
+   }
+  EOF
+}
+
+# End Create DB Secret for the API database user
