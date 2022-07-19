@@ -3,6 +3,7 @@ import logging
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
+import sqlalchemy.orm.decl_api
 
 from . import schemas
 from .models import model as models
@@ -27,7 +28,7 @@ def getFamApplications(db: Session):
     return famApps
 
 
-def getPrimaryKey(model):
+def getPrimaryKey(model: models) -> str:
     """recieves a declarative base model and returns the primary key that
     is defined for the base
 
@@ -41,7 +42,7 @@ def getPrimaryKey(model):
     return pkName
 
 
-def getNext(model, db: Session):
+def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     """calculates the next increment for the given model.  This is
     created because in development the autoincrement / populate feature
     for sqllite databases does not always work.

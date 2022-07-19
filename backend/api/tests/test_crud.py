@@ -3,10 +3,12 @@ import logging
 import os
 
 import api.app.crud as crud
+import api.app.models.model
 
 LOGGER = logging.getLogger(__name__)
 
-def test_getFamApplications(dbSession):
+
+def test_getFamApplications_nodata(dbSession):
     """Was a starting place to figure out crud tests that work with the database
     session, not complete.
 
@@ -14,15 +16,106 @@ def test_getFamApplications(dbSession):
     :type dbSession: _type_
     """
     # TODO: start coding tests for crud.py code.
-    files = os.listdir('.')
+    files = os.listdir(".")
     LOGGER.debug(f"files: {files}")
 
     famApps = crud.getFamApplications(dbSession)
     assert famApps == []
-    LOGGER.debug(f'famApps: {famApps}')
+    LOGGER.debug(f"famApps: {famApps}")
 
-    # add an app and verify its returned.
-    pass
 
-def test_getFamUsers(dbSession):
-    pass
+def test_getFamUsers_nodata(dbSession):
+    famUsers = crud.getFamUsers(dbSession)
+    LOGGER.debug(f"fam users: {famUsers}")
+    assert famUsers == []
+
+
+def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData):
+    db = dbSession_famUsers_withdata
+    users = crud.getFamUsers(db)
+    LOGGER.debug(f"users: {users}")
+    LOGGER.debug(f"number of users: {len(users)}")
+    # expecting the number of records in the user table to be 1
+    assert 1 == len(users)
+
+    # checking that the expected user is in the db
+    for user in users:
+        LOGGER.debug(f"user: {user.__dict__} {user.user_name}")
+        assert user.user_name == testUserData["user_name"]
+
+
+def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):
+    db = dbSession
+    LOGGER.debug(f"testUserData_asPydantic: {testUserData_asPydantic}")
+
+    # get user count
+    userBefore = crud.getFamUsers(db)
+    numUsersStart = len(userBefore)
+    LOGGER.debug(f"testUserData_asPydantic: {testUserData_asPydantic}")
+    user = crud.createFamUser(famUser=testUserData_asPydantic, db=db)
+    LOGGER.debug(f"created the user: {user}")
+
+    # make sure the user that was created has the same guid as the supplied
+    # data
+    assert user.user_guid == testUserData_asPydantic.user_guid
+
+    #
+    usersAfter = crud.getFamUsers(db)
+    numUsersAfter = len(usersAfter)
+    assert numUsersAfter > numUsersStart
+
+
+def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData):
+    # test getting a single user
+    db = dbSession_famUsers_withdata
+
+    # get one record from db... should only have one
+    famUser = db.query(api.app.models.model.FamUser).one()
+    LOGGER.debug(f"famUser: {famUser.user_id}")
+    crud.getFamUser(db=db, user_id=famUser.user_id)
+    assert famUser.user_name == testUserData["user_name"]
+
+
+def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
+    db = dbSession_famUsers_withdata
+
+    # assert that we have a record in the database
+    users = crud.getFamUsers(db)
+    assert 1 == len(users)
+
+    # delete the user from the database
+    deleteUser = crud.deleteUser(user_id=users[0].user_id, db=db)
+    LOGGER.debug(f"deleted user: {deleteUser}")
+
+    # assert no users in the database
+    users = users = crud.getFamUsers(db)
+    assert 0 == len(users)
+
+
+def test_getPrimaryKey():
+    pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
+    assert pkColName == 'user_id'
+
+def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):
+    """fixgture delivers a db session with one record in it, testing that
+    the getNext method returns the next record primary key.
+
+    Not the best test admittedly
+
+    :param dbSession_famUsers_withdata: _description_
+    :type dbSession_famUsers_withdata: _type_
+    """
+    db = dbSession_famUsers_withdata
+    famUserModel = api.app.models.model.FamUser
+    LOGGER.debug(f"famUserModel type: {type(famUserModel)}")
+    nextValueBefore = crud.getNext(db=db, model=famUserModel)
+    assert nextValueBefore > 0
+
+    # now add record and test again that the number is greater
+    crud.createFamUser(famUser=testUserData2_asPydantic, db=db)
+
+    nextValueAfter = crud.getNext(db=db, model=famUserModel)
+    assert nextValueAfter > nextValueBefore
+
+
+

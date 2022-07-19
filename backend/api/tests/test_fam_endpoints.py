@@ -68,6 +68,9 @@ def test_post_fam_users(testClient_fixture, testUserData):
 
     # modify the user data to make it invalid
     testUserData["user_type"] = "invalid data"
+    testUserData['create_date'] = str(testUserData['create_date'])
+    testUserData['update_date'] = str(testUserData['update_date'])
+
     resp = testClient_fixture.post(endPoint, json=testUserData)
     body = resp.json()
     LOGGER.debug(f"body: {body}")
@@ -109,6 +112,9 @@ def test_post_fam_users(testClient_fixture, testUserData):
 def user_client_withUsersNoCleanup(testClient_fixture, testUserData):
     # used for delete, assumption is the test user that was created
     # has been cleaned up.
+    testUserData['create_date'] = str(testUserData['create_date'])
+    testUserData['update_date'] = str(testUserData['update_date'])
+
     resp = testClient_fixture.post(endPoint, json=testUserData)
     LOGGER.debug(f"setup user table with data: {resp.status_code} " +
                  f"{resp.reason}")
@@ -123,6 +129,9 @@ def user_client_withUsersNoCleanup(testClient_fixture, testUserData):
 
 @pytest.fixture(scope="function")
 def user_client_withUsers(testClient_fixture, testUserData):
+    testUserData['create_date'] = str(testUserData['create_date'])
+    testUserData['update_date'] = str(testUserData['update_date'])
+
     resp = testClient_fixture.post(endPoint, json=testUserData)
     LOGGER.debug(f"setup user table with data: {resp.status_code}" +
                  f"  {resp.reason}")
