@@ -72,3 +72,25 @@ class FamUserGet(FamUser):
         """allows serialization of orm data struct"""
 
         orm_mode = True
+
+# class FamRole(BaseModel):
+
+#     role_id: int
+#     role_name: str
+    # role_purpose = Column(String(200), nullable=False)
+    # parent_role_id = Column(Integer, ForeignKey("fam_role.role_id"))
+    # application_id = Column(
+    #     Integer, ForeignKey("fam_application.application_id"), nullable=False
+    # )
+    # client_number_id = Column(Integer, ForeignKey("fam_forest_client.client_number_id"))
+    # create_user = Column(String(30), nullable=False)
+    # create_date = Column(
+    #     TIMESTAMP(precision=6), nullable=False, server_default=text("CURRENT_DATE")
+    # )
+    # update_user = Column(String(30), nullable=False)
+    # update_date = Column(TIMESTAMP(precision=6), server_default=text("CURRENT_DATE"))
+
+    # application = relationship("FamApplication")
+    # client_number = relationship("FamForestClient")
+    # parent_role = relationship("FamRole", remote_side=[role_id])
+    # users = relationship("FamUser", secondary="fam_user_role_xref")

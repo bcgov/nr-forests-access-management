@@ -45,7 +45,10 @@ cd database
 python3 -m venv venv
 . ./venv/bin/activate
 pip install -r requirements.txt
-postgresql+psycopg2://postgres:postgres@0.0.0.0/postgres > model.py
+python -m sqlacodegen postgresql+psycopg2://postgres:postgres@0.0.0.0/postgres > model.py
 ```
 
 the *model.py* will now contain the database model as defined in the database
+
+Now there is a new model, the next step is to generate an alembic migration.
+See ../api/alembic/readme.md for instructions on that

@@ -13,7 +13,7 @@ import datetime
 import logging
 import os
 import uuid
-from typing import Any, Generator
+from typing import Any, Generator, TypedDict
 
 import api.app.dependencies as dependencies
 import api.app.models.model as model
@@ -25,6 +25,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, session
+
+from sqlalchemy.engine.base import Engine
+
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
 testSession = None
@@ -32,8 +35,20 @@ testSession = None
 LOGGER = logging.getLogger(__name__)
 
 
+class FamUserTD(TypedDict):
+    # cludge... ideally this type should be derived from the
+    # pydantic model schema.FamUser
+    user_type: str
+    cognito_user_id: str
+    user_name: str
+    user_guid: str
+    create_user: str
+    create_date: datetime
+    update_user: str
+    update_date: datetime
+
 @pytest.fixture(scope="function")
-def getApp(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
+def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     """
     Create a fresh database on each test case.
     """
@@ -45,7 +60,7 @@ def getApp(sessionObjects, dbEngine) -> Generator[FastAPI, Any, None]:
 
 
 @pytest.fixture(scope="function")
-def testClient_fixture(getApp: FastAPI):
+def testClient_fixture(getApp: FastAPI) -> TestClient:
     """returns a requests object of the current app backed by a test
     database, with the objects defined in the model created in it.
 
@@ -59,19 +74,17 @@ def testClient_fixture(getApp: FastAPI):
 
 
 @pytest.fixture(scope="module")
-def sessionObjects(dbEngine):
+def sessionObjects(dbEngine: Engine) -> sessionmaker:
     # Use connect_args parameter only with sqlite
     SessionTesting = sessionmaker(autocommit=False,
                                   autoflush=False,
                                   bind=dbEngine)
+    LOGGER.debug(f"session type: {type(SessionTesting)}")
     yield SessionTesting
-    if os.path.exists("./test_db.db"):
-        LOGGER.debug("remove the database: ./test_db.db'")
-        os.remove("./test_db.db")
 
 
 @pytest.fixture(scope="module")
-def dbEngine():
+def dbEngine() -> Engine:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
     LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
 
@@ -79,11 +92,16 @@ def dbEngine():
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
     model.Base.metadata.create_all(bind=engine)
-    LOGGER.debug("engine type: {}")
+    LOGGER.debug(f"engine type: {type(engine)}")
     yield engine
 
-    # TODO: uncomment once working
-    # model.Base.metadata.drop_all(dbEngine)
+    # dropping all objects in the test database and...
+    # delete the test database
+    model.Base.metadata.drop_all(engine)
+    if os.path.exists("./test_db.db"):
+        LOGGER.debug("remove the database: ./test_db.db'")
+        os.remove("./test_db.db")
+
 
 
 @pytest.fixture(scope="function")
@@ -158,7 +176,7 @@ def testUserData() -> dict:
 
 
 @pytest.fixture(scope="function")
-def testUserData2() -> dict:
+def testUserData2() -> Generator[FamUserTD]:
     userData = {
         "user_type": "a",
         "cognito_user_id": "22dfs",
@@ -172,9 +190,14 @@ def testUserData2() -> dict:
     yield userData
 
 
+
 def override_get_db():
     try:
         db = testSession()
         yield db
     finally:
         db.close()
+
+
+
+

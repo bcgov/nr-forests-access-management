@@ -24,12 +24,15 @@ docker-compose up db
 # run the migrations
 cd api
 alembic upgrade head
+cd ..
 
-# create env vars
+# create env vars - make sure in the `backend` directory
+# loads secrets in env-db-dev.env to env vars
 set -o allexport; source env-db-dev.env; set +o allexport
 
-# activate the virtualenv
+# activate the virtualenv if not already activated
 . ./venv/bin/activate
 
+# run the actual api
 uvicorn api.app.main:app --reload
 ```

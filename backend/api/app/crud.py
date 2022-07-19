@@ -118,8 +118,16 @@ def deleteUser(db: Session, user_id: int):
     return famUser
 
 
+def getFamRoles(db: Session):
+    LOGGER.debug(f"db session: {db}")
+    famRoles = db.query(models.FamRole).all()
+    return famRoles
+
+
 if __name__ == "__main__":
     import database
 
     db = database.SessionLocal
     getFamApplications(db, 5)
+
+
