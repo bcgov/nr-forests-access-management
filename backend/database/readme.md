@@ -51,6 +51,11 @@ podman run flyway/flyway:9.0.1 -user=$POSTGRES_USER \
     -url=jdbc:postgresql://localhost:5432/postgres \
     migrate
 
+# not working ^^ interpod network communication problem!  solution below does work through.
+
+# Install flyway locally:
+wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.0.1/flyway-commandline-9.0.1-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-9.0.1/flyway /usr/local/bin
+
 flyway -user=$POSTGRES_USER \
     -password=$POSTGRES_PASSWORD \
     -url=jdbc:postgresql://localhost:5432/postgres \
