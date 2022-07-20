@@ -17,6 +17,8 @@ create the following env vars:
 ```
 podman pull postgres
 
+mkdir $POSTGRES_LOCAL_DATA_DIR
+
 podman run -d \
     --name postgres-fam \
     -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
@@ -36,6 +38,24 @@ cd sql
 git clone https://github.com/bcgov/nr-forests-access-management .
 psql -d postgres -h 0.0.0.0 -U postgres -f db/sql/1_initial_schema.sql
 rm -rf sql
+```
+
+    flyway -user=myuser -password=s3cr3t -url=jdbc:h2:mem -placeholders.abc=def migrate
+    jdbc:postgresql://0.0.0.0:5432/postgres
+
+# Run flyway migrations
+```
+podman pull flyway/flyway:9.0.1
+podman run flyway/flyway:9.0.1 -user=$POSTGRES_USER \
+    -password=$POSTGRES_PASSWORD \
+    -url=jdbc:postgresql://localhost:5432/postgres \
+    migrate
+
+flyway -user=$POSTGRES_USER \
+    -password=$POSTGRES_PASSWORD \
+    -url=jdbc:postgresql://localhost:5432/postgres \
+    migrate
+
 ```
 
 # reverse engineer the DataModel into SQL Alchemy datamodel
