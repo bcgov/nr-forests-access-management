@@ -60,7 +60,6 @@ flyway -user=$POSTGRES_USER \
     -password=$POSTGRES_PASSWORD \
     -url=jdbc:postgresql://localhost:5432/postgres \
     migrate
-
 ```
 
 # reverse engineer the DataModel into SQL Alchemy datamodel
