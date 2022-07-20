@@ -36,3 +36,24 @@ set -o allexport; source env-db-dev.env; set +o allexport
 # run the actual api
 uvicorn api.app.main:app --reload
 ```
+
+# Running the tests
+
+instructions here are for running tests in vscode, you can also run them manually on the
+the command line.  Tests use the [pytest](https://docs.pytest.org/en/7.1.x/) testing framework
+
+## Tell VS Code what framework to use
+
+If you created your virtualenv in the folder `backend` then the
+.vscode/settings.json should be able to find the virtualenv that you are looking
+for, and the tests should be configured.
+
+If for some reason not then:
+* <ctrl><shift>P
+* type in `Python: Configure Tests`
+* Select `Pytest`
+* For Root Directory select `.`
+
+for test Output,
+* find the `output` tab
+* select `Python Test Log` in from the pulldown, top right of the output window

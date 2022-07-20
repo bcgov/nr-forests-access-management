@@ -64,9 +64,9 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def main():
-    return RedirectResponse(url="/docs/")
+    return RedirectResponse(url="/docs/", include_in_schema=False)
 
 
 apiPrefix = '/api/v1'

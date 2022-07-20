@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -13,7 +14,7 @@ router = APIRouter()
 
 @router.get(
     "/fam_applications",
-    response_model=list[schemas.FamApplication],
+    response_model=List[schemas.FamApplication],
     tags=["FAM_application"],
 )
 def get_fam_applications(db: Session = Depends(dependencies.get_db)):
@@ -44,7 +45,7 @@ def get_fam_application(
 
 
 @router.get("/fam_users",
-            response_model=list[schemas.FamUserGet],
+            response_model=List[schemas.FamUserGet],
             tags=["FAM_users"])
 def get_fam_users(db: Session = Depends(dependencies.get_db)):
     """
@@ -107,3 +108,17 @@ def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     user = crud.getFamUser(user_id=user_id, db=db)
     LOGGER.debug(f"userdata: {user}")
     return user
+
+
+# @router.get("/fam_roles",
+#             response_model=List[schemas.FamRolesGet],
+#             tags=["FAM_Roles"])
+# def get_fam_users(db: Session = Depends(dependencies.get_db)):
+#     """
+#     List of different applications that are administered by FAM
+#     """
+#     LOGGER.debug(f"running router ... {db}")
+#     queryData = crud.getFamRoles(db)
+#     return queryData
+
+

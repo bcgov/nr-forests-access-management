@@ -43,9 +43,9 @@ class FamUserTD(TypedDict):
     user_name: str
     user_guid: str
     create_user: str
-    create_date: datetime
+    create_date: datetime.datetime
     update_user: str
-    update_date: datetime
+    update_date: datetime.datetime
 
 @pytest.fixture(scope="function")
 def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
@@ -176,7 +176,7 @@ def testUserData() -> dict:
 
 
 @pytest.fixture(scope="function")
-def testUserData2() -> Generator[FamUserTD]:
+def testUserData2() -> FamUserTD:
     userData = {
         "user_type": "a",
         "cognito_user_id": "22dfs",
