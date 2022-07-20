@@ -31,4 +31,15 @@ server/backend.hcl
 server/.terraform.lock.hcl
 server/lambda/node_modules
 out.json
+
+
+*.db
+.env
+venv
+venvdc
+__pycache__
+.coverage
+.pytest_cache
+
+junk*
 flyway/request.json
