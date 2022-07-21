@@ -66,8 +66,8 @@ app.add_middleware(
 
 @app.get("/", include_in_schema=False)
 def main():
-    return RedirectResponse(url="/docs/", include_in_schema=False)
-
+    #return RedirectResponse(url="/docs/", include_in_schema=False)
+    return RedirectResponse(url="/docs/")
 
 apiPrefix = '/api/v1'
 app.include_router(fam_router.router, prefix=apiPrefix)

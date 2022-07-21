@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from sqlalchemy import func
@@ -73,6 +74,7 @@ def createFamApplication(famApplication: schemas.FamApplication, db: Session):
 
     famAppDict = famApplication.dict()
     famAppDict[pkColName] = nextVal
+
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
     db.add(db_item)
@@ -88,7 +90,16 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
 
     famUserDict = famUser.dict()
     famUserDict[pkColName] = nextVal
+
+    # maybe there is a way to get the db to do this for us, but just as easy
+    # to add the dates in here.
+    now = datetime.datetime.now()
+    famUserDict['create_date'] = now
+    famUserDict['update_date'] = now
+
     LOGGER.debug(f"famUserDict: {famUserDict}")
+    LOGGER.debug(f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}")
+
 
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
