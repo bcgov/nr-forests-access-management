@@ -50,9 +50,7 @@ class FamUser(BaseModel):
     user_guid: str
     # create_user: EmailStr
     create_user: str
-    create_date: datetime
     update_user: str
-    update_date: datetime
 
     @validator("user_type")
     def user_type_length(cls, v):
@@ -67,6 +65,9 @@ class FamUser(BaseModel):
 
 class FamUserGet(FamUser):
     user_id: int
+    create_date: datetime
+    update_date: datetime
+
 
     class Config:
         """allows serialization of orm data struct"""
