@@ -15,6 +15,7 @@ import os
 import uuid
 from typing import Any, Generator, TypedDict
 
+import api.app.crud as crud
 import api.app.dependencies as dependencies
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -24,16 +25,14 @@ from api.app.main import app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, session
-
 from sqlalchemy.engine.base import Engine
+from sqlalchemy.orm import session, sessionmaker
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
 testSession = None
 
 LOGGER = logging.getLogger(__name__)
-
 
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
@@ -103,10 +102,10 @@ def dbEngine() -> Engine:
     # dropping all objects in the test database and...
     # delete the test database
 
-    # model.Base.metadata.drop_all(engine)
-    # if os.path.exists("./test_db.db"):
-    #     LOGGER.debug("remove the database: ./test_db.db'")
-    #     os.remove("./test_db.db")
+    model.Base.metadata.drop_all(engine)
+    if os.path.exists("./test_db.db"):
+        LOGGER.debug("remove the database: ./test_db.db'")
+        os.remove("./test_db.db")
 
 
 
@@ -125,7 +124,8 @@ def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects,
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUsers_withdata(dbSession, testUserData, add_group):
+def dbSession_famUsers_withdata(dbSession, testUserData3, testGroupData,
+                                userGroupXrefData):
     """to add a user need to satisfy the integrity constraints:
 
     1. create the group
@@ -142,22 +142,64 @@ def dbSession_famUsers_withdata(dbSession, testUserData, add_group):
     :rtype: _type_
     """
     db = dbSession
-    # add a record to the database
-    newUser = model.FamUser(**testUserData)
-    db.add(newUser)
-    db.commit()
-    yield db  # use the session in tests.
+    # CONRAD / TOLU: after creating a new model based on a postgres
+    # database that contained the latest flyway migrations, started running into
+    # integrity constraints when trying to add a new user.  Looks like it
+    # now requires you to have a group defined before you can add a user.
+    # Code below shows how you can add data through an association table,
+    # however I'm not sure this integrity constraint is necessary.
+    #
+    # To see where I'm at you can run the tests and see which ones fail
+    # goood luck
 
-    db.delete(newUser)
+
+    # trying to add to user without violating the integrity constraint
+    # group was populated with a record by the add_group fixture.
+    newUser = model.FamUser(**testUserData3)
+    groupSchema = model.FamGroup(**testGroupData)
+
+    userGroupXrefData['group'] = groupSchema
+    userGroupXrefData['user'] = newUser
+
+    xrefTable = model.FamUserGroupXref(**userGroupXrefData)
+    db.add(xrefTable)
     db.commit()
+    yield db
+
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+
+
+
+    # famGroupPK = crud.getPrimaryKey(model.FamGroup)
+    # famGroupPKNextVal = crud.getNext(model.FamGroup, db)
+
+
+    # # add a record to the database
+    # newUser = model.FamUser(**testUserData)
+    # db.add(newUser)
+    # db.commit()
+    # yield db  # use the session in tests.
+
+    # db.delete(newUser)
+    # db.commit()
+
+@pytest.fixture(scope="function")
+def userGroupXrefData():
+    nowdatetime = datetime.datetime.now()
+    xrefData = {
+        "create_user": 'serg',
+        "create_date": nowdatetime,
+        "update_user": 'ron',
+        "update_date": nowdatetime,
+    }
+    yield xrefData
 
 @pytest.fixture(scope="function")
 def add_group(dbSession, testGroupData):
     db = dbSession
-    groupData = model.FamGroup(**testGroupData)
-    db.add(groupData)
-    db.commit()
+    groupSchema = schemas.FamGroupPost(**testGroupData)
 
+    crud.createFamGroup(famGroup=groupSchema, db=db)
     yield db
 
     db.delete(groupData)
@@ -166,6 +208,7 @@ def add_group(dbSession, testGroupData):
 @pytest.fixture(scope="function")
 def testGroupData():
     testGroupData = {
+        'group_id': 99,
         'group_name': 'test group',
         'purpose': 'testing',
         'create_user': 'Brian Trotier',
@@ -235,6 +278,22 @@ def testUserData2() -> FamUserTD:
         "update_date": datetime.datetime.now(),
     }
     yield userData
+
+@pytest.fixture(scope="function")
+def testUserData3() -> FamUserTD:
+    userData = {
+        "user_id": 33,
+        "user_type": "a",
+        "cognito_user_id": "zzff",
+        "user_name": "Billy Smith",
+        "user_guid": str(uuid.uuid4()),
+        "create_user": "Al Arbour",
+        "create_date": datetime.datetime.now(),
+        "update_user": "Al Arbour",
+        "update_date": datetime.datetime.now(),
+    }
+    yield userData
+
 
 
 

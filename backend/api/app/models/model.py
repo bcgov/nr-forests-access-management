@@ -277,6 +277,8 @@ class FamGroup(Base):
             cycle=False,
             cache=1,
         ),
+        autoincrement=True,
+        primary_key=True
     )
     group_name = Column(String(100), nullable=False)
     purpose = Column(String(200), nullable=False)

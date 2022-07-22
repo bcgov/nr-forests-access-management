@@ -30,7 +30,7 @@ def test_getFamUsers_nodata(dbSession):
     assert famUsers == []
 
 
-def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData):
+def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
     db = dbSession_famUsers_withdata
     users = crud.getFamUsers(db)
     LOGGER.debug(f"users: {users}")
@@ -41,7 +41,7 @@ def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData):
     # checking that the expected user is in the db
     for user in users:
         LOGGER.debug(f"user: {user.__dict__} {user.user_name}")
-        assert user.user_name == testUserData["user_name"]
+        assert user.user_name == testUserData3["user_name"]
 
 
 def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):

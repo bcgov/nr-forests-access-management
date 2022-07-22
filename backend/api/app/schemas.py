@@ -3,6 +3,26 @@ from typing import Optional
 
 from pydantic import BaseModel, validator
 
+class FamGroupPost(BaseModel):
+    group_name: str
+    purpose: str
+    create_user: str
+    parent_group_id: int
+    update_user: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamGroupGet(FamGroupPost):
+    group_id: int
+    create_date: datetime
+    update_date: datetime
+
+    class Config:
+        orm_mode = True
+
+
 
 class FamApplicationClient(BaseModel):
     application_client_id: int
@@ -95,3 +115,5 @@ class FamUserGet(FamUser):
     # client_number = relationship("FamForestClient")
     # parent_role = relationship("FamRole", remote_side=[role_id])
     # users = relationship("FamUser", secondary="fam_user_role_xref")
+
+
