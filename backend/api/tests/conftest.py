@@ -102,10 +102,11 @@ def dbEngine() -> Engine:
 
     # dropping all objects in the test database and...
     # delete the test database
-    model.Base.metadata.drop_all(engine)
-    if os.path.exists("./test_db.db"):
-        LOGGER.debug("remove the database: ./test_db.db'")
-        os.remove("./test_db.db")
+
+    # model.Base.metadata.drop_all(engine)
+    # if os.path.exists("./test_db.db"):
+    #     LOGGER.debug("remove the database: ./test_db.db'")
+    #     os.remove("./test_db.db")
 
 
 
@@ -124,7 +125,22 @@ def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects,
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUsers_withdata(dbSession, testUserData):
+def dbSession_famUsers_withdata(dbSession, testUserData, add_group):
+    """to add a user need to satisfy the integrity constraints:
+
+    1. create the group
+    2. retrieve the group id
+    3.
+
+    :param dbSession: _description_
+    :type dbSession: _type_
+    :param testUserData: _description_
+    :type testUserData: _type_
+    :param add_group: _description_
+    :type add_group: _type_
+    :yield: _description_
+    :rtype: _type_
+    """
     db = dbSession
     # add a record to the database
     newUser = model.FamUser(**testUserData)
@@ -134,6 +150,32 @@ def dbSession_famUsers_withdata(dbSession, testUserData):
 
     db.delete(newUser)
     db.commit()
+
+@pytest.fixture(scope="function")
+def add_group(dbSession, testGroupData):
+    db = dbSession
+    groupData = model.FamGroup(**testGroupData)
+    db.add(groupData)
+    db.commit()
+
+    yield db
+
+    db.delete(groupData)
+    db.commit()
+
+@pytest.fixture(scope="function")
+def testGroupData():
+    testGroupData = {
+        'group_name': 'test group',
+        'purpose': 'testing',
+        'create_user': 'Brian Trotier',
+        'create_date': datetime.datetime.now(),
+        'parent_group_id': 1,
+        'client_number_id': 1,
+        'update_user': 'Brian Trotier',
+        'update_date': datetime.datetime.now()
+    }
+    return testGroupData
 
 
 @pytest.fixture(scope="function")

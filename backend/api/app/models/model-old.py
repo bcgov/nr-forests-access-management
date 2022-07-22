@@ -1,4 +1,8 @@
 # coding: utf-8
+
+# LEAVING THIS HERE FOR EASY COMPARISON PURPOSES...
+# TODO: delete this file before final push / pr
+
 from sqlalchemy import Column, ForeignKey, Numeric, String, Integer, Table, text
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
