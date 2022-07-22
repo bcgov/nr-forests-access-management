@@ -47,6 +47,7 @@ class FamUserTD(TypedDict):
     update_user: str
     update_date: datetime.datetime
 
+
 @pytest.fixture(scope="function")
 def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     """
@@ -87,10 +88,14 @@ def sessionObjects(dbEngine: Engine) -> sessionmaker:
 def dbEngine() -> Engine:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
     LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
+    execution_options = {"schema_translate_map": {"app_fam": None}}
 
     engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+        SQLALCHEMY_DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        execution_options=execution_options
     )
+
     model.Base.metadata.create_all(bind=engine)
     LOGGER.debug(f"engine type: {type(engine)}")
     yield engine

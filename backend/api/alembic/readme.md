@@ -1,11 +1,9 @@
-# migrations quick walkthrough
+# Generate a new alembic migration based on changes to the model.py
 
-## Generate migrations from the models defined in code:
+This is what needs to be run after `sqlacodegen` has been used to
+reverse engineer the database into an ORM
 
 `alembic revision --autogenerate -m "migration message"`
-
-
-alembic  -x tenant=fam revision -m "first migration" --autogenerate
 
 ## Generate blank migration file for future population
 
@@ -14,7 +12,7 @@ alembic  -x tenant=fam revision -m "first migration" --autogenerate
 
 ## Run migrations
 
-runs all the migrations defined.
+Having generated a new alembic migration, you can then apply it:
 ```
 cd api
 alembic upgrade head

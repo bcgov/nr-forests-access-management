@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
+metadata = Base.metadata
 
 
 class FamApplication(Base):

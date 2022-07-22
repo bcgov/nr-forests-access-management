@@ -27,7 +27,6 @@ podman run -d \
     -p 5432:5432 \
     postgres
 
-
 ```
 ### Test the database is working
 
@@ -58,24 +57,46 @@ wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.0.1/f
 Due to injected variables in the sql migration files, recommend the best way to
 run the migration is to use the `runmigratons.sh` shell script.
 
+`bash runmigratons.sh`
 
 # Reverse engineer the DataModel into SQL Alchemy datamodel
 
+* make sure the virtualenv is invoked
+* if you haven't installed the dev dependencies do so now
+
+`cd backend && pip install -r requirements-dev.txt`
+
+now, generate a new model based on what exists in the database...
+
 ```
 cd database
-python3 -m venv venv
-. ./venv/bin/activate
-pip install -r requirements.txt
 sqlacodegen --schema app_fam postgresql+psycopg2://postgres:postgres@0.0.0.0/postgres  > model.py
 ```
 
-the *model.py* will now contain the database model as defined in the database
+the *model.py* will now contain the database model as defined in the database.
+the next steps:
 
-Now there is a new model, the next step is to generate an alembic migration.
-See ../api/alembic/readme.md for instructions on that
+1. shutdown the temporary database and delete the folder
+    `sudo rm -rf $POSTGRES_LOCAL_DATA_DIR`
+1. spin up the old database using docker-compose
+    `dc up db`
+1. replace  backend/api/app/models/model.py with the new model.py
+1. use alembic to generate a new alembic migration
+    ```
+
+
+    ```
+
+and then generate a new alembic migration.
+
+
 
 **note:** with the latest database migration scripts needed to upgrade
 sqlacodegen.  (requirements.txt contains the latest versions)
+
+
+
+
 
 
 # OLD / DEPRECATED - Run DDL output from ERStudio

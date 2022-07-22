@@ -1,2 +1,0 @@
-sqlacodegen==3.0.0rc1
-psycopg2==2.9.3
