@@ -94,12 +94,13 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     # maybe there is a way to get the db to do this for us, but just as easy
     # to add the dates in here.
     now = datetime.datetime.now()
-    famUserDict['create_date'] = now
-    famUserDict['update_date'] = now
+    famUserDict["create_date"] = now
+    famUserDict["update_date"] = now
 
     LOGGER.debug(f"famUserDict: {famUserDict}")
-    LOGGER.debug(f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}")
-
+    LOGGER.debug(
+        f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}"
+    )
 
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
@@ -116,17 +117,41 @@ def getFamUsers(db: Session):
 
 def getFamUser(db: Session, user_id: int):
     # get a single user based on user_id
-    famUser = db.query(models.FamUser).filter(
-        models.FamUser.user_id == user_id).one()
+    famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
     return famUser
 
 
 def deleteUser(db: Session, user_id: int):
-    famUser = db.query(models.FamUser).filter(
-        models.FamUser.user_id == user_id).one()
+    famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
     db.delete(famUser)
     db.commit()
     return famUser
+
+
+def createFamRole(famRole: schemas.FamRole, db: Session):
+    LOGGER.debug(f"Fam role: {famRole}")
+    pkColName = getPrimaryKey(models.FamRole)
+    nextVal = getNext(models.FamRole, db)
+
+    famRoleDict = famRole.dict()
+    famRoleDict[pkColName] = nextVal
+
+    # maybe there is a way to get the db to do this for us, but just as easy
+    # to add the dates in here.
+    now = datetime.datetime.now()
+    famRoleDict["create_date"] = now
+    famRoleDict["update_date"] = now
+
+    LOGGER.debug(f"famRoleDict: {famRoleDict}")
+    LOGGER.debug(
+        f"famAppDict: {famRoleDict['create_date']} {famRoleDict['update_date']}"
+    )
+
+    db_item = models.FamRole(**famRoleDict)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
 def getFamRoles(db: Session):
@@ -135,10 +160,14 @@ def getFamRoles(db: Session):
     return famRoles
 
 
+def getFamRole(db: Session, role_id: int):
+    # get a single role based on role_id
+    schemas.FamRole = db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one()
+    return schemas.FamRole
+
+
 if __name__ == "__main__":
     import database
 
     db = database.SessionLocal
     getFamApplications(db, 5)
-
-
