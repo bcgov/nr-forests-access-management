@@ -12,6 +12,16 @@ python3 -m venv venv
 . ./venv/bin/activate
 pip install -r requirements.txt
 ```
+### potential gotchas running pip install above:
+
+sudo apt-get install libpq-dev
+(was missing pg_config executable)
+
+pip install wheel
+(needed to make this explicit)
+
+sudo apt-get install python3-dev
+(build was failing without this)
 
 ## run the api - locally for development
 
@@ -36,6 +46,11 @@ set -o allexport; source env-db-dev.env; set +o allexport
 # run the actual api
 uvicorn api.app.main:app --reload
 ```
+
+## potential gotchas with running the api above:
+
+sudo apt-get install alembic
+(needed to install the executable)
 
 # Running the tests
 
