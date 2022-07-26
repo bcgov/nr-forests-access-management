@@ -16,3 +16,11 @@ Also, if you look in flyway-invoke.tf, you will notice that there are replacemen
 PAYLOAD=$(cat /home/conrad/repos/nr-forests-access-management/flyway/request.json | base64)
 aws lambda invoke --function-name lambda-db-migrations --payload $PAYLOAD out.json
 cat out.json
+
+# Local Development
+
+The Dockerfile in this directory can be run (optionally from docker-compose at the root of the project). The resulting docker container has flyway installed and all the scripts copied over. The scripts can be applied to the database with the following command from your terminal:
+
+docker exec -it famdb flyway-migrate.sh
+
+Note: it would have been lovely to put that script into /docker-entrypoint-initdb.d and get it to run on startup of the DB, but flyway needs to connect over TCP/IP and Postgres doesn't expose TCP/IP until after startup (as per https://github.com/docker-library/postgres/pull/440).
