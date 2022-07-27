@@ -41,7 +41,7 @@ jobs:
       #     pytest
 
       - name: Zipping the source code and the requirements libraries into fam_api.zip
-      - uses: montudor/action-zip@v1
+        uses: montudor/action-zip@v1
         with:
           args: zip -qq -r server/fam_api/fam_api.zip server/fam_api/app
       
