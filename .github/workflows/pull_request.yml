@@ -45,9 +45,10 @@ jobs:
         with:
           args: zip -qq -r server/fam_api/fam_api.zip server/fam_api/app
       
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
-          name: server/fam_api/fam_api.zip
+          name: fam_api_zip_file
+          path: server/fam_api/fam_api.zip
 
       # - name: Deploying back-end using terraform
       #   run: |
