@@ -11,11 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
@@ -25,26 +20,49 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      # - name: building the backend
-      #   run: |
-      #     cd server/lambda
-      #     npm install
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
 
-      - name: Deploying back-end using terraform
+      - name: Install dependencies
         run: |
-          cd server
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
-          EOF
-          cat > github.auto.tfvars <<EOF
-          github_repository = "https://github.com/${{ github.repository }}"
-          github_branch = "${{ github.ref_name }}"
-          github_commit = "${{ github.sha }}"
-          github_event = "${{ github.event_name }}"
-          EOF
-          terraform init -backend-config=backend.hcl
-          terraform plan
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # - name: Lint with flake8
+      #   run: |
+      #     # stop the build if there are Python syntax errors or undefined names
+      #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+      #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      # - name: Test with pytest
+      #   run: |
+      #     pytest
+
+      - name: Zipping the source code and the requirements libraries into fam_api.zip
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r server/fam_api/fam_api.zip server/fam_api/app
+      
+      - uses: actions/upload-artifact@v2with:
+          name: server/fam_api/fam_api.zip
+
+      # - name: Deploying back-end using terraform
+      #   run: |
+      #     cd server
+      #     cat <<EOF > backend.hcl
+      #     organization = "${{ env.organization }}"
+      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+      #     EOF
+      #     cat > github.auto.tfvars <<EOF
+      #     github_repository = "https://github.com/${{ github.repository }}"
+      #     github_branch = "${{ github.ref_name }}"
+      #     github_commit = "${{ github.sha }}"
+      #     github_event = "${{ github.event_name }}"
+      #     EOF
+      #     terraform init -backend-config=backend.hcl
+      #     terraform plan
 
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
