@@ -42,5 +42,5 @@ __pycache__
 .pytest_cache
 
 junk*
-flyway/request.json
-backend/database/flyway-9.0.1/*
+fam_api/request.json
+backend/database/fam_api-9.0.1/*
