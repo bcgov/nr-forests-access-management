@@ -40,7 +40,7 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
 
-resource "aws_lambda_function" "db-migrations" {
+resource "aws_lambda_function" "fam_api" {
   filename      = "${path.module}/fam_api/function.zip"
   function_name = "fam_api"
   role          = aws_iam_role.fam_api_lambda_exec.arn
