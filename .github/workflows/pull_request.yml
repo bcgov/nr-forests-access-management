@@ -40,8 +40,9 @@ jobs:
           src_path: /server/fam_api/app
           dst_path: app_vi
           dst_owner: bcgov
-          dst_repo_name: nr-forests-access-management
           src_branch: feat/buildFamApi
+          dst_repo_name: nr-forests-access-management
+          
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
