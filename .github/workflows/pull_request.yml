@@ -34,13 +34,14 @@ jobs:
           if [ -f requirements.txt ]; then pip install -t app_v1 -r requirements.txt; fi
 
       - name: Copy
-        uses: andstor/copycat-action@v3
+        uses:
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           src_path: /server/fam_api/app
           dst_path: app_vi
           dst_owner: bcgov
           dst_repo_name: nr-forests-access-management
+          src_branch: feat/buildFamApi
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
