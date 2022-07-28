@@ -38,10 +38,10 @@ jobs:
         with:
        #  personal_token: ${{ secrets.PERSONAL_TOKEN }}
           src_path: /server/fam_api/app
-          dst_path: app_vi
+          dst_path: app_v1
           dst_owner: bcgov
-          src_branch: feat/buildFamApi
           dst_repo_name: nr-forests-access-management
+          src_branch: feat/buildFamApi
           
       # - name: Lint with flake8
       #   run: |
@@ -70,7 +70,7 @@ jobs:
       - name: Zipping the source code and the requirements libraries into fam_api.zip
         uses: montudor/action-zip@v1
         with:
-          args:  zip -qq -r fam_api.zip . -i app
+          args:  zip -qq -r fam_api.zip . -i app_v1
       
       - uses: actions/upload-artifact@v3
         with:
