@@ -41,10 +41,12 @@ jobs:
 
       - name: Zip the source code and the requirements libraries into fam_api.zip
         run: |
-          cd /server/venv/lib/python3.8/site-packages
+          cd /server/fam_api/venv/lib/python3.8/site-packages
           zip -r9 ../../../../fam_api_new.zip .
           cd ../../fam_api
           zip -g ./fam_api_new.zip -r app
+
+          
 
       # - name: Zipping the source code and the requirements libraries into fam_api.zip
       #   uses: montudor/action-zip@v1
