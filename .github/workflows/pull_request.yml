@@ -42,7 +42,7 @@ jobs:
 
         - name: Zip the source code and the requirements libraries into fam_api.zip
           run: |
-            cd env/lib/python3.7/site-packages
+            cd venv/lib/python3.7/site-packages
             zip -r9 ../../../../fam_api_new.zip 
             cd ../../fam_api
             zip -g ./fam_api_new.zip -r app
