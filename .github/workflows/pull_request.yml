@@ -32,6 +32,15 @@ jobs:
           cp -R /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages app_v1
           pip install -t app_v1 flake8 pytest
           if [ -f requirements.txt ]; then pip install -t app_v1 -r requirements.txt; fi
+
+      - name: Copy
+        uses: andstor/copycat-action@v3
+        with:
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          src_path: /server/fam_api/app
+          dst_path: app_vi
+          dst_owner: bcgov
+          dst_repo_name: nr-forests-access-management
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
@@ -42,10 +51,10 @@ jobs:
       #   run: |
       #     pytest
 
-      - name: Copy api files into a new directory
-        run:
+      # - name: Copy api files into a new directory
+      #   run:
         #  mkdir app 
-          cp -R /server/fam_api/app app
+        #  cp -R /server/fam_api/app app
         # cp -R /usr/local/lib/python3.8/dist-packages app
 
       # - name: Zip the source code and the requirements libraries into fam_api.zip
