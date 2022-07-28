@@ -40,15 +40,22 @@ jobs:
       #   run: |
       #     pytest
 
-      - name: Zipping the source code and the requirements libraries into fam_api.zip
-        uses: montudor/action-zip@v1
-        with:
-          args:  zip -qq -r fam_api.zip . -i ../../app
+        - name: Zip the source code and the requirements libraries into fam_api.zip
+          run: |
+            cd env/lib/python3.7/site-packages
+            zip -r9 ../../../../fam_api_new.zip 
+            cd ../../fam_api
+            zip -g ./fam_api_new.zip -r app
+
+      # - name: Zipping the source code and the requirements libraries into fam_api.zip
+      #   uses: montudor/action-zip@v1
+      #   with:
+      #     args:  zip -qq -r fam_api.zip . -i ../../app
       
       - uses: actions/upload-artifact@v3
         with:
           name: fam_api_zip_file-1
-          path: server/fam_api/fam_api.zip
+          path: server/fam_api/fam_api_new.zip
 
       # - name: Deploying back-end using terraform
       #   run: |
