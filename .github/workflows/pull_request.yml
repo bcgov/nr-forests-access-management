@@ -34,9 +34,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -t app_v1 -r requirements.txt; fi
 
       - name: Copy
-        uses:
+        uses: andstor/copycat-action@v3
         with:
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+       #  personal_token: ${{ secrets.PERSONAL_TOKEN }}
           src_path: /server/fam_api/app
           dst_path: app_vi
           dst_owner: bcgov
