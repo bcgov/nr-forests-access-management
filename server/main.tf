@@ -47,7 +47,7 @@ provider "aws" {
 
 # data "archive_file" "lambda_greetings_server" {
 #   type        = "zip"
-#   source_dir  = "${path.module}/lambda"
+#   source_dir  = "${epath.modul}/lambda"
 #   output_path = "${path.module}/greetings-server.zip"
 # }
 
