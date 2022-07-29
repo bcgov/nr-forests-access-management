@@ -27,13 +27,13 @@ jobs:
 
       - name: Create Zip directory with resources and app
         run: |
-          mkdir -p $GITHUB_WORKSPACE/app_v1 && cp -R $GITHUB_WORKSPACE/server/fam_api/app app_v1
-          ls app_v1
+          mkdir -p $GITHUB_WORKSPACE/fam_api && cp -R $GITHUB_WORKSPACE/server/fam_api/app fam_api
+          ls fam_api
           python -m pip install --upgrade pip
-          cp -R /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages app_v1
-          pip install -t app_v1 flake8 pytest
-          if [ -f requirements.txt ]; then pip install -t app_v1 -r requirements.txt; fi
-          ls app_v1
+          cp -R /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages fam_api
+          pip install -t fam_api flake8 pytest
+          if [ -f requirements.txt ]; then pip install -t fam_api -r requirements.txt; fi
+          ls fam_api
           
       # - name: Lint with flake8
       #   run: |
@@ -48,12 +48,12 @@ jobs:
       - name: Zipping the source code and the requirements libraries into fam_api.zip
         uses: montudor/action-zip@v1
         with:
-          args:  zip -qq -r app_v1.zip . -i $GITHUB_WORKSPACE/app_v1
+          args:  zip -qq -r fam_api.zip . -i $GITHUB_WORKSPACE/fam_api
       
       - uses: actions/upload-artifact@v3
         with:
           name: fam_api_zip_file-1
-          path: app_v1.zip
+          path: fam_api.zip
 
       - name: Deploying back-end using terraform
         run: |
