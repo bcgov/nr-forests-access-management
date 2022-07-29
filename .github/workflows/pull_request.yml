@@ -45,31 +45,31 @@ jobs:
       #   run: |
       #     pytest
 
-      - name: Zipping the source code and the requirements libraries into fam_api.zip
-        uses: montudor/action-zip@v1
-        with:
-          args:  zip -qq -r fam_api.zip . -i $GITHUB_WORKSPACE/fam_api
+      # - name: Zipping the source code and the requirements libraries into fam_api.zip
+      #   uses: montudor/action-zip@v1
+      #   with:
+      #     args:  zip -qq -r fam_api.zip . -i $GITHUB_WORKSPACE/fam_api
       
-      - uses: actions/upload-artifact@v3
-        with:
-          name: fam_api_zip_file-1
-          path: $GITHUB_WORKSPACE/fam_api
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: fam_api_zip_file-1
+      #     path: $GITHUB_WORKSPACE/fam_api
 
-      # - name: Deploying back-end using terraform
-      #   run: |
-      #     cd server
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
-      #     EOF
-      #     cat > github.auto.tfvars <<EOF
-      #     github_repository = "https://github.com/${{ github.repository }}"
-      #     github_branch = "${{ github.ref_name }}"
-      #     github_commit = "${{ github.sha }}"
-      #     github_event = "${{ github.event_name }}"
-      #     EOF
-      #     terraform init -backend-config=backend.hcl
-      #     terraform plan
+      - name: Deploying back-end using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+          EOF
+          cat > github.auto.tfvars <<EOF
+          github_repository = "https://github.com/${{ github.repository }}"
+          github_branch = "${{ github.ref_name }}"
+          github_commit = "${{ github.sha }}"
+          github_event = "${{ github.event_name }}"
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform plan
 
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
