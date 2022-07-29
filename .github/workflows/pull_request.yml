@@ -77,7 +77,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: fam_api_zip_file-1
-          path: $GITHUB_WORKSPACE/app_v1.zip
+          path: app_v1.zip
 
       # - name: Deploying back-end using terraform
       #   run: |
