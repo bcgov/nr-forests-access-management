@@ -72,12 +72,12 @@ jobs:
       - name: Zipping the source code and the requirements libraries into fam_api.zip
         uses: montudor/action-zip@v1
         with:
-          args:  zip -qq -r fam_api.zip . -i app_v1
+          args:  zip -qq -r api_v1.zip . -i $GITHUB_WORKSPACE/app_v1
       
       - uses: actions/upload-artifact@v3
         with:
           name: fam_api_zip_file-1
-          path: server/fam_api/fam_api_new.zip
+          path: server/fam_api/api_v1.zip
 
       # - name: Deploying back-end using terraform
       #   run: |
