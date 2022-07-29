@@ -27,21 +27,22 @@ jobs:
 
       - name: Create Zip directory
         run: |
+          mkdir -p app_v1 && cp -R server/fam-api/app app_v1
+          ls app_v1
           python -m pip install --upgrade pip
-          mkdir app_v1
           cp -R /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages app_v1
           pip install -t app_v1 flake8 pytest
           if [ -f requirements.txt ]; then pip install -t app_v1 -r requirements.txt; fi
 
-      - name: Copy
-        uses: andstor/copycat-action@v3
-        with:
-       #  personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          src_path: server/fam_api/app
-          dst_path: app_v1
-          dst_owner: bcgov
-          dst_repo_name: nr-forests-access-management
-          src_branch: feat/buildFamApi
+      # - name: Copy
+      #   uses: andstor/copycat-action@v3
+      #   with:
+      #  #  personal_token: ${{ secrets.PERSONAL_TOKEN }}
+      #     src_path: server/fam_api/app
+      #     dst_path: app_v1
+      #     dst_owner: bcgov
+      #     dst_repo_name: nr-forests-access-management
+      #     src_branch: feat/buildFamApi
           
       # - name: Lint with flake8
       #   run: |
