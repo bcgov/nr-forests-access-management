@@ -27,7 +27,7 @@ jobs:
 
       - name: Create Zip directory
         run: |
-          mkdir -p app_v1 && cp -R server/fam-api/app app_v1
+          mkdir -p app_v1 && cp -R /server/fam-api/app app_v1
           ls app_v1
           python -m pip install --upgrade pip
           cp -R /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages app_v1
