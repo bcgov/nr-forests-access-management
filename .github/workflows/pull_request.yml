@@ -37,7 +37,7 @@ jobs:
         uses: andstor/copycat-action@v3
         with:
        #  personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          src_path: /server/fam_api/app
+          src_path: server/fam_api/app
           dst_path: app_v1
           dst_owner: bcgov
           dst_repo_name: nr-forests-access-management
