@@ -40,7 +40,7 @@ resource "aws_iam_role" "fam_api_v1_lambda_exec" {
   assume_role_policy = data.aws_iam_policy_document.fam_api_v1_lambda_exec_policydoc.json
 }
 
-resource "aws_lambda_function" "fam_api_v1_v1" {
+resource "aws_lambda_function" "fam_api_v1" {
   filename      = "fam_api_v1.zip"
   function_name = "fam_api_v1"
   role          = aws_iam_role.fam_api_v1_lambda_exec.arn
