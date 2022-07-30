@@ -1,6 +1,6 @@
-resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
-  name   = "fam_api_lambda_access_policy"
-  role   = aws_iam_role.fam_api_lambda_exec.id
+resource "aws_iam_role_policy" "fam_api_v1_lambda_access_policy" {
+  name   = "fam_api_v1_lambda_access_policy"
+  role   = aws_iam_role.fam_api_v1_lambda_exec.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
   EOF
 }
 
-data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
+data "aws_iam_policy_document" "fam_api_v1_lambda_exec_policydoc" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -35,18 +35,18 @@ data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
   }
 }
 
-resource "aws_iam_role" "fam_api_lambda_exec" {
-  name = "fam_api_serverless_lambda_role"
-  assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
+resource "aws_iam_role" "fam_api_v1_lambda_exec" {
+  name = "fam_api_v1_serverless_lambda_role"
+  assume_role_policy = data.aws_iam_policy_document.fam_api_v1_lambda_exec_policydoc.json
 }
 
-resource "aws_lambda_function" "fam_api_v1" {
-  filename      = "fam_api.zip"
+resource "aws_lambda_function" "fam_api_v1_v1" {
+  filename      = "fam_api_v1.zip"
   function_name = "fam_api_v1"
-  role          = aws_iam_role.fam_api_lambda_exec.arn
+  role          = aws_iam_role.fam_api_v1_lambda_exec.arn
   handler = "app.main.handler"
 
- # source_code_hash = filebase64sha256("fam_api_zip_file-1")
+ # source_code_hash = filebase64sha256("fam_api_v1_zip_file-1")
 
   runtime = "python3.8"
 
