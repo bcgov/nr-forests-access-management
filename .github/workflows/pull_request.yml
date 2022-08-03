@@ -56,7 +56,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
         #  name: fam_api_zip_file-1
-          path: fam_api.zip
+          path: /fam_api/fam_api.zip
 
       - name: Deploying back-end using terraform
         run: |
