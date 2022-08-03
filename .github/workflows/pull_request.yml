@@ -69,7 +69,7 @@ jobs:
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
-          name: api
+          name: fam-api
           path: api.zip
 
       - name: Deploying back-end using terraform
@@ -87,6 +87,7 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform plan
+          terraform apply -auto-approve
 
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
