@@ -46,7 +46,7 @@ resource "aws_lambda_function" "api" {
   role          = aws_iam_role.api_lambda_exec.arn
   handler = "app.main.handler"
 
-  # source_code_hash = filebase64sha256("../api.zip")
+  # source_code_hash = filebase64sha256("/home/runner/work/nr-forests-access-management/nr-forests-access-management/api.zip")
 
   runtime = "python3.8"
 
