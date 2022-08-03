@@ -62,7 +62,7 @@ jobs:
           ls
       - name: Add API files to Zip file
         run: |
-          cd ./server/fam_api/app/ && zip -g ../../api.zip -r .
+          cd ./server/fam_api/app && zip -g ../../api.zip -r .
           pwd
           ls
 
