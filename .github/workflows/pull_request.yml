@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Pull Request
 
 on:
   pull_request:
@@ -11,11 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
@@ -25,40 +20,19 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      # - name: building the backend
-      #   run: |
-      #     cd server/lambda
-      #     npm install
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
 
-      - name: Deploying back-end using terraform
+      - name: Create archive of dependencies
         run: |
-          cd server
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
-          EOF
-          cat > github.auto.tfvars <<EOF
-          github_repository = "https://github.com/${{ github.repository }}"
-          github_branch = "${{ github.ref_name }}"
-          github_commit = "${{ github.sha }}"
-          github_event = "${{ github.event_name }}"
-          EOF
-          terraform init -backend-config=backend.hcl
-          terraform plan
-
-      # - name: Building front-end and deploying Frontend using terraform
-      #   run: |
-      #     cd server
-      #     terraform output > ../client/.env
-      #     cd ../client
-      #     npm install
-
-      #     CI=false npm run build
-
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
-      #     EOF
-
-      #     terraform init -backend-config=backend.hcl
-      #     terraform plan
+          cd ./server/venv/lib/python3.8/site-packages
+          zip -r9 ../../../../../api.zip .
+      - name: Add API files to Zip file
+        run: cd ./../../app && zip -g ../api.zip -r .
+      - name: Upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: api
+          path: api.zip
