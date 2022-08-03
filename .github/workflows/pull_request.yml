@@ -67,3 +67,36 @@ jobs:
         with:
           name: api
           path: api.zip
+
+      - name: Deploying back-end using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+          EOF
+          cat > github.auto.tfvars <<EOF
+          github_repository = "https://github.com/${{ github.repository }}"
+          github_branch = "${{ github.ref_name }}"
+          github_commit = "${{ github.sha }}"
+          github_event = "${{ github.event_name }}"
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform plan
+
+      # - name: Building front-end and deploying Frontend using terraform
+      #   run: |
+      #     cd server
+      #     terraform output > ../client/.env
+      #     cd ../client
+      #     npm install
+
+      #     CI=false npm run build
+
+      #     cat <<EOF > backend.hcl
+      #     organization = "${{ env.organization }}"
+      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+      #     EOF
+
+      #     terraform init -backend-config=backend.hcl
+      #     terraform plan
