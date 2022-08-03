@@ -59,9 +59,8 @@ jobs:
           cd ./server/fam_api/venv/lib/python3.8/site-packages
           zip -r9 ../../api.zip .
       - name: Add API files to Zip file
-        run: |
-          cd ./server/fam_api
-          zip -g ./api.zip -r app
+        run: cd ./server/fam_api/app  && zip -g ../../api.zip -r .
+        
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
