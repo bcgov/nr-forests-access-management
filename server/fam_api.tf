@@ -46,7 +46,7 @@ resource "aws_lambda_function" "fam_api" {
   role          = aws_iam_role.fam_api_lambda_exec.arn
   handler = "app.main.handler"
 
-  source_code_hash = filebase64sha256("fam_api/fam_api.zip")
+  source_code_hash = filebase64sha256("${path.module}/fam_api/fam_api.zip")
 
   runtime = "python3.8"
 
