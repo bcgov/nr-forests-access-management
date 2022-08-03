@@ -60,7 +60,7 @@ jobs:
           zip -r9 ../../../../../../api.zip .
       - name: Add API files to Zip file
         run: |
-          cd ./server/fam_api && zip -g ../../../../../../api.zip -r .
+          cd ./server/fam_api && zip -g ../api.zip -r .
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
