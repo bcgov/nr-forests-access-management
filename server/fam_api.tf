@@ -41,7 +41,7 @@ resource "aws_iam_role" "api_lambda_exec" {
 }
 
 resource "aws_lambda_function" "api" {
-  filename      = "api.zip"
+  filename      = "/home/runner/work/nr-forests-access-management/nr-forests-access-management/api.zip"
   function_name = "api"
   role          = aws_iam_role.api_lambda_exec.arn
   handler = "app.main.handler"
