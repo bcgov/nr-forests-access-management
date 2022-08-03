@@ -53,12 +53,14 @@ jobs:
       #   run: |
       #     cd ./server/fam_api/
       #     . venv/bin/activate && pytest
-          
+      - name: Install zip
+        uses: montudor/action-zip@v0.1.0
+   
       - name: Create archive of dependencies
         run: |
           mkdir ./server/fam_api/fam_api_v1
           cd server/fam_api/venv/lib/python3.8/site-packages
-          zip -r9 server/fam_api/fam_api_v1/api.zip .
+          zip -qq -r server/fam_api/fam_api_v1/api.zip .
       - name: Add API files to Zip file
         run: |
           cd ./server/fam_api/app && zip -g server/fam_api/fam_api_v1/api.zip -r .
