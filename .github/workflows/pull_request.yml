@@ -57,11 +57,11 @@ jobs:
       - name: Create archive of dependencies
         run: |
           mkdir ./server/fam_api/fam_api_v1
-          cd ./server/fam_api/venv/lib/python3.8/site-packages
-          zip -r9 ./server/fam_api/fam_api_v1/api.zip .
+          cd server/fam_api/venv/lib/python3.8/site-packages
+          zip -r9 server/fam_api/fam_api_v1/api.zip .
       - name: Add API files to Zip file
         run: |
-          cd ./server/fam_api/app && zip -g mkdir ./server/fam_api/fam_api_v1/api.zip -r .
+          cd ./server/fam_api/app && zip -g server/fam_api/fam_api_v1/api.zip -r .
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
