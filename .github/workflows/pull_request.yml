@@ -43,7 +43,7 @@ jobs:
        # Step-4 Build a Virtual ENV, but only if it doesn't already exist
       - name: Activate Virtual ENV
         run: 
-          cd ./server/fam_api/
+          cd /server/fam_api
           python -m venv venv && source venv/bin/activate && pip3 install -r server/fam_api/requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
