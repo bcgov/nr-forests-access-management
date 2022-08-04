@@ -64,6 +64,7 @@ jobs:
         run: |
           cd server/fam_api
           zip -u ../api.zip -r app/
+          cd ..
           pwd
           ls
 
@@ -71,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: fam-api
-          path: ./api.zip
+          path: ./server/api.zip
           if-no-files-found: error 
 
       - name: Deploying back-end using terraform
