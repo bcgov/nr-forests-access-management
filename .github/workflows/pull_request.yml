@@ -71,7 +71,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: fam-api
-          path: api.zip
+          path: ./api.zip
+          if-no-files-found: error 
 
       - name: Deploying back-end using terraform
         run: |
