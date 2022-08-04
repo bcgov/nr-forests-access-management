@@ -57,13 +57,13 @@ jobs:
       - name: Create archive of dependencies
         run: |
           cd server/fam_api/venv/lib/python3.8/site-packages
-          zip -r9 ../../../../../api.zip .
+          zip -r9 ../../../../../fam-api.zip .
           pwd
           ls
       - name: Add API files to Zip file
         run: |
           cd server/fam_api
-          zip -u ../api.zip -r app/
+          zip -u ../fam-api.zip -r app/
           cd ..
           pwd
           ls
@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: fam-api
-          path: ./server/api.zip
+          path: ./server/fam-api.zip
           if-no-files-found: error 
 
       - name: Deploying back-end using terraform
