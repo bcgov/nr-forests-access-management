@@ -58,15 +58,12 @@ jobs:
         run: |
           cd server/fam_api/venv/lib/python3.8/site-packages
           zip -r9 ../../../../../fam-api.zip .
-          pwd
-          ls
+
       - name: Add API files to Zip file
         run: |
           cd server/fam_api
           zip -u ../fam-api.zip -r app/
           cd ..
-          pwd
-          ls
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
@@ -90,7 +87,6 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform plan
-          terraform apply -auto-approve
 
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
