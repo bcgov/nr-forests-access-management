@@ -1,6 +1,6 @@
-resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
-  name   = "fam_api_lambda_access_policy"
-  role   = aws_iam_role.fam_api_lambda_exec.id
+resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
+  name   = "fam-api_lambda_access_policy"
+  role   = aws_iam_role.fam-api_lambda_exec.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
   EOF
 }
 
-data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
+data "aws_iam_policy_document" "fam-api_lambda_exec_policydoc" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -35,18 +35,18 @@ data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
   }
 }
 
-resource "aws_iam_role" "fam_api_lambda_exec" {
-  name = "fam_api_serverless_lambda_role"
-  assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
+resource "aws_iam_role" "fam-api_lambda_exec" {
+  name = "fam-api_serverless_lambda_role"
+  assume_role_policy = data.aws_iam_policy_document.fam-api_lambda_exec_policydoc.json
 }
 
-resource "aws_lambda_function" "fam_api" {
-  filename      = "${path.module}/fam_api/function.zip"
-  function_name = "fam_api"
-  role          = aws_iam_role.fam_api_lambda_exec.arn
+resource "aws_lambda_function" "fam-api" {
+  filename      = "fam-api.zip"
+  function_name = "fam-api"
+  role          = aws_iam_role.fam-api_lambda_exec.arn
   handler = "app.main.handler"
 
-  source_code_hash = filebase64sha256("${path.module}/fam_api/function.zip")
+  source_code_hash = filebase64sha256("fam-api.zip")
 
   runtime = "python3.8"
 
@@ -59,6 +59,8 @@ resource "aws_lambda_function" "fam_api" {
     "managed-by" = "terraform"
   }
 }
+
+
 
 
 
