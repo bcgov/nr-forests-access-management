@@ -115,10 +115,10 @@ def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
             tags=["FAM_roles"])
 def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     """
-    List of different applications that are administered by FAM
+    List of different roles that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud.getFamRole(db)
+    queryData = crud.getFamRoles(db)
     return queryData
 
 
