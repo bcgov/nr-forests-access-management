@@ -211,10 +211,8 @@ def deleteUser(db: Session, user_id: int):
     :return: _description_
     :rtype: _type_
     """
-    famUser = db.query(models.FamUser).options(load_only('user_id')).filter(models.FamUser.user_id == user_id).one()
-    # options(load_only(*fields)).
-    #famUser.fam_user_group_xref
-    #del famUser['fam_user_group_xref']
+    famUser = db.query(models.FamUser).options(
+        load_only('user_id')).filter(models.FamUser.user_id == user_id).one()
     db.delete(famUser)
 
     db.commit()
