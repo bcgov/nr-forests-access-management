@@ -34,6 +34,7 @@ testSession = None
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
     # pydantic model schema.FamUser
@@ -76,15 +77,20 @@ def testClient_fixture(getApp: FastAPI) -> TestClient:
 @pytest.fixture(scope="module")
 def sessionObjects(dbEngine: Engine) -> sessionmaker:
     # Use connect_args parameter only with sqlite
-    SessionTesting = sessionmaker(autocommit=False,
-                                  autoflush=False,
-                                  bind=dbEngine)
+    SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=dbEngine)
     LOGGER.debug(f"session type: {type(SessionTesting)}")
     yield SessionTesting
 
 
 @pytest.fixture(scope="module")
 def dbEngine() -> Engine:
+    # should re-create the database every time the tests are run, the following
+    # line ensure database that maybe hanging around as a result of a failed
+    # test is deleted
+    if os.path.exists("./test_db.db"):
+        LOGGER.debug("remove the database: ./test_db.db'")
+        os.remove("./test_db.db")
+
     SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
     LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
     execution_options = {"schema_translate_map": {"app_fam": None}}
@@ -92,7 +98,7 @@ def dbEngine() -> Engine:
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
         connect_args={"check_same_thread": False},
-        execution_options=execution_options
+        execution_options=execution_options,
     )
 
     model.Base.metadata.create_all(bind=engine)
@@ -108,10 +114,8 @@ def dbEngine() -> Engine:
         os.remove("./test_db.db")
 
 
-
 @pytest.fixture(scope="function")
-def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects,
-                                                     Any, None]:
+def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
 
     connection = dbEngine.connect()
     # transaction = connection.begin()
@@ -124,8 +128,9 @@ def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects,
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUsers_withdata(dbSession, testUserData3, testGroupData,
-                                userGroupXrefData):
+def dbSession_famUsers_withdata(
+    dbSession, testUserData3, testGroupData, userGroupXrefData
+):
     """to add a user need to satisfy the integrity constraints:
 
     1. create the group
@@ -141,58 +146,42 @@ def dbSession_famUsers_withdata(dbSession, testUserData3, testGroupData,
     :yield: _description_
     :rtype: _type_
     """
+    # the following link goes over working with related/associated tables
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+
     db = dbSession
-    # CONRAD / TOLU: after creating a new model based on a postgres
-    # database that contained the latest flyway migrations, started running into
-    # integrity constraints when trying to add a new user.  Looks like it
-    # now requires you to have a group defined before you can add a user.
-    # Code below shows how you can add data through an association table,
-    # however I'm not sure this integrity constraint is necessary.
-    #
-    # To see where I'm at you can run the tests and see which ones fail
-    # goood luck
-
-
     # trying to add to user without violating the integrity constraint
     # group was populated with a record by the add_group fixture.
     newUser = model.FamUser(**testUserData3)
     groupSchema = model.FamGroup(**testGroupData)
 
-    userGroupXrefData['group'] = groupSchema
-    userGroupXrefData['user'] = newUser
+    userGroupXrefData["group"] = groupSchema
+    userGroupXrefData["user"] = newUser
 
     xrefTable = model.FamUserGroupXref(**userGroupXrefData)
     db.add(xrefTable)
     db.commit()
+
     yield db
 
-    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    db.delete(xrefTable)
+    db.delete(groupSchema)
+    db.delete(newUser)
 
+    db.commit()
 
-
-    # famGroupPK = crud.getPrimaryKey(model.FamGroup)
-    # famGroupPKNextVal = crud.getNext(model.FamGroup, db)
-
-
-    # # add a record to the database
-    # newUser = model.FamUser(**testUserData)
-    # db.add(newUser)
-    # db.commit()
-    # yield db  # use the session in tests.
-
-    # db.delete(newUser)
-    # db.commit()
 
 @pytest.fixture(scope="function")
 def userGroupXrefData():
     nowdatetime = datetime.datetime.now()
     xrefData = {
-        "create_user": 'serg',
+        "create_user": "serg",
         "create_date": nowdatetime,
-        "update_user": 'ron',
+        "update_user": "ron",
         "update_date": nowdatetime,
     }
     yield xrefData
+
 
 @pytest.fixture(scope="function")
 def add_group(dbSession, testGroupData):
@@ -202,21 +191,22 @@ def add_group(dbSession, testGroupData):
     crud.createFamGroup(famGroup=groupSchema, db=db)
     yield db
 
-    db.delete(groupData)
+    db.delete(testGroupData)
     db.commit()
+
 
 @pytest.fixture(scope="function")
 def testGroupData():
     testGroupData = {
-        'group_id': 99,
-        'group_name': 'test group',
-        'purpose': 'testing',
-        'create_user': 'Brian Trotier',
-        'create_date': datetime.datetime.now(),
-        'parent_group_id': 1,
-        'client_number_id': 1,
-        'update_user': 'Brian Trotier',
-        'update_date': datetime.datetime.now()
+        "group_id": 99,
+        "group_name": "test group",
+        "purpose": "testing",
+        "create_user": "Brian Trotier",
+        "create_date": datetime.datetime.now(),
+        "parent_group_id": 1,
+        "client_number_id": 1,
+        "update_user": "Brian Trotier",
+        "update_date": datetime.datetime.now(),
     }
     return testGroupData
 
@@ -235,7 +225,7 @@ def testUserData2_asPydantic(testUserData2) -> schemas.FamUser:
 
 @pytest.fixture(scope="function")
 def deleteAllUsers(dbSession: session.Session) -> None:
-    """ Cleans up all users from the database after the test has been run
+    """Cleans up all users from the database after the test has been run
 
     :param dbSession: mocked up database session
     :type dbSession: sqlalchemy.orm.session.Session
@@ -279,6 +269,7 @@ def testUserData2() -> FamUserTD:
     }
     yield userData
 
+
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
@@ -295,15 +286,9 @@ def testUserData3() -> FamUserTD:
     yield userData
 
 
-
-
 def override_get_db():
     try:
         db = testSession()
         yield db
     finally:
         db.close()
-
-
-
-

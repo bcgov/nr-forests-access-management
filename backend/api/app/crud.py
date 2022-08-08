@@ -3,7 +3,7 @@ import logging
 
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 import sqlalchemy.orm.decl_api
 
 from . import schemas
@@ -211,8 +211,12 @@ def deleteUser(db: Session, user_id: int):
     :return: _description_
     :rtype: _type_
     """
-    famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
+    famUser = db.query(models.FamUser).options(load_only('user_id')).filter(models.FamUser.user_id == user_id).one()
+    # options(load_only(*fields)).
+    #famUser.fam_user_group_xref
+    #del famUser['fam_user_group_xref']
     db.delete(famUser)
+
     db.commit()
     return famUser
 

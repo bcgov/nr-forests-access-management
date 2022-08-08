@@ -17,4 +17,3 @@ Having generated a new alembic migration, you can then apply it:
 cd api
 alembic upgrade head
 ```
-

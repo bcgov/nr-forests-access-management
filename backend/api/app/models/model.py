@@ -3,7 +3,6 @@ from sqlalchemy import (
     Column,
     ForeignKeyConstraint,
     Identity,
-    Index,
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
@@ -22,9 +21,9 @@ class FamApplication(Base):
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
         UniqueConstraint("application_name", name="fam_app_name_uk"),
         {
-            "comment": "An application is a digital product that fulfills a specific user "
-            "goal. It can be a front-end application, a back-end API, a "
-            "combination of these, or something else entirely.",
+            "comment": "An application is a digital product that fulfills a  "
+            "specific user goal. It can be a front-end application, a back-end "
+            "API, a combination of these, or something else entirely.",
             "schema": "app_fam",
         },
     )
@@ -39,7 +38,8 @@ class FamApplication(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness of an Application registered under FAM",
+        comment="Automatically generated key used to identify the uniqueness " +
+                "of an Application registered under FAM",
     )
     application_name = Column(String(100), nullable=False)
     application_description = Column(String(200), nullable=False)
@@ -56,7 +56,8 @@ class FamApplication(Base):
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated " +
+                "the record.",
     )
     update_date = Column(
         TIMESTAMP(precision=6),
@@ -131,8 +132,8 @@ class FamUser(Base):
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
         UniqueConstraint("user_type", "user_name", name="fam_usr_uk"),
         {
-            "comment": "A user is a person or system that can authenticate and then "
-            "interact with an application.",
+            "comment": "A user is a person or system that can authenticate "
+            "and then interact with an application.",
             "schema": "app_fam",
         },
     )
@@ -148,7 +149,8 @@ class FamUser(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness of a User within the FAM Application",
+        comment="Automatically generated key used to identify the "
+                "uniqueness of a User within the FAM Application",
     )
     user_type = Column(String(1), nullable=False)
     user_name = Column(String(100), nullable=False)
@@ -167,7 +169,8 @@ class FamUser(Base):
     cognito_user_id = Column(String(32))
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated the "
+                "record.",
     )
     update_date = Column(
         TIMESTAMP(precision=6),
@@ -175,7 +178,10 @@ class FamUser(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_user_group_xref = relationship("FamUserGroupXref", back_populates="user")
+    fam_user_group_xref = relationship(
+        "FamUserGroupXref", back_populates="user" , cascade="all, delete-orphan"
+    )
+    # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
 
 
@@ -210,7 +216,8 @@ class FamApplicationClient(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness of an OIDC as it corresponds to an identified client ",
+        comment="Automatically generated key used to identify the uniqueness " +
+                " of an OIDC as it corresponds to an identified client ",
     )
     cognito_client_id = Column(String(32), nullable=False)
     create_user = Column(
@@ -226,11 +233,13 @@ class FamApplicationClient(Base):
     )
     application_id = Column(
         BigInteger,
-        comment="Automatically generated key used to identify the uniqueness of an Application registered under FAM",
+        comment="Automatically generated key used to identify the uniqueness " +
+                "of an Application registered under FAM",
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated the " +
+                "record. ",
     )
     update_date = Column(
         String(9), server_default=text("CURRENT_DATE"), comment="ZIP code."
@@ -255,13 +264,13 @@ class FamGroup(Base):
         PrimaryKeyConstraint("group_id", name="fam_grp_pk"),
         UniqueConstraint("group_name", name="fam_grp_name_uk"),
         {
-            "comment": "A group is a collection of roles. When a group is assigned to a "
-            "user, the user indirectly assumes the privileges of all the roles "
-            "encompassed by the group. Groups are used to define profiles in "
-            "order to make it easier to manage common sets of roles for users. "
-            "A group can contain roles from multiple applications in order to "
-            "handle the case where users typically have a certain set of "
-            "privileges across multiple applications.",
+            "comment": "A group is a collection of roles. When a group is "
+            "assigned to a user, the user indirectly assumes the privileges of "
+            "all the roles encompassed by the group. Groups are used to define"
+            "profiles in order to make it easier to manage common sets of roles "
+            "for users. A group can contain roles from multiple applications "
+            "in order to handle the case where users typically have a certain "
+            "set of privileges across multiple applications.",
             "schema": "app_fam",
         },
     )
@@ -278,7 +287,7 @@ class FamGroup(Base):
             cache=1,
         ),
         autoincrement=True,
-        primary_key=True
+        primary_key=True,
     )
     group_name = Column(String(100), nullable=False)
     purpose = Column(String(200), nullable=False)
@@ -342,8 +351,9 @@ class FamRole(Base):
         PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
         UniqueConstraint("role_name", name="fam_rle_name_uk"),
         {
-            "comment": "A role is a qualifier that can be assigned to a user in order to "
-            "identify a privilege within the context of an application.",
+            "comment": "A role is a qualifier that can be assigned to a user "
+            "in order to identify a privilege within the context of an "
+            "application.",
             "schema": "app_fam",
         },
     )
@@ -359,7 +369,8 @@ class FamRole(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness of a Role within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a Role within the FAM Application",
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=False)
@@ -384,7 +395,8 @@ class FamRole(Base):
     parent_role_id = Column(
         BigInteger,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness of a Role within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness " +
+                "of a Role within the FAM Application",
     )
     update_user = Column(
         String(30),
@@ -470,7 +482,8 @@ class FamGroupRoleXref(Base):
         BigInteger,
         nullable=False,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness of a Role within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a Role within the FAM Application",
     )
     create_user = Column(
         String(30),
@@ -508,9 +521,9 @@ class FamUserGroupXref(Base):
         ),
         PrimaryKeyConstraint("user_id", "group_id", name="fam_usr_rle_pk_1"),
         {
-            "comment": "User Group Xref is a cross-reference object that allows for the "
-            "identification of Groups assigned to a user, as well as the users "
-            "that belong to a given Group",
+            "comment": "User Group Xref is a cross-reference object that "
+            "allows for the identification of Groups assigned to a user, as "
+            "well as the users that belong to a given Group",
             "schema": "app_fam",
         },
     )
@@ -519,7 +532,8 @@ class FamUserGroupXref(Base):
         BigInteger,
         nullable=False,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness of a User within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a User within the FAM Application",
     )
     group_id = Column(BigInteger, nullable=False, index=True)
     create_user = Column(
@@ -535,7 +549,8 @@ class FamUserGroupXref(Base):
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated the "
+                "record. ",
     )
     update_date = Column(
         TIMESTAMP(precision=6),
@@ -569,13 +584,15 @@ class FamUserRoleXref(Base):
         BigInteger,
         nullable=False,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness of a User within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a User within the FAM Application",
     )
     role_id = Column(
         BigInteger,
         nullable=False,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness of a Role within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a Role within the FAM Application",
     )
     create_user = Column(
         String(30),
@@ -590,7 +607,8 @@ class FamUserRoleXref(Base):
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated "
+                "the record. ",
     )
     update_date = Column(
         TIMESTAMP(precision=6),

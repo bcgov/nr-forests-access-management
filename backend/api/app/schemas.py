@@ -23,7 +23,6 @@ class FamGroupGet(FamGroupPost):
         orm_mode = True
 
 
-
 class FamApplicationClient(BaseModel):
     application_client_id: int
     cognito_client_id: str
