@@ -68,11 +68,11 @@ class FamUserGet(FamUser):
     create_date: datetime
     update_date: datetime
 
-
     class Config:
         """allows serialization of orm data struct"""
 
         orm_mode = True
+
 
 class FamRole(BaseModel):
     role_id: int
@@ -94,11 +94,11 @@ class FamRole(BaseModel):
     # parent_role = relationship("FamRole", remote_side=[role_id])
     # users = relationship("FamUser", secondary="fam_user_role_xref")
 
+
 class FamRoleGet(FamRole):
     role_id: int
     create_date: datetime
     update_date: datetime
-
 
     class Config:
         """allows serialization of orm data struct"""
