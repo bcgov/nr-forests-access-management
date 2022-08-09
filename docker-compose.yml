@@ -1,0 +1,9 @@
+---
+version: "3.8"
+
+services:
+  famdb:
+    build: server/flyway
+    container_name: famdb
+    ports:
+      - 5432:5432

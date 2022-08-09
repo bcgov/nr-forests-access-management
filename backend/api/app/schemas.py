@@ -4,6 +4,26 @@ from typing import Optional, Union
 from pydantic import BaseModel, Field, validator
 
 
+class FamGroupPost(BaseModel):
+    group_name: str
+    purpose: str
+    create_user: str
+    parent_group_id: int
+    update_user: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamGroupGet(FamGroupPost):
+    group_id: int
+    create_date: datetime
+    update_date: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class FamApplicationClient(BaseModel):
     application_client_id: int
     cognito_client_id: str
