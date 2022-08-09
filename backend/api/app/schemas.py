@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
 
 
 class FamApplicationClient(BaseModel):
@@ -75,28 +75,20 @@ class FamUserGet(FamUser):
 
 
 class FamRole(BaseModel):
-    role_id: int
     role_name: str
     role_purpose: str
-    parent_role_id: int
-    # application_id = Column(
-    #     Integer, ForeignKey("fam_application.application_id"), nullable=False
-    # )
-    client_number_id: int
-    create_user: str
-    # create_date = Column(
-    #     TIMESTAMP(precision=6), nullable=False, server_default=text("CURRENT_DATE")
-    # )
-    update_user: str
-    # update_date: datetime.datetime
-    # application = relationship("FamApplication")
-    # client_number = relationship("FamForestClient")
-    # parent_role = relationship("FamRole", remote_side=[role_id])
-    # users = relationship("FamUser", secondary="fam_user_role_xref")
+    parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
+    application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
+    client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
+
+    class Config:
+        orm_mode = True
 
 
 class FamRoleGet(FamRole):
     role_id: int
+    create_user: str
+    update_user: str
     create_date: datetime
     update_date: datetime
 
