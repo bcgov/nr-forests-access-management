@@ -1,2 +1,5 @@
 black==22.6.0
 flake8==4.0.1
+# used to reverse engineer database after flyway migrations, not part of
+# deployment so putting as a dev dependency
+sqlacodegen==3.0.0rc1
