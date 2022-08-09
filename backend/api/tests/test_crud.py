@@ -1,4 +1,3 @@
-import pytest
 import logging
 import os
 
@@ -10,10 +9,10 @@ LOGGER = logging.getLogger(__name__)
 
 def test_getFamApplications_nodata(dbSession):
     """Was a starting place to figure out crud tests that work with the database
-    session, not complete.
+    session, not complete.  Assumes the database starts without any data.
 
-    :param dbSession: _description_
-    :type dbSession: _type_
+    :param dbSession: sql alchemy database session
+    :type dbSession: sqlalchemy.orm.Session
     """
     # TODO: start coding tests for crud.py code.
     files = os.listdir(".")
@@ -25,12 +24,25 @@ def test_getFamApplications_nodata(dbSession):
 
 
 def test_getFamUsers_nodata(dbSession):
+    """queries for users on an empty database, should return an empty list
+
+    :param dbSession: sql alchemy database session
+    :type dbSession: sqlalchemy.orm.Session
+    """
     famUsers = crud.getFamUsers(dbSession)
     LOGGER.debug(f"fam users: {famUsers}")
     assert famUsers == []
 
 
-def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData):
+def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
+    """gets a database session which has user data inserted into it, and a
+    dictionary containing the data that was added to the database
+
+    :param dbSession_famUsers_withdata: sql alchemy database session
+    :type dbSession_famUsers_withdata: sqlalchemy.orm.Session
+    :param testUserData3: _description_
+    :type testUserData3: _type_
+    """
     db = dbSession_famUsers_withdata
     users = crud.getFamUsers(db)
     LOGGER.debug(f"users: {users}")
@@ -41,7 +53,7 @@ def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData):
     # checking that the expected user is in the db
     for user in users:
         LOGGER.debug(f"user: {user.__dict__} {user.user_name}")
-        assert user.user_name == testUserData["user_name"]
+        assert user.user_name == testUserData3["user_name"]
 
 
 def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):
@@ -65,7 +77,7 @@ def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):
     assert numUsersAfter > numUsersStart
 
 
-def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData):
+def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData3):
     # test getting a single user
     db = dbSession_famUsers_withdata
 
@@ -73,7 +85,7 @@ def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData):
     famUser = db.query(api.app.models.model.FamUser).one()
     LOGGER.debug(f"famUser: {famUser.user_id}")
     crud.getFamUser(db=db, user_id=famUser.user_id)
-    assert famUser.user_name == testUserData["user_name"]
+    assert famUser.user_name == testUserData3["user_name"]
 
 
 def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
@@ -93,17 +105,24 @@ def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
 
 
 def test_getPrimaryKey():
+    """Testing that the method to retrieve the name of a primary key column
+    on a table.
+    """
     pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
     assert pkColName == 'user_id'
 
+
 def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):
-    """fixgture delivers a db session with one record in it, testing that
-    the getNext method returns the next record primary key.
+    """fixture delivers a db session with one record in it, testing that
+    the getNext method returns the primary key of the current record + 1
 
-    Not the best test admittedly
+    getNext method was implemented because the unit testing uses sqllite, and
+    sqlalchemy wrapper to sqllite does not do the autoincrement / populate of
+    primary keys.
 
-    :param dbSession_famUsers_withdata: _description_
-    :type dbSession_famUsers_withdata: _type_
+    :param dbSession_famUsers_withdata: a sql alchemy database session which is
+        pre-populated with user data.
+    :type dbSession_famUsers_withdata: sqlalchemy.orm.Session
     """
     db = dbSession_famUsers_withdata
     famUserModel = api.app.models.model.FamUser
@@ -116,6 +135,3 @@ def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAl
 
     nextValueAfter = crud.getNext(db=db, model=famUserModel)
     assert nextValueAfter > nextValueBefore
-
-
-

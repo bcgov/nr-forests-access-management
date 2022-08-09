@@ -4,7 +4,8 @@
         120
     ],
     "python.testing.pytestArgs": [
-        "backend"
+        "-c",
+        "backend/pytest.ini"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -13,7 +14,6 @@
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-
+    "python.linting.flake8Args": ["--ignore=E24,W504", "--max-line-length=88", "--verbose"],
     "workbench.list.openMode": "doubleClick",
-
 }
