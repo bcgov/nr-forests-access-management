@@ -374,10 +374,10 @@ class FamRole(Base):
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=False)
-    application_id = Column(BigInteger, nullable=False, index=True)
+    application_id = Column(BigInteger, nullable=True, index=True)
     client_number_id = Column(
         BigInteger,
-        nullable=False,
+        nullable=True,
         index=True,
         comment="Sequentially assigned number to identify a ministry client.",
     )
@@ -394,6 +394,7 @@ class FamRole(Base):
     )
     parent_role_id = Column(
         BigInteger,
+        nullable=True,
         index=True,
         comment="Automatically generated key used to identify the uniqueness " +
                 "of a Role within the FAM Application",

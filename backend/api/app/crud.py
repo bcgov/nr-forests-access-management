@@ -221,11 +221,8 @@ def deleteUser(db: Session, user_id: int):
 
 def createFamRole(famRole: schemas.FamRole, db: Session):
     LOGGER.debug(f"Fam role: {famRole}")
-    pkColName = getPrimaryKey(models.FamRole)
-    nextVal = getNext(models.FamRole, db)
 
     famRoleDict = famRole.dict()
-    famRoleDict[pkColName] = nextVal
 
     # maybe there is a way to get the db to do this for us, but just as easy
     # to add the dates in here.
