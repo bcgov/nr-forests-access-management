@@ -65,7 +65,7 @@ jobs:
       - name: Add API files to Zip file
         run: |
           # cd server/fam_api
-          cd backend/api/app
+          cd backend/api
           # zip -u ../fam-api.zip -r app/
           zip -u ../fam-api.zip -r app/
           cd ..
