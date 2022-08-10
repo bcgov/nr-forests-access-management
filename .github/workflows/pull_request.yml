@@ -43,7 +43,7 @@ jobs:
        # Step-4 Build a Virtual ENV, but only if it doesn't already exist
       - name: Activate Virtual ENV
         run: |
-          cd ./backend/api
+          cd ./backend
           python -m venv venv && source venv/bin/activate && pip3 install -r ../requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
@@ -56,7 +56,6 @@ jobs:
    
       - name: Create archive of dependencies
         run: |
-          pwd
           cd backend
           pwd
           ls
