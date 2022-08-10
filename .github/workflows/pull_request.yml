@@ -36,7 +36,7 @@ jobs:
         with:
           path: server/fam_api/venv # what we cache: the Virtual ENV
           # The cache key depends on requirements.txt
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/backend/requirements.txt') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/backend/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
 
