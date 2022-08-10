@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
 from .routers import fam_router
+from mangum import Mangum
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -71,4 +72,5 @@ def main():
 
 apiPrefix = '/api/v1'
 app.include_router(fam_router.router, prefix=apiPrefix)
+handler = Mangum(app)
 
