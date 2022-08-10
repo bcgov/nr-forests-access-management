@@ -60,7 +60,7 @@ jobs:
           pwd
           ls
           cd venv/lib/python3.8/site-packages
-          zip -r9 ../../../../../fam-api.zip .
+          zip -r9 ../../../../fam-api.zip .
 
       - name: Add API files to Zip file
         run: |
@@ -92,6 +92,7 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform plan
+          terraform apply -auto-approve
 
       # - name: Building front-end and deploying Frontend using terraform
       #   run: |
