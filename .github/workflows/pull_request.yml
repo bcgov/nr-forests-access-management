@@ -36,14 +36,14 @@ jobs:
         with:
           path: server/fam_api/venv # what we cache: the Virtual ENV
           # The cache key depends on requirements.txt
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/server/fam_api/requirements*.txt') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/backend/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
 
        # Step-4 Build a Virtual ENV, but only if it doesn't already exist
       - name: Activate Virtual ENV
         run: |
-          cd ./server/fam_api
+          cd ./backend/api
           python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
@@ -56,25 +56,27 @@ jobs:
    
       - name: Create archive of dependencies
         run: |
-          cd server/fam_api/venv/lib/python3.8/site-packages
+          cd backend/venv/lib/python3.8/site-packages
           zip -r9 ../../../../../fam-api.zip .
 
       - name: Add API files to Zip file
         run: |
-          cd server/fam_api
-          zip -u ../fam-api.zip -r app/
+          # cd server/fam_api
+          cd backend/api
+          # zip -u ../fam-api.zip -r app/
+          zip -u ../fam-api.zip -r api/
           cd ..
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
           name: fam-api
-          path: ./server/fam-api.zip
+          path: ./backend/fam-api.zip
           if-no-files-found: error 
 
       - name: Deploying back-end using terraform
         run: |
-          cd server
+          cd backend
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
