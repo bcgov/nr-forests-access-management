@@ -139,8 +139,5 @@ def create_fam_role(
     except IntegrityError as e:
         LOGGER.debug(f"error: {e}")
         raise HTTPException(status_code=422, detail=str(e))
-    # except Exception as e:
-    #     logging.debug("------ ERROR ------ ")
-    #     logging.exception(e)
 
     return queryData
