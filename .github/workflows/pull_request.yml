@@ -56,8 +56,6 @@ jobs:
    
       - name: Create archive of dependencies
         run: |
-          pwd
-          cd ../
           cd backend/venv/lib/python3.8/site-packages
           zip -r9 ../../../../../fam-api.zip .
 
