@@ -56,7 +56,11 @@ jobs:
    
       - name: Create archive of dependencies
         run: |
-          cd ./backend/venv/lib/python3.8/site-packages
+          pwd
+          cd backend
+          pwd
+          ls
+          cd /venv/lib/python3.8/site-packages
           zip -r9 ../../../../../fam-api.zip .
 
       - name: Add API files to Zip file
