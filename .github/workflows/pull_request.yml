@@ -44,7 +44,7 @@ jobs:
       - name: Activate Virtual ENV
         run: |
           cd ./backend
-          python -m venv venv && source venv/bin/activate && pip3 install -r ../requirements.txt
+          python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
       # - name: Run Tests   
