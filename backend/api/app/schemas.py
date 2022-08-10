@@ -112,6 +112,8 @@ class FamRoleGet(FamRole):
     create_date: Union[datetime, None]
     update_date: Union[datetime, None]
 
+    application: Union[FamApplication, None]
+
     class Config:
         """allows serialization of orm data struct"""
 
