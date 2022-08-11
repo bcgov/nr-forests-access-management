@@ -118,7 +118,7 @@ def test_getFamRoles_withdata(dbSession_famRoles_withdata, testRoleData):
     # expecting the number of records in the role table to be 1
     assert 1 == len(roles)
 
-    # checking that the expected user is in the db
+    # checking that the expected role is in the db
     for role in roles:
         LOGGER.debug(f"role: {role.__dict__} {role.role_name}")
         assert role.role_name == testRoleData["role_name"]

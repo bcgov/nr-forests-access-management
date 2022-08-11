@@ -52,7 +52,7 @@ class FamApplication(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -62,7 +62,7 @@ class FamApplication(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -110,7 +110,7 @@ class FamForestClient(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -119,7 +119,7 @@ class FamForestClient(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -229,7 +229,7 @@ class FamApplicationClient(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     application_id = Column(
@@ -243,7 +243,7 @@ class FamApplicationClient(Base):
                 "record. ",
     )
     update_date = Column(
-        String(9), server_default=text("CURRENT_DATE"), comment="ZIP code."
+        String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
     )
 
     application = relationship(
@@ -447,7 +447,7 @@ class FamApplicationGroupXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -456,7 +456,7 @@ class FamApplicationGroupXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -495,7 +495,7 @@ class FamGroupRoleXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -504,7 +504,7 @@ class FamGroupRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -546,7 +546,7 @@ class FamUserGroupXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -556,7 +556,7 @@ class FamUserGroupXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -604,7 +604,7 @@ class FamUserRoleXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -614,7 +614,7 @@ class FamUserRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
