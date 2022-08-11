@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import (
     BigInteger,
     Column,
@@ -6,7 +7,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
-    text,
+    text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
@@ -162,7 +163,7 @@ class FamUser(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
@@ -174,7 +175,7 @@ class FamUser(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -299,7 +300,7 @@ class FamGroup(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_group_id = Column(BigInteger, index=True)
@@ -314,7 +315,7 @@ class FamGroup(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -389,7 +390,7 @@ class FamRole(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_role_id = Column(
@@ -405,7 +406,7 @@ class FamRole(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 

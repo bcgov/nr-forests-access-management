@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from sqlalchemy import func
@@ -129,16 +128,7 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     famUserDict = famUser.dict()
     famUserDict[pkColName] = nextVal
 
-    # maybe there is a way to get the db to do this for us, but just as easy
-    # to add the dates in here.
-    now = datetime.datetime.now()
-    famUserDict["create_date"] = now
-    famUserDict["update_date"] = now
-
     LOGGER.debug(f"famUserDict: {famUserDict}")
-    LOGGER.debug(
-        f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}"
-    )
 
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
@@ -161,10 +151,6 @@ def createFamGroup(famGroup: schemas.FamGroupPost, db: Session):
     nextVal = getNext(models.FamGroup, db)
     famGroupDict = famGroup.dict()
     famGroupDict[pkColName] = nextVal
-
-    now = datetime.datetime.now()
-    famGroupDict["create_date"] = now
-    famGroupDict["update_date"] = now
 
     db_item = models.FamGroup(**famGroupDict)
     db.add(db_item)
@@ -223,17 +209,7 @@ def createFamRole(famRole: schemas.FamRole, db: Session):
     LOGGER.debug(f"Fam role: {famRole}")
 
     famRoleDict = famRole.dict()
-
-    # maybe there is a way to get the db to do this for us, but just as easy
-    # to add the dates in here.
-    now = datetime.datetime.now()
-    famRoleDict["create_date"] = now
-    famRoleDict["update_date"] = now
-
     LOGGER.debug(f"famRoleDict: {famRoleDict}")
-    LOGGER.debug(
-        f"famAppDict: {famRoleDict['create_date']} {famRoleDict['update_date']}"
-    )
 
     db_item = models.FamRole(**famRoleDict)
     db.add(db_item)
