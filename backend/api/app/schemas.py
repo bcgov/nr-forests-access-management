@@ -86,7 +86,7 @@ class FamUser(BaseModel):
 class FamUserGet(FamUser):
     user_id: int
     create_date: datetime
-    update_date: datetime
+    update_date: Optional[datetime]
 
     class Config:
         """allows serialization of orm data struct"""
