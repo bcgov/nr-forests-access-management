@@ -97,12 +97,20 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     """
     LOGGER.debug(f"famApplication: {famApplication}")
     LOGGER.debug(f"famApplication as dict: {famApplication.dict()}")
-    pkColName = getPrimaryKey(models.FamApplication)
+
     nextVal = getNext(models.FamApplication, db)
     LOGGER.debug(f"next val: {nextVal}")
-
     famAppDict = famApplication.dict()
+    pkColName = getPrimaryKey(models.FamApplication)
     famAppDict[pkColName] = nextVal
+
+    # TODO: once integrate ian's db changes are merged, the dates will be calced
+    #       in the database
+    now = datetime.datetime.now()
+    famAppDict['create_date'] = now
+    famAppDict['update_date'] = now
+    famAppDict['update_user'] = getUpdateUser()
+    famAppDict['create_user'] = getAddUser()
 
     # TODO: need to figure out a better way of handling application_client_id is null
     if 'application_client_id' in famAppDict:
@@ -254,6 +262,19 @@ def getFamRoles(db: Session):
     LOGGER.debug(f"db session: {db}")
     famRoles = db.query(models.FamRole).all()
     return famRoles
+
+
+def getUpdateUser():
+    """A stub method, once the api has been integrated w/ Cognito the update
+    user will come from the JWT token that is a result of the authentication.
+    """
+    return 'default updateuser'
+
+def getAddUser():
+    """A stub method, once the api has been integrated w/ Cognito the update
+    user will come from the JWT token that is a result of the authentication.
+    """
+    return 'default adduser'
 
 
 if __name__ == "__main__":

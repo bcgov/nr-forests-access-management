@@ -14,9 +14,6 @@ def dbSession_famApplication_withdata(dbSession, applicationData1):
     applicationData1AsPydantic = schemas.FamApplicationCreate(**applicationData1)
     appData = crud.createFamApplication(famApplication=applicationData1AsPydantic,
                                         db=dbSession)
-    # application = model.FamApplication(**applicationData1)
-    # dbSession.add(application)
-    # dbSession.commit()
 
     yield dbSession
 

@@ -8,10 +8,14 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 :yield: _description_
 :rtype: _type_
 """
+import sys
+import os
+#sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 
 import datetime
 import logging
-import os
 import uuid
 from typing import Any, Generator, TypedDict
 
@@ -28,11 +32,21 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import session, sessionmaker
 
+
+import sys
+
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
 testSession = None
 
 LOGGER = logging.getLogger(__name__)
+
+# crud code is useful for setting up the router tests, so making
+# it available for use globally
+pytest_plugins = [
+    "fixtures.fixtures_crud_application",
+    "fixtures.fixtures_router_application",
+]
 
 
 class FamUserTD(TypedDict):
@@ -268,7 +282,6 @@ def testUserData2() -> FamUserTD:
         "update_date": datetime.datetime.now(),
     }
     yield userData
-
 
 
 @pytest.fixture(scope="function")

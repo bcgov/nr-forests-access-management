@@ -34,25 +34,16 @@ class FamApplicationClient(BaseModel):
     class Config:
         orm_mode = True
 
-
-class FamApplication(BaseModel):
-    application_id: int
-    application_name: str
-    application_description: str
-    application_client_id: int
-    create_user: str
-    create_date: datetime
-    update_user: str
-    update_date: datetime
-
-    class Config:
-        orm_mode = True
-
-
 class FamApplicationCreate(BaseModel):
     application_name: str
     application_description: str
     application_client_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class FamApplication(FamApplicationCreate):
+    application_id: int
     create_user: str
     create_date: datetime
     update_user: str
@@ -60,6 +51,8 @@ class FamApplicationCreate(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 
 
 class FamUser(BaseModel):
