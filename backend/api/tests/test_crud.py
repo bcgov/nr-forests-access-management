@@ -7,20 +7,6 @@ import api.app.models.model
 LOGGER = logging.getLogger(__name__)
 
 
-def test_getFamApplications_nodata(dbSession):
-    """Was a starting place to figure out crud tests that work with the database
-    session, not complete.  Assumes the database starts without any data.
-
-    :param dbSession: sql alchemy database session
-    :type dbSession: sqlalchemy.orm.Session
-    """
-    # TODO: start coding tests for crud.py code.
-    files = os.listdir(".")
-    LOGGER.debug(f"files: {files}")
-
-    famApps = crud.getFamApplications(dbSession)
-    assert famApps == []
-    LOGGER.debug(f"famApps: {famApps}")
 
 
 def test_getFamUsers_nodata(dbSession):

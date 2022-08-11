@@ -4,8 +4,7 @@
         120
     ],
     "python.testing.pytestArgs": [
-        "-c",
-        "backend/pytest.ini"
+        "backend"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

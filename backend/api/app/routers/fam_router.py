@@ -43,6 +43,26 @@ def get_fam_application(
     # return queryData
     return queryData
 
+@router.delete(
+    "/fam_applications/{application_id}",
+    response_model=schemas.FamApplication,
+    tags=["FAM_application"]
+)
+def delete_fam_application(
+    application_id: int,
+    db: Session = Depends(dependencies.get_db),
+):
+    """
+    Add Application/client to FAM
+    """
+    LOGGER.debug(f"running router ... {db}")
+    application = crud.getFamApplication(application_id=application_id, db=db)
+    if not application:
+        raise HTTPException(status_code=404,
+                            detail=f"application_id={application_id} does not exist")
+    application = crud.deleteApplication(db=db, application=application)
+    return application
+
 
 @router.get("/fam_users",
             response_model=List[schemas.FamUserGet],

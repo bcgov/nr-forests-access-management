@@ -44,3 +44,4 @@ __pycache__
 junk*
 fam_api/request.json
 backend/database/fam_api-9.0.1/*
+backend/database/flyway*

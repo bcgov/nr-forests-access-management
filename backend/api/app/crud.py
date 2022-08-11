@@ -85,7 +85,7 @@ def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
         return queryResult[0] + 1
 
 
-def createFamApplication(famApplication: schemas.FamApplication, db: Session):
+def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Session):
     """used to add a new application record to the database
 
     :param famApplication: _description_
@@ -103,6 +103,10 @@ def createFamApplication(famApplication: schemas.FamApplication, db: Session):
 
     famAppDict = famApplication.dict()
     famAppDict[pkColName] = nextVal
+
+    # TODO: need to figure out a better way of handling application_client_id is null
+    if 'application_client_id' in famAppDict:
+        del famAppDict['application_client_id']
 
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
@@ -201,6 +205,12 @@ def getFamUser(db: Session, user_id: int):
     return famUser
 
 
+def getApplication(db: Session, application_id: int):
+    """gets a single application"""
+    application = db.query(models.FamApplication).filter(models.FamApplication.application_id == application_id).one()
+    return application
+
+
 def deleteUser(db: Session, user_id: int):
     """deletes a user
 
@@ -217,6 +227,20 @@ def deleteUser(db: Session, user_id: int):
 
     db.commit()
     return famUser
+
+def deleteApplication(db: Session, application_id: int):
+    application = db.query(models.FamApplication).options(
+        load_only('application_id')).filter(
+            models.FamApplication.application_id == application_id).one()
+    db.delete(application)
+
+    db.commit()
+    return application
+
+def getApplicationByName(db: Session, application_name: str):
+    application = db.query(models.FamApplication).filter(
+        models.FamApplication.application_name == application_name).one()
+    return application
 
 
 def getFamRoles(db: Session):
