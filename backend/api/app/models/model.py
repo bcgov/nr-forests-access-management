@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import (
     BigInteger,
     Column,
@@ -6,7 +7,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
-    text,
+    text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
@@ -162,7 +163,7 @@ class FamUser(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
@@ -174,7 +175,7 @@ class FamUser(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -299,7 +300,7 @@ class FamGroup(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_group_id = Column(BigInteger, index=True)
@@ -314,7 +315,7 @@ class FamGroup(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -374,10 +375,10 @@ class FamRole(Base):
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=False)
-    application_id = Column(BigInteger, nullable=False, index=True)
+    application_id = Column(BigInteger, nullable=True, index=True)
     client_number_id = Column(
         BigInteger,
-        nullable=False,
+        nullable=True,
         index=True,
         comment="Sequentially assigned number to identify a ministry client.",
     )
@@ -389,11 +390,12 @@ class FamRole(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_role_id = Column(
         BigInteger,
+        nullable=True,
         index=True,
         comment="Automatically generated key used to identify the uniqueness " +
                 "of a Role within the FAM Application",
@@ -404,7 +406,7 @@ class FamRole(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
