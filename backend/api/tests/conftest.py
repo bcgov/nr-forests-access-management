@@ -269,6 +269,7 @@ def testUserData2() -> FamUserTD:
     }
     yield userData
 
+
 @pytest.fixture(scope="function")
 def dbSession_famRoles_withdata(dbSession, testRoleData):
     db = dbSession
@@ -280,6 +281,7 @@ def dbSession_famRoles_withdata(dbSession, testRoleData):
 
     db.delete(newRole)
     db.commit()
+
 
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
@@ -315,6 +317,7 @@ def addApplication(dbSession, testApplicationData):
     db.delete(newApp)
     db.commit()
 
+
 @pytest.fixture(scope="function")
 def testApplicationData(dbSession):
     appData = {
@@ -325,24 +328,56 @@ def testApplicationData(dbSession):
     yield appData
 
 
-
 @pytest.fixture(scope="function")
 def testRoleData_asPydantic(testRoleData) -> schemas.FamRole:
     famRoleAsPydantic = schemas.FamRole(**testRoleData)
     yield famRoleAsPydantic
 
+
+@pytest.fixture(scope="function")
+def testCreateSimpleRoleData_asPydantic(testCreateSimpleRoleData) -> schemas.FamRole:
+    famRoleAsPydantic = schemas.FamRole(**testCreateSimpleRoleData)
+    yield famRoleAsPydantic
+
+
+@pytest.fixture(scope="function")
+def testCreateSimpleRoleData() -> dict:
+    roleData = {
+        "role_name": "FAM_ADMIN",
+        "role_purpose": "FAM Admin",
+        "create_user": "John Doe"
+    }
+    yield roleData
+
+
 @pytest.fixture(scope="function")
 def testRoleData() -> dict:
     roleData = {
-        "role_id": "23",
+        "role_id": 23,
         "role_name": "admin",
         "role_purpose": "admin",
-        "parent_role_id": "3",
-        "client_number_id": "2021",
-        "create_user": "John Doe",
-        "update_user": "John Doe",
+        "parent_role_id": 3,
+        "client_number_id": 2021,
+        "create_user": "John Doe"
     }
     yield roleData
+
+
+@pytest.fixture(scope="function")
+def deleteAllRoles(dbSession: session.Session) -> None:
+    """Cleans up all roles from the database after the test has been run
+
+    :param dbSession: mocked up database session
+    :type dbSession: sqlalchemy.orm.session.Session
+    """
+    LOGGER.debug(f"dbsession type: {type(dbSession)}")
+    yield
+    db = dbSession
+    famRoles = db.query(model.FamRole).all()
+    for famRole in famRoles:
+        db.delete(famRole)
+    db.commit()
+
 
 def override_get_db():
     try:
