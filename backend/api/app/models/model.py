@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column,
     ForeignKeyConstraint,
     Identity,
+    Integer,
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
@@ -360,7 +361,9 @@ class FamRole(Base):
     )
 
     role_id = Column(
-        BigInteger,
+        # Use '.with_variant' for sqlite as it does not recognize BigInteger
+        # Ref: 	https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#allowing-autoincrement-behavior-sqlalchemy-types-other-than-integer-integer
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
