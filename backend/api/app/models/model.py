@@ -31,7 +31,7 @@ class FamApplication(Base):
     )
 
     application_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             start=1,
             increment=1,
@@ -90,7 +90,7 @@ class FamForestClient(Base):
     )
 
     client_number_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -141,7 +141,7 @@ class FamUser(Base):
     )
 
     user_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -208,7 +208,7 @@ class FamApplicationClient(Base):
     )
 
     application_client_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -278,7 +278,7 @@ class FamGroup(Base):
     )
 
     group_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
