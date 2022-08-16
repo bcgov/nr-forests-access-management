@@ -1,12 +1,14 @@
+import datetime
 from sqlalchemy import (
     BigInteger,
     Column,
     ForeignKeyConstraint,
     Identity,
+    Integer,
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
-    text,
+    text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
@@ -29,7 +31,7 @@ class FamApplication(Base):
     )
 
     application_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             start=1,
             increment=1,
@@ -51,7 +53,7 @@ class FamApplication(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -61,7 +63,7 @@ class FamApplication(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -88,7 +90,7 @@ class FamForestClient(Base):
     )
 
     client_number_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -109,7 +111,7 @@ class FamForestClient(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -118,7 +120,7 @@ class FamForestClient(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -139,7 +141,7 @@ class FamUser(Base):
     )
 
     user_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -162,7 +164,7 @@ class FamUser(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
@@ -174,12 +176,12 @@ class FamUser(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
     fam_user_group_xref = relationship(
-        "FamUserGroupXref", back_populates="user", cascade="all, delete-orphan"
+        "FamUserGroupXref", back_populates="user" , cascade="all, delete-orphan"
     )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
@@ -206,7 +208,7 @@ class FamApplicationClient(Base):
     )
 
     application_client_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -228,7 +230,7 @@ class FamApplicationClient(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     application_id = Column(
@@ -242,7 +244,7 @@ class FamApplicationClient(Base):
                 "record. ",
     )
     update_date = Column(
-        String(9), server_default=text("CURRENT_DATE"), comment="ZIP code."
+        String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
     )
 
     application = relationship(
@@ -276,7 +278,7 @@ class FamGroup(Base):
     )
 
     group_id = Column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -299,7 +301,7 @@ class FamGroup(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_group_id = Column(BigInteger, index=True)
@@ -314,7 +316,7 @@ class FamGroup(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -359,7 +361,9 @@ class FamRole(Base):
     )
 
     role_id = Column(
-        BigInteger,
+        # Use '.with_variant' for sqlite as it does not recognize BigInteger
+        # Ref: 	https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#allowing-autoincrement-behavior-sqlalchemy-types-other-than-integer-integer
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
             start=1,
@@ -374,10 +378,10 @@ class FamRole(Base):
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=False)
-    application_id = Column(BigInteger, nullable=False, index=True)
+    application_id = Column(BigInteger, nullable=True, index=True)
     client_number_id = Column(
         BigInteger,
-        nullable=False,
+        nullable=True,
         index=True,
         comment="Sequentially assigned number to identify a ministry client.",
     )
@@ -389,11 +393,12 @@ class FamRole(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_role_id = Column(
         BigInteger,
+        nullable=True,
         index=True,
         comment="Automatically generated key used to identify the uniqueness " +
                 "of a Role within the FAM Application",
@@ -404,7 +409,7 @@ class FamRole(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -445,7 +450,7 @@ class FamApplicationGroupXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -454,7 +459,7 @@ class FamApplicationGroupXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -493,7 +498,7 @@ class FamGroupRoleXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -502,7 +507,7 @@ class FamGroupRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -544,7 +549,7 @@ class FamUserGroupXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -554,7 +559,7 @@ class FamUserGroupXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -602,7 +607,7 @@ class FamUserRoleXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -612,7 +617,7 @@ class FamUserRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 

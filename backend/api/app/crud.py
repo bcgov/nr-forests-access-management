@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from sqlalchemy import func
@@ -267,6 +266,19 @@ def getApplicationByName(db: Session, application_name: str):
     return application
 
 
+def createFamRole(famRole: schemas.FamRole, db: Session):
+    LOGGER.debug(f"Fam role: {famRole}")
+
+    famRoleDict = famRole.dict()
+    LOGGER.debug(f"famRoleDict: {famRoleDict}")
+
+    db_item = models.FamRole(**famRoleDict)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
 def getFamRoles(db: Session):
     """gets all the existing FAM roles
 
@@ -292,6 +304,12 @@ def getAddUser():
     user will come from the JWT token that is a result of the authentication.
     """
     return "default adduser"
+
+
+def getFamRole(db: Session, role_id: int):
+    # get a single role based on role_id
+    schemas.FamRole = db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one()
+    return schemas.FamRole
 
 
 if __name__ == "__main__":

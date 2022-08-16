@@ -285,6 +285,19 @@ def testUserData2() -> FamUserTD:
 
 
 @pytest.fixture(scope="function")
+def dbSession_famRoles_withdata(dbSession, testRoleData):
+    db = dbSession
+    # add a record to the database
+    newRole = model.FamRole(**testRoleData)
+    db.add(newRole)
+    db.commit()
+    yield db  # use the session in tests.
+
+    db.delete(newRole)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
         "user_id": 33,
@@ -298,6 +311,86 @@ def testUserData3() -> FamUserTD:
         "update_date": datetime.datetime.now(),
     }
     yield userData
+
+
+@pytest.fixture(scope="function")
+def addApplication(dbSession, testApplicationData):
+    """ This test is going to add and application record to the database and
+    then when the test is torn down it will remove that record.
+
+    Args:
+        dbSession (_type_): _description_
+        testApplicationData (_type_): _description_
+    """
+    db = dbSession
+    newApp = model.FamApplication(**testApplicationData)
+    db.add(newApp)
+    db.commit()
+    yield db  # use the session in tests.
+
+    db.delete(newApp)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
+def testApplicationData(dbSession):
+    appData = {
+        "application_name" : 'testapp',
+        "applicationdescription": "test description"
+
+    }
+    yield appData
+
+
+@pytest.fixture(scope="function")
+def testRoleData_asPydantic(testRoleData) -> schemas.FamRole:
+    famRoleAsPydantic = schemas.FamRole(**testRoleData)
+    yield famRoleAsPydantic
+
+
+@pytest.fixture(scope="function")
+def testCreateSimpleRoleData_asPydantic(testCreateSimpleRoleData) -> schemas.FamRole:
+    famRoleAsPydantic = schemas.FamRole(**testCreateSimpleRoleData)
+    yield famRoleAsPydantic
+
+
+@pytest.fixture(scope="function")
+def testCreateSimpleRoleData() -> dict:
+    roleData = {
+        "role_name": "FAM_ADMIN",
+        "role_purpose": "FAM Admin",
+        "create_user": "John Doe"
+    }
+    yield roleData
+
+
+@pytest.fixture(scope="function")
+def testRoleData() -> dict:
+    roleData = {
+        "role_id": 23,
+        "role_name": "admin",
+        "role_purpose": "admin",
+        "parent_role_id": 3,
+        "client_number_id": 2021,
+        "create_user": "John Doe"
+    }
+    yield roleData
+
+
+@pytest.fixture(scope="function")
+def deleteAllRoles(dbSession: session.Session) -> None:
+    """Cleans up all roles from the database after the test has been run
+
+    :param dbSession: mocked up database session
+    :type dbSession: sqlalchemy.orm.session.Session
+    """
+    LOGGER.debug(f"dbsession type: {type(dbSession)}")
+    yield
+    db = dbSession
+    famRoles = db.query(model.FamRole).all()
+    for famRole in famRoles:
+        db.delete(famRole)
+    db.commit()
 
 
 def override_get_db():
