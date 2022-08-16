@@ -77,7 +77,7 @@ def test_createFamApplication(dbSession, applicationData1):
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
     appData = crud.createFamApplication(famApplication=appDataAsPydantic, db=dbSession)
-    LOGGER.debug(f"appData: {}")
+    #LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
     famAppsAfter = crud.getFamApplications(dbSession)

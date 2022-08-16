@@ -104,23 +104,20 @@ class FamUserGet(FamUser):
         orm_mode = True
 
 
-class FamRoleGet(FamRole):
-    role_id: int
-    update_user: Union[str, None]
-    create_date: Union[datetime, None]
-    update_date: Union[datetime, None]
 
 
-class FamRole(BaseModel):
-    role_name: str
-    role_purpose: str
-    parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
-    application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
-    client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
-    create_user: str
+# class FamRole(BaseModel):
+#     role_name: str
+#     role_purpose: str
+#     parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
+#     application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
+#     client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
+#     create_user: str
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
+
+
 
 
 class FamRole(BaseModel):
