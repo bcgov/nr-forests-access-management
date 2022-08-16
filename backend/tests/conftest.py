@@ -8,10 +8,17 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 :yield: _description_
 :rtype: _type_
 """
+# flake8: ignore=F402
+
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# sys.path.append(os.path.dirname(__file__))
 
 import datetime
 import logging
-import os
+import sys
 import uuid
 from typing import Any, Generator, TypedDict
 
@@ -33,6 +40,13 @@ from sqlalchemy.orm import session, sessionmaker
 testSession = None
 
 LOGGER = logging.getLogger(__name__)
+
+# crud code is useful for setting up the router tests, so making
+# it available for use globally
+pytest_plugins = [
+    "fixtures.fixtures_crud_application",
+    "fixtures.fixtures_router_application",
+]
 
 
 class FamUserTD(TypedDict):

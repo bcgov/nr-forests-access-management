@@ -8,7 +8,6 @@ endPoint = f"{apiPrefix}/fam_users"
 
 
 def test_get_fam_users_nodata(testClient_fixture):
-    LOGGER.debug("here here here")
     response = testClient_fixture.get(endPoint)
     LOGGER.debug(f"endPoint: {endPoint}")
     LOGGER.debug(f"response {response}")

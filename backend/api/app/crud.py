@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
@@ -84,7 +85,7 @@ def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
         return queryResult[0] + 1
 
 
-def createFamApplication(famApplication: schemas.FamApplication, db: Session):
+def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Session):
     """used to add a new application record to the database
 
     :param famApplication: _description_
@@ -96,12 +97,24 @@ def createFamApplication(famApplication: schemas.FamApplication, db: Session):
     """
     LOGGER.debug(f"famApplication: {famApplication}")
     LOGGER.debug(f"famApplication as dict: {famApplication.dict()}")
-    pkColName = getPrimaryKey(models.FamApplication)
+
     nextVal = getNext(models.FamApplication, db)
     LOGGER.debug(f"next val: {nextVal}")
-
     famAppDict = famApplication.dict()
+    pkColName = getPrimaryKey(models.FamApplication)
     famAppDict[pkColName] = nextVal
+
+    # TODO: once integrate ian's db changes are merged, the dates will be calced
+    #       in the database
+    now = datetime.datetime.now()
+    famAppDict["create_date"] = now
+    famAppDict["update_date"] = now
+    famAppDict["update_user"] = getUpdateUser()
+    famAppDict["create_user"] = getAddUser()
+
+    # TODO: need to figure out a better way of handling application_client_id is null
+    if "application_client_id" in famAppDict:
+        del famAppDict["application_client_id"]
 
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
@@ -128,7 +141,16 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     famUserDict = famUser.dict()
     famUserDict[pkColName] = nextVal
 
+    # maybe there is a way to get the db to do this for us, but just as easy
+    # to add the dates in here.
+    now = datetime.datetime.now()
+    famUserDict["create_date"] = now
+    famUserDict["update_date"] = now
+
     LOGGER.debug(f"famUserDict: {famUserDict}")
+    LOGGER.debug(
+        f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}"
+    )
 
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
@@ -151,6 +173,10 @@ def createFamGroup(famGroup: schemas.FamGroupPost, db: Session):
     nextVal = getNext(models.FamGroup, db)
     famGroupDict = famGroup.dict()
     famGroupDict[pkColName] = nextVal
+
+    now = datetime.datetime.now()
+    famGroupDict["create_date"] = now
+    famGroupDict["update_date"] = now
 
     db_item = models.FamGroup(**famGroupDict)
     db.add(db_item)
@@ -187,6 +213,16 @@ def getFamUser(db: Session, user_id: int):
     return famUser
 
 
+def getFamApplication(db: Session, application_id: int):
+    """gets a single application"""
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_id == application_id)
+        .one()
+    )
+    return application
+
+
 def deleteUser(db: Session, user_id: int):
     """deletes a user
 
@@ -197,12 +233,38 @@ def deleteUser(db: Session, user_id: int):
     :return: _description_
     :rtype: _type_
     """
-    famUser = db.query(models.FamUser).options(
-        load_only('user_id')).filter(models.FamUser.user_id == user_id).one()
+    famUser = (
+        db.query(models.FamUser)
+        .options(load_only("user_id"))
+        .filter(models.FamUser.user_id == user_id)
+        .one()
+    )
     db.delete(famUser)
 
     db.commit()
     return famUser
+
+
+def deleteFamApplication(db: Session, application_id: int):
+    application = (
+        db.query(models.FamApplication)
+        .options(load_only("application_id"))
+        .filter(models.FamApplication.application_id == application_id)
+        .one()
+    )
+    db.delete(application)
+
+    db.commit()
+    return application
+
+
+def getApplicationByName(db: Session, application_name: str):
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_name == application_name)
+        .one()
+    )
+    return application
 
 
 def createFamRole(famRole: schemas.FamRole, db: Session):
@@ -229,6 +291,20 @@ def getFamRoles(db: Session):
     LOGGER.debug(f"db session: {db}")
     famRoles = db.query(models.FamRole).all()
     return famRoles
+
+
+def getUpdateUser():
+    """A stub method, once the api has been integrated w/ Cognito the update
+    user will come from the JWT token that is a result of the authentication.
+    """
+    return "default updateuser"
+
+
+def getAddUser():
+    """A stub method, once the api has been integrated w/ Cognito the update
+    user will come from the JWT token that is a result of the authentication.
+    """
+    return "default adduser"
 
 
 def getFamRole(db: Session, role_id: int):

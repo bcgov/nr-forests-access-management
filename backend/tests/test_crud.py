@@ -11,20 +11,6 @@ import api.app.schemas as schemas
 LOGGER = logging.getLogger(__name__)
 
 
-def test_getFamApplications_nodata(dbSession):
-    """Was a starting place to figure out crud tests that work with the database
-    session, not complete.  Assumes the database starts without any data.
-
-    :param dbSession: sql alchemy database session
-    :type dbSession: sqlalchemy.orm.Session
-    """
-    # TODO: start coding tests for crud.py code.
-    files = os.listdir(".")
-    LOGGER.debug(f"files: {files}")
-
-    famApps = crud.getFamApplications(dbSession)
-    assert famApps == []
-    LOGGER.debug(f"famApps: {famApps}")
 
 
 def test_getFamUsers_nodata(dbSession):
@@ -199,7 +185,7 @@ def test_createFamRole_withParentRole(
     childRoleData["parent_role_id"] = parentRole.role_id
     LOGGER.debug(f"Adding role: {childRoleData}.")
     childRole = crud.createFamRole(famRole=schemas.FamRole(**childRoleData), db=db)
-    
+
     assert childRole.role_name == ROLE_CHILD
     assert childRole.role_id > 0 and childRole.role_id != parentRole.role_id
     assert childRole.parent_role_id == parentRole.role_id
@@ -212,6 +198,7 @@ def test_getPrimaryKey():
     """
     pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
     assert pkColName == "user_id"
+
 
 
 def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):

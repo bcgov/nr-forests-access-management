@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -16,20 +16,22 @@ router = APIRouter()
     "/fam_applications",
     response_model=List[schemas.FamApplication],
     tags=["FAM_application"],
+    status_code=200
 )
-def get_fam_applications(db: Session = Depends(dependencies.get_db)):
+def get_fam_applications(response: Response,
+                         db: Session = Depends(dependencies.get_db)):
     """
     List of different applications that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
     queryData = crud.getFamApplications(db)
+    if len(queryData) == 0:
+        response.status_code = 204
     return queryData
 
 
 @router.post(
-    "/fam_applications",
-    response_model=schemas.FamApplication,
-    tags=["FAM_application"]
+    "/fam_applications", response_model=schemas.FamApplication, tags=["FAM_application"]
 )
 def create_fam_application(
     famApplication: schemas.FamApplicationCreate,
@@ -44,9 +46,31 @@ def create_fam_application(
     return queryData
 
 
-@router.get("/fam_users",
-            response_model=List[schemas.FamUserGet],
-            tags=["FAM_users"])
+@router.delete(
+    "/fam_applications/{application_id}",
+    response_model=schemas.FamApplication,
+    tags=["FAM_application"],
+)
+def delete_fam_application(
+    application_id: int,
+    db: Session = Depends(dependencies.get_db),
+):
+    """
+    Add Application/client to FAM
+    """
+    LOGGER.debug(f"running router ... {db}")
+    application = crud.getFamApplication(application_id=application_id, db=db)
+    if not application:
+        raise HTTPException(
+            status_code=404, detail=f"application_id={application_id} does not exist"
+        )
+    application_id = application.application_id
+    LOGGER.debug(f"application_id: {application_id}")
+    application = crud.deleteFamApplication(db=db, application_id=application_id)
+    return application
+
+
+@router.get("/fam_users", response_model=List[schemas.FamUserGet], tags=["FAM_users"])
 def get_fam_users(db: Session = Depends(dependencies.get_db)):
     """
     List of different users that are administered by FAM
@@ -56,9 +80,7 @@ def get_fam_users(db: Session = Depends(dependencies.get_db)):
     return queryData
 
 
-@router.post("/fam_users",
-             response_model=schemas.FamUserGet,
-             tags=["FAM_users"])
+@router.post("/fam_users", response_model=schemas.FamUserGet, tags=["FAM_users"])
 def create_fam_user(
     famUser: schemas.FamUser, db: Session = Depends(dependencies.get_db)
 ):
@@ -91,15 +113,14 @@ def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     user = crud.getFamUser(user_id=user_id, db=db)
     LOGGER.debug(f"user: {user}")
     if not user:
-        raise HTTPException(status_code=404,
-                            detail=f"user_id={user_id} does not exist")
+        raise HTTPException(status_code=404, detail=f"user_id={user_id} does not exist")
     user = crud.deleteUser(db=db, user_id=user_id)
     return user
 
 
-@router.get("/fam_users/{user_id}",
-            response_model=schemas.FamUserGet,
-            tags=["FAM_users"])
+@router.get(
+    "/fam_users/{user_id}", response_model=schemas.FamUserGet, tags=["FAM_users"]
+)
 def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     """
     Get a FAM user

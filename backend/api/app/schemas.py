@@ -23,6 +23,25 @@ class FamGroupGet(FamGroupPost):
     class Config:
         orm_mode = True
 
+class FamGroupPost(BaseModel):
+    group_name: str
+    purpose: str
+    create_user: str
+    parent_group_id: int
+    update_user: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamGroupGet(FamGroupPost):
+    group_id: int
+    create_date: datetime
+    update_date: datetime
+
+    class Config:
+        orm_mode = True
+
 
 class FamApplicationClient(BaseModel):
     application_client_id: int
@@ -35,25 +54,16 @@ class FamApplicationClient(BaseModel):
     class Config:
         orm_mode = True
 
-
-class FamApplication(BaseModel):
-    application_id: int
-    application_name: str
-    applicationdescription: str
-    application_client_id: int
-    create_user: str
-    create_date: datetime
-    update_user: str
-    update_date: datetime
-
-    class Config:
-        orm_mode = True
-
-
 class FamApplicationCreate(BaseModel):
     application_name: str
-    applicationdescription: str
-    application_client_id: int
+    application_description: str
+    application_client_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class FamApplication(FamApplicationCreate):
+    application_id: int
     create_user: str
     create_date: datetime
     update_user: str
@@ -61,6 +71,8 @@ class FamApplicationCreate(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 
 
 class FamUser(BaseModel):
@@ -89,9 +101,23 @@ class FamUserGet(FamUser):
     update_date: Optional[datetime]
 
     class Config:
-        """allows serialization of orm data struct"""
-
         orm_mode = True
+
+
+
+
+# class FamRole(BaseModel):
+#     role_name: str
+#     role_purpose: str
+#     parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
+#     application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
+#     client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
+#     create_user: str
+
+#     class Config:
+#         orm_mode = True
+
+
 
 
 class FamRole(BaseModel):
