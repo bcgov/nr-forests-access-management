@@ -18,7 +18,8 @@ router = APIRouter()
     tags=["FAM_application"],
     status_code=200
 )
-def get_fam_applications(response: Response, db: Session = Depends(dependencies.get_db)):
+def get_fam_applications(response: Response,
+                         db: Session = Depends(dependencies.get_db)):
     """
     List of different applications that are administered by FAM
     """
@@ -63,7 +64,9 @@ def delete_fam_application(
         raise HTTPException(
             status_code=404, detail=f"application_id={application_id} does not exist"
         )
-    application = crud.deleteApplication(db=db, application=application)
+    application_id = application.application_id
+    LOGGER.debug(f"application_id: {application_id}")
+    application = crud.deleteFamApplication(db=db, application_id=application_id)
     return application
 
 

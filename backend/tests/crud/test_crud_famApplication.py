@@ -30,7 +30,7 @@ def test_deleteFamApplications(dbSession_famApplication_withdata, applicationDat
     apps = crud.getFamApplications(db=db)
     # iterate over all of them and delete them
     for app in apps:
-        crud.deleteApplication(db=db, application_id=app.application_id)
+        crud.deleteFamApplication(db=db, application_id=app.application_id)
 
     # finally assert that there are no apps left in the database
     appsAfter = crud.getFamApplications(db=db)
@@ -41,7 +41,7 @@ def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     apps = crud.getFamApplications(db=db)
     for app in apps:
-        appById = crud.getApplication(db=db, application_id=app.application_id)
+        appById = crud.getFamApplication(db=db, application_id=app.application_id)
         assert appById.application_id == app.application_id
 
 
@@ -77,6 +77,7 @@ def test_createFamApplication(dbSession, applicationData1):
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
     appData = crud.createFamApplication(famApplication=appDataAsPydantic, db=dbSession)
+    LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
     famAppsAfter = crud.getFamApplications(dbSession)

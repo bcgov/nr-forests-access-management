@@ -179,7 +179,7 @@ class FamUser(Base):
     )
 
     fam_user_group_xref = relationship(
-        "FamUserGroupXref", back_populates="user" , cascade="all, delete-orphan"
+        "FamUserGroupXref", back_populates="user", cascade="all, delete-orphan"
     )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")

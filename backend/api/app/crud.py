@@ -107,14 +107,14 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     # TODO: once integrate ian's db changes are merged, the dates will be calced
     #       in the database
     now = datetime.datetime.now()
-    famAppDict['create_date'] = now
-    famAppDict['update_date'] = now
-    famAppDict['update_user'] = getUpdateUser()
-    famAppDict['create_user'] = getAddUser()
+    famAppDict["create_date"] = now
+    famAppDict["update_date"] = now
+    famAppDict["update_user"] = getUpdateUser()
+    famAppDict["create_user"] = getAddUser()
 
     # TODO: need to figure out a better way of handling application_client_id is null
-    if 'application_client_id' in famAppDict:
-        del famAppDict['application_client_id']
+    if "application_client_id" in famAppDict:
+        del famAppDict["application_client_id"]
 
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
@@ -213,9 +213,13 @@ def getFamUser(db: Session, user_id: int):
     return famUser
 
 
-def getApplication(db: Session, application_id: int):
+def getFamApplication(db: Session, application_id: int):
     """gets a single application"""
-    application = db.query(models.FamApplication).filter(models.FamApplication.application_id == application_id).one()
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_id == application_id)
+        .one()
+    )
     return application
 
 
@@ -229,25 +233,37 @@ def deleteUser(db: Session, user_id: int):
     :return: _description_
     :rtype: _type_
     """
-    famUser = db.query(models.FamUser).options(
-        load_only('user_id')).filter(models.FamUser.user_id == user_id).one()
+    famUser = (
+        db.query(models.FamUser)
+        .options(load_only("user_id"))
+        .filter(models.FamUser.user_id == user_id)
+        .one()
+    )
     db.delete(famUser)
 
     db.commit()
     return famUser
 
-def deleteApplication(db: Session, application_id: int):
-    application = db.query(models.FamApplication).options(
-        load_only('application_id')).filter(
-            models.FamApplication.application_id == application_id).one()
+
+def deleteFamApplication(db: Session, application_id: int):
+    application = (
+        db.query(models.FamApplication)
+        .options(load_only("application_id"))
+        .filter(models.FamApplication.application_id == application_id)
+        .one()
+    )
     db.delete(application)
 
     db.commit()
     return application
 
+
 def getApplicationByName(db: Session, application_name: str):
-    application = db.query(models.FamApplication).filter(
-        models.FamApplication.application_name == application_name).one()
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_name == application_name)
+        .one()
+    )
     return application
 
 
@@ -268,13 +284,14 @@ def getUpdateUser():
     """A stub method, once the api has been integrated w/ Cognito the update
     user will come from the JWT token that is a result of the authentication.
     """
-    return 'default updateuser'
+    return "default updateuser"
+
 
 def getAddUser():
     """A stub method, once the api has been integrated w/ Cognito the update
     user will come from the JWT token that is a result of the authentication.
     """
-    return 'default adduser'
+    return "default adduser"
 
 
 if __name__ == "__main__":
