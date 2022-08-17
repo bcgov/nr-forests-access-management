@@ -104,12 +104,32 @@ def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
     assert 0 == len(users)
 
 
+def test_getFamRoles_nodata(dbSession):
+    famRoles = crud.getFamRoles(dbSession)
+    LOGGER.debug(f"fam roles: {famRoles}")
+    assert famRoles == []
+
+
+def test_getFamRoles_withdata(dbSession_famRoles_withdata, testRoleData):
+    db = dbSession_famRoles_withdata
+    roles = crud.getFamRoles(db)
+    LOGGER.debug(f"roles: {roles}")
+    LOGGER.debug(f"number of roles: {len(roles)}")
+    # expecting the number of records in the role table to be 1
+    assert 1 == len(roles)
+
+    # checking that the expected role is in the db
+    for role in roles:
+        LOGGER.debug(f"role: {role.__dict__} {role.role_name}")
+        assert role.role_name == testRoleData["role_name"]
+
+
 def test_getPrimaryKey():
     """Testing that the method to retrieve the name of a primary key column
     on a table.
     """
     pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
-    assert pkColName == 'user_id'
+    assert pkColName == "user_id"
 
 
 def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):

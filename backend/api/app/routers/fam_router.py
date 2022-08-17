@@ -31,7 +31,7 @@ def get_fam_applications(db: Session = Depends(dependencies.get_db)):
     response_model=schemas.FamApplication,
     tags=["FAM_application"]
 )
-def get_fam_application(
+def create_fam_application(
     famApplication: schemas.FamApplicationCreate,
     db: Session = Depends(dependencies.get_db),
 ):
@@ -49,7 +49,7 @@ def get_fam_application(
             tags=["FAM_users"])
 def get_fam_users(db: Session = Depends(dependencies.get_db)):
     """
-    List of different applications that are administered by FAM
+    List of different users that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
     queryData = crud.getFamUsers(db)
@@ -102,7 +102,7 @@ def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
             tags=["FAM_users"])
 def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     """
-    Delete a FAM user
+    Get a FAM user
     """
     LOGGER.debug(f"userid is: {user_id}")
     user = crud.getFamUser(user_id=user_id, db=db)
@@ -110,15 +110,34 @@ def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     return user
 
 
-# @router.get("/fam_roles",
-#             response_model=List[schemas.FamRolesGet],
-#             tags=["FAM_Roles"])
-# def get_fam_users(db: Session = Depends(dependencies.get_db)):
-#     """
-#     List of different applications that are administered by FAM
-#     """
-#     LOGGER.debug(f"running router ... {db}")
-#     queryData = crud.getFamRoles(db)
-#     return queryData
+@router.get("/fam_roles",
+            response_model=List[schemas.FamRoleGet],
+            tags=["FAM_roles"])
+def get_fam_roles(db: Session = Depends(dependencies.get_db)):
+    """
+    List of different roles that are administered by FAM
+    """
+    LOGGER.debug(f"running router ... {db}")
+    queryData = crud.getFamRoles(db)
+    return queryData
 
 
+@router.post("/fam_roles",
+             response_model=schemas.FamRoleGet,
+             tags=["FAM_roles"])
+def create_fam_role(
+    famRole: schemas.FamRole, db: Session = Depends(dependencies.get_db)
+):
+    """
+    Add a role to FAM
+    """
+    queryData = None
+    LOGGER.debug(f"running router ... {db}")
+    try:
+        queryData = crud.createFamRole(famRole, db)
+        LOGGER.debug(f"queryData: {queryData}")
+    except IntegrityError as e:
+        LOGGER.debug(f"error: {e}")
+        raise HTTPException(status_code=422, detail=str(e))
+
+    return queryData

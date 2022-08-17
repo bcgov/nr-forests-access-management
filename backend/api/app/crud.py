@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from sqlalchemy import func
@@ -129,16 +128,7 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     famUserDict = famUser.dict()
     famUserDict[pkColName] = nextVal
 
-    # maybe there is a way to get the db to do this for us, but just as easy
-    # to add the dates in here.
-    now = datetime.datetime.now()
-    famUserDict["create_date"] = now
-    famUserDict["update_date"] = now
-
     LOGGER.debug(f"famUserDict: {famUserDict}")
-    LOGGER.debug(
-        f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}"
-    )
 
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
@@ -161,10 +151,6 @@ def createFamGroup(famGroup: schemas.FamGroupPost, db: Session):
     nextVal = getNext(models.FamGroup, db)
     famGroupDict = famGroup.dict()
     famGroupDict[pkColName] = nextVal
-
-    now = datetime.datetime.now()
-    famGroupDict["create_date"] = now
-    famGroupDict["update_date"] = now
 
     db_item = models.FamGroup(**famGroupDict)
     db.add(db_item)
@@ -219,6 +205,19 @@ def deleteUser(db: Session, user_id: int):
     return famUser
 
 
+def createFamRole(famRole: schemas.FamRole, db: Session):
+    LOGGER.debug(f"Fam role: {famRole}")
+
+    famRoleDict = famRole.dict()
+    LOGGER.debug(f"famRoleDict: {famRoleDict}")
+
+    db_item = models.FamRole(**famRoleDict)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
 def getFamRoles(db: Session):
     """gets all the existing FAM roles
 
@@ -230,6 +229,12 @@ def getFamRoles(db: Session):
     LOGGER.debug(f"db session: {db}")
     famRoles = db.query(models.FamRole).all()
     return famRoles
+
+
+def getFamRole(db: Session, role_id: int):
+    # get a single role based on role_id
+    schemas.FamRole = db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one()
+    return schemas.FamRole
 
 
 if __name__ == "__main__":
