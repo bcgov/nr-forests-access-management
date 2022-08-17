@@ -32,16 +32,6 @@ resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
   EOF
 }
 
-environment {
-    variables = {
-      DB_SECRET = "${var.db_api_creds_secretname}"
-    }
-  }
-
-tags = {
-  "managed-by" = "terraform"
-}
-
 data "aws_iam_policy_document" "fam-api_lambda_exec_policydoc" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -71,6 +61,12 @@ resource "aws_lambda_function" "fam-api" {
     subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
     security_group_ids = [data.aws_security_group.a.id]
   }
+
+  environment {
+      variables = {
+        DB_SECRET = "${var.db_api_creds_secretname}"
+      }
+    }
 
   tags = {
     "managed-by" = "terraform"
