@@ -8,6 +8,14 @@ resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
       {
         "Effect": "Allow",
         "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "${aws_secretsmanager_secret.secret_api_DB.arn}"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents",
@@ -22,6 +30,16 @@ resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
     ]
   }
   EOF
+}
+
+environment {
+    variables = {
+      DB_SECRET = "${var.db_api_creds_secretname}"
+    }
+  }
+
+tags = {
+  "managed-by" = "terraform"
 }
 
 data "aws_iam_policy_document" "fam-api_lambda_exec_policydoc" {
@@ -39,7 +57,6 @@ resource "aws_iam_role" "fam-api_lambda_exec" {
   name = "fam-api_serverless_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.fam-api_lambda_exec_policydoc.json
 }
-
 resource "aws_lambda_function" "fam-api" {
   filename      = "fam-api.zip"
   function_name = "fam-api"
