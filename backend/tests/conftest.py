@@ -31,7 +31,7 @@ from api.app.database import Base
 from api.app.main import app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import session, sessionmaker
 
@@ -72,6 +72,16 @@ def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     testSession = sessionObjects
     app.dependency_overrides[dependencies.get_db] = override_get_db
     yield app
+
+
+# This @event is important. By default FOREIGN KEY constraints have no effect on the operation of the table from SQLite.
+# It (FOREIGN KEY) only works when emitting CREATE statements for tables.
+# Reference: https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 @pytest.fixture(scope="function")

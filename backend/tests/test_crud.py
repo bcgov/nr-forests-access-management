@@ -10,9 +10,6 @@ import api.app.schemas as schemas
 
 LOGGER = logging.getLogger(__name__)
 
-
-
-
 def test_getFamUsers_nodata(dbSession):
     """queries for users on an empty database, should return an empty list
 
@@ -92,6 +89,39 @@ def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
     # assert no users in the database
     users = users = crud.getFamUsers(db)
     assert 0 == len(users)
+
+
+def test_getPrimaryKey():
+    """Testing that the method to retrieve the name of a primary key column
+    on a table.
+    """
+    pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
+    assert pkColName == "user_id"
+
+
+def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):
+    """fixture delivers a db session with one record in it, testing that
+    the getNext method returns the primary key of the current record + 1
+
+    getNext method was implemented because the unit testing uses sqllite, and
+    sqlalchemy wrapper to sqllite does not do the autoincrement / populate of
+    primary keys.
+
+    :param dbSession_famUsers_withdata: a sql alchemy database session which is
+        pre-populated with user data.
+    :type dbSession_famUsers_withdata: sqlalchemy.orm.Session
+    """
+    db = dbSession_famUsers_withdata
+    famUserModel = api.app.models.model.FamUser
+    LOGGER.debug(f"famUserModel type: {type(famUserModel)}")
+    nextValueBefore = crud.getNext(db=db, model=famUserModel)
+    assert nextValueBefore > 0
+
+    # now add record and test again that the number is greater
+    crud.createFamUser(famUser=testUserData2_asPydantic, db=db)
+
+    nextValueAfter = crud.getNext(db=db, model=famUserModel)
+    assert nextValueAfter > nextValueBefore
 
 
 def test_getFamRoles_nodata(dbSession):
@@ -192,35 +222,20 @@ def test_createFamRole_withParentRole(
     LOGGER.debug(f"Child role added: {vars(childRole)}")
 
 
-def test_getPrimaryKey():
-    """Testing that the method to retrieve the name of a primary key column
-    on a table.
-    """
-    pkColName = crud.getPrimaryKey(api.app.models.model.FamUser)
-    assert pkColName == "user_id"
+def test_createFamRole_withNoneExistingParentRole_violate_constraint(
+    testCreateSimpleRoleData_asPydantic, dbSession
+):
+    db = dbSession
 
+    # Create a role with non-existing parent_role_id
+    none_existing_parent_role_id = 999
+    roleData = testCreateSimpleRoleData_asPydantic.dict()
+    roleData["parent_role_id"] = none_existing_parent_role_id
 
-
-def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):
-    """fixture delivers a db session with one record in it, testing that
-    the getNext method returns the primary key of the current record + 1
-
-    getNext method was implemented because the unit testing uses sqllite, and
-    sqlalchemy wrapper to sqllite does not do the autoincrement / populate of
-    primary keys.
-
-    :param dbSession_famUsers_withdata: a sql alchemy database session which is
-        pre-populated with user data.
-    :type dbSession_famUsers_withdata: sqlalchemy.orm.Session
-    """
-    db = dbSession_famUsers_withdata
-    famUserModel = api.app.models.model.FamUser
-    LOGGER.debug(f"famUserModel type: {type(famUserModel)}")
-    nextValueBefore = crud.getNext(db=db, model=famUserModel)
-    assert nextValueBefore > 0
-
-    # now add record and test again that the number is greater
-    crud.createFamUser(famUser=testUserData2_asPydantic, db=db)
-
-    nextValueAfter = crud.getNext(db=db, model=famUserModel)
-    assert nextValueAfter > nextValueBefore
+    famRole = schemas.FamRole(**roleData)
+    LOGGER.debug(f"Adding role with non-existing parent_role_id-: {famRole}.")
+    with pytest.raises(IntegrityError) as e:
+        # invalid insert for the same role.
+        assert crud.createFamRole(famRole, db=db)
+    assert str(e.value).find("FOREIGN KEY constraint failed") != -1
+    LOGGER.debug(f"Expected exception raised: {e.value}")
