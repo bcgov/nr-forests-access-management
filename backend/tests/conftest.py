@@ -31,7 +31,7 @@ from api.app.database import Base
 from api.app.main import app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import session, sessionmaker
 
@@ -72,6 +72,16 @@ def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     testSession = sessionObjects
     app.dependency_overrides[dependencies.get_db] = override_get_db
     yield app
+
+
+# This @event is important. By default FOREIGN KEY constraints have no effect on the operation of the table from SQLite.
+# It (FOREIGN KEY) only works when emitting CREATE statements for tables.
+# Reference: https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 @pytest.fixture(scope="function")
@@ -212,15 +222,10 @@ def add_group(dbSession, testGroupData):
 @pytest.fixture(scope="function")
 def testGroupData():
     testGroupData = {
-        "group_id": 99,
         "group_name": "test group",
         "purpose": "testing",
         "create_user": "Brian Trotier",
-        "create_date": datetime.datetime.now(),
-        "parent_group_id": 1,
-        "client_number_id": 1,
-        "update_user": "Brian Trotier",
-        "update_date": datetime.datetime.now(),
+        "create_date": datetime.datetime.now()
     }
     return testGroupData
 
@@ -285,10 +290,10 @@ def testUserData2() -> FamUserTD:
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoles_withdata(dbSession, testRoleData):
+def dbSession_famRoles_withSimpleData(dbSession, simpleRoleData):
     db = dbSession
     # add a record to the database
-    newRole = model.FamRole(**testRoleData)
+    newRole = model.FamRole(**simpleRoleData)
     db.add(newRole)
     db.commit()
     yield db  # use the session in tests.
@@ -300,15 +305,11 @@ def dbSession_famRoles_withdata(dbSession, testRoleData):
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
-        "user_id": 33,
         "user_type": "a",
         "cognito_user_id": "zzff",
         "user_name": "Billy Smith",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
-        "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
-        "update_date": datetime.datetime.now(),
+        "create_user": "Al Arbour"
     }
     yield userData
 
@@ -343,35 +344,16 @@ def testApplicationData(dbSession):
 
 
 @pytest.fixture(scope="function")
-def testRoleData_asPydantic(testRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**testRoleData)
+def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRole:
+    famRoleAsPydantic = schemas.FamRole(**simpleRoleData)
     yield famRoleAsPydantic
 
 
 @pytest.fixture(scope="function")
-def testCreateSimpleRoleData_asPydantic(testCreateSimpleRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**testCreateSimpleRoleData)
-    yield famRoleAsPydantic
-
-
-@pytest.fixture(scope="function")
-def testCreateSimpleRoleData() -> dict:
+def simpleRoleData() -> dict:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
-        "create_user": "John Doe"
-    }
-    yield roleData
-
-
-@pytest.fixture(scope="function")
-def testRoleData() -> dict:
-    roleData = {
-        "role_id": 23,
-        "role_name": "admin",
-        "role_purpose": "admin",
-        "parent_role_id": 3,
-        "client_number_id": 2021,
         "create_user": "John Doe"
     }
     yield roleData
