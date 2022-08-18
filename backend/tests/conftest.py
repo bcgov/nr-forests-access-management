@@ -222,15 +222,10 @@ def add_group(dbSession, testGroupData):
 @pytest.fixture(scope="function")
 def testGroupData():
     testGroupData = {
-        "group_id": 99,
         "group_name": "test group",
         "purpose": "testing",
         "create_user": "Brian Trotier",
-        "create_date": datetime.datetime.now(),
-        "parent_group_id": 1,
-        "client_number_id": 1,
-        "update_user": "Brian Trotier",
-        "update_date": datetime.datetime.now(),
+        "create_date": datetime.datetime.now()
     }
     return testGroupData
 
@@ -310,15 +305,11 @@ def dbSession_famRoles_withSimpleData(dbSession, simpleRoleData):
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
-        "user_id": 33,
         "user_type": "a",
         "cognito_user_id": "zzff",
         "user_name": "Billy Smith",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
-        "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
-        "update_date": datetime.datetime.now(),
+        "create_user": "Al Arbour"
     }
     yield userData
 
