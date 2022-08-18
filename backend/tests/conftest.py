@@ -295,10 +295,10 @@ def testUserData2() -> FamUserTD:
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoles_withdata(dbSession, testRoleData):
+def dbSession_famRoles_withSimpleData(dbSession, simpleRoleData):
     db = dbSession
     # add a record to the database
-    newRole = model.FamRole(**testRoleData)
+    newRole = model.FamRole(**simpleRoleData)
     db.add(newRole)
     db.commit()
     yield db  # use the session in tests.
@@ -353,35 +353,16 @@ def testApplicationData(dbSession):
 
 
 @pytest.fixture(scope="function")
-def testRoleData_asPydantic(testRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**testRoleData)
+def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRole:
+    famRoleAsPydantic = schemas.FamRole(**simpleRoleData)
     yield famRoleAsPydantic
 
 
 @pytest.fixture(scope="function")
-def testCreateSimpleRoleData_asPydantic(testCreateSimpleRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**testCreateSimpleRoleData)
-    yield famRoleAsPydantic
-
-
-@pytest.fixture(scope="function")
-def testCreateSimpleRoleData() -> dict:
+def simpleRoleData() -> dict:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
-        "create_user": "John Doe"
-    }
-    yield roleData
-
-
-@pytest.fixture(scope="function")
-def testRoleData() -> dict:
-    roleData = {
-        "role_id": 23,
-        "role_name": "admin",
-        "role_purpose": "admin",
-        "parent_role_id": 3,
-        "client_number_id": 2021,
         "create_user": "John Doe"
     }
     yield roleData
