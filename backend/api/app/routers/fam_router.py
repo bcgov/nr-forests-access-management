@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .. import crud, dependencies, schemas
+from .. import dependencies, schemas
+from api.app.crud import crud, crud_famApplication
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def get_fam_applications(response: Response,
     List of different applications that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud.getFamApplications(db)
+    queryData = crud_famApplication.getFamApplications(db)
     if len(queryData) == 0:
         response.status_code = 204
     return queryData
@@ -41,7 +42,7 @@ def create_fam_application(
     Add Application/client to FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud.createFamApplication(famApplication, db)
+    queryData = crud_famApplication.createFamApplication(famApplication, db)
     # return queryData
     return queryData
 
@@ -59,14 +60,14 @@ def delete_fam_application(
     Add Application/client to FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    application = crud.getFamApplication(application_id=application_id, db=db)
+    application = crud_famApplication.getFamApplication(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
             status_code=404, detail=f"application_id={application_id} does not exist"
         )
     application_id = application.application_id
     LOGGER.debug(f"application_id: {application_id}")
-    application = crud.deleteFamApplication(db=db, application_id=application_id)
+    application = crud_famApplication.deleteFamApplication(db=db, application_id=application_id)
     return application
 
 
