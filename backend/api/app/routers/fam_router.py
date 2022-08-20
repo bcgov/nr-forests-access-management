@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .. import dependencies, schemas
-from api.app.crud import crud, crud_famApplication
+from api.app.crud import crud, crud_famApplication, crud_famUser
 
 LOGGER = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ def get_fam_users(db: Session = Depends(dependencies.get_db)):
     List of different users that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud.getFamUsers(db)
+    queryData = crud_famUser.getFamUsers(db)
     return queryData
 
 
@@ -91,7 +91,7 @@ def create_fam_user(
     queryData = None
     LOGGER.debug(f"running router ... {db}")
     try:
-        queryData = crud.createFamUser(famUser, db)
+        queryData = crud_famUser.createFamUser(famUser, db)
         LOGGER.debug(f"queryData: {queryData}")
     except IntegrityError as e:
         LOGGER.debug(f"error: {e}")
@@ -111,11 +111,11 @@ def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     Delete a FAM user
     """
 
-    user = crud.getFamUser(user_id=user_id, db=db)
+    user = crud_famUser.getFamUser(user_id=user_id, db=db)
     LOGGER.debug(f"user: {user}")
     if not user:
         raise HTTPException(status_code=404, detail=f"user_id={user_id} does not exist")
-    user = crud.deleteUser(db=db, user_id=user_id)
+    user = crud_famUser.deleteUser(db=db, user_id=user_id)
     return user
 
 
@@ -127,7 +127,7 @@ def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     Get a FAM user
     """
     LOGGER.debug(f"userid is: {user_id}")
-    user = crud.getFamUser(user_id=user_id, db=db)
+    user = crud_famUser.getFamUser(user_id=user_id, db=db)
     LOGGER.debug(f"userdata: {user}")
     return user
 
