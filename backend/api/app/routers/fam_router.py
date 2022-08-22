@@ -1,12 +1,12 @@
 import logging
 from typing import List
 
+from api.app.crud import crud_famApplication, crud_famRole, crud_famUser
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .. import dependencies, schemas
-from api.app.crud import crud, crud_famApplication, crud_famUser
 
 LOGGER = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     List of different roles that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud.getFamRoles(db)
+    queryData = crud_famRole.getFamRoles(db)
     return queryData
 
 
@@ -156,7 +156,7 @@ def create_fam_role(
     queryData = None
     LOGGER.debug(f"running router ... {db}")
     try:
-        queryData = crud.createFamRole(famRole, db)
+        queryData = crud_famRole.createFamRole(famRole, db)
         LOGGER.debug(f"queryData: {queryData}")
     except IntegrityError as e:
         LOGGER.debug(f"error: {e}")

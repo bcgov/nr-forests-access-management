@@ -5,7 +5,7 @@ from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
-from . import crudUtils as utils
+from . import crudUtils as crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,8 +48,8 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     :rtype: _type_
     """
     LOGGER.debug(f"Fam user: {famUser}")
-    pkColName = utils.getPrimaryKey(models.FamUser)
-    nextVal = utils.getNext(models.FamUser, db)
+    pkColName = crudUtils.getPrimaryKey(models.FamUser)
+    nextVal = crudUtils.getNext(models.FamUser, db)
 
     famUserDict = famUser.dict()
     famUserDict[pkColName] = nextVal

@@ -5,7 +5,7 @@ from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
-from . import crudUtils as utils
+from . import crudUtils as crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,10 +58,10 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     LOGGER.debug(f"famApplication: {famApplication}")
     LOGGER.debug(f"famApplication as dict: {famApplication.dict()}")
 
-    nextVal = utils.getNext(models.FamApplication, db)
+    nextVal = crudUtils.getNext(models.FamApplication, db)
     LOGGER.debug(f"next val: {nextVal}")
     famAppDict = famApplication.dict()
-    pkColName = utils.getPrimaryKey(models.FamApplication)
+    pkColName = crudUtils.getPrimaryKey(models.FamApplication)
     famAppDict[pkColName] = nextVal
 
     # TODO: once integrate ian's db changes are merged, the dates will be calced
@@ -69,8 +69,8 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     now = datetime.datetime.now()
     famAppDict["create_date"] = now
     famAppDict["update_date"] = now
-    famAppDict["update_user"] = utils.getUpdateUser()
-    famAppDict["create_user"] = utils.getAddUser()
+    famAppDict["update_user"] = crudUtils.getUpdateUser()
+    famAppDict["create_user"] = crudUtils.getAddUser()
 
     # TODO: need to figure out a better way of handling application_client_id is null
     if "application_client_id" in famAppDict:

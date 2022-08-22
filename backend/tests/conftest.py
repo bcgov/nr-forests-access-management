@@ -44,8 +44,8 @@ LOGGER = logging.getLogger(__name__)
 # crud code is useful for setting up the router tests, so making
 # it available for use globally
 pytest_plugins = [
-    "fixtures.fixtures_crud_application",
-    "fixtures.fixtures_router_application",
+    "fixtures.fixtures_crud_famApplication",
+    "fixtures.fixtures_router_famApplication",
     "fixtures.fixtures_crud_famUser"
 ]
 
