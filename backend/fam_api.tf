@@ -49,7 +49,7 @@ resource "aws_iam_role" "fam-api_lambda_exec" {
 }
 resource "aws_lambda_function" "fam-api-kv" {
   filename      = "fam-api.zip"
-  function_name = "fam-api"
+  function_name = "fam-api-kv"
   role          = aws_iam_role.fam-api_lambda_exec.arn
   handler = "app.main.handler"
 
@@ -72,9 +72,3 @@ resource "aws_lambda_function" "fam-api-kv" {
     "managed-by" = "terraform"
   }
 }
-
-
-
-
-
-
