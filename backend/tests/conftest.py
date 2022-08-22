@@ -16,16 +16,12 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 # sys.path.append(os.path.dirname(__file__))
 
-import datetime
 import logging
 import sys
-import uuid
-from typing import Any, Generator, TypedDict
+from typing import Any, Generator
 
-import api.app.crud as crud
 import api.app.dependencies as dependencies
 import api.app.models.model as model
-import api.app.schemas as schemas
 import pytest
 from api.app.database import Base
 from api.app.main import app
@@ -33,7 +29,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
@@ -44,9 +40,9 @@ LOGGER = logging.getLogger(__name__)
 # crud code is useful for setting up the router tests, so making
 # it available for use globally
 pytest_plugins = [
-    "fixtures.fixtures_crud_famApplication",
-    "fixtures.fixtures_router_famApplication",
-    "fixtures.fixtures_crud_famUser",
+    "fixtures.fixtures_crud_application",
+    "fixtures.fixtures_router_application",
+    "fixtures.fixtures_crud_user",
     "fixtures.fixtures_crud_role"
 ]
 
