@@ -1,12 +1,11 @@
 import logging.config
 import os.path
-import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
-from .routers import fam_router, router_application
+from .routers import fam_router, router_application, router_user
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -72,4 +71,5 @@ def main():
 apiPrefix = '/api/v1'
 app.include_router(fam_router.router, prefix=apiPrefix) # TODO: this will be gone after router refactoring.
 app.include_router(router_application.router, prefix=apiPrefix + '/fam_applications', tags=["FAM Applications"])
+app.include_router(router_user.router, prefix=apiPrefix + '/fam_users', tags=["FAM Users"])
 
