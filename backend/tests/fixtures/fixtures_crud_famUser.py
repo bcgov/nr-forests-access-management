@@ -6,6 +6,7 @@ from typing import TypedDict
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
+from api.app.crud import crud_famGroup as crud_famGroup
 from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
@@ -140,3 +141,24 @@ def userGroupXrefData():
         "update_date": nowdatetime,
     }
     yield xrefData
+
+@pytest.fixture(scope="function")
+def add_group(dbSession, testGroupData):
+    db = dbSession
+    groupSchema = schemas.FamGroupPost(**testGroupData)
+
+    crud_famGroup.createFamGroup(famGroup=groupSchema, db=db)
+    yield db
+
+    db.delete(testGroupData)
+    db.commit()
+
+@pytest.fixture(scope="function")
+def testGroupData():
+    testGroupData = {
+        "group_name": "test group",
+        "purpose": "testing",
+        "create_user": "Brian Trotier",
+        "create_date": datetime.datetime.now()
+    }
+    return testGroupData

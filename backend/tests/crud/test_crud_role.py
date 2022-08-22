@@ -1,25 +1,22 @@
 import logging
-import os
-
-from api.app.crud import crud, crudUtils
-import api.app.models.model
-import pytest
-from sqlalchemy.exc import IntegrityError
 
 import api.app.schemas as schemas
+import pytest
+from api.app.crud import crud_famRole
+from sqlalchemy.exc import IntegrityError
 
 LOGGER = logging.getLogger(__name__)
 
 
 def test_getFamRoles_nodata(dbSession):
-    famRoles = crud.getFamRoles(dbSession)
+    famRoles = crud_famRole.getFamRoles(dbSession)
     LOGGER.debug(f"fam roles: {famRoles}")
     assert famRoles == []
 
 
 def test_getFamRoles_withdata(dbSession_famRoles_withSimpleData, simpleRoleData):
     db = dbSession_famRoles_withSimpleData
-    roles = crud.getFamRoles(db)
+    roles = crud_famRole.getFamRoles(db)
     LOGGER.debug(f"roles: {roles}")
     LOGGER.debug(f"number of roles: {len(roles)}")
     # expecting the number of records in the role table to be 1
@@ -40,16 +37,16 @@ def test_createSimpleFamRole(
     )
 
     # get role count
-    rolesBefore = crud.getFamRoles(db)
+    rolesBefore = crud_famRole.getFamRoles(db)
     numRolesStart = len(rolesBefore)
 
-    role = crud.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
+    role = crud_famRole.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
     LOGGER.debug(f"created the role: {role}")
 
     # make sure the role that was created has the same role_name as the supplied
     assert role.role_name == simpleRoleData_asPydantic.role_name
 
-    rolesAfter = crud.getFamRoles(db)
+    rolesAfter = crud_famRole.getFamRoles(db)
     numRolesAfter = len(rolesAfter)
     assert numRolesAfter > numRolesStart
 
@@ -60,11 +57,11 @@ def test_createFamRole_withExistingRoleName_violate_constraint(
     db = dbSession
 
     # Add simple role
-    role = crud.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
+    role = crud_famRole.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
     LOGGER.debug(f"New role is added: {role.role_name} role.")
 
     # Verify new role
-    roles = crud.getFamRoles(db)
+    roles = crud_famRole.getFamRoles(db)
     filtered = list(filter(lambda role:
                     role.role_name == simpleRoleData_asPydantic.role_name,
                     roles))
@@ -74,7 +71,7 @@ def test_createFamRole_withExistingRoleName_violate_constraint(
     LOGGER.debug(f"Adding role {simpleRoleData_asPydantic.role_name} again.")
     with pytest.raises(IntegrityError) as e:
         # invalid insert for the same role.
-        assert crud.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
+        assert crud_famRole.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
     assert str(e.value).find("UNIQUE constraint failed: fam_role.role_name") != -1
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
@@ -89,7 +86,7 @@ def test_createFamRole_withParentRole(
     parentRoleData = simpleRoleData_asPydantic.dict()
     parentRoleData["role_name"] = ROLE_PARENT
     LOGGER.debug(f"Adding role: {parentRoleData}.")
-    parentRole = crud.createFamRole(famRole=schemas.FamRole(**parentRoleData), db=db)
+    parentRole = crud_famRole.createFamRole(famRole=schemas.FamRole(**parentRoleData), db=db)
 
     assert parentRole.role_name == ROLE_PARENT
     assert parentRole.role_id > 0
@@ -101,7 +98,7 @@ def test_createFamRole_withParentRole(
     childRoleData["role_name"] = ROLE_CHILD
     childRoleData["parent_role_id"] = parentRole.role_id
     LOGGER.debug(f"Adding role: {childRoleData}.")
-    childRole = crud.createFamRole(famRole=schemas.FamRole(**childRoleData), db=db)
+    childRole = crud_famRole.createFamRole(famRole=schemas.FamRole(**childRoleData), db=db)
 
     assert childRole.role_name == ROLE_CHILD
     assert childRole.role_id > 0 and childRole.role_id != parentRole.role_id
@@ -123,6 +120,6 @@ def test_createFamRole_withNoneExistingParentRole_violate_constraint(
     LOGGER.debug(f"Adding role with non-existing parent_role_id-: {famRole}.")
     with pytest.raises(IntegrityError) as e:
         # invalid insert for the same role.
-        assert crud.createFamRole(famRole, db=db)
+        assert crud_famRole.createFamRole(famRole, db=db)
     assert str(e.value).find("FOREIGN KEY constraint failed") != -1
     LOGGER.debug(f"Expected exception raised: {e.value}")
