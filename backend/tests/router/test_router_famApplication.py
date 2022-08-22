@@ -9,7 +9,7 @@ endPoint = f"{apiPrefix}/fam_applications"
 
 
 def test_get_fam_application_nodata(testClient_fixture):
-    response = testClient_fixture.get(endPoint)
+    response = testClient_fixture.get(f"{endPoint}/")
     LOGGER.debug(f"endPoint: {endPoint}")
     LOGGER.debug(f"response {response}")
     assert response.status_code == 204
@@ -19,7 +19,7 @@ def test_get_fam_application_nodata(testClient_fixture):
 
 
 def test_get_fam_application(testApplication_fixture, applicationData1):
-    response = testApplication_fixture.get(endPoint)
+    response = testApplication_fixture.get(f"{endPoint}/")
     LOGGER.debug(f"response: {response}")
     data = response.json()
     LOGGER.debug(f"data: {data}")
@@ -30,7 +30,7 @@ def test_get_fam_application(testApplication_fixture, applicationData1):
 def test_delete_fam_application(testApplication_fixture, applicationData1):
     # verfiy that a record is being returned, so we have something to
     # be deleted
-    response = testApplication_fixture.get(endPoint)
+    response = testApplication_fixture.get(f"{endPoint}/")
     LOGGER.debug(f"response: {response}")
     data = response.json()
     assert len(data) == 1
@@ -43,7 +43,7 @@ def test_delete_fam_application(testApplication_fixture, applicationData1):
     LOGGER.debug(f"response: {response.status_code}")
 
     # now verify that there are no application records
-    getResp = testApplication_fixture.get(endPoint)
+    getResp = testApplication_fixture.get(f"{endPoint}/")
     getData = getResp.json()
     assert getResp.status_code == 204
     assert getData == []
@@ -53,12 +53,12 @@ def test_post_fam_application(testClient_fixture, applicationData1):
     LOGGER.debug(f"applicationData1: {applicationData1}")
     applicationData1["create_date"] = str(applicationData1["create_date"])
     applicationData1["update_date"] = str(applicationData1["update_date"])
-    postResp = testClient_fixture.post(endPoint, json=applicationData1)
+    postResp = testClient_fixture.post(f"{endPoint}/", json=applicationData1)
     LOGGER.debug(f"resp status: {postResp.status_code}")
     assert postResp.status_code == 200
 
     # make sure that there is data in the application
-    getResp = testClient_fixture.get(endPoint)
+    getResp = testClient_fixture.get(f"{endPoint}/")
     getData = getResp.json()
     recordAdded = False
     testRecord = None
