@@ -3,7 +3,7 @@ import os
 
 import api.app.models.model as models
 import api.app.schemas as schemas
-from api.app.crud import crud_famApplication as crud_famApplication
+from api.app.crud import crud_application as crud_application
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,11 +12,11 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
     db = dbSession_famApplication_withdata
 
     LOGGER.debug(f"applicationData1: {applicationData1}")
-    application1 = crud_famApplication.getApplicationByName(
+    application1 = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
     LOGGER.debug(f"application1: {application1}")
-    apps = crud_famApplication.getFamApplications(db=db)
+    apps = crud_application.getFamApplications(db=db)
 
     assert len(apps) == 1
     assert hasattr(apps[0], "application_name")
@@ -26,27 +26,27 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
 def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     # get list of applications from the database
-    apps = crud_famApplication.getFamApplications(db=db)
+    apps = crud_application.getFamApplications(db=db)
     # iterate over all of them and delete them
     for app in apps:
-        crud_famApplication.deleteFamApplication(db=db, application_id=app.application_id)
+        crud_application.deleteFamApplication(db=db, application_id=app.application_id)
 
     # finally assert that there are no apps left in the database
-    appsAfter = crud_famApplication.getFamApplications(db=db)
+    appsAfter = crud_application.getFamApplications(db=db)
     assert len(appsAfter) == 0
 
 
 def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
-    apps = crud_famApplication.getFamApplications(db=db)
+    apps = crud_application.getFamApplications(db=db)
     for app in apps:
-        appById = crud_famApplication.getFamApplication(db=db, application_id=app.application_id)
+        appById = crud_application.getFamApplication(db=db, application_id=app.application_id)
         assert appById.application_id == app.application_id
 
 
 def test_getFamApplicationByName(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
-    app = crud_famApplication.getApplicationByName(
+    app = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
     assert app.application_name == applicationData1["application_name"]
@@ -63,23 +63,23 @@ def test_getFamApplications_nodata(dbSession):
     files = os.listdir(".")
     LOGGER.debug(f"files: {files}")
 
-    famApps = crud_famApplication.getFamApplications(dbSession)
+    famApps = crud_application.getFamApplications(dbSession)
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
 
 
 def test_createFamApplication(dbSession, applicationData1):
     # make sure we are starting off with no records
-    famApps = crud_famApplication.getFamApplications(dbSession)
+    famApps = crud_application.getFamApplications(dbSession)
     assert famApps == []
 
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
-    appData = crud_famApplication.createFamApplication(famApplication=appDataAsPydantic, db=dbSession)
+    appData = crud_application.createFamApplication(famApplication=appDataAsPydantic, db=dbSession)
     #LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
-    famAppsAfter = crud_famApplication.getFamApplications(dbSession)
+    famAppsAfter = crud_application.getFamApplications(dbSession)
     exists = False
     for famAppAfter in famAppsAfter:
         if famAppAfter.application_name == applicationData1["application_name"]:

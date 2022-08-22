@@ -6,7 +6,7 @@ from typing import TypedDict
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
-from api.app.crud import crud_famGroup as crud_famGroup
+from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
@@ -147,7 +147,7 @@ def add_group(dbSession, testGroupData):
     db = dbSession
     groupSchema = schemas.FamGroupPost(**testGroupData)
 
-    crud_famGroup.createFamGroup(famGroup=groupSchema, db=db)
+    crud_group.createFamGroup(famGroup=groupSchema, db=db)
     yield db
 
     db.delete(testGroupData)

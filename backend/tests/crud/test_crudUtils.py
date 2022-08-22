@@ -2,7 +2,7 @@
 import logging
 
 import api.app.models.model as model
-from api.app.crud import crud_famUser, crudUtils
+from api.app.crud import crud_user, crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAl
     assert nextValueBefore > 0
 
     # now add record and test again that the number is greater
-    crud_famUser.createFamUser(famUser=testUserData2_asPydantic, db=db)
+    crud_user.createFamUser(famUser=testUserData2_asPydantic, db=db)
 
     nextValueAfter = crudUtils.getNext(db=db, model=famUserModel)
     assert nextValueAfter > nextValueBefore
