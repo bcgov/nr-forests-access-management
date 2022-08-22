@@ -77,9 +77,3 @@ resource "aws_lambda_function" "fam-api" {
     "managed-by" = "terraform"
   }
 }
-
-
-
-
-
-
