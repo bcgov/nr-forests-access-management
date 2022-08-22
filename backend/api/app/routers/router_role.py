@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from api.app.crud import crud_application, crud_role, crud_user
+from api.app.crud import crud_role
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -12,9 +12,8 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/fam_roles",
-            response_model=List[schemas.FamRoleGet],
-            tags=["FAM_roles"])
+@router.get("/",
+            response_model=List[schemas.FamRoleGet])
 def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     """
     List of different roles that are administered by FAM
@@ -23,9 +22,8 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     queryData = crud_role.getFamRoles(db)
     return queryData
 
-@router.post("/fam_roles",
-             response_model=schemas.FamRoleGet,
-             tags=["FAM_roles"])
+@router.post("/",
+             response_model=schemas.FamRoleGet)
 def create_fam_role(
     famRole: schemas.FamRole, db: Session = Depends(dependencies.get_db)
 ):
