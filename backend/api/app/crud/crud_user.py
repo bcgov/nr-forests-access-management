@@ -21,7 +21,6 @@ def getFamUsers(db: Session):
     famUsers = db.query(models.FamUser).all()
     return famUsers
 
-
 def getFamUser(db: Session, user_id: int):
     """gets a specific users record
 
@@ -35,7 +34,6 @@ def getFamUser(db: Session, user_id: int):
     # get a single user based on user_id
     famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
     return famUser
-
 
 def createFamUser(famUser: schemas.FamUser, db: Session):
     """used to add a new FAM user to the database
@@ -70,7 +68,6 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     db.commit()
     # db.refresh(db_item)
     return db_item
-
 
 def deleteUser(db: Session, user_id: int):
     """deletes a user

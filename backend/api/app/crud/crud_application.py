@@ -25,7 +25,6 @@ def getFamApplications(db: Session):
     LOGGER.debug(f"famApplications: {famApps}, {type(famApps)}")
     return famApps
 
-
 def getFamApplication(db: Session, application_id: int):
     """gets a single application"""
     application = (
@@ -35,7 +34,6 @@ def getFamApplication(db: Session, application_id: int):
     )
     return application
 
-
 def getApplicationByName(db: Session, application_name: str):
     application = (
         db.query(models.FamApplication)
@@ -43,7 +41,6 @@ def getApplicationByName(db: Session, application_name: str):
         .one()
     )
     return application
-
 
 def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Session):
     """used to add a new application record to the database
@@ -83,7 +80,6 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     db.refresh(db_item)
     return db_item
 
-
 def deleteFamApplication(db: Session, application_id: int):
     application = (
         db.query(models.FamApplication)
@@ -95,7 +91,6 @@ def deleteFamApplication(db: Session, application_id: int):
 
     db.commit()
     return application
-
 
 if __name__ == "__main__":
     import database

@@ -7,7 +7,6 @@ from api.app.crud import crud_application as crud_application
 
 LOGGER = logging.getLogger(__name__)
 
-
 def test_getFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
 
@@ -22,7 +21,6 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
     assert hasattr(apps[0], "application_name")
     assert apps[0].application_name == applicationData1["application_name"]
 
-
 def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     # get list of applications from the database
@@ -35,7 +33,6 @@ def test_deleteFamApplications(dbSession_famApplication_withdata, applicationDat
     appsAfter = crud_application.getFamApplications(db=db)
     assert len(appsAfter) == 0
 
-
 def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     apps = crud_application.getFamApplications(db=db)
@@ -43,14 +40,12 @@ def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
         appById = crud_application.getFamApplication(db=db, application_id=app.application_id)
         assert appById.application_id == app.application_id
 
-
 def test_getFamApplicationByName(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     app = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
     assert app.application_name == applicationData1["application_name"]
-
 
 def test_getFamApplications_nodata(dbSession):
     """Was a starting place to figure out crud tests that work with the database
@@ -66,7 +61,6 @@ def test_getFamApplications_nodata(dbSession):
     famApps = crud_application.getFamApplications(dbSession)
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
-
 
 def test_createFamApplication(dbSession, applicationData1):
     # make sure we are starting off with no records

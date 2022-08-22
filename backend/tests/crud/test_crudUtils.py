@@ -13,7 +13,6 @@ def test_getPrimaryKey():
     pkColName = crudUtils.getPrimaryKey(model.FamUser)
     assert pkColName == "user_id"
 
-
 def test_getNext(dbSession_famUsers_withdata, testUserData2_asPydantic, deleteAllUsers):
     """fixture delivers a db session with one record in it, testing that
     the getNext method returns the primary key of the current record + 1

@@ -15,7 +15,6 @@ def test_getFamUsers_nodata(dbSession):
     LOGGER.debug(f"fam users: {famUsers}")
     assert famUsers == []
 
-
 def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
     """gets a database session which has user data inserted into it, and a
     dictionary containing the data that was added to the database
@@ -37,7 +36,6 @@ def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
         LOGGER.debug(f"user: {user.__dict__} {user.user_name}")
         assert user.user_name == testUserData3["user_name"]
 
-
 def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):
     db = dbSession
     LOGGER.debug(f"testUserData_asPydantic: {testUserData_asPydantic}")
@@ -58,7 +56,6 @@ def test_createFamUser(testUserData_asPydantic, dbSession, deleteAllUsers):
     numUsersAfter = len(usersAfter)
     assert numUsersAfter > numUsersStart
 
-
 def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData3):
     # test getting a single user
     db = dbSession_famUsers_withdata
@@ -68,7 +65,6 @@ def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData3):
     LOGGER.debug(f"famUser: {famUser.user_id}")
     crud_user.getFamUser(db=db, user_id=famUser.user_id)
     assert famUser.user_name == testUserData3["user_name"]
-
 
 def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
     db = dbSession_famUsers_withdata

@@ -12,7 +12,6 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-
 @router.get(
     "/fam_applications",
     response_model=List[schemas.FamApplication],
@@ -30,7 +29,6 @@ def get_fam_applications(response: Response,
         response.status_code = 204
     return queryData
 
-
 @router.post(
     "/fam_applications", response_model=schemas.FamApplication, tags=["FAM_application"]
 )
@@ -45,7 +43,6 @@ def create_fam_application(
     queryData = crud_application.createFamApplication(famApplication, db)
     # return queryData
     return queryData
-
 
 @router.delete(
     "/fam_applications/{application_id}",
@@ -70,7 +67,6 @@ def delete_fam_application(
     application = crud_application.deleteFamApplication(db=db, application_id=application_id)
     return application
 
-
 @router.get("/fam_users", response_model=List[schemas.FamUserGet], tags=["FAM_users"])
 def get_fam_users(db: Session = Depends(dependencies.get_db)):
     """
@@ -79,7 +75,6 @@ def get_fam_users(db: Session = Depends(dependencies.get_db)):
     LOGGER.debug(f"running router ... {db}")
     queryData = crud_user.getFamUsers(db)
     return queryData
-
 
 @router.post("/fam_users", response_model=schemas.FamUserGet, tags=["FAM_users"])
 def create_fam_user(
@@ -102,7 +97,6 @@ def create_fam_user(
 
     return queryData
 
-
 @router.delete(
     "/fam_users/{user_id}", response_model=schemas.FamUser, tags=["FAM_users"]
 )
@@ -118,7 +112,6 @@ def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     user = crud_user.deleteUser(db=db, user_id=user_id)
     return user
 
-
 @router.get(
     "/fam_users/{user_id}", response_model=schemas.FamUserGet, tags=["FAM_users"]
 )
@@ -131,7 +124,6 @@ def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     LOGGER.debug(f"userdata: {user}")
     return user
 
-
 @router.get("/fam_roles",
             response_model=List[schemas.FamRoleGet],
             tags=["FAM_roles"])
@@ -142,7 +134,6 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     LOGGER.debug(f"running router ... {db}")
     queryData = crud_role.getFamRoles(db)
     return queryData
-
 
 @router.post("/fam_roles",
              response_model=schemas.FamRoleGet,

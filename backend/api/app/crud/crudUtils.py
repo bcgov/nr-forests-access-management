@@ -22,7 +22,6 @@ def getPrimaryKey(model: models) -> str:
     LOGGER.debug(f"primary key for table {model.__table__}: {pkName}")
     return pkName
 
-
 def getHighestValue(
     model: sqlalchemy.orm.decl_api.DeclarativeMeta, columnName: str, db: Session
 ):
@@ -43,7 +42,6 @@ def getHighestValue(
     queryResult = db.query(func.max(columnObj)).first()
     LOGGER.debug(f"queryResult: {queryResult}")
     return queryResult
-
 
 def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     """calculates the next increment for the given model.  This is
@@ -69,7 +67,6 @@ def getUpdateUser():
     user will come from the JWT token that is a result of the authentication.
     """
     return "default updateuser"
-
 
 def getAddUser():
     """A stub method, once the api has been integrated w/ Cognito the update
