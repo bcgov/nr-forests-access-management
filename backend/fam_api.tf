@@ -47,9 +47,9 @@ resource "aws_iam_role" "fam-api_lambda_exec" {
   name = "fam-api_serverless_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.fam-api_lambda_exec_policydoc.json
 }
-resource "aws_lambda_function" "fam-api-kv" {
+resource "aws_lambda_function" "fam-api-mvp" {
   filename      = "fam-api.zip"
-  function_name = "fam-api-kv"
+  function_name = "fam-api-mvp"
   role          = aws_iam_role.fam-api_lambda_exec.arn
   handler = "app.main.handler"
 
