@@ -113,33 +113,33 @@ locals {
 
 # Run flyway to update the database
 
-# data "aws_lambda_invocation" "invoke_flyway" {
-#   function_name = "lambda-db-migrations"
+data "aws_lambda_invocation" "invoke_flyway" {
+  function_name = "lambda-db-migrations"
 
-#   input = <<JSON
-#   {
-#     "flywayRequest": {
-#         "flywayMethod": "MIGRATE",
-#         "placeholders": {
-#           "api_db_username" : "${local.api_db_creds.username}",
-#           "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
-#         },
-#         "target": "latest"
-#     },
-#     "dbRequest": {
-#         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
-#     },
-#     "gitRequest": {
-#         "gitRepository": "${var.github_repository}",
-#         "gitBranch": "${var.github_branch}",
-#         "folders": "server/flyway/sql"
-#     }
-#   }
-#   JSON
+  input = <<JSON
+  {
+    "flywayRequest": {
+        "flywayMethod": "MIGRATE",
+        "placeholders": {
+          "api_db_username" : "${local.api_db_creds.username}",
+          "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
+        },
+        "target": "latest"
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.database.endpoint}/${var.db_name}"
+    },
+    "gitRequest": {
+        "gitRepository": "${var.github_repository}",
+        "gitBranch": "${var.github_branch}",
+        "folders": "server/flyway/sql"
+    }
+  }
+  JSON
 
-#   depends_on = [
-#     aws_db_cluster_snapshot.fam_snapshot
-#   ]
+  depends_on = [
+    aws_db_cluster_snapshot.fam_snapshot
+  ]
 
-#   count = var.github_event == "push" ? 1 : 0
-# }
+  count = var.github_event == "push" ? 1 : 0
+}
