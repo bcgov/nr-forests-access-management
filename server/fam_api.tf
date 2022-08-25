@@ -55,10 +55,24 @@ resource "aws_lambda_function" "fam-api" {
     security_group_ids = [data.aws_security_group.a.id]
   }
 
+  environment {
+
+    variables = {
+      PG_PASSWORD = "RXaKyz0Zg5uLtkkv"
+      PG_USER = "fam_proxy_api"
+      PG_DATABASE = "${var.db_name}"
+      PG_PORT = "${data.aws_rds_cluster.database.port}"
+      PG_HOST = "${data.aws_rds_cluster.database.endpoint}"
+    }
+
+  }
+
   tags = {
     "managed-by" = "terraform"
   }
 }
+
+
 
 
 

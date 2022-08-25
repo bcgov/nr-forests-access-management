@@ -20,6 +20,3 @@ VOLUME [ "/pgdata" ]
 COPY ./sql ./sql
 COPY flyway-migrate.sh /usr/local/bin
 RUN chmod 775 /usr/local/bin/flyway-migrate.sh
-
-COPY flyway-migrate.sh /docker-entrypoint-initdb.d/
-RUN chmod 775 /docker-entrypoint-initdb.d/flyway-migrate.sh
