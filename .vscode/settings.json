@@ -4,7 +4,7 @@
         120
     ],
     "python.testing.pytestArgs": [
-        "backend"
+        "server/backend"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
