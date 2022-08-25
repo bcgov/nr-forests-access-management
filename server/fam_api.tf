@@ -55,12 +55,7 @@ resource "aws_lambda_function" "fam-api" {
     security_group_ids = [data.aws_security_group.a.id]
   }
 
-  tags = {
-    "managed-by" = "terraform"
-  }
-}
-
-environment {
+  environment {
 
     variables = {
       PG_PASSWORD = "RXaKyz0Zg5uLtkkv"
@@ -71,6 +66,13 @@ environment {
     }
 
   }
+
+  tags = {
+    "managed-by" = "terraform"
+  }
+}
+
+
 
 
 
