@@ -21,7 +21,7 @@ async def root():
     connection.autocommit = True  # Ensure data is added to the database immediately after write commands
     cursor = connection.cursor()
     cursor.execute('SELECT %s as connected;', ('Connection to postgres successful!',))
-    return {"message": get_secret}
+    return {"message": get_secret()}
 
 def get_secret():
 
