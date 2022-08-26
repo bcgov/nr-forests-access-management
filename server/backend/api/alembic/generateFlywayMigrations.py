@@ -35,6 +35,7 @@ class CreateFlywayMigraions():
                 self.createFlywayMigration(alembicMigration)
 
     def createFlywayMigration(self, alembicMigrationFilePath):
+        # TODO: finish here
 
 
     def flywayMigrationExists(self, alembicMigrationFilePath):
