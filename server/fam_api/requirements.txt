@@ -7,3 +7,5 @@ email-validator==1.2.1
 pytest==7.1.2
 requests==2.28.1
 psycopg2-binary==2.9.3
+boto3
+botocore
