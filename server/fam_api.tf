@@ -18,7 +18,7 @@ resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
             "ec2:UnassignPrivateIpAddresses"
         ],
         "Resource": "*"
-      }
+      },
       {
         "Effect": "Allow",
         "Action": [
