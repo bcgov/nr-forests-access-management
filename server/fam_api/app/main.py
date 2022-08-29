@@ -30,7 +30,7 @@ async def root():
 def get_secret():
 
     secret_name = os.environ.get('DB_SECRET')
-    # region_name = "ca-central-1"
+    region_name = "ca-central-1"
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
