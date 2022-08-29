@@ -66,7 +66,7 @@ resource "aws_lambda_function" "fam-api" {
   environment {
 
     variables = {
-      DB_SECRET = "${var.var.db_api_creds_secretname}"
+      DB_SECRET = "${var.db_api_creds_secretname}"
       PG_DATABASE = "${var.db_name}"
       PG_PORT = "${data.aws_rds_cluster.database.port}"
       PG_HOST = "${data.aws_rds_cluster.database.endpoint}"
