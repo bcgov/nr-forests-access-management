@@ -15,7 +15,7 @@ async def root():
     secret_value = get_secret()
     secret_json = json.loads(secret_value['SecretString'])
     username = secret_json['username']
-    password = secret_json['pasword']
+    password = secret_json['password']
 
     connection = psycopg2.connect(host=os.environ.get('PG_HOST'),
                                   port=os.environ.get('PG_PORT'),
