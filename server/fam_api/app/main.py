@@ -24,7 +24,7 @@ async def root():
                                   password=password)
     connection.autocommit = True  # Ensure data is added to the database immediately after write commands
     cursor = connection.cursor()
-    cursor.execute('select application_description from app_fam.fam_application where application_name = "fam";')
+    cursor.execute("select app.application_description from app_fam.fam_application app where app.application_name = 'fam';")
     return {"message": cursor.fetchone()}
 
 def get_secret():
