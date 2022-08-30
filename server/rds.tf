@@ -105,6 +105,13 @@ module "db" {
   
 }
 
+data "aws_rds_cluster" "database" {
+  cluster_identifier = var.db_cluster_identifier
+  depends_on = [
+    module.db
+  ]
+}
+
 # Begin Create DB Secret for the API database user
 
 resource "random_password" "api_db_password" {

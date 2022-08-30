@@ -82,6 +82,10 @@ resource "aws_lambda_function" "fam-api" {
 
 # Setting up database proxy for the api
 
+data "aws_secretsmanager_secret" "api_db_secret" {
+  arn = "arn:aws:secretsmanager:ca-central-1:521834415778:secret:rds-db-credentials/cluster-PHNYJBMNHD44C62N7AZIY2ICV4/fam_proxy_api-sRqbjb"
+}
+
 data "aws_iam_policy_document" "api_user_rds_proxy_secret_access_policydoc" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -100,7 +104,7 @@ resource "aws_iam_role" "api_user_rds_proxy_secret_access_role" {
 
 resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
   name   = "api_user_rds_proxy_secret_access_policy"
-  role   = aws_iam_role.fam-rds_proxy_secret_access_role.id
+  role   = aws_iam_role.api_user_rds_proxy_secret_access_role.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -122,7 +126,7 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "arn:aws:secretsmanager:ca-central-1:521834415778:secret:rds-db-credentials/cluster-PHNYJBMNHD44C62N7AZIY2ICV4/fam_proxy_api-sRqbjb"
+          "${data.aws_secretsmanager_secret.api_db_secret.arn}"
         ]
       }
     ]
@@ -133,7 +137,7 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
 module "rds_proxy" {
   source = "terraform-aws-modules/rds-proxy/aws"
 
-  role_arn = aws_iam_role.fam-rds_proxy_secret_access_role.id
+  role_arn = aws_iam_role.api_user_rds_proxy_secret_access_role.id
 
   name                   = "api_rds_proxy"
   iam_role_name          = "api_rds_proxy_role"
@@ -162,8 +166,9 @@ module "rds_proxy" {
 
   secrets = {
     "api_user" = {
-      description = "Aurora PostgreSQL API user password"
-      arn         = "arn:aws:secretsmanager:ca-central-1:521834415778:secret:rds-db-credentials/cluster-PHNYJBMNHD44C62N7AZIY2ICV4/fam_proxy_api-sRqbjb"
+      description = aws_iam_role.api_user_rds_proxy_secret_access_role.description
+      arn         = aws_iam_role.api_user_rds_proxy_secret_access_role.arn
+      kms_key_id  = aws_iam_role.api_user_rds_proxy_secret_access_role.kms_key_id
     }
   }
 
@@ -172,7 +177,7 @@ module "rds_proxy" {
 
   # Target Aurora cluster
   target_db_cluster     = true
-  db_cluster_identifier = module.db.cluster_id
+  db_cluster_identifier = data.aws_rds_cluster.database.id
 
   tags = {
     "managed-by" = "terraform"
