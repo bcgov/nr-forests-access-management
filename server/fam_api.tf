@@ -139,8 +139,8 @@ module "rds_proxy" {
 
   role_arn = aws_iam_role.api_user_rds_proxy_secret_access_role.id
 
-  name                   = "api_rds_proxy"
-  iam_role_name          = "api_rds_proxy_role"
+  name                   = "api-rds-proxy"
+  iam_role_name          = "api-rds-proxy_role"
   vpc_security_group_ids = [data.aws_security_group.a.id]
   vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
 
