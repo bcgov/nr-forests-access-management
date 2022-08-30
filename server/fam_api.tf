@@ -166,9 +166,9 @@ module "rds_proxy" {
 
   secrets = {
     "api_user" = {
-      description = aws_iam_role.api_user_rds_proxy_secret_access_role.description
-      arn         = aws_iam_role.api_user_rds_proxy_secret_access_role.arn
-      kms_key_id  = aws_iam_role.api_user_rds_proxy_secret_access_role.kms_key_id
+      description = data.aws_secretsmanager_secret.api_db_secret.description
+      arn         = data.aws_secretsmanager_secret.api_db_secret.arn
+      kms_key_id  = data.aws_secretsmanager_secret.api_db_secret.kms_key_id
     }
   }
 
