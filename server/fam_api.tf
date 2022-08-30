@@ -137,7 +137,7 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
 module "rds_proxy" {
   source = "terraform-aws-modules/rds-proxy/aws"
 
-  role_arn = aws_iam_role.api_user_rds_proxy_secret_access_role.id
+  role_arn = aws_iam_role.api_user_rds_proxy_secret_access_role.arn
 
   name                   = "api-rds-proxy"
   iam_role_name          = "api-rds-proxy_role"
