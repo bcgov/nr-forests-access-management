@@ -47,7 +47,9 @@ jobs:
           python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
-      # - name: Run Tests   
+      - name: Run Tests 
+      run: . venv/bin/activate && pytest  
+      
       #   # Activate the virtualenv in every step
       #   # because GitHub actions doesn't preserve the environment   
       #   run: |
