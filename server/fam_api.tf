@@ -69,7 +69,7 @@ resource "aws_lambda_function" "fam-api" {
       DB_SECRET = "${var.db_api_creds_secretname}"
       PG_DATABASE = "${var.db_name}"
       PG_PORT = "${data.aws_rds_cluster.database.port}"
-      PG_HOST = "${module.rds_proxy.proxy_endpoint}"
+      PG_HOST = "${aws_db_proxy.example.endpoint}"
     }
 
   }
