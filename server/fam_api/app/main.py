@@ -12,7 +12,6 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-
     secret_value = get_secret()
     secret_json = json.loads(secret_value['SecretString'])
     username = secret_json['username']
@@ -27,7 +26,7 @@ async def root():
     cursor = connection.cursor()
     cursor.execute("select app.application_description from app_fam.fam_application app where app.application_name = 'fam';")
     return {"message": cursor.fetchone()}
-    
+
 def get_secret():
 
     secret_name = os.environ.get('DB_SECRET')
@@ -41,6 +40,7 @@ def get_secret():
     )
 
     return client.get_secret_value( SecretId=secret_name )
+
 
 app.include_router(api_router, prefix="/api/v1")
 handler = Mangum(app)
