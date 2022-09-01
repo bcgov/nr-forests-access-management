@@ -69,7 +69,7 @@ resource "aws_lambda_function" "fam-api" {
       DB_SECRET = "${var.db_api_creds_secretname}"
       PG_DATABASE = "${var.db_name}"
       PG_PORT = "${data.aws_rds_cluster.database.port}"
-      PG_HOST = "${aws_db_proxy.example.endpoint}"
+      PG_HOST = "${data.aws_rds_cluster.database.endpoint}"
     }
 
   }
@@ -119,46 +119,13 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${aws_secretsmanager_secret.secret_api_DB.arn}"
+          "arn:aws:secretsmanager:ca-central-1:521834415778:secret:tmpDBSecret-r8DW39"
         ]
       }
     ]
   }
   EOF
 }
-
-# module "rds_proxy" {
-#   source = "terraform-aws-modules/rds-proxy/aws"
-
-#   role_arn = aws_iam_role.api_user_rds_proxy_secret_access_role.arn
-
-#   name                   = "fam-api-rds-proxy"
-#   vpc_security_group_ids = [data.aws_security_group.a.id]
-#   vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
-#   manage_log_group       = false
-#   create_iam_policy      = true
-#   create_iam_role        = true
-#   iam_auth = "DISABLED"
-
-#   secrets = {
-#     "api_user" = {
-#       description = aws_secretsmanager_secret.secret_api_DB.description
-#       arn         = aws_secretsmanager_secret.secret_api_DB.arn
-#       kms_key_id  = aws_secretsmanager_secret.secret_api_DB.kms_key_id
-#     }
-#   }
-
-#   engine_family = "POSTGRESQL"
-#   debug_logging = true
-
-#   # Target Aurora cluster
-#   target_db_cluster     = true
-#   db_cluster_identifier = data.aws_rds_cluster.database.id
-
-#   tags = {
-#     "managed-by" = "terraform"
-#   }
-# }
 
 resource "aws_db_proxy" "example" {
   name                   = "example"
@@ -174,7 +141,7 @@ resource "aws_db_proxy" "example" {
     auth_scheme = "SECRETS"
     description = "example"
     iam_auth    = "DISABLED"
-    secret_arn  = aws_secretsmanager_secret.secret_api_DB.arn
+    secret_arn  = "arn:aws:secretsmanager:ca-central-1:521834415778:secret:tmpDBSecret-r8DW39"
   }
 
   tags = {
@@ -196,7 +163,7 @@ resource "aws_db_proxy_default_target_group" "example" {
 }
 
 resource "aws_db_proxy_target" "example" {
-  db_cluster_identifier = data.aws_rds_cluster.database.id
+  db_cluster_identifier = "database-1"
   db_proxy_name          = aws_db_proxy.example.name
   target_group_name      = aws_db_proxy_default_target_group.example.name
 }
