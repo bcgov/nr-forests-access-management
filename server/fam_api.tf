@@ -138,7 +138,6 @@ module "rds_proxy" {
   manage_log_group       = false
   create_iam_policy      = false
   create_iam_role        = false
-  iam_auth               = "DISABLED"
 
   db_proxy_endpoints = {
     read_write = {
