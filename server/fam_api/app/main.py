@@ -13,22 +13,34 @@ app = FastAPI()
 @app.get("/")
 async def root():
 
-    ENDPOINT=os.environ.get('PG_HOST')
-    PORT=os.environ.get('PG_PORT')
-    USER=os.environ.get('PG_USER')
-    # Currently, all proxies listen on port 5432 for RDS PostgreSQL
-    REGION=5432
-    DBNAME=os.environ.get('PG_DATABASE')
+    secret_value = get_secret()
+    secret_json = json.loads(secret_value['SecretString'])
+    username = secret_json['username']
+    password = secret_json['password']
 
-    session = boto3.Session(profile_name='RDSCreds')
-    client = session.client('rds')
-    token = client.generate_db_auth_token(DBHostname=ENDPOINT, Port=PORT, DBUsername=USER, Region=REGION)
-    connection = psycopg2.connect(host=ENDPOINT, port=PORT, database=DBNAME, user=USER, password=token, sslrootcert="SSLCERTIFICATE")
-
+    connection = psycopg2.connect(host=os.environ.get('PG_HOST'),
+                                  port=os.environ.get('PG_PORT'),
+                                  dbname=os.environ.get('PG_DATABASE'),
+                                  user=username,
+                                  password=password)
     connection.autocommit = True  # Ensure data is added to the database immediately after write commands
     cursor = connection.cursor()
     cursor.execute("select app.application_description from app_fam.fam_application app where app.application_name = 'fam';")
     return {"message": cursor.fetchone()}
+    
+def get_secret():
+
+    secret_name = os.environ.get('DB_SECRET')
+    region_name = "ca-central-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    return client.get_secret_value( SecretId=secret_name )
 
 app.include_router(api_router, prefix="/api/v1")
 handler = Mangum(app)

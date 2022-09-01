@@ -58,10 +58,10 @@ resource "aws_lambda_function" "fam-api" {
   environment {
 
     variables = {
+      DB_SECRET = "${var.db_api_creds_secretname}"
       PG_DATABASE = "${var.db_name}"
+      PG_PORT = "${data.aws_rds_cluster.database.port}"
       PG_HOST = "${module.rds_proxy.proxy_endpoint}"
-      PG_USER = "${var.api_db_username}"
-      PG_REGION = "${var.aws_region.default}"
     }
 
   }
