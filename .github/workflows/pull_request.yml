@@ -45,15 +45,15 @@ jobs:
         run: |
           cd ./server/fam_api
           python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
-        if: steps.cache-venv.outputs.cache-hit != 'true' && pytest
+        if: steps.cache-venv.outputs.cache-hit != 'true'
 
-      # # Activate the virtualenv in every step
-      # # because GitHub actions doesn't preserve the environment 
-      # - name: Run Tests   
-      #   run: |
-      #     pwd
-      #     cd ./server/fam_api
-      #     . venv/bin/activate && pytest
+      # Activate the virtualenv in every step
+      # because GitHub actions doesn't preserve the environment 
+      - name: Run Tests   
+        run: |
+          pwd
+          cd ./server/fam_api
+          . venv/bin/activate && pytest
    
       - name: Create archive of dependencies
         run: |
