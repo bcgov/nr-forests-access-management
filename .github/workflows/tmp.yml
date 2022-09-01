@@ -29,10 +29,5 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
           terraform state list
-          # terraform state rm module.rds_proxy.aws_cloudwatch_log_group.this[0]
-
           terraform state rm module.rds_proxy.aws_db_proxy.this[0]
-          terraform state rm module.rds_proxy.aws_db_proxy_default_target_group.this[0]
-          terraform state rm module.rds_proxy.aws_db_proxy_endpoint.this["read_write"]
-
           terraform state list
