@@ -139,16 +139,16 @@ module "rds_proxy" {
   create_iam_policy      = false
   create_iam_role        = false
 
-  db_proxy_endpoints = {
-    read_write = {
-      name                   = "read-write-endpoint"
-      vpc_security_group_ids = [data.aws_security_group.a.id]
-      vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
-      tags = {
-        "managed-by" = "terraform"
-      }
-    }
-  }
+  # db_proxy_endpoints = {
+  #   read_write = {
+  #     name                   = "read-write-endpoint"
+  #     vpc_security_group_ids = [data.aws_security_group.a.id]
+  #     vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+  #     tags = {
+  #       "managed-by" = "terraform"
+  #     }
+  #   }
+  # }
 
   secrets = {
     "api_user" = {
