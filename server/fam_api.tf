@@ -18,6 +18,14 @@ resource "aws_iam_role_policy" "fam-api_lambda_access_policy" {
             "ec2:UnassignPrivateIpAddresses"
         ],
         "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "${aws_secretsmanager_secret.secret_api_DB.arn}"
       }
     ]
   }
@@ -94,7 +102,26 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
   {
     "Version": "2012-10-17",
     "Statement": [
-
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetRandomPassword",
+          "secretsmanager:ListSecrets"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecretVersionIds"
+        ],
+        "Resource": [
+          "${aws_secretsmanager_secret.secret_api_DB.arn}"
+        ]
+      }
     ]
   }
   EOF
@@ -111,6 +138,7 @@ module "rds_proxy" {
   manage_log_group       = false
   create_iam_policy      = false
   create_iam_role        = false
+  iam_auth               = "DISABLED"
 
   db_proxy_endpoints = {
     read_write = {
