@@ -52,6 +52,7 @@ jobs:
       - name: Run Tests   
         run: |
           pwd
+          cd ../
           cd server/fam_api
           . venv/bin/activate && pytest
    
