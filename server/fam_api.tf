@@ -69,7 +69,7 @@ resource "aws_lambda_function" "fam-api" {
       DB_SECRET = "${var.db_api_creds_secretname}"
       PG_DATABASE = "${var.db_name}"
       PG_PORT = "${data.aws_rds_cluster.database.port}"
-      PG_HOST = "${data.aws_rds_cluster.database.endpoint}"
+      PG_HOST = "${module.rds_proxy.proxy_endpoint}"
     }
 
   }
@@ -77,13 +77,6 @@ resource "aws_lambda_function" "fam-api" {
   tags = {
     "managed-by" = "terraform"
   }
-}
-
-
-# Setting up database proxy for the api
-
-data "aws_secretsmanager_secret" "api_db_secret" {
-  arn = "arn:aws:secretsmanager:ca-central-1:521834415778:secret:rds-db-credentials/cluster-PHNYJBMNHD44C62N7AZIY2ICV4/fam_proxy_api-sRqbjb"
 }
 
 data "aws_iam_policy_document" "api_user_rds_proxy_secret_access_policydoc" {
@@ -126,7 +119,7 @@ resource "aws_iam_role_policy" "api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${data.aws_secretsmanager_secret.api_db_secret.arn}"
+          "${aws_secretsmanager_secret.secret_api_DB.arn}"
         ]
       }
     ]
@@ -145,6 +138,7 @@ module "rds_proxy" {
   manage_log_group       = false
   create_iam_policy      = false
   create_iam_role        = false
+  iam_auth               = "DISABLED"
 
   db_proxy_endpoints = {
     read_write = {
@@ -154,23 +148,14 @@ module "rds_proxy" {
       tags = {
         "managed-by" = "terraform"
       }
-    },
-    read_only = {
-      name                   = "read-only-endpoint"
-      vpc_security_group_ids = [data.aws_security_group.a.id]
-      vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
-      target_role            = "READ_ONLY"
-      tags = {
-        "managed-by" = "terraform"
-      }
     }
   }
 
   secrets = {
     "api_user" = {
-      description = data.aws_secretsmanager_secret.api_db_secret.description
-      arn         = data.aws_secretsmanager_secret.api_db_secret.arn
-      kms_key_id  = data.aws_secretsmanager_secret.api_db_secret.kms_key_id
+      description = aws_secretsmanager_secret.secret_api_DB.description
+      arn         = aws_secretsmanager_secret.secret_api_DB.arn
+      kms_key_id  = aws_secretsmanager_secret.secret_api_DB.kms_key_id
     }
   }
 
