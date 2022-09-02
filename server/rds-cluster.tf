@@ -1,11 +1,11 @@
 resource "random_pet" "famdb_cluster_name" {
   prefix = "famdb-cluster"
-  length = 8
+  length = 2
 }
 
 resource "random_pet" "famdb_subnet_group_name" {
   prefix = "famdb-subnet-group"
-  length = 8
+  length = 2
 }
 
 data "aws_kms_alias" "rds_key" {
