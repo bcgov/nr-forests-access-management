@@ -20,7 +20,7 @@ podman pull postgres
 mkdir $POSTGRES_LOCAL_DATA_DIR
 
 podman run -d \
-    --name postgres-fam \
+    --name fam \
     -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
     -e PGDATA=/var/lib/postgresql/data/pgdata \
     -v $POSTGRES_LOCAL_DATA_DIR:/var/lib/postgresql/data \
@@ -31,6 +31,8 @@ podman run -d \
 ### Test the database is working
 
 `psql -d postgres -h 0.0.0.0 -U $POSTGRES_USER`
+
+quit...  `\q`
 
 # Run flyway migrations
 
@@ -59,6 +61,18 @@ run the migration is to use the `runmigratons.sh` shell script.
 
 `bash runmigratons.sh`
 
+### Run up to a specific versions
+
+flyway -user=$POSTGRES_USER \
+    -password=$POSTGRES_PASSWORD \
+    -url=jdbc:postgresql://localhost:5432/postgres \
+    -locations=filesystem:$TMP_FLYWAY_DIR \
+    -placeholders.api_db_username=fam_proxy_api \
+    -placeholders.api_db_password=fam_proxy_api \
+    -target=2 \
+    migrate
+
+
 # Reverse engineer the DataModel into SQL Alchemy datamodel
 
 * make sure the virtualenv is invoked
@@ -70,7 +84,7 @@ now, generate a new model based on what exists in the database...
 
 ```
 cd database
-sqlacodegen --schema app_fam postgresql+psycopg2://postgres:postgres@0.0.0.0/postgres  > model.py
+sqlacodegen --schema app_fam postgresql+psycopg2://postgres:postgres@0.0.0.0/postgres  > /home/kjnether/proj/fam-api/server/backend/api/app/models/model.py
 ```
 
 the *model.py* will now contain the database model as defined in the database.
@@ -82,46 +96,13 @@ the next steps:
     `dc up db`
 1. replace  backend/api/app/models/model.py with the new model.py
 1. use alembic to generate a new alembic migration
+    `alembic revision --autogenerate -m "initial schema"`
+
     ```
 
-
-    ```
-
-and then generate a new alembic migration.
 
 
 
 **note:** with the latest database migration scripts needed to upgrade
 sqlacodegen.  (requirements.txt contains the latest versions)
 
-
-
-
-
-
-# OLD / DEPRECATED - Run DDL output from ERStudio
-
-```
-mkdir sql
-cd sql
-git clone https://github.com/bcgov/nr-forests-access-management .
-psql -d postgres -h 0.0.0.0 -U postgres -f db/sql/1_initial_schema.sql
-rm -rf sql
-```
-
-
-
-## Flyway migrations using Docker/Podman - not working!
-
-The most portable way to implment this is using the flyway container.  Wasn't
-able to figure out how to make the flyway container to communicate with the
-postgres container.
-
-```
-podman pull flyway/flyway:9.0.1
-podman run flyway/flyway:9.0.1 -user=$POSTGRES_USER \
-    -password=$POSTGRES_PASSWORD \
-    -url=jdbc:postgresql://localhost:5432/postgres \
-    migrate
-
-# not working ^^ interpod network communication problem!  solution below does work

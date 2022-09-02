@@ -13,7 +13,7 @@
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.linting.flake8Args": ["--append-config=${workspaceFolder}/backend/.flake8"],
+    "python.linting.flake8Args": ["--append-config=${workspaceFolder}/server/backend/.flake8"],
     "workbench.list.openMode": "doubleClick",
 }
 

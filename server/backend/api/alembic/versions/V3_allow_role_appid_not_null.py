@@ -1,7 +1,7 @@
 """Columns to Nullable for fam_role table
 
-Revision ID: V3
-Revises: V2
+Revision ID: 1b5a533f281f
+Revises: 9f691096171b
 Create Date: 2022-08-10 13:10:46.597425
 
 """

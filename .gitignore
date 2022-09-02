@@ -45,3 +45,6 @@ junk*
 fam_api/request.json
 backend/database/fam_api-9.0.1/*
 backend/database/flyway*
+server/backend/database/flyway*
+server/backend/api/alembic/versions-modified/*
+server/backend/api/app/models/model-back.py
