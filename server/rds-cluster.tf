@@ -162,7 +162,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 resource "random_pet" "famdb_mastercreds_secret_name" {
   prefix = "famdb-mastercreds-secret"
-  length = 8
+  length = 2
 }
 
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
