@@ -93,7 +93,7 @@ resource "aws_db_instance" "famdb_cluster_ca_central_1a" {
   port                                  = "5432"
   publicly_accessible                   = "false"
   storage_encrypted                     = "true"
-  storage_type                          = "gp2"
+  storage_type                          = "standard"
   username                              = var.famdb_master_username
   password                              = random_password.db_password.result
   vpc_security_group_ids                = [data.aws_security_group.a.id]
@@ -135,7 +135,7 @@ resource "aws_db_instance" "famdb_cluster_ca_central_1b" {
   port                                  = "5432"
   publicly_accessible                   = "false"
   storage_encrypted                     = "true"
-  storage_type                          = "gp2"
+  storage_type                          = "standard"
   username                              = var.famdb_master_username
   password                              = random_password.db_password.result
   vpc_security_group_ids                = [data.aws_security_group.a.id]
