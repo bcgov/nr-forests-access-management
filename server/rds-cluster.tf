@@ -31,40 +31,55 @@ resource "random_password" "famdb_mastercreds_random_password" {
   override_special = "_%@"
 }
 
+# resource "aws_rds_cluster" "famdb_cluster" {
+#   allocated_storage                   = "1"
+#   availability_zones                  = ["ca-central-1a", "ca-central-1b"]
+#   backtrack_window                    = "0"
+#   backup_retention_period             = "7"
+#   cluster_identifier                  = random_pet.famdb_cluster_name.id
+#   cluster_members                     = [aws_db_instance.famdb_cluster_ca_central_1a.id, aws_db_instance.famdb_cluster_ca_central_1b.id]
+#   copy_tags_to_snapshot               = "true"
+#   db_cluster_parameter_group_name     = "default.aurora-postgresql13"
+#   db_subnet_group_name                = aws_db_subnet_group.famdb_subnet_group.name
+#   deletion_protection                 = "true"
+#   enable_http_endpoint                = "false"
+#   engine                              = "aurora-postgresql"
+#   engine_mode                         = "provisioned"
+#   engine_version                      = "13.7"
+#   iam_database_authentication_enabled = "false"
+#   iops                                = "0"
+#   kms_key_id                          = data.aws_kms_alias.rds_key.id
+#   master_username                     = var.famdb_master_username
+#   master_password                     = random_password.famdb_mastercreds_random_password.result
+#   port                                = "5432"
+#   preferred_backup_window             = "08:49-09:19"
+#   preferred_maintenance_window        = "wed:09:21-wed:09:51"
+
+#   serverlessv2_scaling_configuration {
+#     max_capacity = "1.0"
+#     min_capacity = "0.5"
+#   }
+
+#   storage_encrypted      = "true"
+#   vpc_security_group_ids = [data.aws_security_group.a.id]
+
+#   tags = {
+#     managed-by = "terraform"
+#   }
+# }
+
 resource "aws_rds_cluster" "famdb_cluster" {
-  allocated_storage                   = "1"
-  availability_zones                  = ["ca-central-1a", "ca-central-1b"]
-  backtrack_window                    = "0"
-  backup_retention_period             = "7"
-  cluster_identifier                  = random_pet.famdb_cluster_name.id
-  cluster_members                     = [aws_db_instance.famdb_cluster_ca_central_1a.id, aws_db_instance.famdb_cluster_ca_central_1b.id]
-  copy_tags_to_snapshot               = "true"
-  db_cluster_parameter_group_name     = "default.aurora-postgresql13"
-  db_subnet_group_name                = aws_db_subnet_group.famdb_subnet_group.name
-  deletion_protection                 = "true"
-  enable_http_endpoint                = "false"
-  engine                              = "aurora-postgresql"
-  engine_mode                         = "provisioned"
-  engine_version                      = "13.7"
-  iam_database_authentication_enabled = "false"
-  iops                                = "0"
-  kms_key_id                          = data.aws_kms_alias.rds_key.id
+  cluster_identifier = random_pet.famdb_cluster_name.id
+  engine             = "aurora-postgresql"
+  engine_mode        = "provisioned"
+  engine_version     = "13.6"
+  database_name      = random_pet.famdb_cluster_name.id
   master_username                     = var.famdb_master_username
   master_password                     = random_password.famdb_mastercreds_random_password.result
-  port                                = "5432"
-  preferred_backup_window             = "08:49-09:19"
-  preferred_maintenance_window        = "wed:09:21-wed:09:51"
 
   serverlessv2_scaling_configuration {
-    max_capacity = "1.0"
-    min_capacity = "0.5"
-  }
-
-  storage_encrypted      = "true"
-  vpc_security_group_ids = [data.aws_security_group.a.id]
-
-  tags = {
-    managed-by = "terraform"
+    max_capacity = 1.0
+    min_capacity = 0.5
   }
 }
 
@@ -187,7 +202,7 @@ resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" 
   secret_string = <<EOF
    {
     "username": "${var.famdb_master_username}",
-    "password": "${random_password.random_password.result}"
+    "password": "${random_password.famdb_mastercreds_random_password.result}"
    }
 EOF
 }
