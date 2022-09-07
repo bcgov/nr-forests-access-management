@@ -43,10 +43,11 @@ line flyway.
 The current solution is running a bash script that generates temporary versions
 of the sql, with variables being dereferenced.
 
-## Get flyway commandline
+## Get flyway command line tool
 
 flyway can be downloaded from: https://flywaydb.org/download/community
 
+**OR**
 
 ### Get the flyway cli for linux / wsl
 
@@ -97,7 +98,6 @@ the next steps:
 1. replace  backend/api/app/models/model.py with the new model.py
 1. use alembic to generate a new alembic migration
     `alembic revision --autogenerate -m "initial schema"`
-
     ```
 
 

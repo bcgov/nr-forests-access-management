@@ -1,8 +1,8 @@
-"""post_orm_model_patching
+"""post alembic migrations
 
 Revision ID: V5
 Revises: V4
-Create Date: 2022-09-02 12:05:56.440606
+Create Date: 2022-09-07 16:26:10.600110
 
 """
 from alembic import op
