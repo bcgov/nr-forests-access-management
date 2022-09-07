@@ -576,13 +576,24 @@ class FamUserRoleXref(Base):
         ForeignKeyConstraint(
             ["user_id"], ["app_fam.fam_user.user_id"], name="reffam_user10"
         ),
-        PrimaryKeyConstraint("user_id", "role_id", name="fam_usr_rle_pk"),
-        {
-            "comment": "User Role Xref is a cross-reference object that allows for the "
-            "identification of Roles assigned to a user, as well as the users "
-            "that belong to a given Role",
-            "schema": "app_fam",
-        },
+        PrimaryKeyConstraint("user_role_xref_id", name="fam_usr_rle_xrf_pk"),
+        UniqueConstraint("user_id", "role_id",
+                         name="fam_usr_rle_usr_id_rle_id_uk")
+    )
+
+    user_role_xref_id = Column(
+        BigInteger().with_variant(Integer, "sqlite"),
+        Identity(
+            always=True,
+            start=1,
+            increment=1,
+            minvalue=1,
+            maxvalue=9223372036854775807,
+            cycle=False,
+            cache=1,
+        ),
+        comment="Automatically generated key used to identify the uniqueness "
+                "of a FamUserRoleXref within the FAM Application"
     )
 
     user_id = Column(
