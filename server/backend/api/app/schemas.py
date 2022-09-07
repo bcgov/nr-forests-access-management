@@ -23,6 +23,7 @@ class FamGroupGet(FamGroupPost):
     class Config:
         orm_mode = True
 
+
 class FamGroupPost(BaseModel):
     group_name: str
     purpose: str
@@ -54,6 +55,7 @@ class FamApplicationClient(BaseModel):
     class Config:
         orm_mode = True
 
+
 class FamApplicationCreate(BaseModel):
     application_name: str
     application_description: str
@@ -61,6 +63,7 @@ class FamApplicationCreate(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class FamApplication(FamApplicationCreate):
     application_id: int
@@ -71,8 +74,6 @@ class FamApplication(FamApplicationCreate):
 
     class Config:
         orm_mode = True
-
-
 
 
 class FamUser(BaseModel):
@@ -95,15 +96,6 @@ class FamUser(BaseModel):
         orm_mode = True
 
 
-class FamUserGet(FamUser):
-    user_id: int
-    create_date: datetime
-    update_date: Optional[datetime]
-
-    class Config:
-        orm_mode = True
-
-
 class FamRole(BaseModel):
     role_name: str
     role_purpose: str
@@ -111,6 +103,17 @@ class FamRole(BaseModel):
     application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
     client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
     create_user: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamUserGet(FamUser):
+    user_id: int
+    create_date: datetime
+    update_date: Optional[datetime]
+
+    role: Union[FamRole, None]
 
     class Config:
         orm_mode = True
@@ -127,4 +130,24 @@ class FamRoleGet(FamRole):
     class Config:
         """allows serialization of orm data struct"""
 
+        orm_mode = True
+
+
+# Role assignment with one role at a time for the user.
+class FamUserRoleAssignmentCreate(BaseModel):
+    user_name: str
+    user_type: str
+    role_id: int
+    client_number_id: Union[int, None]  # Forest Client ID
+
+    class Config:
+        orm_mode = True
+
+
+class FamUserRoleAssignmentGet(BaseModel):
+    user_role_xref_id: int
+    user_id: int
+    role_id: int
+
+    class Config:
         orm_mode = True

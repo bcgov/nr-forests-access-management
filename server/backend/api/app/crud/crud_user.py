@@ -9,6 +9,7 @@ from . import crudUtils as crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
+
 def getFamUsers(db: Session):
     """return all the users currently entered into the application
 
@@ -20,6 +21,7 @@ def getFamUsers(db: Session):
     LOGGER.debug(f"db session: {db}")
     famUsers = db.query(models.FamUser).all()
     return famUsers
+
 
 def getFamUser(db: Session, user_id: int):
     """gets a specific users record
@@ -34,6 +36,17 @@ def getFamUser(db: Session, user_id: int):
     # get a single user based on user_id
     famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
     return famUser
+
+
+def getFamUserByDomainAndName(db: Session, user_type: str, user_name: str):
+    # get a single user based on unique combination of user_name and user_type.
+    famUser = db.query(models.FamUser).filter(
+                models.FamUser.user_type == user_type
+                and
+                models.FamUser.user_name == user_name
+              ).one()
+    return famUser
+
 
 def createFamUser(famUser: schemas.FamUser, db: Session):
     """used to add a new FAM user to the database
@@ -68,6 +81,7 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     db.commit()
     # db.refresh(db_item)
     return db_item
+
 
 def deleteUser(db: Session, user_id: int):
     """deletes a user
