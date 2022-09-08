@@ -8,7 +8,7 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.defaultInterpreterPath": "./backend/venv/bin/python",
+    "python.defaultInterpreterPath": "./server/backend/venv/bin/python",
     "python.pythonPath": "./backend/venv/bin/python",
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
