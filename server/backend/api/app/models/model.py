@@ -102,7 +102,7 @@ class FamForestClient(Base):
         ),
         comment="Sequentially assigned number to identify a ministry client.",
     )
-    client_name = Column(String(100), nullable=False)
+    client_name = Column(String(100), nullable=True)
     create_user = Column(
         String(30),
         nullable=False,
@@ -154,7 +154,7 @@ class FamUser(Base):
         comment="Automatically generated key used to identify the "
                 "uniqueness of a User within the FAM Application",
     )
-    user_type = Column(String(1), nullable=False)
+    user_type = Column(String(10), nullable=False)
     user_name = Column(String(100), nullable=False)
     create_user = Column(
         String(30),
