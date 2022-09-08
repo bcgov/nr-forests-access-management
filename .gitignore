@@ -47,3 +47,5 @@ backend/database/fam_api-9.0.1/*
 backend/database/flyway*
 server/fam-api.zip
 server/localtest.auto.tfvars
+aurora/.terraform.lock.hcl
+aurora/aurora.hcl
