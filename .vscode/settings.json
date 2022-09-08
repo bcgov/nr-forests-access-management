@@ -4,17 +4,18 @@
         120
     ],
     "python.testing.pytestArgs": [
-        "server/backend"
+        ""
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.defaultInterpreterPath": "./backend/venv/bin/python",
-    "python.pythonPath": "./backend/venv/bin/python",
+    "python.defaultInterpreterPath": "./server/backend/venv/bin/python",
+    "python.pythonPath": "./server/backend/venv/bin/python",
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
     "python.linting.flake8Args": ["--append-config=${workspaceFolder}/server/backend/.flake8"],
     "workbench.list.openMode": "doubleClick",
+    "python.testing.cwd": "./server/backend",
 }
 
 
