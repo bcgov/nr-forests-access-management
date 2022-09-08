@@ -3,6 +3,4 @@ verbose
 ignore=E24,W504
 max-line-length=88
 per-file-ignores =
-    server/backend/tests/conftest.py: E402
-    server/backend/api/app/models/model.py: E501
-
+    backend/tests/conftest.py: E402

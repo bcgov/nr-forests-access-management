@@ -2,7 +2,7 @@ FROM postgres:14.4
 
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=test
-ENV POSTGRES_PORT=5342
+ENV POSTGRES_PORT=5432
 ENV POSTGRES_HOST_AUTH_METHOD=trust
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -20,6 +20,3 @@ VOLUME [ "/pgdata" ]
 COPY ./sql ./sql
 COPY flyway-migrate.sh /usr/local/bin
 RUN chmod 775 /usr/local/bin/flyway-migrate.sh
-
-COPY flyway-migrate.sh /docker-entrypoint-initdb.d/
-RUN chmod 775 /docker-entrypoint-initdb.d/flyway-migrate.sh
