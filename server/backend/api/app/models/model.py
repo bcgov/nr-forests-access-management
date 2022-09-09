@@ -578,7 +578,8 @@ class FamUserRoleXref(Base):
         ),
         PrimaryKeyConstraint("user_role_xref_id", name="fam_usr_rle_xrf_pk"),
         UniqueConstraint("user_id", "role_id",
-                         name="fam_usr_rle_usr_id_rle_id_uk")
+                         name="fam_usr_rle_usr_id_rle_id_uk"),
+        {"schema": "app_fam"}  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
     )
 
     user_role_xref_id = Column(
