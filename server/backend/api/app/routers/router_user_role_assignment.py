@@ -27,5 +27,5 @@ def create_user_role_assignment(
         userRoleAssignmentRequset,
         db
     )
-    LOGGER.debug(f"User/Role assignment executed successfully, id: ${createData.user_role_xref_id}")
+    LOGGER.debug(f"User/Role assignment executed successfully, id: {createData.user_role_xref_id}")
     return createData
