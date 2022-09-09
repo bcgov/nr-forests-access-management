@@ -38,14 +38,17 @@ def getFamUser(db: Session, user_id: int):
     return famUser
 
 
-def getFamUserByDomainAndName(db: Session, user_type: str, user_name: str):
+def getFamUserByDomainAndName(
+    db: Session, user_type: str, user_name: str
+) -> models.FamUser:
     # get a single user based on unique combination of user_name and user_type.
-    famUser = db.query(models.FamUser).filter(
+    fam_user: models.FamUser = db.query(models.FamUser).filter(
                 models.FamUser.user_type == user_type
                 and
                 models.FamUser.user_name == user_name
-              ).one()
-    return famUser
+              ).one_or_none()
+    LOGGER.debug(f"fam_user {str(fam_user.user_id) + ' found' if fam_user else 'not found'}.")
+    return fam_user
 
 
 def createFamUser(famUser: schemas.FamUser, db: Session):
@@ -59,23 +62,8 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     :rtype: _type_
     """
     LOGGER.debug(f"Fam user: {famUser}")
-    pkColName = crudUtils.getPrimaryKey(models.FamUser)
-    nextVal = crudUtils.getNext(models.FamUser, db)
 
     famUserDict = famUser.dict()
-    famUserDict[pkColName] = nextVal
-
-    # maybe there is a way to get the db to do this for us, but just as easy
-    # to add the dates in here.
-    now = datetime.datetime.now()
-    famUserDict["create_date"] = now
-    famUserDict["update_date"] = now
-
-    LOGGER.debug(f"famUserDict: {famUserDict}")
-    LOGGER.debug(
-        f"famAppDict: {famUserDict['create_date']} {famUserDict['update_date']}"
-    )
-
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
     db.commit()

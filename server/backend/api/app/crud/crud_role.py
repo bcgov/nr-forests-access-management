@@ -1,4 +1,3 @@
-
 import logging
 
 from api.app.models import model as models
@@ -8,10 +7,12 @@ from .. import schemas
 
 LOGGER = logging.getLogger(__name__)
 
-def getFamRole(db: Session, role_id: int):
+
+def getFamRole(db: Session, role_id: int) -> models.FamRole:
     # get a single role based on role_id
-    schemas.FamRole = db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one()
-    return schemas.FamRole
+    return db.query(models.FamRole).filter(
+        models.FamRole.role_id == role_id).one()
+
 
 def getFamRoles(db: Session):
     """gets all the existing FAM roles
@@ -25,6 +26,7 @@ def getFamRoles(db: Session):
     famRoles = db.query(models.FamRole).all()
     return famRoles
 
+
 def createFamRole(famRole: schemas.FamRole, db: Session):
     LOGGER.debug(f"Fam role: {famRole}")
 
@@ -36,4 +38,3 @@ def createFamRole(famRole: schemas.FamRole, db: Session):
     db.commit()
     db.refresh(db_item)
     return db_item
-
