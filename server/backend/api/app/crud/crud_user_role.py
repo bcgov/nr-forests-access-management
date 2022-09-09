@@ -50,7 +50,7 @@ def createFamUserRoleAssignment(
     )
     if fam_user_role_xref:
         LOGGER.debug(
-            f"User/Role already exists with id: {fam_user_role_xref.user_role_xref_id}."
+            f"User/Role assignment already exists with id: {fam_user_role_xref.user_role_xref_id}."
         )
         return fam_user_role_xref
 
@@ -129,7 +129,7 @@ def createFamUserRoleAssignment(
 
 
 def getUserRolebyUserIdAndRoleId(
-    db, user_id: int, role_id: int
+    db: Session, user_id: int, role_id: int
 ) -> models.FamUserRoleXref:
     famUserRole = (
         db.query(models.FamUserRoleXref)
@@ -137,7 +137,7 @@ def getUserRolebyUserIdAndRoleId(
             models.FamUserRoleXref.user_id == user_id
             and models.FamUserRoleXref.role_id == role_id
         )
-        .one()
+        .one_or_none()
     )
     return famUserRole
 
