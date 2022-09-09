@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
+
+from . import constants as famConstants
 
 
 class FamGroupPost(BaseModel):
@@ -77,20 +79,12 @@ class FamApplication(FamApplicationCreate):
 
 
 class FamUser(BaseModel):
-    user_type: str
+    user_type: famConstants.UserType
     cognito_user_id: Optional[str]  # temporarily optional
     user_name: str
-    user_guid: str
-    # create_user: EmailStr
+    user_guid: Optional[str]
     create_user: str
-    update_user: str
-
-    @validator("user_type")
-    def user_type_length(cls, v):
-        if len(v) > 1:
-            raise ValueError(f"value for user_type provided was {v}, " +
-                             "user_type length cannot exceed 1 character")
-        return v.title()
+    update_user: Optional[str]
 
     class Config:
         orm_mode = True
@@ -136,7 +130,7 @@ class FamRoleGet(FamRole):
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
-    user_type: str
+    user_type: famConstants.UserType
     role_id: int
     client_number_id: Union[int, None]  # Forest Client ID
 
