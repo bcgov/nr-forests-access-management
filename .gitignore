@@ -47,6 +47,8 @@ backend/database/fam_api-9.0.1/*
 backend/database/flyway*
 server/fam-api.zip
 server/localtest.auto.tfvars
+aurora/.terraform.lock.hcl
+aurora/aurora.hcl
 server/backend/database/flyway*
 server/backend/api/alembic/versions-modified/*
 server/backend/api/app/models/model-back.py
