@@ -10,6 +10,10 @@ data "aws_secretsmanager_secret" "db_flyway_api_creds" {
 
 data "aws_secretsmanager_secret_version" "db_flyway_api_creds_current" {
   secret_id = data.aws_secretsmanager_secret.db_flyway_api_creds.id
+
+  depends_on = [
+    aws_secretsmanager_secret_version.famdb_apicreds_secret_version
+  ]
 }
 
 data "aws_rds_cluster" "flyway_database" {
@@ -92,13 +96,13 @@ data "aws_iam_policy_document" "flyway_exec_policydoc" {
 }
 
 resource "aws_iam_role" "flyway_exec" {
-  name = "${random_pet.flyway_lambda_name.id}-role"
+  name               = "${random_pet.flyway_lambda_name.id}-role"
   assume_role_policy = data.aws_iam_policy_document.flyway_exec_policydoc.json
 }
 
 resource "aws_lambda_function" "flyway-migrations" {
   filename      = "${path.module}/flyway/flyway-all.jar"
-  function_name = "${random_pet.flyway_lambda_name.id}"
+  function_name = random_pet.flyway_lambda_name.id
   role          = aws_iam_role.flyway_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
@@ -116,12 +120,12 @@ resource "aws_lambda_function" "flyway-migrations" {
   }
 
   memory_size = 512
-  timeout = 240
+  timeout     = 240
 
   environment {
     variables = {
-      DB_SECRET = "${data.aws_secretsmanager_secret.db_flyway_master_creds.name}"
-      FLYWAY_MIXED = "false"
+      DB_SECRET      = "${data.aws_secretsmanager_secret.db_flyway_master_creds.name}"
+      FLYWAY_MIXED   = "false"
       FLYWAY_SCHEMAS = "flyway,app_fam"
     }
   }
@@ -136,7 +140,7 @@ resource "aws_lambda_function" "flyway-migrations" {
 resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
   db_cluster_identifier          = data.aws_rds_cluster.flyway_database.id
   db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
-  count = var.github_event == "push" ? 1 : 0
+  count                          = var.github_event == "push" ? 1 : 0
 }
 
 # Need to grab the username and password from the database so they can go into the scripts
@@ -148,7 +152,7 @@ locals {
 # Run flyway to update the database
 
 data "aws_lambda_invocation" "invoke_flyway_migration" {
-  function_name = "${aws_lambda_function.flyway-migrations.function_name}"
+  function_name = aws_lambda_function.flyway-migrations.function_name
 
   input = <<JSON
   {
