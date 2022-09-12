@@ -1,7 +1,7 @@
 """drop composit id and use Surrogate key for user_role_xref
 
-Revision ID: 71107ef642e9
-Revises: e579238143a5
+Revision ID: V6
+Revises: V5
 Create Date: 2022-09-02 16:04:41.639586
 
 """
@@ -12,8 +12,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = '71107ef642e9'
-down_revision = 'e579238143a5'
+revision = 'V6'
+down_revision = 'V5'
 branch_labels = None
 depends_on = None
 

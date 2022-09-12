@@ -7,8 +7,8 @@ insert forest-client record on the fly.
 This field should be come mandatory once FAM fully integrated with
 forest-client api. 
 
-Revision ID: e2729cfc8443
-Revises: 71107ef642e9
+Revision ID: V7
+Revises: V6
 Create Date: 2022-09-07 15:18:57.924679
 
 """
@@ -18,8 +18,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = 'e2729cfc8443'
-down_revision = '71107ef642e9'
+revision = 'V7'
+down_revision = 'V6'
 branch_labels = None
 depends_on = None
 

@@ -1,7 +1,7 @@
 """increase user_type length
 
-Revision ID: a186ab9c88d8
-Revises: e2729cfc8443
+Revision ID: V8
+Revises: V7
 Create Date: 2022-09-08 14:27:01.084891
 
 """
@@ -11,8 +11,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = "a186ab9c88d8"
-down_revision = "e2729cfc8443"
+revision = "V8"
+down_revision = "V7"
 branch_labels = None
 depends_on = None
 
