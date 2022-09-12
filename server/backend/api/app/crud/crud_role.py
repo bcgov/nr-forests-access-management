@@ -1,4 +1,5 @@
 import logging
+from typing import List, Optional
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session
@@ -8,13 +9,13 @@ from .. import schemas
 LOGGER = logging.getLogger(__name__)
 
 
-def getFamRole(db: Session, role_id: int) -> models.FamRole:
+def getFamRole(db: Session, role_id: int) -> Optional[models.FamRole]:
     # get a single role based on role_id
     return db.query(models.FamRole).filter(
-        models.FamRole.role_id == role_id).one()
+        models.FamRole.role_id == role_id).one_or_none()
 
 
-def getFamRoles(db: Session):
+def getFamRoles(db: Session) -> List[models.FamRole]:
     """gets all the existing FAM roles
 
     :param db: _description_
@@ -23,11 +24,10 @@ def getFamRoles(db: Session):
     :rtype: _type_
     """
     LOGGER.debug(f"db session: {db}")
-    famRoles = db.query(models.FamRole).all()
-    return famRoles
+    return db.query(models.FamRole).all()
 
 
-def createFamRole(famRole: schemas.FamRole, db: Session):
+def createFamRole(famRole: schemas.FamRole, db: Session) -> models.FamRole:
     LOGGER.debug(f"Fam role: {famRole}")
 
     famRoleDict = famRole.dict()
@@ -38,3 +38,17 @@ def createFamRole(famRole: schemas.FamRole, db: Session):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def getFamRoleByRoleName(
+    db: Session, role_name: str
+) -> Optional[models.FamRole]:
+    """
+    Gets FAM roles by unique role_name
+    """
+    LOGGER.debug(f"Getting FamRole by role_name: {role_name}")
+    return (
+        db.query(models.FamRole)
+        .filter(models.FamRole.role_name == role_name)
+        .one_or_none()
+    )

@@ -6,6 +6,7 @@ from api.app.models import model as models
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,14 +63,23 @@ def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     else:
         return queryResult[0] + 1
 
+
 def getUpdateUser():
     """A stub method, once the api has been integrated w/ Cognito the update
     user will come from the JWT token that is a result of the authentication.
     """
     return "default updateuser"
 
+
 def getAddUser():
     """A stub method, once the api has been integrated w/ Cognito the update
     user will come from the JWT token that is a result of the authentication.
     """
     return "default adduser"
+
+
+def raiseHTTPException(status_code: str, error_msg: str):
+    LOGGER.error(error_msg)
+    raise HTTPException(
+        status_code=status_code, detail=error_msg
+    )
