@@ -161,7 +161,7 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
         "target": "latest"
     },
     "dbRequest": {
-        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.flyway_database.endpoint}/${data.aws_rds_cluster.flyway_database.endpoint.database_name}"
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.flyway_database.endpoint}/${data.aws_rds_cluster.flyway_database.database_name}"
     },
     "gitRequest": {
         "gitRepository": "${var.github_repository}",
