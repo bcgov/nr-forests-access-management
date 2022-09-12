@@ -98,7 +98,7 @@ resource "aws_iam_role" "flyway_exec" {
 
 resource "aws_lambda_function" "flyway-migrations" {
   filename      = "${path.module}/flyway/flyway-all.jar"
-  function_name = "flyway-migrations"
+  function_name = "${flyway_lambda_name.id}"
   role          = aws_iam_role.flyway_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
@@ -142,21 +142,21 @@ resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
 # Need to grab the username and password from the database so they can go into the scripts
 
 locals {
-  api_db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_api_creds_current.secret_string)
+  flyway_db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_api_creds_current.secret_string)
 }
 
 # Run flyway to update the database
 
-data "aws_lambda_invocation" "invoke_flyway" {
-  function_name = "lambda-db-migrations"
+data "aws_lambda_invocation" "invoke_flyway_migration" {
+  function_name = "${aws_lambda_function.flyway-migrations.function_name}"
 
   input = <<JSON
   {
     "flywayRequest": {
         "flywayMethod": "MIGRATE",
         "placeholders": {
-          "api_db_username" : "${local.api_db_creds.username}",
-          "api_db_password" : "md5${md5(join("", [local.api_db_creds.password, local.api_db_creds.username]))}"
+          "api_db_username" : "${local.flyway_db_creds.username}",
+          "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}"
         },
         "target": "latest"
     },

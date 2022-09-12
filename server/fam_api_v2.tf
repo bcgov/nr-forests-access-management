@@ -1,6 +1,6 @@
 # Looking up a few things so they can be changed for this file in one place only
 
-data "aws_secretsmanager_secret" "db_api_creds" {
+data "aws_secretsmanager_secret" "db_api_creds_secret" {
   name = aws_secretsmanager_secret.famdb_apicreds_secret.name
 }
 
@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
           "secretsmanager:DescribeSecret",
           "secretsmanager:GetSecretValue"
         ],
-        "Resource": "${data.aws_secretsmanager_secret.db_api_creds.arn}"
+        "Resource": "${data.aws_secretsmanager_secret.db_api_creds_secret.arn}"
       }
     ]
   }
@@ -87,7 +87,7 @@ resource "aws_lambda_function" "fam-api-function" {
   environment {
 
     variables = {
-      DB_SECRET = "${data.aws_secretsmanager_secret.db_api_creds.name}"
+      DB_SECRET = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
       PG_PORT = "${data.aws_rds_cluster.api_database.port}"
       PG_HOST = "${data.aws_rds_cluster.api_database.endpoint}"
