@@ -41,7 +41,7 @@ def createFamUserRoleAssignment(
             **{
                 "user_type": request.user_type,
                 "user_name": request.user_name,
-                "create_user": famConstants.FAM_SYSTEM_USER,
+                "create_user": famConstants.FAM_PROXY_API_USER,
             }
         )
         fam_user = crud_user.createFamUser(requestUser, db)
@@ -81,11 +81,12 @@ def createFamUserRoleAssignment(
                 **{
                     "client_number_id": request.client_number_id,
                     "client_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
-                    "create_user": famConstants.FAM_SYSTEM_USER,
+                    "create_user": famConstants.FAM_PROXY_API_USER,
                 }
             )
             db.add(new_fam_forest_client)
             db.flush()
+            forest_client = new_fam_forest_client
             LOGGER.debug(
                 f"New Forest Client {new_fam_forest_client.client_number_id} added."
             )
@@ -101,7 +102,7 @@ def createFamUserRoleAssignment(
             # Note, later implementation for forest-client child role will be based on a
             # boolean column from the parent role that requires forest-client child role.
             child_role = crud_role.createFamRole(
-                schemas.FamRole(
+                schemas.FamRole(**
                     {
                         "parent_role_id": fam_role.role_id,
                         "application_id": fam_role.application_id,
@@ -114,9 +115,10 @@ def createFamUserRoleAssignment(
                             forest_client.client_name,
                             request.client_number_id,
                         ),
+                        "create_user": famConstants.FAM_PROXY_API_USER
                     }
                 ),
-                db,
+                db
             )
             LOGGER.debug(
                 f"Child role {child_role.role_id} added for parent role "
@@ -140,11 +142,11 @@ def createFamUserRoleAssignment(
         return fam_user_role_xref
 
     # Finally, assign user with role/child-role
-    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(**
         {
             "user_id": fam_user.user_id,
             "role_id": associate_role_id,
-            "create_user": famConstants.FAM_SYSTEM_USER,
+            "create_user": famConstants.FAM_PROXY_API_USER,
         }
     )
     db.add(new_fam_user_role)
