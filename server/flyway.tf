@@ -98,7 +98,7 @@ resource "aws_iam_role" "flyway_exec" {
 
 resource "aws_lambda_function" "flyway-migrations" {
   filename      = "${path.module}/flyway/flyway-all.jar"
-  function_name = "${flyway_lambda_name.id}"
+  function_name = "${random_pet.flyway_lambda_name.id}"
   role          = aws_iam_role.flyway_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"

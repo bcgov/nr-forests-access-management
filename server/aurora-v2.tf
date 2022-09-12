@@ -207,7 +207,7 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${aws_secretsmanager_secret.famdb_mastercreds_secret.arn}"
+          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}"
         ]
       }
     ]
@@ -216,7 +216,7 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
 }
 
 resource "aws_db_proxy" "famdb_proxy_api" {
-  name                   = "${random_pet.famdb_cluster_name.id}-fam-proxy-api"
+  name                   = "${random_pet.famdb_cluster_name.id}-fam-api-proxy-api"
   debug_logging          = false
   engine_family          = "POSTGRESQL"
   idle_client_timeout    = 1800
