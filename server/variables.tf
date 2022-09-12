@@ -67,19 +67,3 @@ variable "db_api_creds_secretname" {
   default     = "fam_api_db_creds2"
   sensitive   = true
 }
-
-variable "github_repository" {
-  type = string
-}
-
-variable "github_branch" {
-  type = string
-}
-
-variable "github_commit" {
-  type = string
-}
-
-variable "github_event" {
-  type = string
-}

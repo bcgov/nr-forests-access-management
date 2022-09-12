@@ -1,0 +1,101 @@
+# Looking up a few things so they can be changed for this file in one place only
+
+data "aws_secretsmanager_secret" "db_api_creds" {
+  name = aws_secretsmanager_secret.famdb_apicreds_secret.name
+}
+
+data "aws_rds_cluster" "api_database" {
+  cluster_identifier = random_pet.famdb_cluster_name.id
+  depends_on = [
+    module.aurora_postgresql_v2
+  ]
+}
+
+# Random names to allow multiple instances per workspace
+
+resource "random_pet" "api_lambda_name" {
+  prefix = "fam-api-lambda"
+  length = 2
+}
+
+
+resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
+  name   = "${random_pet.api_lambda_name.id}-access-policy"
+  role   = aws_iam_role.fam-api_lambda_exec.id
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "ec2:CreateNetworkInterface",
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:DeleteNetworkInterface",
+            "ec2:AssignPrivateIpAddresses",
+            "ec2:UnassignPrivateIpAddresses"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "${data.aws_secretsmanager_secret.db_api_creds.arn}"
+      }
+    ]
+  }
+  EOF
+}
+
+data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "fam_api_lambda_exec" {
+  name = "${random_pet.api_lambda_name.id}-role"
+  assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
+}
+
+resource "aws_lambda_function" "fam-api-function" {
+  filename      = "fam-api.zip"
+  function_name = "${random_pet.api_lambda_name.id}"
+  role          = aws_iam_role.fam_api_lambda_exec.arn
+  handler = "app.main.handler"
+
+  source_code_hash = filebase64sha256("fam-api.zip")
+
+  runtime = "python3.8"
+
+  vpc_config {
+    subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+    security_group_ids = [data.aws_security_group.a.id]
+  }
+
+  environment {
+
+    variables = {
+      DB_SECRET = "${data.aws_secretsmanager_secret.db_api_creds.name}"
+      PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
+      PG_PORT = "${data.aws_rds_cluster.api_database.port}"
+      PG_HOST = "${data.aws_rds_cluster.api_database.endpoint}"
+    }
+
+  }
+
+  tags = {
+    "managed-by" = "terraform"
+  }
+}

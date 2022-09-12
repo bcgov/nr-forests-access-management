@@ -13,8 +13,8 @@ data "aws_kms_alias" "rds_key" {
 }
 
 resource "random_password" "famdb_master_password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
@@ -60,6 +60,7 @@ module "aurora_postgresql_v2" {
   engine_mode       = "provisioned"
   engine_version    = data.aws_rds_engine_version.postgresql.version
   storage_encrypted = true
+  database_name     = var.famdb_database_name
 
   vpc_id                 = data.aws_vpc.selected.id
   vpc_security_group_ids = [data.aws_security_group.a.id]
@@ -133,8 +134,9 @@ EOF
 }
 
 resource "random_password" "famdb_api_password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 variable "famdb_api_username" {
@@ -177,7 +179,7 @@ data "aws_iam_policy_document" "famdb_api_user_rds_proxy_secret_access_policydoc
 }
 
 resource "aws_iam_role" "famdb_api_user_rds_proxy_secret_access_role" {
-  name = "${random_pet.famdb_cluster_name.id}-api-proxy-role"
+  name               = "${random_pet.famdb_cluster_name.id}-api-proxy-role"
   assume_role_policy = data.aws_iam_policy_document.famdb_api_user_rds_proxy_secret_access_policydoc.json
 }
 
