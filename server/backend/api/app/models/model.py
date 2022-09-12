@@ -92,7 +92,6 @@ class FamForestClient(Base):
     client_number_id = Column(
         BigInteger().with_variant(Integer, "sqlite"),
         Identity(
-            always=True,
             start=1,
             increment=1,
             minvalue=1,
