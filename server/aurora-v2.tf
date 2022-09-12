@@ -15,6 +15,7 @@ data "aws_kms_alias" "rds_key" {
 resource "random_password" "famdb_master_password" {
   length  = 16
   special = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 variable "famdb_master_username" {
