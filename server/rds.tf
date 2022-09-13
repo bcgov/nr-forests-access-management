@@ -1,28 +1,3 @@
-data "aws_vpc" "selected" {
-  state = "available"
-}
-
-data "aws_subnet" "a" {
-  filter {
-    name   = "tag:Name"
-    values = [var.subnet_a]
-  }
-}
-
-data "aws_subnet" "b" {
-  filter {
-    name   = "tag:Name"
-    values = [var.subnet_b]
-  }
-}
-
-data "aws_security_group" "a" {
-  filter {
-    name   = "tag:Name"
-    values = [var.aws_security_group_a]
-  }
-}
-
 # BEGIN CREATE RANDOM PASSWORD FOR RDS MASTER USER
 
 resource "random_password" "db_password" {

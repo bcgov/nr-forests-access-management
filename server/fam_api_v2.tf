@@ -84,8 +84,8 @@ resource "aws_lambda_function" "fam-api-function" {
   runtime = "python3.8"
 
   vpc_config {
-    subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
-    security_group_ids = [data.aws_security_group.a.id]
+    vpc_security_group_ids = [data.aws_security_group.sg_app.id]
+    vpc_subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
   }
 
   environment {

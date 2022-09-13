@@ -28,6 +28,22 @@ variable "subnet_b" {
   default     = "Data_Dev_azb_net"
 }
 
+
+variable "aws_security_group_app" {
+  description = "Value of the name tag for the security group in AZ a"
+  default     = "App_sg"
+}
+
+variable "subnet_app_a" {
+  description = "Value of the name tag for the subnet in AZ a"
+  default     = "App_Dev_aza_net"
+}
+
+variable "subnet_app_b" {
+  description = "Value of the name tag for the subnet in AZ b"
+  default     = "App_Dev_azb_net"
+}
+
 variable "db_cluster_identifier" {
   description = "The name of the database cluster instance"
   type        = string
