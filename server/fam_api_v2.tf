@@ -11,6 +11,10 @@ data "aws_rds_cluster" "api_database" {
   ]
 }
 
+data "aws_db_proxy" "api_lambda_db_proxy" {
+  name = aws_db_proxy.famdb_proxy_api.name
+}
+
 # Random names to allow multiple instances per workspace
 
 resource "random_pet" "api_lambda_name" {
@@ -65,15 +69,15 @@ data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
 }
 
 resource "aws_iam_role" "fam_api_lambda_exec" {
-  name = "${random_pet.api_lambda_name.id}-role"
+  name               = "${random_pet.api_lambda_name.id}-role"
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
 
 resource "aws_lambda_function" "fam-api-function" {
   filename      = "fam-api.zip"
-  function_name = "${random_pet.api_lambda_name.id}"
+  function_name = random_pet.api_lambda_name.id
   role          = aws_iam_role.fam_api_lambda_exec.arn
-  handler = "app.main.handler"
+  handler       = "app.main.handler"
 
   source_code_hash = filebase64sha256("fam-api.zip")
 
@@ -87,10 +91,13 @@ resource "aws_lambda_function" "fam-api-function" {
   environment {
 
     variables = {
-      DB_SECRET = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
+      DB_SECRET   = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
-      PG_PORT = "${data.aws_rds_cluster.api_database.port}"
-      PG_HOST = "${data.aws_rds_cluster.api_database.endpoint}"
+      #   PG_PORT = "${data.aws_rds_cluster.api_database.port}"
+      # Postgresql proxy always uses 5432
+      PG_PORT = "5432"
+      #   PG_HOST = "${data.aws_rds_cluster.api_database.endpoint}"
+      PG_HOST = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
     }
 
   }
