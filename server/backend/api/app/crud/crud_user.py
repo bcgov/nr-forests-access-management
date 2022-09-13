@@ -61,13 +61,13 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     :return: _description_
     :rtype: _type_
     """
-    LOGGER.debug(f"Fam user: {famUser}")
+    LOGGER.debug(f"Creating Fam_User: {famUser}")
 
     famUserDict = famUser.dict()
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
-    db.commit()
-    # db.refresh(db_item)
+    # db.commit()
+    db.flush()
     return db_item
 
 

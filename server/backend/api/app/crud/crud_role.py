@@ -28,15 +28,14 @@ def getFamRoles(db: Session) -> List[models.FamRole]:
 
 
 def createFamRole(famRole: schemas.FamRole, db: Session) -> models.FamRole:
-    LOGGER.debug(f"Fam role: {famRole}")
+    LOGGER.debug(f"Creating Fam role: {famRole}")
 
     famRoleDict = famRole.dict()
-    LOGGER.debug(f"famRoleDict: {famRoleDict}")
-
     db_item = models.FamRole(**famRoleDict)
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    # db.commit()
+    # db.refresh(db_item)
+    db.flush()
     return db_item
 
 

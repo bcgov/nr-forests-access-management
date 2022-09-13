@@ -88,7 +88,7 @@ def createFamUserRoleAssignment(
             db.flush()
             forest_client = new_fam_forest_client
             LOGGER.debug(
-                f"New Forest Client {new_fam_forest_client.client_number_id} added."
+                f"New Forest Client {forest_client.client_number_id} added."
             )
 
         # Verify if Forest Client role exist
@@ -96,7 +96,7 @@ def createFamUserRoleAssignment(
             db,
             constructForestClientRoleName(fam_role.role_name, request.client_number_id),
         )
-        LOGGER.debug(f"forest_client_child_roles: {forest_client_child_role}")
+        LOGGER.debug(f"forest_client_child_roles for role_name {fam_role.role_name}: {forest_client_child_role}")
 
         if not forest_client_child_role:
             # Note, later implementation for forest-client child role will be based on a
@@ -121,8 +121,7 @@ def createFamUserRoleAssignment(
                 db
             )
             LOGGER.debug(
-                f"Child role {child_role.role_id} added for parent role "
-                "{fam_role.role_name}(${child_role.parent_role_id})."
+                f"Child role {child_role.role_id} added for parent role {fam_role.role_name}({child_role.parent_role_id})."
             )
 
         else:
@@ -150,6 +149,7 @@ def createFamUserRoleAssignment(
         }
     )
     db.add(new_fam_user_role)
+    LOGGER.debug(f"Creating new user/role assignment for {new_fam_user_role.__dict__}")
     db.commit()
     return new_fam_user_role
 
