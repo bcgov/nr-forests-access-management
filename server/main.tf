@@ -16,6 +16,21 @@ provider "aws" {
   }
 }
 
+variable "target_env" {
+  description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
+}
+
+variable "target_aws_account_id" {
+  description = "AWS workload account id"
+}
+
+variable "aws_region" {
+  description = "AWS region for all resources."
+
+  type    = string
+  default = "ca-central-1"
+}
+
 # Commented out all the Node.js and Dynamo stuff to preserve sanity
 
 # resource "random_pet" "lambda_bucket_name" {
