@@ -7,10 +7,16 @@ Backend API for Forest Access Management
 ## install dependencies
 
 ```
-cd backend
+cd server/backend
 python3 -m venv venv
 . ./venv/bin/activate
 pip install -r requirements.txt
+```
+
+install the development dependencies (linter/formatters/utilities/etc)
+
+```
+pip install -r requirements-dev.txt
 ```
 ### potential gotchas running pip install above:
 
@@ -26,7 +32,7 @@ sudo apt-get install python3-dev
 ## run the api - locally for development
 
 ```
-cd backend
+cd server/backend
 
 # run the backend postgres db
 docker-compose up db
