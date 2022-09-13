@@ -155,7 +155,7 @@ resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_apicreds_secret_version" {
-  secret_id     = aws_secretsmanager_secret.famdb_mastercreds_secret.id
+  secret_id     = aws_secretsmanager_secret.famdb_apicreds_secret.id
   secret_string = <<EOF
    {
     "username": "${var.famdb_api_username}",
