@@ -149,8 +149,8 @@ def createFamUserRoleAssignment(
         }
     )
     db.add(new_fam_user_role)
+    db.flush()
     LOGGER.debug(f"Creating new user/role assignment for {new_fam_user_role.__dict__}")
-    db.commit()
     return new_fam_user_role
 
 
