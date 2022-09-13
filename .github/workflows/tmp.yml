@@ -28,7 +28,8 @@ jobs:
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
           EOF
           terraform init -backend-config=backend.hcl
-          terraform state list
+          # terraform state list
           # terraform state rm aws_secretsmanager_secret.famdb_mastercreds_secret
           # terraform state rm aws_secretsmanager_secret_version.famdb_mastercreds_secret_version
           # terraform state list
+          terraform destroy
