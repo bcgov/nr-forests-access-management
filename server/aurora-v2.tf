@@ -220,7 +220,7 @@ resource "aws_db_proxy" "famdb_proxy_api" {
   debug_logging          = false
   engine_family          = "POSTGRESQL"
   idle_client_timeout    = 1800
-  require_tls            = true
+  require_tls            = false
   role_arn               = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
   vpc_security_group_ids = [data.aws_security_group.sg_app.id]
   vpc_subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
@@ -245,7 +245,6 @@ resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
     init_query                   = "SET x=1, y=2"
     max_connections_percent      = 100
     max_idle_connections_percent = 50
-    session_pinning_filters      = []
   }
 }
 
