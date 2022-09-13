@@ -116,7 +116,7 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
-  name = "${random_pet.famdb_cluster_name.id}_master_creds_secretname"
+  name = "${random_pet.famdb_cluster_name.id}_master_creds"
 
   tags = {
     managed-by = "terraform"
@@ -147,7 +147,7 @@ variable "famdb_api_username" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
-  name = "${random_pet.famdb_cluster_name.id}_api_creds_secretname"
+  name = "${random_pet.famdb_cluster_name.id}_api_creds"
 
   tags = {
     managed-by = "terraform"
