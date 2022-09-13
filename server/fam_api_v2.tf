@@ -21,7 +21,7 @@ resource "random_pet" "api_lambda_name" {
 
 resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
   name   = "${random_pet.api_lambda_name.id}-access-policy"
-  role   = aws_iam_role.fam-api_lambda_exec.id
+  role   = aws_iam_role.fam_api_lambda_exec.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",

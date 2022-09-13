@@ -139,7 +139,7 @@ resource "aws_lambda_function" "flyway-migrations" {
 
 resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
   db_cluster_identifier          = data.aws_rds_cluster.flyway_database.id
-  db_cluster_snapshot_identifier = "pipeline-${var.github_branch}-${var.github_commit}"
+  db_cluster_snapshot_identifier = "pre-flyway-${var.github_branch}-${var.github_commit}"
   count                          = var.github_event == "push" ? 1 : 0
 }
 
