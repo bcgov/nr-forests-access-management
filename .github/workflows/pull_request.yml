@@ -34,16 +34,16 @@ jobs:
         uses: actions/cache@v2
         id: cache-venv # name for referring later
         with:
-          path: server/fam_api/venv # what we cache: the Virtual ENV
+          path: server/backend/venv # what we cache: the Virtual ENV
           # The cache key depends on requirements.txt
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/server/fam_api/requirements*.txt') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/server/backend/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
 
        # Step-4 Build a Virtual ENV, but only if it doesn't already exist
       - name: Activate Virtual ENV
         run: |
-          cd ./server/fam_api
+          cd ./server/backend
           python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
@@ -56,12 +56,12 @@ jobs:
    
       - name: Create archive of dependencies
         run: |
-          cd server/fam_api/venv/lib/python3.8/site-packages
+          cd server/backend/venv/lib/python3.8/site-packages
           zip -r9 ../../../../../fam-api.zip .
 
       - name: Add API files to Zip file
         run: |
-          cd server/fam_api
+          cd server/backend
           zip -u ../fam-api.zip -r app/
           cd ..
 
