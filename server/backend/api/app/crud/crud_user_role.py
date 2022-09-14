@@ -7,7 +7,7 @@ from api.app.models import model as models
 from sqlalchemy.orm import Session
 
 from .. import schemas
-from . import crud_role, crud_user, crudUtils
+from . import crud_role, crud_user, crud_forest_client, crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,19 +33,7 @@ def createFamUserRoleAssignment(
         crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
 
     # Determine if user already exists or add a new user.
-    fam_user = crud_user.getFamUserByDomainAndName(
-        db, request.user_type, request.user_name
-    )
-    if not fam_user:
-        requestUser = schemas.FamUser(
-            **{
-                "user_type": request.user_type,
-                "user_name": request.user_name,
-                "create_user": famConstants.FAM_PROXY_API_USER,
-            }
-        )
-        fam_user = crud_user.createFamUser(requestUser, db)
-    LOGGER.debug(f"User for user_role assignment: {fam_user.user_id}.")
+    fam_user = crud_user.findOrCreate(db, request.user_type, request.user_name)
 
     # Verify if role exists.
     fam_role = crud_role.getFamRole(db, request.role_id)
@@ -62,48 +50,24 @@ def createFamUserRoleAssignment(
             f"Forest Client Id {request.client_number_id} present "
             "in request to assign a forest client role."
         )
-        forest_client: models.FamForestClient = (
-            db.query(models.FamForestClient)
-            .filter(
-                models.FamForestClient.client_number_id == request.client_number_id
-            )
-            .one_or_none()
-        )
 
-        # Note, current mvp implementation is: if Forest Client does not exist, insert one.
-        # Later when fully integrated with forest-client api then it can be verified against the source.
-        if not forest_client:
-            LOGGER.debug(
-                f"Forest Client with Id {request.client_number_id} "
-                "does not exist, add a new Forest Client."
-            )
-            new_fam_forest_client: models.FamForestClient = models.FamForestClient(
-                **{
-                    "client_number_id": request.client_number_id,
-                    "client_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
-                    "create_user": famConstants.FAM_PROXY_API_USER,
-                }
-            )
-            db.add(new_fam_forest_client)
-            db.flush()
-            forest_client = new_fam_forest_client
-            LOGGER.debug(
-                f"New Forest Client {forest_client.client_number_id} added."
-            )
+        forest_client = crud_forest_client.findOrCreate(db, request.client_number_id)
 
         # Verify if Forest Client role exist
         forest_client_child_role = crud_role.getFamRoleByRoleName(
             db,
             constructForestClientRoleName(fam_role.role_name, request.client_number_id),
         )
-        LOGGER.debug(f"forest_client_child_roles for role_name {fam_role.role_name}: {forest_client_child_role}")
+        LOGGER.debug(
+            f"forest_client_child_roles for role_name '{fam_role.role_name}': {forest_client_child_role}"
+        )
 
         if not forest_client_child_role:
             # Note, later implementation for forest-client child role will be based on a
             # boolean column from the parent role that requires forest-client child role.
             child_role = crud_role.createFamRole(
-                schemas.FamRole(**
-                    {
+                schemas.FamRoleCreate(
+                    **{
                         "parent_role_id": fam_role.role_id,
                         "application_id": fam_role.application_id,
                         "client_number_id": request.client_number_id,
@@ -115,10 +79,10 @@ def createFamUserRoleAssignment(
                             forest_client.client_name,
                             request.client_number_id,
                         ),
-                        "create_user": famConstants.FAM_PROXY_API_USER
+                        "create_user": famConstants.FAM_PROXY_API_USER,
                     }
                 ),
-                db
+                db,
             )
             LOGGER.debug(
                 f"Child role {child_role.role_id} added for parent role {fam_role.role_name}({child_role.parent_role_id})."
@@ -141,8 +105,8 @@ def createFamUserRoleAssignment(
         return fam_user_role_xref
 
     # Finally, assign user with role/child-role
-    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(**
-        {
+    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+        **{
             "user_id": fam_user.user_id,
             "role_id": associate_role_id,
             "create_user": famConstants.FAM_PROXY_API_USER,

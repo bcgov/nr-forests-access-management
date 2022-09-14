@@ -25,7 +25,7 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
 @router.post("/",
              response_model=schemas.FamRoleGet)
 def create_fam_role(
-    famRole: schemas.FamRole, db: Session = Depends(dependencies.get_db)
+    famRole: schemas.FamRoleCreate, db: Session = Depends(dependencies.get_db)
 ):
     """
     Add a role to FAM

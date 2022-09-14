@@ -21,8 +21,8 @@ def dbSession_famRoles_withSimpleData(dbSession, simpleRoleData):
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**simpleRoleData)
+def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRoleCreate:
+    famRoleAsPydantic = schemas.FamRoleCreate(**simpleRoleData)
     yield famRoleAsPydantic
 
 

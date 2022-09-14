@@ -27,14 +27,12 @@ def getFamRoles(db: Session) -> List[models.FamRole]:
     return db.query(models.FamRole).all()
 
 
-def createFamRole(famRole: schemas.FamRole, db: Session) -> models.FamRole:
+def createFamRole(famRole: schemas.FamRoleCreate, db: Session) -> models.FamRole:
     LOGGER.debug(f"Creating Fam role: {famRole}")
 
     famRoleDict = famRole.dict()
     db_item = models.FamRole(**famRoleDict)
     db.add(db_item)
-    # db.commit()
-    # db.refresh(db_item)
     db.flush()
     return db_item
 

@@ -1,11 +1,10 @@
-import datetime
 import logging
 
+from api.app import constants as famConstants
 from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
-from . import crudUtils as crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,12 +41,17 @@ def getFamUserByDomainAndName(
     db: Session, user_type: str, user_name: str
 ) -> models.FamUser:
     # get a single user based on unique combination of user_name and user_type.
-    fam_user: models.FamUser = db.query(models.FamUser).filter(
-                models.FamUser.user_type == user_type
-                and
-                models.FamUser.user_name == user_name
-              ).one_or_none()
-    LOGGER.debug(f"fam_user {str(fam_user.user_id) + ' found' if fam_user else 'not found'}.")
+    fam_user: models.FamUser = (
+        db.query(models.FamUser)
+        .filter(
+            models.FamUser.user_type == user_type
+            and models.FamUser.user_name == user_name
+        )
+        .one_or_none()
+    )
+    LOGGER.debug(
+        f"fam_user {str(fam_user.user_id) + ' found' if fam_user else 'not found'}."
+    )
     return fam_user
 
 
@@ -66,7 +70,6 @@ def createFamUser(famUser: schemas.FamUser, db: Session):
     famUserDict = famUser.dict()
     db_item = models.FamUser(**famUserDict)
     db.add(db_item)
-    # db.commit()
     db.flush()
     return db_item
 
@@ -88,6 +91,26 @@ def deleteUser(db: Session, user_id: int):
         .one()
     )
     db.delete(famUser)
-
-    db.commit()
     return famUser
+
+
+def findOrCreate(db: Session, user_type: str, user_name: str):
+    LOGGER.debug(
+        f"User - 'findOrCreate' with user_type: {user_type}, user_name: {user_name}."
+    )
+
+    fam_user = getFamUserByDomainAndName(db, user_type, user_name)
+    if not fam_user:
+        requestUser = schemas.FamUser(
+            **{
+                "user_type": user_type,
+                "user_name": user_name,
+                "create_user": famConstants.FAM_PROXY_API_USER,
+            }
+        )
+        fam_user = createFamUser(requestUser, db)
+        LOGGER.debug(f"User created: {fam_user.user_id}.")
+        return fam_user
+
+    LOGGER.debug(f"User {fam_user.user_id} found.")
+    return fam_user
