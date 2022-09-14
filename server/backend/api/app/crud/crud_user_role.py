@@ -53,13 +53,15 @@ def createFamUserRoleAssignment(
 
         forest_client = crud_forest_client.findOrCreate(db, request.client_number_id)
 
-        # Verify if Forest Client role exist
+        # Verify if Forest Client role (child role) exist
         forest_client_child_role = crud_role.getFamRoleByRoleName(
             db,
             constructForestClientRoleName(fam_role.role_name, request.client_number_id),
         )
         LOGGER.debug(
-            f"forest_client_child_roles for role_name '{fam_role.role_name}': {forest_client_child_role}"
+            "forest_client_child_roles for role_name "
+            f"'{constructForestClientRoleName(fam_role.role_name, request.client_number_id)}':"
+            f" {'Does not exist' if not forest_client_child_role else 'Exists'}"
         )
 
         if not forest_client_child_role:
@@ -85,7 +87,8 @@ def createFamUserRoleAssignment(
                 db,
             )
             LOGGER.debug(
-                f"Child role {child_role.role_id} added for parent role {fam_role.role_name}({child_role.parent_role_id})."
+                f"Child role {child_role.role_id} added for parent role "
+                f"{fam_role.role_name}({child_role.parent_role_id})."
             )
 
         else:
