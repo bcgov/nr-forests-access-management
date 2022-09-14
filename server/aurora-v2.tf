@@ -216,14 +216,17 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
 }
 
 resource "aws_db_proxy" "famdb_proxy_api" {
-  name                   = "${random_pet.famdb_cluster_name.id}-fam-api-proxy-api"
-  debug_logging          = false
-  engine_family          = "POSTGRESQL"
-  idle_client_timeout    = 1800
-  require_tls            = false
-  role_arn               = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
-  vpc_security_group_ids = [data.aws_security_group.sg_app.id]
-  vpc_subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
+  name                = "${random_pet.famdb_cluster_name.id}-fam-api-proxy-api"
+  debug_logging       = true
+  engine_family       = "POSTGRESQL"
+  idle_client_timeout = 1800
+  require_tls         = false
+  role_arn            = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
+  # vpc_security_group_ids = [data.aws_security_group.sg_app.id]
+  # vpc_subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
+  vpc_security_group_ids = [data.aws_security_group.a.id]
+  vpc_subnet_ids         = [data.aws_subnet.appa_a.id, data.aws_subnet.b.id]
+
 
   auth {
     auth_scheme = "SECRETS"
