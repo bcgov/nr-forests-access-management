@@ -95,6 +95,8 @@ module "aurora_postgresql_v2" {
   tags = {
     managed-by = "terraform"
   }
+
+  enabled_cloudwatch_logs_exports = [ "audit", "error", "general", "slowquery", "postgresql" ]
 }
 
 resource "aws_db_parameter_group" "famdb_postgresql13" {
@@ -193,6 +195,9 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
       {
         "Effect": "Allow",
         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
           "secretsmanager:GetRandomPassword",
           "secretsmanager:ListSecrets"
         ],
@@ -209,6 +214,16 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
         "Resource": [
           "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}"
         ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": "kms:Decrypt",
+        "Resource": "arn:aws:kms:region:account_id:key/key_id",
+        "Condition": {
+          "StringEquals": {
+              "kms:ViaService": "secretsmanager.region.amazonaws.com"
+          }
+        }
       }
     ]
   }
@@ -248,6 +263,7 @@ resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
     init_query                   = "SET x=1, y=2"
     max_connections_percent      = 100
     max_idle_connections_percent = 50
+    session_pinning_filters      = [EXCLUDE_VARIABLE_SETS]
   }
 }
 
