@@ -22,7 +22,7 @@ async def root():
                                   dbname=os.environ.get('PG_DATABASE'),
                                   user=username,
                                   password=password,
-                                  sslmode='disabled')
+                                  sslmode='prefer')
     connection.autocommit = True  # Ensure data is added to the database immediately after write commands
     cursor = connection.cursor()
     cursor.execute("select app.application_description from app_fam.fam_application app where app.application_name = 'fam';")
