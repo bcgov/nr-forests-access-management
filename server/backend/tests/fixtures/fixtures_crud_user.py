@@ -5,16 +5,18 @@ from typing import TypedDict
 
 import api.app.models.model as model
 import api.app.schemas as schemas
+import api.app.constants as famConstants
 import pytest
 from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
     # pydantic model schema.FamUser
-    user_type: str
+    user_type: famConstants.UserType
     cognito_user_id: str
     user_name: str
     user_guid: str
@@ -69,7 +71,7 @@ def dbSession_famUsers_withdata(
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
-        "user_type": "a",
+        "user_type": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
         "user_name": "Billy Smith",
         "user_guid": str(uuid.uuid4()),
@@ -106,7 +108,7 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 def testUserData() -> dict:
 
     userData = {
-        "user_type": "a",
+        "user_type": famConstants.UserType.BCEID,
         "cognito_user_id": "22ftw",
         "user_name": "Mike Bossy",
         "user_guid": str(uuid.uuid4()),
@@ -120,7 +122,7 @@ def testUserData() -> dict:
 @pytest.fixture(scope="function")
 def testUserData2() -> FamUserTD:
     userData = {
-        "user_type": "a",
+        "user_type": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
         "user_name": "Dennis Potvin",
         "user_guid": str(uuid.uuid4()),

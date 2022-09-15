@@ -185,6 +185,9 @@ class FamUser(Base):
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
 
+    def __str__(self):
+        return f'FamUser({self.user_id}, {self.user_name}, {self.user_type})'
+
 
 class FamApplicationClient(Base):
     __tablename__ = "fam_application_client"

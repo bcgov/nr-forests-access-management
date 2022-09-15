@@ -91,6 +91,7 @@ def deleteUser(db: Session, user_id: int):
         .one()
     )
     db.delete(famUser)
+    db.flush()
     return famUser
 
 
