@@ -51,48 +51,7 @@ def createFamUserRoleAssignment(
             "in request to assign a forest client role."
         )
 
-        forest_client = crud_forest_client.findOrCreate(db, request.client_number_id)
-
-        # Verify if Forest Client role (child role) exist
-        forest_client_child_role = crud_role.getFamRoleByRoleName(
-            db,
-            constructForestClientRoleName(fam_role.role_name, request.client_number_id),
-        )
-        LOGGER.debug(
-            "forest_client_child_roles for role_name "
-            f"'{constructForestClientRoleName(fam_role.role_name, request.client_number_id)}':"
-            f" {'Does not exist' if not forest_client_child_role else 'Exists'}"
-        )
-
-        if not forest_client_child_role:
-            # Note, later implementation for forest-client child role will be based on a
-            # boolean column from the parent role that requires forest-client child role.
-            child_role = crud_role.createFamRole(
-                schemas.FamRoleCreate(
-                    **{
-                        "parent_role_id": fam_role.role_id,
-                        "application_id": fam_role.application_id,
-                        "client_number_id": request.client_number_id,
-                        "role_name": constructForestClientRoleName(
-                            fam_role.role_name, request.client_number_id
-                        ),
-                        "role_purpose": constructForestClientRolePurpose(
-                            fam_role.role_purpose,
-                            forest_client.client_name,
-                            request.client_number_id,
-                        ),
-                        "create_user": famConstants.FAM_PROXY_API_USER,
-                    }
-                ),
-                db,
-            )
-            LOGGER.debug(
-                f"Child role {child_role.role_id} added for parent role "
-                f"{fam_role.role_name}({child_role.parent_role_id})."
-            )
-
-        else:
-            child_role = forest_client_child_role
+        child_role = findOrCreateChildRole(db, request.client_number_id, fam_role)
 
     # Role Id for associating with user
     associate_role_id = child_role.role_id if child_role else fam_role.role_id
@@ -152,3 +111,51 @@ def constructForestClientRolePurpose(
     parent_role_purpose: str, client_name: str, client_number_id: int
 ):
     return f"{parent_role_purpose} for {client_name} ({client_number_id})"
+
+
+def findOrCreateChildRole(
+    db: Session, client_number_id: int, parent_role: models.FamRole
+):
+    # Note, this is current implementation for fam_forest_client as to programmatically
+    # insert a record into the table. Later FAM will be interfacing with Forest
+    # Client API, thus the way to insert a record will cahnge.
+    forest_client = crud_forest_client.findOrCreate(db, client_number_id)
+
+    # Verify if Forest Client role (child role) exist
+    forest_client_role_name = constructForestClientRoleName(
+        parent_role.role_name, client_number_id
+    )
+    forest_client_child_role = crud_role.getFamRoleByRoleName(
+        db,
+        forest_client_role_name,
+    )
+    LOGGER.debug(
+        "Forest Client child role for role_name "
+        f"'{forest_client_role_name}':"
+        f" {'Does not exist' if not forest_client_child_role else 'Exists'}"
+    )
+
+    if not forest_client_child_role:
+        # Note, later implementation for forest-client child role will be based on a
+        # boolean column from the parent role that requires forest-client child role.
+        child_role = crud_role.createFamRole(
+            schemas.FamRoleCreate(
+                **{
+                    "parent_role_id": parent_role.role_id,
+                    "application_id": parent_role.application_id,
+                    "client_number_id": client_number_id,
+                    "role_name": forest_client_role_name,
+                    "role_purpose": constructForestClientRolePurpose(
+                        parent_role.role_purpose,
+                        forest_client.client_name,
+                        client_number_id,
+                    ),
+                    "create_user": famConstants.FAM_PROXY_API_USER,
+                }
+            ),
+            db,
+        )
+        LOGGER.debug(
+            f"Child role {child_role.role_id} added for parent role "
+            f"{parent_role.role_name}({child_role.parent_role_id})."
+        )
