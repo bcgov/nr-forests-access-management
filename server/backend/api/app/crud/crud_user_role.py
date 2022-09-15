@@ -97,28 +97,37 @@ def createFamUserRoleAssignment(
     # Role Id for associating with user
     associate_role_id = child_role.role_id if child_role else fam_role.role_id
 
-    # Check if the user/role assignment (fam_user_role_xref) already exists.
-    fam_user_role_xref = getUserRolebyUserIdAndRoleId(
-        db, fam_user.user_id, associate_role_id
+    fam_user_role_xref = findOrCreate(db, fam_user.user_id, associate_role_id)
+    LOGGER.debug(
+        f"User/Role assignment executed successfully: {fam_user_role_xref.__dict__}"
     )
-    if fam_user_role_xref:
-        LOGGER.debug(
-            f"User/Role assignment already exists with id: {fam_user_role_xref.user_role_xref_id}."
-        )
-        return fam_user_role_xref
+    return fam_user_role_xref
 
-    # Finally, assign user with role/child-role
-    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
-        **{
-            "user_id": fam_user.user_id,
-            "role_id": associate_role_id,
-            "create_user": famConstants.FAM_PROXY_API_USER,
-        }
+
+def findOrCreate(db: Session, user_id: int, role_id: int):
+    LOGGER.debug(
+        f"FamUserRoleXref - 'findOrCreate' with user_id: {user_id}, role_id: {role_id}."
     )
-    db.add(new_fam_user_role)
-    db.flush()
-    LOGGER.debug(f"Creating new user/role assignment for {new_fam_user_role.__dict__}")
-    return new_fam_user_role
+
+    fam_user_role_xref = getUserRolebyUserIdAndRoleId(db, user_id, role_id)
+
+    if not fam_user_role_xref:
+        new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+            **{
+                "user_id": user_id,
+                "role_id": role_id,
+                "create_user": famConstants.FAM_PROXY_API_USER,
+            }
+        )
+        db.add(new_fam_user_role)
+        db.flush()
+        LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
+        return new_fam_user_role
+
+    LOGGER.debug(
+        f"FamUserRoleXref already exists with id: {fam_user_role_xref.user_role_xref_id}."
+    )
+    return fam_user_role_xref
 
 
 def getUserRolebyUserIdAndRoleId(
