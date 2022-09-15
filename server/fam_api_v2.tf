@@ -85,7 +85,7 @@ resource "aws_lambda_function" "fam-api-function" {
 
   vpc_config {
     security_group_ids = [data.aws_security_group.sg_app.id]
-    subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
+    subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
   }
 
 

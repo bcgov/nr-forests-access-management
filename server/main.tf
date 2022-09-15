@@ -20,24 +20,25 @@ data "aws_vpc" "selected" {
   state = "available"
 }
 
-data "aws_subnet" "a" {
+
+data "aws_security_group" "sg_data" {
   filter {
     name   = "tag:Name"
-    values = [var.subnet_a]
+    values = [var.aws_security_group_data]
   }
 }
 
-data "aws_subnet" "b" {
+data "aws_subnet" "a_data" {
   filter {
     name   = "tag:Name"
-    values = [var.subnet_b]
+    values = [var.subnet_data_a]
   }
 }
 
-data "aws_security_group" "a" {
+data "aws_subnet" "b_data" {
   filter {
     name   = "tag:Name"
-    values = [var.aws_security_group_a]
+    values = [var.subnet_data_b]
   }
 }
 

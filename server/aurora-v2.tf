@@ -34,7 +34,7 @@ variable "famdb_database_name" {
 resource "aws_db_subnet_group" "famdb_subnet_group" {
   description = "For Aurora cluster ${random_pet.famdb_cluster_name.id}"
   name        = "${random_pet.famdb_cluster_name.id}-subnet-group"
-  subnet_ids  = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+  subnet_ids  = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
   tags = {
     managed-by = "terraform"
@@ -63,7 +63,7 @@ module "aurora_postgresql_v2" {
   database_name     = var.famdb_database_name
 
   vpc_id                 = data.aws_vpc.selected.id
-  vpc_security_group_ids = [data.aws_security_group.a.id]
+  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
   db_subnet_group_name   = aws_db_subnet_group.famdb_subnet_group.name
 
   master_username = var.famdb_master_username
@@ -225,9 +225,9 @@ resource "aws_db_proxy" "famdb_proxy_api" {
   require_tls         = false
   role_arn            = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
   # vpc_security_group_ids = [data.aws_security_group.sg_app.id]
-  # vpc_subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
-  vpc_security_group_ids = [data.aws_security_group.a.id]
-  vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+  # vpc_subnet_ids         = [data.aws_subnet.a_datapp_a.id, data.aws_subnet.a_datapp_b.id]
+  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
+  vpc_subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
 
   auth {
