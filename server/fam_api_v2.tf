@@ -86,8 +86,6 @@ resource "aws_lambda_function" "fam-api-function" {
   vpc_config {
     security_group_ids = [data.aws_security_group.sg_app.id]
     subnet_ids         = [data.aws_subnet.app_a.id, data.aws_subnet.app_b.id]
-    # security_group_ids = [data.aws_security_group.a.id]
-    # subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
   }
 
 
@@ -97,10 +95,7 @@ resource "aws_lambda_function" "fam-api-function" {
     variables = {
       DB_SECRET   = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
-      #   PG_PORT = "${data.aws_rds_cluster.api_database.port}"
-      # Postgresql proxy always uses 5432
       PG_PORT = "5432"
-      #   PG_HOST = "${data.aws_rds_cluster.api_database.endpoint}"
       PG_HOST = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
     }
 
