@@ -1,18 +1,13 @@
 # Lookup variables outside file
 
-variable "function_name" {
-  type = string
-  default = "${aws_lambda_function.fam-api-function.function_name}"
-}
-
 data "aws_lambda_function" "target_lambda" {
-  function_name = var.function_name
+  function_name = aws_lambda_function.fam-api-function.function_name
 }
 
 # Define new stuff
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
-  name = "${function_name}-gateway"
+  name = "${aws_lambda_function.fam-api-function.function_name}-gateway"
 }
 
 resource "aws_api_gateway_resource" "fam_api_gateway_resource" {
@@ -69,7 +64,7 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
 resource "aws_lambda_permission" "fam_api_gateway_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = var.function_name
+  function_name = aws_lambda_function.fam-api-function.function_name
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource
