@@ -66,7 +66,7 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
 }
 
 
-resource "aws_lambda_permission" "apigw" {
+resource "aws_lambda_permission" "fam_api_gateway_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = var.function_name
@@ -78,7 +78,7 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 
-module "cors" {
+module "fam_api_cors" {
   source  = "squidfunk/api-gateway-enable-cors/aws"
   version = "0.3.3"
 
