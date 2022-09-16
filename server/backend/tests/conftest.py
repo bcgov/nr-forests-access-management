@@ -47,6 +47,7 @@ pytest_plugins = [
     "fixtures.fixtures_crud_role"
 ]
 
+
 @pytest.fixture(scope="function")
 def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     """
@@ -58,6 +59,7 @@ def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     app.dependency_overrides[dependencies.get_db] = override_get_db
     yield app
 
+
 # This @event is important. By default FOREIGN KEY constraints have no effect on the operation of the table from SQLite.
 # It (FOREIGN KEY) only works when emitting CREATE statements for tables.
 # Reference: https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
@@ -66,6 +68,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
+
 
 @pytest.fixture(scope="function")
 def testClient_fixture(getApp: FastAPI) -> TestClient:
@@ -80,12 +83,14 @@ def testClient_fixture(getApp: FastAPI) -> TestClient:
     client = TestClient(getApp)
     yield client
 
+
 @pytest.fixture(scope="module")
 def sessionObjects(dbEngine: Engine) -> sessionmaker:
     # Use connect_args parameter only with sqlite
     SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=dbEngine)
     LOGGER.debug(f"session type: {type(SessionTesting)}")
     yield SessionTesting
+
 
 @pytest.fixture(scope="module")
 def dbEngine() -> Engine:
@@ -118,6 +123,7 @@ def dbEngine() -> Engine:
         LOGGER.debug("remove the database: ./test_db.db'")
         os.remove("./test_db.db")
 
+
 @pytest.fixture(scope="function")
 def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
 
@@ -130,9 +136,16 @@ def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
     # transaction.rollback()
     connection.close()
 
+
 def override_get_db():
     try:
         db = testSession()
         yield db
+
+    except Exception:
+        db.rollback()
+
     finally:
+        db.commit()
+        LOGGER.debug("closing test db session")
         db.close()
