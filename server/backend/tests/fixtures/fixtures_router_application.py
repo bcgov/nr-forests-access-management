@@ -1,8 +1,6 @@
 import logging
 import pytest
 
-import api.app.crud as crud
-
 
 LOGGER = logging.getLogger(__name__)
 

@@ -33,7 +33,9 @@ def getFamUser(db: Session, user_id: int):
     :rtype: _type_
     """
     # get a single user based on user_id
-    famUser = db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one()
+    famUser = (
+        db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one_or_none()
+    )
     return famUser
 
 

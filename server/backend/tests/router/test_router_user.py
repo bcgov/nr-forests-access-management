@@ -1,6 +1,6 @@
 import logging
 
-import pytest
+import api.app.constants as famConstants
 from api.app.main import apiPrefix
 
 LOGGER = logging.getLogger(__name__)
@@ -74,12 +74,11 @@ def test_post_fam_users(testClient_fixture, testUserData):
     body = resp.json()
     LOGGER.debug(f"body: {body}")
     assert resp.status_code == 422
-    expectedMessage = 'value for user_type provided was invalid data, ' + \
-        "user_type length cannot exceed 1 character"
+    expectedMessage = "value is not a valid enumeration member; permitted: 'IDIR', 'BCeID'"
     assert body['detail'][0]['msg'] == expectedMessage
 
     # fix the data so the post should succeed
-    testUserData["user_type"] = "z"
+    testUserData["user_type"] = famConstants.UserType.BCEID
     resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
     respData = resp.json()
     LOGGER.debug(f"resp data: {resp.json()}")
@@ -91,6 +90,7 @@ def test_post_fam_users(testClient_fixture, testUserData):
     resp = testClient_fixture.post(f"{endPoint}/", json=respDataCopy)
     respBody = resp.json()
     LOGGER.debug(f"resp data: {resp.status_code} - {resp.json()}")
+    
     assert resp.status_code == 422
     assert "IntegrityError" in respBody["detail"]
 
@@ -105,47 +105,3 @@ def test_post_fam_users(testClient_fixture, testUserData):
 
 # follow this article.. best article I've found on testing
 # https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/testing/
-
-
-@pytest.fixture(scope="function")
-def user_client_withUsersNoCleanup(testClient_fixture, testUserData):
-    # used for delete, assumption is the test user that was created
-    # has been cleaned up.
-    testUserData['create_date'] = str(testUserData['create_date'])
-    testUserData['update_date'] = str(testUserData['update_date'])
-
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
-    LOGGER.debug(f"setup user table with data: {resp.status_code} " +
-                 f"{resp.reason}")
-    LOGGER.debug(f"setup data: {testUserData}")
-    if resp.status_code != 200:
-        raise ValueError(
-            "should work! but... can't create this record: "
-            + f" {testUserData}, the response is: {resp.reason}"
-        )
-    return testClient_fixture
-
-
-@pytest.fixture(scope="function")
-def user_client_withUsers(testClient_fixture, testUserData):
-    testUserData['create_date'] = str(testUserData['create_date'])
-    testUserData['update_date'] = str(testUserData['update_date'])
-
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
-    LOGGER.debug(f"setup user table with data: {resp.status_code}" +
-                 f"  {resp.reason}")
-    if resp.status_code != 200:
-        raise ValueError(
-            "should work! but... can't create this record: "
-            + f" {testUserData}, the response is: {resp.reason}"
-        )
-    yield testClient_fixture
-
-    respData = resp.json()
-
-    LOGGER.debug(f"delete result: {respData}")
-    resp = testClient_fixture.delete(f"{endPoint}/{respData['user_id']}")
-    LOGGER.debug(
-        "status code from removing user_id: " +
-        f"{respData['user_id']} {resp.status_code}"
-    )
