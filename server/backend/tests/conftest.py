@@ -44,7 +44,8 @@ pytest_plugins = [
     "fixtures.fixtures_router_application",
     "fixtures.fixtures_crud_user",
     "fixtures.fixtures_router_user",
-    "fixtures.fixtures_crud_role"
+    "fixtures.fixtures_crud_role",
+    "fixtures.fixtures_crud_user_role_assignment"
 ]
 
 

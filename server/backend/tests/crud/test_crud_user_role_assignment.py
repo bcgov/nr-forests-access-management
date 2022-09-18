@@ -1,0 +1,125 @@
+import logging
+
+import api.app.schemas as schemas
+import pytest
+from api.app.crud import crud_user_role, crud_role, crud_user
+from api.app.models import model as models
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sqlalchemy.orm import session
+from sqlalchemy import text, bindparam
+from tests.fixtures.fixtures_crud_user_role_assignment import FOM_SUBMITTER_ROLE_NAME
+
+LOGGER = logging.getLogger(__name__)
+
+
+def test_createFamUserRoleXref_violate_supportUserTypes(
+    simpleUserRoleRequest, deleteAllUserRoleAssignment
+):
+    # Create a user_type with not supported type.
+    notSupported_UserType = "NOT_SUPPORTED_TYPE"
+    requestData = simpleUserRoleRequest.dict()
+    requestData["user_type"] = notSupported_UserType
+
+    LOGGER.debug(
+        "Creating user/role assignment request with not supported "
+        f"user_type: {notSupported_UserType}."
+    )
+    with pytest.raises(ValidationError) as e:
+        assert schemas.FamUserRoleAssignmentCreate(**requestData)
+    assert (
+        str(e.value).find(
+            "value is not a valid enumeration member; permitted: 'IDIR', 'BCeID'"
+        )
+        != -1
+    )
+    LOGGER.debug(f"Expected exception raised: {e.value}")
+
+
+# Make sure previous tests don't need any role in db.
+def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest):
+    db = dbSession
+    LOGGER.debug(
+        "Creating user/role assignment with not supported with no role id not exist in db."
+    )
+
+    with pytest.raises(HTTPException) as e:
+        assert crud_user_role.createFamUserRoleAssignment(db, simpleUserRoleRequest)
+    LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
+    assert str(e._excinfo).find("Role id ") != -1
+    assert str(e._excinfo).find("does not exist") != -1
+
+
+def test_create_forestClientFOMSubmitter_userRoleAssignment(
+    simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
+    simpleFOMSubmitterRole_dbSession: session.Session,
+):
+    db = simpleFOMSubmitterRole_dbSession
+    LOGGER.debug(
+        "Creating forest client FOM Submitter user/role assignment with FOM_Submitter"
+        " parent exists in db."
+    )
+    famSubmitterRole = (
+        db.query(models.FamRole)
+        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .one_or_none()
+    )
+    # Verify parent role exist first.
+    assert isinstance(famSubmitterRole, models.FamRole)
+    assert famSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
+
+    simpleUserRoleRequest.role_id = famSubmitterRole.role_id
+
+    # User/Role assignment created.
+    user_role_assignment = crud_user_role.createFamUserRoleAssignment(
+        db, simpleUserRoleRequest
+    )
+
+    # Find child role
+    forestClientRole = crud_role.getFamRole(db, user_role_assignment.role_id)
+
+    # Find user by user_type and user_name
+    user = crud_user.getFamUserByDomainAndName(
+        db, simpleUserRoleRequest.user_type, simpleUserRoleRequest.user_name
+    )
+
+    assert isinstance(user_role_assignment, models.FamUserRoleXref)
+    assert user_role_assignment.role_id != famSubmitterRole.role_id
+    assert forestClientRole.parent_role_id == famSubmitterRole.role_id
+    assert user.user_id == user_role_assignment.user_id
+
+    clean_up_user_role_assignment(db, user_role_assignment)
+
+
+def clean_up_user_role_assignment(
+    db: session.Session, user_role_assignment: models.FamUserRoleXref
+):
+    db.delete(user_role_assignment)
+    db.commit()
+
+    # Delete child role.
+    stmt = text(
+        """
+        DELETE FROM fam_role
+        WHERE role_id = :role_id
+    """
+    )
+    stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
+    db.execute(stmt)
+
+    # Delete user
+    stmt = text(
+        """
+        DELETE FROM fam_user
+        WHERE user_id = :user_id
+    """
+    )
+    stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
+    db.execute(stmt)
+
+    # Note! Strange error: below delete does not work, (ValueError:
+    # Couldn't parse datetime string: 'LOCALTIMESTAMP')
+    # Need to investigate for test environemnt (sqlite) -
+    # db.delete(forestClientRole)
+    # db.delete(user)
+    # db.commit()
