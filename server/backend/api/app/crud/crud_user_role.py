@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def createFamUserRoleAssignment(
-    request: schemas.FamUserRoleAssignmentCreate, db: Session
+    db: Session, request: schemas.FamUserRoleAssignmentCreate
 ):
     """
     Create fam_user_role_xref Association
@@ -125,17 +125,17 @@ def findOrCreateChildRole(
     forest_client_role_name = constructForestClientRoleName(
         parent_role.role_name, client_number_id
     )
-    forest_client_child_role = crud_role.getFamRoleByRoleName(
+    child_role = crud_role.getFamRoleByRoleName(
         db,
         forest_client_role_name,
     )
     LOGGER.debug(
         "Forest Client child role for role_name "
         f"'{forest_client_role_name}':"
-        f" {'Does not exist' if not forest_client_child_role else 'Exists'}"
+        f" {'Does not exist' if not child_role else 'Exists'}"
     )
 
-    if not forest_client_child_role:
+    if not child_role:
         # Note, later implementation for forest-client child role will be based on a
         # boolean column from the parent role that requires forest-client child role.
         child_role = crud_role.createFamRole(
@@ -159,3 +159,4 @@ def findOrCreateChildRole(
             f"Child role {child_role.role_id} added for parent role "
             f"{parent_role.role_name}({child_role.parent_role_id})."
         )
+    return child_role
