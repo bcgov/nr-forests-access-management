@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -43,10 +44,9 @@ def deleteAllRoles(dbSession: session.Session) -> None:
     :param dbSession: mocked up database session
     :type dbSession: sqlalchemy.orm.session.Session
     """
-    LOGGER.debug(f"dbsession type: {type(dbSession)}")
     yield
     db = dbSession
-    famRoles = db.query(model.FamRole).all()
+    famRoles: List[model.FamRole] = db.query(model.FamRole).all()
     for famRole in famRoles:
         db.delete(famRole)
     db.commit()

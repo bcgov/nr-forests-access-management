@@ -24,8 +24,8 @@ def create_user_role_assignment(
     """
     LOGGER.debug(f"running router ... {db}")
     createData = crud_user_role.createFamUserRoleAssignment(
-        userRoleAssignmentRequset,
-        db
+        db,
+        userRoleAssignmentRequset
     )
     LOGGER.debug(f"User/Role assignment executed successfully, id: {createData.user_role_xref_id}")
     return createData
