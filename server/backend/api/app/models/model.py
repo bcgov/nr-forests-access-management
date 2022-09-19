@@ -110,7 +110,7 @@ class FamForestClient(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -119,7 +119,7 @@ class FamForestClient(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("LOCALTIMESTAMP"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
@@ -412,6 +412,7 @@ class FamRole(Base):
     update_date = Column(
         TIMESTAMP(precision=6),
         onupdate=datetime.datetime.utcnow,
+        # server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -621,7 +622,7 @@ class FamUserRoleXref(Base):
     create_date = Column(
         TIMESTAMP(precision=6),
         nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -631,7 +632,7 @@ class FamUserRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(precision=6),
-        server_default=text("LOCALTIMESTAMP"),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
