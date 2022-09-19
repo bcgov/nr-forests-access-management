@@ -46,13 +46,16 @@ def simpleFOMSubmitterRole_dbSession(
 ):
     db = dbSession
     # add a role record to db
-    newRole = model.FamRole(
+    fomSubmitterRole = model.FamRole(
         **{
             "role_name": FOM_SUBMITTER_ROLE_NAME,
             "role_purpose": "Grant a user access to submit to FOM",
             "create_user": famConstants.FAM_PROXY_API_USER
         }
     )
-    db.add(newRole)
+    db.add(fomSubmitterRole)
     db.commit()
     yield db
+
+    db.delete(fomSubmitterRole)
+    db.commit()

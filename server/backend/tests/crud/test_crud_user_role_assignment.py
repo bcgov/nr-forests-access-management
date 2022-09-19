@@ -91,13 +91,56 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     clean_up_user_role_assignment(db, user_role_assignment)
 
 
+def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_existing_one(
+    simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
+    simpleFOMSubmitterRole_dbSession: session.Session,
+):
+    db = simpleFOMSubmitterRole_dbSession
+    LOGGER.debug(
+        "Creating twice forest client FOM Submitter user/role assignment "
+        "will return existing record."
+    )
+
+    famSubmitterRole = (
+        db.query(models.FamRole)
+        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .one_or_none()
+    )
+    # Verify parent role exist first.
+    assert isinstance(famSubmitterRole, models.FamRole)
+    assert famSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
+
+    simpleUserRoleRequest.role_id = famSubmitterRole.role_id
+
+    # User/Role assignment created.
+    user_role_assignment1 = crud_user_role.createFamUserRoleAssignment(
+        db, simpleUserRoleRequest
+    )
+
+    # Create twice.
+    user_role_assignment2 = crud_user_role.createFamUserRoleAssignment(
+        db, simpleUserRoleRequest
+    )
+
+    # Verify user/role assignment creation returns the same fam_user_role_xref from db.
+    assert user_role_assignment1.role_id == user_role_assignment2.role_id
+    assert user_role_assignment1.user_id == user_role_assignment2.user_id
+    assert (
+        user_role_assignment1.user_role_xref_id
+        == user_role_assignment2.user_role_xref_id
+    )
+
+    clean_up_user_role_assignment(db, user_role_assignment1)
+
+
 def clean_up_user_role_assignment(
-    db: session.Session, user_role_assignment: models.FamUserRoleXref
+    db: session.Session,
+    user_role_assignment: models.FamUserRoleXref
 ):
     db.delete(user_role_assignment)
     db.commit()
-
-    # Delete child role.
+    
+    # Delete child role (db.delete(forestClientRole)).
     stmt = text(
         """
         DELETE FROM fam_role
@@ -107,7 +150,7 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-    # Delete user
+    # Delete user (db.delete(newUser))
     stmt = text(
         """
         DELETE FROM fam_user
@@ -116,10 +159,3 @@ def clean_up_user_role_assignment(
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
     db.execute(stmt)
-
-    # Note! Strange error: below delete does not work, (ValueError:
-    # Couldn't parse datetime string: 'LOCALTIMESTAMP')
-    # Need to investigate for test environemnt (sqlite) -
-    # db.delete(forestClientRole)
-    # db.delete(user)
-    # db.commit()
