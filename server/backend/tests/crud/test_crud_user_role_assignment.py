@@ -50,14 +50,14 @@ def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest):
     assert str(e._excinfo).find("does not exist") != -1
 
 
-def test_create_forestClientFOMSubmitter_userRoleAssignment(
+def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
     LOGGER.debug(
-        "Creating forest client FOM Submitter user/role assignment with FOM_Submitter"
-        " parent exists in db."
+        "Creating forest client FOM Submitter user/role assignment "
+        "and parent role exists in db."
     )
     famSubmitterRole = (
         db.query(models.FamRole)
