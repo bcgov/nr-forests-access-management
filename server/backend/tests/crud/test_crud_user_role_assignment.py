@@ -36,7 +36,7 @@ def test_createFamUserRoleXref_violate_supportUserTypes(
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
 
-# Make sure previous tests don't need any role in db.
+# Make sure previous tests don't leave any role in db.
 def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest):
     db = dbSession
     LOGGER.debug(
@@ -87,6 +87,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     assert user_role_assignment.role_id != famSubmitterRole.role_id
     assert forestClientRole.parent_role_id == famSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
+    assert user.user_type == simpleUserRoleRequest.user_type
 
     clean_up_user_role_assignment(db, user_role_assignment)
 
@@ -117,10 +118,22 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_exi
         db, simpleUserRoleRequest
     )
 
-    # Create twice.
+    # Call create twice with the same request.
     user_role_assignment2 = crud_user_role.createFamUserRoleAssignment(
         db, simpleUserRoleRequest
     )
+
+    # Verify no extra role is created.
+    parent_child_roles = set(
+        (
+            simpleUserRoleRequest.role_id,
+            user_role_assignment1.role_id,
+            user_role_assignment2.role_id,
+        )
+    )
+    assert len(parent_child_roles) == 2  # contains only parent and child 2 roles.
+    fam_roles = crud_role.getFamRoles(db)  # all db roles created.
+    assert len(fam_roles) == 2
 
     # Verify user/role assignment creation returns the same fam_user_role_xref from db.
     assert user_role_assignment1.role_id == user_role_assignment2.role_id
@@ -134,12 +147,11 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_exi
 
 
 def clean_up_user_role_assignment(
-    db: session.Session,
-    user_role_assignment: models.FamUserRoleXref
+    db: session.Session, user_role_assignment: models.FamUserRoleXref
 ):
     db.delete(user_role_assignment)
     db.commit()
-    
+
     # Delete child role (db.delete(forestClientRole)).
     stmt = text(
         """
