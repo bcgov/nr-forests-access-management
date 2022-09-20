@@ -5,66 +5,65 @@ import json
 
 LOGGER = logging.getLogger(__name__)
 
-"""
-TODO: Need some discission to:
-1. synchronize environment variables below (local envs / aws envs).
-2. refactor getDBString() function.
-"""
-
-on_aws = os.environ.get('DB_SECRET')  # This key only presents on aws.
-
-APP_ENV = os.getenv("APP_ENV", "dev")  # TODO: ? What other APP_ENV does the deployment have ?
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "fam")
-POSTGRES_DB_TEST = os.getenv("POSTGRES_DB_TEST", "fam_test")  # TODO: Is this being used or intention?
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+# APP_ENV = os.getenv("APP_ENV", "dev")
+on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
 
 
 def getDBString():
+    db_conn_string = getAWSDBString() if on_aws else getLocalDBString()
+    LOGGER.debug(f"Database connection url: {db_conn_string}")
+    return db_conn_string
 
-    secret_json = {}
-    if on_aws:
-        secret_value = get_secret()
-        secret_json = json.loads(secret_value['SecretString'])
 
-    username = secret_json.get('username', POSTGRES_USER)
-    password = secret_json.get('password', POSTGRES_PASSWORD)
+def getLocalDBString():
+    username = os.getenv("POSTGRES_USER", "postgres")
+    password = os.getenv("POSTGRES_PASSWORD", "postgres")
+    host = os.getenv("POSTGRES_HOST", "localhost")
+    dbname = os.getenv("POSTGRES_DB", "fam")
+    port = os.getenv("POSTGRES_PORT", "5432")
+    db_conn_string: str
 
-    host = os.environ.get('PG_HOST', POSTGRES_HOST)
-    port = os.environ.get('PG_PORT', POSTGRES_PORT)
-    dbname = os.environ.get('PG_DATABASE', POSTGRES_DB)
-
-    SQLALCHEMY_DATABASE_URL = os.getenv("DB_CONN")
-    if not SQLALCHEMY_DATABASE_URL:
+    # if the POSTGRESQL_USER env var is populated then use a postgres
+    if "POSTGRES_USER" in os.environ:
+        db_conn_string = (
+            f"postgresql+psycopg2://{username}"
+            + f":{password}@{host}:{port}/"
+            + f"{dbname}"
+        )
+    else:
         # force default sqllite database if not POSTGRES vars not defined
         curdir = os.path.dirname(__file__)
         databaseFile = os.path.join(curdir, "..", "fam.db")
         LOGGER.debug(f"databaseFile: {databaseFile}")
-        SQLALCHEMY_DATABASE_URL = f"sqlite:///{databaseFile}"
-        LOGGER.debug(f"SQLALCHEMY_DATABASE_URL: {SQLALCHEMY_DATABASE_URL}")
+        db_conn_string = f"sqlite:///{databaseFile}"
 
-    # if the POSTGRESQL_USER env var is populated then use a postgres
-    if "POSTGRES_USER" in os.environ:
-        SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{username}" + \
-            f":{password}@{host}:{port}/" + \
-            f"{dbname}"
-
-    LOGGER.debug(f"db conn str: {SQLALCHEMY_DATABASE_URL}")
-    return SQLALCHEMY_DATABASE_URL
+    return db_conn_string
 
 
-def get_secret():
+def getAWSDBString():
+    secret_value = getAWSDBSecret()
+    secret_json = json.loads(secret_value["SecretString"])
 
-    secret_name = os.environ.get('DB_SECRET')
+    username = secret_json.get("username")
+    password = secret_json.get("password")
+
+    host = os.environ.get("PG_HOST")
+    port = os.environ.get("PG_PORT")
+    dbname = os.environ.get("PG_DATABASE")
+    db_conn_string = (
+        f"postgresql+psycopg2://{username}"
+        + f":{password}@{host}:{port}/"
+        + f"{dbname}"
+    )
+    return db_conn_string
+
+
+def getAWSDBSecret():
+    secret_name = os.environ.get("DB_SECRET")
     region_name = "ca-central-1"
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
+    client = session.client(service_name="secretsmanager", region_name=region_name)
 
     return client.get_secret_value(SecretId=secret_name)
