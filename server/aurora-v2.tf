@@ -13,8 +13,8 @@ data "aws_kms_alias" "rds_key" {
 }
 
 resource "random_password" "famdb_master_password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
@@ -34,7 +34,7 @@ variable "famdb_database_name" {
 resource "aws_db_subnet_group" "famdb_subnet_group" {
   description = "For Aurora cluster ${random_pet.famdb_cluster_name.id}"
   name        = "${random_pet.famdb_cluster_name.id}-subnet-group"
-  subnet_ids  = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+  subnet_ids  = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
   tags = {
     managed-by = "terraform"
@@ -60,9 +60,10 @@ module "aurora_postgresql_v2" {
   engine_mode       = "provisioned"
   engine_version    = data.aws_rds_engine_version.postgresql.version
   storage_encrypted = true
+  database_name     = var.famdb_database_name
 
   vpc_id                 = data.aws_vpc.selected.id
-  vpc_security_group_ids = [data.aws_security_group.a.id]
+  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
   db_subnet_group_name   = aws_db_subnet_group.famdb_subnet_group.name
 
   master_username = var.famdb_master_username
@@ -94,6 +95,8 @@ module "aurora_postgresql_v2" {
   tags = {
     managed-by = "terraform"
   }
+
+  enabled_cloudwatch_logs_exports = [ "postgresql" ]
 }
 
 resource "aws_db_parameter_group" "famdb_postgresql13" {
@@ -115,7 +118,7 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
-  name = "${random_pet.famdb_cluster_name.id}_master_creds_secretname"
+  name = "${random_pet.famdb_cluster_name.id}_master_creds"
 
   tags = {
     managed-by = "terraform"
@@ -133,8 +136,9 @@ EOF
 }
 
 resource "random_password" "famdb_api_password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 variable "famdb_api_username" {
@@ -145,7 +149,7 @@ variable "famdb_api_username" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
-  name = "${random_pet.famdb_cluster_name.id}_api_creds_secretname"
+  name = "${random_pet.famdb_cluster_name.id}_api_creds"
 
   tags = {
     managed-by = "terraform"
@@ -153,7 +157,7 @@ resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_apicreds_secret_version" {
-  secret_id     = aws_secretsmanager_secret.famdb_mastercreds_secret.id
+  secret_id     = aws_secretsmanager_secret.famdb_apicreds_secret.id
   secret_string = <<EOF
    {
     "username": "${var.famdb_api_username}",
@@ -177,7 +181,7 @@ data "aws_iam_policy_document" "famdb_api_user_rds_proxy_secret_access_policydoc
 }
 
 resource "aws_iam_role" "famdb_api_user_rds_proxy_secret_access_role" {
-  name = "${random_pet.famdb_cluster_name.id}-api-proxy-role"
+  name               = "${random_pet.famdb_cluster_name.id}-api-proxy-role"
   assume_role_policy = data.aws_iam_policy_document.famdb_api_user_rds_proxy_secret_access_policydoc.json
 }
 
@@ -205,7 +209,7 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${aws_secretsmanager_secret.famdb_mastercreds_secret.arn}"
+          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}"
         ]
       }
     ]
@@ -214,20 +218,23 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
 }
 
 resource "aws_db_proxy" "famdb_proxy_api" {
-  name                   = "${random_pet.famdb_cluster_name.id}-fam-proxy-api"
-  debug_logging          = false
-  engine_family          = "POSTGRESQL"
-  idle_client_timeout    = 1800
-  require_tls            = true
-  role_arn               = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
-  vpc_security_group_ids = [data.aws_security_group.a.id]
-  vpc_subnet_ids         = [data.aws_subnet.a.id, data.aws_subnet.b.id]
+  name                = "${random_pet.famdb_cluster_name.id}-fam-api-proxy-api"
+  debug_logging       = true
+  engine_family       = "POSTGRESQL"
+  idle_client_timeout = 1800
+  require_tls         = false
+  role_arn            = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
+  # vpc_security_group_ids = [data.aws_security_group.sg_app.id]
+  # vpc_subnet_ids         = [data.aws_subnet.a_datapp_a.id, data.aws_subnet.a_datapp_b.id]
+  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
+  vpc_subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
+
 
   auth {
     auth_scheme = "SECRETS"
     description = "example"
     iam_auth    = "DISABLED"
-    secret_arn  = aws_secretsmanager_secret.famdb_mastercreds_secret.arn
+    secret_arn  = aws_secretsmanager_secret.famdb_apicreds_secret.arn
   }
 
   tags = {
@@ -240,10 +247,10 @@ resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
 
   connection_pool_config {
     connection_borrow_timeout    = 120
-    init_query                   = "SET x=1, y=2"
+    # init_query                   = "SET x=1, y=2"
     max_connections_percent      = 100
     max_idle_connections_percent = 50
-    session_pinning_filters      = []
+    # session_pinning_filters      = [ "EXCLUDE_VARIABLE_SETS" ]
   }
 }
 

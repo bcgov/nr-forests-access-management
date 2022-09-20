@@ -7,6 +7,8 @@ from starlette.responses import RedirectResponse
 
 from .routers import router_application, router_role, router_user, router_user_role_assignment
 
+from mangum import Mangum
+
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
     '..',
@@ -74,3 +76,5 @@ app.include_router(router_application.router, prefix=apiPrefix + '/fam_applicati
 app.include_router(router_user.router, prefix=apiPrefix + '/fam_users', tags=["FAM Users"])
 app.include_router(router_role.router, prefix=apiPrefix + '/fam_roles', tags=["FAM Roles"])
 app.include_router(router_user_role_assignment.router, prefix=apiPrefix + '/user_role_assignment', tags=["FAM User Role Assignment"])
+
+handler = Mangum(app)

@@ -13,73 +13,33 @@ variable "aws_region" {
   default = "ca-central-1"
 }
 
-variable "aws_security_group_a" {
-  description = "Value of the name tag for the security group in AZ a"
+variable "aws_security_group_data" {
+  description = "Value of the name tag for the DATA security group"
   default     = "Data_sg"
 }
 
-variable "subnet_a" {
-  description = "Value of the name tag for the subnet in AZ a"
+variable "subnet_data_a" {
+  description = "Value of the name tag for a subnet in the DATA security group"
   default     = "Data_Dev_aza_net"
 }
 
-variable "subnet_b" {
-  description = "Value of the name tag for the subnet in AZ b"
+variable "subnet_data_b" {
+  description = "Value of the name tag for a subnet in the DATA security group"
   default     = "Data_Dev_azb_net"
 }
 
-variable "db_cluster_identifier" {
-  description = "The name of the database cluster instance"
-  type        = string
-  default     = "fam-aurora-db-postgres"
+
+variable "aws_security_group_app" {
+  description = "Value of the name tag for the APP security group"
+  default     = "App_sg"
 }
 
-variable "db_name" {
-  description = "The name of the database"
-  type        = string
-  default     = "famdb"
+variable "subnet_app_a" {
+  description = "Value of the name tag for a subnet in the APP security group"
+  default     = "App_Dev_aza_net"
 }
 
-variable "db_username" {
-  description = "The username for the DB master user"
-  type        = string
-  default     = "sysadmin"
-  sensitive   = true
-}
-
-variable "db_master_creds_secretname" {
-  description = "The name of the AWS Secret that holds the master db username/password"
-  type        = string
-  default     = "fam_db_master_account3"
-  sensitive   = true
-}
-
-variable "api_db_username" {
-  description = "The username for the DB api user"
-  type        = string
-  default     = "fam_proxy_api"
-  sensitive   = true
-}
-
-variable "db_api_creds_secretname" {
-  description = "The name of the AWS Secret that holds the FAM api db username/password"
-  type        = string
-  default     = "fam_api_db_creds2"
-  sensitive   = true
-}
-
-variable "github_repository" {
-  type = string
-}
-
-variable "github_branch" {
-  type = string
-}
-
-variable "github_commit" {
-  type = string
-}
-
-variable "github_event" {
-  type = string
+variable "subnet_app_b" {
+  description = "Value of the name tag for a subnet in the APP security group"
+  default     = "App_Dev_azb_net"
 }
