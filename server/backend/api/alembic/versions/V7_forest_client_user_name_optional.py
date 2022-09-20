@@ -4,7 +4,7 @@ Note!: this change is to accommodate initial implementation for FAM Api that
 does not yet integrate with forest-client api. FAM frontned app is only 
 accepting user input for forest-client id and FAM api backend needs to
 insert forest-client record on the fly.
-This field should be come mandatory once FAM fully integrated with
+This field should become mandatory once FAM fully integrated with
 forest-client api. 
 
 Revision ID: V7
