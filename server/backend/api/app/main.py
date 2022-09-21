@@ -5,7 +5,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
-from .routers import router_application, router_role, router_user, router_user_role_assignment
+from .routers import \
+    router_application, \
+    router_role, \
+    router_user, \
+    router_user_role_assignment
 
 from mangum import Mangum
 
@@ -22,7 +26,8 @@ logging.config.fileConfig(
 
 LOGGER = logging.getLogger('api.app.main')
 
-tags_metadata = [{
+tags_metadata = [
+    {
         "name": "Forest Access Management - FAM",
         "description": "Controls the user access to different Forest based" +
                        "applications and what roles different users will " +
@@ -72,9 +77,17 @@ def main():
 
 
 apiPrefix = '/api/v1'
-app.include_router(router_application.router, prefix=apiPrefix + '/fam_applications', tags=["FAM Applications"])
-app.include_router(router_user.router, prefix=apiPrefix + '/fam_users', tags=["FAM Users"])
-app.include_router(router_role.router, prefix=apiPrefix + '/fam_roles', tags=["FAM Roles"])
-app.include_router(router_user_role_assignment.router, prefix=apiPrefix + '/user_role_assignment', tags=["FAM User Role Assignment"])
+app.include_router(router_application.router,
+                   prefix=apiPrefix + '/fam_applications',
+                   tags=["FAM Applications"])
+app.include_router(router_user.router,
+                   prefix=apiPrefix + '/fam_users',
+                   tags=["FAM Users"])
+app.include_router(router_role.router,
+                   prefix=apiPrefix + '/fam_roles',
+                   tags=["FAM Roles"])
+app.include_router(router_user_role_assignment.router,
+                   prefix=apiPrefix + '/user_role_assignment',
+                   tags=["FAM User Role Assignment"])
 
 handler = Mangum(app)

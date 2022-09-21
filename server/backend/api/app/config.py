@@ -6,10 +6,10 @@ import json
 LOGGER = logging.getLogger(__name__)
 
 # APP_ENV = os.getenv("APP_ENV", "dev")
-on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
 
 
 def getDBString():
+    on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     db_conn_string = getAWSDBString() if on_aws else getLocalDBString()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
@@ -26,9 +26,9 @@ def getLocalDBString():
     # if the POSTGRESQL_USER env var is populated then use a postgres
     if "POSTGRES_USER" in os.environ:
         db_conn_string = (
-            f"postgresql+psycopg2://{username}"
-            + f":{password}@{host}:{port}/"
-            + f"{dbname}"
+            f"postgresql+psycopg2://{username}" +
+            f":{password}@{host}:{port}/" +
+            f"{dbname}"
         )
     else:
         # force default sqllite database if not POSTGRES vars not defined
@@ -51,9 +51,9 @@ def getAWSDBString():
     port = os.environ.get("PG_PORT")
     dbname = os.environ.get("PG_DATABASE")
     db_conn_string = (
-        f"postgresql+psycopg2://{username}"
-        + f":{password}@{host}:{port}/"
-        + f"{dbname}"
+        f"postgresql+psycopg2://{username}" +
+        f":{password}@{host}:{port}/" +
+        f"{dbname}"
     )
     return db_conn_string
 
