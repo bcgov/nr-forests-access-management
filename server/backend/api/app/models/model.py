@@ -412,6 +412,12 @@ class FamRole(Base):
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
+    role_type = Column(
+        String(15),
+        nullable=False,
+        comment="Identifies if the role is a parent or child role.  Users " + \
+                "should only be assigned to roles where role_type=child",
+    )
 
     application = relationship("FamApplication", back_populates="fam_role")
     client_number = relationship("FamForestClient", back_populates="fam_role")
