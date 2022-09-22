@@ -13,9 +13,7 @@ from tests.fixtures.fixtures_crud_user_role_assignment import FOM_SUBMITTER_ROLE
 LOGGER = logging.getLogger(__name__)
 
 
-def test_createFamUserRoleXref_violate_supportUserTypes(
-    simpleUserRoleRequest, deleteAllUserRoleAssignment
-):
+def test_createFamUserRoleXref_violate_supportUserTypes(simpleUserRoleRequest):
     # Create a user_type with not supported type.
     notSupported_UserType = "NOT_SUPPORTED_TYPE"
     requestData = simpleUserRoleRequest.dict()
@@ -37,7 +35,7 @@ def test_createFamUserRoleXref_violate_supportUserTypes(
 
 
 # Make sure previous tests don't leave any role in db.
-def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest):
+def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest, deleteAllRoles):
     db = dbSession
     LOGGER.debug(
         "Creating user/role assignment with not supported with no role id not exist in db."
@@ -52,7 +50,7 @@ def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest):
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    simpleFOMSubmitterRole_dbSession: session.Session,
+    simpleFOMSubmitterRole_dbSession: session.Session
 ):
     db = simpleFOMSubmitterRole_dbSession
     LOGGER.debug(
@@ -83,7 +81,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
         db, simpleUserRoleRequest.user_type, simpleUserRoleRequest.user_name
     )
 
-    assert isinstance(user_role_assignment, models.FamUserRoleXref)
+    # assert user_role_assignment, schemas.FamUserRoleAssignmentCreate
     assert user_role_assignment.role_id != famSubmitterRole.role_id
     assert forestClientRole.parent_role_id == famSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
@@ -147,10 +145,19 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_exi
 
 
 def clean_up_user_role_assignment(
-    db: session.Session, user_role_assignment: models.FamUserRoleXref
+    db: session.Session, user_role_assignment: schemas.FamUserRoleAssignmentGet
 ):
-    db.delete(user_role_assignment)
-    db.commit()
+    # Delete fam_user_role_xref
+    stmt = text(
+        """
+        DELETE FROM fam_user_role_xref
+        WHERE user_role_xref_id = :user_role_xref_id
+    """
+    )
+    stmt = stmt.bindparams(
+        bindparam("user_role_xref_id", value=user_role_assignment.user_role_xref_id)
+    )
+    db.execute(stmt)
 
     # Delete child role (db.delete(forestClientRole)).
     stmt = text(
@@ -162,6 +169,17 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
+
+    # Then delete parent role
+    stmt = text(
+        """
+        DELETE FROM fam_role
+    """
+    )
+    # stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
+    db.execute(stmt)
+
+
     # Delete user (db.delete(newUser))
     stmt = text(
         """
@@ -170,4 +188,16 @@ def clean_up_user_role_assignment(
     """
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
+    db.execute(stmt)
+
+    # Delete application
+    stmt = text(
+        """
+        DELETE FROM fam_application
+        WHERE application_id = :application_id
+    """
+    )
+    stmt = stmt.bindparams(
+        bindparam("application_id", value=user_role_assignment.application_id)
+    )
     db.execute(stmt)

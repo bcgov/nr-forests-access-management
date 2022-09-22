@@ -7,14 +7,14 @@ from api.app.models import model as models
 from sqlalchemy.orm import Session
 
 from .. import schemas
-from . import crud_role, crud_user, crud_forest_client, crudUtils
+from . import crud_forest_client, crud_role, crud_user, crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
 
 def createFamUserRoleAssignment(
     db: Session, request: schemas.FamUserRoleAssignmentCreate
-):
+) -> schemas.FamUserRoleAssignmentGet:
     """
     Create fam_user_role_xref Association
 
@@ -51,16 +51,23 @@ def createFamUserRoleAssignment(
             "in request to assign a forest client role."
         )
 
-        child_role = findOrCreateChildRole(db, request.client_number_id, fam_role)
+        # Note, the request contains string(with leading '0') client_number_id
+        client_number: int = crudUtils.padStrToInt(request.client_number_id)
+        child_role = findOrCreateChildRole(db, client_number, fam_role)
 
     # Role Id for associating with user
     associate_role_id = child_role.role_id if child_role else fam_role.role_id
 
+    # Create user/role assignment.
     fam_user_role_xref = findOrCreate(db, fam_user.user_id, associate_role_id)
-    LOGGER.debug(
-        f"User/Role assignment executed successfully: {fam_user_role_xref.__dict__}"
+
+    xref_dict = fam_user_role_xref.__dict__
+    xref_dict["application_id"] = (
+        child_role.application_id if child_role else fam_role.application_id
     )
-    return fam_user_role_xref
+    userRoleAssignment = schemas.FamUserRoleAssignmentGet(**xref_dict)
+    LOGGER.debug(f"User/Role assignment executed successfully: {userRoleAssignment}")
+    return userRoleAssignment
 
 
 def findOrCreate(db: Session, user_id: int, role_id: int):
@@ -116,10 +123,15 @@ def constructForestClientRolePurpose(
 def findOrCreateChildRole(
     db: Session, client_number_id: int, parent_role: models.FamRole
 ):
+
+    # Note, client_name is unique. For now for MVP version we will insert it with
+    # a dummy name.
+    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{client_number_id}"
+
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
-    forest_client = crud_forest_client.findOrCreate(db, client_number_id)
+    forest_client = crud_forest_client.findOrCreate(db, client_number_id, client_name)
 
     # Verify if Forest Client role (child role) exist
     forest_client_role_name = constructForestClientRoleName(
