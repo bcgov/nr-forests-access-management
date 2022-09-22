@@ -90,7 +90,7 @@ jobs:
           rm -rf packaging
           cd ../../
           cd server/backend
-          zip -u ../fam-ui-api.zip -r app/ -x database/**\* tests/**\* venv/**\* .env
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
           cd ..
 
 
