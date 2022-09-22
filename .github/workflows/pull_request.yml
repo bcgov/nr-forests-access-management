@@ -58,7 +58,7 @@ jobs:
       #     cd server/fam_api/venv/lib/python3.8/site-packages
       #     zip -r9 ../../../../../fam-api.zip .
 
-      - name: Install and Package Dependencies
+      - name: Install and Package Dependencies - sample app
         run: |
           cd server/fam_api
           mkdir packaging
@@ -72,19 +72,27 @@ jobs:
           zip -u ../fam-api.zip -r app/
           cd ..
 
-
-      # - name: Add API files to Zip file
-      #   run: |
-      #     cd server/fam_api
-      #     zip -u ../fam-api.zip -r app/
-      #     cd ..
-
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
           name: fam-api
           path: ./server/fam-api.zip
           if-no-files-found: error
+
+      - name: Install and Package Dependencies - Ians Code
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r app/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+
 
   # Steps to deploy Kevin's python as a lambda
 
@@ -118,12 +126,12 @@ jobs:
       #     zip -u ../fam-ui-api.zip -r api/
       #     cd ..
 
-      # - name: Upload zip file artifact Kevin
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: fam-ui-api
-      #     path: ./server/fam-ui-api.zip
-      #     if-no-files-found: error
+      - name: Upload zip file artifact Kevin
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./server/fam-ui-api.zip
+          if-no-files-found: error
 
       - name: Deploying back-end using terraform
         run: |
