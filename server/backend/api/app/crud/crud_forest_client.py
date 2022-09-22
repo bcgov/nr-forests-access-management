@@ -30,11 +30,7 @@ def createFamForestClient(famForestClient: schemas.FamForestClientCreate, db: Se
     return db_item
 
 
-def findOrCreate(
-    db: Session,
-    client_number_id: int,
-    client_name: str = famConstants.DUMMY_FOREST_CLIENT_NAME,
-):
+def findOrCreate(db: Session, client_number_id: int, client_name: str):
     LOGGER.debug(
         f"Forest Client - 'findOrCreate' with client_number_id: {client_number_id}."
     )
@@ -45,6 +41,7 @@ def findOrCreate(
             f"Forest Client with Id {client_number_id} "
             "does not exist, add a new Forest Client."
         )
+
         request_forest_client = schemas.FamForestClientCreate(
             **{
                 "client_number_id": client_number_id,

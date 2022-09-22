@@ -1,14 +1,15 @@
-
 import logging
 
 import sqlalchemy
+from api.app import constants as famConstants
 from api.app.models import model as models
+from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
 LOGGER = logging.getLogger(__name__)
+
 
 def getPrimaryKey(model: models) -> str:
     """recieves a declarative base model and returns the primary key that
@@ -22,6 +23,7 @@ def getPrimaryKey(model: models) -> str:
     pkName = inspect(model).primary_key[0].name
     LOGGER.debug(f"primary key for table {model.__table__}: {pkName}")
     return pkName
+
 
 def getHighestValue(
     model: sqlalchemy.orm.decl_api.DeclarativeMeta, columnName: str, db: Session
@@ -43,6 +45,7 @@ def getHighestValue(
     queryResult = db.query(func.max(columnObj)).first()
     LOGGER.debug(f"queryResult: {queryResult}")
     return queryResult
+
 
 def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     """calculates the next increment for the given model.  This is
@@ -80,6 +83,24 @@ def getAddUser():
 
 def raiseHTTPException(status_code: str, error_msg: str):
     LOGGER.error(error_msg)
-    raise HTTPException(
-        status_code=status_code, detail=error_msg
-    )
+    raise HTTPException(status_code=status_code, detail=error_msg)
+
+
+def padStrToInt(padStr: str):
+    pad_removed_Str = padStr.lstrip(famConstants.FOREST_CLIENT_ID_PADDING['char'])
+    return int(pad_removed_Str)
+
+
+def intToPadStr(num: int, padding: str, length: int, toLeft: bool):
+    num_str = str(num)
+    if len(num_str) == length:
+        return num_str
+
+    if toLeft:
+        num_str = f'{num_str:{padding}>{length}}'
+    else:
+        num_str = f'{num_str:{padding}<{length}}'
+    LOGGER.debug(f'Padded string {num_str}')
+
+    return num_str
+

@@ -73,9 +73,15 @@ class FamUser(BaseModel):
 class FamRoleCreate(BaseModel):
     role_name: str
     role_purpose: str
-    parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
-    application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
-    client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    application_id: Union[int, None] = Field(
+        default=None, title="Application this role is associated with"
+    )
+    client_number_id: Union[int, None] = Field(
+        default=None, title="Forest Client this role is associated with"
+    )
     create_user: str
 
     class Config:
@@ -112,7 +118,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
     user_type: famConstants.UserType
     role_id: int
-    client_number_id: Union[int, None]  # Forest Client ID
+    client_number_id: Union[str, None]  # Forest Client ID string
 
     class Config:
         orm_mode = True
@@ -122,13 +128,16 @@ class FamUserRoleAssignmentGet(BaseModel):
     user_role_xref_id: int
     user_id: int
     role_id: int
+    application_id: int
 
     class Config:
         orm_mode = True
 
 
 class FamForestClientCreate(BaseModel):
-    client_number_id: int
+    # client_number_id: int  
+    # Note, the request contains string(with leading '0') client_number_id
+    client_number_id: str
     client_name: str
     create_user: str
 
