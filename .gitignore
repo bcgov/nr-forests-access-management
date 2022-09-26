@@ -52,3 +52,4 @@ aurora/aurora.hcl
 server/backend/database/flyway*
 server/backend/api/alembic/versions-modified/*
 server/backend/api/app/models/model-back.py
+server/packaging/*

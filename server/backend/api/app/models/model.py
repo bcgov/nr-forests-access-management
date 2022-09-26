@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    CheckConstraint,
     text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
@@ -334,31 +335,59 @@ class FamGroup(Base):
     fam_user_group_xref = relationship("FamUserGroupXref", back_populates="group")
 
 
-class FamRole(Base):
-    __tablename__ = "fam_role"
+class FamRoleType(Base):
+    __tablename__ = "fam_role_type"
+
+    role_type_code = Column(
+        String(2),
+        nullable=False,
+        comment='role type code'
+    )
+
+    description = Column(
+        String(100),
+        nullable=True,
+        comment='Description of what the role_type_code represents'
+    )
+
+    effective_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the code was effective.",
+    )
+
+    expiry_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=True,
+        default=None,
+        comment="The date and time the code expired.",
+    )
+
+    update_date = Column(
+        TIMESTAMP(precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+
     __table_args__ = (
-        ForeignKeyConstraint(
-            ["application_id"],
-            ["app_fam.fam_application.application_id"],
-            name="reffam_application22",
-        ),
-        ForeignKeyConstraint(
-            ["client_number_id"],
-            ["app_fam.fam_forest_client.client_number_id"],
-            name="reffam_forest_client24",
-        ),
-        ForeignKeyConstraint(
-            ["parent_role_id"], ["app_fam.fam_role.role_id"], name="reffam_role23"
-        ),
-        PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
-        UniqueConstraint("role_name", name="fam_rle_name_uk"),
+        PrimaryKeyConstraint("role_type_code", name="fam_role_type_code_pk"),
+        CheckConstraint(role_type_code.in_(['C', 'A'])),
         {
-            "comment": "A role is a qualifier that can be assigned to a user "
-            "in order to identify a privilege within the context of an "
-            "application.",
+            "comment": "A role type is a code that is associated with roles "
+            "that will influence what can be associate with a role.  At time "
+            "of implementation an abstract role can only have other roles "
+            "related to it, while a concrete role can only have users "
+            "associated with it",
             "schema": "app_fam",
         },
     )
+
+    role_relation = relationship("FamRole", back_populates="role_type_relation")
+
+
+class FamRole(Base):
+    __tablename__ = "fam_role"
 
     role_id = Column(
         # Use '.with_variant' for sqlite as it does not recognize BigInteger
@@ -412,11 +441,12 @@ class FamRole(Base):
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
-    role_type = Column(
-        String(15),
+    role_type_code = Column(
+        String(2),
         nullable=False,
-        comment="Identifies if the role is a parent or child role.  Users " + \
-                "should only be assigned to roles where role_type=child",
+        comment="Identifies if the role is an abstract or concrete role. " +
+                "Users should only be assigned to roles where " +
+                "role_type=concrete",
     )
 
     application = relationship("FamApplication", back_populates="fam_role")
@@ -429,6 +459,35 @@ class FamRole(Base):
     )
     fam_group_role_xref = relationship("FamGroupRoleXref", back_populates="role")
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="role")
+    role_type_relation = relationship("FamRoleType", backref="role_relation")
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["application_id"],
+            ["app_fam.fam_application.application_id"],
+            name="reffam_application22",
+        ),
+        ForeignKeyConstraint(
+            ["client_number_id"],
+            ["app_fam.fam_forest_client.client_number_id"],
+            name="reffam_forest_client24",
+        ),
+        ForeignKeyConstraint(
+            ["parent_role_id"], ["app_fam.fam_role.role_id"], name="reffam_role23"
+        ),
+        PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
+        UniqueConstraint("role_name", name="fam_rle_name_uk"),
+        ForeignKeyConstraint(
+            [role_type_code], ["app_fam.fam_role_type.role_type_code"], name="reffam_role_type"
+        ),
+        {
+            "comment": "A role is a qualifier that can be assigned to a user "
+            "in order to identify a privilege within the context of an "
+            "application.",
+            "schema": "app_fam",
+        },
+    )
+
+
 
 
 class FamApplicationGroupXref(Base):
