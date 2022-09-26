@@ -38,5 +38,5 @@ def delete_user_role_assignment(
     """
     Delete FAM user_role_xref association.
     """
-    # crud_user_role.deleteFamUserRoleAssignment(db, user_role_xref_id)
+    crud_user_role.deleteFamUserRoleAssignment(db, user_role_xref_id)
     LOGGER.debug(f"User/Role assignment deleted successfully, id: {user_role_xref_id}")

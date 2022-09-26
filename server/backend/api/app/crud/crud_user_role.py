@@ -4,7 +4,7 @@ from typing import Optional
 
 from api.app import constants as famConstants
 from api.app.models import model as models
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
 from . import crud_forest_client, crud_role, crud_user, crudUtils
@@ -68,6 +68,17 @@ def createFamUserRoleAssignment(
     userRoleAssignment = schemas.FamUserRoleAssignmentGet(**xref_dict)
     LOGGER.debug(f"User/Role assignment executed successfully: {userRoleAssignment}")
     return userRoleAssignment
+
+
+def deleteFamUserRoleAssignment(db: Session, user_role_xref_id: int):
+    record = (
+        db.query(models.FamUserRoleXref)
+        .options(load_only("user_role_xref_id"))
+        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
+        .one()
+    )
+    db.delete(record)
+    db.flush()
 
 
 def findOrCreate(db: Session, user_id: int, role_id: int):
