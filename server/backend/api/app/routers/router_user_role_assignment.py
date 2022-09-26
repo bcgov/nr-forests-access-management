@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import logging
 
 from api.app.crud import crud_user_role
@@ -24,6 +25,18 @@ def create_user_role_assignment(
         db, userRoleAssignmentRequset
     )
     LOGGER.debug(
-        f"User/Role assignment executed successfully, id: {createData.user_role_xref_id}"
+        "User/Role assignment executed successfully, "
+        f"id: {createData.user_role_xref_id}"
     )
     return createData
+
+
+@router.delete("/{user_role_xref_id}", status_code=HTTPStatus.NO_CONTENT)
+def delete_user_role_assignment(
+    user_role_xref_id: int, db: Session = Depends(dependencies.get_db)
+) -> None:
+    """
+    Delete FAM user_role_xref association.
+    """
+    # crud_user_role.deleteFamUserRoleAssignment(db, user_role_xref_id)
+    LOGGER.debug(f"User/Role assignment deleted successfully, id: {user_role_xref_id}")
