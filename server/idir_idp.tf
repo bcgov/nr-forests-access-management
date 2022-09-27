@@ -28,7 +28,7 @@ resource "aws_cognito_identity_provider" "idir_oidc_provider" {
 
   attribute_mapping = {
     email                      = "email",
-    email_verified             = "sub",
+    email_verified             = "email_verified",
     family_name                = "family_name",
     given_name                 = "given_name",
     name                       = "name",
