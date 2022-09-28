@@ -2,7 +2,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
-  allowed_oauth_scopes                          = ["openid"]
+  allowed_oauth_scopes                          = ["openid profile"]
   callback_urls                                 = ["https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -10,7 +10,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  read_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
   refresh_token_validity                        = "30"
   supported_identity_providers                  = ["${aws_cognito_identity_provider.idir_oidc_provider.provider_name}"]
 
@@ -21,14 +21,14 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  write_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
 
 # Developer notes: we're capturing all the fields from the upstream IDP, but we really don't need them all. Only scope necessary is openid.
 # It's more secure to only enable the exact fields that you need so that personal information isn't passed around in tokens unnecessarily
 
 # Necessary list of available attributes
-# read_attributes = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+# read_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 # write_attributes = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 
 # Full list of available attributes
