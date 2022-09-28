@@ -383,7 +383,7 @@ class FamRoleType(Base):
         },
     )
 
-    role_relation = relationship("FamRole", back_populates="role_type_relation")
+    #fam_role_relation = relationship("FamRole", back_populates="role_type_relation")
 
 
 class FamRole(Base):
