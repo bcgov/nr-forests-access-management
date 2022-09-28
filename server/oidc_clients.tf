@@ -10,7 +10,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = ["address", "birthdate", "custom:display_name", "custom:identity_provider", "custom:user_guid", "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo"]
+  read_attributes                               = ["address", "birthdate", "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
   refresh_token_validity                        = "30"
   supported_identity_providers                  = ["${aws_cognito_identity_provider.idir_oidc_provider.provider_name}"]
 
@@ -21,5 +21,14 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = ["address", "birthdate", "custom:display_name", "custom:identity_provider", "custom:user_guid", "email", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo"]
+  write_attributes = ["address", "birthdate", "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
+
+# Necessary list of available attributes
+# read_attributes = ["email", "email_verified", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+# write_attributes = ["email", "email_verified", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+
+# Full list of available attributes
+# read_attributes = ["address", "birthdate",  "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+# write_attributes = ["address", "birthdate",  "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+ 

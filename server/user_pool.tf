@@ -41,23 +41,23 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
     attribute_data_type      = "String"
     developer_only_attribute = "false"
     mutable                  = "true"
-    name                     = "display_name"
-    required                 = "false"
-
-    string_attribute_constraints {
-      max_length = "256"
-      min_length = "0"
-    }
-  }
-
-  schema {
-    attribute_data_type      = "String"
-    developer_only_attribute = "false"
-    mutable                  = "true"
     name                     = "email"
     required                 = "true"
 
     string_attribute_constraints {
+      max_length = "512"
+      min_length = "0"
+    }
+  }
+
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "idp_name"
+    required                 = "false"
+
+    string_attribute_constraints {
       max_length = "256"
       min_length = "0"
     }
@@ -67,20 +67,7 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
     attribute_data_type      = "String"
     developer_only_attribute = "false"
     mutable                  = "true"
-    name                     = "identity_provider"
-    required                 = "false"
-
-    string_attribute_constraints {
-      max_length = "256"
-      min_length = "0"
-    }    
-  }
-
-  schema {
-    attribute_data_type      = "String"
-    developer_only_attribute = "false"
-    mutable                  = "true"
-    name                     = "user_guid"
+    name                     = "idp_user_id"
     required                 = "false"
 
     string_attribute_constraints {
@@ -88,6 +75,33 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
       min_length = "0"
     }
   }
+
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "idp_username"
+    required                 = "false"
+
+    string_attribute_constraints {
+      max_length = "256"
+      min_length = "0"
+    }
+  }
+
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "idp_display_name"
+    required                 = "false"
+
+    string_attribute_constraints {
+      max_length = "256"
+      min_length = "0"
+    }
+  }
+
 
   username_configuration {
     case_sensitive = "false"
