@@ -50,7 +50,7 @@ def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest, deleteAl
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    simpleFOMSubmitterRole_dbSession: session.Session
+    simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
     LOGGER.debug(
@@ -144,12 +144,35 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_exi
     clean_up_user_role_assignment(db, user_role_assignment1)
 
 
+def test_givenValidId_whenDeleteAssignment_thenUserRoleAssignmentIsDeleted(
+    simpleFOMSubmitterRole_dbSession: session.Session,
+):
+    db = simpleFOMSubmitterRole_dbSession
+    famUserRoleAssignments = (
+        db.query(models.FamUserRoleXref)
+        .all()
+    )
+    # Verify at least one record setup ready first.
+    assert len(famUserRoleAssignments) >= 1
+
+    assignment_id_to_delete = famUserRoleAssignments[0].user_role_xref_id
+    crud_user_role.deleteFamUserRoleAssignment(db, assignment_id_to_delete)
+
+    famUserRoleAssignments = (
+        db.query(models.FamUserRoleXref)
+        .filter(models.FamUserRoleXref.user_role_xref_id == assignment_id_to_delete)
+        .one_or_none()
+    )
+
+    assert len(famUserRoleAssignments) == 1
+
+
 def clean_up_user_role_assignment(
     db: session.Session, user_role_assignment: schemas.FamUserRoleAssignmentGet
 ):
     # Delete fam_user_role_xref
     stmt = text(
-        """
+    """
         DELETE FROM fam_user_role_xref
         WHERE user_role_xref_id = :user_role_xref_id
     """
@@ -169,7 +192,6 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-
     # Then delete parent role
     stmt = text(
         """
@@ -178,7 +200,6 @@ def clean_up_user_role_assignment(
     )
     # stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
-
 
     # Delete user (db.delete(newUser))
     stmt = text(
