@@ -3,13 +3,12 @@ BEGIN;
 -- Running upgrade V5 -> V6
 
 CREATE TABLE app_fam.fam_role_type (
-    role_type_code VARCHAR(2), 
+    role_type_code VARCHAR(2) NOT NULL, 
     description VARCHAR(100), 
     effective_date TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL, 
     expiry_date TIMESTAMP(6) WITHOUT TIME ZONE, 
     update_date TIMESTAMP(6) WITHOUT TIME ZONE, 
-    CONSTRAINT fam_role_type_code_pk PRIMARY KEY (role_type_code), 
-    CHECK (role_type_code IN ('C', 'A'))
+    CONSTRAINT fam_role_type_code_pk PRIMARY KEY (role_type_code)
 );
 
 COMMENT ON TABLE app_fam.fam_role_type IS 'A role type is a code that is associated with roles that will influence what can be associate with a role.  At time of implementation an abstract role can only have other roles related to it, while a concrete role can only have users associated with it';
@@ -30,9 +29,9 @@ COMMENT ON COLUMN app_fam.fam_role.role_type_code IS 'Identifies if the role is 
 
 ALTER TABLE app_fam.fam_role ADD CONSTRAINT reffam_role_type FOREIGN KEY(role_type_code) REFERENCES app_fam.fam_role_type (role_type_code);
 
-INSERT INTO app_fam.fam_role_type (role_type_code, description, effective_date, update_date) VALUES ('A', 'Abstract role, can only be associated with other roles', '2022-09-27 18:49:18', '2022-09-27 18:49:18');
+INSERT INTO app_fam.fam_role_type (role_type_code, description, effective_date, update_date) VALUES ('A', 'Abstract role, can only be associated with other roles', '2022-09-28 09:56:01', '2022-09-28 09:56:01');
 
-INSERT INTO app_fam.fam_role_type (role_type_code, description, effective_date, update_date) VALUES ('C', 'Concrete Role, can only be associated with other users', '2022-09-27 18:49:18', '2022-09-27 18:49:18');
+INSERT INTO app_fam.fam_role_type (role_type_code, description, effective_date, update_date) VALUES ('C', 'Concrete Role, can only be associated with other users', '2022-09-28 09:56:01', '2022-09-28 09:56:01');
 
 UPDATE alembic_version SET version_num='V6' WHERE alembic_version.version_num = 'V5';
 

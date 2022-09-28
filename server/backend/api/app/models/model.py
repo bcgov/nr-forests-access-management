@@ -372,7 +372,7 @@ class FamRoleType(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("role_type_code", name="fam_role_type_code_pk"),
-        CheckConstraint(role_type_code.in_(['C', 'A'])),
+        #CheckConstraint(role_type_code.in_(['C', 'A'])),
         {
             "comment": "A role type is a code that is associated with roles "
             "that will influence what can be associate with a role.  At time "
