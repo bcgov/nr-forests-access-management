@@ -55,3 +55,5 @@ server/backend/api/app/models/model-back.py
 server/packagelambda.bash
 server/packaging/*
 server/my-deployment-package.zip
+server/backend/packaging/*
+
