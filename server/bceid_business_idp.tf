@@ -15,7 +15,7 @@ variable "oidc_bceid_business_dev_idp_client_secret" {
 
 resource "aws_cognito_identity_provider" "bceid_business_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "BCEID_BUSINESS"
+  provider_name = "BCEIDBUSINESS"
   provider_type = "OIDC"
 
   provider_details = {
