@@ -19,7 +19,7 @@ resource "aws_cognito_identity_provider" "idir_oidc_provider" {
   provider_type = "OIDC"
 
   provider_details = {
-    authorize_scopes          = "openid profile email"
+    authorize_scopes          = "openid profile email idir"
     client_id                 = var.oidc_idir_dev_idp_client_id
     client_secret             = var.oidc_idir_dev_idp_client_secret
     oidc_issuer               = var.oidc_idir_dev_idp_issuer
