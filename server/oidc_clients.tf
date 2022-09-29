@@ -51,7 +51,7 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
 }
 
 
-resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
+resource "aws_cognito_user_pool_client" "fom_public_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
@@ -61,7 +61,7 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
   id_token_validity                             = "60"
-  name                                          = "fom_ministry"
+  name                                          = "fom_public"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
   refresh_token_validity                        = "30"
