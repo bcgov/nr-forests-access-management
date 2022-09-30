@@ -2,13 +2,15 @@ import logging
 
 import api.app.schemas as schemas
 import pytest
-from api.app.crud import crud_user_role, crud_role, crud_user
+from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
 from fastapi import HTTPException
 from pydantic import ValidationError
+from sqlalchemy import bindparam, text
 from sqlalchemy.orm import session
-from sqlalchemy import text, bindparam
-from tests.fixtures.fixtures_crud_user_role_assignment import FOM_SUBMITTER_ROLE_NAME
+from sqlalchemy.orm.exc import NoResultFound
+from tests.fixtures.fixtures_crud_user_role_assignment import \
+    FOM_SUBMITTER_ROLE_NAME
 
 LOGGER = logging.getLogger(__name__)
 
@@ -57,16 +59,16 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
         "Creating forest client FOM Submitter user/role assignment "
         "and parent role exists in db."
     )
-    famSubmitterRole = (
+    fomSubmitterRole = (
         db.query(models.FamRole)
         .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify parent role exist first.
-    assert isinstance(famSubmitterRole, models.FamRole)
-    assert famSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
+    assert isinstance(fomSubmitterRole, models.FamRole)
+    assert fomSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
 
-    simpleUserRoleRequest.role_id = famSubmitterRole.role_id
+    simpleUserRoleRequest.role_id = fomSubmitterRole.role_id
 
     # User/Role assignment created.
     user_role_assignment = crud_user_role.createFamUserRoleAssignment(
@@ -82,8 +84,8 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     )
 
     # assert user_role_assignment, schemas.FamUserRoleAssignmentCreate
-    assert user_role_assignment.role_id != famSubmitterRole.role_id
-    assert forestClientRole.parent_role_id == famSubmitterRole.role_id
+    assert user_role_assignment.role_id != fomSubmitterRole.role_id
+    assert forestClientRole.parent_role_id == fomSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
     assert user.user_type == simpleUserRoleRequest.user_type
 
@@ -145,9 +147,9 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_exi
 
 
 def test_givenValidId_whenDeleteAssignment_thenUserRoleAssignmentIsDeleted(
-    simpleFOMSubmitterRole_dbSession: session.Session,
+    simpleUserRoleAssignment_dbSession: session.Session,
 ):
-    db = simpleFOMSubmitterRole_dbSession
+    db = simpleUserRoleAssignment_dbSession
     famUserRoleAssignments = (
         db.query(models.FamUserRoleXref)
         .all()
@@ -164,7 +166,26 @@ def test_givenValidId_whenDeleteAssignment_thenUserRoleAssignmentIsDeleted(
         .one_or_none()
     )
 
+    # Verify correct user/role assignment has been deleted.
+    assert famUserRoleAssignments is None
+
+
+def test_givenInValidId_whenDeleteAssignment_raiseException(
+    simpleUserRoleAssignment_dbSession: session.Session,
+):
+    db = simpleUserRoleAssignment_dbSession
+    famUserRoleAssignments = (
+        db.query(models.FamUserRoleXref)
+        .all()
+    )
+    # Verify  one record setup ready first.
     assert len(famUserRoleAssignments) == 1
+
+    with pytest.raises(NoResultFound) as e:
+        invalid_id = 0
+        crud_user_role.deleteFamUserRoleAssignment(db, invalid_id)
+    LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
+    assert str(e._excinfo).find("No row was found when one was required") != -1
 
 
 def clean_up_user_role_assignment(
@@ -172,10 +193,10 @@ def clean_up_user_role_assignment(
 ):
     # Delete fam_user_role_xref
     stmt = text(
-    """
+        """
         DELETE FROM fam_user_role_xref
         WHERE user_role_xref_id = :user_role_xref_id
-    """
+        """
     )
     stmt = stmt.bindparams(
         bindparam("user_role_xref_id", value=user_role_assignment.user_role_xref_id)
@@ -187,7 +208,7 @@ def clean_up_user_role_assignment(
         """
         DELETE FROM fam_role
         WHERE role_id = :role_id
-    """
+        """
     )
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
@@ -197,7 +218,7 @@ def clean_up_user_role_assignment(
         """
         DELETE FROM fam_user
         WHERE user_id = :user_id
-    """
+        """
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
     db.execute(stmt)

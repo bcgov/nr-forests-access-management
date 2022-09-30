@@ -29,6 +29,41 @@ def simpleUserRoleRequest(simpleUserRoleData) -> schemas.FamUserRoleAssignmentCr
 
 
 @pytest.fixture(scope="function")
+def simpleUserRoleAssignment_dbSession(
+    simpleFOMSubmitterRole_dbSession: session.Session
+):
+    db = simpleFOMSubmitterRole_dbSession
+    fam_role: model.FamRole = (db.query(model.FamRole).all())[0]
+
+    # add dummy user
+    fam_user = model.FamUser(
+        **{
+            "user_type": famConstants.UserType.IDIR,
+            "user_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
+            "create_user": famConstants.FAM_PROXY_API_USER
+        }
+    )
+    db.add(fam_user)
+    db.flush()
+
+    # add user/role assignment
+    user_role_assignment = model.FamUserRoleXref(
+        **{
+            "user_id": fam_user.user_id,
+            "role_id": fam_role.role_id,
+            "create_user": famConstants.FAM_PROXY_API_USER
+        }
+    )
+    db.add(user_role_assignment)
+    db.commit()
+    yield db
+
+    db.delete(user_role_assignment)
+    db.delete(fam_user)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
 def simpleFOMSubmitterRole_dbSession(
     dbSession: session.Session,
 ):
