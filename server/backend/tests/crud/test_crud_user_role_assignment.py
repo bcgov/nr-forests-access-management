@@ -192,15 +192,6 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-    # Then delete parent role
-    stmt = text(
-        """
-        DELETE FROM fam_role
-    """
-    )
-    # stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
-    db.execute(stmt)
-
     # Delete user (db.delete(newUser))
     stmt = text(
         """
@@ -209,16 +200,4 @@ def clean_up_user_role_assignment(
     """
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
-    db.execute(stmt)
-
-    # Delete application
-    stmt = text(
-        """
-        DELETE FROM fam_application
-        WHERE application_id = :application_id
-    """
-    )
-    stmt = stmt.bindparams(
-        bindparam("application_id", value=user_role_assignment.application_id)
-    )
     db.execute(stmt)

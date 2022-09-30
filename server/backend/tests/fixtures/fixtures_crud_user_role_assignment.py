@@ -59,4 +59,5 @@ def simpleFOMSubmitterRole_dbSession(
     yield db
 
     db.delete(fomSubmitterRole)
+    db.delete(famApplication)
     db.commit()
