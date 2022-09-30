@@ -95,7 +95,7 @@ variable "minimum_write_list" {
 variable "all_read_list_idir" {
   description = "The list of all read attributes for IDIR clients"
   type        = list(string)
-  default     = ["email", "email_verified", "name" "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "email_verified", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
 
 variable "all_write_list_idir" {
