@@ -2,7 +2,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
-  allowed_oauth_scopes                          = ["openid"]
+  allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = ["https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -28,7 +28,7 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
-  allowed_oauth_scopes                          = ["openid"]
+  allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = ["https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -55,7 +55,7 @@ resource "aws_cognito_user_pool_client" "fom_public_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
-  allowed_oauth_scopes                          = ["openid"]
+  allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = ["https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -95,13 +95,13 @@ variable "minimum_write_list" {
 variable "all_read_list_idir" {
   description = "The list of all read attributes for IDIR clients"
   type        = list(string)
-  default     = ["email", "email_verified", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "email_verified", "name" "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
 
 variable "all_write_list_idir" {
   description = "The list of all write attributes for IDIR clients"
   type        = list(string)
-  default     = ["email", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
 
 variable "all_read_list_bceid_business" {
