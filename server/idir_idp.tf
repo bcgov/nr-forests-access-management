@@ -27,6 +27,7 @@ resource "aws_cognito_identity_provider" "idir_oidc_provider" {
   }
 
   attribute_mapping = {
+    email                      = "email",
     "custom:idp_name"          = "identity_provider",
     "custom:idp_user_id"       = "idir_user_guid",
     "custom:idp_username"      = "idir_username",
