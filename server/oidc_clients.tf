@@ -95,23 +95,23 @@ variable "minimum_write_list" {
 variable "all_read_list_idir" {
   description = "The list of all read attributes for IDIR clients"
   type        = list(string)
-  default     = ["email", "email_verified", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "email_verified", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:keycloak_username"]
 }
 
 variable "all_write_list_idir" {
   description = "The list of all write attributes for IDIR clients"
   type        = list(string)
-  default     = ["email", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:keycloak_username"]
 }
 
 variable "all_read_list_bceid_business" {
   description = "The list of all read attributes for BCEIDBUSINESS clients"
   type        = list(string)
-  default     = ["email", "email_verified", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id"]
+  default     = ["email", "email_verified", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id", "custom:keycloak_username"]
 }
 
 variable "all_write_list_bceid_business" {
   description = "The list of all write attributes for BCEIDBUSINESS clients"
   type        = list(string)
-  default     = ["email", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id"]
+  default     = ["email", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id", "custom:keycloak_username"]
 }
