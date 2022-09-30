@@ -10,7 +10,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  read_attributes                               = var.minimum_read_list
   refresh_token_validity                        = "30"
   supported_identity_providers                  = ["${aws_cognito_identity_provider.idir_oidc_provider.provider_name}"]
 
@@ -21,7 +21,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  write_attributes = var.minimum_write_list
 }
 
 resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
@@ -36,7 +36,7 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fom_ministry"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  read_attributes                               = var.all_read_list_idir
   refresh_token_validity                        = "30"
   supported_identity_providers                  = ["${aws_cognito_identity_provider.idir_oidc_provider.provider_name}"]
 
@@ -47,7 +47,7 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  write_attributes = var.all_write_list_idir
 }
 
 
@@ -63,7 +63,7 @@ resource "aws_cognito_user_pool_client" "fom_public_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fom_public"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  read_attributes                               = var.all_read_list_bceid_business
   refresh_token_validity                        = "30"
   supported_identity_providers                  = ["${aws_cognito_identity_provider.bceid_business_oidc_provider.provider_name}"]
 
@@ -74,18 +74,44 @@ resource "aws_cognito_user_pool_client" "fom_public_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  write_attributes = var.all_write_list_bceid_business
 }
 
 # Developer notes: we're capturing all the fields from the upstream IDP, but we really don't need them all. Only scope necessary is openid.
 # It's more secure to only enable the exact fields that you need so that personal information isn't passed around in tokens unnecessarily
 
-# Necessary list of available attributes
-# read_attributes = ["locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
-# write_attributes = ["email", "locale", "zoneinfo", "updated_at", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+variable "minimum_read_list" {
+  description = "The list of required read attributes for all clients"
+  type        = list(string)
+  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+}
 
-# Full list of available attributes
-# read_attributes = ["address", "birthdate",  "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
-# write_attributes = ["address", "birthdate",  "email", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+variable "minimum_write_list" {
+  description = "The list of required write attributes for all clients"
+  type        = list(string)
+  default     = ["email", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+}
 
+variable "all_read_list_idir" {
+  description = "The list of all read attributes for IDIR clients"
+  type        = list(string)
+  default     = ["email", "email_verified", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+}
 
+variable "all_write_list_idir" {
+  description = "The list of all write attributes for IDIR clients"
+  type        = list(string)
+  default     = ["email", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+}
+
+variable "all_read_list_bceid_business" {
+  description = "The list of all read attributes for BCEIDBUSINESS clients"
+  type        = list(string)
+  default     = ["email", "email_verified", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id"]
+}
+
+variable "all_write_list_bceid_business" {
+  description = "The list of all write attributes for BCEIDBUSINESS clients"
+  type        = list(string)
+  default     = ["email", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id"]
+}

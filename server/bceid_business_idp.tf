@@ -27,19 +27,13 @@ resource "aws_cognito_identity_provider" "bceid_business_oidc_provider" {
   }
 
   attribute_mapping = {
-    email                      = "email",
-    email_verified             = "email_verified",
-    family_name                = "family_name",
-    given_name                 = "given_name",
-    name                       = "name",
-    preferred_username         = "preferred_username",
-    username                   = "sub",
     "custom:idp_name"          = "identity_provider",
     "custom:idp_user_id"       = "bceid_user_guid",
-    "custom:idp_username"      = "bceid_user_name",
+    "custom:idp_username"      = "bceid_username",
     "custom:idp_display_name"  = "display_name"
     "custom:idp_business_name" = "bceid_business_name",
-    "custom:idp_business_id"   = "bceid_business_guid"
+    "custom:idp_business_id"   = "bceid_business_guid",
+    "custom:keycloak_username" = "preferred_username"
   }
 
 }
