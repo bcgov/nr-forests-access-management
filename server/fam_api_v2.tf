@@ -78,7 +78,7 @@ resource "aws_lambda_function" "fam-api-function" {
   #function_name = random_pet.api_lambda_name.id
   function_name = "fam-api-lambda"
   role          = aws_iam_role.fam_api_lambda_exec.arn
-  handler       = "app.main.handler"
+  handler       = "api.app.main.handler"
 
   source_code_hash = filebase64sha256("fam-api.zip")
 
