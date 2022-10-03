@@ -11,8 +11,13 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# @router.get(
+#     "/",
+#     response_model=List[schemas.FamApplication],
+#     status_code=200
+# )
 @router.get(
-    "/",
+    "",
     response_model=List[schemas.FamApplication],
     status_code=200
 )
@@ -33,7 +38,7 @@ def get_fam_applications(response: Response,
     return queryData
 
 @router.post(
-    "/", response_model=schemas.FamApplication
+    "", response_model=schemas.FamApplication
 )
 def create_fam_application(
     famApplication: schemas.FamApplicationCreate,
