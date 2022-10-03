@@ -53,12 +53,12 @@ def test_post_fam_application(testClient_fixture, applicationData1):
     LOGGER.debug(f"applicationData1: {applicationData1}")
     applicationData1["create_date"] = str(applicationData1["create_date"])
     applicationData1["update_date"] = str(applicationData1["update_date"])
-    postResp = testClient_fixture.post(f"{endPoint}/", json=applicationData1)
+    postResp = testClient_fixture.post(f"{endPoint}", json=applicationData1)
     LOGGER.debug(f"resp status: {postResp.status_code}")
     assert postResp.status_code == 200
 
     # make sure that there is data in the application
-    getResp = testClient_fixture.get(f"{endPoint}/")
+    getResp = testClient_fixture.get(f"{endPoint}")
     getData = getResp.json()
     recordAdded = False
     testRecord = None
