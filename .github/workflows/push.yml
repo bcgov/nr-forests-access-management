@@ -97,6 +97,9 @@ jobs:
           oidc_idir_dev_idp_client_id = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_ID }}"
           oidc_idir_dev_idp_client_secret = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_SECRET }}"
           oidc_idir_dev_idp_issuer = "${{ secrets.OIDC_IDIR_DEV_IDP_ISSUER }}"
+          oidc_bceid_business_dev_idp_client_id = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
+          oidc_bceid_business_dev_idp_client_secret = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
+          oidc_bceid_business_dev_idp_issuer = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
           EOF
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve

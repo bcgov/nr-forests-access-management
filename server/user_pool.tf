@@ -102,6 +102,45 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
     }
   }
 
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "idp_business_name"
+    required                 = "false"
+
+    string_attribute_constraints {
+      max_length = "2048"
+      min_length = "0"
+    }
+  }
+
+
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "idp_business_id"
+    required                 = "false"
+
+    string_attribute_constraints {
+      max_length = "2048"
+      min_length = "0"
+    }
+  }
+
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = "false"
+    mutable                  = "true"
+    name                     = "keycloak_username"
+    required                 = "false"
+
+    string_attribute_constraints {
+      max_length = "2048"
+      min_length = "0"
+    }
+  }
 
   username_configuration {
     case_sensitive = "false"
