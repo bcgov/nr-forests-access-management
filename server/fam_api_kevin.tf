@@ -23,7 +23,7 @@ data "aws_db_proxy" "api_lambda_db_proxy_kevin" {
 
 resource "aws_lambda_function" "fam-api_lambda_function" {
   filename      = "fam-ui-api.zip"
-  function_name = "fam-api-lambda"
+  function_name = "fam-api-lambda-old"
   role          = data.aws_iam_role.secret_access_role_kevin.arn
   handler = "api.app.main.handler"
 
