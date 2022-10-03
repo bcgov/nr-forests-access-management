@@ -9,6 +9,9 @@ data "aws_lambda_function" "target_lambda" {
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
   name = "${aws_lambda_function.fam-api-function.function_name}-gateway"
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
 
 resource "aws_api_gateway_resource" "fam_api_gateway_resource" {
