@@ -4,7 +4,8 @@ data "aws_lambda_function" "target_lambda" {
   function_name = aws_lambda_function.fam-api-function.function_name
 }
 
-# Define new stuff
+# defines the gateway name as the name of the lambda function with
+# the text '-gateway' appended to it.
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
   name = "${aws_lambda_function.fam-api-function.function_name}-gateway"
