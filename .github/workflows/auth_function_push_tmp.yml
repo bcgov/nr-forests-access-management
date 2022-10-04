@@ -12,18 +12,18 @@ jobs:
   test-auth-lambda:
     runs-on: ubuntu-latest
 
-    # services:
-    #   postgres:
-    #     image: postgres
-    #     env:
-    #       POSTGRES_DB: db
-    #       POSTGRES_USER: user
-    #       POSTGRES_PASSWORD: password
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
 
@@ -32,13 +32,13 @@ jobs:
         with: 
           path: "nr-forests-access-management"
 
-      - name: start postgres
-        uses: harmon758/postgresql-action@v1
-        with:
-          postgresql version: '11'
-          postgresql db: db
-          postgresql user: user
-          postgresql password: password      
+      # - name: start postgres
+      #   uses: harmon758/postgresql-action@v1
+      #   with:
+      #     postgresql version: '11'
+      #     postgresql db: db
+      #     postgresql user: user
+      #     postgresql password: password      
 
       - name: run flyway on test database
         uses: joshuaavalon/flyway-action@v3.0.0
