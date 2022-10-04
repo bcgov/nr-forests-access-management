@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.FamUserGet])
+@router.get("", response_model=List[schemas.FamUserGet])
 def get_fam_users(db: Session = Depends(dependencies.get_db)):
     """
     List of different users that are administered by FAM
@@ -21,7 +21,7 @@ def get_fam_users(db: Session = Depends(dependencies.get_db)):
     queryData = crud_user.getFamUsers(db)
     return queryData
 
-@router.post("/", response_model=schemas.FamUserGet)
+@router.post("", response_model=schemas.FamUserGet)
 def create_fam_user(
     famUser: schemas.FamUser, db: Session = Depends(dependencies.get_db)
 ):
