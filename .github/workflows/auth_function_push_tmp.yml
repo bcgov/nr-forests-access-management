@@ -46,6 +46,6 @@ jobs:
           url: jdbc:postgresql://postgres:5432/db
           user: user
           password: password
-          locations: ./server/flyway/sql
+          locations: server/flyway/sql
 
       - run: echo 'testing'
