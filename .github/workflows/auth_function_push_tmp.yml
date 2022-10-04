@@ -1,0 +1,48 @@
+name: Test Auth Lambda
+
+on:
+  push:
+    branches: [feat/23-authorization-lambda]
+
+env:
+  environment: dev
+  organization: bcgov
+
+jobs:
+  test-auth-lambda:
+    runs-on: ubuntu-latest
+
+    # services:
+    #   postgres:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_DB: db
+    #       POSTGRES_USER: user
+    #       POSTGRES_PASSWORD: password
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
+    steps:
+
+      - name: checkout the nr-forests-access-management repository
+        uses: actions/checkout@v2
+        with: 
+          path: "nr-forests-access-management"
+
+      - name: start postgres
+        uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: '11'          
+
+      - name: run flyway on test database
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:postgresql://postgres:5432/db
+          user: user
+          password: password
+          locations: ./server/flyway/sql
+
+      - run: echo 'testing'
