@@ -49,3 +49,5 @@ jobs:
           locations: nr-forests-access-management/server/flyway/sql
 
       - run: echo 'testing'
+
+      # no-op
