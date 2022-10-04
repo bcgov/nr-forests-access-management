@@ -11,6 +11,10 @@ env:
 jobs:
   test-auth-lambda:
     runs-on: ubuntu-latest
+    env: 
+      FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
+      FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
+
 
     services:
       postgres:
