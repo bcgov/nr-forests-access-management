@@ -35,7 +35,10 @@ jobs:
       - name: start postgres
         uses: harmon758/postgresql-action@v1
         with:
-          postgresql version: '11'          
+          postgresql version: '11'
+          postgresql db: db
+          postgresql user: user
+          postgresql password: password      
 
       - name: run flyway on test database
         uses: joshuaavalon/flyway-action@v3.0.0
