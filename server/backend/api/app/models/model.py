@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    CheckConstraint,
     text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
