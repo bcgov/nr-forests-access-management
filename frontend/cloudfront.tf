@@ -23,7 +23,7 @@ resource "random_pet" "lambda_bucket_name" {
 
 resource "aws_s3_bucket" "web_distribution" {
   bucket = random_pet.lambda_bucket_name.id
-  acl    = "public-read"
+  #acl    = "public-read"
 
 }
 resource "aws_cloudfront_origin_access_identity" "web_distribution" {
@@ -101,7 +101,8 @@ locals {
     json = "application/json",
     svg  = "image/svg+xml",
     ttf  = "font/ttf",
-    txt  = "text/txt"
+    txt  = "text/txt",
+    css  = "text/css"
 
   }
 }
