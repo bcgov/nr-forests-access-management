@@ -48,13 +48,11 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install python test dependencies
-        run: pip install pytest pytest-md pytest-emoji
-
-      - name: Auth function install and package Dependencies
-        run: |
+      - name: Auth function install python test dependencies
+        run: 
+          pip install pytest pytest-md pytest-emoji
           cd server/auth_function
-          pip install -t . -r ../requirements.txt
+          pip install -r ../requirements.txt
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2
@@ -68,3 +66,22 @@ jobs:
           PG_DATABASE: db
           PG_USER: appuser
           PG_PASSWORD: appuserpw
+
+      - name: Auth function zip
+        run: |
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt
+          zip -r9 ../../fam_auth_function.zip .
+          cd ..
+          rm -rf packaging
+          cd ..
+          zip -u ../fam_auth_function.zip -r auth_function/
+          cd ..          
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./server/fam_auth_function.zip
+          if-no-files-found: error
