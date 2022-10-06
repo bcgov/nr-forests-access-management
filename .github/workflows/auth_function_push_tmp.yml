@@ -57,11 +57,11 @@ jobs:
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2   
-        custom-arguments: 'server/auth_function'  
         with:
           emoji: true
           verbose: true
           job-summary: true
+          custom-arguments: 'server/auth_function' 
         env: 
           PG_HOST: postgres
           PG_PORT: 5432
