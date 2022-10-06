@@ -49,13 +49,15 @@ jobs:
           python-version: '3.8'
 
       - name: Auth function install python test dependencies
+        working-directory: server/auth_function
         run: |
           pip install pytest pytest-md pytest-emoji
-          cd server/auth_function
           pip install -r requirements.txt
+
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2
+        working-directory: server/auth_function        
         with:
           emoji: true
           verbose: true
@@ -66,6 +68,7 @@ jobs:
           PG_DATABASE: db
           PG_USER: appuser
           PG_PASSWORD: appuserpw
+
 
       - name: Auth function zip
         run: |
