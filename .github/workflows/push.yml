@@ -113,9 +113,6 @@ jobs:
           cd frontend
           npm install
 
-          cd frontend
-          npm install
-
           # not sure why the put it like this, just explicitly calling the
           # build for now
           #CI=false npm run build
