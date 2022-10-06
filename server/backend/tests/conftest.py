@@ -132,7 +132,11 @@ def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
     # transaction = connection.begin()
     session = sessionObjects(bind=connection)
     yield session  # use the session in tests.
-
+    try:
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        LOGGER.debug(f"error: {e}")
     session.close()
     # transaction.rollback()
     connection.close()

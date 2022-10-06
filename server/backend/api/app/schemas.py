@@ -99,6 +99,38 @@ class FamUserGet(FamUser):
         orm_mode = True
 
 
+class FamRoleTypeGet(BaseModel):
+    role_type_code: str
+    description: str
+    effective_date: datetime
+    expiry_date: Optional[datetime]
+    update_date: Optional[datetime]
+
+    class Config:
+        """allows serialization of orm data struct"""
+
+        orm_mode = True
+
+
+class FamRoleCreate(BaseModel):
+    role_name: str
+    role_purpose: str
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    application_id: Union[int, None] = Field(
+        default=None, title="Application this role is associated with"
+    )
+    client_number_id: Union[int, None] = Field(
+        default=None, title="Forest Client this role is associated with"
+    )
+    create_user: str
+    role_type_code: str
+
+    class Config:
+        orm_mode = True
+
+
 class FamRoleGet(FamRoleCreate):
     role_id: int
     update_user: Union[str, None]

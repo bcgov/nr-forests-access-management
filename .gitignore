@@ -54,9 +54,8 @@ server/backend/database/flyway*
 server/backend/api/alembic/versions-modified/*
 server/backend/api/app/models/model-back.py
 server/packagelambda.bash
-server/packaging/*
 server/my-deployment-package.zip
+server/packaging/*
 server/backend/packaging/*
-
 server/localtest.auto.tfvars
 server/github.auto.tfvars

@@ -13,8 +13,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = 'V9'
-down_revision = 'V8'
+revision = 'V11'
+down_revision = 'V10'
 branch_labels = None
 depends_on = None
 
