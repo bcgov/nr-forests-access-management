@@ -56,8 +56,8 @@ jobs:
 
 
       - name: Auth function run pytest
-        uses: pavelzw/pytest-action@v2
-        working-directory: server/auth_function        
+        working-directory: server/auth_function  
+        uses: pavelzw/pytest-action@v2     
         with:
           emoji: true
           verbose: true
