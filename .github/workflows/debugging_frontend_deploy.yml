@@ -58,7 +58,13 @@ jobs:
           echo testing 1 2 3
           cd frontend
           echo in frontend dir
-          terraform show
           echo ----------------------
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+          EOF
+          terraform init -backend-config=backend.hcl
+
+
           terraform output > domain.txt
           cat domain.txt
