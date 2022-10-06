@@ -57,5 +57,8 @@ jobs:
         run: |
           echo testing 1 2 3
           cd frontend
+          echo in frontend dir
+          terraform show
+          echo ----------------------
           terraform output > domain.txt
           cat domain.txt
