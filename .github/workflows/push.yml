@@ -105,6 +105,8 @@ jobs:
           terraform apply -auto-approve
 
       - name: Build / Deploy frontend
+        run: |
+
           # --- commenting this out for now as we arn't using any envs with
           # --- hello world
           # cd server
