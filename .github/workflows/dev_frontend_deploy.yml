@@ -33,7 +33,10 @@ jobs:
           cd frontend
           npm install
 
-          CI=false npm run build
+          # not sure why the put it like this, just explicitly calling the
+          # build for now
+          #CI=false npm run build
+          npm run build
 
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
