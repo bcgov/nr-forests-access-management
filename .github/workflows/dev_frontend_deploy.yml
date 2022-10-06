@@ -25,6 +25,8 @@ jobs:
 
       - name: Building front-end and deploying Frontend using terraform
         run: |
+          # --- commenting this out for now as we arn't using any envs with
+          # --- hello world
           # cd server
           # terraform output > ../frontend/.env
           # cd ..frontend
@@ -39,4 +41,6 @@ jobs:
           EOF
 
           terraform init -backend-config=backend.hcl
-          terraform plan
+          #terraform plan
+          terraform apply -auto-approve
+
