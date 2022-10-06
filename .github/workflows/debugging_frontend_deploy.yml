@@ -7,7 +7,10 @@ name: Push
 
 on:
   push:
-    branches: [branch-name-that-doesnt-exist]
+    branches: [feat/165-sample-vue-app]
+    #branches: [branch-name-that-doesnt-exist]
+
+    feat/165-sample-vue-app
 
 env:
   TF_VERSION: 1.0.5
@@ -28,27 +31,34 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
 
-      - name: Building front-end and deploying Frontend using terraform
+      # - name: Building front-end and deploying Frontend using terraform
+      #   run: |
+      #     # --- commenting this out for now as we arn't using any envs with
+      #     # --- hello world
+      #     # cd server
+      #     # terraform output > ../frontend/.env
+      #     # cd ..frontend
+      #     cd frontend
+      #     npm install
+
+      #     # not sure why the put it like this, just explicitly calling the
+      #     # build for now
+      #     #CI=false npm run build
+      #     npm run build
+
+      #     cat <<EOF > backend.hcl
+      #     organization = "${{ env.organization }}"
+      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+      #     EOF
+
+      #     terraform init -backend-config=backend.hcl
+      #     #terraform plan
+      #     terraform apply -auto-approve
+
+      - name: Terraform - Retrieve cloudfront domain
         run: |
-          # --- commenting this out for now as we arn't using any envs with
-          # --- hello world
-          # cd server
-          # terraform output > ../frontend/.env
-          # cd ..frontend
           cd frontend
-          npm install
+          terraform output > domain.txt
+          echo domain.txt
 
-          # not sure why the put it like this, just explicitly calling the
-          # build for now
-          #CI=false npm run build
-          npm run build
-
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
-          EOF
-
-          terraform init -backend-config=backend.hcl
-          #terraform plan
-          terraform apply -auto-approve
 
