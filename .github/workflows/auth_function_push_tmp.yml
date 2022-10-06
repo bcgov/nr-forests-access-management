@@ -51,8 +51,15 @@ jobs:
       - name: Auth function install python test dependencies
         run: 
           pip install pytest pytest-md pytest-emoji
+
+      - name: Auth function install dependencies
+        run:        
           cd server/auth_function
           pip install -r ../requirements.txt
+
+      - name: Auth function install test dependencies
+        run:        
+          pip install -r ../requirements-dev.txt          
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2
