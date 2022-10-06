@@ -91,19 +91,18 @@ jobs:
           terraform init -backend-config=backend.hcl
           terraform plan
 
-      # - name: Building front-end and deploying Frontend using terraform
-      #   run: |
-      #     cd server
-      #     terraform output > ../client/.env
-      #     cd ../client
-      #     npm install
+      - name: Building front-end and deploying Frontend using terraform
+        run: |
 
-      #     CI=false npm run build
+          # not sure why the put it like this, just explicitly calling the
+          # build for now
+          #CI=false npm run build
+          npm run build
 
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
-      #     EOF
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+          EOF
 
-      #     terraform init -backend-config=backend.hcl
-      #     terraform plan
+          terraform init -backend-config=backend.hcl
+          terraform plan
