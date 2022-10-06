@@ -103,7 +103,6 @@ locals {
     ttf  = "font/ttf",
     txt  = "text/txt",
     css  = "text/css"
-
   }
 }
 
@@ -116,5 +115,5 @@ resource "aws_s3_bucket_object" "site_files" {
   key    = each.value
   source = "${local.src_dir}/${each.value}"
 
-  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9]+)$", each.value).extension, "application/octet-stream")
+  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9]+)$", each.value).extension, "text/plain")
 }
