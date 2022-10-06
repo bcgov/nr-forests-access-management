@@ -25,9 +25,10 @@ jobs:
 
       - name: Building front-end and deploying Frontend using terraform
         run: |
-          cd server
-          terraform output > ../frontend/.env
-          cd ../frontend
+          # cd server
+          # terraform output > ../frontend/.env
+          # cd ..frontend
+          cd frontend
           npm install
 
           CI=false npm run build
