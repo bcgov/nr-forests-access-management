@@ -54,16 +54,7 @@ jobs:
       - name: Auth function install and package Dependencies
         run: |
           cd server/auth_function
-          mkdir packaging
-          cd packaging
           pip install -t . -r ../requirements.txt
-          zip -r9 ../../auth_function.zip .
-          cd ..
-          rm -rf packaging
-          cd ../../
-          cd server/auth_function
-          zip -u ../auth_function.zip -r app/
-          cd ..
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2
