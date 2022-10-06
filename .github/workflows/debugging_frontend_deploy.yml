@@ -55,8 +55,7 @@ jobs:
 
       - name: Terraform - Retrieve cloudfront domain
         run: |
+          echo testing 1 2 3
           cd frontend
           terraform output > domain.txt
-          echo domain.txt
-
-
+          cat domain.txt
