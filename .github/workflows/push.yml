@@ -104,3 +104,27 @@ jobs:
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
 
+      - name: Build / Deploy frontend
+          # --- commenting this out for now as we arn't using any envs with
+          # --- hello world
+          # cd server
+          # terraform output > ../frontend/.env
+          # cd ..frontend
+          cd frontend
+          npm install
+
+          cd frontend
+          npm install
+
+          # not sure why the put it like this, just explicitly calling the
+          # build for now
+          #CI=false npm run build
+          npm run build
+
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve
