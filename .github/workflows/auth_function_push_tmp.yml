@@ -29,8 +29,8 @@ jobs:
 
       - name: checkout the nr-forests-access-management repository
         uses: actions/checkout@v2
-        with: 
-          path: "nr-forests-access-management"  
+        # with: 
+        #   path: "nr-forests-access-management"  
 
       - name: run flyway on test database
         uses: joshuaavalon/flyway-action@v3.0.0
@@ -38,7 +38,7 @@ jobs:
           url: jdbc:postgresql://postgres:5432/db
           user: user
           password: password
-          locations: nr-forests-access-management/server/flyway/sql
+          locations: server/flyway/sql
         env: 
           FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
           FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
