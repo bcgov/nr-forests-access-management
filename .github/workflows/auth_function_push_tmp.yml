@@ -73,6 +73,7 @@ jobs:
 
 
       - name: Auth function zip
+        working-directory: server/auth_function
         run: |
           mkdir packaging
           cd packaging
