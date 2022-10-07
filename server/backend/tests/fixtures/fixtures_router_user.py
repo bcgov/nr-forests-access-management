@@ -1,6 +1,6 @@
 import logging
-import pytest
 
+import pytest
 import tests.router.test_router_user as test_router_user
 
 LOGGER = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ def user_client_withUsersNoCleanup(testClient_fixture, testUserData):
     testUserData['create_date'] = str(testUserData['create_date'])
     testUserData['update_date'] = str(testUserData['update_date'])
 
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
     LOGGER.debug(f"setup user table with data: {resp.status_code} " +
                  f"{resp.reason}")
     LOGGER.debug(f"setup data: {testUserData}")
@@ -31,7 +31,7 @@ def user_client_withUsers(testClient_fixture, testUserData):
     testUserData['create_date'] = str(testUserData['create_date'])
     testUserData['update_date'] = str(testUserData['update_date'])
 
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
     LOGGER.debug(f"setup user table with data: {resp.status_code}" +
                  f"  {resp.reason}")
     if resp.status_code != 200:

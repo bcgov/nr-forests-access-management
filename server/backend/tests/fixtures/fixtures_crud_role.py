@@ -1,13 +1,12 @@
+import datetime
 import logging
 from typing import List
 
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
-import datetime
-from sqlalchemy.orm import session
-
 import sqlalchemy.exc
+from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,13 +35,11 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
     db.commit()
     yield db  # use the session in tests.
     try:
-        #roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
         db.delete(roleTypeModel_abstract)
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.error(f'wasn\'t committed: {e}')
 
     try:
-        #roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
         db.delete(roleTypeModel_concrete)
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.debug(f'wasn\'t committed: {e}')
@@ -99,7 +96,6 @@ def deleteAllRoles(dbSession: session.Session) -> None:
     for famRole in famRoles:
         db.delete(famRole)
     db.commit()
-    #deleteAllRoles_external(dbSession)
 
 
 @pytest.fixture(scope="function")

@@ -110,33 +110,35 @@ def getUserRolebyUserIdAndRoleId(
     return famUserRole
 
 
-def constructForestClientRoleName(parent_role_name: str, client_number_id: int):
-    return f"{parent_role_name}_{client_number_id}"
+def constructForestClientRoleName(parent_role_name: str, forest_client_number: str):
+    return f"{parent_role_name}_{forest_client_number}"
 
 
 def constructForestClientRolePurpose(
-    parent_role_purpose: str, client_name: str, client_number_id: int
+    parent_role_purpose: str, client_name: str, forest_client_number: str
 ):
-    return f"{parent_role_purpose} for {client_name} ({client_number_id})"
+    return f"{parent_role_purpose} for {client_name} ({forest_client_number})"
 
 
 def findOrCreateChildRole(
-    db: Session, client_number_id: int, parent_role: models.FamRole
+    db: Session, forest_client_number: str, parent_role: models.FamRole
 ):
 
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
-    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{client_number_id}"
+    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
 
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
-    forest_client = crud_forest_client.findOrCreate(db, client_number_id, client_name)
-
-    # Verify if Forest Client role (child role) exist
-    forest_client_role_name = constructForestClientRoleName(
-        parent_role.role_name, client_number_id
+    forest_client = crud_forest_client.findOrCreate(
+        db, forest_client_number, client_name
     )
+
+    forest_client_role_name = constructForestClientRoleName(
+        parent_role.role_name, forest_client_number
+    )
+    # Verify if Forest Client role (child role) exist
     child_role = crud_role.getFamRoleByRoleName(
         db,
         forest_client_role_name,
@@ -155,14 +157,15 @@ def findOrCreateChildRole(
                 **{
                     "parent_role_id": parent_role.role_id,
                     "application_id": parent_role.application_id,
-                    "client_number_id": client_number_id,
+                    "forest_client_number": forest_client_number,
                     "role_name": forest_client_role_name,
                     "role_purpose": constructForestClientRolePurpose(
                         parent_role.role_purpose,
                         forest_client.client_name,
-                        client_number_id,
+                        forest_client_number,
                     ),
                     "create_user": famConstants.FAM_PROXY_API_USER,
+                    "role_type_code": "C",
                 }
             ),
             db,
