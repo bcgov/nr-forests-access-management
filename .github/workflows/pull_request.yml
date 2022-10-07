@@ -12,9 +12,56 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Run local postgres for testing
+    # services:
+    #   postgres:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_DB: db
+    #       POSTGRES_USER: user
+    #       POSTGRES_PASSWORD: password
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432:5432
+
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
+
+      # - name: run flyway on test database
+      #   uses: joshuaavalon/flyway-action@v3.0.0
+      #   with:
+      #     url: jdbc:postgresql://postgres:5432/db
+      #     user: user
+      #     password: password
+      #     locations: server/flyway/sql
+      #   env: 
+      #     FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
+      #     FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
+
+      # - name: Auth function install python test dependencies
+      #   working-directory: server/auth_function
+      #   run: |
+      #     pip install pytest pytest-md pytest-emoji
+      #     pip install -r requirements.txt
+
+      # - name: Auth function run pytest
+      #   uses: pavelzw/pytest-action@v2   
+      #   with:
+      #     emoji: true
+      #     verbose: true
+      #     job-summary: true
+      #     custom-arguments: 'server/auth_function' 
+      #   env: 
+      #     PG_HOST: localhost
+      #     PG_PORT: 5432
+      #     PG_DATABASE: db
+      #     PG_USER: appuser
+      #     PG_PASSWORD: appuserpw      
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -68,6 +115,23 @@ jobs:
           name: fam-ui-api
           path: ./server/fam-ui-api.zip
           if-no-files-found: error
+
+      # Steps to deploy authorization lambda function
+
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          zip -r server/fam_auth_function.zip auth_function_packaging
+          rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./server/fam_auth_function.zip
+          if-no-files-found: error      
 
       - name: Deploying back-end using terraform
         run: |
