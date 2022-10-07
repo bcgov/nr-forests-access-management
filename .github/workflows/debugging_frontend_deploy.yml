@@ -82,4 +82,5 @@ jobs:
 
           echo ---- $url ----
           echo '---------------------'
+          sleep 2
           curl -sSf $url
