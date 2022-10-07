@@ -29,29 +29,29 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
 
-      # - name: Building front-end and deploying Frontend using terraform
-      #   run: |
-      #     # --- commenting this out for now as we arn't using any envs with
-      #     # --- hello world
-      #     # cd server
-      #     # terraform output > ../frontend/.env
-      #     # cd ..frontend
-      #     cd frontend
-      #     npm install
+      - name: Building front-end and deploying Frontend using terraform
+        run: |
+          # --- commenting this out for now as we arn't using any envs with
+          # --- hello world
+          # cd server
+          # terraform output > ../frontend/.env
+          # cd ..frontend
+          cd frontend
+          npm install
 
-      #     # not sure why the put it like this, just explicitly calling the
-      #     # build for now
-      #     #CI=false npm run build
-      #     npm run build
+          # not sure why the put it like this, just explicitly calling the
+          # build for now
+          #CI=false npm run build
+          npm run build
 
-      #     cat <<EOF > backend.hcl
-      #     organization = "${{ env.organization }}"
-      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
-      #     EOF
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
+          EOF
 
-      #     terraform init -backend-config=backend.hcl
-      #     #terraform plan
-      #     terraform apply -auto-approve
+          terraform init -backend-config=backend.hcl
+          #terraform plan
+          terraform apply -auto-approve
 
       - name: Terraform - Retrieve cloudfront domain
         run: |
@@ -65,22 +65,16 @@ jobs:
           EOF
           terraform init -backend-config=backend.hcl
 
-
+          # grab the domain from the terraform output
           terraform-bin output > domain.txt
-          echo ---------------------------
-          cat domain.txt
-          echo ---------------------------
-          less domain.txt
-          echo --------------------------
 
+          # extract the domain from the terraform output
           url=$(cat domain.txt | grep cf_domain_name | tr -d '\n')
-          echo $url
-          echo -------------------------------
           prefix='cf_domain_name = '
           url=${url#"$prefix"}
           url=https://$(echo $url | tr -d '"')
+          echo extracted url: $url
 
-          echo ---- $url ----
-          echo '---------------------'
           sleep 2
-          curl  --compressed  $url
+          #curl  --compressed  $url
+          curl -sSf --compressed  $url
