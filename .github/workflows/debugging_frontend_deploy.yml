@@ -66,10 +66,12 @@ jobs:
           terraform init -backend-config=backend.hcl
 
 
-          terraform output > domain.txt
+          terraform-bin output > domain.txt
           echo ---------------------------
           cat domain.txt
           echo ---------------------------
+          less domain.txt
+          echo --------------------------
 
           url=$(cat domain.txt | grep cf_domain_name | tr -d '\n')
           echo $url
