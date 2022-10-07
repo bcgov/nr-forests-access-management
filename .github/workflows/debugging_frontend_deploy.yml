@@ -71,7 +71,7 @@ jobs:
           cat domain.txt
           echo ---------------------------
 
-          url=$(cat domain.txt | tr -d '\n')
+          url=$(cat domain.txt | grep cf_domain_name | tr -d '\n')
           echo $url
           echo -------------------------------
           prefix='cf_domain_name = '
