@@ -59,3 +59,4 @@ server/packaging/*
 server/backend/packaging/*
 server/localtest.auto.tfvars
 server/github.auto.tfvars
+frontend/domain.txt
