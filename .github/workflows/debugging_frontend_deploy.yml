@@ -78,7 +78,7 @@ jobs:
           echo -------------------------------
           prefix='cf_domain_name = '
           url=${url#"$prefix"}
-          url=$(echo $url | tr -d '"')
+          url=https://$(echo $url | tr -d '"')
 
           echo ---- $url ----
           echo '---------------------'
