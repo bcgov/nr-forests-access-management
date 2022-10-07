@@ -83,4 +83,4 @@ jobs:
           echo ---- $url ----
           echo '---------------------'
           sleep 2
-          curl -sSf $url
+          curl -sSf  --compressed  $url
