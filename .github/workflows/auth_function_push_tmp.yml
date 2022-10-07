@@ -77,7 +77,7 @@ jobs:
           mkdir auth_function_packaging
           rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
           # pip install -t auth_function_packaging -r server/auth_function/requirements.txt
-          zip -b auth_function_packaging -r9 fam_auth_function.zip .
+          zip -b auth_function_packaging -r9 server/fam_auth_function.zip .
           rm -rf packaging     
 
       - name: Auth function upload zip file artifact
