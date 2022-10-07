@@ -82,7 +82,7 @@ jobs:
           cd ..
           rm -rf packaging
           cd ..
-          zip -u ../fam_auth_function.zip -r auth_function/
+          zip -u ../fam_auth_function.zip -r auth_function/ -x "auth_function/test/*" -x "auth_function/requirements.txt"
           cd ..          
 
       - name: Auth function upload zip file artifact
