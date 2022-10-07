@@ -78,5 +78,6 @@ jobs:
           echo extracted url: $url
 
           sleep 2
-          #curl  --compressed  $url
+          curl  --compressed  $url
+          echo -------------------------------------
           curl -sSf --compressed  $url
