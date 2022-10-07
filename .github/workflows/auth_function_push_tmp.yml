@@ -77,6 +77,7 @@ jobs:
         run: |
           mkdir packaging
           cd packaging
+          touch dummy.txt
           # pip install -t . -r ../requirements.txt
           zip -r9 ../../fam_auth_function.zip .
           cd ..
