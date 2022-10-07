@@ -1,5 +1,3 @@
-# adding comment to try to toggle change to this file
-
 terraform {
  backend "remote" {}
 required_providers {
@@ -9,6 +7,7 @@ required_providers {
     }
   }
 }
+
 
 provider "aws" {
   region = var.aws_region
@@ -86,7 +85,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   restrictions {
     geo_restriction {
       restriction_type = "whitelist"
-      locations        = ["CA", "US"]
+      locations        = ["CA"]
     }
   }
 }
