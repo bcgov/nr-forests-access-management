@@ -3,6 +3,7 @@ import psycopg2
 import os
 import logging
 import jsonpickle
+import pathlib
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,7 +41,8 @@ def db_transaction(db_connection):
 def test_find_app_description(db_connection, db_transaction):
 
     # setup
-    file = open('login_event.json')
+    event_file_path = str(pathlib.Path(__file__).resolve().parent) + "/login_event.json"
+    file = open(event_file_path)
     try:
         event = jsonpickle.decode(file.read())
         context = {'requestid' : '1234'}
