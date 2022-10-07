@@ -76,9 +76,9 @@ jobs:
         run: |
           mkdir auth_function_packaging
           rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
-          # pip install -t auth_function_packaging -r server/auth_function/requirements.txt
-          zip -b auth_function_packaging -r9 server/fam_auth_function.zip .
-          rm -rf packaging     
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          zip -r server/fam_auth_function.zip auth_function_packaging
+          rm -rf auth_function_packaging
 
       - name: Auth function upload zip file artifact
         uses: actions/upload-artifact@v2
@@ -86,3 +86,4 @@ jobs:
           name: fam-auth-function
           path: ./server/fam_auth_function.zip
           if-no-files-found: error
+
