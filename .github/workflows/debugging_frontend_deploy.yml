@@ -72,6 +72,8 @@ jobs:
           echo ---------------------------
 
           url=$(cat domain.txt | tr -d '\n')
+          echo $url
+          echo -------------------------------
           prefix='cf_domain_name = '
           url=${url#"$prefix"}
           url=$(echo $url | tr -d '"')
