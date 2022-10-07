@@ -1,6 +1,7 @@
 import pytest
 import psycopg2
 import os
+import sys
 import logging
 import jsonpickle
 import pathlib
@@ -8,6 +9,8 @@ import pathlib
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+current_dir = pathlib.Path(__file__).resolve().parent
+sys.path.append(str(current_dir.parent))
 function = __import__('lambda_function')
 handler = function.lambda_handler
 
@@ -41,7 +44,7 @@ def db_transaction(db_connection):
 def test_find_app_description(db_connection, db_transaction):
 
     # setup
-    event_file_path = str(pathlib.Path(__file__).resolve().parent) + "/login_event.json"
+    event_file_path = str(current_dir) + "/login_event.json"
     file = open(event_file_path)
     try:
         event = jsonpickle.decode(file.read())
