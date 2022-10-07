@@ -8,7 +8,6 @@ required_providers {
   }
 }
 
-
 provider "aws" {
   region = var.aws_region
   assume_role {

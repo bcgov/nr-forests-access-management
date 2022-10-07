@@ -51,7 +51,8 @@ jobs:
 
           terraform init -backend-config=backend.hcl
           #terraform plan
-          terraform apply -auto-approve
+          # force replacement of the component
+          terraform apply -auto-approve -replace=aws_cloudfront_distribution.web_distribution
 
       - name: Terraform - Retrieve cloudfront domain
         run: |
