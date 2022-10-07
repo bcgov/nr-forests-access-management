@@ -68,3 +68,7 @@ jobs:
 
           terraform output > domain.txt
           cat domain.txt
+
+          url=https://$(grep 'cf_domain_name = ' domain.txt| cut -d= -f2 | tr -d '"' | tr -d ' ')
+          curl -sSf $url
+          curl https://sdflskdfsd
