@@ -71,7 +71,7 @@ jobs:
           cat domain.txt
           echo ---------------------------
 
-          url=https://$(grep 'cf_domain_name = ' domain.txt| cut -d= -f2 | tr -d '"' | tr -d ' ')
+          url=https://$(grep 'cf_domain_name = ' domain.txt| cut -d= -f2 | tr -d '"' | tr -d ' ' | tr -d '\n')
           echo ---- $url ----
           echo '---------------------'
           curl -sSf $url
