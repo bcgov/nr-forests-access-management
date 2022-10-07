@@ -73,18 +73,12 @@ jobs:
 
 
       - name: Auth function zip
-        working-directory: server/auth_function
         run: |
-          mkdir packaging
-          cd packaging
-          touch dummy.txt
-          # pip install -t . -r ../requirements.txt
-          zip -r9 ../../fam_auth_function.zip .
-          cd ..
-          rm -rf packaging
-          cd ..
-          zip -u ../fam_auth_function.zip -r . -x "auth_function/test/*" -x "auth_function/requirements.txt"
-          cd ..          
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          # pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          zip -b auth_function_packaging -r9 fam_auth_function.zip .
+          rm -rf packaging     
 
       - name: Auth function upload zip file artifact
         uses: actions/upload-artifact@v2
