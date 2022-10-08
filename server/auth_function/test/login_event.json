@@ -1,0 +1,39 @@
+{
+  "request": {
+      "userAttributes": {"string": "string"},
+      "groupConfiguration": [
+          {
+              "groupsToOverride": [
+                  "string",
+                  "string"
+              ],
+              "iamRolesToOverride": [
+                  "string",
+                  "string"
+              ],
+              "preferredRole": "string"
+          }
+      ],
+      "clientMetadata": {"string": "string"}
+  },
+  "response": {
+      "claimsOverrideDetails": {
+          "claimsToAddOrOverride": {"string": "string"},
+          "claimsToSuppress": [
+              "string",
+              "string"
+          ],
+          "groupOverrideDetails": {
+              "groupsToOverride": [
+                  "string",
+                  "string"
+              ],
+              "iamRolesToOverride": [
+                  "string",
+                  "string"
+              ],
+              "preferredRole": "string"
+          }
+      }
+  }
+}

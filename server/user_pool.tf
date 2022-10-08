@@ -1,3 +1,7 @@
+data "aws_lambda_function" "pre_token_function" {
+  function_name = random_pet.auth_lambda_name.id
+}
+
 resource "random_pet" "fam_user_pool_name" {
   prefix = "fam-user-pool"
   length = 2
@@ -148,6 +152,10 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
 
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
+  }
+
+  lambda_config {
+    pre_token_generation = data.aws_lambda_function.pre_token_function.arn
   }
 }
 
