@@ -1,7 +1,3 @@
-data "aws_lambda_function" "pre_token_function" {
-  function_name = random_pet.auth_lambda_name.id
-}
-
 resource "random_pet" "fam_user_pool_name" {
   prefix = "fam-user-pool"
   length = 2
@@ -24,10 +20,6 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   email_configuration {
     email_sending_account = "COGNITO_DEFAULT"
   }
-
-  #   lambda_config {
-  #     pre_token_generation = "arn:aws:lambda:ca-central-1:521834415778:function:testCognitoPreJWT"
-  #   }
 
   mfa_configuration = "OFF"
   name              = random_pet.fam_user_pool_name.id
@@ -155,8 +147,12 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   }
 
   lambda_config {
-    pre_token_generation = data.aws_lambda_function.pre_token_function.arn
+    pre_token_generation = aws_lambda_function.fam-auth-function.arn
   }
+
+  depends_on = [
+    aws_lambda_function.fam-auth-function
+  ]
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
