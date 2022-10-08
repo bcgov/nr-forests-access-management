@@ -1,5 +1,5 @@
 data "aws_lambda_function" "pre_token_function" {
-  function_name = random_pet.auth_lambda_name
+  function_name = random_pet.auth_lambda_name.id
 }
 
 resource "random_pet" "fam_user_pool_name" {
