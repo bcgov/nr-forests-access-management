@@ -17,7 +17,7 @@ def simpleUserRoleData() -> dict:
         "user_name": "Test User",
         "user_type": famConstants.UserType.BCEID,
         "role_id": 2,
-        "forest_client_number": "00001001",  # Forest Client id
+        "forest_client_number": "00001001",
     }
     yield userRoleData
 
@@ -60,4 +60,5 @@ def simpleFOMSubmitterRole_dbSession(
     yield db
 
     db.delete(fomSubmitterRole)
+    db.delete(famApplication)
     db.commit()

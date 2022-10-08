@@ -1,19 +1,21 @@
+import copy
 import logging
 
 import api.app.schemas as schemas
 import pytest
-from api.app.crud import crud_user_role, crud_role, crud_user
+from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
 from fastapi import HTTPException
 from pydantic import ValidationError
+from sqlalchemy import bindparam, text
 from sqlalchemy.orm import session
-from sqlalchemy import text, bindparam
-from tests.fixtures.fixtures_crud_user_role_assignment import FOM_SUBMITTER_ROLE_NAME
+from tests.fixtures.fixtures_crud_user_role_assignment import \
+    FOM_SUBMITTER_ROLE_NAME
 
 LOGGER = logging.getLogger(__name__)
 
 
-def test_createFamUserRoleXref_violate_supportUserTypes(simpleUserRoleRequest):
+def test_createUserRoleAssignment_violate_supportUserTypes(simpleUserRoleRequest):
     # Create a user_type with not supported type.
     notSupported_UserType = "NOT_SUPPORTED_TYPE"
     requestData = simpleUserRoleRequest.dict()
@@ -48,9 +50,41 @@ def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest, deleteAl
     assert str(e._excinfo).find("does not exist") != -1
 
 
+def test_userRoleAssignment_withAbstractRole_raise_exception(
+    simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
+    simpleFOMSubmitterRole_dbSession: session.Session,
+):
+    db = simpleFOMSubmitterRole_dbSession
+    LOGGER.debug(
+        "Creating user/role assignment with role_type_code is 'A' (abstract role)"
+        ", cannot be created."
+    )
+
+    famSubmitterRole = (
+        db.query(models.FamRole)
+        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .one_or_none()
+    )
+    # Verify this role is 'abstract' first.
+    assert famSubmitterRole.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
+
+    invalid_request = copy.deepcopy(simpleUserRoleRequest)
+    invalid_request.role_id = famSubmitterRole.role_id
+    # test on creating assignment with abstract role, no need to 
+    # provide forest_client_number
+    del invalid_request.forest_client_number
+
+    with pytest.raises(HTTPException) as e:
+        assert crud_user_role.createFamUserRoleAssignment(
+            db, invalid_request
+        )
+    LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
+    assert str(e._excinfo).find("Cannot assign") != -1
+
+
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    simpleFOMSubmitterRole_dbSession: session.Session
+    simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
     LOGGER.debug(
@@ -65,6 +99,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     # Verify parent role exist first.
     assert isinstance(famSubmitterRole, models.FamRole)
     assert famSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
+    assert famSubmitterRole.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
 
     simpleUserRoleRequest.role_id = famSubmitterRole.role_id
 
@@ -86,6 +121,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     assert forestClientRole.parent_role_id == famSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
     assert user.user_type == simpleUserRoleRequest.user_type
+    assert forestClientRole.role_type_code == models.FamRoleType.ROLE_TYPE_CONCRETE
 
     clean_up_user_role_assignment(db, user_role_assignment)
 
@@ -169,7 +205,6 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-
     # Then delete parent role
     stmt = text(
         """
@@ -179,7 +214,6 @@ def clean_up_user_role_assignment(
     # stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-
     # Delete user (db.delete(newUser))
     stmt = text(
         """
@@ -188,16 +222,4 @@ def clean_up_user_role_assignment(
     """
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
-    db.execute(stmt)
-
-    # Delete application
-    stmt = text(
-        """
-        DELETE FROM fam_application
-        WHERE application_id = :application_id
-    """
-    )
-    stmt = stmt.bindparams(
-        bindparam("application_id", value=user_role_assignment.application_id)
-    )
     db.execute(stmt)

@@ -34,6 +34,7 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
     db.add(roleTypeModel_concrete)
     db.commit()
     yield db  # use the session in tests.
+    
     try:
         db.delete(roleTypeModel_abstract)
     except sqlalchemy.exc.InvalidRequestError as e:
@@ -77,7 +78,7 @@ def simpleRoleData() -> dict:
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
         "create_user": "John Doe",
-        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
 
