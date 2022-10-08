@@ -132,7 +132,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
     user_type: famConstants.UserType
     role_id: int
-    client_number_id: Union[str, None]  # Forest Client ID string
+    forest_client_number: Union[str, None]
 
     class Config:
         orm_mode = True

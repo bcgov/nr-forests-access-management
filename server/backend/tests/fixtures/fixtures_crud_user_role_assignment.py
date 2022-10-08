@@ -17,7 +17,7 @@ def simpleUserRoleData() -> dict:
         "user_name": "Test User",
         "user_type": famConstants.UserType.BCEID,
         "role_id": 2,
-        "client_number_id": 1001,  # Forest Client id
+        "forest_client_number": "00001001",  # Forest Client id
     }
     yield userRoleData
 
@@ -52,7 +52,7 @@ def simpleFOMSubmitterRole_dbSession(
             "role_purpose": "Grant a user access to submit to FOM",
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": famApplication.application_id,
-            "role_type_code": "A",
+            "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         }
     )
     db.add(fomSubmitterRole)

@@ -346,6 +346,9 @@ class FamGroup(Base):
 class FamRoleType(Base):
     __tablename__ = "fam_role_type"
 
+    ROLE_TYPE_ABSTRACT = 'A'
+    ROLE_TYPE_CONCRETE = 'C'
+
     role_type_code = Column(
         String(2),
         nullable=False,
@@ -390,8 +393,6 @@ class FamRoleType(Base):
             "schema": "app_fam",
         },
     )
-
-    #fam_role_relation = relationship("FamRole", back_populates="role_type_relation")
 
 
 class FamRole(Base):
@@ -494,8 +495,6 @@ class FamRole(Base):
             "schema": "app_fam",
         },
     )
-
-
 
 
 class FamApplicationGroupXref(Base):

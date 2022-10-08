@@ -37,18 +37,18 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
     try:
         db.delete(roleTypeModel_abstract)
     except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.error(f'wasn\'t committed: {e}')
+        LOGGER.error(f"wasn't committed: {e}")
 
     try:
         db.delete(roleTypeModel_concrete)
     except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.debug(f'wasn\'t committed: {e}')
+        LOGGER.debug(f"wasn't committed: {e}")
 
 
 @pytest.fixture(scope="function")
 def concreteRoleTypeRecord() -> dict:
     roleType = {
-        "role_type_code": "C",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -58,7 +58,7 @@ def concreteRoleTypeRecord() -> dict:
 @pytest.fixture(scope="function")
 def abstractRoleTypeRecord() -> dict:
     roleType = {
-        "role_type_code": "A",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -77,10 +77,9 @@ def simpleRoleData() -> dict:
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
         "create_user": "John Doe",
-        "role_type_code": "A",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
     }
     yield roleData
-
 
 
 @pytest.fixture(scope="function")
@@ -114,4 +113,3 @@ def deleteAllRoleTypes(dbSession: session.Session) -> None:
     for famRoleType in famRoleTypes:
         db.delete(famRoleType)
     db.commit()
-
