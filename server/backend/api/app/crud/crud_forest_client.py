@@ -9,13 +9,16 @@ from .. import schemas
 LOGGER = logging.getLogger(__name__)
 
 
-def getFamForestClient(db: Session, client_number_id: int):
+def getFamForestClient(
+    db: Session, forest_client_number: str
+) -> models.FamForestClient:
     LOGGER.debug(
-        f"Forest Client - 'getFamForestClient' with client_number_id: {client_number_id}."
+        "Forest Client - 'getFamForestClient' with forest_client_number: "
+        f"{forest_client_number}."
     )
     return (
         db.query(models.FamForestClient)
-        .filter(models.FamForestClient.client_number_id == client_number_id)
+        .filter(models.FamForestClient.forest_client_number == forest_client_number)
         .one_or_none()
     )
 
@@ -30,21 +33,22 @@ def createFamForestClient(famForestClient: schemas.FamForestClientCreate, db: Se
     return db_item
 
 
-def findOrCreate(db: Session, client_number_id: int, client_name: str):
+def findOrCreate(db: Session, forest_client_number: str, client_name: str):
     LOGGER.debug(
-        f"Forest Client - 'findOrCreate' with client_number_id: {client_number_id}."
+        "Forest Client - 'findOrCreate' with forest_client_number: "
+        f"{forest_client_number}."
     )
 
-    fam_forest_client = getFamForestClient(db, client_number_id)
+    fam_forest_client = getFamForestClient(db, forest_client_number)
     if not fam_forest_client:
         LOGGER.debug(
-            f"Forest Client with Id {client_number_id} "
+            f"Forest Client with forest_client_number {forest_client_number} "
             "does not exist, add a new Forest Client."
         )
 
         request_forest_client = schemas.FamForestClientCreate(
             **{
-                "client_number_id": client_number_id,
+                "forest_client_number": forest_client_number,
                 "client_name": client_name,
                 "create_user": famConstants.FAM_PROXY_API_USER,
             }

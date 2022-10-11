@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import Optional
 
 from api.app import constants as famConstants
 from api.app.models import model as models
@@ -44,19 +43,31 @@ def createFamUserRoleAssignment(
         f"Role for user_role assignment found: {fam_role.role_name} ({fam_role.role_id})."
     )
 
-    child_role: Optional(models.FamRole) = None
-    if request.client_number_id:
+    # Role is a 'Concrete' type, then create role assignment directly with the role.
+    # Role is a 'Abstract' type, create role assignment with forst client child role.
+    require_child_role = (
+        fam_role.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
+    )
+
+    if require_child_role:
         LOGGER.debug(
-            f"Forest Client Id {request.client_number_id} present "
-            "in request to assign a forest client role."
+            f"Role {fam_role.role_name} requires child role "
+            "for user/role assignment."
         )
 
-        # Note, the request contains string(with leading '0') client_number_id
-        client_number: int = crudUtils.padStrToInt(request.client_number_id)
-        child_role = findOrCreateChildRole(db, client_number, fam_role)
+        if not hasattr(request, "forest_client_number"):
+            error_msg = f"""Invalid role assignment request. Cannot assign user 
+            {request.user_name} to abstract role {fam_role.role_name}"""
+            crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
+
+        # Note: current FSA design in the 'request body' contains a
+        #     'forest_client_number' if it requires a child role.
+        child_role = findOrCreateForestClientChildRole(
+            db, request.forest_client_number, fam_role
+        )
 
     # Role Id for associating with user
-    associate_role_id = child_role.role_id if child_role else fam_role.role_id
+    associate_role_id = child_role.role_id if require_child_role else fam_role.role_id
 
     # Create user/role assignment.
     fam_user_role_xref = findOrCreate(db, fam_user.user_id, associate_role_id)
@@ -121,33 +132,34 @@ def getUserRolebyUserIdAndRoleId(
     return famUserRole
 
 
-def constructForestClientRoleName(parent_role_name: str, client_number_id: int):
-    return f"{parent_role_name}_{client_number_id}"
+def constructForestClientRoleName(parent_role_name: str, forest_client_number: str):
+    return f"{parent_role_name}_{forest_client_number}"
 
 
 def constructForestClientRolePurpose(
-    parent_role_purpose: str, client_name: str, client_number_id: int
+    parent_role_purpose: str, client_name: str, forest_client_number: str
 ):
-    return f"{parent_role_purpose} for {client_name} ({client_number_id})"
+    return f"{parent_role_purpose} for {client_name} ({forest_client_number})"
 
 
-def findOrCreateChildRole(
-    db: Session, client_number_id: int, parent_role: models.FamRole
+def findOrCreateForestClientChildRole(
+    db: Session, forest_client_number: str, parent_role: models.FamRole
 ):
-
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
-    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{client_number_id}"
+    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
 
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
-    forest_client = crud_forest_client.findOrCreate(db, client_number_id, client_name)
-
-    # Verify if Forest Client role (child role) exist
-    forest_client_role_name = constructForestClientRoleName(
-        parent_role.role_name, client_number_id
+    forest_client = crud_forest_client.findOrCreate(
+        db, forest_client_number, client_name
     )
+
+    forest_client_role_name = constructForestClientRoleName(
+        parent_role.role_name, forest_client_number
+    )
+    # Verify if Forest Client role (child role) exist
     child_role = crud_role.getFamRoleByRoleName(
         db,
         forest_client_role_name,
@@ -159,21 +171,20 @@ def findOrCreateChildRole(
     )
 
     if not child_role:
-        # Note, later implementation for forest-client child role will be based on a
-        # boolean column from the parent role that requires forest-client child role.
         child_role = crud_role.createFamRole(
             schemas.FamRoleCreate(
                 **{
                     "parent_role_id": parent_role.role_id,
                     "application_id": parent_role.application_id,
-                    "client_number_id": client_number_id,
+                    "forest_client_number": forest_client_number,
                     "role_name": forest_client_role_name,
                     "role_purpose": constructForestClientRolePurpose(
                         parent_role.role_purpose,
                         forest_client.client_name,
-                        client_number_id,
+                        forest_client_number,
                     ),
                     "create_user": famConstants.FAM_PROXY_API_USER,
+                    "role_type_code": models.FamRoleType.ROLE_TYPE_CONCRETE,
                 }
             ),
             db,

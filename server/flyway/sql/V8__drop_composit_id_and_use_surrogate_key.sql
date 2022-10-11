@@ -1,6 +1,6 @@
 BEGIN;
 
--- Running upgrade V5 -> V6
+-- Running upgrade V7 -> V8
 
 ALTER TABLE app_fam.fam_user_role_xref DROP CONSTRAINT fam_usr_rle_pk;
 
@@ -12,7 +12,7 @@ ALTER TABLE app_fam.fam_user_role_xref ADD CONSTRAINT fam_usr_rle_pk PRIMARY KEY
 
 ALTER TABLE app_fam.fam_user_role_xref ADD CONSTRAINT fam_usr_rle_usr_id_rle_id_uk UNIQUE (user_id, role_id);
 
-UPDATE alembic_version SET version_num='V6' WHERE alembic_version.version_num = 'V5';
+UPDATE alembic_version SET version_num='V8' WHERE alembic_version.version_num = 'V7';
 
 COMMIT;
 

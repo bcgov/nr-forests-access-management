@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/",
+@router.get("",
             response_model=List[schemas.FamRoleGet])
 def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     """
@@ -22,7 +22,7 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
     queryData = crud_role.getFamRoles(db)
     return queryData
 
-@router.post("/",
+@router.post("",
              response_model=schemas.FamRoleGet)
 def create_fam_role(
     famRole: schemas.FamRoleCreate, db: Session = Depends(dependencies.get_db)

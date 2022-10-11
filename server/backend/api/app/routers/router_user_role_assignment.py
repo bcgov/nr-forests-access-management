@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.FamUserRoleAssignmentGet)
+@router.post("", response_model=schemas.FamUserRoleAssignmentGet)
 def create_user_role_assignment(
     userRoleAssignmentRequset: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(dependencies.get_db),

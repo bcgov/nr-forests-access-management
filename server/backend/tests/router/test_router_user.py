@@ -18,7 +18,7 @@ def test_get_fam_users_nodata(testClient_fixture):
 
 
 def test_get_fam_users_withdata(user_client_withUsers):
-    response = user_client_withUsers.get(f"{endPoint}/")
+    response = user_client_withUsers.get(f"{endPoint}")
     LOGGER.debug(f"response: {response}")
     data = response.json()
     LOGGER.debug(f"data: {data}")
@@ -54,7 +54,7 @@ def test_get_fam_user(user_client_withUsers):
     # retrieval of user is by id, don't know what id got
     # assigned so getting all the users, from that can
     # test the get individual user end point
-    allUsersResponse = user_client_withUsers.get(f"{endPoint}/")
+    allUsersResponse = user_client_withUsers.get(f"{endPoint}")
     allUsersData = allUsersResponse.json()
     LOGGER.debug(f"user data: {allUsersData}")
     for user in allUsersData:
@@ -70,7 +70,7 @@ def test_post_fam_users(testClient_fixture, testUserData):
     testUserData['create_date'] = str(testUserData['create_date'])
     testUserData['update_date'] = str(testUserData['update_date'])
 
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
     body = resp.json()
     LOGGER.debug(f"body: {body}")
     assert resp.status_code == 422
@@ -79,7 +79,7 @@ def test_post_fam_users(testClient_fixture, testUserData):
 
     # fix the data so the post should succeed
     testUserData["user_type"] = famConstants.UserType.BCEID
-    resp = testClient_fixture.post(f"{endPoint}/", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
     respData = resp.json()
     LOGGER.debug(f"resp data: {resp.json()}")
     assert resp.status_code == 200
@@ -88,7 +88,7 @@ def test_post_fam_users(testClient_fixture, testUserData):
     # verify that a record with the same 'guid' cannot be entered
     # respDataCopy = respData.copy()
     # del respDataCopy["user_id"]
-    # resp = testClient_fixture.post(f"{endPoint}/", json=respDataCopy)
+    # resp = testClient_fixture.post(f"{endPoint}", json=respDataCopy)
     # respBody = resp.json()
     # LOGGER.debug(f"resp data: {resp.status_code} - {resp.json()}")
     # assert resp.status_code == 422
@@ -101,7 +101,3 @@ def test_post_fam_users(testClient_fixture, testUserData):
     # making sure the delete was successful, but not testing delete end point
     # here
     assert resp.status_code == 200
-
-
-# follow this article.. best article I've found on testing
-# https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/testing/

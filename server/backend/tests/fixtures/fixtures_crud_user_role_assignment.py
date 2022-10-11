@@ -1,10 +1,10 @@
 import logging
 
+import api.app.constants as famConstants
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
 from sqlalchemy.orm import session
-import api.app.constants as famConstants
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def simpleUserRoleData() -> dict:
         "user_name": "Test User",
         "user_type": famConstants.UserType.BCEID,
         "role_id": 2,
-        "client_number_id": 1001,  # Forest Client id
+        "forest_client_number": "00001001",
     }
     yield userRoleData
 
@@ -65,9 +65,9 @@ def simpleUserRoleAssignment_dbSession(
 
 @pytest.fixture(scope="function")
 def simpleFOMSubmitterRole_dbSession(
-    dbSession: session.Session,
+    dbSession_famRoletype: session.Session,
 ):
-    db = dbSession
+    db = dbSession_famRoletype
 
     # add an application to db
     famApplication = model.FamApplication(
@@ -87,6 +87,7 @@ def simpleFOMSubmitterRole_dbSession(
             "role_purpose": "Grant a user access to submit to FOM",
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": famApplication.application_id,
+            "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         }
     )
     db.add(fomSubmitterRole)

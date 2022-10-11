@@ -79,10 +79,11 @@ class FamRoleCreate(BaseModel):
     application_id: Union[int, None] = Field(
         default=None, title="Application this role is associated with"
     )
-    client_number_id: Union[int, None] = Field(
+    forest_client_number: Union[str, None] = Field(
         default=None, title="Forest Client this role is associated with"
     )
     create_user: str
+    role_type_code: str
 
     class Config:
         orm_mode = True
@@ -96,6 +97,19 @@ class FamUserGet(FamUser):
     role: Union[FamRoleCreate, None]
 
     class Config:
+        orm_mode = True
+
+
+class FamRoleTypeGet(BaseModel):
+    role_type_code: str
+    description: str
+    effective_date: datetime
+    expiry_date: Optional[datetime]
+    update_date: Optional[datetime]
+
+    class Config:
+        """allows serialization of orm data struct"""
+
         orm_mode = True
 
 
@@ -118,7 +132,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
     user_type: famConstants.UserType
     role_id: int
-    client_number_id: Union[str, None]  # Forest Client ID string
+    forest_client_number: Union[str, None]
 
     class Config:
         orm_mode = True
@@ -135,9 +149,8 @@ class FamUserRoleAssignmentGet(BaseModel):
 
 
 class FamForestClientCreate(BaseModel):
-    # client_number_id: int  
-    # Note, the request contains string(with leading '0') client_number_id
-    client_number_id: str
+    # Note, the request may contain string(with leading '0')
+    forest_client_number: str
     client_name: str
     create_user: str
 
