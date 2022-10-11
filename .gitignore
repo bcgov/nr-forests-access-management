@@ -59,4 +59,5 @@ server/packaging/*
 server/backend/packaging/*
 server/localtest.auto.tfvars
 server/github.auto.tfvars
+functional-tests/.project
 frontend/domain.txt
