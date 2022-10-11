@@ -57,10 +57,9 @@ jobs:
 
       - name: Terraform - Retrieve cloudfront domain
         run: |
-          echo testing 1 2 3
           cd frontend
-          echo in frontend dir
-          echo ----------------------
+
+          # terraform config / setup
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
@@ -77,7 +76,10 @@ jobs:
           url=https://$(echo $url | tr -d '"')
           echo extracted url: $url
 
+          # execute the actual curl test
           sleep 2
           curl  --compressed  $url
-          echo -------------------------------------
+          echo ------------- Running Curl Test ------------------------
           curl -sSf --compressed  $url
+          echo ---------------- Done ---------------------------
+
