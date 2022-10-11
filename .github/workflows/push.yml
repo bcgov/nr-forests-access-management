@@ -27,7 +27,7 @@ jobs:
     #       --health-timeout 5s
     #       --health-retries 5
     #     ports:
-    #       - 5432:5432    
+    #       - 5432:5432
 
     steps:
       - name: checkout the repo and building the Backend
@@ -40,7 +40,7 @@ jobs:
       #     user: user
       #     password: password
       #     locations: server/flyway/sql
-      #   env: 
+      #   env:
       #     FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
       #     FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
 
@@ -51,18 +51,18 @@ jobs:
       #     pip install -r requirements.txt
 
       # - name: Auth function run pytest
-      #   uses: pavelzw/pytest-action@v2   
+      #   uses: pavelzw/pytest-action@v2
       #   with:
       #     emoji: true
       #     verbose: true
       #     job-summary: true
-      #     custom-arguments: 'server/auth_function' 
-      #   env: 
+      #     custom-arguments: 'server/auth_function'
+      #   env:
       #     PG_HOST: localhost
       #     PG_PORT: 5432
       #     PG_DATABASE: db
       #     PG_USER: appuser
-      #     PG_PASSWORD: appuserpw          
+      #     PG_PASSWORD: appuserpw
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -146,7 +146,7 @@ jobs:
         with:
           name: fam-auth-function
           path: ./server/fam_auth_function.zip
-          if-no-files-found: error          
+          if-no-files-found: error
 
       - name: Deploying back-end using terraform
         run: |
@@ -193,3 +193,21 @@ jobs:
 
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
+
+          # finally get the url and test connectivity
+
+          ## grab the domain from the terraform output
+          terraform-bin output > domain.txt
+
+          # extract the domain from the terraform output
+          url=$(cat domain.txt | grep cf_domain_name | tr -d '\n')
+          prefix='cf_domain_name = '
+          url=${url#"$prefix"}
+          url=https://$(echo $url | tr -d '"')
+          echo extracted url: $url
+
+          # execute the actual curl test
+          curl  --compressed  $url
+          echo ------------- Running Curl Test ------------------------
+          curl -sSf --compressed  $url
+          echo ---------------- Done ---------------------------
