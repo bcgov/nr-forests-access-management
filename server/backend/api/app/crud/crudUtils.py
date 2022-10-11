@@ -1,7 +1,6 @@
 import logging
 
 import sqlalchemy
-from api.app import constants as famConstants
 from api.app.models import model as models
 from fastapi import HTTPException
 from sqlalchemy import func
@@ -84,23 +83,3 @@ def getAddUser():
 def raiseHTTPException(status_code: str, error_msg: str):
     LOGGER.error(error_msg)
     raise HTTPException(status_code=status_code, detail=error_msg)
-
-
-def padStrToInt(padStr: str):
-    pad_removed_Str = padStr.lstrip(famConstants.FOREST_CLIENT_ID_PADDING['char'])
-    return int(pad_removed_Str)
-
-
-def intToPadStr(num: int, padding: str, length: int, toLeft: bool):
-    num_str = str(num)
-    if len(num_str) == length:
-        return num_str
-
-    if toLeft:
-        num_str = f'{num_str:{padding}>{length}}'
-    else:
-        num_str = f'{num_str:{padding}<{length}}'
-    LOGGER.debug(f'Padded string {num_str}')
-
-    return num_str
-
