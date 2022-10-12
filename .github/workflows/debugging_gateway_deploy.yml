@@ -1,0 +1,54 @@
+# leaving this in the repo for now as its a useful action that can be used
+# to speed up debugging of frontend deployment.
+
+# have disabled all triggers so it shouldn't run.
+
+name: Push
+
+on:
+  push:
+    branches: [feat/84-configure-lambda]
+    #branches: [branch-name-that-doesnt-exist]
+
+env:
+  TF_VERSION: 1.0.5
+  environment: dev
+  organization: bcgov
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout the repo and building the Backend
+        uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+
+
+
+      - name: Deploying back-end using terraform
+        run: |
+          cd server
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
+          EOF
+          cat > github.auto.tfvars <<EOF
+          github_repository = "https://github.com/${{ github.repository }}"
+          github_branch = "${{ github.ref_name }}"
+          github_commit = "${{ github.sha }}"
+          github_event = "${{ github.event_name }}"
+          oidc_idir_dev_idp_client_id = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_ID }}"
+          oidc_idir_dev_idp_client_secret = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_SECRET }}"
+          oidc_idir_dev_idp_issuer = "${{ secrets.OIDC_IDIR_DEV_IDP_ISSUER }}"
+          oidc_bceid_business_dev_idp_client_id = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
+          oidc_bceid_business_dev_idp_client_secret = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
+          oidc_bceid_business_dev_idp_issuer = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve

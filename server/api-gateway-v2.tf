@@ -61,6 +61,16 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
     aws_api_gateway_integration.fam_api_gateway_integration_proxy_root
   ]
 
+  # triggers = {
+  #   redeployment = sha1(jsonencode(aws_api_gateway_rest_api.example.body))
+  # }
+  # in theory should trigger a redeploy ever time pipeline run, not long
+  # term solution but should solve problem of api not being publicaly
+  # available
+  variables {
+    deployed_at = "${timestamp()}"
+  }
+
   rest_api_id = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
   stage_name  = "test"
 }
