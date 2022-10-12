@@ -44,7 +44,6 @@ jobs:
           zip -u ../fam-api.zip -r app/
           cd ..
 
-
       - name: Deploying back-end using terraform
         run: |
           cd server
