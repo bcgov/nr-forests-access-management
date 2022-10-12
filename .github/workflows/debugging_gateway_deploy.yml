@@ -29,6 +29,20 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
 
+      # Steps to deploy the sample API
+      - name: Install and Package Dependencies - sample app
+        run: |
+          cd server/fam_api
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt
+          zip -r9 ../../fam-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/fam_api
+          zip -u ../fam-api.zip -r app/
+          cd ..
 
 
       - name: Deploying back-end using terraform
