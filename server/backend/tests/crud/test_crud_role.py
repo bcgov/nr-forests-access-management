@@ -26,9 +26,9 @@ def test_getFamRoles_withdata(dbSession_famRoles_withSimpleData, simpleRoleData)
         assert role.role_name == simpleRoleData["role_name"]
 
 def test_createSimpleFamRole(
-    simpleRoleData_asPydantic, dbSession, deleteAllRoles
+    simpleRoleData_asPydantic, dbSession_famRoletype, deleteAllRoles
 ):
-    db = dbSession
+    db = dbSession_famRoletype
     LOGGER.debug(
         f"simpleRoleData_asPydantic: {simpleRoleData_asPydantic}"
     )
@@ -47,10 +47,11 @@ def test_createSimpleFamRole(
     numRolesAfter = len(rolesAfter)
     assert numRolesAfter > numRolesStart
 
+
 def test_createFamRole_withExistingRoleName_violate_constraint(
-    simpleRoleData_asPydantic, dbSession
+    simpleRoleData_asPydantic, dbSession_famRoletype, deleteAllRoleTypes
 ):
-    db = dbSession
+    db = dbSession_famRoletype
 
     # Add simple role
     role = crud_role.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
@@ -69,12 +70,15 @@ def test_createFamRole_withExistingRoleName_violate_constraint(
         # invalid insert for the same role.
         assert crud_role.createFamRole(famRole=simpleRoleData_asPydantic, db=db)
     assert str(e.value).find("UNIQUE constraint failed: fam_role.role_name") != -1
+    # if don't rollback the exception leaves the database session in an unstable
+    # state and subsequent commits / flush statements will fail
+    db.rollback()
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
 def test_createFamRole_withParentRole(
-    simpleRoleData_asPydantic, dbSession, deleteAllRoles
+    simpleRoleData_asPydantic, dbSession_famRoletype, deleteAllRoles
 ):
-    db = dbSession
+    db = dbSession_famRoletype
 
     # Set up ROLE_PARENT
     ROLE_PARENT = "ROLE_PARENT"
@@ -101,9 +105,9 @@ def test_createFamRole_withParentRole(
     LOGGER.debug(f"Child role added: {vars(childRole)}")
 
 def test_createFamRole_withNoneExistingParentRole_violate_constraint(
-    simpleRoleData_asPydantic, dbSession
+    simpleRoleData_asPydantic, dbSession_famRoletype
 ):
-    db = dbSession
+    db = dbSession_famRoletype
 
     # Create a role with non-existing parent_role_id
     none_existing_parent_role_id = 999
