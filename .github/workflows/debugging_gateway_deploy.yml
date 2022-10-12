@@ -45,6 +45,14 @@ jobs:
           zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
           cd ..
 
+      - name: Upload zip file artifact Kevin
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./server/fam-ui-api.zip
+          if-no-files-found: error
+
+
       - name: Auth function zip
         run: |
           mkdir auth_function_packaging
@@ -54,6 +62,14 @@ jobs:
           zip -r9 ../server/fam_auth_function.zip .
           cd ..
           rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./server/fam_auth_function.zip
+          if-no-files-found: error
+
 
       - name: Deploying back-end using terraform
         run: |
