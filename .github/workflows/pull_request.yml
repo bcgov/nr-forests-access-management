@@ -39,7 +39,7 @@ jobs:
       #     user: user
       #     password: password
       #     locations: server/flyway/sql
-      #   env: 
+      #   env:
       #     FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
       #     FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
 
@@ -50,18 +50,18 @@ jobs:
       #     pip install -r requirements.txt
 
       # - name: Auth function run pytest
-      #   uses: pavelzw/pytest-action@v2   
+      #   uses: pavelzw/pytest-action@v2
       #   with:
       #     emoji: true
       #     verbose: true
       #     job-summary: true
-      #     custom-arguments: 'server/auth_function' 
-      #   env: 
+      #     custom-arguments: 'server/auth_function'
+      #   env:
       #     PG_HOST: localhost
       #     PG_PORT: 5432
       #     PG_DATABASE: db
       #     PG_USER: appuser
-      #     PG_PASSWORD: appuserpw      
+      #     PG_PASSWORD: appuserpw
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -133,7 +133,7 @@ jobs:
         with:
           name: fam-auth-function
           path: ./server/fam_auth_function.zip
-          if-no-files-found: error      
+          if-no-files-found: error
 
       - name: Deploying back-end using terraform
         run: |
@@ -160,7 +160,7 @@ jobs:
       - name: Building front-end and deploying Frontend using terraform
         run: |
           cd frontend
-          npm install
+          npm ci
 
           # not sure why the put it like this, just explicitly calling the
           # build for now
