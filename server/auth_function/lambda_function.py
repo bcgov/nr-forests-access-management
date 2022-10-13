@@ -48,27 +48,27 @@ def release_db_connection(connection):
         db_connection.close()
 
 def lambda_handler(event, context):
-    logger.info('## ENVIRONMENT VARIABLES\r' + jsonpickle.encode(dict(**os.environ)))
-    logger.info('## EVENT\r' + jsonpickle.encode(event))
-    logger.info('## CONTEXT\r' + jsonpickle.encode(context))
+    # logger.info('## ENVIRONMENT VARIABLES\r' + jsonpickle.encode(dict(**os.environ)))
+    # logger.info('## EVENT\r' + jsonpickle.encode(event))
+    # logger.info('## CONTEXT\r' + jsonpickle.encode(context))
 
     # grab requestor's email address
     # email = event['request']['userAttributes']['email']
 
-    connection = obtain_db_connection()
-    cursor = connection.cursor()
-    cursor.execute("select application_description description from app_fam.fam_application app where app.application_name = 'fam';")
-    query_result = cursor.fetchone()
-    app_description = query_result[0]
+    # connection = obtain_db_connection()
+    # cursor = connection.cursor()
+    # cursor.execute("select application_description description from app_fam.fam_application app where app.application_name = 'fam';")
+    # query_result = cursor.fetchone()
+    # app_description = query_result[0]
 
-    release_db_connection(connection)
+    # release_db_connection(connection)
     
-    event["response"]["claimsOverrideDetails"] = { 
-        "claimsToAddOrOverride": { 
-            "famAuthorization": {
-                "appDescription": app_description 
-            }
-        } 
-    }
+    # event["response"]["claimsOverrideDetails"] = { 
+    #     "claimsToAddOrOverride": { 
+    #         "famAuthorization": {
+    #             "appDescription": app_description 
+    #         }
+    #     } 
+    # }
          
     return event
