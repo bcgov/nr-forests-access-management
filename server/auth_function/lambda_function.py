@@ -60,16 +60,21 @@ def lambda_handler(event, context):
     # cursor.execute("select application_description description from app_fam.fam_application app where app.application_name = 'fam';")
     # query_result = cursor.fetchone()
     # app_description = query_result[0]
-    app_description = "Hard Coded"
 
     # release_db_connection(connection)
     
+    # event["response"]["claimsOverrideDetails"] = { 
+    #     "claimsToAddOrOverride": { 
+    #         "famAuthorization": {
+    #             "appDescription": app_description 
+    #         }
+    #     } 
+    # }
+
     event["response"]["claimsOverrideDetails"] = { 
         "claimsToAddOrOverride": { 
-            "famAuthorization": {
-                "appDescription": app_description 
+                "pet_preference": "cats" 
             }
         } 
-    }
          
     return event
