@@ -48,9 +48,9 @@ def release_db_connection(connection):
         db_connection.close()
 
 def lambda_handler(event, context):
-    # logger.info('## ENVIRONMENT VARIABLES\r' + jsonpickle.encode(dict(**os.environ)))
-    # logger.info('## EVENT\r' + jsonpickle.encode(event))
-    # logger.info('## CONTEXT\r' + jsonpickle.encode(context))
+    logger.info('## ENVIRONMENT VARIABLES\r' + jsonpickle.encode(dict(**os.environ)))
+    logger.info('## EVENT\r' + jsonpickle.encode(event))
+    logger.info('## CONTEXT\r' + jsonpickle.encode(context))
 
     # grab requestor's email address
     email = event['request']['userAttributes']['email']
@@ -64,9 +64,10 @@ def lambda_handler(event, context):
     release_db_connection(connection)
     
     event["response"]["claimsOverrideDetails"] = { 
-        "claimsToAddOrOverride": { 
-                "famAuthorization": app_description
+        "groupOverrideDetails": {
+            "groupsToOverride": ["group-A", "group-B", app_description],
+            "iamRolesToOverride": [],
+            "preferredRole": ""
             }
-        } 
-         
+        }         
     return event
