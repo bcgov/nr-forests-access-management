@@ -4,8 +4,8 @@ from enum import Enum
 
 
 class UserType(str, Enum):
-    IDIR = 'IDIR'
-    BCEID = 'BCeID'
+    IDIR = 'I'
+    BCEID = 'B'
 
 
 FAM_PROXY_API_USER = 'fam_proxy_api'

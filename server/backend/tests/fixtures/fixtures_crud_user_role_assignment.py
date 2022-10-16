@@ -15,7 +15,7 @@ FOM_SUBMITTER_ROLE_NAME = "FOM_Submitter"
 def simpleUserRoleData() -> dict:
     userRoleData = {
         "user_name": "Test User",
-        "user_type": famConstants.UserType.BCEID,
+        "user_type_code": famConstants.UserType.BCEID,
         "role_id": 2,
         "forest_client_number": "00001001",
     }
