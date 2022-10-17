@@ -136,7 +136,7 @@ class FamForestClient(Base):
 
 
 class FamUserType(Base):
-    __tablename__ = "fam_user_type"
+    __tablename__ = "fam_user_type_code"
 
     USER_TYPE_IDIR = 'I'
     USER_TYPE_BCEID = 'B'
@@ -240,7 +240,7 @@ class FamUser(Base):
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
         UniqueConstraint("user_type_code", "user_name", name="fam_usr_uk"),
         ForeignKeyConstraint(
-            [user_type_code], ["app_fam.fam_user_type.user_type_code"], name="reffam_user_type"
+            [user_type_code], ["app_fam.fam_user_type_code.user_type_code"], name="reffam_user_type"
         ),
         {
             "comment": "A user is a person or system that can authenticate "
