@@ -10,6 +10,11 @@ def get_db():
         LOGGER.debug("starting a new db session")
         db = SessionLocal()
         yield db
+
+    except Exception:
+        db.rollback()
+
     finally:
+        db.commit()
         LOGGER.debug("closing db session")
         db.close()

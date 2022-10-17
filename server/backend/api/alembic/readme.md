@@ -25,7 +25,7 @@
 1. Run the existing migrations to bring database up to date
     ```
     cd api
-    alebic upgrade head
+    alembic upgrade head
     ```
 1. Make changes in the orm database definition `model.py`
 

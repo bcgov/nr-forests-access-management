@@ -1,27 +1,10 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
+from . import constants as famConstants
 
-class FamGroupPost(BaseModel):
-    group_name: str
-    purpose: str
-    create_user: str
-    parent_group_id: int
-    update_user: str
-
-    class Config:
-        orm_mode = True
-
-
-class FamGroupGet(FamGroupPost):
-    group_id: int
-    create_date: datetime
-    update_date: datetime
-
-    class Config:
-        orm_mode = True
 
 class FamGroupPost(BaseModel):
     group_name: str
@@ -54,6 +37,7 @@ class FamApplicationClient(BaseModel):
     class Config:
         orm_mode = True
 
+
 class FamApplicationCreate(BaseModel):
     application_name: str
     application_description: str
@@ -61,6 +45,7 @@ class FamApplicationCreate(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class FamApplication(FamApplicationCreate):
     application_id: int
@@ -73,23 +58,32 @@ class FamApplication(FamApplicationCreate):
         orm_mode = True
 
 
-
-
 class FamUser(BaseModel):
-    user_type: str
+    user_type_code: famConstants.UserType
     cognito_user_id: Optional[str]  # temporarily optional
     user_name: str
-    user_guid: str
-    # create_user: EmailStr
+    user_guid: Optional[str]
     create_user: str
-    update_user: str
+    update_user: Optional[str]
 
-    @validator("user_type")
-    def user_type_length(cls, v):
-        if len(v) > 1:
-            raise ValueError(f"value for user_type provided was {v}, " +
-                             "user_type length cannot exceed 1 character")
-        return v.title()
+    class Config:
+        orm_mode = True
+
+
+class FamRoleCreate(BaseModel):
+    role_name: str
+    role_purpose: str
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    application_id: Union[int, None] = Field(
+        default=None, title="Application this role is associated with"
+    )
+    forest_client_number: Union[str, None] = Field(
+        default=None, title="Forest Client this role is associated with"
+    )
+    create_user: str
+    role_type_code: str
 
     class Config:
         orm_mode = True
@@ -99,6 +93,8 @@ class FamUserGet(FamUser):
     user_id: int
     create_date: datetime
     update_date: Optional[datetime]
+
+    role: Union[FamRoleCreate, None]
 
     class Config:
         orm_mode = True
@@ -117,22 +113,7 @@ class FamRoleTypeGet(BaseModel):
         orm_mode = True
 
 
-
-class FamRole(BaseModel):
-    role_name: str
-    role_purpose: str
-    parent_role_id: Union[int, None] = Field(default=None, title="Reference role_id to higher role")
-    application_id: Union[int, None] = Field(default=None, title="Application this role is associated with")
-    client_number_id: Union[int, None] = Field(default=None, title="Forest Client this role is associated with")
-    create_user: str
-    role_type_code: str
-    #   Optional[FamRoleTypeGet]
-
-    class Config:
-        orm_mode = True
-
-
-class FamRoleGet(FamRole):
+class FamRoleGet(FamRoleCreate):
     role_id: int
     update_user: Union[str, None]
     create_date: Union[datetime, None]
@@ -145,3 +126,42 @@ class FamRoleGet(FamRole):
 
         orm_mode = True
 
+
+# Role assignment with one role at a time for the user.
+class FamUserRoleAssignmentCreate(BaseModel):
+    user_name: str
+    user_type_code: famConstants.UserType
+    role_id: int
+    forest_client_number: Union[str, None]
+
+    class Config:
+        orm_mode = True
+
+
+class FamUserRoleAssignmentGet(BaseModel):
+    user_role_xref_id: int
+    user_id: int
+    role_id: int
+    application_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class FamForestClientCreate(BaseModel):
+    # Note, the request may contain string(with leading '0')
+    forest_client_number: str
+    client_name: str
+    create_user: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamForestClientGet(FamForestClientCreate):
+    update_user: Union[str, None]
+    create_date: Union[datetime, None]
+    update_date: Union[datetime, None]
+
+    class Config:
+        orm_mode = True

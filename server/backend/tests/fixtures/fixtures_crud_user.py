@@ -5,16 +5,18 @@ from typing import TypedDict
 
 import api.app.models.model as model
 import api.app.schemas as schemas
+import api.app.constants as famConstants
 import pytest
 from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
     # pydantic model schema.FamUser
-    user_type: str
+    user_type_code: famConstants.UserType
     cognito_user_id: str
     user_name: str
     user_guid: str
@@ -23,15 +25,30 @@ class FamUserTD(TypedDict):
     update_user: str
     update_date: datetime.datetime
 
+
+@pytest.fixture(scope="function")
+def dbSession_famUserTypes(
+    dbSession, idirUserTypeCodeRecord, bceidUserTypeCodeRecord
+):
+    db = dbSession
+    idirUserTypeCode = model.FamUserType(**idirUserTypeCodeRecord)
+    bceidUserTypeCode = model.FamUserType(**bceidUserTypeCodeRecord)
+    db.add(idirUserTypeCode)
+    db.add(bceidUserTypeCode)
+
+    db.commit()
+    yield db
+
+    db.delete(idirUserTypeCode)
+    db.delete(bceidUserTypeCode)
+    db.commit()
+
+
 @pytest.fixture(scope="function")
 def dbSession_famUsers_withdata(
-    dbSession, testUserData3, testGroupData, userGroupXrefData
+    dbSession_famUserTypes, testUserData3, testGroupData, userGroupXrefData
 ):
-    """to add a user need to satisfy the integrity constraints:
-
-    1. create the group
-    2. retrieve the group id
-    3.
+    """to add a user need to satisfy the integrity constraints.
 
     :param dbSession: _description_
     :type dbSession: _type_
@@ -45,16 +62,16 @@ def dbSession_famUsers_withdata(
     # the following link goes over working with related/associated tables
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
 
-    db = dbSession
+    db = dbSession_famUserTypes
     # trying to add to user without violating the integrity constraint
     # group was populated with a record by the add_group fixture.
     newUser = model.FamUser(**testUserData3)
     groupSchema = model.FamGroup(**testGroupData)
-
     userGroupXrefData["group"] = groupSchema
     userGroupXrefData["user"] = newUser
 
     xrefTable = model.FamUserGroupXref(**userGroupXrefData)
+
     db.add(xrefTable)
     db.commit()
 
@@ -63,13 +80,13 @@ def dbSession_famUsers_withdata(
     db.delete(xrefTable)
     db.delete(groupSchema)
     db.delete(newUser)
-
     db.commit()
+
 
 @pytest.fixture(scope="function")
 def testUserData3() -> FamUserTD:
     userData = {
-        "user_type": "a",
+        "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
         "user_name": "Billy Smith",
         "user_guid": str(uuid.uuid4()),
@@ -102,11 +119,30 @@ def deleteAllUsers(dbSession: session.Session) -> None:
         db.delete(famUser)
     db.commit()
 
+
+@pytest.fixture(scope="function")
+def idirUserTypeCodeRecord() -> dict:
+    userType = {
+        "user_type_code": famConstants.UserType.IDIR,
+        "description": "User Type for IDIR users"
+    }
+    yield userType
+
+
+@pytest.fixture(scope="function")
+def bceidUserTypeCodeRecord() -> dict:
+    userType = {
+        "user_type_code": famConstants.UserType.BCEID,
+        "description": "User Type for IDIR users"
+    }
+    yield userType
+
+
 @pytest.fixture(scope="function")
 def testUserData() -> dict:
 
     userData = {
-        "user_type": "a",
+        "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22ftw",
         "user_name": "Mike Bossy",
         "user_guid": str(uuid.uuid4()),
@@ -120,7 +156,7 @@ def testUserData() -> dict:
 @pytest.fixture(scope="function")
 def testUserData2() -> FamUserTD:
     userData = {
-        "user_type": "a",
+        "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
         "user_name": "Dennis Potvin",
         "user_guid": str(uuid.uuid4()),
