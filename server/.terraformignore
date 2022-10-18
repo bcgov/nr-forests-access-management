@@ -6,5 +6,3 @@ tmpdata/
 terraform-local.md
 backend/
 fam_api/
-
-flyway/flyway-all.jar
