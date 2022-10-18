@@ -30,6 +30,7 @@ def simpleUserRoleRequest(simpleUserRoleData) -> schemas.FamUserRoleAssignmentCr
 
 @pytest.fixture(scope="function")
 def simpleUserRoleAssignment_dbSession(
+    dbSession_famUserTypes,
     simpleFOMSubmitterRole_dbSession: session.Session
 ):
     db = simpleFOMSubmitterRole_dbSession
@@ -38,7 +39,7 @@ def simpleUserRoleAssignment_dbSession(
     # add dummy user
     fam_user = model.FamUser(
         **{
-            "user_type": famConstants.UserType.IDIR,
+            "user_type_code": famConstants.UserType.IDIR,
             "user_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
             "create_user": famConstants.FAM_PROXY_API_USER
         }

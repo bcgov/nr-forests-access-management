@@ -122,8 +122,8 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     )
 
     # assert user_role_assignment, schemas.FamUserRoleAssignmentCreate
-    assert user_role_assignment.role_id != famSubmitterRole.role_id
-    assert forestClientRole.parent_role_id == famSubmitterRole.role_id
+    assert user_role_assignment.role_id != fomSubmitterRole.role_id
+    assert forestClientRole.parent_role_id == fomSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
     assert user.user_type_code == simpleUserRoleRequest.user_type_code
     assert forestClientRole.role_type_code == models.FamRoleType.ROLE_TYPE_CONCRETE

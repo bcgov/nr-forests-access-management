@@ -251,9 +251,6 @@ class FamUser(Base):
     def __str__(self):
         return f'FamUser({self.user_id}, {self.user_name}, {self.user_type_code})'
 
-    def __str__(self):
-        return f'FamUser({self.user_id}, {self.user_name}, {self.user_type})'
-
 
 class FamApplicationClient(Base):
     __tablename__ = "fam_application_client"
