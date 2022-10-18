@@ -23,16 +23,16 @@ def createFamUserRoleAssignment(
     """
     LOGGER.debug(f"Request for user role assignment: {request}.")
 
-    # Verify user_type in enum (IDIR, BCEID)
+    # Verify user_type_code in enum (IDIR, BCEID)
     if (
-        request.user_type != famConstants.UserType.IDIR
-        and request.user_type != famConstants.UserType.BCEID
+        request.user_type_code != famConstants.UserType.IDIR
+        and request.user_type_code != famConstants.UserType.BCEID
     ):
-        error_msg = f"Invalid user type: {request.user_type}."
+        error_msg = f"Invalid user type: {request.user_type_code}."
         crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
 
     # Determine if user already exists or add a new user.
-    fam_user = crud_user.findOrCreate(db, request.user_type, request.user_name)
+    fam_user = crud_user.findOrCreate(db, request.user_type_code, request.user_name)
 
     # Verify if role exists.
     fam_role = crud_role.getFamRole(db, request.role_id)

@@ -21,10 +21,6 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
     email_sending_account = "COGNITO_DEFAULT"
   }
 
-  #   lambda_config {
-  #     pre_token_generation = "arn:aws:lambda:ca-central-1:521834415778:function:testCognitoPreJWT"
-  #   }
-
   mfa_configuration = "OFF"
   name              = random_pet.fam_user_pool_name.id
 
@@ -149,6 +145,14 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
   }
+
+  lambda_config {
+    pre_token_generation = aws_lambda_function.fam-auth-function.arn
+  }
+
+  depends_on = [
+    aws_lambda_function.fam-auth-function
+  ]
 }
 
 resource "aws_cognito_user_pool_domain" "main" {

@@ -17,20 +17,20 @@ LOGGER = logging.getLogger(__name__)
 
 
 def test_createUserRoleAssignment_violate_supportUserTypes(simpleUserRoleRequest):
-    # Create a user_type with not supported type.
-    notSupported_UserType = "NOT_SUPPORTED_TYPE"
+    # Create a user_type_code with not supported type.
+    notSupported_UserType = "NS"
     requestData = simpleUserRoleRequest.dict()
-    requestData["user_type"] = notSupported_UserType
+    requestData["user_type_code"] = notSupported_UserType
 
     LOGGER.debug(
         "Creating user/role assignment request with not supported "
-        f"user_type: {notSupported_UserType}."
+        f"user_type_code: {notSupported_UserType}."
     )
     with pytest.raises(ValidationError) as e:
         assert schemas.FamUserRoleAssignmentCreate(**requestData)
     assert (
         str(e.value).find(
-            "value is not a valid enumeration member; permitted: 'IDIR', 'BCeID'"
+            "value is not a valid enumeration member; permitted: 'I', 'B'"
         )
         != -1
     )
@@ -38,8 +38,10 @@ def test_createUserRoleAssignment_violate_supportUserTypes(simpleUserRoleRequest
 
 
 # Make sure previous tests don't leave any role in db.
-def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest, deleteAllRoles):
-    db = dbSession
+def test_roleNotExist_raise_exception(
+    dbSession_famUserTypes: session.Session, simpleUserRoleRequest, deleteAllRoles
+):
+    db = dbSession_famUserTypes
     LOGGER.debug(
         "Creating user/role assignment with not supported with no role id not exist in db."
     )
@@ -49,10 +51,12 @@ def test_roleNotExist_raise_exception(dbSession, simpleUserRoleRequest, deleteAl
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Role id ") != -1
     assert str(e._excinfo).find("does not exist") != -1
+    db.rollback()  # Note, this will make sure intermediate object created by the crud call is rollback after exception is raised.
 
 
 def test_userRoleAssignment_withAbstractRole_raise_exception(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
+    dbSession_famUserTypes,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
@@ -71,21 +75,21 @@ def test_userRoleAssignment_withAbstractRole_raise_exception(
 
     invalid_request = copy.deepcopy(simpleUserRoleRequest)
     invalid_request.role_id = famSubmitterRole.role_id
-    # test on creating assignment with abstract role, no need to 
+    # test on creating assignment with abstract role, no need to
     # provide forest_client_number
     del invalid_request.forest_client_number
 
     with pytest.raises(HTTPException) as e:
-        assert crud_user_role.createFamUserRoleAssignment(
-            db, invalid_request
-        )
+        assert crud_user_role.createFamUserRoleAssignment(db, invalid_request)
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Cannot assign") != -1
+    db.rollback()
 
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    simpleFOMSubmitterRole_dbSession: session.Session
+    dbSession_famUserTypes,
+    simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
     LOGGER.debug(
@@ -112,16 +116,16 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     # Find child role
     forestClientRole = crud_role.getFamRole(db, user_role_assignment.role_id)
 
-    # Find user by user_type and user_name
+    # Find user by user_type_code and user_name
     user = crud_user.getFamUserByDomainAndName(
-        db, simpleUserRoleRequest.user_type, simpleUserRoleRequest.user_name
+        db, simpleUserRoleRequest.user_type_code, simpleUserRoleRequest.user_name
     )
 
     # assert user_role_assignment, schemas.FamUserRoleAssignmentCreate
-    assert user_role_assignment.role_id != fomSubmitterRole.role_id
-    assert forestClientRole.parent_role_id == fomSubmitterRole.role_id
+    assert user_role_assignment.role_id != famSubmitterRole.role_id
+    assert forestClientRole.parent_role_id == famSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
-    assert user.user_type == simpleUserRoleRequest.user_type
+    assert user.user_type_code == simpleUserRoleRequest.user_type_code
     assert forestClientRole.role_type_code == models.FamRoleType.ROLE_TYPE_CONCRETE
 
     clean_up_user_role_assignment(db, user_role_assignment)
@@ -129,6 +133,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_existing_one(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
+    dbSession_famUserTypes,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
@@ -248,7 +253,6 @@ def clean_up_user_role_assignment(
     stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
 
-
     # Then delete parent role
     stmt = text(
         """
@@ -257,7 +261,6 @@ def clean_up_user_role_assignment(
     )
     # stmt = stmt.bindparams(bindparam("role_id", value=user_role_assignment.role_id))
     db.execute(stmt)
-
 
     # Delete user (db.delete(newUser))
     stmt = text(
@@ -268,4 +271,3 @@ def clean_up_user_role_assignment(
     )
     stmt = stmt.bindparams(bindparam("user_id", value=user_role_assignment.user_id))
     db.execute(stmt)
-

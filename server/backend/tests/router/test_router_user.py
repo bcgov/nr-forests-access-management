@@ -30,7 +30,7 @@ def test_delete_fam_user(user_client_withUsersNoCleanup, testClient_fixture):
     respData = response.json()
     LOGGER.debug(f"data: {respData}")
     # start of by making sure we have data
-    assert len(respData) > 0 and "user_type" in respData[0]
+    assert len(respData) > 0 and "user_type_code" in respData[0]
 
     # delete the data
     respDelete = user_client_withUsersNoCleanup.delete(
@@ -63,10 +63,10 @@ def test_get_fam_user(user_client_withUsers):
         assert singleUserData == user
 
 
-def test_post_fam_users(testClient_fixture, testUserData):
+def test_post_fam_users(testClient_fixture, testUserData, dbSession_famUserTypes):
 
     # modify the user data to make it invalid
-    testUserData["user_type"] = "invalid data"
+    testUserData["user_type_code"] = "X"
     testUserData['create_date'] = str(testUserData['create_date'])
     testUserData['update_date'] = str(testUserData['update_date'])
 
@@ -74,11 +74,11 @@ def test_post_fam_users(testClient_fixture, testUserData):
     body = resp.json()
     LOGGER.debug(f"body: {body}")
     assert resp.status_code == 422
-    expectedMessage = "value is not a valid enumeration member; permitted: 'IDIR', 'BCeID'"
+    expectedMessage = "value is not a valid enumeration member; permitted: 'I', 'B'"
     assert body['detail'][0]['msg'] == expectedMessage
 
     # fix the data so the post should succeed
-    testUserData["user_type"] = famConstants.UserType.BCEID
+    testUserData["user_type_code"] = famConstants.UserType.BCEID
     resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
     respData = resp.json()
     LOGGER.debug(f"resp data: {resp.json()}")

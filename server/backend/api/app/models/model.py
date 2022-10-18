@@ -108,7 +108,7 @@ class FamForestClient(Base):
         index=True,
         comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client."
     )
-    client_name = Column(String(100), nullable=False, index=True)
+    client_name = Column(String(100), nullable=True, index=True)
     create_user = Column(
         String(30),
         nullable=False,
@@ -134,17 +134,56 @@ class FamForestClient(Base):
     fam_role = relationship("FamRole", back_populates="client_number")
 
 
-class FamUser(Base):
-    __tablename__ = "fam_user"
+class FamUserType(Base):
+    __tablename__ = "fam_user_type_code"
+
+    USER_TYPE_IDIR = 'I'
+    USER_TYPE_BCEID = 'B'
+
+    user_type_code = Column(
+        String(2),
+        nullable=False,
+        comment='user type code'
+    )
+
+    description = Column(
+        String(100),
+        nullable=True,
+        comment='Description of what the user_type_code represents.'
+    )
+
+    effective_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the code was effective.",
+    )
+
+    expiry_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=True,
+        default=None,
+        comment="The date and time the code expired.",
+    )
+
+    update_date = Column(
+        TIMESTAMP(precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+
     __table_args__ = (
-        PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
-        UniqueConstraint("user_type", "user_name", name="fam_usr_uk"),
+        PrimaryKeyConstraint("user_type_code", name="fam_user_type_code_pk"),
         {
-            "comment": "A user is a person or system that can authenticate "
-            "and then interact with an application.",
+            "comment": "A user type is a code that is associated with "
+            "the user to indicate its identity provider.",
             "schema": "app_fam",
         },
     )
+
+
+class FamUser(Base):
+    __tablename__ = "fam_user"
 
     user_id = Column(
         BigInteger().with_variant(Integer, "sqlite"),
@@ -160,7 +199,10 @@ class FamUser(Base):
         comment="Automatically generated key used to identify the "
                 "uniqueness of a User within the FAM Application",
     )
-    user_type = Column(String(10), nullable=False)
+    user_type_code = Column(
+        String(2), 
+        nullable=False,
+        comment="Identifies which type of the user it belongs to; IDIR, BCeID etc.")
     user_name = Column(String(100), nullable=False)
     create_user = Column(
         String(30),
@@ -191,6 +233,23 @@ class FamUser(Base):
     )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
+    user_type_relation = relationship("FamUserType", backref="user_relation")
+
+    __table_args__ = (
+        PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
+        UniqueConstraint("user_type_code", "user_name", name="fam_usr_uk"),
+        ForeignKeyConstraint(
+            [user_type_code], ["app_fam.fam_user_type_code.user_type_code"], name="reffam_user_type"
+        ),
+        {
+            "comment": "A user is a person or system that can authenticate "
+            "and then interact with an application.",
+            "schema": "app_fam",
+        },
+    )
+
+    def __str__(self):
+        return f'FamUser({self.user_id}, {self.user_name}, {self.user_type_code})'
 
     def __str__(self):
         return f'FamUser({self.user_id}, {self.user_name}, {self.user_type})'
@@ -651,7 +710,10 @@ class FamUserRoleXref(Base):
         PrimaryKeyConstraint("user_role_xref_id", name="fam_usr_rle_xrf_pk"),
         UniqueConstraint("user_id", "role_id",
                          name="fam_usr_rle_usr_id_rle_id_uk"),
-        {"schema": "app_fam"}  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
+        {
+            "comment": "User Role Xref is a cross-reference object that allows for the identification of Roles assigned to a user, as well as the users that belong to a given Role",
+            "schema": "app_fam"
+        }  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
     )
 
     user_role_xref_id = Column(

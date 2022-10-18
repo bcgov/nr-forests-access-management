@@ -40,13 +40,13 @@ def getFamUser(db: Session, user_id: int):
 
 
 def getFamUserByDomainAndName(
-    db: Session, user_type: str, user_name: str
+    db: Session, user_type_code: str, user_name: str
 ) -> models.FamUser:
-    # get a single user based on unique combination of user_name and user_type.
+    # get a single user based on unique combination of user_name and user_type_code.
     fam_user: models.FamUser = (
         db.query(models.FamUser)
         .filter(
-            models.FamUser.user_type == user_type
+            models.FamUser.user_type_code == user_type_code
             and models.FamUser.user_name == user_name
         )
         .one_or_none()
@@ -97,16 +97,16 @@ def deleteUser(db: Session, user_id: int):
     return famUser
 
 
-def findOrCreate(db: Session, user_type: str, user_name: str):
+def findOrCreate(db: Session, user_type_code: str, user_name: str):
     LOGGER.debug(
-        f"User - 'findOrCreate' with user_type: {user_type}, user_name: {user_name}."
+        f"User - 'findOrCreate' with user_type: {user_type_code}, user_name: {user_name}."
     )
 
-    fam_user = getFamUserByDomainAndName(db, user_type, user_name)
+    fam_user = getFamUserByDomainAndName(db, user_type_code, user_name)
     if not fam_user:
         requestUser = schemas.FamUser(
             **{
-                "user_type": user_type,
+                "user_type_code": user_type_code,
                 "user_name": user_name,
                 "create_user": famConstants.FAM_PROXY_API_USER,
             }

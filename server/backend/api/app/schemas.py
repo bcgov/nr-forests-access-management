@@ -59,7 +59,7 @@ class FamApplication(FamApplicationCreate):
 
 
 class FamUser(BaseModel):
-    user_type: famConstants.UserType
+    user_type_code: famConstants.UserType
     cognito_user_id: Optional[str]  # temporarily optional
     user_name: str
     user_guid: Optional[str]
@@ -130,7 +130,7 @@ class FamRoleGet(FamRoleCreate):
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
-    user_type: famConstants.UserType
+    user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[str, None]
 
