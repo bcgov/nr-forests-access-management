@@ -28,8 +28,8 @@ resource "aws_api_gateway_method" "fam_api_gateway_method_proxy" {
 }
 
 resource "aws_api_gateway_integration" "fam_api_gateway_integration_proxy" {
-  rest_api_id   = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
-  resource_id   = aws_api_gateway_resource.fam_api_gateway_resource.id
+  rest_api_id = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
+  resource_id = aws_api_gateway_resource.fam_api_gateway_resource.id
   http_method = aws_api_gateway_method.fam_api_gateway_method_proxy.http_method
 
   integration_http_method = "POST"

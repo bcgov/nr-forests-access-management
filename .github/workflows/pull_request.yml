@@ -39,7 +39,7 @@ jobs:
       #     user: user
       #     password: password
       #     locations: server/flyway/sql
-      #   env: 
+      #   env:
       #     FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
       #     FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
 
@@ -50,18 +50,18 @@ jobs:
       #     pip install -r requirements.txt
 
       # - name: Auth function run pytest
-      #   uses: pavelzw/pytest-action@v2   
+      #   uses: pavelzw/pytest-action@v2
       #   with:
       #     emoji: true
       #     verbose: true
       #     job-summary: true
-      #     custom-arguments: 'server/auth_function' 
-      #   env: 
+      #     custom-arguments: 'server/auth_function'
+      #   env:
       #     PG_HOST: localhost
       #     PG_PORT: 5432
       #     PG_DATABASE: db
       #     PG_USER: appuser
-      #     PG_PASSWORD: appuserpw      
+      #     PG_PASSWORD: appuserpw
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -133,11 +133,23 @@ jobs:
         with:
           name: fam-auth-function
           path: ./server/fam_auth_function.zip
-          if-no-files-found: error      
+          if-no-files-found: error
 
       - name: Deploying back-end using terraform
         run: |
           cd server
+
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters.
+          db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${{ github.sha }}"
+          if ((echo ${{ github.ref_name }} | wc -c ) > 12)
+          then
+              commit=${{ github.ref_name }}
+              db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${commit:0:7}"
+          fi
+          # remove non alphanumeric characters
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
@@ -153,6 +165,7 @@ jobs:
           oidc_bceid_business_dev_idp_client_id = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
           oidc_bceid_business_dev_idp_client_secret = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
           oidc_bceid_business_dev_idp_issuer = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
+          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           EOF
           terraform init -backend-config=backend.hcl
           terraform plan

@@ -43,3 +43,13 @@ variable "subnet_app_b" {
   description = "Value of the name tag for a subnet in the APP security group"
   default     = "App_Dev_azb_net"
 }
+
+variable "db_cluster_snapshot_identifier" {
+  description = "Value fo the db_cluster_snapshot_identifier used for the fam_pre_flyway_snapshot resource (flyway.tf).  Validation will identify length constraint violations before it attempts to deploy"
+  #default     = "pre-flyway-${var.github_branch}-${var.github_commit}"
+  validation {
+    condition     = length(var.db_cluster_snapshot_identifier) < 63
+    error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
+  }
+}
+

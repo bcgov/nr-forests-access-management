@@ -74,6 +74,19 @@ jobs:
       - name: Deploying back-end using terraform
         run: |
           cd server
+
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters.
+          db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${{ github.sha }}"
+          if ((echo ${{ github.ref_name }} | wc -c ) > 12)
+          then
+              commit=${{ github.ref_name }}
+              db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${commit:0:7}"
+          fi
+          # remove non alphanumeric characters
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+
+
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-backend" }
@@ -89,6 +102,8 @@ jobs:
           oidc_bceid_business_dev_idp_client_id = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
           oidc_bceid_business_dev_idp_client_secret = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
           oidc_bceid_business_dev_idp_issuer = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
+          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           EOF
           terraform init -backend-config=backend.hcl
-          terraform apply -auto-approve
+          #terraform apply -auto-approve
+          terraform plan

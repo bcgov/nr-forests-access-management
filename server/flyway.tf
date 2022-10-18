@@ -138,8 +138,10 @@ resource "aws_lambda_function" "flyway-migrations" {
 # Everything below here is for invoking flyway. It only happens if there is a push
 
 resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
-  db_cluster_identifier          = data.aws_rds_cluster.flyway_database.id
-  db_cluster_snapshot_identifier = "pre-flyway-${var.github_branch}-${var.github_commit}"
+  db_cluster_identifier = data.aws_rds_cluster.flyway_database.id
+  #db_cluster_snapshot_identifier = "pre-flyway-${var.github_branch}-${var.github_commit}"
+  #"${var.github_branch}"
+  db_cluster_snapshot_identifier = var.db_cluster_snapshot_identifier
   count                          = var.github_event == "push" ? 1 : 0
 }
 
