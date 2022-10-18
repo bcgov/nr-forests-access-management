@@ -43,8 +43,8 @@ def delete_user_role_assignment(
     Delete FAM user_role_xref association.
     """
     """
-    Note! Ther appear to be a bug in FasAPI/Starlette, when there is 204 No-Content code (like Delete)
-    but for some reason response still has content and throw error. 
+    Note! There appear to be a bug in FasAPI/Starlette, when http status 204 No-Content is returned (like Delete)
+    but, for some reason response still has content and throw error. 
     To fix: see this => https://lightrun.com/answers/tiangolo-fastapi-response-content-longer-than-content-length-error-for-delete-and-nocontent 
     (response_class=Response) is added to @router.delete with 204 status.
     """
