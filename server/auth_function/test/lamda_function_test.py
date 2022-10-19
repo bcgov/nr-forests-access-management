@@ -5,6 +5,8 @@ import sys
 import logging
 import jsonpickle
 import pathlib
+from psycopg2 import sql
+import fixtures
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -34,38 +36,112 @@ def db_transaction(db_connection):
     yield db_connection
     db_connection.rollback()
 
-# @pytest.fixture(scope='function')
-# def fam_user(db_connection, db_transaction):
+@pytest.fixture(scope='session')
+def context():
+    context = {'requestid' : '1234'}
+    yield context
 
-#     #insert a fam user
-
-    
-
-def test_find_app_description(db_connection, db_transaction):
-
-    # setup
+@pytest.fixture(scope='function')
+def event():
     event_file_path = str(current_dir) + "/login_event.json"
     file = open(event_file_path)
     try:
         event = jsonpickle.decode(file.read())
-        context = {'requestid' : '1234'}
     finally:
         file.close()
+    yield event
+
+test_user_properties = {
+    "idp_type_code": "I",
+    "idp_name": "idir",
+    "idp_user_id": "B5ECDB094DFB4149A6A8445A01A96BF0",
+    "idp_username": "COGUSTAF",
+    "cognito_user_id": "idir_b5ecdb094dfb4149a6a8445a01a96bf0@idir", 
+}
+
+@pytest.fixture(scope='function')
+def initial_user(db_connection, db_transaction):
+    global test_user_properties
+    initial_user = test_user_properties
+
+    # Only insert the bare minimum to simulate entering user in advance of first login
+
+    raw_query = '''INSERT INTO app_fam.fam_user
+        (user_type_code, user_name, 
+        create_user, create_date, update_user, update_date)
+        VALUES( '{}', '{}', 
+        CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);'''
+
+    replaced_query = raw_query.format(
+        initial_user["idp_type_code"], 
+        initial_user["idp_username"])
+    db_connection.cursor().execute(replaced_query)
+
+    yield initial_user
+
+def test_create_user_if_not_found(db_connection, db_transaction, context, event):
+
+    global test_user_properties
+
+    test_idp_type_code = test_user_properties["idp_type_code"]
+    test_idp_user_id = test_user_properties["idp_user_id"] 
+    test_cognito_user_id = test_user_properties["cognito_user_id"]
+    test_idp_username = test_user_properties["idp_username"] 
+
+    # setup
 
     # execute
     result = handler(event, context)
 
-    # assert
-    actual_app_description = event['response']['claimsOverrideDetails']['claimsToAddOrOverride']['famAuthorization']['appDescription']
-
+    # validate that there is one user in the database with the properties from the incoming event
     cursor = db_connection.cursor()
-    cursor.execute("select application_description description from app_fam.fam_application app where app.application_name = 'fam';")
-    appQueryResult = cursor.fetchone()
-    expected_app_description = appQueryResult[0]
+    raw_query = '''select count(*) from app_fam.fam_user where 
+        user_type_code = {} and 
+        user_guid = {} and 
+        cognito_user_id = {} and
+        user_name = {};'''
+    replaced_query = sql.SQL(raw_query).format(
+        sql.Literal(test_idp_type_code), 
+        sql.Literal(test_idp_user_id), 
+        sql.Literal(test_cognito_user_id), 
+        sql.Literal(test_idp_username))
+    cursor.execute(replaced_query)
 
-    assert expected_app_description == actual_app_description
+    count = cursor.fetchone()[0]
+
+    assert count == 1
+
+
+def test_update_user_if_already_exists(db_connection, db_transaction, context, event, initial_user):
+
+    global test_user_properties
+
+    test_idp_type_code = test_user_properties["idp_type_code"]
+    test_idp_user_id = test_user_properties["idp_user_id"] 
+    test_cognito_user_id = test_user_properties["cognito_user_id"]
+    test_idp_username = test_user_properties["idp_username"] 
+
+    # setup
+
+    # execute
+    result = handler(event, context)
+
+    # validate that there is one user in the database with the properties from the incoming event
+    cursor = db_connection.cursor()
+    raw_query = '''select count(*) from app_fam.fam_user where 
+        user_type_code = {} and 
+        user_guid = {} and 
+        cognito_user_id = {} and
+        user_name = {};'''
+    query = sql.SQL(raw_query).format(
+        sql.Literal(test_idp_type_code), 
+        sql.Literal(test_idp_user_id), 
+        sql.Literal(test_cognito_user_id), 
+        sql.Literal(test_idp_username))
+    cursor.execute(query)
+
+    count = cursor.fetchone()[0]
+
+    assert count == 1
 
     
-
-
-

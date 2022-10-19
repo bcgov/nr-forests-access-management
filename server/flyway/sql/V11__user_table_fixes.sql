@@ -1,0 +1,1 @@
+ALTER TABLE app_fam.fam_user alter COLUMN cognito_user_id type varchar(100);
