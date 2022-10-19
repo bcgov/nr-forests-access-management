@@ -53,7 +53,7 @@ def lambda_handler(event, context):
     logger.info('## CONTEXT\r' + jsonpickle.encode(context))
 
     # grab requestor's email address
-    # email = event['request']['userAttributes']['email']
+    email = event['request']['userAttributes']['email']
 
     connection = obtain_db_connection()
     cursor = connection.cursor()
@@ -64,11 +64,10 @@ def lambda_handler(event, context):
     release_db_connection(connection)
     
     event["response"]["claimsOverrideDetails"] = { 
-        "claimsToAddOrOverride": { 
-            "famAuthorization": {
-                "appDescription": app_description 
+        "groupOverrideDetails": {
+            "groupsToOverride": ["group-A", "group-B", app_description],
+            "iamRolesToOverride": [],
+            "preferredRole": ""
             }
-        } 
-    }
-         
+        }         
     return event

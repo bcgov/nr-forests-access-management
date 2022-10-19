@@ -1,12 +1,12 @@
+import datetime
 import logging
+from typing import List
 
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
-import datetime
-from sqlalchemy.orm import session
-
 import sqlalchemy.exc
+from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,23 +34,22 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
     db.add(roleTypeModel_concrete)
     db.commit()
     yield db  # use the session in tests.
+    
     try:
-        #roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
         db.delete(roleTypeModel_abstract)
     except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.error(f'wasn\'t committed: {e}')
+        LOGGER.error(f"wasn't committed: {e}")
 
     try:
-        #roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
         db.delete(roleTypeModel_concrete)
     except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.debug(f'wasn\'t committed: {e}')
+        LOGGER.debug(f"wasn't committed: {e}")
 
 
 @pytest.fixture(scope="function")
 def concreteRoleTypeRecord() -> dict:
     roleType = {
-        "role_type_code": "C",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -60,7 +59,7 @@ def concreteRoleTypeRecord() -> dict:
 @pytest.fixture(scope="function")
 def abstractRoleTypeRecord() -> dict:
     roleType = {
-        "role_type_code": "A",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -68,8 +67,8 @@ def abstractRoleTypeRecord() -> dict:
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRole:
-    famRoleAsPydantic = schemas.FamRole(**simpleRoleData)
+def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRoleCreate:
+    famRoleAsPydantic = schemas.FamRoleCreate(**simpleRoleData)
     yield famRoleAsPydantic
 
 
@@ -79,10 +78,9 @@ def simpleRoleData() -> dict:
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
         "create_user": "John Doe",
-        "role_type_code": "A",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
-
 
 
 @pytest.fixture(scope="function")
@@ -92,14 +90,12 @@ def deleteAllRoles(dbSession: session.Session) -> None:
     :param dbSession: mocked up database session
     :type dbSession: sqlalchemy.orm.session.Session
     """
-    LOGGER.debug(f"dbsession type: {type(dbSession)}")
     yield
     db = dbSession
-    famRoles = db.query(model.FamRole).all()
+    famRoles: List[model.FamRole] = db.query(model.FamRole).all()
     for famRole in famRoles:
         db.delete(famRole)
     db.commit()
-    #deleteAllRoles_external(dbSession)
 
 
 @pytest.fixture(scope="function")
@@ -118,4 +114,3 @@ def deleteAllRoleTypes(dbSession: session.Session) -> None:
     for famRoleType in famRoleTypes:
         db.delete(famRoleType)
     db.commit()
-

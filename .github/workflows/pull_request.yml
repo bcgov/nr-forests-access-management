@@ -160,7 +160,7 @@ jobs:
       - name: Building front-end and deploying Frontend using terraform
         run: |
           cd frontend
-          npm ci
+          npm install
 
           # not sure why the put it like this, just explicitly calling the
           # build for now

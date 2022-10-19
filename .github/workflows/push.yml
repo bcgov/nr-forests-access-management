@@ -179,7 +179,7 @@ jobs:
           # terraform output > ../frontend/.env
           # cd ..frontend
           cd frontend
-          npm ci
+          npm install
 
           # not sure why the put it like this, just explicitly calling the
           # build for now
@@ -194,9 +194,9 @@ jobs:
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
 
-          # get the url and test connectivity
-          # --------------------------------------------------------
-          # grab the domain from the terraform output
+          # finally get the url and test connectivity
+
+          ## grab the domain from the terraform output
           terraform-bin output > domain.txt
 
           # extract the domain from the terraform output
@@ -207,8 +207,6 @@ jobs:
           echo extracted url: $url
 
           # execute the actual curl test
-          # This curl will provide useful information if the second
-          # curl fails
           curl  --compressed  $url
           echo ------------- Running Curl Test ------------------------
           curl -sSf --compressed  $url
