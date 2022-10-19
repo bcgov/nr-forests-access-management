@@ -7,10 +7,12 @@ from sqlalchemy.exc import IntegrityError
 
 LOGGER = logging.getLogger(__name__)
 
+
 def test_getFamRoles_nodata(dbSession):
     famRoles = crud_role.getFamRoles(dbSession)
     LOGGER.debug(f"fam roles: {famRoles}")
     assert famRoles == []
+
 
 def test_getFamRoles_withdata(dbSession_famRoles_withSimpleData, simpleRoleData):
     db = dbSession_famRoles_withSimpleData
@@ -24,6 +26,7 @@ def test_getFamRoles_withdata(dbSession_famRoles_withSimpleData, simpleRoleData)
     for role in roles:
         LOGGER.debug(f"role: {role.__dict__} {role.role_name}")
         assert role.role_name == simpleRoleData["role_name"]
+
 
 def test_createSimpleFamRole(
     simpleRoleData_asPydantic, dbSession_famRoletype, deleteAllRoles
@@ -75,6 +78,7 @@ def test_createFamRole_withExistingRoleName_violate_constraint(
     db.rollback()
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
+
 def test_createFamRole_withParentRole(
     simpleRoleData_asPydantic, dbSession_famRoletype, deleteAllRoles
 ):
@@ -85,7 +89,7 @@ def test_createFamRole_withParentRole(
     parentRoleData = simpleRoleData_asPydantic.dict()
     parentRoleData["role_name"] = ROLE_PARENT
     LOGGER.debug(f"Adding role: {parentRoleData}.")
-    parentRole = crud_role.createFamRole(famRole=schemas.FamRole(**parentRoleData), db=db)
+    parentRole = crud_role.createFamRole(famRole=schemas.FamRoleCreate(**parentRoleData), db=db)
 
     assert parentRole.role_name == ROLE_PARENT
     assert parentRole.role_id > 0
@@ -97,12 +101,13 @@ def test_createFamRole_withParentRole(
     childRoleData["role_name"] = ROLE_CHILD
     childRoleData["parent_role_id"] = parentRole.role_id
     LOGGER.debug(f"Adding role: {childRoleData}.")
-    childRole = crud_role.createFamRole(famRole=schemas.FamRole(**childRoleData), db=db)
+    childRole = crud_role.createFamRole(famRole=schemas.FamRoleCreate(**childRoleData), db=db)
 
     assert childRole.role_name == ROLE_CHILD
     assert childRole.role_id > 0 and childRole.role_id != parentRole.role_id
     assert childRole.parent_role_id == parentRole.role_id
     LOGGER.debug(f"Child role added: {vars(childRole)}")
+
 
 def test_createFamRole_withNoneExistingParentRole_violate_constraint(
     simpleRoleData_asPydantic, dbSession_famRoletype
@@ -114,7 +119,7 @@ def test_createFamRole_withNoneExistingParentRole_violate_constraint(
     roleData = simpleRoleData_asPydantic.dict()
     roleData["parent_role_id"] = none_existing_parent_role_id
 
-    famRole = schemas.FamRole(**roleData)
+    famRole = schemas.FamRoleCreate(**roleData)
     LOGGER.debug(f"Adding role with non-existing parent_role_id-: {famRole}.")
     with pytest.raises(IntegrityError) as e:
         # invalid insert for the same role.
