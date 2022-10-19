@@ -144,4 +144,32 @@ def test_update_user_if_already_exists(db_connection, db_transaction, context, e
 
     assert count == 1
 
-    
+def test_single_parent_role_found(db_connection, db_transaction, context, event, initial_user):
+
+    # setup
+    expected_role = 'EXPECTED'
+
+    # Set up expected role in DB
+    cursor = db_connection.cursor()
+    raw_query = '''insert into app_fam.fam_role 
+        (role_name, role_purpose, application_id, role_type_code, create_user, update_user)
+        values( '{}', 'just for testing', (select application_id from app_fam.fam_application where application_name = 'fam'), 'C', CURRENT_USER, CURRENT_USER);'''
+    replaced_query = raw_query.format(expected_role)
+    db_connection.cursor().execute(replaced_query)
+
+    # Set up expected client in DB
+    cursor = db_connection.cursor()
+    raw_query = '''insert into app_fam.fam_application_client 
+        (cognito_client_id, application_id, create_user, update_user)
+        values( '{}', (select application_id from app_fam.fam_application where application_name = 'fam'), CURRENT_USER, CURRENT_USER);'''
+    replaced_query = raw_query.format('3u3vm7ehhaj2iqkm851t8fl6gp')
+    db_connection.cursor().execute(replaced_query)
+
+    # execute
+    result = handler(event, context)
+
+    # validate that there is one user in the database with the properties from the incoming event
+    override_groups = result['response']['claimsOverrideDetails']['groupOverrideDetails']['groupsToOverride']
+    assert expected_role in override_groups
+
+
