@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt install -y wget && rm -rf /var/lib/apt/lists/*
 
-RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.0.1/flyway-commandline-9.0.1-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-9.0.1/flyway /usr/local/bin 
+RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.0.1/flyway-commandline-9.0.1-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-9.0.1/flyway /usr/local/bin
 RUN chmod 775 /flyway-9.0.1/flyway
 
 HEALTHCHECK --interval=10s --retries=3 --start-period=30s --timeout=5s \
