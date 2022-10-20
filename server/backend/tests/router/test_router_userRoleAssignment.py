@@ -14,7 +14,7 @@ def test_create_user_role_assignment_associated_with_abstract_role(
     dbSession_famUserTypes,
     simpleFOMSubmitterRole_dbSession,
     simpleUserRoleData,
-    clean_up_all_user_role_assignment
+    clean_up_all_user_role_assignment,
 ):
     db: Session = simpleFOMSubmitterRole_dbSession
 
@@ -41,21 +41,27 @@ def test_create_user_role_assignment_associated_with_abstract_role(
 
     # Verify assignment did get created
     assignment_id = response.json()["user_role_xref_id"]
-    assignment_db_item: model.FamUserRoleXref = db.query(model.FamUserRoleXref).filter(
-        model.FamUserRoleXref.user_role_xref_id == assignment_id
-    ).one()
+    assignment_db_item: model.FamUserRoleXref = (
+        db.query(model.FamUserRoleXref)
+        .filter(model.FamUserRoleXref.user_role_xref_id == assignment_id)
+        .one()
+    )
     assert assignment_db_item is not None
 
     # Verify assignment linking to correct user
-    assignment_user_db_item = db.query(model.FamUser).filter(
-        model.FamUser.user_name == request_data['user_name']
-    ).one()
+    assignment_user_db_item = (
+        db.query(model.FamUser)
+        .filter(model.FamUser.user_name == request_data["user_name"])
+        .one()
+    )
     assert assignment_user_db_item is not None
 
     # Verify assignment linking to correct role and parent role
-    assignment_role_db_item: model.FamRole = db.query(model.FamRole).filter(
-        model.FamRole.role_id == assignment_db_item.role_id
-    ).one()
+    assignment_role_db_item: model.FamRole = (
+        db.query(model.FamRole)
+        .filter(model.FamRole.role_id == assignment_db_item.role_id)
+        .one()
+    )
     assert assignment_role_db_item is not None
     assert assignment_role_db_item.parent_role_id == fom_submitter_role.role_id
 
@@ -65,7 +71,7 @@ def test_create_user_role_assignment_with_concrete_role(
     dbSession_famUserTypes,
     simpleConcreteRole_dbSession,
     simpleUserRoleData,
-    clean_up_all_user_role_assignment
+    clean_up_all_user_role_assignment,
 ):
     db = simpleConcreteRole_dbSession
 
@@ -74,15 +80,13 @@ def test_create_user_role_assignment_with_concrete_role(
     assert len(user_role_assignment_db_items) == 0
 
     # Verify one concrete role exists initially.
-    role_db_item: model.FamRole = (
-        db.query(model.FamRole).one()
-    )
+    role_db_item: model.FamRole = db.query(model.FamRole).one()
     assert role_db_item is not None
     assert role_db_item.role_type_code == model.FamRoleType.ROLE_TYPE_CONCRETE
 
     request_data = copy.deepcopy(simpleUserRoleData)
     request_data["role_id"] = role_db_item.role_id
-    del request_data['forest_client_number']
+    del request_data["forest_client_number"]
 
     # Execute POST (role assignment created)
     response = testClient_fixture.post(f"{endPoint}", json=request_data)
@@ -93,20 +97,49 @@ def test_create_user_role_assignment_with_concrete_role(
 
     # Verify assignment did get created
     assignment_id = response.json()["user_role_xref_id"]
-    assignment_db_item: model.FamUserRoleXref = db.query(model.FamUserRoleXref).filter(
-        model.FamUserRoleXref.user_role_xref_id == assignment_id
-    ).one()
+    assignment_db_item: model.FamUserRoleXref = (
+        db.query(model.FamUserRoleXref)
+        .filter(model.FamUserRoleXref.user_role_xref_id == assignment_id)
+        .one()
+    )
     assert assignment_db_item is not None
 
     # Verify assignment linking to correct user
-    assignment_user_db_item = db.query(model.FamUser).filter(
-        model.FamUser.user_name == request_data['user_name']
-    ).one()
+    assignment_user_db_item = (
+        db.query(model.FamUser)
+        .filter(model.FamUser.user_name == request_data["user_name"])
+        .one()
+    )
     assert assignment_user_db_item is not None
 
     # Verify assignment linking to correct role and no parent role
-    assignment_role_db_item: model.FamRole = db.query(model.FamRole).filter(
-        model.FamRole.role_id == assignment_db_item.role_id
-    ).one()
+    assignment_role_db_item: model.FamRole = (
+        db.query(model.FamRole)
+        .filter(model.FamRole.role_id == assignment_db_item.role_id)
+        .one()
+    )
     assert assignment_role_db_item is not None
-    assert assignment_role_db_item.parent_role_id == None
+    assert assignment_role_db_item.parent_role_id is None
+
+
+def test_delete_user_role_assignment(
+    testClient_fixture, simpleUserRoleAssignment_dbSession
+):
+    db = simpleUserRoleAssignment_dbSession
+
+    # Verify 1 user/role assignment initially
+    user_role_assignment_db_items = db.query(
+        model.FamUserRoleXref
+    ).all()
+    assert len(user_role_assignment_db_items) == 1
+
+    # Execute Delete
+    testClient_fixture.delete(
+        f"{endPoint}/{user_role_assignment_db_items[0].user_role_xref_id}"
+    )
+
+    # Verify user/role assignment has been deleted
+    user_role_assignment_db_items: model.FamUserRoleXref = db.query(
+        model.FamUserRoleXref
+    ).all()
+    assert len(user_role_assignment_db_items) == 0

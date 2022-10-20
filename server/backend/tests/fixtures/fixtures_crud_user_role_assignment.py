@@ -4,8 +4,8 @@ import api.app.constants as famConstants
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
-from sqlalchemy.orm import session
 from sqlalchemy import text
+from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def simpleUserRoleRequest(simpleUserRoleData) -> schemas.FamUserRoleAssignmentCr
 
 @pytest.fixture(scope="function")
 def simpleUserRoleAssignment_dbSession(
-    dbSession_famUserTypes, simpleFOMSubmitterRole_dbSession: session.Session
+    request, dbSession_famUserTypes, simpleFOMSubmitterRole_dbSession: session.Session
 ):
     db = simpleFOMSubmitterRole_dbSession
     fam_role: model.FamRole = (db.query(model.FamRole).all())[0]
@@ -59,7 +59,13 @@ def simpleUserRoleAssignment_dbSession(
     db.commit()
     yield db
 
-    db.delete(user_role_assignment)
+    xref_db_item = db.query(model.FamUserRoleXref).filter(
+        model.FamUserRoleXref.user_id == user_role_assignment.user_id,
+        model.FamUserRoleXref.role_id == user_role_assignment.role_id,
+    ).one_or_none()
+
+    if xref_db_item:
+        db.delete(xref_db_item)
     db.delete(fam_user)
     db.commit()
 
@@ -103,21 +109,25 @@ def simpleFOMSubmitterRole_dbSession(
     db.commit()
     yield db
 
-    db.delete(fomSubmitterRole)
-    db.commit()
+    role_db_item = db.query(model.FamRole).filter(
+        model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME
+    ).one_or_none()
+
+    if role_db_item:
+        db.delete(role_db_item)
+        db.commit()
 
 
 @pytest.fixture(scope="function")
-def simpleConcreteRole_dbSession(
-    dbSession_famRoletype, simpleFamApplication_dbSession
-):
+def simpleConcreteRole_dbSession(dbSession_famRoletype, simpleFamApplication_dbSession):
     db = simpleFamApplication_dbSession
     famApplication: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
+    role_name = "Concrete_Test_Role"
     simpleConcreteRole = model.FamRole(
         **{
-            "role_name": "Concrete Test Role",
+            "role_name": role_name,
             "role_purpose": "Concrete role for application",
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": famApplication.application_id,
@@ -128,8 +138,13 @@ def simpleConcreteRole_dbSession(
     db.commit()
     yield db
 
-    db.delete(simpleConcreteRole)
-    db.commit()
+    role_db_item = db.query(model.FamRole).filter(
+        model.FamRole.role_name == role_name
+    ).one_or_none()
+
+    if role_db_item:
+        db.delete(role_db_item)
+        db.commit()
 
 
 @pytest.fixture(scope="function")
