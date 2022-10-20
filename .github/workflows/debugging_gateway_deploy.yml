@@ -105,5 +105,5 @@ jobs:
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           EOF
           terraform init -backend-config=backend.hcl
-          #terraform apply -auto-approve
-          terraform plan
+          terraform apply -auto-approve
+          #terraform plan
