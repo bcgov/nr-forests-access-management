@@ -46,8 +46,8 @@ def getFamUserByDomainAndName(
     fam_user: models.FamUser = (
         db.query(models.FamUser)
         .filter(
-            models.FamUser.user_type_code == user_type_code
-            and models.FamUser.user_name == user_name
+            models.FamUser.user_type_code == user_type_code,
+            models.FamUser.user_name == user_name,
         )
         .one_or_none()
     )

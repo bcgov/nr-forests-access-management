@@ -74,7 +74,7 @@ def createFamUserRoleAssignment(
 
     xref_dict = fam_user_role_xref.__dict__
     xref_dict["application_id"] = (
-        child_role.application_id if child_role else fam_role.application_id
+        child_role.application_id if require_child_role else fam_role.application_id
     )
     userRoleAssignment = schemas.FamUserRoleAssignmentGet(**xref_dict)
     LOGGER.debug(f"User/Role assignment executed successfully: {userRoleAssignment}")
@@ -124,8 +124,8 @@ def getUserRolebyUserIdAndRoleId(
     famUserRole = (
         db.query(models.FamUserRoleXref)
         .filter(
-            models.FamUserRoleXref.user_id == user_id
-            and models.FamUserRoleXref.role_id == role_id
+            models.FamUserRoleXref.user_id == user_id,
+            models.FamUserRoleXref.role_id == role_id,
         )
         .one_or_none()
     )

@@ -1,0 +1,112 @@
+import copy
+import logging
+
+import api.app.models.model as model
+from api.app.main import apiPrefix
+from sqlmodel import Session
+
+LOGGER = logging.getLogger(__name__)
+endPoint = f"{apiPrefix}/user_role_assignment"
+
+
+def test_create_user_role_assignment_associated_with_abstract_role(
+    testClient_fixture,
+    dbSession_famUserTypes,
+    simpleFOMSubmitterRole_dbSession,
+    simpleUserRoleData,
+    clean_up_all_user_role_assignment
+):
+    db: Session = simpleFOMSubmitterRole_dbSession
+
+    # Verify no assignment initially.
+    user_role_assignment_db_items = db.query(model.FamUserRoleXref).all()
+    assert len(user_role_assignment_db_items) == 0
+
+    # Verify FOM submitter abstract role exists initially.
+    fom_submitter_role: model.FamRole = (
+        db.query(model.FamRole).filter(model.FamRole.role_name == "FOM_Submitter").one()
+    )
+    assert fom_submitter_role is not None
+    assert fom_submitter_role.role_type_code == model.FamRoleType.ROLE_TYPE_ABSTRACT
+
+    request_data = copy.deepcopy(simpleUserRoleData)
+    request_data["role_id"] = fom_submitter_role.role_id
+
+    # Execute POST (concrete role created for role assignment and linked to parent role)
+    response = testClient_fixture.post(f"{endPoint}", json=request_data)
+
+    # Verify status and body
+    assert response.status_code == 200
+    assert response.json() is not None
+
+    # Verify assignment did get created
+    assignment_id = response.json()["user_role_xref_id"]
+    assignment_db_item: model.FamUserRoleXref = db.query(model.FamUserRoleXref).filter(
+        model.FamUserRoleXref.user_role_xref_id == assignment_id
+    ).one()
+    assert assignment_db_item is not None
+
+    # Verify assignment linking to correct user
+    assignment_user_db_item = db.query(model.FamUser).filter(
+        model.FamUser.user_name == request_data['user_name']
+    ).one()
+    assert assignment_user_db_item is not None
+
+    # Verify assignment linking to correct role and parent role
+    assignment_role_db_item: model.FamRole = db.query(model.FamRole).filter(
+        model.FamRole.role_id == assignment_db_item.role_id
+    ).one()
+    assert assignment_role_db_item is not None
+    assert assignment_role_db_item.parent_role_id == fom_submitter_role.role_id
+
+
+def test_create_user_role_assignment_with_concrete_role(
+    testClient_fixture,
+    dbSession_famUserTypes,
+    simpleConcreteRole_dbSession,
+    simpleUserRoleData,
+    clean_up_all_user_role_assignment
+):
+    db = simpleConcreteRole_dbSession
+
+    # Verify no assignment initially.
+    user_role_assignment_db_items = db.query(model.FamUserRoleXref).all()
+    assert len(user_role_assignment_db_items) == 0
+
+    # Verify one concrete role exists initially.
+    role_db_item: model.FamRole = (
+        db.query(model.FamRole).one()
+    )
+    assert role_db_item is not None
+    assert role_db_item.role_type_code == model.FamRoleType.ROLE_TYPE_CONCRETE
+
+    request_data = copy.deepcopy(simpleUserRoleData)
+    request_data["role_id"] = role_db_item.role_id
+    del request_data['forest_client_number']
+
+    # Execute POST (role assignment created)
+    response = testClient_fixture.post(f"{endPoint}", json=request_data)
+
+    # Verify status and body
+    assert response.status_code == 200
+    assert response.json() is not None
+
+    # Verify assignment did get created
+    assignment_id = response.json()["user_role_xref_id"]
+    assignment_db_item: model.FamUserRoleXref = db.query(model.FamUserRoleXref).filter(
+        model.FamUserRoleXref.user_role_xref_id == assignment_id
+    ).one()
+    assert assignment_db_item is not None
+
+    # Verify assignment linking to correct user
+    assignment_user_db_item = db.query(model.FamUser).filter(
+        model.FamUser.user_name == request_data['user_name']
+    ).one()
+    assert assignment_user_db_item is not None
+
+    # Verify assignment linking to correct role and no parent role
+    assignment_role_db_item: model.FamRole = db.query(model.FamRole).filter(
+        model.FamRole.role_id == assignment_db_item.role_id
+    ).one()
+    assert assignment_role_db_item is not None
+    assert assignment_role_db_item.parent_role_id == None

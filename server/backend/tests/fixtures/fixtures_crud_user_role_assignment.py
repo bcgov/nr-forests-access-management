@@ -5,6 +5,7 @@ import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
 from sqlalchemy.orm import session
+from sqlalchemy import text
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,8 +31,7 @@ def simpleUserRoleRequest(simpleUserRoleData) -> schemas.FamUserRoleAssignmentCr
 
 @pytest.fixture(scope="function")
 def simpleUserRoleAssignment_dbSession(
-    dbSession_famUserTypes,
-    simpleFOMSubmitterRole_dbSession: session.Session
+    dbSession_famUserTypes, simpleFOMSubmitterRole_dbSession: session.Session
 ):
     db = simpleFOMSubmitterRole_dbSession
     fam_role: model.FamRole = (db.query(model.FamRole).all())[0]
@@ -41,7 +41,7 @@ def simpleUserRoleAssignment_dbSession(
         **{
             "user_type_code": famConstants.UserType.IDIR,
             "user_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
-            "create_user": famConstants.FAM_PROXY_API_USER
+            "create_user": famConstants.FAM_PROXY_API_USER,
         }
     )
     db.add(fam_user)
@@ -52,7 +52,7 @@ def simpleUserRoleAssignment_dbSession(
         **{
             "user_id": fam_user.user_id,
             "role_id": fam_role.role_id,
-            "create_user": famConstants.FAM_PROXY_API_USER
+            "create_user": famConstants.FAM_PROXY_API_USER,
         }
     )
     db.add(user_role_assignment)
@@ -65,12 +65,8 @@ def simpleUserRoleAssignment_dbSession(
 
 
 @pytest.fixture(scope="function")
-def simpleFOMSubmitterRole_dbSession(
-    dbSession_famRoletype: session.Session,
-):
-    db = dbSession_famRoletype
-
-    # add an application to db
+def simpleFamApplication_dbSession(dbSession):
+    db = dbSession
     famApplication = model.FamApplication(
         **{
             "application_name": "FOM",
@@ -79,7 +75,19 @@ def simpleFOMSubmitterRole_dbSession(
         }
     )
     db.add(famApplication)
-    db.flush()
+    db.commit()
+    yield db
+
+    db.delete(famApplication)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
+def simpleFOMSubmitterRole_dbSession(
+    dbSession_famRoletype, simpleFamApplication_dbSession
+):
+    db = simpleFamApplication_dbSession
+    famApplication: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
     fomSubmitterRole = model.FamRole(
@@ -96,5 +104,59 @@ def simpleFOMSubmitterRole_dbSession(
     yield db
 
     db.delete(fomSubmitterRole)
-    db.delete(famApplication)
     db.commit()
+
+
+@pytest.fixture(scope="function")
+def simpleConcreteRole_dbSession(
+    dbSession_famRoletype, simpleFamApplication_dbSession
+):
+    db = simpleFamApplication_dbSession
+    famApplication: model.FamApplication = (db.query(model.FamApplication).all())[0]
+
+    # add a role record to db
+    simpleConcreteRole = model.FamRole(
+        **{
+            "role_name": "Concrete Test Role",
+            "role_purpose": "Concrete role for application",
+            "create_user": famConstants.FAM_PROXY_API_USER,
+            "application_id": famApplication.application_id,
+            "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+        }
+    )
+    db.add(simpleConcreteRole)
+    db.commit()
+    yield db
+
+    db.delete(simpleConcreteRole)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
+def clean_up_all_user_role_assignment(dbSession):
+    db = dbSession
+    yield db
+
+    # Delete fam_user_role_xref
+    stmt = text(
+        """
+        DELETE FROM fam_user_role_xref
+        """
+    )
+    db.execute(stmt)
+
+    # Then role
+    stmt = text(
+        """
+        DELETE FROM fam_role
+        """
+    )
+    db.execute(stmt)
+
+    # Delete user
+    stmt = text(
+        """
+        DELETE FROM fam_user
+        """
+    )
+    db.execute(stmt)
