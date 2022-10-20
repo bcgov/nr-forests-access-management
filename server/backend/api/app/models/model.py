@@ -201,7 +201,7 @@ class FamUser(Base):
                 "uniqueness of a User within the FAM Application",
     )
     user_type_code = Column(
-        String(2), 
+        String(2),
         nullable=False,
         comment="Identifies which type of the user it belongs to; IDIR, BCeID etc.")
     user_name = Column(String(100), nullable=False)
@@ -217,7 +217,7 @@ class FamUser(Base):
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
-    cognito_user_id = Column(String(32))
+    cognito_user_id = Column(String(100))
     update_user = Column(
         String(30),
         comment="The user or proxy account that created or last updated the "
@@ -310,9 +310,12 @@ class FamApplicationClient(Base):
                 "record. ",
     )
     update_date = Column(
-        String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
+        #String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
+        TIMESTAMP(precision=6),
+        nullable=False,
+        server_default=text("LOCALTIMESTAMP"),
+        comment="The date and time the record was created.",
     )
-
     application = relationship(
         "FamApplication", back_populates="fam_application_client"
     )

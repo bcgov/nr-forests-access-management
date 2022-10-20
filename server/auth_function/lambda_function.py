@@ -13,6 +13,13 @@ logger.setLevel(logging.INFO)
 db_connection = None
 testing = False
 
+
+user_type_code_dict = {
+    "idir": "I",
+    "bceidbusiness": "B"
+}
+
+
 def obtain_db_connection():
     global db_connection
 
@@ -37,7 +44,7 @@ def obtain_db_connection():
                                         user=username,
                                         password=password,
                                         sslmode='disable')
-        connection.autocommit = False         
+        connection.autocommit = False
         db_connection = connection
     return db_connection
 
@@ -58,19 +65,48 @@ def lambda_handler(event, context):
 
 
     cursor = connection.cursor()
-    cursor.execute("select application_description description from app_fam.fam_application app where app.application_name = 'fam';")
-    query_result = cursor.fetchone()
-    app_description = query_result[0]
+    query = """
+    SELECT
+        role.role_name,
+        role.client_number_id,
+        parent_role.role_name as parent_role
+    FROM app_fam.fam_role role
+         LEFT JOIN app_fam.fam_role parent_role ON role.parent_role_id = parent_role.role_id
+    INNER JOIN app_fam.fam_application application ON role.application_id = application.application_id
+	JOIN app_fam.fam_application_client client ON application.application_id = client.application_id
+	JOIN app_fam.fam_user_role_xref role_assignment ON role.role_id = role_assignment.role_id
+	JOIN app_fam.fam_user user_assigned ON role_assignment.user_id = user_assigned.user_id
+	WHERE user_assigned.user_guid = {user_guid}
+	AND user_assigned.user_type_code = {user_type_code}
+	AND client.cognito_client_id = {cognito_client_id};
+    """
+    user_guid = event['request']['userAttributes']['custom:idp_user_id']
+    user_type_code = user_type_code_dict[event['request']['userAttributes']['custom:idp_name']]
+    cognito_client_id = event['callerContext']['clientId']
+
+
+    sql_query = sql.SQL(query).format(
+        user_guid = sql.Literal(user_guid),
+        user_type_code = sql.Literal(user_type_code),
+        cognito_client_id = sql.Literal(cognito_client_id))
+
+    cursor.execute(sql_query)
+    roleList = []
+    for record in cursor:
+        roleList.append(record[0])
+
+    # query_result = cursor.fetchone()
+    # app_description = query_result[0]
 
     release_db_connection(connection)
-    
-    event["response"]["claimsOverrideDetails"] = { 
+
+    event["response"]["claimsOverrideDetails"] = {
         "groupOverrideDetails": {
-            "groupsToOverride": ["group-A", "group-B", app_description],
+            "groupsToOverride": roleList,
             "iamRolesToOverride": [],
             "preferredRole": ""
             }
-        }         
+        }
     return event
 
 def populate_user_if_necessary(connection, event, context):
@@ -86,17 +122,17 @@ def populate_user_if_necessary(connection, event, context):
     user_type_code = user_type_code_dict[user_type]
 
     raw_query = '''INSERT INTO app_fam.fam_user
-        (user_type_code, user_guid, cognito_user_id, user_name, 
+        (user_type_code, user_guid, cognito_user_id, user_name,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, 
+        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT ON CONSTRAINT fam_usr_uk DO
         UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id};'''
 
     sql_query = sql.SQL(raw_query).format(
-        user_type_code = sql.Literal(user_type_code), 
-        user_guid = sql.Literal(user_guid), 
-        cognito_user_id = sql.Literal(cognito_user_id), 
+        user_type_code = sql.Literal(user_type_code),
+        user_guid = sql.Literal(user_guid),
+        cognito_user_id = sql.Literal(cognito_user_id),
         user_name = sql.Literal(user_name))
 
     connection.cursor().execute(sql_query)
