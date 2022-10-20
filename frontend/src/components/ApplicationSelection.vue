@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 const selected = ref(null)
+// TODO: Change to javascript object with id, name, description for each application.
 const applications = ['Forest Operations Map (FOM)', 'Forest Access Management (FAM)', 'Forest Operations Plan (FOP)']
 
 </script>
@@ -11,12 +12,14 @@ const applications = ['Forest Operations Map (FOM)', 'Forest Access Management (
   <div v-if="applications.length">
   <label>Application to Administer</label>
   <br/>
-  <select v-model="selected" size="5" >
+  <select v-model="selected" :size="applications.length+1" >
     <!--<option disabled value="">Please select one</option> -->
     <option v-for="app in applications" :value="app">{{app}}</option>
   </select>
   <br />
-  <button>Manage Access</button>
+  <p>Selected application: {{selected}}</p>
+  <br/>
+  <button onclick="alert('Manage app {{selected}}')">Manage Access</button>
   &nbsp;
   <button>Grant Access</button>
   </div>
