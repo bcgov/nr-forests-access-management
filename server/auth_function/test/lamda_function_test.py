@@ -6,7 +6,6 @@ import logging
 import jsonpickle
 import pathlib
 from psycopg2 import sql
-import fixtures
 
 modulePath = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(modulePath)
@@ -21,87 +20,39 @@ sys.path.append(str(current_dir.parent))
 function = __import__('lambda_function')
 handler = function.lambda_handler
 
-@pytest.fixture(scope='session')
-def db_connection():
-    user4tests = 'fam_proxy_api'
-    user4tests = 'postgres' # override for kevins config
-
-    dbName = 'postgres'
-    dbName = 'fam' # override for kevins config
-    connection = psycopg2.connect(host=os.environ.get('PG_HOST', 'localhost'),
-                                  port=os.environ.get('PG_PORT', '5432'),
-                                  dbname=os.environ.get('PG_DATABASE', dbName),
-                                  user=os.environ.get('PG_USER', user4tests),
-                                  password=os.environ.get('PG_PASSWORD', 'postgres'),
-                                  sslmode='disable')
-                                  #dbname='fam')
-    connection.autocommit = False  # With tests we don't need to clean up the data
-    function.db_connection = connection
-    function.testing = True
-    yield connection
-    # Do a monkeypatch on get get db and finalize db methods
-    connection.close()
-
-@pytest.fixture(scope='function')
-def db_transaction(db_connection):
-    yield db_connection
-    db_connection.rollback()
-
-@pytest.fixture(scope='session')
-def context():
-    context = {'requestid' : '1234'}
-    yield context
-
-@pytest.fixture(scope='function')
-def event():
-    event_file_path = str(current_dir) + "/login_event.json"
-    file = open(event_file_path)
-    try:
-        event = jsonpickle.decode(file.read())
-    finally:
-        file.close()
-    yield event
 
 
 
-test_user_properties = {
-    "idp_type_code": "I",
-    "idp_name": "idir",
-    "idp_user_id": "B5ECDB094DFB4149A6A8445A01A96BF0",
-    "idp_username": "COGUSTAF",
-    "cognito_user_id": "idir_b5ecdb094dfb4149a6a8445a01a96bf0@idir",
-}
 
-@pytest.fixture(scope='function')
-def initial_user(db_connection, db_transaction, event):
-    global test_user_properties
-    initial_user = test_user_properties
 
-    # Only insert the bare minimum to simulate entering user in advance of first login
 
-    raw_query = '''INSERT INTO app_fam.fam_user
-        (user_type_code, user_name, user_guid,
-        create_user, create_date, update_user, update_date)
-        VALUES( '{}', '{}', '{}',
-        CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);'''
-    #print(f"query is\n:{raw_query}")
+# test_user_properties = {
+#     "idp_type_code": "I",
+#     "idp_name": "idir",
+#     "idp_user_id": "B5ECDB094DFB4149A6A8445A01A96BF0",
+#     "idp_username": "COGUSTAF",
+#     "cognito_user_id": "idir_b5ecdb094dfb4149a6a8445a01a96bf0@idir",
+# }
 
-    idpName = event['request']['userAttributes']['custom:idp_name']
-    replaced_query = raw_query.format(
-        lambda_function.user_type_code_dict[idpName],
-        event['request']['userAttributes']['custom:idp_username'],
-        event['request']['userAttributes']['custom:idp_user_id']
-    )
 
-        #initial_user["idp_type_code"],
-        #initial_user["idp_username"])
-    db_connection.cursor().execute(replaced_query)
 
-    yield initial_user
+def test_create_user_if_not_found(db_connection, db_transaction, context, event, test_user_properties):
+    """
+    test to make sure that if the user doesn't exist in the database it will
+    be created.
 
-def test_create_user_if_not_found(db_connection, db_transaction, context, event):
+    :param db_connection: _description_
+    :type db_connection: _type_
+    :param db_transaction: _description_
+    :type db_transaction: _type_
+    :param context: _description_
+    :type context: _type_
+    :param event: _description_
+    :type event: _type_
+    :param test_user_properties: _description_
+    :type test_user_properties: _type_
+    """
 
-    global test_user_properties
 
     test_idp_type_code = test_user_properties["idp_type_code"]
     test_idp_user_id = test_user_properties["idp_user_id"]
@@ -132,10 +83,24 @@ def test_create_user_if_not_found(db_connection, db_transaction, context, event)
     assert count == 1
 
 
-def test_update_user_if_already_exists(db_connection, db_transaction, context, event, initial_user):
+def test_update_user_if_already_exists(db_connection, db_transaction, context, event, initial_user_without_guid_or_cognito_id, test_user_properties):
+    """
+    if the user has already been created but does not have a guid or a cognito user
+    id then, it will be updated, and the guid / cognito user id will be populated.
 
-    global test_user_properties
-
+    :param db_connection: _description_
+    :type db_connection: _type_
+    :param db_transaction: _description_
+    :type db_transaction: _type_
+    :param context: _description_
+    :type context: _type_
+    :param event: _description_
+    :type event: _type_
+    :param initial_user: _description_
+    :type initial_user: _type_
+    :param test_user_properties: _description_
+    :type test_user_properties: _type_
+    """
     test_idp_type_code = test_user_properties["idp_type_code"]
     test_idp_user_id = test_user_properties["idp_user_id"]
     test_cognito_user_id = test_user_properties["cognito_user_id"]
@@ -201,7 +166,7 @@ def test_single_parent_role_found(db_connection, db_transaction, context, event,
 
     # execute
     result = handler(event, context)
-    db_connection.commit()
+    #db_connection.commit()
 
     # validate that there is one user in the database with the properties from the incoming event
     override_groups = result['response']['claimsOverrideDetails']['groupOverrideDetails']['groupsToOverride']
