@@ -256,6 +256,8 @@ class FamUser(Base):
 class FamApplicationClient(Base):
     __tablename__ = "fam_application_client"
     __table_args__ = (
+        UniqueConstraint('cognito_client_id', 'application_id', name='cognito_app_uk'),
+
         ForeignKeyConstraint(
             ["application_id"],
             ["app_fam.fam_application.application_id"],
@@ -271,6 +273,7 @@ class FamApplicationClient(Base):
             "re-use it (at the OIDC level).",
             "schema": "app_fam",
         },
+
     )
 
     application_client_id = Column(
