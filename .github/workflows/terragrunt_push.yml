@@ -1,4 +1,4 @@
-name: Push
+name: Deploy
 
 on:
   push:
@@ -12,6 +12,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: env.environment
 
     steps:
       - name: Checkout
