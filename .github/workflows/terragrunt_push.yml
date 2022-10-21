@@ -10,9 +10,10 @@ env:
   organization: bcgov
 
 jobs:
-  build:
+  aws-deployment:
     runs-on: ubuntu-latest
-    environment: ${ env.environment }
+    environment: 
+      name: ${{ env.environment }}
 
     steps:
       - name: Checkout
