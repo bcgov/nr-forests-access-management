@@ -30,11 +30,11 @@ def database_connection_string():
 @pytest.fixture(scope="session")
 def db_connection(database_connection_string):
     LOGGER.debug("test log message")
-    user4tests = "fam_proxy_api"
-    user4tests = "postgres"  # override for kevins config
+    # user4tests = "fam_proxy_api"
+    # user4tests = "postgres"  # override for kevins config
 
-    dbName = "postgres"
-    dbName = "fam"  # override for kevins config
+    # dbName = "postgres"
+    # dbName = "fam"  # override for kevins config
     # connection = psycopg2.connect(
     #     host=os.environ.get("PG_HOST", "localhost"),
     #     port=os.environ.get("PG_PORT", "5432"),
@@ -43,12 +43,15 @@ def db_connection(database_connection_string):
     #     password=os.environ.get("PG_PASSWORD", "postgres"),
     #     sslmode="disable",
     # )
-    connection = psycopg2.connect(database_connection_string)
+
+
+    #connection = psycopg2.connect(database_connection_string)
 
     # dbname='fam')
-    connection.autocommit = False  # With tests we don't need to clean up the data
-    lambda_function.db_connection = connection
+    #connection.autocommit = False  # With tests we don't need to clean up the data
+    #lambda_function.db_connection = connection
     lambda_function.testing = True
+    connection = lambda_function.obtain_db_connection()
     yield connection
     # Do a monkeypatch on get get db and finalize db methods
     connection.close()
