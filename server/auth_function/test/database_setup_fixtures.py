@@ -2,6 +2,7 @@ import json
 import logging
 import os
 
+import config
 import lambda_function
 import psycopg2
 import pytest
@@ -10,21 +11,40 @@ LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
-def db_connection():
+def database_connection_string():
+    # config.get_db_connection_string()
+    # host = 'localhost'
+    # port = '5432'
+    # dbname = 'fam' #'postgres'
+    # user4tests = 'postgres' # fam_proxy_api
+    # password = 'postgres'
+
+    # # "dbname=test user=postgres password=secret" dbname="test",
+    # db_conn_string = (
+    #     f"user={user4tests} password={password} host={host} port={port} " +
+    #     f"dbname ={dbname}" )
+    db_conn_string = config.get_db_connection_string()
+    return db_conn_string
+
+
+@pytest.fixture(scope="session")
+def db_connection(database_connection_string):
     LOGGER.debug("test log message")
     user4tests = "fam_proxy_api"
     user4tests = "postgres"  # override for kevins config
 
     dbName = "postgres"
     dbName = "fam"  # override for kevins config
-    connection = psycopg2.connect(
-        host=os.environ.get("PG_HOST", "localhost"),
-        port=os.environ.get("PG_PORT", "5432"),
-        dbname=os.environ.get("PG_DATABASE", dbName),
-        user=os.environ.get("PG_USER", user4tests),
-        password=os.environ.get("PG_PASSWORD", "postgres"),
-        sslmode="disable",
-    )
+    # connection = psycopg2.connect(
+    #     host=os.environ.get("PG_HOST", "localhost"),
+    #     port=os.environ.get("PG_PORT", "5432"),
+    #     dbname=os.environ.get("PG_DATABASE", dbName),
+    #     user=os.environ.get("PG_USER", user4tests),
+    #     password=os.environ.get("PG_PASSWORD", "postgres"),
+    #     sslmode="disable",
+    # )
+    connection = psycopg2.connect(database_connection_string)
+
     # dbname='fam')
     connection.autocommit = False  # With tests we don't need to clean up the data
     lambda_function.db_connection = connection

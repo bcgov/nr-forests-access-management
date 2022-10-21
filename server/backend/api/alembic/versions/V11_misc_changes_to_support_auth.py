@@ -27,7 +27,8 @@ def upgrade() -> None:
                comment='The date and time the record was created.',
                existing_comment='ZIP code.',
                existing_server_default=sa.text('LOCALTIMESTAMP'),
-               schema='app_fam')
+               schema='app_fam',
+               postgresql_using='update_date::timestamp(6) without time zone')
     op.create_unique_constraint('cognito_app_uk', 'fam_application_client', ['cognito_client_id', 'application_id'], schema='app_fam')
     op.alter_column('fam_user', 'cognito_user_id',
                existing_type=sa.VARCHAR(length=32),
@@ -35,6 +36,7 @@ def upgrade() -> None:
                existing_nullable=True,
                schema='app_fam')
     # ### end Alembic commands ###
+    # ALTER TABLE app_fam.fam_application_client alter COLUMN update_date type timestamp(6) USING update_date::timestamp(6) without time zone;
 
 
 def downgrade() -> None:
