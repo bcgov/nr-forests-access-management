@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 
 const selected = ref(null)
@@ -7,10 +7,20 @@ const selected = ref(null)
 const applications = [
   { name: 'FOM', description: 'Forest Operations Map', id: '1001' }, 
   { name: 'FAM', description: 'Forest Access Management', id: '1002' },
-  { name: 'FOP', description: 'Forest Operations Plan', id: '1003' }]
+  { name: 'FOP', description: 'Forest Operations Plan', id: '1003' }
+]
+
+const isActionsDisabled = computed( () => {
+  return selected.value == null
+})
 
 function manage() {
-  alert(`Manage app ${selected.value}`)
+  if (selected.value) {
+    alert(`Manage app ${selected.value.description}`)
+  } else {
+    // Not really required, button is disabled if nothing is selected.
+    alert('Please select an option');
+  }
 }
 </script>
 
@@ -20,14 +30,14 @@ function manage() {
   <br/>
   <select v-model="selected" :size="applications.length+1">
     <!--<option disabled value="">Please select one</option> -->
-    <option v-for="app in applications" :value="app.name+':'+app.id">{{app.description}}</option>
+    <option v-for="app in applications" :value="app">{{app.description}}</option>
   </select>
   <br />
   <p>Selected application: {{selected}}</p>
   <br/>
-  <button @click="manage">Manage Access</button>
+  <button @click="manage" :disabled="isActionsDisabled">Manage Access</button>
   &nbsp;
-  <button>Grant Access</button>
+  <button :disabled="isActionsDisabled">Grant Access</button>
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>
