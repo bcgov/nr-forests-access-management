@@ -5,10 +5,13 @@ const selected = ref(null)
 // TODO: Change to javascript object with id, name, description for each application.
 const applications = ['Forest Operations Map (FOM)', 'Forest Access Management (FAM)', 'Forest Operations Plan (FOP)']
 
+function manage(event) {
+  alert(`Manage app ${selected.value}`)
+  // alert(event.target.tagName)
+}
 </script>
 
 <template>
-  <div>
   <div v-if="applications.length">
   <label>Application to Administer</label>
   <br/>
@@ -19,20 +22,12 @@ const applications = ['Forest Operations Map (FOM)', 'Forest Access Management (
   <br />
   <p>Selected application: {{selected}}</p>
   <br/>
-  <button onclick="alert('Manage app {{selected}}')">Manage Access</button>
+  <button @click="manage">Manage Access</button>
   &nbsp;
   <button>Grant Access</button>
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>
-  </div>
-
-  <!--
-    <ul v-if="applications.length">
-    <li v-for="app of applications">{{ app }}</li>
-    </ul>
-    <p v-else>List is empty.</p>
--->
   </div>
 </template>
 
