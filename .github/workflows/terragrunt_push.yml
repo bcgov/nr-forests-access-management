@@ -6,7 +6,7 @@ on:
 
 env:
   TF_VERSION: 1.0.5
-  environment: sandbox
+  environment: test
   organization: bcgov
 
 jobs:
