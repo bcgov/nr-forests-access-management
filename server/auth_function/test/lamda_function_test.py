@@ -44,13 +44,15 @@ def test_create_user_if_not_found(
     # validate that there is one user in the database with the properties from
     # the incoming event
     cursor = db_connection.cursor()
+
     raw_query = """select count(*) from app_fam.fam_user where
-    # potentially another way to handle params:
-    #   https://www.psycopg.org/psycopg3/docs/basic/params.html
         user_type_code = {} and
         user_guid = {} and
         cognito_user_id = {} and
         user_name = {};"""
+
+    # potentially another way to handle params:
+    #   https://www.psycopg.org/psycopg3/docs/basic/params.html
     replaced_query = sql.SQL(raw_query).format(
         sql.Literal(test_idp_type_code),
         sql.Literal(test_idp_user_id),

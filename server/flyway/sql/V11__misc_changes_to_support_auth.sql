@@ -2,7 +2,7 @@ BEGIN;
 
 -- Running upgrade V10 -> V11
 
-ALTER TABLE app_fam.fam_application_client ALTER COLUMN update_date TYPE TIMESTAMP(6) WITHOUT TIME ZONE;
+ALTER TABLE app_fam.fam_application_client ALTER COLUMN update_date TYPE TIMESTAMP(6) WITHOUT TIME ZONE USING update_date::timestamp(6) without time zone;
 
 ALTER TABLE app_fam.fam_application_client ALTER COLUMN update_date SET NOT NULL;
 
