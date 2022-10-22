@@ -16,3 +16,7 @@ variable "aws_region" {
 variable "fam_user_pool_name" {
   description = "Name for the FAM user pool"
 }
+
+variable "fam_user_pool_domain_name" {
+  description = "Name for the FAM user pool domain"
+}
