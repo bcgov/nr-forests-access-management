@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Dummy Step
         run: |
-          echo "Testing GitHub Actions"   
+          echo "Testing GitHub Actions Dependencies"   
 
   aws-test-deployment:
     name: 1. Deploy to AWS TEST environment
