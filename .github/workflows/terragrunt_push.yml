@@ -19,7 +19,7 @@ jobs:
           echo "Testing GitHub Actions"   
 
   aws-test-deployment:
-    name: Deploy to AWS TEST environment
+    name: 1. Deploy to AWS TEST environment
     runs-on: ubuntu-latest
     environment: test
     needs: [build]
@@ -49,7 +49,7 @@ jobs:
           terraform apply -auto-approve
 
   aws-prod-deployment:
-    name: Deploy to AWS PROD environment
+    name: 2. Deploy to AWS PROD environment
     runs-on: ubuntu-latest
     environment: prod
     needs: [build]
