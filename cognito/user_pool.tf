@@ -150,6 +150,6 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
-  domain       = "${var.fam_user_pool_name}-domain"
+  domain       = "${var.fam_user_pool_domain_name}"
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
 }
