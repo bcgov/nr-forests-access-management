@@ -6,14 +6,13 @@ on:
 
 env:
   TF_VERSION: 1.0.5
-  environment: test
   organization: bcgov
 
 jobs:
-  aws-deployment:
+  aws-test-deployment:
+    name: Deploy to AWS TEST environment
     runs-on: ubuntu-latest
-    environment: 
-      name: test
+    environment: test
 
     steps:
       - name: Checkout
@@ -30,10 +29,38 @@ jobs:
           cd cognito
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-test-flyway" }
           EOF
           cat > github.auto.tfvars <<EOF
           fam_user_pool_name = "fam-custom-user-pool"
           EOF
           terraform init -backend-config=backend.hcl
           terraform apply -auto-approve
+
+  aws-prod-deployment:
+    name: Deploy to AWS PROD environment
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Terraform Deploy Prod
+        run: |
+          cd cognito
+          cat <<EOF > backend.hcl
+          organization = "${{ env.organization }}"
+          workspaces { name = "${{ secrets.LICENCEPLATE }}-prod-flyway" }
+          EOF
+          cat > github.auto.tfvars <<EOF
+          fam_user_pool_name = "fam-custom-user-pool"
+          EOF
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve          
