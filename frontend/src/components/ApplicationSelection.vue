@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
+import { ref, computed, watch } from 'vue'
 
 const selected = ref(null)
 
@@ -10,12 +9,34 @@ const applications = [
   { name: 'FOP', description: 'Forest Operations Plan', id: '1003' }
 ]
 
+watch(selected, async (newSelection) => {
+  try {
+    console.log('Trying to retrieve applications')
+
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Accept', 'application/json');
+
+    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications', 
+      { headers: headers})
+
+    // https://nn24zzbo40.execute-api.ca-central-1.amazonaws.com/junk/api/v1/fam_applications
+    // https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications')
+    // TODO: Error:  Access to fetch at 'https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+    console.log(res);
+    var apps = await res.json()
+    console.log(apps[0].application_description)
+  } catch (error) {
+    alert('Error retrieving applications: ' + error)
+  }
+})
+
 const isActionsDisabled = computed( () => {
   return selected.value == null
 })
 
 function manage() {
-  if (selected.value) {
+  if (selected.value) {    
     alert(`Manage app ${selected.value.description}`)
   } else {
     // Not really required, button is disabled if nothing is selected.
