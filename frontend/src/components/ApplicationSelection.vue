@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-
-const selected = ref(null)
+import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 
 const applications = ref([
   { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
@@ -9,7 +8,7 @@ const applications = ref([
   { application_name: 'FOP', application_description: 'Forest Operations Plan', application_id: '1003' }
 ])
 
-watch(selected, async (newSelection) => {
+watch(selectedApplication, async (newSelection) => {
   try {
     console.log('Trying to retrieve applications')
 
@@ -27,15 +26,11 @@ watch(selected, async (newSelection) => {
   }
 })
 
-const isActionsDisabled = computed( () => {
-  return selected.value == null
-})
-
 function manage() {
-  if (selected.value) {    
-    alert(`Manage app ${selected.value.application_description}`)
+  if (selectedApplication.value) {   
+    alert(`Manage app ${selectedApplication.value.application_description}`)
   } else {
-    // Not really required, button is disabled if nothing is selected.
+    // Not really required, button is disabled if nothing is selectedApplication.
     alert('Please select an option');
   }
 }
@@ -48,16 +43,16 @@ function manage() {
   <div v-if="applications.length">
   <label>Application to Administer</label>
   <br/>
-  <select v-model="selected" :size="applications.length+1">
+  <select v-model="selectedApplication" :size="applications.length+1">
     <!--<option disabled value="">Please select one</option> -->
     <option v-for="app in applications" :value="app">{{app.application_description}}</option>
   </select>
   <br />
-  <p>Selected application: {{selected}}</p>
+  <p>Application application: {{selectedApplication}}</p>
   <br/>
-  <button @click="manage" :disabled="isActionsDisabled">Manage Access</button>
+  <button @click="manage" :disabled="isApplicationSelected">Manage Access</button>
   &nbsp;
-  <button :disabled="isActionsDisabled">Grant Access</button>
+  <button :disabled="isApplicationSelected">Grant Access</button>
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>

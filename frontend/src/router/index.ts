@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ApplicationSelection from '../components/ApplicationSelection.vue'
+import ManageAccess from '../components/ManageAccess.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/application',
       name: 'application',
       component: ApplicationSelection
+    },
+    {
+      path: '/manage',
+      name: 'manage',
+      component: ManageAccess
     },
     {
       path: '/about',
