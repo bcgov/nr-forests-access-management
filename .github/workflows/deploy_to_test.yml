@@ -18,9 +18,9 @@ jobs:
     name: 1. Deploy to AWS TEST environment
     needs: [build]
     uses: ./.githhub/workflows/reusable_terraform_server.yml
-    runs-on: ubuntu-latest
     environment: test
     with: 
       environment_name: test
       tfc-workspace: ${{ secrets.LICENCEPLATE }}-test         
       tf-subcommand: apply
+    secrets: inherit
