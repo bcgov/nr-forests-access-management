@@ -1,0 +1,53 @@
+name: Run Terraform (Backend)
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string    
+      tfc_workspace:
+        required: true
+        type: string        
+      tf_subcommand:
+        required: true
+        type: string
+    secrets: inherit
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+
+jobs:
+
+  aws-test-deployment:
+
+    name: Run Terraform
+    runs-on: ubuntu-latest
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      tfc_workspace: ${{ inputs.tfc_workspace }}
+      tf_subcommand: ${{ inputs.tf_subcommand }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - name: Setup Terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ environment_name }}
+        env:
+          TFC-WORKSPACE: ${{ tfc_workspace }}
+
+        run: terragrunt run-all ${{ tf_subcommand }} --terragrunt-non-interactive       

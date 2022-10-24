@@ -28,12 +28,12 @@ jobs:
 
       - name: destroying the  back-end using terraform
         run: |
-          cd server
+          cd cognito
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
           workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-flyway" }
           EOF
-          
+
           terraform init -backend-config=backend.hcl
           terraform destroy -auto-approve
 

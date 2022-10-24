@@ -5,7 +5,7 @@ terraform {
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  project          = get_env("LICENCEPLATE")
+  tfc_workspace    = get_env("TFC-WORKSPACE")
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
 }
 
@@ -18,7 +18,7 @@ terraform {
     hostname = "${local.tfc_hostname}"
     organization = "${local.tfc_organization}"
     workspaces {
-      name = "${local.project}-${local.environment}"
+      name = "${local.tfc_workspace}"
     }
   }
 }
@@ -30,8 +30,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "fam-user-pool"
-  fam_user_pool_domain_name = "test-fam-user-pool-domain"
+
 EOF
 }
 
