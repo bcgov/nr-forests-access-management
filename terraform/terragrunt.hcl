@@ -5,7 +5,7 @@ terraform {
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  project          = get_env("LICENSEPLATE")
+  project          = get_env("LICENCEPLATE")
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
 }
 
