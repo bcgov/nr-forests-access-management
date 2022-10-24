@@ -1,7 +1,3 @@
-terraform {
-  source = "../cognito"
-}
-
 # Indicate what region to deploy the resources into
 generate "provider" {
   path = "provider.tf"
