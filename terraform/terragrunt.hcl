@@ -1,3 +1,7 @@
+terraform {
+  source = "../..//cognito"
+}
+
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
