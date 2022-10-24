@@ -3,29 +3,25 @@ import { ref, computed, watch } from 'vue'
 
 const selected = ref(null)
 
-const applications = [
-  { name: 'FOM', description: 'Forest Operations Map', id: '1001' }, 
-  { name: 'FAM', description: 'Forest Access Management', id: '1002' },
-  { name: 'FOP', description: 'Forest Operations Plan', id: '1003' }
-]
+const applications = ref([
+  { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
+  { application_name: 'FAM', application_description: 'Forest Access Management', application_id: '1002' },
+  { application_name: 'FOP', application_description: 'Forest Operations Plan', application_id: '1003' }
+])
 
 watch(selected, async (newSelection) => {
   try {
     console.log('Trying to retrieve applications')
 
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Accept', 'application/json');
-
-    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications', 
-      { headers: headers})
+    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
 
     // https://nn24zzbo40.execute-api.ca-central-1.amazonaws.com/junk/api/v1/fam_applications
     // https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications')
     // TODO: Error:  Access to fetch at 'https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
     console.log(res);
     var apps = await res.json()
-    console.log(apps[0].application_description)
+    console.log(apps)
+    applications.value = apps
   } catch (error) {
     alert('Error retrieving applications: ' + error)
   }
@@ -37,7 +33,7 @@ const isActionsDisabled = computed( () => {
 
 function manage() {
   if (selected.value) {    
-    alert(`Manage app ${selected.value.description}`)
+    alert(`Manage app ${selected.value.application_description}`)
   } else {
     // Not really required, button is disabled if nothing is selected.
     alert('Please select an option');
@@ -46,12 +42,15 @@ function manage() {
 </script>
 
 <template>
+  <div>
+  <h1>Choose Application</h1>
+
   <div v-if="applications.length">
   <label>Application to Administer</label>
   <br/>
   <select v-model="selected" :size="applications.length+1">
     <!--<option disabled value="">Please select one</option> -->
-    <option v-for="app in applications" :value="app">{{app.description}}</option>
+    <option v-for="app in applications" :value="app">{{app.application_description}}</option>
   </select>
   <br />
   <p>Selected application: {{selected}}</p>
@@ -62,6 +61,7 @@ function manage() {
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>
+  </div>
   </div>
 </template>
 
