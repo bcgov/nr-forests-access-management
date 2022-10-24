@@ -47,7 +47,7 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          LICENSE_PLATE: ${{ secrets.LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ secrets.LICENSEPLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive        
 
       # - name: Setup Terraform
