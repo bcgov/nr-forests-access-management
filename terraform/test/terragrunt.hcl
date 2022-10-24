@@ -1,5 +1,5 @@
 terraform {
-  source = "../../cognito"
+  source = "../..//cognito"
 }
 
 include {
