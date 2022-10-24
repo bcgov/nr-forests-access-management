@@ -4,9 +4,15 @@ on:
   push:
     branches: [feat/67-pipeline-support]
 
+# env:
+#   TF_VERSION: 1.0.5
+#   organization: bcgov
+
 env:
-  TF_VERSION: 1.0.5
-  organization: bcgov
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+  TFC_WORKSPACE: test  
 
 jobs:
 
@@ -29,24 +35,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0
 
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+        env:
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+        run: terragrunt run-all apply --terragrunt-non-interactive        
+
       # - name: Setup Terraform
       #   uses: hashicorp/setup-terraform@v2.0.2
       #   with:
       #     terraform_version: ${{ env.TF_VERSION }}
       #     cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}      
 
-      - name: Terragrunt GitHub Actions
-        uses: the-commons-project/terragrunt-github-actions@1.0.6
-        with:
-          tg_actions_version: 'latest'
-          tf_actions_version: 'latest'
-          tf_actions_subcommand: 'init'
-          tf_actions_cli_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }} 
-          tf_actions_working_dir: '.'
-          tf_actions_comment: true
-          args: '-var="target_env=test"'
-        env:
-          TF_WORKSPACE: '${{ secrets.LICENCEPLATE }}-test-flyway'
+      # - name: Terragrunt GitHub Actions
+      #   uses: the-commons-project/terragrunt-github-actions@1.0.6
+      #   with:
+      #     tg_actions_version: 'latest'
+      #     tf_actions_version: 'latest'
+      #     tf_actions_subcommand: 'init'
+      #     tf_actions_cli_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }} 
+      #     tf_actions_working_dir: '.'
+      #     tf_actions_comment: true
+      #     args: '-var="target_env=test"'
+      #   env:
+      #     TF_WORKSPACE: '${{ secrets.LICENCEPLATE }}-test-flyway'
 
       # - name: Terraform Deploy Test
       #   run: |
