@@ -31,7 +31,7 @@ def getLocalDBString():
     # if the env vars are populated they will take precidence, otherwise
     # the values identified here will be used
     username = os.getenv("api_db_username", "fam_proxy_api")  # postgres
-    password = os.getenv("api_db_password", "postgres")
+    password = os.getenv("api_db_password", "test")
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")
