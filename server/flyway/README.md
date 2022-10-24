@@ -21,6 +21,10 @@ cat out.json
 
 The Dockerfile in this directory can be run (optionally from docker-compose at the root of the project). The resulting docker container has flyway installed and all the scripts copied over. The scripts can be applied to the database with the following command from your terminal:
 
+``` bash
+docker-compose up
+cd server
 docker exec -it famdb flyway-migrate.sh
+```
 
 Note: it would have been lovely to put that script into /docker-entrypoint-initdb.d and get it to run on startup of the DB, but flyway needs to connect over TCP/IP and Postgres doesn't expose TCP/IP until after startup (as per https://github.com/docker-library/postgres/pull/440).
