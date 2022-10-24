@@ -19,6 +19,7 @@ jobs:
           echo "Testing GitHub Actions Dependencies"   
 
   aws-test-deployment:
+
     name: 1. Deploy to AWS TEST environment
     runs-on: ubuntu-latest
     environment: test
@@ -28,52 +29,65 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.2
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+      #     cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}      
+
+      - name: Terragrunt GitHub Actions
+        uses: the-commons-project/terragrunt-github-actions@1.0.6
         with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+          tg_actions_version: 'latest'
+          tf_actions_version: 'latest'
+          tf_actions_subcommand: 'init'
+          tf_actions_cli_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }} 
+          tf_actions_working_dir: 'terragrunt'
+          tf_actions_comment: true
+          args: '-var="target_env=test"'
+        env:
+          TF_WORKSPACE: '${{ secrets.LICENCEPLATE }}-test-flyway'
 
-      - name: Terraform Deploy Test
-        run: |
-          cd cognito
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-test-flyway" }
-          EOF
-          cat > github.auto.tfvars <<EOF
-          fam_user_pool_name = "fam-user-pool"
-          fam_user_pool_domain_name = "test-fam-user-pool-domain"
-          EOF
-          terraform init -backend-config=backend.hcl
-          terraform apply -auto-approve
+      # - name: Terraform Deploy Test
+      #   run: |
+      #     cd cognito
+      #     cat <<EOF > backend.hcl
+      #     organization = "${{ env.organization }}"
+      #     workspaces { name = "${{ secrets.LICENCEPLATE }}-test-flyway" }
+      #     EOF
+      #     cat > github.auto.tfvars <<EOF
+      #     fam_user_pool_name = "fam-user-pool"
+      #     fam_user_pool_domain_name = "test-fam-user-pool-domain"
+      #     EOF
+      #     terraform init -backend-config=backend.hcl
+      #     terraform apply -auto-approve
 
-  aws-prod-deployment:
-    name: 2. Deploy to AWS PROD environment
-    runs-on: ubuntu-latest
-    environment: prod
-    needs: [build]
+  # aws-prod-deployment:
+  #   name: 2. Deploy to AWS PROD environment
+  #   runs-on: ubuntu-latest
+  #   environment: prod
+  #   needs: [build]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2.5.0
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2.5.0
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2.0.2
+  #       with:
+  #         terraform_version: ${{ env.TF_VERSION }}
+  #         cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      - name: Terraform Deploy Prod
-        run: |
-          cd cognito
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-prod-flyway" }
-          EOF
-          cat > github.auto.tfvars <<EOF
-          fam_user_pool_name = "fam-user-pool"
-          fam_user_pool_domain_name = "fam-user-pool-domain"
-          EOF
-          terraform init -backend-config=backend.hcl
-          terraform apply -auto-approve          
+  #     - name: Terraform Deploy Prod
+  #       run: |
+  #         cd cognito
+  #         cat <<EOF > backend.hcl
+  #         organization = "${{ env.organization }}"
+  #         workspaces { name = "${{ secrets.LICENCEPLATE }}-prod-flyway" }
+  #         EOF
+  #         cat > github.auto.tfvars <<EOF
+  #         fam_user_pool_name = "fam-user-pool"
+  #         fam_user_pool_domain_name = "fam-user-pool-domain"
+  #         EOF
+  #         terraform init -backend-config=backend.hcl
+  #         terraform apply -auto-approve          
