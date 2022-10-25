@@ -14,10 +14,10 @@ jobs:
         run: |
           echo "Testing GitHub Actions Dependencies"   
 
-  # aws-test-deployment:
-  #   uses: ./.github/workflows/reusable_terraform_server.yml
-  #   with: 
-  #     environment_name: "test"
-  #     tfc_workspace: "-test"       
-  #     tf_subcommand: "apply"
-  #   secrets: inherit
+  aws-test-deployment:
+    uses: ./.github/workflows/reusable_terraform_server.yml
+    with: 
+      environment_name: "test"
+      tfc_workspace: "-test"       
+      tf_subcommand: "apply"
+    secrets: inherit
