@@ -9,5 +9,6 @@ generate "test_tfvars" {
   contents          = <<-EOF
   fam_user_pool_name = "prod-fam-user-pool"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
+  famdb_cluster_name = "prod-fam-cluster"
 EOF
 }

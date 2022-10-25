@@ -12,11 +12,11 @@ on:
       tf_subcommand:
         required: true
         type: string
-    secrets:
-      licenceplate:
-        required: true
-      tfc_team_token:
-        required: true
+    secrets: inherit
+      # licenceplate:
+      #   required: true
+      # tfc_team_token:
+      #   required: true
 
 env:
   TF_VERSION: 1.2.2
@@ -35,11 +35,58 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../infrastructure/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./infrastructure/server/fam_auth_function.zip
+          if-no-files-found: error   
+
+      # Steps to deploy Ian's python as a lambda
+      - name: Install and Package Dependencies - FAM API
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-api.zip ../infrastructure/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./infrastructure/server/fam-ui-api.zip
+          if-no-files-found: error
+       
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
@@ -49,6 +96,16 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          TFC-WORKSPACE: ${{ secrets.licenceplate }}${{ inputs.tfc_workspace }}
+          TFC-WORKSPACE: ${{ secrets.LICENCEPLATE }}${{ inputs.tfc_workspace }}
+          github_repository: "https://github.com/${{ github.repository }}"
+          github_branch: "${{ github.ref_name }}"
+          github_commit: "${{ github.sha }}"
+          github_event: "${{ github.event_name }}"
+          oidc_idir_dev_idp_client_id: "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_ID }}"
+          oidc_idir_dev_idp_client_secret: "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_SECRET }}"
+          oidc_idir_dev_idp_issuer: "${{ secrets.OIDC_IDIR_DEV_IDP_ISSUER }}"
+          oidc_bceid_business_dev_idp_client_id: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
+          oidc_bceid_business_dev_idp_client_secret: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
+          oidc_bceid_business_dev_idp_issuer: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
 
         run: terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       

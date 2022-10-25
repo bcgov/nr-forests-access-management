@@ -7,8 +7,8 @@ generate "test_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "test-fam-user-pool"
-  fam_user_pool_domain_name = "test-fam-user-pool-domain"
-  famdb_cluster_name = "test-fam-cluster"
+  fam_user_pool_name = "dev-fam-user-pool"
+  fam_user_pool_domain_name = "dev-fam-user-pool-domain"
+  famdb_cluster_name = "dev-fam-cluster"
 EOF
 }
