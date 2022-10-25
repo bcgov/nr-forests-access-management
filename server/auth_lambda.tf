@@ -95,8 +95,8 @@ resource "aws_lambda_function" "fam-auth-function" {
     variables = {
       DB_SECRET   = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
-      PG_PORT = "5432"
-      PG_HOST = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
+      PG_PORT     = "5432"
+      PG_HOST     = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
     }
 
   }

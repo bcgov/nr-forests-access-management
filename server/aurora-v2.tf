@@ -96,7 +96,7 @@ module "aurora_postgresql_v2" {
     managed-by = "terraform"
   }
 
-  enabled_cloudwatch_logs_exports = [ "postgresql" ]
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
 resource "aws_db_parameter_group" "famdb_postgresql13" {
@@ -246,7 +246,7 @@ resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
   db_proxy_name = aws_db_proxy.famdb_proxy_api.name
 
   connection_pool_config {
-    connection_borrow_timeout    = 120
+    connection_borrow_timeout = 120
     # init_query                   = "SET x=1, y=2"
     max_connections_percent      = 100
     max_idle_connections_percent = 50
