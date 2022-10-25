@@ -2,10 +2,12 @@
 import router from '@/router';
 import { ref, computed, watch } from 'vue'
 import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
+import type { Application } from '../services/ApplicationService'
 
+// TODO: Maybe look into lazy loading via a timeout style function.
 
 // To make this application load logic work using await needed to wrap this component invocation in <Suspense> (in SelectApplicationView)
-const applications = ref([])
+const applications = ref<Application[]>([])
 // TODO: Applications list is reset each time we navigate back to this page, so the lazy loading doesn't work.
 if (applications.value.length == 0) {
   try {
@@ -14,7 +16,7 @@ if (applications.value.length == 0) {
     var apps = await res.json()
     console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
-    applications.value = apps
+    applications.value = apps as Application[]
   } catch (error) {
     // TODO: Better error handling.
     alert('Error retrieving applications: ' + error)
@@ -70,7 +72,6 @@ function manage() {
     <label>Select the application to administer</label>
     <br/>
     <select v-model="selectedApplication" :size="applications.length+1">
-      <!--<option disabled value="">Please select one</option> -->
       <option v-for="app in applications" :value="app">{{app.application_description}}</option>
     </select>
     <br/>
