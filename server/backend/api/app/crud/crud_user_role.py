@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from api.app import constants as famConstants
 from api.app.models import model as models
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
 from . import crud_forest_client, crud_role, crud_user, crudUtils
@@ -74,11 +74,22 @@ def createFamUserRoleAssignment(
 
     xref_dict = fam_user_role_xref.__dict__
     xref_dict["application_id"] = (
-        child_role.application_id if child_role else fam_role.application_id
+        child_role.application_id if require_child_role else fam_role.application_id
     )
     userRoleAssignment = schemas.FamUserRoleAssignmentGet(**xref_dict)
     LOGGER.debug(f"User/Role assignment executed successfully: {userRoleAssignment}")
     return userRoleAssignment
+
+
+def deleteFamUserRoleAssignment(db: Session, user_role_xref_id: int):
+    record = (
+        db.query(models.FamUserRoleXref)
+        .options(load_only("user_role_xref_id"))
+        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
+        .one()
+    )
+    db.delete(record)
+    db.flush()
 
 
 def findOrCreate(db: Session, user_id: int, role_id: int):
@@ -113,8 +124,8 @@ def getUserRolebyUserIdAndRoleId(
     famUserRole = (
         db.query(models.FamUserRoleXref)
         .filter(
-            models.FamUserRoleXref.user_id == user_id
-            and models.FamUserRoleXref.role_id == role_id
+            models.FamUserRoleXref.user_id == user_id,
+            models.FamUserRoleXref.role_id == role_id,
         )
         .one_or_none()
     )
