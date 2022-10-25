@@ -6,22 +6,29 @@ import type { Application } from '../services/ApplicationService'
 
 // TODO: Maybe look into lazy loading via a timeout style function.
 
-// To make this application load logic work using await needed to wrap this component invocation in <Suspense> (in SelectApplicationView)
+// Applications list is reset each time we navigate back to this page. We could cache this as shared state for the user session, 
+// but safer and easier to just reload each time.
 const applications = ref<Application[]>([])
-// TODO: Applications list is reset each time we navigate back to this page, so the lazy loading doesn't work.
+
+// Use timeout to implement lazy loading. Component will render and display loading message until this finishes.
+setTimeout( async () => {
+
 if (applications.value.length == 0) {
   try {
     console.log('Trying to retrieve applications')
+    // TODO: Parameterize URL
     const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
     var apps = await res.json()
     console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
     applications.value = apps as Application[]
+    // TODO: Redirect to error page or display error if no applications.
   } catch (error) {
     // TODO: Better error handling.
     alert('Error retrieving applications: ' + error)
   }
 }
+})
 /*
 const applications = ref([
   { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
@@ -82,10 +89,9 @@ function manage() {
     <br/>
     <p>Selection: {{selectedApplication}}</p>
     <br/>
-
   </div>
   <div v-else>
-    <p>You are not authorized to administer any applications.</p>
+    <p>Loading...</p>
   </div>
   </div>
 </template>
