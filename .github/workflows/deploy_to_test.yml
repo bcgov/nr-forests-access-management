@@ -19,7 +19,7 @@ jobs:
     with: 
       environment_name: test
       tfc_workspace: -test
-      tf_subcommand: apply
+      tf_subcommand: destroy
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
