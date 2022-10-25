@@ -17,8 +17,8 @@ jobs:
   aws-test-deployment:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
-      environment_name: prod
-      tfc_workspace: -prod-flyway
+      environment_name: test
+      tfc_workspace: -test-backend
       tf_subcommand: destroy
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
