@@ -12,7 +12,6 @@ on:
       tf_subcommand:
         required: true
         type: string
-    secrets: inherit
 
 env:
   TF_VERSION: 1.2.2
@@ -25,6 +24,7 @@ jobs:
 
     name: Run Terraform
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     with:
       environment_name: ${{ inputs.environment_name }}
       tfc_workspace: ${{ inputs.tfc_workspace }}

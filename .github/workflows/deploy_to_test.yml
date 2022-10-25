@@ -17,7 +17,6 @@ jobs:
   aws-test-deployment:
     name: 1. Deploy to AWS TEST environment
     needs: [build]
-    environment: test
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: test
