@@ -3,6 +3,24 @@ import router from '@/router';
 import { ref, computed, watch } from 'vue'
 import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 
+
+// To make this application load logic work using await needed to wrap this component invocation in <Suspense> (in SelectApplicationView)
+const applications = ref([])
+// TODO: Applications list is reset each time we navigate back to this page, so the lazy loading doesn't work.
+if (applications.value.length == 0) {
+  try {
+    console.log('Trying to retrieve applications')
+    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
+    var apps = await res.json()
+    console.log(`Retrieved ${apps.length} applications`)
+    console.log(apps)
+    applications.value = apps
+  } catch (error) {
+    // TODO: Better error handling.
+    alert('Error retrieving applications: ' + error)
+  }
+}
+/*
 const applications = ref([
   { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
   { application_name: 'FAM', application_description: 'Forest Access Management', application_id: '1002' },
@@ -13,11 +31,10 @@ watch(selectedApplication, async (newSelection) => {
   try {
     console.log('Trying to retrieve applications')
 
+    // TODO: Parameterize URL
     const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
 
-    // https://nn24zzbo40.execute-api.ca-central-1.amazonaws.com/junk/api/v1/fam_applications
-    // https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications')
-    // TODO: Error:  Access to fetch at 'https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+    // TODO: Invoke this after login
     console.log(res);
     var apps = await res.json()
     console.log(`Retrieved ${apps.length} applications`)
@@ -27,7 +44,7 @@ watch(selectedApplication, async (newSelection) => {
     alert('Error retrieving applications: ' + error)
   }
 })
-
+*/
 function manage() {
   if (selectedApplication.value) {   
     // alert(`Manage app ${selectedApplication.value.application_description}`)
@@ -50,18 +67,21 @@ function manage() {
   <h1>Select Application</h1>
 
   <div v-if="applications.length">
-  <label>Select the application to administer</label>
-  <br/>
-  <select v-model="selectedApplication" :size="applications.length+1">
-    <!--<option disabled value="">Please select one</option> -->
-    <option v-for="app in applications" :value="app">{{app.application_description}}</option>
-  </select>
-  <br />
-  <p>Application application: {{selectedApplication}}</p>
-  <br/>
-  <button @click="router.push('/manage')" :disabled="isApplicationSelected">Manage Access</button>
-  &nbsp;
-  <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
+    <label>Select the application to administer</label>
+    <br/>
+    <select v-model="selectedApplication" :size="applications.length+1">
+      <!--<option disabled value="">Please select one</option> -->
+      <option v-for="app in applications" :value="app">{{app.application_description}}</option>
+    </select>
+    <br/>
+    <button @click="router.push('/manage')" :disabled="isApplicationSelected">Manage Access</button>
+    &nbsp;
+    <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
+    <br/>
+    <br/>
+    <p>Selection: {{selectedApplication}}</p>
+    <br/>
+
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>
