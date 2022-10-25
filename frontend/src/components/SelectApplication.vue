@@ -1,59 +1,45 @@
 <script setup lang="ts">
 import router from '@/router';
-import { ref, computed, watch } from 'vue'
+import { ref, inject } from 'vue'
 import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 import type { Application } from '../services/ApplicationService'
 
-// TODO: Maybe look into lazy loading via a timeout style function.
-
-// Applications list is reset each time we navigate back to this page. We could cache this as shared state for the user session, 
+// Applications list is reset each time we navigate back to this page. We could cache this as shared state for the user's session, 
 // but safer and easier to just reload each time.
 const applications = ref<Application[]>([])
 
+// Need to inject during setup, not in timeout
+const baseUrl = inject('fam_api_base_url')
+
 // Use timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
-
-if (applications.value.length == 0) {
-  try {
-    console.log('Trying to retrieve applications')
-    // TODO: Parameterize URL
-    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
-    var apps = await res.json()
-    console.log(`Retrieved ${apps.length} applications`)
-    console.log(apps)
-    applications.value = apps as Application[]
-    // TODO: Redirect to error page or display error if no applications.
-  } catch (error) {
-    // TODO: Better error handling.
-    alert('Error retrieving applications: ' + error)
-  }
-}
-})
-/*
-const applications = ref([
-  { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
-  { application_name: 'FAM', application_description: 'Forest Access Management', application_id: '1002' },
-  { application_name: 'FOP', application_description: 'Forest Operations Plan', application_id: '1003' }
-])
-
-watch(selectedApplication, async (newSelection) => {
-  try {
-    console.log('Trying to retrieve applications')
-
-    // TODO: Parameterize URL
-    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
-
-    // TODO: Invoke this after login
-    console.log(res);
-    var apps = await res.json()
-    console.log(`Retrieved ${apps.length} applications`)
-    console.log(apps)
-    applications.value = apps
-  } catch (error) {
-    alert('Error retrieving applications: ' + error)
+  if (applications.value.length == 0) {
+    try {
+      // TODO: Clean up logs and/or use logging solution?
+      const url = baseUrl + '/api/v1/fam_applications'
+      console.log(`Retrieving applications from ${url}`)
+      const res = await fetch(url)
+      var apps = await res.json() as Application[]
+      console.log(`Retrieved ${apps.length} applications`)
+      console.log(apps)
+      // apps = apps.slice(0,1) // To test only getting one application
+      applications.value = apps
+      // If only one application then select and redirect to Manage Access screen
+      if (apps.length == 1) {
+        // TODO: Update breadcrumb to not show Select Application screen?
+        console.log('User has access to only one application - select and redirect to manage access screen.')
+        selectedApplication.value = apps[0]
+        router.push('/manage')
+      }
+      
+      // TODO: Redirect to error page or display error if no applications.
+    } catch (error) {
+      // TODO: Better error handling.
+      alert('Error retrieving applications: ' + error)
+    }
   }
 })
-*/
+
 function manage() {
   if (selectedApplication.value) {   
     // alert(`Manage app ${selectedApplication.value.application_description}`)
