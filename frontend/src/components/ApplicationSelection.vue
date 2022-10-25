@@ -57,9 +57,9 @@ function manage() {
   <br />
   <p>Application application: {{selectedApplication}}</p>
   <br/>
-  <button @click="manage" :disabled="isApplicationSelected">Manage Access</button>
+  <button @click="router.push('/manage')" :disabled="isApplicationSelected">Manage Access</button>
   &nbsp;
-  <button :disabled="isApplicationSelected">Grant Access</button>
+  <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
   </div>
   <div v-else>
     <p>You are not authorized to administer any applications.</p>

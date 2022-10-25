@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ApplicationSelection from '../components/ApplicationSelection.vue'
 import ManageAccess from '../components/ManageAccess.vue'
+import GrantAccess from '../components/GrantAccess.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/manage',
       name: 'manage',
       component: ManageAccess
+    },
+    {
+      path: '/grant',
+      name: 'grant',
+      component: GrantAccess
     },
     {
       path: '/about',

@@ -10,11 +10,10 @@ import { selectedApplication, isApplicationSelected, selectedApplicationDisplayT
   <span><RouterLink to="/">Home</RouterLink> 
     &rarr; <RouterLink to="/application">Select Application</RouterLink> 
     &rarr; <RouterLink to="/manage">Manage Access {{selectedApplicationDisplayText}}</RouterLink>
+    &rarr; <RouterLink to="/grant">Grant Access {{selectedApplicationDisplayText}}</RouterLink>
   </span>
 
-  <h1>Manage Access {{selectedApplicationDisplayText}}</h1>
-
-  <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
+  <h1>Grant Access {{selectedApplicationDisplayText}}</h1>
   
   </div>
 </template>
