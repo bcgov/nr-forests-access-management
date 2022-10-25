@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import router from '@/router';
-import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '../services/ApplicationService'
+import { isApplicationSelected, selectedApplicationDisplayText } from '../services/ApplicationService'
 import Breadcrumb from './Breadcrumb.vue'
 
+var foo = 2;
 </script>
 
 <template>
@@ -12,7 +13,8 @@ import Breadcrumb from './Breadcrumb.vue'
   <h1>Manage Access - {{selectedApplicationDisplayText}}</h1>
 
   <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
-  
+
+  <br/>TODO<br/>
   </div>
 </template>
 

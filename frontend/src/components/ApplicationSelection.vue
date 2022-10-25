@@ -20,6 +20,7 @@ watch(selectedApplication, async (newSelection) => {
     // TODO: Error:  Access to fetch at 'https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/prod/api/v1/fam_applications' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
     console.log(res);
     var apps = await res.json()
+    console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
     applications.value = apps
   } catch (error) {
@@ -36,6 +37,7 @@ function manage() {
     alert('Please select an option');
   }
 }
+
 </script>
 
 <template>

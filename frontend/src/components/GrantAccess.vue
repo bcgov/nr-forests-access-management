@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '../services/ApplicationService'
+import { selectedApplicationDisplayText } from '../services/ApplicationService'
 import Breadcrumb from './Breadcrumb.vue'
 
 </script>
@@ -8,9 +8,10 @@ import Breadcrumb from './Breadcrumb.vue'
   <div>
     
     <Breadcrumb activePage='Grant'/>
+    
+    <h1>Grant Access - {{selectedApplicationDisplayText}}</h1>
   
-  <h1>Grant Access - {{selectedApplicationDisplayText}}</h1>
-  
+    <br/>TODO<br/>
   </div>
 </template>
 
