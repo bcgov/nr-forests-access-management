@@ -18,7 +18,7 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: test
-      tfc_workspace: -test
+      tfc_workspace: -test-flyway
       tf_subcommand: destroy
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
