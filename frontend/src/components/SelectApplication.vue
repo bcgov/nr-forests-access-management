@@ -40,16 +40,6 @@ setTimeout( async () => {
   }
 })
 
-function manage() {
-  if (selectedApplication.value) {   
-    // alert(`Manage app ${selectedApplication.value.application_description}`)
-    router.push('/manage')
-  } else {
-    // Not really required, button is disabled if nothing is selectedApplication.
-    alert('Please select an option');
-  }
-}
-
 </script>
 
 <template>
