@@ -18,6 +18,6 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: "test"
-      tfc-workspace: "${{ secrets.LICENCEPLATE }}-test"       
-      tf-subcommand: "apply"
+      tfc_workspace: "${{ secrets.LICENCEPLATE }}-test"       
+      tf_subcommand: "apply"
     secrets: inherit
