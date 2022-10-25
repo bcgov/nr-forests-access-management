@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: test
-      tfc_workspace: -test-backend
+      tfc_workspace_suffix: test-backend
       tf_subcommand: apply
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}

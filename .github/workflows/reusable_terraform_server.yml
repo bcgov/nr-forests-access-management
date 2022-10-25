@@ -6,7 +6,7 @@ on:
       environment_name:
         required: true
         type: string    
-      tfc_workspace:
+      tfc_workspace_suffix:
         required: true
         type: string        
       tf_subcommand:
@@ -100,7 +100,7 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          TFC-WORKSPACE: ${{ secrets.licenseplate }}${{ inputs.tfc_workspace }}
+          tfc_workspace: ${{ secrets.licenceplate }}-${{ inputs.tfc_workspace_suffix }}
           github_repository: "https://github.com/${{ github.repository }}"
           github_branch: "${{ github.ref_name }}"
           github_commit: "${{ github.sha }}"

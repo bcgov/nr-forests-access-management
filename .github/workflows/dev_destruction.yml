@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: dev
-      tfc_workspace: -dev-backend
+      tfc_workspace_suffix: dev-backend
       tf_subcommand: destroy
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}

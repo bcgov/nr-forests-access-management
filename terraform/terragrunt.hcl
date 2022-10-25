@@ -5,7 +5,7 @@ terraform {
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  tfc_workspace    = get_env("TFC-WORKSPACE")
+  tfc_workspace    = get_env("tfc_workspace")
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
   github_repository = get_env("github_repository")
   github_branch = get_env("github_branch")
