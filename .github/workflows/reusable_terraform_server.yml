@@ -12,7 +12,7 @@ on:
       tf_subcommand:
         required: true
         type: string    
-    secrets: inherit
+    secrets:
       licenceplate:
         required: true
       tfc_team_token:
