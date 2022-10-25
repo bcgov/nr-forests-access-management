@@ -23,10 +23,10 @@ jobs:
       environment_name: test
       tfc_workspace: -test-backend
       tf_subcommand: apply
-      github_repository: "https://github.com/${{ github.repository }}"
-      github_branch: "${{ github.ref_name }}"
-      github_commit: "${{ github.sha }}"
-      github_event: "${{ github.event_name }}"   
+      # github_repository: "https://github.com/${{ github.repository }}"
+      # github_branch: "${{ github.ref_name }}"
+      # github_commit: "${{ github.sha }}"
+      # github_event: "${{ github.event_name }}"   
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
