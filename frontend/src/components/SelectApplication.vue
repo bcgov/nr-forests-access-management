@@ -89,9 +89,16 @@ function manage() {
     <br/>
     <p>Selection: {{selectedApplication}}</p>
     <br/>
+<<<<<<< HEAD
   </div>
   <div v-else>
     <p>Loading...</p>
+=======
+
+  </div>
+  <div v-else>
+    <p>You are not authorized to administer any applications.</p>
+>>>>>>> dev
   </div>
   </div>
 </template>

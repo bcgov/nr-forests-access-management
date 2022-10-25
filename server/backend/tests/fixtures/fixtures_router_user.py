@@ -17,6 +17,8 @@ def user_client_withUsersNoCleanup(
     testUserData["update_date"] = str(testUserData["update_date"])
 
     resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
+    LOGGER.debug(f"setup user table with data: {resp.status_code} " +
+                 f"{resp.reason}")
     LOGGER.debug(f"setup user table with data: {resp.status_code} " + f"{resp.reason}")
     LOGGER.debug(f"setup data: {testUserData}")
     if resp.status_code != 200:
@@ -33,7 +35,8 @@ def user_client_withUsers(testClient_fixture, testUserData, dbSession_famUserTyp
     testUserData["update_date"] = str(testUserData["update_date"])
 
     resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
-    LOGGER.debug(f"setup user table with data: {resp.status_code}" + f"  {resp.reason}")
+    LOGGER.debug(f"setup user table with data: {resp.status_code}" +
+                 f"  {resp.reason}")
     if resp.status_code != 200:
         raise ValueError(
             "should work! but... can't create this record: "

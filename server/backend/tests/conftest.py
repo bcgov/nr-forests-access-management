@@ -154,3 +154,20 @@ def override_get_db():
         db.commit()
         LOGGER.debug("closing test db session")
         db.close()
+
+
+def getFixtureParams(request):
+    """
+    Helper function to pass custom param into fixture to do setup/dear-down logic mostly.
+    For example, in test, can mark the test that uses some fixture to pass param into the fixture: 
+        @pytest.mark.fixture_data({"clean_up": False})
+
+    And then in that specific fixture, get the param individually by calling:
+        need_cleanup = getFixtureParams(request)['clean_up']
+        
+        Note, the fixture needs to have pytest 'request' as the argument passing into the function.
+    """
+    marker = request.node.get_closest_marker("fixture_data")
+    params = marker.args[0]
+    LOGGER.debug(f"Contains fixture params: {params}")
+    return params

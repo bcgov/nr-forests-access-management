@@ -74,13 +74,13 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
 }
 
 resource "aws_lambda_function" "fam-api-function" {
-  filename      = "fam-ui-api.zip"
+  filename = "fam-ui-api.zip"
   #function_name = random_pet.api_lambda_name.id
   function_name = "fam-api-lambda"
   role          = aws_iam_role.fam_api_lambda_exec.arn
   handler       = "api.app.main.handler"
 
-  source_code_hash = filebase64sha256("fam-api.zip")
+  source_code_hash = filebase64sha256("fam-ui-api.zip")
 
   runtime = "python3.8"
 
@@ -96,8 +96,8 @@ resource "aws_lambda_function" "fam-api-function" {
     variables = {
       DB_SECRET   = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
-      PG_PORT = "5432"
-      PG_HOST = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
+      PG_PORT     = "5432"
+      PG_HOST     = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
     }
 
   }

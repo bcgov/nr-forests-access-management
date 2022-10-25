@@ -1,10 +1,17 @@
-name: Pull Request
+# leaving this in the repo for now as its a useful action that can be used
+# to speed up debugging of frontend deployment.
+
+# have disabled all triggers so it shouldn't run.
+
+name: Push
 
 on:
-  pull_request:
-    branches: [dev]
+  push:
+    #branches: [feat/84-configure-lambda]
+    branches: [branch-name-that-doesnt-exist]
 
 env:
+  TF_VERSION: 1.0.5
   environment: dev
   organization: bcgov
 
@@ -12,88 +19,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Run local postgres for testing
-    # services:
-    #   postgres:
-    #     image: postgres
-    #     env:
-    #       POSTGRES_DB: db
-    #       POSTGRES_USER: user
-    #       POSTGRES_PASSWORD: password
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-    #     ports:
-    #       - 5432:5432
-
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
-
-      # - name: run flyway on test database
-      #   uses: joshuaavalon/flyway-action@v3.0.0
-      #   with:
-      #     url: jdbc:postgresql://postgres:5432/db
-      #     user: user
-      #     password: password
-      #     locations: server/flyway/sql
-      #   env:
-      #     FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
-      #     FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
-
-      # - name: Auth function install python test dependencies
-      #   working-directory: server/auth_function
-      #   run: |
-      #     pip install pytest pytest-md pytest-emoji
-      #     pip install -r requirements.txt
-
-      # - name: Auth function run pytest
-      #   uses: pavelzw/pytest-action@v2
-      #   with:
-      #     emoji: true
-      #     verbose: true
-      #     job-summary: true
-      #     custom-arguments: 'server/auth_function'
-      #   env:
-      #     PG_HOST: localhost
-      #     PG_PORT: 5432
-      #     PG_DATABASE: db
-      #     PG_USER: appuser
-      #     PG_PASSWORD: appuserpw
 
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
 
-      - name: Install and Package Dependencies - sample app
-        run: |
-          cd server/fam_api
-          mkdir packaging
-          cd packaging
-          pip install -t . -r ../requirements.txt
-          zip -r9 ../../fam-api.zip .
-          cd ..
-          rm -rf packaging
-          cd ../../
-          cd server/fam_api
-          zip -u ../fam-api.zip -r app/
-          cd ..
-
-      - name: Upload zip file artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: fam-api
-          path: ./server/fam-api.zip
-          if-no-files-found: error
-
+      # Steps to deploy the sample API
       # Steps to deploy Ian's python as a lambda
       - name: Install and Package Dependencies - Ians Code
         run: |
@@ -116,7 +52,6 @@ jobs:
           path: ./server/fam-ui-api.zip
           if-no-files-found: error
 
-      # Steps to deploy authorization lambda function
 
       - name: Auth function zip
         run: |
@@ -135,6 +70,7 @@ jobs:
           path: ./server/fam_auth_function.zip
           if-no-files-found: error
 
+
       - name: Deploying back-end using terraform
         run: |
           cd server
@@ -149,6 +85,7 @@ jobs:
           fi
           # remove non alphanumeric characters
           db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+
 
           cat <<EOF > backend.hcl
           organization = "${{ env.organization }}"
@@ -168,22 +105,5 @@ jobs:
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           EOF
           terraform init -backend-config=backend.hcl
-          terraform plan
-
-      - name: Building front-end and deploying Frontend using terraform
-        run: |
-          cd frontend
-          npm install
-
-          # not sure why the put it like this, just explicitly calling the
-          # build for now
-          #CI=false npm run build
-          npm run build
-
-          cat <<EOF > backend.hcl
-          organization = "${{ env.organization }}"
-          workspaces { name = "${{ secrets.LICENCEPLATE }}-${{ env.environment }}-frontend" }
-          EOF
-
-          terraform init -backend-config=backend.hcl
-          terraform plan
+          terraform apply -auto-approve
+          #terraform plan
