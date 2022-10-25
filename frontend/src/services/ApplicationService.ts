@@ -8,7 +8,7 @@ export interface Application {
 
 }
 
-export const selectedApplication = ref<Application>({application_name: '', application_description:'', application_id:-1} as Application)
+export const selectedApplication = ref<Application>() 
 
 export const isApplicationSelected = computed( () => {
     return selectedApplication.value == null
