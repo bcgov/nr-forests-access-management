@@ -17,7 +17,7 @@ jobs:
   aws-test-deployment:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
-      environment_name: test
-      tfc-workspace: ${{ secrets.LICENCEPLATE }}-test         
-      tf-subcommand: apply
+      environment_name: "test"
+      tfc-workspace: "${{ secrets.LICENCEPLATE }}-test"       
+      tf-subcommand: "apply"
     secrets: inherit
