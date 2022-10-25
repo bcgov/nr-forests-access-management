@@ -7,6 +7,16 @@ locals {
   tfc_organization = "bcgov"
   tfc_workspace    = get_env("TFC-WORKSPACE")
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
+  github_repository = get_env("github_repository")
+  github_branch = get_env("github_branch")
+  github_commit = get_env("github_commit")
+  github_event = get_env("github_event")
+  oidc_idir_dev_idp_client_id = get_env("oidc_idir_dev_idp_client_id")
+  oidc_idir_dev_idp_client_secret = get_env("oidc_idir_dev_idp_client_secret")
+  oidc_idir_dev_idp_issuer = get_env("oidc_idir_dev_idp_issuer")
+  oidc_bceid_business_dev_idp_client_id = get_env("oidc_bceid_business_dev_idp_client_id")
+  oidc_bceid_business_dev_idp_client_secret = get_env("oidc_bceid_business_dev_idp_client_secret")
+  oidc_bceid_business_dev_idp_issuer = get_env("oidc_bceid_business_dev_idp_issuer")
 }
 
 generate "remote_state" {
@@ -30,16 +40,16 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-github_repository = "https://github.com/${{ github.repository }}"
-github_branch = "${{ github.ref_name }}"
-github_commit = "${{ github.sha }}"
-github_event = "${{ github.event_name }}"
-oidc_idir_dev_idp_client_id = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_ID }}"
-oidc_idir_dev_idp_client_secret = "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_SECRET }}"
-oidc_idir_dev_idp_issuer = "${{ secrets.OIDC_IDIR_DEV_IDP_ISSUER }}"
-oidc_bceid_business_dev_idp_client_id = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
-oidc_bceid_business_dev_idp_client_secret = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
-oidc_bceid_business_dev_idp_issuer = "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
+github_repository = "${local.github_repository}"
+github_branch = "${local.github_branch}"
+github_commit = "${local.github_commit}"
+github_event = "${local.github_event}"
+oidc_idir_dev_idp_client_id = "${local.oidc_idir_dev_idp_client_id}"
+oidc_idir_dev_idp_client_secret = "${local.oidc_idir_dev_idp_client_secret}"
+oidc_idir_dev_idp_issuer = "${local.oidc_idir_dev_idp_issuer}"
+oidc_bceid_business_dev_idp_client_id = "${local.oidc_bceid_business_dev_idp_client_id}"
+oidc_bceid_business_dev_idp_client_secret = "${local.oidc_bceid_business_dev_idp_client_secret}"
+oidc_bceid_business_dev_idp_issuer = "${local.oidc_bceid_business_dev_idp_issuer}"
 EOF
 }
 

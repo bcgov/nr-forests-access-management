@@ -43,6 +43,7 @@ variable "oidc_idir_dev_idp_client_id" {
 
 variable "oidc_idir_dev_idp_client_secret" {
   type = string
+  sensitive = true
 }
 
 
@@ -56,4 +57,5 @@ variable "oidc_bceid_business_dev_idp_client_id" {
 
 variable "oidc_bceid_business_dev_idp_client_secret" {
   type = string
+  sensitive = true
 }
