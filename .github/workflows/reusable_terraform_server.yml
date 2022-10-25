@@ -11,12 +11,16 @@ on:
         type: string        
       tf_subcommand:
         required: true
-        type: string
+        type: string    
     secrets: inherit
-      # licenceplate:
-      #   required: true
-      # tfc_team_token:
-      #   required: true
+      licenceplate:
+        required: true
+      tfc_team_token:
+        required: true
+      oidc_idir_dev_idp_client_secret:
+        required: true
+      oidc_bceid_business_dev_idp_client_secret:
+        required: true
 
 env:
   TF_VERSION: 1.2.2
@@ -86,26 +90,22 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Terragrunt Apply
+      - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          TFC-WORKSPACE: ${{ secrets.LICENCEPLATE }}${{ inputs.tfc_workspace }}
+          TFC-WORKSPACE: ${{ secrets.licenseplate }}${{ inputs.tfc_workspace }}
           github_repository: "https://github.com/${{ github.repository }}"
           github_branch: "${{ github.ref_name }}"
           github_commit: "${{ github.sha }}"
           github_event: "${{ github.event_name }}"
-          oidc_idir_dev_idp_client_id: "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_ID }}"
-          oidc_idir_dev_idp_client_secret: "${{ secrets.OIDC_IDIR_DEV_IDP_CLIENT_SECRET }}"
-          oidc_idir_dev_idp_issuer: "${{ secrets.OIDC_IDIR_DEV_IDP_ISSUER }}"
-          oidc_bceid_business_dev_idp_client_id: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_ID }}"
-          oidc_bceid_business_dev_idp_client_secret: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_CLIENT_SECRET }}"
-          oidc_bceid_business_dev_idp_issuer: "${{ secrets.OIDC_BCEID_BUSINESS_DEV_IDP_ISSUER }}"
+          oidc_idir_idp_client_secret: "${{ secrets.oidc_idir_idp_client_secret }}"
+          oidc_bceid_business_idp_client_secret: "${{ secrets.oidc_bceid_business_idp_client_secret }}"
 
         run: terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
