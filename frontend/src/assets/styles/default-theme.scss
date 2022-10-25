@@ -1,0 +1,111 @@
+// Main Colors
+$primary:                       #036;
+$gold:                          #fcba19;
+$white:                         #fff;
+$black:                         #000;
+$lightgray:                     #eee;
+
+// Primary Blue
+$primary9:                      #001f3f;
+$primary8:                      #002952;
+$primary7:                      #036;
+$primary6:                      #003d7a;
+$primary5:                      #00478d;
+$primary4:                      #0050a1;
+$primary3:                      #005ab4;
+$primary2:                      #0064c8;
+$primary1:                      #006edc;
+$primary0:                      #0078ef;
+
+// Gray
+$gray9:                         #212529;
+$gray8:                         #343a40;
+$gray7:                         #495057;
+$gray6:                         #868e96;
+$gray5:                         #adb5bd;
+$gray4:                         #ced4da;
+$gray3:                         #dee2e6;
+$gray2:                         #e9ecef;
+$gray1:                         #f1f3f5;
+$gray0:                         #f8f9fa;
+
+// Font
+$color:                         $gray9;
+$color-inverted:                #fff;
+$color-muted:                   $gray5;
+
+// Background Colors
+$bg-dark:                       $primary;
+$bg-dark-color:                 #fff;
+$bg-dark-link-color:            $gold;
+$bg-dark-border-color:          #5475a7;
+$bg-default:                    #fff;
+
+// Links
+$link-color:                    #1a5a96;
+
+// Header
+$header-font-color:             #fff;
+$header-bg:                     $primary;
+
+// Footer
+$footer-bg:                     $primary;
+$footer-color:                  #fff;
+
+// Main Navigation
+$mn-font-size:                  0.875rem; // 14 px
+$mn-dropdown-menu-size:         0.875rem; // 14 px
+$mn-color:                      #fff;
+$mn-border-color:               #5f79a2;
+$mn-hover-bg:                   #2b4777;
+$mn-hover-color:                $gold;
+$mn-toggle-color:               $gold;
+$mn-dropdown-bg:                #2b4777;
+
+// COMPONENTS
+
+// Cards
+$card-header-color:             #fff;
+$card-header-bg:                #38598a;
+
+// Feature Blocks
+$feature-block-color:           #fff;
+$feature-block-bg:              #244278;
+$feature-block-light-bg:        #fff;
+$feature-block-light-color:     #666;
+$feature-block-primary:         $primary;
+
+// Form Controls
+$fc-height:                     2.75rem;
+$fc-border-color:               #ddd;
+$fc-bg:                         #fff;
+$fc-inner-shadow:               0.1rem 0.1rem 0.1rem $lightgray;
+$fc-placeholder-color:          #aaa;
+$fc-focus-border-color:         #5091cd;
+$fc-invalid-color:              #dc3545;
+
+// Pagination Control
+$pgn-btn-bg:                    $lightgray;
+$pgn-btn-active-bg:             #5091cd;
+$pgn-btn-active-color:          #fff;
+$pgn-btn-border:                1px solid #ccc;
+$pgn-btn-color:                 #000;
+
+// Spinner
+$spinner-lg:                    50px;
+$spinner-sm:                    30px;
+$spinner-color:                 #5091cd;
+$spinner-bg:                    #fff;
+$spinner-invert-color:          #fff;
+$spinner-invert-bg:             rgba(#001a33, 0.8);
+
+// Tables
+$table-header-bg:               #fff;
+$table-header-hover-bg:         #ddd;
+$table-header-sort-active:      #5091cd;
+$table-row-bg:                  #f7f8fa;
+$table-row-border:              3px solid #fff;
+$table-alt-row-bg:              #f4f4f4;
+$table-sort-icon-color:         #ccc;
+$table-sort-icon-active-color:  #000;
+$table-sort-icon-size:          0.25rem;
