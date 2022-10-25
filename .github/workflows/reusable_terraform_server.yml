@@ -17,9 +17,9 @@ on:
         required: true
       tfc_team_token:
         required: true
-      oidc_idir_dev_idp_client_secret:
+      oidc_idir_idp_client_secret:
         required: true
-      oidc_bceid_business_dev_idp_client_secret:
+      oidc_bceid_business_idp_client_secret:
         required: true
 
 env:
