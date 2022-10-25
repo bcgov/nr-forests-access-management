@@ -13,10 +13,19 @@ export const selectedApplication = ref<Application>({application_name: '', appli
 export const isApplicationSelected = computed( () => {
     return selectedApplication.value == null
   })
-  
+
+export const selectedApplicationShortDisplayText = computed( () => {
+if (selectedApplication.value) {  
+    return `${selectedApplication.value.application_name.toUpperCase()}`
+}
+else {
+    return ""
+}
+})
+
 export const selectedApplicationDisplayText = computed( () => {
     if (selectedApplication.value) {  
-      return `${selectedApplication.value.application_name.toUpperCase()}`
+      return `${selectedApplication.value.application_description}`
     }
     else {
       return ""
