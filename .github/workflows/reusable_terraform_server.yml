@@ -100,7 +100,8 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.tfc_workspace_suffix }}"
+          # tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.tfc_workspace_suffix }}"
+          tfc_workspace: "sfha4x-${{ inputs.tfc_workspace_suffix }}"
           github_repository: "https://github.com/${{ github.repository }}"
           github_branch: "${{ github.ref_name }}"
           github_commit: "${{ github.sha }}"
