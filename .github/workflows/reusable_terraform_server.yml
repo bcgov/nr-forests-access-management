@@ -30,12 +30,6 @@ jobs:
     name: Run Terraform
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
-    with:
-      environment_name: ${{ inputs.environment_name }}
-      tfc_workspace: ${{ inputs.tfc_workspace }}
-      tf_subcommand: ${{ inputs.tf_subcommand }}
-      licenceplate: ${{ secrets.licenceplate }}
-      tfc_team_token: ${{ secrets.tfc_team_token }}
 
     steps:
       - name: Checkout
@@ -53,8 +47,8 @@ jobs:
           terragrunt_version: ${{ env.TG_VERSION }}
 
       - name: Terragrunt Apply
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ environment_name }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          TFC-WORKSPACE: ${{ licenceplate }}${{ tfc_workspace }}
+          TFC-WORKSPACE: ${{ secrets.licenceplate }}${{ inputs.tfc_workspace }}
 
-        run: terragrunt run-all ${{ tf_subcommand }} --terragrunt-non-interactive       
+        run: terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
