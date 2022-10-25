@@ -2,21 +2,26 @@
 import { ref, computed, watch } from 'vue'
 import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 
-//function selectedApplicationDisplayText() {
-  // if (selectedApplication.value) {   
-  //   return 
-  //   alert(`Manage app ${selectedApplication.value.application_description}`)
-  // } else {
-  //   // Not really required, button is disabled if nothing is selectedApplication.
-  //   alert('Please select an option');
-  // {{selectedApplication.value.application_description}}
-  // }
-//}
+function selectedApplicationDisplayText() {
+  if (selectedApplication.value) {  
+    return `${selectedApplication.value.application_name.toUpperCase()}`
+  }
+  else {
+    return ""
+  }
+}
+
 </script>
 
 <template>
   <div>
-  <h1>Manage Application </h1>
+    
+  <span><RouterLink to="/">Home</RouterLink> 
+    &rarr; <RouterLink to="/application">Select Application</RouterLink> 
+    &rarr; <RouterLink to="/manage">Manage Access {{selectedApplicationDisplayText()}}</RouterLink>
+  </span>
+
+  <h1>Manage Access {{selectedApplicationDisplayText()}}</h1>
   
   </div>
 </template>

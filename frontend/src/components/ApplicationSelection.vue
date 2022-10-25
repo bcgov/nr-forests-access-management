@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from '@/router';
 import { ref, computed, watch } from 'vue'
 import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 
@@ -28,7 +29,8 @@ watch(selectedApplication, async (newSelection) => {
 
 function manage() {
   if (selectedApplication.value) {   
-    alert(`Manage app ${selectedApplication.value.application_description}`)
+    // alert(`Manage app ${selectedApplication.value.application_description}`)
+    router.push('/manage')
   } else {
     // Not really required, button is disabled if nothing is selectedApplication.
     alert('Please select an option');
@@ -38,10 +40,15 @@ function manage() {
 
 <template>
   <div>
-  <h1>Choose Application</h1>
+    
+  <span><RouterLink to="/">Home</RouterLink> 
+    &rarr; <RouterLink to="/application">Select Application</RouterLink> 
+  </span>
+
+  <h1>Select Application</h1>
 
   <div v-if="applications.length">
-  <label>Application to Administer</label>
+  <label>Select the application to administer</label>
   <br/>
   <select v-model="selectedApplication" :size="applications.length+1">
     <!--<option disabled value="">Please select one</option> -->
