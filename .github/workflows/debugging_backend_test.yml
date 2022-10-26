@@ -6,7 +6,10 @@ on:
 jobs:
   call-workflow-1-in-local-repo:
     steps:
-      - uses: actions/checkout@v3 # Necessary to access local action
+      - name: configure local actions
+        uses: actions/checkout@v3 # Necessary to access local action
+
+      - name: run local action - backend unit tests
         uses: ./.github/local-actions/run_api_unittests.yml
 
     #uses: ${{ github.github_repository }}/.github/workflows/run_api_unittests.yml
