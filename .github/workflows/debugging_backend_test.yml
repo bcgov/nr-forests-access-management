@@ -4,17 +4,8 @@ on:
 
 
 jobs:
-  call-workflow-1-in-local-repo:
-    runs-on: ubuntu-latest
+  call-backend-unit-tests:
+    - name: run local action - backend unit tests
+      #uses: ./.github/local-actions/run_api_unittests.yml@feat/94-integrate-unit-tests
+      uses: ./.github/workflows/run_api_unittests.yml
 
-    steps:
-      - name: configure local actions
-        uses: actions/checkout@v3 # Necessary to access local action
-
-      - name: run local action - backend unit tests
-        #uses: ./.github/local-actions/run_api_unittests.yml@feat/94-integrate-unit-tests
-        uses: ./.github/workflows/run_api_unittests.yml
-
-    #uses: ${{ github.github_repository }}/.github/workflows/run_api_unittests.yml
-    #uses: ./.github/workflows/run_api_unittests.yml
-    # ./.github/workflows/check-lint.yaml
