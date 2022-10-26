@@ -13,7 +13,7 @@ jobs:
 
       - name: run local action - backend unit tests
         #uses: ./.github/local-actions/run_api_unittests.yml@feat/94-integrate-unit-tests
-        uses: ./.github/reuseable_actions/backend_tests
+        uses: ./.github/workflows/run_api_unittests.yml
 
     #uses: ${{ github.github_repository }}/.github/workflows/run_api_unittests.yml
     #uses: ./.github/workflows/run_api_unittests.yml
