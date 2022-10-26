@@ -33,29 +33,29 @@ variable "github_event" {
 
 # Variables for IDP setup
 
-variable "oidc_idir_dev_idp_issuer" {
+variable "oidc_idir_idp_issuer" {
   type = string
 }
 
-variable "oidc_idir_dev_idp_client_id" {
+variable "oidc_idir_idp_client_id" {
   type = string
 }
 
-variable "oidc_idir_dev_idp_client_secret" {
+variable "oidc_idir_idp_client_secret" {
   type = string
   sensitive = true
 }
 
 
-variable "oidc_bceid_business_dev_idp_issuer" {
+variable "oidc_bceid_business_idp_issuer" {
   type = string
 }
 
-variable "oidc_bceid_business_dev_idp_client_id" {
+variable "oidc_bceid_business_idp_client_id" {
   type = string
 }
 
-variable "oidc_bceid_business_dev_idp_client_secret" {
+variable "oidc_bceid_business_idp_client_secret" {
   type = string
   sensitive = true
 }
