@@ -1,14 +1,17 @@
-name: DEPLOY Test Environment
+name: DEPLOY Development Environment
 
+# on:
+#   workflow_dispatch:
 on:
-  workflow_dispatch:
+  push:
+    branches: [feat/67-pipeline-support]  
 
 jobs:
 
   aws-test-deployment:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
-      environment_name: test
+      environment_name: dev
       tf_subcommand: apply
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
