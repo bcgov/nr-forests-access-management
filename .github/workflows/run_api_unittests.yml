@@ -48,5 +48,9 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python --version
           cd server/backend
           pip install -r requirements.txt
+
+      - name: Run Tests
+        run: |
