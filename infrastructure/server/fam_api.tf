@@ -75,8 +75,7 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
 
 resource "aws_lambda_function" "fam-api-function" {
   filename      = "fam-ui-api.zip"
-  #function_name = random_pet.api_lambda_name.id
-  function_name = var.api_lambda_name
+  function_name = random_pet.api_lambda_name.id
   role          = aws_iam_role.fam_api_lambda_exec.arn
   handler       = "api.app.main.handler"
 

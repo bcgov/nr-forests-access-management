@@ -19,6 +19,5 @@ generate "test_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Prod_aza_net"
   subnet_app_b = "App_Prod_azb_net"
-  api_lambda_name = "fam-api-lambda-function-prod"
 EOF
 }
