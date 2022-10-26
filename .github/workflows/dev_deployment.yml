@@ -2,9 +2,6 @@ name: DEPLOY Development Environment
 
 on:
   workflow_dispatch:
-# on:
-#   push:
-#     branches: [feat/67-pipeline-support]  
 
 jobs:
 
