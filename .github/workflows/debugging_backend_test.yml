@@ -5,6 +5,8 @@ on:
 
 jobs:
   call-workflow-1-in-local-repo:
+    runs-on: ubuntu-latest
+
     steps:
       - name: configure local actions
         uses: actions/checkout@v3 # Necessary to access local action
