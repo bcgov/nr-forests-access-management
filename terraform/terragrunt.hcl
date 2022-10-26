@@ -40,8 +40,8 @@ github_repository = "${local.github_repository}"
 github_branch = "${local.github_branch}"
 github_commit = "${local.github_commit}"
 github_event = "${local.github_event}"
-oidc_idir_dev_idp_client_secret = "${local.oidc_idir_idp_client_secret}"
-oidc_bceid_business_dev_idp_client_secret = "${local.oidc_bceid_business_idp_client_secret}"
+oidc_idir_idp_client_secret = "${local.oidc_idir_idp_client_secret}"
+oidc_bceid_business_idp_client_secret = "${local.oidc_bceid_business_idp_client_secret}"
 EOF
 }
 
