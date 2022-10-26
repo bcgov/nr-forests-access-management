@@ -27,11 +27,6 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
-server/backend.hcl
-server/.terraform.lock.hcl
-server/lambda/node_modules
-out.json
-
 
 *.db
 .env
@@ -42,23 +37,28 @@ __pycache__
 .pytest_cache
 
 junk*
-fam_api/request.json
-backend/database/fam_api-9.0.1/*
-backend/database/flyway*
-server/fam-api.zip
-server/localtest.auto.tfvars
+
 aurora/.terraform.lock.hcl
 aurora/aurora.hcl
+
+server/.terraform.lock.hcl
+server/backend.hcl
+server/credentials.tfrc.json
+server/fam_auth_function.zip
+server/fam-api.zip
+server/fam-ui-api.zip
+server/github.auto.tfvars
+server/junk.bash
+server/localtest.auto.tfvars
+server/my-deployment-package.zip
+server/packagelambda.bash
 
 server/backend/database/flyway*
 server/backend/api/alembic/versions-modified/*
 server/backend/api/app/models/model-back.py
-server/packagelambda.bash
-server/my-deployment-package.zip
-server/packaging/*
 server/backend/packaging/*
-server/localtest.auto.tfvars
-server/github.auto.tfvars
+server/packaging/*
+
 functional-tests/.project
 frontend/domain.txt
 server/credentials.tfrc.json
