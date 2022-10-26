@@ -5,4 +5,5 @@ on:
 
 jobs:
   call-workflow-1-in-local-repo:
-    uses: $GITHUB_REPOSITORY/.github/workflows/run_api_unittests.yml
+    uses: ${{ github.github_repository }}/.github/workflows/run_api_unittests.yml
+#GITHUB_REPOSITORY
