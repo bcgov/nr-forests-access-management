@@ -1,0 +1,16 @@
+name: DESTROY Test Environment
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  aws-test-destruction:
+    uses: ./.github/workflows/reusable_terraform_server.yml
+    with: 
+      environment_name: test
+      tf_subcommand: destroy
+    secrets: 
+      licenceplate: ${{ secrets.LICENCEPLATE}}
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
