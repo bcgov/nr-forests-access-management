@@ -1,18 +1,27 @@
 name: api unit tests
 
+# on:
+#   workflow_call:
+#     inputs:
+#     # leaving here as an example of an input
+#       username:
+#         description: 'A username passed from the caller workflow'
+#         default: 'john-doe'
+#         required: false
+#         type: string
+
+# debugging
 on:
-  workflow_call:
-    inputs:
-    # leaving here as an example of an input
-      username:
-        description: 'A username passed from the caller workflow'
-        default: 'john-doe'
-        required: false
-        type: string
+  push:
+    branches: [feat/94-integrate-unit-tests]
 
 env:
   environment: dev
   organization: bcgov
+  pg_db: fam
+  pg_user: fam_test
+  pg_pass: test
+
 
 jobs:
   api-unit-tests:
@@ -23,10 +32,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: db
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: fam
+          POSTGRES_DB: $pg_db
+          POSTGRES_USER: $pg_user
+          POSTGRES_PASSWORD: $pg_pass
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -54,3 +62,7 @@ jobs:
 
       - name: Run Tests
         run: |
+          cd server/backend
+          pytest
+
+
