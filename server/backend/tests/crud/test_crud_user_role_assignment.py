@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from sqlalchemy import bindparam, text
 from sqlalchemy.orm import session
 from sqlalchemy.orm.exc import NoResultFound
-from tests.fixtures.fixtures_crud_user_role_assignment import \
+from fixtures.fixtures_crud_user_role_assignment import \
     FOM_SUBMITTER_ROLE_NAME
 
 LOGGER = logging.getLogger(__name__)

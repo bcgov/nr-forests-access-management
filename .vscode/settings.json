@@ -3,8 +3,12 @@
         80,
         120
     ],
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": true,
     "python.testing.pytestArgs": [
-        ""
+        "./server/backend",
+        "./server/auth_function"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -15,8 +19,7 @@
     "python.linting.enabled": true,
     "python.linting.flake8Args": ["--append-config=${workspaceFolder}/server/backend/.flake8"],
     "workbench.list.openMode": "doubleClick",
-    "python.testing.cwd": "./server/backend",
-
+    "python.testing.cwd": "",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
 
