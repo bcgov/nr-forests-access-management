@@ -5,4 +5,3 @@ on:
 jobs:
   call-backend-unit-tests:
     uses: ./.github/workflows/run_api_unittests.yml
-
