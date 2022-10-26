@@ -1,19 +1,19 @@
 name: api unit tests
 
-# on:
-#   workflow_call:
-#     inputs:
-#     # leaving here as an example of an input
-#       username:
-#         description: 'A username passed from the caller workflow'
-#         default: 'john-doe'
-#         required: false
-#         type: string
+on:
+  workflow_call:
+    # inputs:
+    # leaving here as an example of an input
+      # username:
+      #   description: 'A username passed from the caller workflow'
+      #   default: 'john-doe'
+      #   required: false
+      #   type: string
 
 # debugging
-on:
-  push:
-    branches: [feat/94-integrate-unit-tests]
+# on:
+#   push:
+#     branches: [feat/94-integrate-unit-tests]
 
 env:
   environment: dev

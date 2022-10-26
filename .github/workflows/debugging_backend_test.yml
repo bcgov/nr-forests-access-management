@@ -1,0 +1,8 @@
+on:
+  push:
+    branches: [feat/94-integrate-unit-tests]
+
+
+jobs:
+  call-workflow-1-in-local-repo:
+    uses: $GITHUB_REPOSITORY/.github/workflows/run_api_unittests.yml
