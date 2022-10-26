@@ -1,9 +1,8 @@
 on:
   push:
-    #branches: [feat/94-integrate-unit-tests]
-    branches: [do-not-trigger]
+    branches: [feat/94-integrate-unit-tests]
+
 
 jobs:
-  call-backend-unit-tests:
-      #uses: ./.github/local-actions/run_api_unittests.yml@feat/94-integrate-unit-tests
-    uses: ./.github/workflows/run_api_unittests.yml
+  call-workflow-1-in-local-repo:
+    uses: $GITHUB_REPOSITORY/.github/workflows/run_api_unittests.yml
