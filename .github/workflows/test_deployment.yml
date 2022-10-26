@@ -1,11 +1,7 @@
 name: DEPLOY Test Environment
 
-
-# on:
-#   workflow_dispatch:
 on:
-  push:
-    branches: [feat/67-pipeline-support]
+  workflow_dispatch:
 
 jobs:
 
