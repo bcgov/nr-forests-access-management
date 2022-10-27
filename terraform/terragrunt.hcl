@@ -5,14 +5,7 @@ terraform {
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  tfc_workspace    = get_env("tfc_workspace")
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  github_repository = get_env("github_repository")
-  github_branch = get_env("github_branch")
-  github_commit = get_env("github_commit")
-  github_event = get_env("github_event")
-  oidc_idir_idp_client_secret = get_env("oidc_idir_idp_client_secret")
-  oidc_bceid_business_idp_client_secret = get_env("oidc_bceid_business_idp_client_secret")
 }
 
 generate "remote_state" {
@@ -24,7 +17,7 @@ terraform {
     hostname = "${local.tfc_hostname}"
     organization = "${local.tfc_organization}"
     workspaces {
-      name = "${local.tfc_workspace}"
+      name = "${var.terraform_workspace}"
     }
   }
 }
@@ -36,12 +29,6 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-github_repository = "${local.github_repository}"
-github_branch = "${local.github_branch}"
-github_commit = "${local.github_commit}"
-github_event = "${local.github_event}"
-oidc_idir_idp_client_secret = "${local.oidc_idir_idp_client_secret}"
-oidc_bceid_business_idp_client_secret = "${local.oidc_bceid_business_idp_client_secret}"
 EOF
 }
 
