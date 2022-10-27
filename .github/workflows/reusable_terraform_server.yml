@@ -11,8 +11,8 @@ on:
         type: string    
       execute_flyway:
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: "false"
     secrets:
       licenceplate:
         required: true
@@ -122,7 +122,7 @@ jobs:
           oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
           oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
-          execute_flyway = $${{ inputs.execute_flyway }}
+          execute_flyway = "$${{ inputs.execute_flyway }}""
           EOF
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
