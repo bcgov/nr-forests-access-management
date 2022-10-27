@@ -21,27 +21,27 @@ env:
   POSTGRES_DB: fam
   POSTGRES_USER: fam_test
   POSTGRES_PASSWORD: test
-  USE_POSTGRES: true
+  USE_POSTGRES: false
 
 jobs:
   api-unit-tests:
     runs-on: ubuntu-latest
 
     #Run local postgres for testing
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: $POSTGRES_DB
-          POSTGRES_USER: $POSTGRES_USER
-          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    # services:
+    #   postgres:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_DB: $POSTGRES_DB
+    #       POSTGRES_USER: $POSTGRES_USER
+    #       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432:5432
 
     steps:
       - name: checkout the repo and building the Backend
@@ -64,5 +64,3 @@ jobs:
         run: |
           cd server/backend
           pytest
-
-
