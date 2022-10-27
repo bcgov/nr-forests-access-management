@@ -1,6 +1,6 @@
-<!-- <script setup lang="ts"> -->
 <script lang="ts">
-  import { RouterLink, RouterView } from 'vue-router'
+
+  import { RouterView } from 'vue-router'
   import Header from '@/components/Header.vue'
   import Footer from '@/components/Footer.vue'
 
@@ -16,7 +16,7 @@
 <template>
   <FamHeader />
 
-  <main class="p-0 mt-4">
+  <main class="container p-0 mt-4">
     <RouterView />
   </main>
 
