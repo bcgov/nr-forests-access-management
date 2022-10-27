@@ -30,9 +30,9 @@ env:
 
 jobs:
 
-  aws-test-deployment:
+  aws-server-deployment:
 
-    name: Run Terraform
+    name: Run Terraform to Deploy Server
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
 
