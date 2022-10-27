@@ -1,7 +1,16 @@
 <script setup lang="ts">
+  import { inject } from 'vue';
+
+  let environmentLabel = inject('fam_environment_display_name') as string
+  console.log("environmentLabel: ", environmentLabel)
+  if (environmentLabel && environmentLabel.length > 0) {
+    environmentLabel = ` (${environmentLabel.toUpperCase()})`
+  }
+
 </script>
 
 <template>
+
   <header class="app-header" id="header">
     <nav class="navbar navbar-expand-md justify-content-between">
       <a class="navbar-brand" title="Forest Access Management" href="https://www2.gov.bc.ca" style="margin-right: 0;">
@@ -11,7 +20,9 @@
             width="152" height="55"
             alt="B.C. Government Logo">
       </a>
-
+      <!-- <img alt="BC Gov logo" class="logo" src="@/assets/bcgov-header-horiz-LG.png" width="140" height="60" /> -->
+      <h2>Forest Access Management {{environmentLabel}}</h2>
+      
       <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
         aria-controls="navbarNav" 
         aria-expanded="false" 
@@ -43,12 +54,11 @@
   </header>
 
   <div class="wrapper">
-    
     <nav>
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/application">Select Application</RouterLink>
-      <RouterLink to="/manage">Manage Access</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/application">Select Application</RouterLink>
+        <!-- <RouterLink to="/manage">Manage Access</RouterLink> -->
+        <RouterLink to="/about">About</RouterLink>
     </nav>
   </div>
 
