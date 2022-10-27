@@ -5,7 +5,7 @@ const selected = ref(null)
 // TODO: Change to javascript object with id, name, description for each application.
 const applications = ['Forest Operations Map (FOM)', 'Forest Access Management (FAM)', 'Forest Operations Plan (FOP)']
 
-function manage(event) {
+function manage(event: Event) {
   alert(`Manage app ${selected.value}`)
   // alert(event.target.tagName)
 }
