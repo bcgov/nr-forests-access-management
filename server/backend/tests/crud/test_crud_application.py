@@ -20,8 +20,7 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
 
     # if migrations have run then should already have 2, otherwise for blank db
     # should only be 1
-    #assert len(apps) >= 1
-    assert len(apps) > 99999999
+    assert len(apps) >= 1
     assert hasattr(apps[0], "application_name")
     # get all the apps into a list
     appNameList = []
