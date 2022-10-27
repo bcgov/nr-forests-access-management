@@ -99,7 +99,8 @@ jobs:
           terragrunt_version: ${{ env.TG_VERSION }}
 
       - name: Create Terraform vars
-        working-directory: infrastructure/server
+        # working-directory: infrastructure/server
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         run: |
           # calculate the db_cluster_snapshot_identifier, attempting to ensure it
           # is less than 63 characters.

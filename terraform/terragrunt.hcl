@@ -17,7 +17,7 @@ terraform {
     hostname = "${local.tfc_hostname}"
     organization = "${local.tfc_organization}"
     workspaces {
-      name = "${var.terraform_workspace}"
+      name = "$${var.terraform_workspace}"
     }
   }
 }
