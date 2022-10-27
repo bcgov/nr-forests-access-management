@@ -9,3 +9,4 @@ psycopg2-binary==2.9.3
 mangum==0.15.0
 boto3
 botocore
+python-dotenv==0.21.0
