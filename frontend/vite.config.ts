@@ -16,7 +16,7 @@ export default defineConfig(async ({ command, mode }) => {
         '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
       }
     },
-    root: path.resolve(__dirname, 'src'),
+    // root: path.resolve(__dirname, 'src'),
     server: {
       port: port,
     },
