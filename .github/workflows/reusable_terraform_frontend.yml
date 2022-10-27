@@ -39,10 +39,12 @@ jobs:
           cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Build Frontend
+        working-directory: frontend
         run: |
-          cd frontend
           npm install
           npm run build
+          mkdir ../infrastructure/frontend/dist
+          rsync -r dist/* ../infrastructure/frontend/dist
           
 
       - name: Setup Terragrunt
@@ -52,7 +54,7 @@ jobs:
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-client"
         run: |
-
-          # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       

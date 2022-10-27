@@ -5,7 +5,7 @@ on:
 
 jobs:
 
-  aws-test-deployment:
+  aws-dev-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
       environment_name: dev
