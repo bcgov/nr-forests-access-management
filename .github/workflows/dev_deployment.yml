@@ -6,9 +6,6 @@ on:
 jobs:
 
   aws-dev-deployment:
-
-    uses: ./.github/workflows/reuseable_api_unittests.yml
-
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: dev
