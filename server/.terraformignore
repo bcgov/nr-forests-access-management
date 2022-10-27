@@ -1,0 +1,8 @@
+backend/venv/
+.env
+backend.hcl
+junk.bash
+tmpdata/
+terraform-local.md
+backend/
+fam_api/
