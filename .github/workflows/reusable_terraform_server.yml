@@ -98,22 +98,8 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Create DB Snapshot Identifier
-        run: |
-          cd server
-          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
-          # is less than 63 characters.
-          db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${{ github.sha }}"
-          if ((echo ${{ github.ref_name }} | wc -c ) > 12)
-          then
-              commit=${{ github.ref_name }}
-              db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${commit:0:7}"
-          fi
-          # remove non alphanumeric characters
-          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
-
-      - name: Terragrunt ${{ inputs.tf_subcommand }} 
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+      - name: Create Terraform vars
+        working-directory: infrastructure/server
         run: |
           # calculate the db_cluster_snapshot_identifier, attempting to ensure it
           # is less than 63 characters.
@@ -139,5 +125,8 @@ jobs:
           execute_flyway = "$${{ inputs.execute_flyway }}"
           EOF
 
+      - name: Terragrunt ${{ inputs.tf_subcommand }} 
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
