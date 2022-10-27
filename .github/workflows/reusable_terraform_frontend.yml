@@ -38,6 +38,13 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          
+
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
