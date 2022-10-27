@@ -16,7 +16,7 @@
 <template>
   <FamHeader />
 
-  <main>
+  <main class="p-0 mt-4">
     <RouterView />
   </main>
 
