@@ -1,20 +1,3 @@
-terraform {
- backend "remote" {}
- #backend "local" {}
-required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "3.9.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
-  }
-}
 
 resource "random_pet" "lambda_bucket_name" {
   prefix = "ssp-testing-bucket"
