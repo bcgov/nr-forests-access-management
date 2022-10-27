@@ -18,10 +18,10 @@ on:
 env:
   environment: dev
   organization: bcgov
-  pg_db: fam
-  pg_user: fam_test
-  pg_pass: test
-
+  POSTGRES_DB: fam
+  POSTGRES_USER: fam_test
+  POSTGRES_PASSWORD: test
+  USE_POSTGRES: true
 
 jobs:
   api-unit-tests:
@@ -32,9 +32,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: $pg_db
-          POSTGRES_USER: $pg_user
-          POSTGRES_PASSWORD: $pg_pass
+          POSTGRES_DB: $POSTGRES_DB
+          POSTGRES_USER: $POSTGRES_USER
+          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

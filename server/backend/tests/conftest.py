@@ -22,6 +22,7 @@ from typing import Any, Generator
 
 import api.app.dependencies as dependencies
 import api.app.models.model as model
+import api.app.config as config
 import pytest
 from api.app.database import Base
 from api.app.main import app
@@ -102,15 +103,25 @@ def dbEngine() -> Engine:
         LOGGER.debug("remove the database: ./test_db.db'")
         os.remove("./test_db.db")
 
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
-    LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
     execution_options = {"schema_translate_map": {"app_fam": None}}
 
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL,
-        connect_args={"check_same_thread": False},
-        execution_options=execution_options,
-    )
+
+
+    if os.getenv("USE_POSTGRES", "false") == 'false':
+        SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
+        LOGGER.debug(f"SQL Alchemy URL: {SQLALCHEMY_DATABASE_URL}")
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            connect_args={"check_same_thread": False},
+            execution_options=execution_options,
+        )
+    else:
+        SQLALCHEMY_DATABASE_URL = config.getDBString()
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            echo=False)
+
+
 
     model.Base.metadata.create_all(bind=engine)
     LOGGER.debug(f"engine type: {type(engine)}")
@@ -123,6 +134,7 @@ def dbEngine() -> Engine:
     if os.path.exists("./test_db.db"):
         LOGGER.debug("remove the database: ./test_db.db'")
         os.remove("./test_db.db")
+
 
 
 @pytest.fixture(scope="function")
@@ -159,12 +171,12 @@ def override_get_db():
 def getFixtureParams(request):
     """
     Helper function to pass custom param into fixture to do setup/dear-down logic mostly.
-    For example, in test, can mark the test that uses some fixture to pass param into the fixture: 
+    For example, in test, can mark the test that uses some fixture to pass param into the fixture:
         @pytest.mark.fixture_data({"clean_up": False})
 
     And then in that specific fixture, get the param individually by calling:
         need_cleanup = getFixtureParams(request)['clean_up']
-        
+
         Note, the fixture needs to have pytest 'request' as the argument passing into the function.
     """
     marker = request.node.get_closest_marker("fixture_data")
