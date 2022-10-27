@@ -1,6 +1,7 @@
 on:
   push:
-    branches: [feat/94-integrate-unit-tests]
+    #branches: [feat/94-integrate-unit-tests]
+    branches: [do-not-trigger]
 
 jobs:
   call-backend-unit-tests:

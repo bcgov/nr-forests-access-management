@@ -5,12 +5,15 @@ on:
 
 jobs:
 
-  aws-test-deployment:
+  aws-dev-deployment:
+
+    uses: ./.github/workflows/reuseable_api_unittests.yml
+
     uses: ./.github/workflows/reusable_terraform_server.yml
-    with: 
+    with:
       environment_name: dev
       tf_subcommand: apply
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
       oidc_idir_idp_client_secret: "${{ secrets.OIDC_IDIR_IDP_CLIENT_SECRET }}"
