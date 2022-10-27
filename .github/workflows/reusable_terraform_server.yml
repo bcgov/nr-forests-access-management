@@ -115,7 +115,6 @@ jobs:
 
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
-          terraform_workspace = "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
           github_repository = "https://github.com/${{ github.repository }}"
           github_branch = "${{ github.ref_name }}"
           github_commit = "${{ github.sha }}"
@@ -123,7 +122,7 @@ jobs:
           oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
           oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
-          execute_flyway = "$${{ inputs.execute_flyway }}"
+          execute_flyway = $${{ inputs.execute_flyway }}
           EOF
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
