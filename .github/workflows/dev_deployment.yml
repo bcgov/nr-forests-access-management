@@ -13,7 +13,6 @@ jobs:
     with:
       environment_name: dev
       tf_subcommand: apply
-      execute_flyway: true
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
