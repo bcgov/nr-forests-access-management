@@ -17,7 +17,7 @@ def getDBString():
 
 def getLocalDBString():
     username = os.getenv("POSTGRES_USER", "postgres")
-    password = os.getenv("POSTGRES_PASSWORD", "postgres")
+    password = os.getenv("POSTGRES_PASSWORD", "test")
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")

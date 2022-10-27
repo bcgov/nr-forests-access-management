@@ -16,10 +16,19 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
     )
     LOGGER.debug(f"application1: {application1}")
     apps = crud_application.getFamApplications(db=db)
+    LOGGER.debug(f"returned from getFamApplications: {apps}")
 
-    assert len(apps) == 1
+    # if migrations have run then should already have 2, otherwise for blank db
+    # should only be 1
+    assert len(apps) >= 1
     assert hasattr(apps[0], "application_name")
-    assert apps[0].application_name == applicationData1["application_name"]
+    # get all the apps into a list
+    appNameList = []
+    for app in apps:
+        appNameList.append(app.application_name)
+
+    # assert apps[0].application_name == applicationData1["application_name"]
+    assert  applicationData1["application_name"] in appNameList
 
 def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
