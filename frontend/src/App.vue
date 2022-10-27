@@ -1,15 +1,32 @@
 <script setup lang="ts">
+import { inject } from 'vue'
+import { RouterLink, RouterView } from 'vue-router'
 
-  import { RouterView } from 'vue-router'
-  import Header from '@/components/header/Header.vue'
-  import Footer from '@/components/footer/Footer.vue'
-
+const environmentDisplayName = inject('fam_environment_display_name') as string
+var environmentLabel = ''
+if (environmentDisplayName.length > 0) {
+  environmentLabel = ` (${environmentDisplayName.toUpperCase()})`
+}
 </script>
 
 <template>
-  <Header></Header>
+  <header>
+    <img alt="BC Gov logo" class="logo" src="@/assets/bcgov-header-horiz-LG.png" width="140" height="60" />
 
-  <main class="container pt-0 mt-2">
+    <div class="wrapper">
+      <h1>FAM - Forest Access Management {{environmentLabel}}</h1>
+      
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/application">Select Application</RouterLink>
+        <!-- <RouterLink to="/manage">Manage Access</RouterLink> -->
+        <RouterLink to="/about">About</RouterLink>
+
+      </nav>
+    </div>
+  </header>
+
+  <main>
     <RouterView />
   </main>
 
