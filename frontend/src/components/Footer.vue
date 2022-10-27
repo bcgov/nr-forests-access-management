@@ -26,14 +26,15 @@
   @import "@/assets/styles/base.scss";
 
   .app-footer {
+    --bs-link-color: $footer-color;
+    color: $footer-color !important;
     border-top: 4px solid $gold;
     background: $footer-bg;
-    color: $footer-color;
     position: fixed;
     right: 0;
     bottom: 0;
     left: 0;
-    height: 2rem;
+    height: 2.5rem;
     z-index: 1002;
 
     // padding-top: 1.5rem;
