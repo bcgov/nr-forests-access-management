@@ -1,0 +1,108 @@
+name: Run Terraform (Backend)
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string        
+      tf_subcommand:
+        required: true
+        type: string    
+    secrets:
+      licenceplate:
+        required: true
+      tfc_team_token:
+        required: true
+      oidc_idir_idp_client_secret:
+        required: true
+      oidc_bceid_business_idp_client_secret:
+        required: true
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+
+jobs:
+
+  aws-test-deployment:
+
+    name: Run Terraform
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../infrastructure/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./infrastructure/server/fam_auth_function.zip
+          if-no-files-found: error   
+
+      # Steps to deploy Ian's python as a lambda
+      - name: Install and Package Dependencies - FAM API
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-api.zip ../infrastructure/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./infrastructure/server/fam-ui-api.zip
+          if-no-files-found: error
+       
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+
+      - name: Setup Terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt ${{ inputs.tf_subcommand }} 
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          github_repository: "https://github.com/${{ github.repository }}"
+          github_branch: "${{ github.ref_name }}"
+          github_commit: "${{ github.sha }}"
+          github_event: "${{ github.event_name }}"
+          oidc_idir_idp_client_secret: "${{ secrets.oidc_idir_idp_client_secret }}"
+          oidc_bceid_business_idp_client_secret: "${{ secrets.oidc_bceid_business_idp_client_secret }}"
+
+        run: terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
