@@ -1,6 +1,7 @@
 import datetime
 import logging
 from typing import List
+import os
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -27,23 +28,37 @@ def dbSession_famRoles_withSimpleData(dbSession_famRoletype, simpleRoleData):
 
 @pytest.fixture(scope="function")
 def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRecord):
+    # add the fam role types if they do not already exist
     db = dbSession
-    roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
-    db.add(roleTypeModel_abstract)
-    roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
-    db.add(roleTypeModel_concrete)
-    db.commit()
-    yield db  # use the session in tests.
-    
-    try:
-        db.delete(roleTypeModel_abstract)
-    except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.error(f"wasn't committed: {e}")
+    postgresDb = os.getenv('USE_POSTGRES', 'false')
 
-    try:
-        db.delete(roleTypeModel_concrete)
-    except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.debug(f"wasn't committed: {e}")
+    roles = model.FamRoleType
+    roleTypesQuery = db.query(roles).all()
+    roleTypesInDb = []
+    for roleType in roleTypesQuery:
+        roleTypesInDb.append(roleType.role_type_code)
+
+    if postgresDb == 'false':
+        # only populate the data if running under sqllite backend as the postgres
+        # one will have had the migrations run on it.
+        roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
+        db.add(roleTypeModel_abstract)
+
+        roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
+        db.add(roleTypeModel_concrete)
+
+        db.commit()
+    yield db  # use the session in tests.
+    if postgresDb == 'false':
+        try:
+            db.delete(roleTypeModel_abstract)
+        except sqlalchemy.exc.InvalidRequestError as e:
+            LOGGER.error(f"wasn't committed: {e}")
+
+        try:
+            db.delete(roleTypeModel_concrete)
+        except sqlalchemy.exc.InvalidRequestError as e:
+            LOGGER.debug(f"wasn't committed: {e}")
 
 
 @pytest.fixture(scope="function")
@@ -101,6 +116,8 @@ def deleteAllRoles(dbSession: session.Session) -> None:
 @pytest.fixture(scope="function")
 def deleteAllRoleTypes(dbSession: session.Session) -> None:
     """cleans up all role types from the database"""
+
+    # TODO: need to fix this, shouldn't blanket delete roles
     LOGGER.debug(f"dbsession type: {type(dbSession)}")
     yield
 

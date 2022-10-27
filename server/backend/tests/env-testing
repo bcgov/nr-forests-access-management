@@ -1,0 +1,4 @@
+# tests will look for USE_POSTGRES env var, if found and is not equal to
+# false will attempt to run tests using postgres backend
+USE_POSTGRES=false
+POSTGRES_USER=postgres
