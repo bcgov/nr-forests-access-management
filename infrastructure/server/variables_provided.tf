@@ -1,8 +1,3 @@
-variable "terraform_workspace" {
-  description = "Variable for passing the workspace into terragrunt"
-  type        = string  
-}
-
 variable "fam_user_pool_name" {
   description = "Name for the FAM user pool"
   type        = string
