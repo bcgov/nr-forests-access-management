@@ -45,6 +45,7 @@ jobs:
           npm run build
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist
+          ls dist
           ls ../infrastructure/frontend
           ls ../infrastructure/frontend/dist
           
