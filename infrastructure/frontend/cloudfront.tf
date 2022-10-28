@@ -90,8 +90,8 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "site_files" {
-  # Enumerate all the files in ./src
-  for_each = fileset(local.src_dir, "**")
+  # for_each = fileset(local.src_dir, "**")
+  for_each = fileset("dist", "[^.]*")
 
   # Create an object from each
   bucket = aws_s3_bucket.web_distribution.id
