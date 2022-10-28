@@ -11,8 +11,8 @@
 
 <template>
 
-  <header class="app-header" id="header">
-    <nav class="navbar navbar-expand-md justify-content-between">
+  <header class="container-fluid app-header" id="header">
+    <nav class="navbar navbar-expand-md justify-content-between px-2">
       <a class="navbar-brand" title="Forest Access Management" href="https://www2.gov.bc.ca" style="margin-right: 0;">
         <img
             class="nav-logo img-fluid d-none d-sm-block"
