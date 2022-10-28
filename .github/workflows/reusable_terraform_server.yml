@@ -9,6 +9,10 @@ on:
       tf_subcommand:
         required: true
         type: string    
+      execute_flyway:
+        required: false
+        type: string
+        default: "false"
     secrets:
       licenceplate:
         required: true
@@ -26,9 +30,9 @@ env:
 
 jobs:
 
-  aws-test-deployment:
+  aws-server-deployment:
 
-    name: Run Terraform
+    name: Run Terraform to Deploy Server
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
 
@@ -94,15 +98,37 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
+      - name: Create Terraform vars
+        # working-directory: infrastructure/server
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        run: |
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters.
+          db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${{ github.sha }}"
+          if ((echo ${{ github.ref_name }} | wc -c ) > 12)
+          then
+              commit=${{ github.ref_name }}
+              db_cluster_snapshot_identifier="pre-flyway-${{ github.ref_name }}-${commit:0:7}"
+          fi
+          # remove non alphanumeric characters
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+
+          # Pass variables from github actions to terraform
+          cat > github.auto.tfvars <<EOF
+          github_repository = "https://github.com/${{ github.repository }}"
+          github_branch = "${{ github.ref_name }}"
+          github_commit = "${{ github.sha }}"
+          github_event = "${{ github.event_name }}"
+          oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
+          oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
+          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
+          execute_flyway = ${{ inputs.execute_flyway }}
+          EOF
+
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-          github_repository: "https://github.com/${{ github.repository }}"
-          github_branch: "${{ github.ref_name }}"
-          github_commit: "${{ github.sha }}"
-          github_event: "${{ github.event_name }}"
-          oidc_idir_idp_client_secret: "${{ secrets.oidc_idir_idp_client_secret }}"
-          oidc_bceid_business_idp_client_secret: "${{ secrets.oidc_bceid_business_idp_client_secret }}"
-
-        run: terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
+        run: |
+          # Run terraform
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       

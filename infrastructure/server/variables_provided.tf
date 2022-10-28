@@ -92,12 +92,19 @@ variable "subnet_app_b" {
   type = string
 }
 
-# variable "db_cluster_snapshot_identifier" {
-#   description = "Value fo the db_cluster_snapshot_identifier used for the fam_pre_flyway_snapshot resource (flyway.tf).  Validation will identify length constraint violations before it attempts to deploy"
-#   #default     = "pre-flyway-${var.github_branch}-${var.github_commit}"
-#   validation {
-#     condition     = length(var.db_cluster_snapshot_identifier) < 63
-#     error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
-#   }
-# }
+# Variables to control flyway process
+
+variable "execute_flyway" {
+  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  type = bool
+  default = false
+}
+
+variable "db_cluster_snapshot_identifier" {
+  description = "Value fo the db_cluster_snapshot_identifier used for the fam_pre_flyway_snapshot resource (flyway.tf).  Validation will identify length constraint violations before it attempts to deploy"
+  validation {
+    condition     = length(var.db_cluster_snapshot_identifier) < 63
+    error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
+  }
+}
 

@@ -1,20 +1,3 @@
-terraform {
- backend "remote" {}
- #backend "local" {}
-required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "3.9.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
-  }
-}
 
 resource "random_pet" "lambda_bucket_name" {
   prefix = "ssp-testing-bucket"
@@ -104,11 +87,16 @@ locals {
     txt  = "text/txt",
     css  = "text/css"
   }
+  files_raw = fileset(local.src_dir, "**")
+  files = toset([
+    for jsFile in local.files_raw:
+      jsFile if jsFile != ".terragrunt-source-manifest" && jsFile != "assets/.terragrunt-source-manifest"
+  ])
 }
 
 resource "aws_s3_bucket_object" "site_files" {
-  # Enumerate all the files in ./src
-  for_each = fileset(local.src_dir, "**")
+  # for_each = fileset(local.src_dir, "**")
+  for_each = local.files
 
   # Create an object from each
   bucket = aws_s3_bucket.web_distribution.id

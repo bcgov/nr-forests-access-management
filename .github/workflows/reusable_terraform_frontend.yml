@@ -1,0 +1,66 @@
+name: Run Terraform (Frontend)
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string        
+      tf_subcommand:
+        required: true
+        type: string    
+    secrets:
+      licenceplate:
+        required: true
+      tfc_team_token:
+        required: true
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform-frontend
+
+jobs:
+
+  aws-frontend-deployment:
+
+    name: Run Terraform to Deploy Frontend
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0   
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+          mkdir ../infrastructure/frontend/dist
+          rsync -r dist/* ../infrastructure/frontend/dist       
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+
+      - name: Setup Terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt ${{ inputs.tf_subcommand }} 
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
+        run: |
+          echo 'listing frontend'
+          ls ../../infrastructure/frontend
+          echo 'listing frontend/dist'
+          ls ../../infrastructure/frontend/dist
+          echo 'listing frontend/dist/assets'
+          ls ../../infrastructure/frontend/dist/assets
+          echo 'running terragrunt'
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
