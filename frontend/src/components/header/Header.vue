@@ -49,15 +49,24 @@
   
     <nav class="bc-nav-links navbar-expand-md py-0">
       <div class="collapse navbar-collapse" id="menuLink">
-          <nav-item @click="$router.push({ name: 'about'})">
-            <a class="nav-link" href="#">About</a>
-          </nav-item>
-          <nav-item @click="$router.push({ name: 'home' })">
-            <a class="nav-link" href="#">Home</a>
-          </nav-item>
-          <nav-item @click="$router.push({ name: 'application' })">
-            <a class="nav-link" href="#">Select Application</a>
-          </nav-item>
+        <ul class="navbar-nav">
+          <li class="nav-item" @click="$router.push({ name: 'about'})">
+            <a class="nav-link" title="About">
+              <span>About</span>
+            </a>
+          </li>
+          <li class="nav-item" @click="$router.push({ name: 'home' })">
+            <a class="nav-link" title="Home">
+              <span>Home</span>
+            </a>
+          </li>
+          <li class="nav-item" @click="$router.push({ name: 'application' })">
+            <a class="nav-link" title="Select Application">
+              <span>Select Application</span>
+            </a>
+          </li>
+        </ul>
+
       </div>
     </nav>
   </header>
