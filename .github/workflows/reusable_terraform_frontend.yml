@@ -44,14 +44,7 @@ jobs:
           npm install
           npm run build
           mkdir ../infrastructure/frontend/dist
-          rsync -r dist/* ../infrastructure/frontend/dist
-          echo 'listing dist'
-          ls dist
-          echo 'listing ../infrastructure/frontend'
-          ls ../infrastructure/frontend
-          echo 'listing ../infrastructure/frontend/dist'
-          ls ../infrastructure/frontend/dist
-          
+          rsync -r dist/* ../infrastructure/frontend/dist       
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
@@ -67,5 +60,7 @@ jobs:
           ls ../../infrastructure/frontend
           echo 'listing frontend/dist'
           ls ../../infrastructure/frontend/dist
+          echo 'listing frontend/dist/assets'
+          ls ../../infrastructure/frontend/dist/assets
           echo 'running terragrunt'
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
