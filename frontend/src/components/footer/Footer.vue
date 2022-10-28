@@ -23,50 +23,5 @@
 </template>
 
 <style lang="scss" scoped>
-  @import "@/assets/styles/base.scss";
-
-  .app-footer {
-    --bs-link-color: $footer-color;
-    color: $footer-color !important;
-    border-top: 4px solid $gold;
-    background: $footer-bg;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 2.5rem;
-    z-index: 1002;
-
-    // padding-top: 1.5rem;
-    padding-right: 1.5rem;
-    padding-bottom: 1.5rem;
-    padding-left: 1.5rem;
-    .gov-links {
-      // text-align: center;
-      margin: 0;
-      padding: 0;
-
-      li {
-        display: inline-block;
-        margin: 0;
-        line-height: 1;
-
-        &::after {
-          position: relative;
-          top: -1px;
-          display: inline-block;
-          margin-left: 0.5rem;
-          margin-right: 0.25rem;
-          content: '|';
-        }
-
-        &:last-child {
-          &::after {
-            display: none;
-          }
-        }
-      }
-    }
-
-  }
+  @import "./footer.scss";
 </style>

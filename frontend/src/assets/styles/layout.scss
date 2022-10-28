@@ -65,3 +65,8 @@
 .no-padding {
   padding: 0;
 }
+
+.bg-secondary-nav {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-secondary-nav-rgb), var(--bs-bg-opacity)) !important;
+}
