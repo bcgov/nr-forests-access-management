@@ -76,6 +76,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 }
 
 locals {
+  src_dir = "./dist/"
   content_type_map = {
     html = "text/html",
     ico  = "image/x-icon",
@@ -86,7 +87,7 @@ locals {
     txt  = "text/txt",
     css  = "text/css"
   }
-  files_raw = fileset("./dist/", "**")
+  files_raw = fileset(local.src_dir, "**")
   files = toset([
     for jsFile in local.files_raw:
       jsFile if jsFile != ".terragrunt-source-manifest"
