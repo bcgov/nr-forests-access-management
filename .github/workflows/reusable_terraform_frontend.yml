@@ -57,4 +57,6 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
         run: |
-          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
+          ls
+          ls dist
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
