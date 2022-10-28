@@ -32,12 +32,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0   
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
-
       - name: Build Frontend
         working-directory: frontend
         run: |
@@ -45,6 +39,12 @@ jobs:
           npm run build
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist       
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
