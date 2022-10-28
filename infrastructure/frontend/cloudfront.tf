@@ -76,7 +76,6 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 }
 
 locals {
-  src_dir = "./dist/"
   content_type_map = {
     html = "text/html",
     ico  = "image/x-icon",
@@ -87,11 +86,16 @@ locals {
     txt  = "text/txt",
     css  = "text/css"
   }
+  files_raw = fileset("./dist/", "**")
+  files = toset([
+    for jsFile in local.files_raw:
+      jsFile if jsFile != ".terragrunt-source-manifest"
+  ])
 }
 
 resource "aws_s3_bucket_object" "site_files" {
   # for_each = fileset(local.src_dir, "**")
-  for_each = fileset("dist", "[^.]*")
+  for_each = local.files
 
   # Create an object from each
   bucket = aws_s3_bucket.web_distribution.id
