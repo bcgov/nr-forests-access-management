@@ -1,4 +1,4 @@
-name: Run Terraform (Backend)
+name: Run Terraform (Frontend)
 
 on:
   workflow_call:
