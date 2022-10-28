@@ -45,8 +45,11 @@ jobs:
           npm run build
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist
+          echo 'listing dist'
           ls dist
+          echo 'listing ../infrastructure/frontend'
           ls ../infrastructure/frontend
+          echo 'listing ../infrastructure/frontend/dist'
           ls ../infrastructure/frontend/dist
           
 
@@ -60,6 +63,9 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
         run: |
+          echo 'listing frontend'
           ls ../../infrastructure/frontend
+          echo 'listing frontend/dist'
           ls ../../infrastructure/frontend/dist
+          echo 'running terragrunt'
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
