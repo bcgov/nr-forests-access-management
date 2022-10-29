@@ -1,12 +1,19 @@
 name: Pull Request Checks
 
-on:
+on: 
   push:
     branches:
       - "main"
     paths:
       - "server/**"
       - "frontend/**"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "server/**"
+      - "frontend/**"
+
 
 jobs:
   auth_function_ci:
