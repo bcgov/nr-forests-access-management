@@ -23,4 +23,4 @@ The Dockerfile in this directory can be run (optionally from docker-compose at t
 
 docker exec -it famdb flyway-migrate.sh
 
-Note: it would have been lovely to put that script into /docker-entrypoint-initdb.d and get it to run on startup of the DB, but flyway needs to connect over TCP/IP and Postgres doesn't expose TCP/IP until after startup (as per https://github.com/docker-library/postgres/pull/440).
+Note: it would have been lovely to put that script into /docker-entrypoint-initdb.d and get it to run on startup of the DB, but flyway needs to connect over TCP/IP and Postgres doesn't expose TCP/IP until after startup (as per https://github.com/docker-library/postgres/pull/440). 
