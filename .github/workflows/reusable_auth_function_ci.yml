@@ -4,10 +4,9 @@ on:
   workflow_call:    
 
 jobs:
-  build:
+  auth-function-ci:
     runs-on: ubuntu-latest
 
-    Run local postgres for testing
     services:
       postgres:
         image: postgres
