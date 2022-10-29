@@ -2,9 +2,9 @@ name: Pull Request Checks
 
 on: [push, pull_request]
   branches: [main]    
-    paths: 
-      - 'server/**'
-      - 'frontend/**'
+  paths: 
+    - 'server/**'
+    - 'frontend/**'
 
 jobs:
 
