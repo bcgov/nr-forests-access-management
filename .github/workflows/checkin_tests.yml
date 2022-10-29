@@ -1,11 +1,6 @@
-name: Checkin Tests
+name: Pull Request Checks
 
 on:
-  push:
-    branches: [main]
-      paths: 
-        - 'server/**'
-        - 'frontend/**'
   pull_request:
     branches: [main]    
       paths: 
