@@ -1,11 +1,10 @@
 name: Pull Request Checks
 
-on:
-  pull_request:
-    branches: [main]    
-      paths: 
-        - 'server/**'
-        - 'frontend/**'
+on: [push, pull_request]
+  branches: [main]    
+    paths: 
+      - 'server/**'
+      - 'frontend/**'
 
 jobs:
 
