@@ -1,3 +1,5 @@
+name: Checkin Tests
+
 on:
   push:
     branches: [main]
