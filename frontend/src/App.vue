@@ -16,7 +16,7 @@
 <template>
   <FamHeader />
 
-  <main class="container p-0 mt-4">
+  <main class="container pt-0 mt-2">
     <RouterView />
   </main>
 
@@ -24,5 +24,7 @@
 
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import "~bootstrap/scss/bootstrap";
+
 </style>
