@@ -12,29 +12,31 @@
 <template>
 
   <header class="container-fluid app-header" id="header">
-    <nav class="navbar navbar-expand-md justify-content-between px-2">
-      <a class="navbar-brand" title="Forest Access Management" href="https://www2.gov.bc.ca" style="margin-right: 0;">
+    <nav class="navbar navbar-expand-md justify-content-between px-2 navbar-dark">
+      <a class="navbar-brand" title="Forest Access Management" href="https://www2.gov.bc.ca" style="margin-right: 3px;">
         <img
             class="nav-logo img-fluid d-none d-sm-block"
             src="@/assets/images/17_gov3_bc_logo.svg"
             width="152" height="55"
             alt="B.C. Government Logo">
       </a>
-      <!-- <img alt="BC Gov logo" class="logo" src="@/assets/bcgov-header-horiz-LG.png" width="140" height="60" /> -->
+
       <h2>Forest Access Management {{environmentLabel}}</h2>
       
-      <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
+      <button class="navbar-toggler" type="button" 
+        title="Toggle Main Navigation"
         aria-controls="navbarNav" 
         aria-expanded="false" 
         aria-label="Toggle navigation"
-        data-toggle="collapse"
-        data-target="#navbarNav">
-        <em class="material-icons">menu</em>
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" title="Log In">
+            <a class="nav-link nav-link-fade-up" title="Log In">
               <span>Log In</span>
             </a>
           </li>
@@ -46,29 +48,21 @@
         </ul>
       </div>
     </nav>
-  
-    <nav class="bc-nav-links navbar-expand-md py-0">
-      <div class="collapse navbar-collapse" id="menuLink">
-        <ul class="navbar-nav">
-          <li class="nav-item" @click="$router.push({ name: 'about'})">
-            <a class="nav-link" title="About">
-              <span>About</span>
-            </a>
-          </li>
-          <li class="nav-item" @click="$router.push({ name: 'home' })">
-            <a class="nav-link" title="Home">
-              <span>Home</span>
-            </a>
-          </li>
-          <li class="nav-item" @click="$router.push({ name: 'application' })">
-            <a class="nav-link" title="Select Application">
-              <span>Select Application</span>
-            </a>
-          </li>
-        </ul>
 
-      </div>
-    </nav>
+    <div class="nav bc-nav">
+        <a class="nav-link" title="About" 
+          @click="$router.push({ name: 'about'})">
+          <span>About</span>
+        </a>
+        <a class="nav-link" title="Home" 
+          @click="$router.push({ name: 'home' })">
+          <span>Home</span>
+        </a>
+        <a class="nav-link" title="Select Application" 
+          @click="$router.push({ name: 'application' })">
+          <span>Select Application</span>
+        </a>
+    </div>
   </header>
 
 </template>

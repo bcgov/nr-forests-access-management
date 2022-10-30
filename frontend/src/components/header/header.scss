@@ -1,127 +1,76 @@
 @import "@/assets/styles/styles.scss";
-.bc-nav-links {
-  background-color: #38598a;
-  border-bottom: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-
-  #menuLink {
-    .nav-item {
-      margin-left: ($spacer * .5) !important;
-      margin-right: ($spacer * .5) !important;
-    }
-  }
-}
 
 .app-header {
   @include clearfix;
 
-  position: relative;
   padding: 0;
-  border-bottom: 2px solid $gold;
+  border-bottom: 2.5px solid $gold;
   background: $header-bg;
   color: $header-font-color;
   z-index: 1005;
-}
 
-// Navbar Toggle Button
-.navbar-toggler {
-  margin-right: 0.5rem;
-  padding: 0.5rem 0.4rem;
-  border: 2px solid $gold;
-  color: $gold;
-  font-size: medium;
-  font-weight: 600;
-  outline: none; // override user agent stylesheet default
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &.collapsed {
-    border: 2px solid transparent;
-    color: #fff;
-  }
-
-  i {
-    float: left;
-    margin-top: -0.25rem;
-    margin-bottom: -0.25rem;
-
-    + span {
-      display: none;
-      margin-top: 1px;
-      margin-left: 0.25rem;
-      font-size: $mn-font-size;
-      font-weight: 700;
-      vertical-align: top;
-    }
-  }
-}
-
-@media (min-width: 420px) {
-  .navbar-toggler {
-    i {
-      + span {
-        display: inline-block;
-      }
-    }
-  }
-}
-
-// NAVBAR
-.navbar {
-  padding: 0;
-  background-color: $header-bg;
-  z-index: 1000;
-
-  .navbar-nav {
-    margin-top: 0.5rem;
-
-    .nav-link {
-      position: relative;
-      z-index: 1001; // +1 to keep above dropdown menus
-      padding: 0.875rem 1rem;
-      border-top: 1px solid $mn-border-color;
-      color: $mn-color;
-      text-transform: uppercase;
-      white-space: nowrap;
-      font-size: $mn-font-size;
-      font-weight: 700;
-      cursor: pointer;
-    }
-  }
-
-}
-
-@media (min-width: 768px) {
+  // NAVBAR
   .navbar {
-    background: transparent;
+    padding: 0;
+    background-color: $header-bg;
 
     .navbar-nav {
-      margin-top: 0;
-
       .nav-link {
-        height: 4.2rem; // 60px to match the branding height
-        padding: 0.5rem 0.75rem !important;
-        border-top: none;
-
+        position: relative;
+        // z-index: 1001; // +1 to keep above dropdown menus
+        // border-top: 1px solid $mn-border-color;
+        color: $mn-color;
+        text-transform: uppercase;
+        white-space: nowrap;
+        font-size: $mn-font-size;
+        font-weight: 700;
+        cursor: pointer;
+        
         span {
-          margin-top: 0.9rem;
           display: inline-block;
         }
 
         &:hover {
-          background-color: #002663;
+          background-color: $mn-hover-bg;
         }
       }
     }
   }
-
+  
   .navbar-collapse {
     flex-grow: 0;
+  }
+}
+
+// Navbar Toggle Button
+.navbar-toggler {
+  margin-right: 0.25rem;
+  margin-bottom: 0.2rem;
+  border: 2px solid $mn-color;
+  color: $mn-color;
+  font-size: medium;
+  // outline: none; // override user agent stylesheet default
+}
+
+.bc-nav {
+  background-color: $bg-dark-border-color;
+  opacity: 1;
+  color: $mn-color !important;
+  border-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  z-index: 1000;
+  a {
+    color: $mn-color;
+    &:hover {
+      background-color: $mn-hover-bg;
+      color: $mn-color;
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .nav-link {
+    border-top: 1px solid $mn-border-color;
   }
 }
