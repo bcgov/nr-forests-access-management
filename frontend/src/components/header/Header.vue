@@ -15,9 +15,8 @@
     <nav class="navbar navbar-expand-md justify-content-between px-2 navbar-dark">
       <a class="navbar-brand" title="Forest Access Management" href="https://www2.gov.bc.ca" style="margin-right: 3px;">
         <img
-            class="nav-logo img-fluid d-none d-sm-block"
+            class="nav-logo"
             src="@/assets/images/17_gov3_bc_logo.svg"
-            width="152" height="55"
             alt="B.C. Government Logo">
       </a>
 
