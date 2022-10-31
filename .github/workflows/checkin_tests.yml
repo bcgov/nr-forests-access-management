@@ -1,0 +1,20 @@
+name: Pull Request Checks
+
+on: 
+  push:
+    branches:
+      - "main"
+    paths:
+      - "server/**"
+      - "frontend/**"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "server/**"
+      - "frontend/**"
+
+
+jobs:
+  auth_function_ci:
+    uses: ./.github/workflows/reusable_auth_function_ci.yml

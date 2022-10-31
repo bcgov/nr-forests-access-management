@@ -1,5 +1,7 @@
 # Notes on setup to help debug/ terraform on AWS / SEA locally
 
+# Note: instructions with *Terragrunt* coming soon!
+
 <img src="https://lh3.googleusercontent.com/pw/AL9nZEUdGiRiLkDzqzut5LaPh7wE7yhuJtqLB4X_ofDBR329pgzUnL-FMAHUC1pYIRX9NUOcJPW-mROg9KK0NYkptnZMtlkO0T-XmdeyWixD9cN4uSDThxhEWrmEDs5HgEdRvnet0KtS-lK30HsuuIWElHFGSQ=w1300-h732-no?authuser=0" width="700px">
 
 # Setup for running Locally
