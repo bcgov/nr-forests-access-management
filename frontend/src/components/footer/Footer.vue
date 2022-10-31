@@ -5,7 +5,7 @@
   <footer class="app-footer" id="footer">
     <div>
       <div class="clearfix row">
-        <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="col-xs-12 col-sm-12 col-md-12">
           <ul class="gov-links">
             <li><a href="#">Home</a></li>
             <li><a href="http://www2.gov.bc.ca/gov/content/home/copyright" target="_blank" rel="noopener">Copyright</a></li>
