@@ -21,7 +21,7 @@
             alt="B.C. Government Logo">
       </a>
 
-      <h2>Forest Access Management {{environmentLabel}}</h2>
+      <h2 class="title">Forest Access Management {{environmentLabel}}</h2>
       
       <button class="navbar-toggler" type="button" 
         title="Toggle Main Navigation"
