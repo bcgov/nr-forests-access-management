@@ -123,7 +123,7 @@ def test_update_user_if_already_exists(
     assert count == 1
 
 
-def test_single_parent_role_found(
+def test_direct_role_assignment(
     db_transaction,
     context,
     event,
@@ -133,6 +133,8 @@ def test_single_parent_role_found(
     create_user_role_xref_record,
     test_role_name,
 ):
+    """ role doesn't have childreen (ie no forest client roles associated
+    and the user is getting assigned directly to the role"""
     # execute
     result = lambda_function.lambda_handler(event, context)
 
@@ -142,3 +144,19 @@ def test_single_parent_role_found(
         "groupOverrideDetails"
     ]["groupsToOverride"]
     assert test_role_name in override_groups
+
+
+def test_parent_role_assignment(event, create_test_forest_client_role):
+    """ if set up as a fom submitter for a specific forest client, then you are assigned
+    to the child role that has a forest client
+
+    forest client table.client_number_id == fam_role.client_number
+    fam_role.
+    """
+    lambda_function.lambda_handler(event,)
+
+    pass
+
+# next some sad case scenarios / db fails / roles not found / multiple roles found for user
+# login with user but wrong user is setup.
+#   -

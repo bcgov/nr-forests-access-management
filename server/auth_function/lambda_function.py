@@ -19,30 +19,7 @@ user_type_code_dict = {"idir": "I", "bceidbusiness": "B"}
 
 def obtain_db_connection():
     global db_connection
-
     if db_connection is None:
-        # ------
-        # thinking code below should be in the config.py file
-        # -----
-        # secret_name = os.environ.get("DB_SECRET")
-        # region_name = "ca-central-1"
-
-        # # Create a Secrets Manager client
-        # session = boto3.session.Session()
-        # client = session.client(service_name="secretsmanager", region_name=region_name)
-        # secret_value = client.get_secret_value(SecretId=secret_name)
-        # secret_json = json.loads(secret_value["SecretString"])
-        # username = secret_json["username"]
-        # password = secret_json["password"]
-
-        # connection = psycopg2.connect(
-        #     host=os.environ.get("PG_HOST"),
-        #     port=os.environ.get("PG_PORT"),
-        #     dbname=os.environ.get("PG_DATABASE"),
-        #     user=username,
-        #     password=password,
-        #     sslmode="disable",
-        # )
         db_connection_string = config.get_db_connection_string()
         connection = psycopg2.connect(db_connection_string, sslmode="disable")
         connection.autocommit = False

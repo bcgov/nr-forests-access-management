@@ -12,17 +12,6 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
 def database_connection_string():
-    # config.get_db_connection_string()
-    # host = 'localhost'
-    # port = '5432'
-    # dbname = 'fam' #'postgres'
-    # user4tests = 'postgres' # fam_proxy_api
-    # password = 'postgres'
-
-    # # "dbname=test user=postgres password=secret" dbname="test",
-    # db_conn_string = (
-    #     f"user={user4tests} password={password} host={host} port={port} " +
-    #     f"dbname ={dbname}" )
     db_conn_string = config.get_db_connection_string()
     return db_conn_string
 
@@ -30,27 +19,7 @@ def database_connection_string():
 @pytest.fixture(scope="session")
 def db_connection(database_connection_string):
     LOGGER.debug("test log message")
-    # user4tests = "fam_proxy_api"
-    # user4tests = "postgres"  # override for kevins config
-
-    # dbName = "postgres"
-    # dbName = "fam"  # override for kevins config
-    # connection = psycopg2.connect(
-    #     host=os.environ.get("PG_HOST", "localhost"),
-    #     port=os.environ.get("PG_PORT", "5432"),
-    #     dbname=os.environ.get("PG_DATABASE", dbName),
-    #     user=os.environ.get("PG_USER", user4tests),
-    #     password=os.environ.get("PG_PASSWORD", "postgres"),
-    #     sslmode="disable",
-    # )
-
-
-    #connection = psycopg2.connect(database_connection_string)
-
-    # dbname='fam')
-    #connection.autocommit = False  # With tests we don't need to clean up the data
-    #lambda_function.db_connection = connection
-    lambda_function.testing = True
+     lambda_function.testing = True
     connection = lambda_function.obtain_db_connection()
     yield connection
     # Do a monkeypatch on get get db and finalize db methods
@@ -87,12 +56,12 @@ def event():
 def test_user_properties(event):
     userAtribs = event["request"]["userAttributes"]
     test_user_properties = {}
-    test_user_properties["idp_user_id"] = userAtribs["custom:idp_name"]
     test_user_properties["idp_type_code"] = lambda_function.user_type_code_dict[
-        test_user_properties["idp_user_id"]
+        userAtribs["custom:idp_name"]
     ]
     test_user_properties["idp_user_id"] = userAtribs["custom:idp_user_id"]
     test_user_properties["idp_username"] = userAtribs["custom:idp_username"]
+
     test_user_properties["cognito_user_id"] = event["userName"]
     return test_user_properties
 
@@ -188,8 +157,12 @@ def create_test_fam_role(db_transaction, test_role_name):
         CURRENT_USER,
         CURRENT_USER)
     """
+    get_insert_role_sql(expected_role, 'C')
     replaced_query = raw_query.format(expected_role)
     cursor.execute(replaced_query)
+
+@pytest.fixture(scope="function")
+def create_test_forest_client_role(db_transaction, test_role_name):
 
 
 @pytest.fixture(scope="function")
@@ -240,3 +213,24 @@ def create_user_role_xref_record(db_transaction, test_user_properties, test_role
         initial_user["idp_username"], initial_user["idp_type_code"], test_role_name
     )
     cursor.execute(replaced_query)
+
+
+def get_insert_role_sql(role_name, role_type):
+    raw_query = f"""
+    insert into app_fam.fam_role
+        (role_name,
+         role_purpose,
+         application_id,
+         role_type_code,
+         create_user,
+         update_user)
+    values
+        ('{role_name}',
+        'just for testing',
+        (select application_id from app_fam.fam_application
+            where application_name = 'fam'),
+        '{role_type}',
+        CURRENT_USER,
+        CURRENT_USER)
+    """
+    return raw_query

@@ -14,11 +14,6 @@ LOGGER = logging.getLogger(__name__)
 def get_db_connection_string():
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     db_conn_string = getAWSDBString() if on_aws else getLocalDBString()
-    db_conn_string_redacted = re.sub('password=\S+',
-                                     'password=*****',
-                                     db_conn_string)
-
-    LOGGER.debug(f"Database connection url: {db_conn_string_redacted}")
     return db_conn_string
 
 

@@ -7,8 +7,7 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": true,
     "python.testing.pytestArgs": [
-        "./server/backend",
-        "./server/auth_function"
+        "server/auth_function"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -22,7 +21,6 @@
     "python.testing.cwd": "",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
-
 }
 
 
