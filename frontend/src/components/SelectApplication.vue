@@ -1,52 +1,25 @@
 <script setup lang="ts">
 import router from '@/router';
-import { ref, computed, watch } from 'vue'
-import { selectedApplication, isApplicationSelected } from '../services/ApplicationService'
+import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 import type { Application } from '../services/ApplicationService'
 
-// TODO: Maybe look into lazy loading via a timeout style function.
-
-// To make this application load logic work using await needed to wrap this component invocation in <Suspense> (in SelectApplicationView)
-const applications = ref<Application[]>([])
-// TODO: Applications list is reset each time we navigate back to this page, so the lazy loading doesn't work.
-if (applications.value.length == 0) {
+// Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
+setTimeout( async () => {
+  // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
     console.log('Trying to retrieve applications')
     const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
     var apps = await res.json()
     console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
-    applications.value = apps as Application[]
+    applicationsUserAdministers.value = apps as Application[]
   } catch (error) {
     // TODO: Better error handling.
     alert('Error retrieving applications: ' + error)
   }
-}
-/*
-const applications = ref([
-  { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: '1001' }, 
-  { application_name: 'FAM', application_description: 'Forest Access Management', application_id: '1002' },
-  { application_name: 'FOP', application_description: 'Forest Operations Plan', application_id: '1003' }
-])
 
-watch(selectedApplication, async (newSelection) => {
-  try {
-    console.log('Trying to retrieve applications')
-
-    // TODO: Parameterize URL
-    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
-
-    // TODO: Invoke this after login
-    console.log(res);
-    var apps = await res.json()
-    console.log(`Retrieved ${apps.length} applications`)
-    console.log(apps)
-    applications.value = apps
-  } catch (error) {
-    alert('Error retrieving applications: ' + error)
-  }
 })
-*/
+
 function manage() {
   if (selectedApplication.value) {   
     // alert(`Manage app ${selectedApplication.value.application_description}`)
@@ -61,18 +34,16 @@ function manage() {
 
 <template>
   <div>
-    
-  <span><RouterLink to="/">Home</RouterLink> 
-    &rarr; <RouterLink to="/application">Select Application</RouterLink> 
-  </span>
+
+  <Breadcrumb activePage='SelectApp'/>
 
   <h1>Select Application</h1>
 
-  <div v-if="applications.length">
+  <div v-if="applicationsUserAdministers.length">
     <label>Select the application to administer</label>
     <br/>
-    <select v-model="selectedApplication" :size="applications.length+1">
-      <option v-for="app in applications" :value="app">{{app.application_description}}</option>
+    <select v-model="selectedApplication" :size="applicationsUserAdministers.length+1">
+      <option v-for="app in applicationsUserAdministers" :value="app">{{app.application_description}}</option>
     </select>
     <br/>
     <button @click="router.push('/manage')" :disabled="isApplicationSelected">Manage Access</button>
@@ -91,25 +62,4 @@ function manage() {
 </template>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
-  }
-}
 </style>

@@ -8,7 +8,12 @@ export interface Application {
 
 }
 
+// The applications the user has access to administer
+export const applicationsUserAdministers = ref<Application[]>([])
+
+// The application selected by the user to admin
 export const selectedApplication = ref<Application>() 
+
 
 export const isApplicationSelected = computed( () => {
     return selectedApplication.value == null
