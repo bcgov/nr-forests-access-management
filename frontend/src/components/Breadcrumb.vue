@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { selectedApplicationShortDisplayText } from '../services/ApplicationService'
+import { applicationsUserAdministers, selectedApplicationShortDisplayText } from '../services/ApplicationService'
 
 enum Page {
   HOME = 'Home',
@@ -17,22 +17,24 @@ defineProps<{
   <template v-if="activePage == Page.HOME">  
   </template>
   <template v-else>
-    <RouterLink to="/">Home</RouterLink> &rarr; 
+    <RouterLink to="/">Home</RouterLink> 
     <template v-if="activePage == Page.SELECT_APP">
-      Select Application
+      &rarr; Select Application
     </template>
     <template v-else>
-      <RouterLink to="/application">Select Application</RouterLink> &rarr; 
+      <template v-if="applicationsUserAdministers.length > 1">
+        &rarr; <RouterLink to="/application">Select Application</RouterLink> 
+      </template>
       <template v-if="activePage == Page.MANAGE">
-        Manage Access: {{selectedApplicationShortDisplayText}}
+        &rarr; Manage Access: {{selectedApplicationShortDisplayText}}
       </template>
       <template v-else>
-        <RouterLink to="/manage">Manage Access</RouterLink> &rarr;
+        &rarr; <RouterLink to="/manage">Manage Access</RouterLink> 
         <template v-if="activePage == Page.GRANT">
-          Grant Access: {{selectedApplicationShortDisplayText}}
+          &rarr; Grant Access: {{selectedApplicationShortDisplayText}}
         </template>
         <template v-else>
-          ERROR SHOULD NOT REACH
+          &rarr; ERROR SHOULD NOT REACH
         </template>
       </template>
     </template>
@@ -41,6 +43,3 @@ defineProps<{
   </span>
 
 </template>
-
-<style scoped>
-</style>

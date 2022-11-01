@@ -13,16 +13,30 @@ setTimeout( async () => {
     console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
     applicationsUserAdministers.value = apps as Application[]
+
   } catch (error) {
     // TODO: Better error handling.
-    alert('Error retrieving applications: ' + error)
+    alert('Error retrieving applications from API, using fake test data... Error: ' + error)
+
+    // TODO: Workaround broken front-end. Remove once front-end is stable.
+    applicationsUserAdministers.value = [
+      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 }, 
+      { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
+      { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
+    ] as Application[]
+
+  }
+
+  // If can only manage one application redirect to manage access screen
+  if (applicationsUserAdministers.value.length == 1) {
+    selectedApplication.value = applicationsUserAdministers.value[0]
+    router.push("/manage")
   }
 
 })
 
 function manage() {
   if (selectedApplication.value) {   
-    // alert(`Manage app ${selectedApplication.value.application_description}`)
     router.push('/manage')
   } else {
     // Not really required, button is disabled if nothing is selectedApplication.
@@ -56,10 +70,8 @@ function manage() {
 
   </div>
   <div v-else>
-    <p>You are not authorized to administer any applications.</p>
+    <p>You are not set up to administer any applications in FAM.</p>
   </div>
   </div>
 </template>
 
-<style scoped>
-</style>
