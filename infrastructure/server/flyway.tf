@@ -115,46 +115,46 @@ resource "aws_lambda_function" "flyway-migrations" {
 
 # Everything below here is for invoking flyway.
 
-# resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
-#   db_cluster_identifier          = data.aws_rds_cluster.flyway_database.id
-#   db_cluster_snapshot_identifier = var.db_cluster_snapshot_identifier
-#   count                          = var.execute_flyway ? 1 : 0
-# }
+resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
+  db_cluster_identifier          = data.aws_rds_cluster.flyway_database.id
+  db_cluster_snapshot_identifier = var.db_cluster_snapshot_identifier
+  count                          = var.execute_flyway ? 1 : 0
+}
 
 # Need to grab the username and password from the database so they can go into the scripts
-# locals {
-#   flyway_db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_api_creds_current.secret_string)
-# }
+locals {
+  flyway_db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_api_creds_current.secret_string)
+}
 
 # Run flyway to update the database
 
-# data "aws_lambda_invocation" "invoke_flyway_migration" {
-#   function_name = aws_lambda_function.flyway-migrations.function_name
+data "aws_lambda_invocation" "invoke_flyway_migration" {
+  function_name = aws_lambda_function.flyway-migrations.function_name
 
-#   input = <<JSON
-#   {
-#     "flywayRequest": {
-#         "flywayMethod": "MIGRATE",
-#         "placeholders": {
-#           "api_db_username" : "${local.flyway_db_creds.username}",
-#           "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}"
-#         },
-#         "target": "latest"
-#     },
-#     "dbRequest": {
-#         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.flyway_database.endpoint}/${data.aws_rds_cluster.flyway_database.database_name}"
-#     },
-#     "gitRequest": {
-#         "gitRepository": "${var.github_repository}",
-#         "gitBranch": "${var.github_branch}",
-#         "folders": "server/flyway/sql"
-#     }
-#   }
-#   JSON
+  input = <<JSON
+  {
+    "flywayRequest": {
+        "flywayMethod": "MIGRATE",
+        "placeholders": {
+          "api_db_username" : "${local.flyway_db_creds.username}",
+          "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}"
+        },
+        "target": "latest"
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.flyway_database.endpoint}/${data.aws_rds_cluster.flyway_database.database_name}"
+    },
+    "gitRequest": {
+        "gitRepository": "${var.github_repository}",
+        "gitBranch": "${var.github_branch}",
+        "folders": "server/flyway/sql"
+    }
+  }
+  JSON
 
-#   depends_on = [
-#     aws_db_cluster_snapshot.fam_pre_flyway_snapshot
-#   ]
+  depends_on = [
+    aws_db_cluster_snapshot.fam_pre_flyway_snapshot
+  ]
 
-#   count = var.execute_flyway ? 1 : 0
-# }
+  count = var.execute_flyway ? 1 : 0
+}
