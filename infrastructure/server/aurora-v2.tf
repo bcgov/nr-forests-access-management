@@ -116,7 +116,7 @@ resource "random_pet" "master_creds_secret_name" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
-  name = "${random_pet.master_creds_secret_name.id}"
+  name = random_pet.master_creds_secret_name.id
 
   tags = {
     managed-by = "terraform"
@@ -153,7 +153,7 @@ resource "random_pet" "api_creds_secret_name" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
-  name = "${random_pet.api_creds_secret_name.id}"
+  name = random_pet.api_creds_secret_name.id
 
   tags = {
     managed-by = "terraform"
@@ -262,4 +262,8 @@ resource "aws_db_proxy_target" "famdb_proxy_api_target" {
   db_cluster_identifier = module.aurora_postgresql_v2.cluster_id
   db_proxy_name         = aws_db_proxy.famdb_proxy_api.name
   target_group_name     = aws_db_proxy_default_target_group.famdb_proxy_api_target_group.name
+
+  depends_on = [
+    module.aurora_postgresql_v2
+  ]
 }
