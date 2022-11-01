@@ -78,40 +78,40 @@ resource "aws_iam_role" "flyway_exec" {
   assume_role_policy = data.aws_iam_policy_document.flyway_exec_policydoc.json
 }
 
-# resource "aws_lambda_function" "flyway-migrations" {
-#   filename      = "${path.module}/flyway-all.jar"
-#   function_name = random_pet.flyway_lambda_name.id
-#   role          = aws_iam_role.flyway_exec.arn
-#   # has to have the form filename.functionname where filename is the file containing the export
-#   handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
+resource "aws_lambda_function" "flyway-migrations" {
+  filename      = "${path.module}/flyway-all.jar"
+  function_name = random_pet.flyway_lambda_name.id
+  role          = aws_iam_role.flyway_exec.arn
+  # has to have the form filename.functionname where filename is the file containing the export
+  handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-#   source_code_hash = filebase64sha256("${path.module}/flyway-all.jar")
+  # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  source_code_hash = filebase64sha256("${path.module}/flyway-all.jar")
 
-#   runtime = "java11"
+  runtime = "java11"
 
-#   vpc_config {
-#     subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
-#     security_group_ids = [data.aws_security_group.sg_data.id]
-#   }
+  vpc_config {
+    subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
+    security_group_ids = [data.aws_security_group.sg_data.id]
+  }
 
-#   memory_size = 512
-#   timeout     = 240
+  memory_size = 512
+  timeout     = 240
 
-#   environment {
-#     variables = {
-#       DB_SECRET      = "${data.aws_secretsmanager_secret.db_flyway_master_creds.name}"
-#       FLYWAY_MIXED   = "false"
-#       FLYWAY_SCHEMAS = "flyway,app_fam"
-#     }
-#   }
+  environment {
+    variables = {
+      DB_SECRET      = "${data.aws_secretsmanager_secret.db_flyway_master_creds.name}"
+      FLYWAY_MIXED   = "false"
+      FLYWAY_SCHEMAS = "flyway,app_fam"
+    }
+  }
 
-#   tags = {
-#     "managed-by" = "terraform"
-#   }
-# }
+  tags = {
+    "managed-by" = "terraform"
+  }
+}
 
 # Everything below here is for invoking flyway.
 
