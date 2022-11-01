@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import router from '@/router';
+import router from '@/router'
+import { inject } from 'vue'
 import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '../services/ApplicationService'
 import type { Application } from '../services/ApplicationService'
+
+// Need to inject during setup, not in timeout
+const baseUrl = inject('fam_api_base_url')
 
 // Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
-    console.log('Trying to retrieve applications')
-    const res = await fetch('https://341ihp76l2.execute-api.ca-central-1.amazonaws.com/test/api/v1/fam_applications')
+    const url = baseUrl + '/api/v1/fam_applications'
+    // TODO: Clean up logs and/or use logging solution?
+    console.log(`Retrieving applications from ${url}`)
+    const res = await fetch(`${url}`)
     var apps = await res.json()
     console.log(`Retrieved ${apps.length} applications`)
     console.log(apps)
@@ -35,15 +41,6 @@ setTimeout( async () => {
 
 })
 
-function manage() {
-  if (selectedApplication.value) {   
-    router.push('/manage')
-  } else {
-    // Not really required, button is disabled if nothing is selectedApplication.
-    alert('Please select an option');
-  }
-}
-
 </script>
 
 <template>
@@ -67,10 +64,9 @@ function manage() {
     <br/>
     <p>Selection: {{selectedApplication}}</p>
     <br/>
-
   </div>
   <div v-else>
-    <p>You are not set up to administer any applications in FAM.</p>
+    <p>Loading...</p>
   </div>
   </div>
 </template>
