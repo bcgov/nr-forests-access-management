@@ -20,7 +20,8 @@
     "workbench.list.openMode": "doubleClick",
     "python.testing.cwd": "",
 
-    "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+    "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"],
+    "python.languageServer": "Pylance"
 }
 
 
