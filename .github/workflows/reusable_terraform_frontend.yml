@@ -19,7 +19,7 @@ env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform-frontend
-  TG_SEVER_SRC_PATH: terraform
+  TG_SERVER_SRC_PATH: terraform
 
 jobs:
 
