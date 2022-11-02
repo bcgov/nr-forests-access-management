@@ -4,7 +4,6 @@ import os
 
 import config
 import lambda_function
-import psycopg2
 import pytest
 
 LOGGER = logging.getLogger(__name__)
@@ -177,8 +176,43 @@ def create_test_fam_role(auth_object, test_role_name):
     cursor.execute(replaced_query)
 
 @pytest.fixture(scope="function")
-def create_test_forest_client_role(db_transaction, test_role_name):
-    pass
+def create_fam_child_parent_role_assignment(auth_object):
+    """
+    * creates a parent role (type = A, abstract),
+    * retrieve the role_id for the role just created
+    * create child role with the (type=C concrete) with parent_id = initally
+      created role
+
+    :param auth_object: _description_
+    :type auth_object: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+    cur = auth_object.db_connection.cursor()
+
+    parent_role_name = 'test_parent_role'
+    child_role_name = 'test_child_role'
+    insert_parent_role_sql = get_insert_role_sql(role_name=parent_role_name,
+                                                 role_type='A')
+    cur.execute(insert_parent_role_sql)
+
+    query = "select role_id from app_fam.fam_role " + \
+            f"where role_name = '{parent_role_name}'"
+    cur.execute(query)
+    parent_role_id = cur.fetchone()[0]
+    LOGGER.debug(f"record: {parent_role_id}")
+
+    insert_parent_role_sql = get_insert_role_sql(role_name=child_role_name,
+                                                 role_type='C',
+                                                 parent_role_id=parent_role_id)
+    cur.execute(insert_parent_role_sql)
+
+    yield auth_object
+
+@pytest.fixture(scope="function")
+def create_test_forest_client_role(auth_object):
+    yield 'junk'
+
 
 @pytest.fixture(scope="function")
 def create_test_fam_cognito_client(auth_object):
@@ -234,7 +268,12 @@ def create_user_role_xref_record(auth_object, test_user_properties, test_role_na
     cursor.execute(replaced_query)
 
 
-def get_insert_role_sql(role_name, role_type):
+def get_insert_role_sql(role_name, role_type, parent_role_id=None):
+    parent_column = ''
+    parent_value = ''
+    if parent_role_id:
+        parent_column = ',parent_role_id'
+        parent_value = ',' + str(parent_role_id)
     raw_query = f"""
     insert into app_fam.fam_role
         (role_name,
@@ -242,7 +281,7 @@ def get_insert_role_sql(role_name, role_type):
          application_id,
          role_type_code,
          create_user,
-         update_user)
+         update_user {parent_column})
     values
         ('{role_name}',
         'just for testing',
@@ -250,7 +289,11 @@ def get_insert_role_sql(role_name, role_type):
             where application_name = 'fam'),
         '{role_type}',
         CURRENT_USER,
-        CURRENT_USER)
+        CURRENT_USER {parent_value})
     """
     return raw_query
+
+def get_role_sql(role_name):
+    pass
+
 

@@ -1,22 +1,31 @@
 import os
 import logging
-import boto3
-import json
 import psycopg2
-from psycopg2 import sql
 import pprint
 import config
+import event_type
+from typing import List, Dict, TypedDict, Any, Union
 
+
+# seeing as a simple lambda function, not using a fileconfig for the logging
+# config, and instead setting up manually if the function is called directly
+# as is done when lambda calls this script.
+# ... see end of file
 LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.INFO)
+
+
+def lambda_handler(event: event_type.Event, context: Any):
+    LOGGER.debug(f"context: {context}")
+    authZ = AuthorizationQuery(event)
+    event_with_authZ = authZ.lambda_handler()
+    return event_with_authZ
 
 
 class AuthorizationQuery(object):
     db_connection = None
     testing = False
 
-
-    def __init__(self, event, testing=False):
+    def __init__(self, event: event_type.Event, testing: bool = False):
         self.user_type_code_dict = {"idir": "I", "bceidbusiness": "B"}
         self.testing = testing
         self.event = event
@@ -25,7 +34,9 @@ class AuthorizationQuery(object):
     def obtain_db_connection(self):
         if self.db_connection is None:
             db_connection_string = config.get_db_connection_string()
-            self.db_connection = psycopg2.connect(db_connection_string, sslmode="disable")
+            self.db_connection = psycopg2.connect(
+                db_connection_string, sslmode="disable"
+            )
             self.db_connection.autocommit = False
 
     def release_db_connection(self):
@@ -33,17 +44,17 @@ class AuthorizationQuery(object):
             self.db_connection.commit()
             self.db_connection.close()
 
-    def lambda_handler(self, context):
+    def lambda_handler(self):
+        """ """
         pp = pprint.PrettyPrinter(indent=4, width=1)
         envStr = pp.pformat(dict(os.environ))
-        LOGGER.debug(f'## ENVIRONMENT VARIABLES\n {envStr}')
-        LOGGER.debug(f'## EVENT\n {pp.pformat(self.event)}')
-        LOGGER.debug(f'## CONTEXT\n {pp.pformat(context)}')
+        LOGGER.debug(f"## ENVIRONMENT VARIABLES\n {envStr}")
+        LOGGER.debug(f"## EVENT\n {pp.pformat(self.event)}")
 
         # could just do the db connection when obj is instantiated
         self.obtain_db_connection()
 
-        self.populate_user_if_necessary(context)
+        self.populate_user_if_necessary()
 
         cursor = self.db_connection.cursor()
         query = """
@@ -73,10 +84,10 @@ class AuthorizationQuery(object):
         ]
         cognito_client_id = self.event["callerContext"]["clientId"]
 
-        sql_query = sql.SQL(query).format(
-            user_guid=sql.Literal(user_guid),
-            user_type_code=sql.Literal(user_type_code),
-            cognito_client_id=sql.Literal(cognito_client_id),
+        sql_query = psycopg2.sql.SQL(query).format(
+            user_guid=psycopg2.sql.Literal(user_guid),
+            user_type_code=psycopg2.sql.Literal(user_type_code),
+            cognito_client_id=psycopg2.sql.Literal(cognito_client_id),
         )
 
         cursor.execute(sql_query)
@@ -100,7 +111,8 @@ class AuthorizationQuery(object):
         # the property obj.event
         return self.event
 
-    def populate_user_if_necessary(self, context):
+    def populate_user_if_necessary(self):
+        """ """
 
         user_type = self.event["request"]["userAttributes"]["custom:idp_name"]
         user_guid = self.event["request"]["userAttributes"]["custom:idp_user_id"]
@@ -118,11 +130,25 @@ class AuthorizationQuery(object):
             ON CONFLICT ON CONSTRAINT fam_usr_uk DO
             UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id};"""
 
-        sql_query = sql.SQL(raw_query).format(
-            user_type_code=sql.Literal(user_type_code),
-            user_guid=sql.Literal(user_guid),
-            cognito_user_id=sql.Literal(cognito_user_id),
-            user_name=sql.Literal(user_name),
+        sql_query = psycopg2.sql.SQL(raw_query).format(
+            user_type_code=psycopg2.sql.Literal(user_type_code),
+            user_guid=psycopg2.sql.Literal(user_guid),
+            cognito_user_id=psycopg2.sql.Literal(cognito_user_id),
+            user_name=psycopg2.sql.Literal(user_name),
         )
 
         self.db_connection.cursor().execute(sql_query)
+
+
+if __name__ == '__main__':
+    LOGGER = logging.getLogger(__name__)
+    # TODO: Leave at debug for initial deploy, then go to INFO
+    #       once working
+    LOGGER.setLevel(logging.DEBUG)  # logging.INFO
+    hndlr = logging.StreamHandler()
+    # add line number to format
+    logFormat = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)d -' + \
+                ' %(message)s'
+    formatter = logging.Formatter(logFormat)
+    hndlr.setFormatter(formatter)
+    LOGGER.addHandler(hndlr)

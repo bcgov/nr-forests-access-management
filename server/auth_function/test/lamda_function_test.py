@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def test_create_user_if_not_found(
-    auth_object, context, test_user_properties
+    auth_object, test_user_properties
 ):
     """
     test to make sure that if the user doesn't exist in the database it will
@@ -23,8 +23,6 @@ def test_create_user_if_not_found(
     :type db_connection: _type_
     :param db_transaction: _description_
     :type db_transaction: _type_
-    :param context: _description_
-    :type context: _type_
     :param event: _description_
     :type event: _type_
     :param test_user_properties: _description_
@@ -39,7 +37,7 @@ def test_create_user_if_not_found(
     # setup
 
     # execute
-    auth_object.lambda_handler(context)
+    auth_object.lambda_handler()
 
     # validate that there is one user in the database with the properties from
     # the incoming event
@@ -68,7 +66,6 @@ def test_create_user_if_not_found(
 
 def test_update_user_if_already_exists(
     auth_object,
-    context,
     initial_user_without_guid_or_cognito_id,
     test_user_properties,
 ):
@@ -80,8 +77,6 @@ def test_update_user_if_already_exists(
     :type db_connection: _type_
     :param db_transaction: _description_
     :type db_transaction: _type_
-    :param context: _description_
-    :type context: _type_
     :param event: _description_
     :type event: _type_
     :param initial_user: _description_
@@ -97,7 +92,7 @@ def test_update_user_if_already_exists(
     # setup
 
     # execute
-    result = auth_object.lambda_handler(context)
+    result = auth_object.lambda_handler()
     LOGGER.debug(f"result: \n{pprint.pformat(result, indent=4)}")
 
     # validate that there is one user in the database with the properties from
@@ -123,7 +118,6 @@ def test_update_user_if_already_exists(
 
 def test_direct_role_assignment(
     auth_object,
-    context,
     initial_user,
     create_test_fam_role,
     create_test_fam_cognito_client,
@@ -133,7 +127,7 @@ def test_direct_role_assignment(
     """ role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
     # execute
-    result = auth_object.lambda_handler(context)
+    result = auth_object.lambda_handler()
 
     # validate that there is one user in the database with the properties from
     # the incoming event
@@ -143,15 +137,28 @@ def test_direct_role_assignment(
     assert test_role_name in override_groups
 
 
-def test_parent_role_assignment(auth_object, create_test_forest_client_role):
+def test_parent_role_assignment(auth_object,
+                                initial_user,
+                                create_fam_child_parent_role_assignment,
+                                create_user_role_xref_record):
     """ if set up as a fom submitter for a specific forest client, then you are assigned
     to the child role that has a forest client
 
-    forest client table.client_number_id == fam_role.client_number
-    fam_role.
+    auth_object - the lambda function that queries database for authorization
+    initial_user - creates an initial user that will be used for the test
+    create_fam_child_parent_role_assignment - Creates two roles, an abstract
+        'A' type role, and a 'C' role that is a parent of the abstract role
+
+
+
     """
     #auth_object.lambda_handler(event,)
-
+    assert True
+    result = auth_object.lambda_handler()
+    groups = result["response"]["claimsOverrideDetails"][
+        "groupOverrideDetails"
+    ]["groupsToOverride"]
+    LOGGER.debug(f"result: {groups}")
     pass
 
 # next some sad case scenarios / db fails / roles not found / multiple roles found for user
