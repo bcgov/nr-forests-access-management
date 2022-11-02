@@ -10,10 +10,6 @@ data "aws_secretsmanager_secret" "db_flyway_api_creds" {
 
 data "aws_secretsmanager_secret_version" "db_flyway_api_creds_current" {
   secret_id = data.aws_secretsmanager_secret.db_flyway_api_creds.id
-
-  depends_on = [
-    aws_secretsmanager_secret_version.famdb_apicreds_secret_version
-  ]
 }
 
 data "aws_rds_cluster" "flyway_database" {

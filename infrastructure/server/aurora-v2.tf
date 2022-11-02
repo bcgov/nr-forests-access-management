@@ -110,8 +110,13 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
   }
 }
 
+resource "random_pet" "master_creds_secret_name" {
+  prefix = "famdb-master-creds"
+  length = 2
+}
+
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
-  name = "${var.famdb_cluster_name}_master_creds"
+  name = random_pet.master_creds_secret_name.id
 
   tags = {
     managed-by = "terraform"
@@ -141,8 +146,14 @@ variable "famdb_api_username" {
   sensitive   = true
 }
 
+
+resource "random_pet" "api_creds_secret_name" {
+  prefix = "famdb-api-creds"
+  length = 2
+}
+
 resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
-  name = "${var.famdb_cluster_name}_api_creds"
+  name = random_pet.api_creds_secret_name.id
 
   tags = {
     managed-by = "terraform"
@@ -251,4 +262,8 @@ resource "aws_db_proxy_target" "famdb_proxy_api_target" {
   db_cluster_identifier = module.aurora_postgresql_v2.cluster_id
   db_proxy_name         = aws_db_proxy.famdb_proxy_api.name
   target_group_name     = aws_db_proxy_default_target_group.famdb_proxy_api_target_group.name
+
+  depends_on = [
+    module.aurora_postgresql_v2
+  ]
 }
