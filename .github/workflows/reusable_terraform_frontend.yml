@@ -56,7 +56,7 @@ jobs:
         name: Terragrunt Server Output
         working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-server"
         run: |
           # Run terraform
           rm github.auto.tfvars
@@ -70,7 +70,7 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json > ../../infrastruicture/frontend/dist/server.json
+          terragrunt run-all output -json > ../../infrastructure/frontend/dist/server.json
 
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
