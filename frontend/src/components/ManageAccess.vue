@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
-import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '../services/ApplicationService'
-import Breadcrumb from './Breadcrumb.vue'
+import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '@/services/ApplicationState'
+import Breadcrumb from '@/components/Breadcrumb.vue'
 
 var foo = 2;
 </script>

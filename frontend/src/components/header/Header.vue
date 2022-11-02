@@ -1,11 +1,8 @@
 <script setup lang="ts">
-  import { inject } from 'vue';
+  import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
-  let environmentLabel = inject('fam_environment_display_name') as string
-  console.log("environmentLabel: ", environmentLabel)
-  if (environmentLabel && environmentLabel.length > 0) {
-    environmentLabel = ` (${environmentLabel.toUpperCase()})`
-  }
+  const environmentSettings = new EnvironmentSettings()
+  const environmentLabel = environmentSettings.getEnvironmentDisplayName("[","]").toUpperCase()
 
 </script>
 

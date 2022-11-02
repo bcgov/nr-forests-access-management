@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ManageAccessView from '../views/ManageAccessView.vue'
 import GrantAccessView from '../views/GrantAccessView.vue'
 import SelectApplicationView from '../views/SelectApplicationView.vue'
+import AboutView from '../views/AboutView.vue'
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -13,8 +14,8 @@ import SelectApplicationView from '../views/SelectApplicationView.vue'
 // Workarounds:
 // 1. Reload the page in the browser if the hot-reload fails.
 // 2. (Recommended) Within router below use a wrapper view compoent. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
-// 3. (Not recommended) Within router below, use the component: () => import(../components/<component>.vue) syntax. This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
-
+// 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax. 
+//    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,10 +43,7 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      component: AboutView,
     }
   ]
 })
