@@ -70,6 +70,10 @@ jobs:
           execute_flyway = false
           EOF
           terragrunt run-all output -json > ../../infrastructure/frontend/dist/server.json
+          echo "printing out contents of server.json"
+          echo "===================================="
+          cat ../../infrastructure/frontend/dist/server.json
+          echo "===================================="
 
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
