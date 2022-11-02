@@ -56,7 +56,7 @@ jobs:
         name: Terragrunt Server Output
         working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-server"
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
           cat > github.auto.tfvars <<EOF
