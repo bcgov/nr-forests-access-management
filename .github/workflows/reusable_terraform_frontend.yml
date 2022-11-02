@@ -59,7 +59,6 @@ jobs:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-server"
         run: |
           # Run terraform
-          rm github.auto.tfvars
           cat > github.auto.tfvars <<EOF
           github_repository = "NA"
           github_branch = "NA"
