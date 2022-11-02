@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import router from '@/router'
-import { inject } from 'vue'
-import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '../services/ApplicationService'
-import type { Application } from '../services/ApplicationService'
+import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationService'
+import type { Application } from '@/services/ApplicationService'
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
-// Need to inject during setup, not in timeout
-const baseUrl = inject('fam_api_base_url')
+const environmentSettings = new EnvironmentSettings()
 
 // Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
-    const url = baseUrl + '/api/v1/fam_applications'
+    const url = environmentSettings.getApiBaseUrl() + '/api/v1/fam_applications'
     // TODO: Clean up logs and/or use logging solution?
     console.log(`Retrieving applications from ${url}`)
     const res = await fetch(`${url}`)

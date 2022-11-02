@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { inject } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
-const environmentDisplayName = inject('fam_environment_display_name') as string
-var environmentLabel = ''
-if (environmentDisplayName.length > 0) {
-  environmentLabel = ` (${environmentDisplayName.toUpperCase()})`
-}
+const environmentSettings = new EnvironmentSettings()
+const environmentLabel = environmentSettings.getEnvironmentDisplayName("[","]").toUpperCase()
 </script>
 
 <template>
