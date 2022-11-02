@@ -19,6 +19,7 @@ env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform-frontend
+  TG_SEVER_SRC_PATH: terraform
 
 jobs:
 
@@ -50,6 +51,27 @@ jobs:
         uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
+
+      - id: terragrunt-server-output
+        name: Terragrunt Server Output
+        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          # Run terraform
+          rm github.auto.tfvars
+          cat > github.auto.tfvars <<EOF
+          github_repository = "NA"
+          github_branch = "NA"
+          github_commit = "NA"
+          github_event = "NA"
+          oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
+          oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
+          db_cluster_snapshot_identifier = "NA"
+          execute_flyway = false
+          EOF
+          terragrunt run-all output -json > ../../infrastruicture/frontend/dist/server.json
+
 
       - name: Terragrunt ${{ inputs.tf_subcommand }} 
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
