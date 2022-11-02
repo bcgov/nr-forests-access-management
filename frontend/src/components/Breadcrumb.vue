@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { applicationsUserAdministers, selectedApplicationShortDisplayText } from '../services/ApplicationService'
+import { applicationsUserAdministers, selectedApplicationShortDisplayText } from '@/services/ApplicationState'
 
 enum Page {
   HOME = 'Home',

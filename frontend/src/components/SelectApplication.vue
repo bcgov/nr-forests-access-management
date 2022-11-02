@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import router from '@/router'
-import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationService'
-import type { Application } from '@/services/ApplicationService'
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationState'
+import type { Application } from '@/services/ApplicationState'
+import { ApiService } from '@/services/ApiService';
 
-const environmentSettings = new EnvironmentSettings()
+const apiService = new ApiService()
 
 // Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
-    const url = environmentSettings.getApiBaseUrl() + '/api/v1/fam_applications'
-    // TODO: Clean up logs and/or use logging solution?
-    console.log(`Retrieving applications from ${url}`)
-    const res = await fetch(`${url}`)
-    var apps = await res.json()
-    console.log(`Retrieved ${apps.length} applications`)
-    console.log(apps)
-    applicationsUserAdministers.value = apps as Application[]
-
+    applicationsUserAdministers.value = await apiService.getApplications()
   } catch (error) {
     // TODO: Better error handling.
     alert('Error retrieving applications from API, using fake test data... Error: ' + error)
@@ -32,7 +24,7 @@ setTimeout( async () => {
 
   }
 
-  // If can only manage one application redirect to manage access screen
+  // If user can only manage one application redirect to manage access screen
   if (applicationsUserAdministers.value.length == 1) {
     selectedApplication.value = applicationsUserAdministers.value[0]
     router.push("/manage")
