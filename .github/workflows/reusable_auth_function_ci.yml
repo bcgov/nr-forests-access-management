@@ -1,7 +1,16 @@
 name: CI for Auth Function (Build and Test)
 
 on:
-  workflow_call:    
+  workflow_call:
+
+env:
+  POSTGRES_DB: fam
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  API_DB_USERNAME: fam_proxy_api
+  API_DB_PASSWORD: fam_password
+
+  # syntax to dereference  ${{ env.TF_VERSION }}
 
 jobs:
   auth-function-ci:
@@ -11,9 +20,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: db
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -34,8 +43,8 @@ jobs:
           password: password
           locations: server/flyway/sql
         env:
-          FLYWAY_PLACEHOLDERS_API_DB_USERNAME: appuser
-          FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: appuserpw
+          FLYWAY_PLACEHOLDERS_API_DB_USERNAME: ${{ env.API_DB_USERNAME }}
+          FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: ${{ env.API_DB_PASSWORD }}
 
       - name: Auth function install python test dependencies
         working-directory: server/auth_function
@@ -53,15 +62,15 @@ jobs:
         env:
           PG_HOST: localhost
           PG_PORT: 5432
-          PG_DATABASE: db
-          PG_USER: appuser
-          PG_PASSWORD: appuserpw
+          PG_DATABASE: ${{ env.POSTGRES_DB }}
+          PG_USER: ${{ env.API_DB_USERNAME }}
+          PG_PASSWORD: ${{ env.API_DB_PASSWORD }}
 
       - name: Auth function zip
         run: |
           mkdir auth_function_packaging
-          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
-          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test --exclude=requirements-dev.txt
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt -r server/auth_function/requirements-dev.txt
           cd auth_function_packaging
           zip -r9 ../infrastructure/server/fam_auth_function.zip .
           cd ..
@@ -72,4 +81,4 @@ jobs:
         with:
           name: fam-auth-function-zip
           path: ./infrastructure/server/fam_auth_function.zip
-          if-no-files-found: error            
+          if-no-files-found: error

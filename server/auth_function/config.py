@@ -3,7 +3,6 @@ import logging
 import boto3
 import json
 import dotenv
-import re
 
 # re-use the pattern that was used for the db connections for
 # the backend
