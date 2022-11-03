@@ -66,11 +66,10 @@ jobs:
           job-summary: true
           custom-arguments: 'server/auth_function'
         env:
-          PG_HOST: localhost
-          PG_PORT: 5432
-          PG_DATABASE: ${{ env.POSTGRES_DB }}
-          PG_USER: ${{ env.API_DB_USERNAME }}
-          PG_PASSWORD: ${{ env.API_DB_PASSWORD }}
+          POSTGRES_HOST: 0.0.0.0
+          POSTGRES_PORT: 5432
+          api_db_username: ${{ env.API_DB_USERNAME }}
+          api_db_password: ${{ env.API_DB_PASSWORD }}
 
       - name: Auth function zip
         run: |
