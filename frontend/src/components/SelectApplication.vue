@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router'
+import router from '../router'
 import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationState'
 import type { Application } from '@/services/ApplicationState'
 import { ApiService } from '@/services/ApiService';
@@ -10,6 +10,7 @@ const apiService = new ApiService()
 setTimeout( async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
+    // throw "force failure"
     applicationsUserAdministers.value = await apiService.getApplications()
   } catch (error) {
     // TODO: Better error handling.
@@ -17,7 +18,7 @@ setTimeout( async () => {
 
     // TODO: Workaround broken front-end. Remove once front-end is stable.
     applicationsUserAdministers.value = [
-      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 }, 
+      // { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 }, 
       { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
     ] as Application[]
