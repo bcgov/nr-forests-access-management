@@ -68,10 +68,10 @@ jobs:
           EOF
           terragrunt run-all output -json
 
+      - name: Create server.json file
         uses: DamianReeves/write-file-action@master
-        working-directory: infrastructure/frontend/dist
         with:
-          path: server.json
+          path: infrastructure/frontend/dist/server.json
           contents: |
             ${{ steps.terragrunt-server-output.outputs.stdout }}
           write-mode: overwrite
