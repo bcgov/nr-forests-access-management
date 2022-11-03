@@ -1,18 +1,21 @@
+import type { Application } from '@/services/ApplicationState';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import type { Application } from '@/services/ApplicationState'
 
 export class ApiService {
 
-    private apiUrl:string
+    private _apiUrl:string
 
     constructor() {
         const environmentSettings = new EnvironmentSettings()
-        this.apiUrl = environmentSettings.getApiBaseUrl() + '/api/v1'
+        this._apiUrl = environmentSettings.getApiBaseUrl() + '/api/v1'
     }
 
+    public get apiUrl(): string {
+        return this.apiUrl;
+    }
 
     async getApplications():Promise<Application[]> {
-        const url = this.apiUrl + '/fam_applications'
+        const url = this._apiUrl + '/fam_applications'
         try {
             // TODO: Clean up logs and/or use logging solution?
             console.log(`Retrieving applications from ${url}`)
