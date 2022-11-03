@@ -5,10 +5,10 @@ on:
     inputs:
       environment_name:
         required: true
-        type: string        
+        type: string
       tf_subcommand:
         required: true
-        type: string    
+        type: string
     secrets:
       licenceplate:
         required: true
@@ -22,16 +22,14 @@ env:
   TG_SERVER_SRC_PATH: terraform
 
 jobs:
-
   aws-frontend-deployment:
-
     name: Run Terraform to Deploy Frontend
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.5.0   
+        uses: actions/checkout@v2.5.0
 
       - name: Build Frontend
         working-directory: frontend
@@ -39,7 +37,7 @@ jobs:
           npm install
           npm run build
           mkdir ../infrastructure/frontend/dist
-          rsync -r dist/* ../infrastructure/frontend/dist       
+          rsync -r dist/* ../infrastructure/frontend/dist
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
@@ -54,7 +52,6 @@ jobs:
 
       - id: terragrunt-server-output
         name: Terragrunt Server Output
-        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
@@ -69,14 +66,26 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json > ../../infrastructure/frontend/dist/server.json
+          terragrunt run-all output -json
+
+        uses: DamianReeves/write-file-action@master
+        working-directory: infrastructure/frontend/dist
+        with:
+          path: server.json
+          contents: |
+            ${{ steps.terragrunt-server-output.outputs.stdout }}
+          write-mode: overwrite
+
+      - id: terragrunt-server-output-test
+        working-directory: infrastructure/frontend/dist
+        name: Terragrunt Server Output Verify
+        run: |
           echo "printing out contents of server.json"
           echo "===================================="
-          cat ../../infrastructure/frontend/dist/server.json
+          cat server.json
           echo "===================================="
 
-
-      - name: Terragrunt ${{ inputs.tf_subcommand }} 
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
