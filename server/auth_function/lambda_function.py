@@ -1,10 +1,8 @@
-import os
 import logging
 import psycopg2
-import pprint
 import config
 import event_type
-from typing import List, Dict, TypedDict, Any, Union
+from typing import Any
 
 
 # seeing as a simple lambda function, not using a fileconfig for the logging
@@ -14,10 +12,30 @@ from typing import List, Dict, TypedDict, Any, Union
 LOGGER = logging.getLogger()
 
 
-def lambda_handler(event: event_type.Event, context: Any):
+def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
+    """recieves a cognito event object, checks to see if the user associated
+    with the event exists in the database.  If not it gets added.  Finally
+    the roles associated with the user are retrieved and used to populate the
+    cognito event objects property:
+
+    response.claimsOverrideDetails.groupOverrideDetails {
+        groupsToOverride: [<role are injected here>]
+        iamRolesToOverride: [],
+        preferredRole": ""
+    }
+
+    :param event: the cognito event
+    :type event: event_type.Event
+    :param context: context sent by cognito, not used by the function
+    :type context: Any
+    :return: returns a modified event with the roles injected into it
+    :rtype: event_type.Event
+    """
     LOGGER.debug(f"context: {context}")
     authZ = AuthorizationQuery(event)
+    authZ.populate_user_if_necessary()
     event_with_authZ = authZ.lambda_handler()
+    authZ.release_db_connection()
     return event_with_authZ
 
 
@@ -25,13 +43,17 @@ class AuthorizationQuery(object):
     db_connection = None
     testing = False
 
-    def __init__(self, event: event_type.Event, testing: bool = False):
+    # testing: bool = False
+    def __init__(self, event: event_type.Event) -> None:
         self.user_type_code_dict = {"idir": "I", "bceidbusiness": "B"}
-        self.testing = testing
+        # self.testing = testing
         self.event = event
         self.obtain_db_connection()
 
-    def obtain_db_connection(self):
+    def obtain_db_connection(self) -> None:
+        """checks to see if a database connection exists, and if it does not
+        then creates one.
+        """
         if self.db_connection is None:
             db_connection_string = config.get_db_connection_string()
             self.db_connection = psycopg2.connect(
@@ -39,22 +61,17 @@ class AuthorizationQuery(object):
             )
             self.db_connection.autocommit = False
 
-    def release_db_connection(self):
-        if not self.testing:
-            self.db_connection.commit()
-            self.db_connection.close()
+    def release_db_connection(self) -> None:
+        """closing the database connection
+        """
+        self.db_connection.close()
 
-    def lambda_handler(self):
-        """ """
-        pp = pprint.PrettyPrinter(indent=4, width=1)
-        envStr = pp.pformat(dict(os.environ))
-        LOGGER.debug(f"## ENVIRONMENT VARIABLES\n {envStr}")
-        LOGGER.debug(f"## EVENT\n {pp.pformat(self.event)}")
-
+    def lambda_handler(self) -> event_type.Event:
+        """Queries the auth database for the roles associated with the user
+        that is described in the cognito event, the function then populates
+        the roles into the event object and returns it."""
         # could just do the db connection when obj is instantiated
         self.obtain_db_connection()
-
-        self.populate_user_if_necessary()
 
         cursor = self.db_connection.cursor()
         query = """
@@ -95,11 +112,6 @@ class AuthorizationQuery(object):
         for record in cursor:
             roleList.append(record[0])
 
-        # query_result = cursor.fetchone()
-        # app_description = query_result[0]
-
-        self.release_db_connection()
-
         self.event["response"]["claimsOverrideDetails"] = {
             "groupOverrideDetails": {
                 "groupsToOverride": roleList,
@@ -111,8 +123,10 @@ class AuthorizationQuery(object):
         # the property obj.event
         return self.event
 
-    def populate_user_if_necessary(self):
-        """ """
+    def populate_user_if_necessary(self) -> None:
+        """ Checks to see if a user described in the input cognito event exists
+        in the authZ database.  If the user does not exist then the user is
+        added to the database"""
 
         user_type = self.event["request"]["userAttributes"]["custom:idp_name"]
         user_guid = self.event["request"]["userAttributes"]["custom:idp_user_id"]
@@ -138,17 +152,19 @@ class AuthorizationQuery(object):
         )
 
         self.db_connection.cursor().execute(sql_query)
+        self.db_connection.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    # Setting up the logging for when the function is integrated into AWS as a
+    # lambda and called by cognito
     LOGGER = logging.getLogger(__name__)
     # TODO: Leave at debug for initial deploy, then go to INFO
     #       once working
-    LOGGER.setLevel(logging.DEBUG)  # logging.INFO
+    LOGGER.setLevel(logging.INFO)  # logging.INFO
     hndlr = logging.StreamHandler()
     # add line number to format
-    logFormat = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)d -' + \
-                ' %(message)s'
+    logFormat = "%(asctime)s - %(name)s - %(levelname)s - %(lineno)d -" + " %(message)s"
     formatter = logging.Formatter(logFormat)
     hndlr.setFormatter(formatter)
     LOGGER.addHandler(hndlr)

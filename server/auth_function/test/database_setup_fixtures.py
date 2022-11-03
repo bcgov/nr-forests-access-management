@@ -2,42 +2,26 @@ import json
 import logging
 import os
 
-import config
 import lambda_function
 import pytest
 
 LOGGER = logging.getLogger(__name__)
 
+
 # issues with mixing session and function
 @pytest.fixture(scope="function")
 def auth_object(cognito_event):
-    auth_obj = lambda_function.AuthorizationQuery(event=cognito_event,
-                                                  testing=True)
+    """setting up an lambda function auth object
+
+    :param cognito_event: _description_
+    :type cognito_event: _type_
+    :yield: _description_
+    :rtype: _type_
+    """
+    auth_obj = lambda_function.AuthorizationQuery(event=cognito_event)
     yield auth_obj
     # rollback connections
     auth_obj.db_connection.rollback()
-
-
-# @pytest.fixture(scope="session")
-# def database_connection_string():
-#     db_conn_string = config.get_db_connection_string()
-#     return db_conn_string
-
-
-# @pytest.fixture(scope="session")
-# def db_connection(database_connection_string):
-#     LOGGER.debug("test log message")
-#      lambda_function.testing = True
-#     connection = lambda_function.obtain_db_connection()
-#     yield connection
-#     # Do a monkeypatch on get get db and finalize db methods
-#     connection.close()
-
-
-# @pytest.fixture(scope="function")
-# def db_transaction(db_connection):
-#     yield db_connection
-#     db_connection.rollback()
 
 
 @pytest.fixture(scope="session")
@@ -51,12 +35,9 @@ def cognito_event():
     event_file_path = os.path.join(os.path.dirname(__file__), "login_event.json")
     # event_file_path = "./login_event.json"
 
-    file = open(event_file_path, "r")
-    try:
-        # event = jsonpickle.decode(file.read())
+    with open(event_file_path, "r") as file:
         event = json.load(file)
-    finally:
-        file.close()
+
     yield event
 
 
@@ -76,12 +57,12 @@ def test_user_properties(auth_object):
 
 
 @pytest.fixture(scope="function")
-def initial_user_without_guid_or_cognito_id(
-    auth_object, test_user_properties
-):
+def initial_user_without_guid_or_cognito_id(auth_object, test_user_properties):
     initial_user = test_user_properties
     db = auth_object.db_connection
     event = auth_object.event
+
+    cursor = db.cursor()
 
     # Only insert the bare minimum to simulate entering user in advance of first login
 
@@ -97,9 +78,11 @@ def initial_user_without_guid_or_cognito_id(
         auth_object.user_type_code_dict[idpName],
         event["request"]["userAttributes"]["custom:idp_username"],
     )
-    db.cursor().execute(replaced_query)
+    cursor.execute(replaced_query)
 
     yield initial_user
+
+    db.rollback()
 
 
 @pytest.fixture(scope="function")
@@ -108,6 +91,7 @@ def initial_user(auth_object, test_user_properties):
     initial_user = test_user_properties
     event = auth_object.event
     db = auth_object.db_connection
+    cursor = db.cursor()
 
     # Only insert the bare minimum to simulate entering user in advance of first login
 
@@ -127,9 +111,11 @@ def initial_user(auth_object, test_user_properties):
 
     # initial_user["idp_type_code"],
     # initial_user["idp_username"])
-    db.cursor().execute(replaced_query)
+    cursor.execute(replaced_query)
 
     yield initial_user
+
+    db.rollback()
 
 
 @pytest.fixture(scope="function")
@@ -171,12 +157,16 @@ def create_test_fam_role(auth_object, test_role_name):
         CURRENT_USER,
         CURRENT_USER)
     """
-    get_insert_role_sql(expected_role, 'C')
+    get_insert_role_sql(expected_role, "C")
     replaced_query = raw_query.format(expected_role)
     cursor.execute(replaced_query)
+    yield
+
+    db.rollback()
+
 
 @pytest.fixture(scope="function")
-def create_fam_child_parent_role_assignment(auth_object):
+def create_fam_child_parent_role_assignment(auth_object, test_role_name):
     """
     * creates a parent role (type = A, abstract),
     * retrieve the role_id for the role just created
@@ -188,30 +178,37 @@ def create_fam_child_parent_role_assignment(auth_object):
     :return: _description_
     :rtype: _type_
     """
-    cur = auth_object.db_connection.cursor()
+    db = auth_object.db_connection
+    cur = db.cursor()
 
-    parent_role_name = 'test_parent_role'
-    child_role_name = 'test_child_role'
-    insert_parent_role_sql = get_insert_role_sql(role_name=parent_role_name,
-                                                 role_type='A')
+    parent_role_name = "test_parent_role"
+    child_role_name = test_role_name
+    insert_parent_role_sql = get_insert_role_sql(
+        role_name=parent_role_name, role_type="A"
+    )
     cur.execute(insert_parent_role_sql)
 
-    query = "select role_id from app_fam.fam_role " + \
-            f"where role_name = '{parent_role_name}'"
+    query = (
+        "select role_id from app_fam.fam_role " +
+        f"where role_name = '{parent_role_name}'"
+    )
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
     LOGGER.debug(f"record: {parent_role_id}")
 
-    insert_parent_role_sql = get_insert_role_sql(role_name=child_role_name,
-                                                 role_type='C',
-                                                 parent_role_id=parent_role_id)
+    insert_parent_role_sql = get_insert_role_sql(
+        role_name=child_role_name, role_type="C", parent_role_id=parent_role_id
+    )
     cur.execute(insert_parent_role_sql)
 
     yield auth_object
 
+    db.rollback()
+
+
 @pytest.fixture(scope="function")
 def create_test_forest_client_role(auth_object):
-    yield 'junk'
+    yield "junk"
 
 
 @pytest.fixture(scope="function")
@@ -239,6 +236,9 @@ def create_test_fam_cognito_client(auth_object):
     """
     replaced_query = raw_query.format(clientId)
     cursor.execute(replaced_query)
+    yield
+
+    db.rollback()
 
 
 @pytest.fixture(scope="function")
@@ -267,13 +267,28 @@ def create_user_role_xref_record(auth_object, test_user_properties, test_role_na
     )
     cursor.execute(replaced_query)
 
+    yield
+    db.rollback()
+
+
+@pytest.fixture(scope="function")
+def cleanup(test_user_properties, auth_object):
+    yield
+    db = auth_object.db_connection
+    cur = db.cursor()
+    username = test_user_properties["idp_username"]
+    LOGGER.debug(f"username: {username}")
+    sql = f"delete from app_fam.fam_user WHERE user_name = '{username}'"
+    cur.execute(sql)
+    db.commit()
+
 
 def get_insert_role_sql(role_name, role_type, parent_role_id=None):
-    parent_column = ''
-    parent_value = ''
+    parent_column = ""
+    parent_value = ""
     if parent_role_id:
-        parent_column = ',parent_role_id'
-        parent_value = ',' + str(parent_role_id)
+        parent_column = ",parent_role_id"
+        parent_value = "," + str(parent_role_id)
     raw_query = f"""
     insert into app_fam.fam_role
         (role_name,
@@ -293,7 +308,6 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
     """
     return raw_query
 
+
 def get_role_sql(role_name):
     pass
-
-
