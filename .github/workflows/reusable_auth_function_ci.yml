@@ -44,7 +44,7 @@ jobs:
       - name: run flyway on test database
         uses: joshuaavalon/flyway-action@v3.0.0
         with:
-          url: jdbc:postgresql://postgres:5432/db
+          url: jdbc:postgresql://postgres:5432/${{ env.POSTGRES_DB }}
           user: ${{ env.POSTGRES_USER }}
           password: ${{ env.POSTGRES_PASSWORD }}
           locations: server/flyway/sql
