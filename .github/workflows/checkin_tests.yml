@@ -6,13 +6,11 @@ on:
       - "main"
     paths:
       - "server/**"
-      - "frontend/**"
   pull_request:
     branches:
       - "main"
     paths:
       - "server/**"
-      - "frontend/**"
 
 
 jobs:
