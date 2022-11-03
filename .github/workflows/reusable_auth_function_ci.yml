@@ -10,8 +10,6 @@ env:
   API_DB_USERNAME: fam_proxy_api
   API_DB_PASSWORD: fam_password
 
-  # syntax to dereference  ${{ env.TF_VERSION }}
-
 jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
