@@ -52,6 +52,7 @@ jobs:
 
       - id: terragrunt-server-output
         name: Terragrunt Server Output
+        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
@@ -61,8 +62,8 @@ jobs:
           github_branch = "NA"
           github_commit = "NA"
           github_event = "NA"
-          oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
-          oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
+          oidc_idir_idp_client_secret = "NA"
+          oidc_bceid_business_idp_client_secret = "NA"
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
