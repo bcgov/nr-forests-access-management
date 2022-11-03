@@ -1,0 +1,94 @@
+name: Run Terraform (Frontend)
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string
+      tf_subcommand:
+        required: true
+        type: string
+    secrets:
+      licenceplate:
+        required: true
+      tfc_team_token:
+        required: true
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform-frontend
+  TG_SERVER_SRC_PATH: terraform
+
+jobs:
+  aws-frontend-deployment:
+    name: Run Terraform to Deploy Frontend
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+          mkdir ../infrastructure/frontend/dist
+          rsync -r dist/* ../infrastructure/frontend/dist
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+
+      - name: Setup Terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - id: terragrunt-server-output
+        name: Terragrunt Server Output
+        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          # Run terraform
+          cat > github.auto.tfvars <<EOF
+          github_repository = "NA"
+          github_branch = "NA"
+          github_commit = "NA"
+          github_event = "NA"
+          oidc_idir_idp_client_secret = "NA"
+          oidc_bceid_business_idp_client_secret = "NA"
+          db_cluster_snapshot_identifier = "NA"
+          execute_flyway = false
+          EOF
+          terragrunt run-all output -json
+
+      - name: Create server.json file
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: infrastructure/frontend/dist/server.json
+          contents: |
+            ${{ steps.terragrunt-server-output.outputs.stdout }}
+          write-mode: overwrite
+
+      - id: terragrunt-server-output-test
+        working-directory: infrastructure/frontend/dist
+        name: Terragrunt Server Output Verify
+        run: |
+          echo "printing out contents of server.json"
+          echo "===================================="
+          cat server.json
+          echo "===================================="
+
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
+        run: |
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive

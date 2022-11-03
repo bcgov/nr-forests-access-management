@@ -2,8 +2,8 @@ include {
   path = find_in_parent_folders()
 }
 
-generate "test_tfvars" {
-  path              = "test.auto.tfvars"
+generate "prod_tfvars" {
+  path              = "prod.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF

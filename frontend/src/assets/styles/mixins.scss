@@ -1,0 +1,63 @@
+// Mixins
+@mixin clearfix() {
+  &::after {
+    display: block;
+    content: " ";
+    clear: both;
+  }
+}
+
+@mixin list-reset() {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+@mixin flex-box() {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin flex($values) {
+  -webkit-flex: $values;
+  -ms-flex: $values;
+  flex: $values;
+}
+
+@mixin flex-direction($values) {
+  -webkit-flex-direction: $values;
+  -ms-flex-direction: $values;
+  flex-direction: $values;
+}
+
+@mixin flex-flow($values) {
+  -webkit-flex-flow: $values;
+  -ms-flex-flow: $values;
+  flex-flow: $values;
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder { @content; }
+  &:-moz-placeholder { @content; }
+  &::-moz-placeholder { @content; }
+  &:-ms-input-placeholder { @content; }
+  &::placeholder { @content; }
+}
+
+// This mixin ensures an element spans to fill the nearest ancestor with defined positioning.
+@mixin fill-parent($position: absolute) {
+  position: $position;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+@mixin align-items($values) {
+  -webkit-align-items: $values;
+  -webkit-box-align: $values;
+  -ms-flex-align: $values;
+  align-items: $values;
+}
