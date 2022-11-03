@@ -66,3 +66,7 @@ server/fam_auth_function.zip
 server/fam-ui-api.zip
 
 server/junk.bash
+infrastructure/server/github.auto.tfvars
+terraform/test/server.json
+terraform/test/.terraform.lock.hcl
+**/.terragrunt-cache/**
