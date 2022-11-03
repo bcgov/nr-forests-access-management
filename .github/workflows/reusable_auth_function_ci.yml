@@ -1,13 +1,7 @@
 name: CI for Auth Function (Build and Test)
 
-# on:
-#   workflow_call:
-
 on:
-  push:
-    #branches: [feat/84-configure-lambda]
-    # testing action, think its running the version that exists in main
-    branches: [feat/21-auth-lookup-function]
+  workflow_call:
 
 env:
   POSTGRES_DB: fam
