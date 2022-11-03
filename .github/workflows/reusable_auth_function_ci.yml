@@ -46,6 +46,11 @@ jobs:
           FLYWAY_PLACEHOLDERS_API_DB_USERNAME: ${{ env.API_DB_USERNAME }}
           FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: ${{ env.API_DB_PASSWORD }}
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
       - name: Auth function install python test dependencies
         working-directory: server/auth_function
         run: |
