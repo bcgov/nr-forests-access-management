@@ -45,8 +45,8 @@ jobs:
         uses: joshuaavalon/flyway-action@v3.0.0
         with:
           url: jdbc:postgresql://postgres:5432/db
-          user: ${{ env.API_DB_USERNAME }}
-          password: ${{ env.API_DB_PASSWORD }}
+          user: ${{ env.POSTGRES_USER }}
+          password: ${{ env.POSTGRES_PASSWORD }}
           locations: server/flyway/sql
         env:
           FLYWAY_PLACEHOLDERS_API_DB_USERNAME: ${{ env.API_DB_USERNAME }}
