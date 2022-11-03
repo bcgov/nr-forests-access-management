@@ -18,11 +18,23 @@ jobs:
       oidc_bceid_business_idp_client_secret: "${{ secrets.OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
 
   aws-test-deployment-frontend:
+    needs: aws-test-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with: 
       environment_name: test
       tf_subcommand: apply
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}      
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}    
+
+  bump-version-tag:
+    needs: aws-test-deployment-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Bump version and push tag
+        uses: hennejg/github-tag-action@v4.1.jh1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
 
