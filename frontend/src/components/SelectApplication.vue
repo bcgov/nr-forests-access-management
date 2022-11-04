@@ -3,7 +3,6 @@ import router from '../router'
 import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationState'
 import type { Application } from '@/services/ApplicationState'
 import { ApiService } from '@/services/ApiService';
-import Breadcrumb from '@/components/Breadcrumb.vue'
 
 const apiService = new ApiService()
 
@@ -37,8 +36,6 @@ setTimeout( async () => {
 
 <template>
   <div>
-
-  <Breadcrumb activePage='SelectApp'/>
 
   <h1>Select Application</h1>
 
