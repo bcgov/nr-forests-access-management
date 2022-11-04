@@ -3,7 +3,6 @@ import { EnvironmentSettings } from './EnvironmentSettings'
 
 describe('getEnvironmentDisplayName', () => {
     it('value with prefix/suffix should include prefix/suffix', () => {
-
         var environmentSettings = new EnvironmentSettings()
         environmentSettings.setEnvironmentDisplayName('test')
         expect(environmentSettings.getEnvironmentDisplayName('[',']')).toEqual('[test]')
