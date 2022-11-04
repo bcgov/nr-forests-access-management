@@ -14,6 +14,7 @@ import AboutView from '../views/AboutView.vue'
 // Workarounds:
 // 1. Reload the page in the browser if the hot-reload fails.
 // 2. (Recommended) Within router below use a wrapper view compoent. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
+//    There still seem to be cases where page reload is needed.
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax. 
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 

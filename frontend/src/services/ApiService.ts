@@ -23,7 +23,7 @@ export class ApiService {
             return apps as Application[]
         } catch (error) {
             // TODO: Better error handling
-            console.log("Error retrieving applications via ${url}")
+            console.log(`Error retrieving applications via ${url}`)
             throw error
         }
     }
