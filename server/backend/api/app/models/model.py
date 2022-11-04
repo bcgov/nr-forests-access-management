@@ -201,7 +201,7 @@ class FamUser(Base):
                 "uniqueness of a User within the FAM Application",
     )
     user_type_code = Column(
-        String(2), 
+        String(2),
         nullable=False,
         comment="Identifies which type of the user it belongs to; IDIR, BCeID etc.")
     user_name = Column(String(100), nullable=False)
@@ -217,7 +217,7 @@ class FamUser(Base):
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
-    cognito_user_id = Column(String(32))
+    cognito_user_id = Column(String(100))
     update_user = Column(
         String(30),
         comment="The user or proxy account that created or last updated the "
@@ -256,6 +256,8 @@ class FamUser(Base):
 class FamApplicationClient(Base):
     __tablename__ = "fam_application_client"
     __table_args__ = (
+        UniqueConstraint('cognito_client_id', 'application_id', name='cognito_app_uk'),
+
         ForeignKeyConstraint(
             ["application_id"],
             ["app_fam.fam_application.application_id"],
@@ -271,6 +273,7 @@ class FamApplicationClient(Base):
             "re-use it (at the OIDC level).",
             "schema": "app_fam",
         },
+
     )
 
     application_client_id = Column(
@@ -310,9 +313,12 @@ class FamApplicationClient(Base):
                 "record. ",
     )
     update_date = Column(
-        String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
+        #String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
+        TIMESTAMP(precision=6),
+        nullable=False,
+        server_default=text("LOCALTIMESTAMP"),
+        comment="The date and time the record was created.",
     )
-
     application = relationship(
         "FamApplication", back_populates="fam_application_client"
     )

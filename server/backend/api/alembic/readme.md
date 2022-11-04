@@ -158,6 +158,11 @@ if error like this shows up:
 then stop and remove the container and then delete the volume:
 
 ```
+# all at once
+docker rm -fv <container id>
+docker volume rm backend_db
+
+# or if you like typing... does the same thing
 docker container stop <container id>
 docker container rm <container id>
 docker volume rm backend_db

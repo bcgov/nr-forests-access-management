@@ -3,3 +3,5 @@ flake8==4.0.1
 # used to reverse engineer database after flyway migrations, not part of
 # deployment so putting as a dev dependency
 sqlacodegen==3.0.0rc1
+# using this for the alembic migrations
+python-dotenv==0.21.0

@@ -8,6 +8,8 @@ Create Date: 2022-09-01 09:24:17.057479
 from alembic import op
 import sqlalchemy as sa
 import sqlmodel
+import os.path
+import dotenv
 
 from sqlalchemy.dialects import postgresql
 
@@ -175,6 +177,30 @@ def upgrade() -> None:
     op.create_index(op.f('ix_app_fam_fam_user_role_xref_role_id'), 'fam_user_role_xref', ['role_id'], unique=False, schema='app_fam')
     op.create_index(op.f('ix_app_fam_fam_user_role_xref_user_id'), 'fam_user_role_xref', ['user_id'], unique=False, schema='app_fam')
     # ### end Alembic commands ###
+
+    # get default env vars if they exist
+    envFilePath = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '.env'))
+    dotenv.load_dotenv(envFilePath)
+
+    # adding the creation of the user in here
+    DATABASE_USER = os.getenv('api_db_username')
+    DATABASE_USER_PASSWORD = os.getenv('api_db_password')
+
+    createUserSQLRaw = "CREATE USER {api_db_username} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '{api_db_password}'"
+
+    create_user_sql = sa.sql.text(f"CREATE USER {sa.sql.quoted_name(DATABASE_USER, False)} WITH PASSWORD :database_password")\
+        .bindparams(
+            database_password=DATABASE_USER_PASSWORD
+        )\
+        .compile(compile_kwargs={"literal_binds": True})
+    conn = op.get_bind()
+    print(str(create_user_sql))
+    conn.execute(create_user_sql)
+
+    grants = [f'GRANT USAGE ON SCHEMA app_fam TO {DATABASE_USER}',
+              f'GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA app_fam TO {DATABASE_USER}']
+    for grant in grants:
+        conn.execute(grant)
 
 
 def downgrade() -> None:
