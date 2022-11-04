@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+  import authService from '@/services/AuthService';
 
   const environmentSettings = new EnvironmentSettings()
   const environmentLabel = environmentSettings.getEnvironmentDisplayName("[","]").toUpperCase()
@@ -32,8 +33,17 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link nav-link-fade-up" title="Log In">
+            <a class="nav-link nav-link-fade-up" title="Log In"
+              v-if="!authService.state.famUser"
+              @click="authService.methods.login">
               <span>Log In</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-fade-up" title="Log In"
+              v-if="authService.state.famUser"
+              @click="authService.methods.logout">
+              <span>Log Out</span>
             </a>
           </li>
           <li class="nav-item">

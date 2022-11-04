@@ -15,4 +15,8 @@ export class EnvironmentSettings {
         }
     }
 
+    getFamCognitoRedirectUrl(): string {
+        const famCognitoRedirectUrl = window.localStorage.getItem('fam_cognito_redirect_url') as string;
+        return famCognitoRedirectUrl
+    }
 }
