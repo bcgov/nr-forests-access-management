@@ -10,10 +10,6 @@ export class ApiService {
         this._apiUrl = environmentSettings.getApiBaseUrl() + '/api/v1'
     }
 
-    public get apiUrl(): string {
-        return this.apiUrl;
-    }
-
     async getApplications():Promise<Application[]> {
         const url = this._apiUrl + '/fam_applications'
         try {
