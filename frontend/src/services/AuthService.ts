@@ -26,7 +26,7 @@ async function login() {
     // update famUser state
     state.famUser = famUser;
 
-    // store user details and jwt in local storage to keep user logged in between page refreshes
+    // store user details and jwt in local storage to keep user logged in.
     localStorage.setItem('famUser', JSON.stringify(famUser));
     router.push('/');
 }
