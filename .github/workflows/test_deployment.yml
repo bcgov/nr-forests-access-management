@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
 
 jobs:
-
   aws-test-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
-    with: 
+    with:
       environment_name: test
       tf_subcommand: apply
       execute_flyway: true
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
       oidc_idir_idp_client_secret: "${{ secrets.OIDC_IDIR_IDP_CLIENT_SECRET }}"
@@ -20,12 +19,12 @@ jobs:
   aws-test-deployment-frontend:
     needs: aws-test-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
-    with: 
+    with:
       environment_name: test
       tf_subcommand: apply
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}    
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
   bump-version-tag:
     needs: aws-test-deployment-frontend
@@ -36,5 +35,4 @@ jobs:
         uses: hennejg/github-tag-action@v4.3.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-
+          release_branches: main, fix/270-update-frontend-s3

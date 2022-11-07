@@ -1,7 +1,12 @@
 name: DEPLOY Test Environment (Frontend Only)
 
-on:
-  workflow_dispatch:
+# on:
+#   workflow_dispatch:
+
+on: 
+  push:
+    branches:
+      - "fix/270-update-frontend-s3"
 
 jobs:
 
@@ -13,4 +18,15 @@ jobs:
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}      
+
+  bump-version-tag:
+    needs: aws-test-deployment-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Bump version and push tag
+        uses: hennejg/github-tag-action@v4.3.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main, fix/270-update-frontend-s3
 
