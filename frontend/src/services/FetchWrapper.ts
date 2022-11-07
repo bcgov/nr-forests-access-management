@@ -47,7 +47,7 @@ function addAuthHeader(url: string, headerObj?: any): any {
     // TODO: Do we need this restriction on if the request is to go to api? The frontend app only calls api anyway, right?
     if (isLoggedIn && isApiUrl) {
         // Add 'Bearer' token.
-        headers['Authorization'] = `Bearer ${authService.state.famUser.token}`;
+        headers['Authorization'] = `Bearer ${authService.state.value.famUser.token}`;
     }
     console.log(`headers: `, headers)
     return headers;
@@ -55,7 +55,7 @@ function addAuthHeader(url: string, headerObj?: any): any {
 
 async function handleResponse(response: Response) {
     const data = await response.json(); console.log('data: ', data);
-    const { famUser } = authService.state;
+    const { famUser } = authService.state.value;
     if (!response.ok) {
         if ([401, 403].includes(response.status) && famUser) {
             // auto logout if 401 Unauthorized or 403 Forbidden response returned from api.

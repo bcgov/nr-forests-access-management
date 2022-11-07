@@ -1,15 +1,14 @@
 import router from '@/router';
-import { reactive, readonly } from 'vue';
+import { readonly, ref } from 'vue';
 
-// Auth state from localStorage
-const state = reactive({
+const state = ref({
     famUser: localStorage.getItem('famUser')? JSON.parse(localStorage.getItem('famUser') as string): undefined,
 })
 
 // functions
 
 function isLoggedIn(): boolean {
-    const loggedIn = !!state.famUser?.token; // TODO check if token expired later?
+    const loggedIn = !!state.value.famUser?.token; // TODO check if token expired later?
     return loggedIn;
 }
 
@@ -24,7 +23,7 @@ async function login() {
     };
 
     // update famUser state
-    state.famUser = famUser;
+    state.value.famUser = famUser;
 
     // store user details and jwt in local storage to keep user logged in.
     localStorage.setItem('famUser', JSON.stringify(famUser));
@@ -32,7 +31,7 @@ async function login() {
 }
 
 async function logout() {
-    state.famUser = null;
+    state.value.famUser = null;
     localStorage.removeItem('famUser');
     // TODO: Probably need to call Amplify library for sign out from Cognito?
     router.push('/');
