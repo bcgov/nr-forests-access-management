@@ -1,7 +1,14 @@
 black==22.6.0
 flake8==4.0.1
+pytest==7.2.0
+
+# used to create the md report used by gha when tests run
+pytest-md==0.2.0
+pytest-emoji==0.2.0
+
 # used to reverse engineer database after flyway migrations, not part of
 # deployment so putting as a dev dependency
 sqlacodegen==3.0.0rc1
+
 # using this for the alembic migrations
 python-dotenv==0.21.0
