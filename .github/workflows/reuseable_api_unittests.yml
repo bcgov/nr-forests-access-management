@@ -1,12 +1,12 @@
 name: api unit tests
 
-# on:
-#   workflow_call:
+on:
+  workflow_call:
 
 # debugging
-on:
-  push:
-    branches: [feat/94-integrate-api-tests]
+# on:
+#   push:
+#     branches: [feat/94-integrate-api-tests]
 
 env:
   environment: dev
