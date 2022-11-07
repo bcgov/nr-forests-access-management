@@ -35,7 +35,7 @@ jobs:
         run: |
           python --version
           cd server/backend
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Auth function run pytest
         uses: pavelzw/pytest-action@v2
