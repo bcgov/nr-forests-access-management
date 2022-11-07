@@ -13,30 +13,26 @@ const baseUrl = inject('fam_api_base_url')
 
 // Use timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
-  if (applications.value.length == 0) {
-    try {
-      // TODO: Clean up logs and/or use logging solution?
-      const url = baseUrl + '/api/v1/fam_applications'
-      console.log(`Retrieving applications from ${url}`)
-      const res = await fetch(url)
-      var apps = await res.json() as Application[]
-      console.log(`Retrieved ${apps.length} applications`)
-      console.log(apps)
-      // apps = apps.slice(0,1) // To test only getting one application
-      applications.value = apps
-      // If only one application then select and redirect to Manage Access screen
-      if (apps.length == 1) {
-        // TODO: Update breadcrumb to not show Select Application screen?
-        console.log('User has access to only one application - select and redirect to manage access screen.')
-        selectedApplication.value = apps[0]
-        router.push('/manage')
-      }
-      
-      // TODO: Redirect to error page or display error if no applications.
-    } catch (error) {
-      // TODO: Better error handling.
-      alert('Error retrieving applications: ' + error)
-    }
+  // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
+  try {
+    applicationsUserAdministers.value = await apiService.getApplications()
+  } catch (error) {
+    // TODO: Better error handling.
+    alert('Error retrieving applications from API, using fake test data... Error: ' + error)
+
+    // TODO: Workaround broken front-end. Remove once front-end is stable.
+    applicationsUserAdministers.value = [
+      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 },
+      { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
+      { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
+    ] as Application[]
+
+  }
+
+  // If user can only manage one application redirect to manage access screen
+  if (applicationsUserAdministers.value.length == 1) {
+    selectedApplication.value = applicationsUserAdministers.value[0]
+    router.push("/manage")
   }
 
 })

@@ -6,11 +6,11 @@ import Breadcrumb from './Breadcrumb.vue'
 
 <template>
   <div>
-    
+
     <Breadcrumb activePage='Grant'/>
-    
+
     <h1>Grant Access - {{selectedApplicationDisplayText}}</h1>
-  
+
     <p>Selection: {{selectedApplication}}</p>
 
     <br/>TODO<br/>
