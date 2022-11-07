@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { EnvironmentSettings } from '@/services/EnvironmentSettings';
   import authService from '@/services/AuthService';
+  import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
   const environmentSettings = new EnvironmentSettings()
   const environmentLabel = environmentSettings.getEnvironmentDisplayName("[","]").toUpperCase()
@@ -34,14 +34,14 @@
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link nav-link-fade-up" title="Log In"
-              v-if="!authService.state.famUser"
+              v-if="!authService.getters.isLoggedIn()"
               @click="authService.methods.login">
               <span>Log In</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-link-fade-up" title="Log In"
-              v-if="authService.state.famUser"
+            <a class="nav-link nav-link-fade-up" title="Log Out"
+              v-if="authService.getters.isLoggedIn()"
               @click="authService.methods.logout">
               <span>Log Out</span>
             </a>
@@ -64,7 +64,8 @@
           @click="$router.push({ name: 'home' })">
           <span>Home</span>
         </a>
-        <a class="nav-link" title="Select Application" 
+        <a class="nav-link" title="Select Application"
+          v-if="authService.getters.isLoggedIn()"
           @click="$router.push({ name: 'application' })">
           <span>Select Application</span>
         </a>
