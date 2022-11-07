@@ -1,7 +1,7 @@
 name: api unit tests
 
-on:
-  workflow_call:
+# on:
+#   workflow_call:
     # inputs:
     # leaving here as an example of an input
       # username:
@@ -11,9 +11,9 @@ on:
       #   type: string
 
 # debugging
-# on:
-#   push:
-#     branches: [feat/94-integrate-unit-tests]
+on:
+  push:
+    branches: [feat/94-integrate-unit-tests]
 
 env:
   environment: dev
@@ -26,22 +26,6 @@ env:
 jobs:
   api-unit-tests:
     runs-on: ubuntu-latest
-
-    #Run local postgres for testing
-    # services:
-    #   postgres:
-    #     image: postgres
-    #     env:
-    #       POSTGRES_DB: $POSTGRES_DB
-    #       POSTGRES_USER: $POSTGRES_USER
-    #       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-    #     ports:
-    #       - 5432:5432
 
     steps:
       - name: checkout the repo and building the Backend
