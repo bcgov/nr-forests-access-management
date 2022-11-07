@@ -14,7 +14,9 @@ on:
       - "server/**"
       - "frontend/**"
 
-
 jobs:
   auth_function_ci:
     uses: ./.github/workflows/reusable_auth_function_ci.yml
+
+  api_unittests:
+    uses: ./.github/workflows/reuseable_api_unittests.yml

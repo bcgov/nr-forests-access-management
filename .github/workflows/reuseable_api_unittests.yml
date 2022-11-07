@@ -1,7 +1,7 @@
 name: api unit tests
 
-# on:
-#   workflow_call:
+on:
+  workflow_call:
     # inputs:
     # leaving here as an example of an input
       # username:
@@ -11,9 +11,9 @@ name: api unit tests
       #   type: string
 
 # debugging
-on:
-  push:
-    branches: [feat/94-integrate-unit-tests]
+# on:
+#   push:
+#     branches: [feat/94-integrate-unit-tests]
 
 env:
   environment: dev
