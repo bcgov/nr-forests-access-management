@@ -6,7 +6,7 @@ name: api unit tests
 # debugging
 on:
   push:
-    branches: [feat/94-integrate-unit-tests]
+    branches: [feat/94-integrate-api-tests]
 
 env:
   environment: dev
