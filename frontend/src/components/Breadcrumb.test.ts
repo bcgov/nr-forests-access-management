@@ -1,40 +1,45 @@
-import { flushPromises, mount, shallowMount } from '@vue/test-utils'
+import { flushPromises, mount, shallowMount, VueWrapper } from '@vue/test-utils'
 import Breadcrumb from '@/components/Breadcrumb.vue'
-import { it, describe, expect } from 'vitest'
-import router from '@/router'
+import { it, describe, expect, beforeEach } from 'vitest'
+import { routes } from '@/router'
+import { createRouter, createWebHistory, type Router } from 'vue-router'
 import { applicationsUserAdministers, selectedApplication } from '@/services/ApplicationState'
 import type { Application } from '@/services/ApplicationState'
-
+import type { Plugin } from 'vue'
 
 describe('Breadcrumb Component', () => {
-  it('should be blank when home page', async () => {
-    // const $router = { currentRoute: { value: { path: '/'}}}
-    router.push('/')
-    const wrapper = mount(Breadcrumb, {
+
+  let wrapper: VueWrapper;
+  let router: Router;
+  
+  beforeEach(async() => {
+    router = createRouter({
+      history: createWebHistory(),
+      routes: routes
+    })
+    wrapper = mount(Breadcrumb, {
       global: {
         plugins: [router]
-        // mocks: {
-        //   $router: $router
-        // }
-
       }
     })
+    await flushPromises()
+
+  })
+
+  it('should be blank when home page', async () => {
+    router.push('/')
     await flushPromises()
     expect(wrapper.html()).toEqual('<span></span>')
   })
 
-  it('should not show SelectApplication when user can administer only one app', () => {
+  it('should not show SelectApplication when user can administer only one app', async () => {
     applicationsUserAdministers.value = [
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
     ] as Application[]
     selectedApplication.value = applicationsUserAdministers.value[0]
 
     router.push('/manage')
-    const wrapper = mount(Breadcrumb, {
-      global: {
-        plugins: [router]
-      }
-    })
+    await flushPromises()
     expect(wrapper.html().includes("Select Application")).toBeFalsy()
   })
 
@@ -46,11 +51,6 @@ describe('Breadcrumb Component', () => {
     selectedApplication.value = applicationsUserAdministers.value[0]
 
     router.push('/manage')
-    const wrapper = mount(Breadcrumb, {
-      global: {
-        plugins: [router]
-      }
-    })
     await flushPromises()
     expect(wrapper.html().includes("Select Application")).toBeTruthy()
   })

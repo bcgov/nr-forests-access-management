@@ -18,35 +18,39 @@ import AboutView from '../views/AboutView.vue'
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax. 
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/application',
+    name: 'application',
+    component: SelectApplicationView
+  },
+  {
+    path: '/manage',
+    name: 'manage',
+    component: ManageAccessView
+  },
+  {
+    path: '/grant',
+    name: 'grant',
+    component: GrantAccessView
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: AboutView,
+  }
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/application',
-      name: 'application',
-      component: SelectApplicationView
-    },
-    {
-      path: '/manage',
-      name: 'manage',
-      component: ManageAccessView
-    },
-    {
-      path: '/grant',
-      name: 'grant',
-      component: GrantAccessView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView,
-    }
-  ]
+  routes: routes
 })
+
+export { routes }  
 
 export default router
