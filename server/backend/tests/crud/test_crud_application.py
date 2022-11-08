@@ -7,6 +7,7 @@ from api.app.crud import crud_application as crud_application
 
 LOGGER = logging.getLogger(__name__)
 
+
 def test_getFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
 
@@ -21,6 +22,26 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
     assert hasattr(apps[0], "application_name")
     assert apps[0].application_name == applicationData1["application_name"]
 
+
+def test_getFamApplicationRoles(
+    dbSession_famApplication_withRoledata, applicationData1, applicationRoleData
+):
+    LOGGER.debug(f"applicationRoleData: {applicationRoleData}")
+    db = dbSession_famApplication_withRoledata
+    apps = crud_application.getFamApplications(db=db)
+    db.commit()
+    LOGGER.debug(f"applicationData1: {applicationData1}")
+    application1 = crud_application.getFamApplicationRoles(
+        db=db, application_id=apps[0].application_id
+    )
+    LOGGER.debug(f"application1: {application1}")
+    # need to convert this db query to a pydantic to see how
+    # to handle the relationship, and if it gets properly serialized
+    asSchema = schemas.FamApplicationRoleGet(application1)
+    asDict = asSchema.dict()
+    LOGGER.debug(f"asDict: {asDict}")
+
+
 def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     # get list of applications from the database
@@ -33,12 +54,16 @@ def test_deleteFamApplications(dbSession_famApplication_withdata, applicationDat
     appsAfter = crud_application.getFamApplications(db=db)
     assert len(appsAfter) == 0
 
+
 def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
     apps = crud_application.getFamApplications(db=db)
     for app in apps:
-        appById = crud_application.getFamApplication(db=db, application_id=app.application_id)
+        appById = crud_application.getFamApplication(
+            db=db, application_id=app.application_id
+        )
         assert appById.application_id == app.application_id
+
 
 def test_getFamApplicationByName(dbSession_famApplication_withdata, applicationData1):
     db = dbSession_famApplication_withdata
@@ -46,6 +71,7 @@ def test_getFamApplicationByName(dbSession_famApplication_withdata, applicationD
         db=db, application_name=applicationData1["application_name"]
     )
     assert app.application_name == applicationData1["application_name"]
+
 
 def test_getFamApplications_nodata(dbSession):
     """Was a starting place to figure out crud tests that work with the database
@@ -62,6 +88,7 @@ def test_getFamApplications_nodata(dbSession):
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
 
+
 def test_createFamApplication(dbSession, applicationData1):
     # make sure we are starting off with no records
     famApps = crud_application.getFamApplications(dbSession)
@@ -69,8 +96,10 @@ def test_createFamApplication(dbSession, applicationData1):
 
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
-    appData = crud_application.createFamApplication(famApplication=appDataAsPydantic, db=dbSession)
-    #LOGGER.debug(f"appData: {}")
+    appData = crud_application.createFamApplication(
+        famApplication=appDataAsPydantic, db=dbSession
+    )
+    # LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
     famAppsAfter = crud_application.getFamApplications(dbSession)
