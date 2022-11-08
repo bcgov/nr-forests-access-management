@@ -42,7 +42,8 @@ def getApplicationByName(db: Session, application_name: str):
     )
     return application
 
-def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Session):
+def createFamApplication(famApplication: schemas.FamApplicationCreate,
+    db: Session):
     """used to add a new application record to the database
 
     :param famApplication: _description_
@@ -91,6 +92,17 @@ def deleteFamApplication(db: Session, application_id: int):
 
     db.commit()
     return application
+
+def getFamApplicationRoles(db: Session, application_id: int):
+    application = (
+        db.query(models.FamApplication)
+        #.join(models.FamRole)
+        # .options(load_only("application_id"))
+        .filter(models.FamApplication.application_id == application_id)
+        .all()
+    )
+    return application
+
 
 if __name__ == "__main__":
     import database
