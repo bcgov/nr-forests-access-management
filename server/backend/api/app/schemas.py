@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from pydantic import BaseModel, Field
 
@@ -58,6 +58,8 @@ class FamApplication(FamApplicationCreate):
         orm_mode = True
 
 
+
+
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[str]  # temporarily optional
@@ -84,6 +86,13 @@ class FamRoleCreate(BaseModel):
     )
     create_user: str
     role_type_code: str
+
+    class Config:
+        orm_mode = True
+
+
+class FamApplicationRoleGet(FamApplication):
+    role: List[FamRoleCreate]
 
     class Config:
         orm_mode = True
