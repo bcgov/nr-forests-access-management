@@ -58,6 +58,8 @@ class FamApplication(FamApplicationCreate):
         orm_mode = True
 
 
+
+
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[str]  # temporarily optional
@@ -90,7 +92,7 @@ class FamRoleCreate(BaseModel):
 
 
 class FamApplicationRoleGet(FamApplication):
-    fam_role: List[FamRoleCreate]
+    role: List[FamRoleCreate]
 
     class Config:
         orm_mode = True

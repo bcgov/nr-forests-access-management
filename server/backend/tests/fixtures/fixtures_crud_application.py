@@ -9,6 +9,8 @@ from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
 
 
+import fixtures.fixtures_crud_role as fixtures_crud_role
+
 LOGGER = logging.getLogger(__name__)
 
 

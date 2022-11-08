@@ -106,6 +106,15 @@ def simpleRoleData() -> Dict[str, str]:
     }
     yield roleData
 
+@pytest.fixture(scope="function")
+def simpleRoleData2() -> dict:
+    roleData = {
+        "role_name": "FAM_TEST",
+        "role_purpose": "FAM Testing",
+        "create_user": "Patrick Roy",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+    }
+    yield roleData
 
 @pytest.fixture(scope="function")
 def simpleRoleData2() -> Dict[str, str]:
