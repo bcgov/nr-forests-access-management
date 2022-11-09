@@ -1,11 +1,3 @@
----
-name: Feature request / user story
-about: Suggest an idea from the perspective of a user
-title: ''
-labels: enhancement
-assignees: ''
-
----
 
 **As a** *(User Type/Persona)* **I want** *(Feature/enhancement)* **So That** *(Value, why is this wanted, what is the user trying to accomplish)*
 
@@ -14,13 +6,18 @@ assignees: ''
 - enter text here
 
 **Acceptance Criteria**
+**Scenario-based** 
 - [ ] Given (Context), When (action carried out), Then (expected outcome)
 - [ ] Given (Context), When (action carried out), Then (expected outcome)
 
+**Rule-based**
+- [ ] Enter a list of criteria
+
 **Definition of Done**
-- [ ] Ready to Demo in Sprint Review
-- [ ] Does what I have made have appropriate test coverage?
-- [ ] Documentation and/or scientific documentation exists and can be found
-- [ ] Peer Reviewed by 2 people on the team
-- [ ] Manual testing of all PRs in Dev and Prod
-- [ ] Merged
+- [ ] Implementation summary in issue description/comments
+- [ ] Internal team and PO reviewed
+- [ ] Appropriate testing:
+    - [ ] Unit tests meet coverage and pass targets
+    - [ ] Manual testing by PO or QA (exploratory/useability/user acceptance)
+- [ ] Appropriate documentation 
+- [ ] Merged to main
