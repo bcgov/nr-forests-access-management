@@ -1,10 +1,13 @@
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'
+import { Amplify } from 'aws-amplify';
+import awsExports from './aws-exports';
 
 import './assets/styles/styles.scss'
 import 'bootstrap'
 
+Amplify.configure(awsExports);
 const app = createApp(App)
 
 const apiBaseUrl = window.localStorage.getItem('fam_api_base_url') as string;
