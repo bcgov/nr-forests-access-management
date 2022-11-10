@@ -6,7 +6,10 @@
     "build": "run-p type-check build-only",
     "preview": "vite preview --port 5173",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test-watch": "vitest",
+    "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
@@ -19,11 +22,15 @@
     "@types/bootstrap": "^5.2.5",
     "@types/node": "^16.11.56",
     "@vitejs/plugin-vue": "^3.0.3",
+    "@vitest/coverage-c8": "^0.24.5",
+    "@vue/test-utils": "^2.2.1",
     "@vue/tsconfig": "^0.1.3",
+    "jsdom": "^20.0.2",
     "npm-run-all": "^4.1.5",
     "sass": "^1.55.0",
     "typescript": "~4.7.4",
     "vite": "^3.0.9",
+    "vitest": "^0.24.5",
     "vue-tsc": "^0.40.7"
   }
 }
