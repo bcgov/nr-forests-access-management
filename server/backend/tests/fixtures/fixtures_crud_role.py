@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import List
+from typing import Dict, List, Union
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -34,7 +34,7 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
     db.add(roleTypeModel_concrete)
     db.commit()
     yield db  # use the session in tests.
-    
+
     try:
         db.delete(roleTypeModel_abstract)
     except sqlalchemy.exc.InvalidRequestError as e:
@@ -47,7 +47,9 @@ def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRec
 
 
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> dict:
+def concreteRoleTypeRecord() -> Dict[
+    str, Union[str, datetime.datetime]
+]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -57,7 +59,8 @@ def concreteRoleTypeRecord() -> dict:
 
 
 @pytest.fixture(scope="function")
-def abstractRoleTypeRecord() -> dict:
+def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime,
+                                                str]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
@@ -73,7 +76,7 @@ def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRoleCreate:
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData() -> dict:
+def simpleRoleData() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
@@ -82,8 +85,9 @@ def simpleRoleData() -> dict:
     }
     yield roleData
 
+
 @pytest.fixture(scope="function")
-def simpleRoleData2() -> dict:
+def simpleRoleData2() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
@@ -91,6 +95,7 @@ def simpleRoleData2() -> dict:
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
+
 
 @pytest.fixture(scope="function")
 def deleteAllRoles(dbSession: session.Session) -> None:
