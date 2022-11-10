@@ -56,19 +56,12 @@
     </nav>
 
     <div class="nav bc-nav">
-        <a class="nav-link" title="About" 
-          @click="$router.push({ name: 'about'})">
-          <span>About</span>
-        </a>
-        <a class="nav-link" title="Home" 
-          @click="$router.push({ name: 'home' })">
-          <span>Home</span>
-        </a>
-        <a class="nav-link" title="Select Application"
-          v-if="authService.getters.isLoggedIn()"
-          @click="$router.push({ name: 'application' })">
-          <span>Select Application</span>
-        </a>
+      <RouterLink class="nav-link" to="/">Home</RouterLink> 
+      <RouterLink class="nav-link" to="/application" 
+        v-if="authService.getters.isLoggedIn()">
+        Select Application
+      </RouterLink> 
+      <RouterLink class="nav-link" to="/about">About</RouterLink> 
     </div>
   </header>
 
