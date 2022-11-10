@@ -17,14 +17,11 @@ def testApplication_fixture(testClient_fixture, dbSession_famApplication_withdat
     LOGGER.debug("got here")
     yield testClient_fixture
 
-    dbSession_famApplication_withdata.rollback()
-
 
 @pytest.fixture(scope="function")
 def application_roles(
         dbSession_famApplication_withRoledata,
-        testClient_fixture,
-        applicationData1):
+        testClient_fixture, applicationData1):
     db = dbSession_famApplication_withRoledata
     # have to commit so that the session spun up by the client can see the data
     db.commit()
@@ -37,4 +34,11 @@ def application_roles(
 
     yield {'client': testClient_fixture, 'app_id': app_id}
 
-    db.rollback()
+# @pytest.fixture(scope="function")
+# def testApplicationData():
+#     applicationData = {
+#         'application_name': 'habs_winner',
+#         'application_description': 'creating the magic necessary for cup 25'
+#     }
+#     #crud.createFamApplication
+#     yield applicationData

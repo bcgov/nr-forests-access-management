@@ -9,8 +9,6 @@ from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
 
 
-import fixtures.fixtures_crud_role as fixtures_crud_role
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -24,7 +22,13 @@ def dbSession_famApplication_withdata(
         famApplication=applicationData1AsPydantic, db=db
     )
 
-    yield db
+    try:
+        db.delete(appData)
+        db.commit()
+    except sqlalchemy.orm.exc.ObjectDeletedError as e:
+        LOGGER.debug(f"exception: {e}")
+        LOGGER.debug(f"{type(e).__name__}")
+        LOGGER.debug("app object was already deleted")
 
     try:
         db.delete(appData)

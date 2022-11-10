@@ -71,7 +71,9 @@ def dbSession_famRoletype(
 
 
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
+def concreteRoleTypeRecord() -> Dict[
+    str, Union[str, datetime.datetime]
+]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -81,7 +83,8 @@ def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
 
 
 @pytest.fixture(scope="function")
-def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
+def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime,
+                                                str]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
@@ -107,7 +110,7 @@ def simpleRoleData() -> Dict[str, str]:
     yield roleData
 
 @pytest.fixture(scope="function")
-def simpleRoleData2() -> dict:
+def simpleRoleData2() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
@@ -115,6 +118,7 @@ def simpleRoleData2() -> dict:
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
+
 
 @pytest.fixture(scope="function")
 def simpleRoleData2() -> Dict[str, str]:
