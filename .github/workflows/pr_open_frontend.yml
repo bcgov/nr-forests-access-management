@@ -1,0 +1,12 @@
+name: Pull Request Checks
+
+on: 
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "frontend/**"
+
+jobs:
+  frontend_ci:
+    uses: ./.github/workflows/reusable_frontend_ci.yml
