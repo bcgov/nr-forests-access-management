@@ -85,10 +85,10 @@ def testClient_fixture(getApp: FastAPI) -> TestClient:
     yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def sessionObjects(dbEngine: Engine) -> sessionmaker:
     # Use connect_args parameter only with sqlite
-    SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=dbEngine)
+    SessionTesting = sessionmaker(autocommit=False, autoflush=True, bind=dbEngine)
     LOGGER.debug(f"session type: {type(SessionTesting)}")
     yield SessionTesting
 
