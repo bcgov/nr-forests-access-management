@@ -2,5 +2,6 @@
 verbose
 ignore=E24,W504
 max-line-length=88
+exclude = .git,__pycache__,__init__.py,.mypy_cache,.pytest_cache
 per-file-ignores =
     backend/tests/conftest.py: E402

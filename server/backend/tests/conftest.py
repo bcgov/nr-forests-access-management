@@ -10,26 +10,24 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 """
 # flake8: ignore=F402
 
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-# sys.path.append(os.path.dirname(__file__))
-
-import logging
-import sys
-from typing import Any, Generator
-
-import api.app.dependencies as dependencies
-import api.app.models.model as model
-import pytest
-from api.app.database import Base
-from api.app.main import app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+import logging
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
+import os
+import pytest
+import sys
+from typing import Any, Generator
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+import api.app.dependencies as dependencies # noqa
+import api.app.models.model as model # noqa
+from api.app.database import Base # noqa
+from api.app.main import app # noqa
+
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
@@ -45,7 +43,7 @@ pytest_plugins = [
     "fixtures.fixtures_crud_user",
     "fixtures.fixtures_router_user",
     "fixtures.fixtures_crud_role",
-    "fixtures.fixtures_crud_user_role_assignment"
+    "fixtures.fixtures_crud_user_role_assignment",
 ]
 
 
@@ -61,9 +59,11 @@ def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     yield app
 
 
-# This @event is important. By default FOREIGN KEY constraints have no effect on the operation of the table from SQLite.
+# This @event is important. By default FOREIGN KEY constraints have no effect
+# on the operation of the table from SQLite.
 # It (FOREIGN KEY) only works when emitting CREATE statements for tables.
-# Reference: https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
+# Reference:
+# https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
@@ -158,14 +158,17 @@ def override_get_db():
 
 def getFixtureParams(request):
     """
-    Helper function to pass custom param into fixture to do setup/dear-down logic mostly.
-    For example, in test, can mark the test that uses some fixture to pass param into the fixture: 
+    Helper function to pass custom param into fixture to do setup/dear-down
+    logic mostly.
+    For example, in test, can mark the test that uses some fixture to pass
+    param into the fixture:
         @pytest.mark.fixture_data({"clean_up": False})
 
     And then in that specific fixture, get the param individually by calling:
         need_cleanup = getFixtureParams(request)['clean_up']
-        
-        Note, the fixture needs to have pytest 'request' as the argument passing into the function.
+
+        Note: the fixture needs to have pytest 'request' as the argument
+              passing into the function.
     """
     marker = request.node.get_closest_marker("fixture_data")
     params = marker.args[0]
