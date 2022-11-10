@@ -7,6 +7,7 @@ from typing import Any, Dict, Generator, Union
 import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
+from api.app.models import model as models
 
 
 LOGGER = logging.getLogger(__name__)
@@ -28,10 +29,13 @@ def dbSession_famApplication_withdata(
         db.delete(appData)
         db.commit()
     except sqlalchemy.orm.exc.ObjectDeletedError as e:
+        LOGGER.debug("app object was already deleted")
+        LOGGER.debug(f"{type(e).__name__}")
+        db.rollback()
+    except Exception as e:
         LOGGER.debug(f"exception: {e}")
         LOGGER.debug(f"{type(e).__name__}")
-        LOGGER.debug("app object was already deleted")
-
+        raise
 
 
 @pytest.fixture(scope="function")
