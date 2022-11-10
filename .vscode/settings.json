@@ -5,6 +5,7 @@
     ],
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
+    "editor.autoIndent": "full",
     "editor.detectIndentation": true,
     "python.testing.pytestArgs": [
         "server/auth_function",
@@ -22,7 +23,9 @@
     "python.testing.cwd": "",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"],
-    "python.languageServer": "Pylance"
+    "python.languageServer": "Pylance",
+    "files.trimTrailingWhitespace": true,
+    "files.eol": "\n",
 }
 
 

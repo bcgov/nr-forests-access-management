@@ -1,7 +1,8 @@
 import logging
 import os
+import sqlalchemy
+from typing import Any, Dict
 
-import api.app.models.model as models
 import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
 
@@ -24,22 +25,48 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
 
 
 def test_getFamApplicationRoles(
-    dbSession_famApplication_withRoledata, applicationData1, applicationRoleData
+    dbSession_famApplication_withRoledata: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Any],
+    applicationRoleData: Dict[str, Any],
+    simpleRoleData,
+    simpleRoleData2,
 ):
-    LOGGER.debug(f"applicationRoleData: {applicationRoleData}")
+    """
+    Tests the crud logic that sits behind the get application/roles
+    dbSession_famApplication_withRoledata - database session with an test
+        application record already loaded to the database, and two roles
+    applicationData1 - A Dictionary describing the application record that is
+        to be added to the database
+    applicationRoleData - A Dictionary that
+    """
+    # get the application_id from the database for the record that was already
+    # added in the fixture dbSession_famApplication_withRoledata
     db = dbSession_famApplication_withRoledata
-    apps = crud_application.getFamApplications(db=db)
-    db.commit()
-    LOGGER.debug(f"applicationData1: {applicationData1}")
-    application1 = crud_application.getFamApplicationRoles(
-        db=db, application_id=apps[0].application_id
+    # getApplicationByName(db=db, application_name=)
+    app = crud_application.getApplicationByName(
+        db=db, application_name=applicationData1["application_name"]
     )
-    LOGGER.debug(f"application1: {application1}")
+    LOGGER.debug(f"applicationData1: {applicationData1}")
+    appRoles = crud_application.getFamApplicationRoles(
+        db=db, application_id=app.application_id
+    )
+    # double check that the app record was populated
+    assert app.application_name == applicationData1["application_name"]
+    LOGGER.debug(f"application1: {appRoles}")
+
     # need to convert this db query to a pydantic to see how
     # to handle the relationship, and if it gets properly serialized
-    asSchema = schemas.FamApplicationRoleGet(application1)
+    asSchema = schemas.FamApplicationRoleGet.from_orm(appRoles)
     asDict = asSchema.dict()
     LOGGER.debug(f"asDict: {asDict}")
+
+    # assert that the roles we are expecting are present
+    assert len(asDict["fam_role"]) == 2
+
+    # get the role names from the returned record
+    role_name_list = [role["role_name"] for role in asDict["fam_role"]]
+    assert simpleRoleData["role_name"] in role_name_list
+    assert simpleRoleData2["role_name"] in role_name_list
 
 
 def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
@@ -99,6 +126,9 @@ def test_createFamApplication(dbSession, applicationData1):
     appData = crud_application.createFamApplication(
         famApplication=appDataAsPydantic, db=dbSession
     )
+    # the object returned by createFamApplication should contain the
+    # application object that it was passed
+    assert appData.application_name == applicationData1['application_name']
     # LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database

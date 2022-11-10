@@ -1,5 +1,6 @@
 import datetime
 import logging
+from typing import List
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
@@ -8,6 +9,7 @@ from .. import schemas
 from . import crudUtils as crudUtils
 
 LOGGER = logging.getLogger(__name__)
+
 
 def getFamApplications(db: Session):
     """runs query to return all the community health service areas and the
@@ -25,6 +27,7 @@ def getFamApplications(db: Session):
     LOGGER.debug(f"famApplications: {famApps}, {type(famApps)}")
     return famApps
 
+
 def getFamApplication(db: Session, application_id: int):
     """gets a single application"""
     application = (
@@ -34,6 +37,7 @@ def getFamApplication(db: Session, application_id: int):
     )
     return application
 
+
 def getApplicationByName(db: Session, application_name: str):
     application = (
         db.query(models.FamApplication)
@@ -42,8 +46,10 @@ def getApplicationByName(db: Session, application_name: str):
     )
     return application
 
-def createFamApplication(famApplication: schemas.FamApplicationCreate,
-    db: Session):
+
+def createFamApplication(
+        famApplication: schemas.FamApplicationCreate,
+        db: Session) -> models.FamApplication:
     """used to add a new application record to the database
 
     :param famApplication: _description_
@@ -77,9 +83,10 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate,
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    db.flush()
+    # db.refresh(db_item)
     return db_item
+
 
 def deleteFamApplication(db: Session, application_id: int):
     application = (
@@ -93,13 +100,25 @@ def deleteFamApplication(db: Session, application_id: int):
     db.commit()
     return application
 
-def getFamApplicationRoles(db: Session, application_id: int):
+
+def getFamApplicationRoles(
+    db: Session, application_id: int
+) -> List[models.FamApplication]:
+    """Given a database session and an application id, will return a
+    FamApplication model with related roles if any exist.
+
+    :param db: input database session object
+    :param application_id: the application id who's roles are to be retrieved
+    :return: orm FamApplication model with join to roles table, listing related
+        roles if any exist.
+    """
+    # Only return on record because querying on the primary key so there can
+    # only ever be one record.
     application = (
         db.query(models.FamApplication)
-        #.join(models.FamRole)
+        # .join(models.FamRole)
         # .options(load_only("application_id"))
-        .filter(models.FamApplication.application_id == application_id)
-        .all()
+        .filter(models.FamApplication.application_id == application_id).one()
     )
     return application
 
