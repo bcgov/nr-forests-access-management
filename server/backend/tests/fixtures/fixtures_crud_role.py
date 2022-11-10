@@ -39,6 +39,7 @@ def dbSession_famRoletype(
 
     yield db  # use the session in tests.
 
+
     try:
         roleTypeRecord = (
             db.query(models.FamRoleType)
