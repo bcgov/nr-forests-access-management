@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 
 import api.app.models.model as model
 import api.app.schemas as schemas
+from api.app.models import model as models
 import pytest
 import sqlalchemy.exc
 from sqlalchemy.orm import session
@@ -26,24 +27,33 @@ def dbSession_famRoles_withSimpleData(dbSession_famRoletype, simpleRoleData):
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRecord):
+def dbSession_famRoletype(dbSession: session.Session, abstractRoleTypeRecord, concreteRoleTypeRecord):
     db = dbSession
+
     roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
     db.add(roleTypeModel_abstract)
     roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
     db.add(roleTypeModel_concrete)
-    db.commit()
+
     yield db  # use the session in tests.
 
-    try:
-        db.delete(roleTypeModel_abstract)
-    except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.error(f"wasn't committed: {e}")
 
     try:
-        db.delete(roleTypeModel_concrete)
+        roleTypeRecord = db.query(models.FamRoleType).filter(models.FamRoleType.role_type_code == abstractRoleTypeRecord['role_type_code']).one()
+        db.delete(roleTypeRecord)
+        #db.flush()
+    except sqlalchemy.exc.InvalidRequestError as e:
+        LOGGER.error(f"wasn't committed: {e}")
+        db.rollback()
+
+    try:
+        roleTypeRecord = db.query(models.FamRoleType).filter(models.FamRoleType.role_type_code == concreteRoleTypeRecord['role_type_code']).one()
+        db.delete(roleTypeRecord)
+        #db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.debug(f"wasn't committed: {e}")
+        db.rollback()
+
 
 
 @pytest.fixture(scope="function")

@@ -4,38 +4,10 @@ volumes:
     driver:
       local
 services:
-  # todo: add the tests
   # todo: add migration for database
-  fam-api:
-    container_name: fam-api
-    #build: ./
-    env_file:
-      - env-db-dev.env
-    entrypoint:
-      - sh
-      - -c
-      -  cd /usr/src &&
-        ls -la &&
-        python3 -m venv venvdc &&
-        . ./venvdc/bin/activate &&
-        pip install -r requirements.txt &&
-        uvicorn api.app.main:app --reload --workers 1 --host localhost --port 8000
-    #command: uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
-    volumes:
-      - ./:/usr/src/
-    ports:
-      - 8002:8000
-    image: python:3.9
   db:
     container_name: db
-    # Postgis with extensions (postgis_topology, fuzzystrmatch, postgis_tiger_geocoder)
     image: postgres:14.1-alpine
-    # Add pgcrypto extension (sed) if not present (grep), then start normally (entrypoint)
-    # entrypoint:
-    #   - sh
-    #   - -c
-    #   -   /docker-entrypoint-initdb.d/10_postgis.sh &&
-    #       /usr/local/bin/docker-entrypoint.sh postgres
     env_file:
       - env-db-dev.env
     environment:
@@ -54,3 +26,38 @@ services:
       - db:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - fam
+  fam-api:
+    container_name: fam-api
+    #build: ./
+    env_file:
+      - env-db-dev.env
+    entrypoint:
+      - sh
+      - -c
+      -  cd /usr/src &&
+        ls -la &&
+        python3 -m venv venvdc &&
+        . ./venvdc/bin/activate &&
+        pip install -r requirements.txt  -r requirements-dev.txt &&
+        uvicorn api.app.main:app --reload --workers 1 --host localhost --port 8000
+    #command: uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./:/usr/src/
+    ports:
+      - 8000:8000
+    image: python:3.8
+    networks:
+      - fam
+
+networks:
+  fam:
+    driver: bridge
+    attachable: true
+    # ingress: true
+
+      #     #driver: bridge
+#     name: pre-existing
+#     attachable: true
+#     external: true
