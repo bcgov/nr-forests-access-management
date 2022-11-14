@@ -31,14 +31,15 @@ services:
     volumes:
       - "./server/flyway/sql:/flyway/sql"
     environment:
-      - FLYWAY_URL=jdbc:postgresql://fam-database:5432/fam
+      - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=test
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
     depends_on:
-      - fam-database
+      fam-database:
+        condition: service_healthy
     networks:
       - fam
 networks:
