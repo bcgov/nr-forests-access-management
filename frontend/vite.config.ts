@@ -30,5 +30,8 @@ export default defineConfig(async ({ command, mode }) => {
     server: {
       port: port,
     },
+    define: {
+      "global": {}, // Important var defined for solving Aws-Amplify bug with Vite(https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49)
+    },
   }
 });
