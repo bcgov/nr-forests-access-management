@@ -7,7 +7,8 @@ import awsExports from './aws-exports';
 import './assets/styles/styles.scss'
 import 'bootstrap'
 
-Amplify.configure(awsExports);
+Amplify.configure(awsExports); // Config Amplify for Cognito resource.
+
 const app = createApp(App)
 
 app.use(router)

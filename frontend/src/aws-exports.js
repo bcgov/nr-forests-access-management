@@ -6,8 +6,8 @@ const config = {
     oauth: {
       domain: 'dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com',
       scope: ['openid'],
-      redirectSignIn: 'http://localhost:3000/cognito/callback',
-      redirectSignOut: 'http://localhost:3000/cognito/logout',
+      redirectSignIn: 'http://localhost:5173/cognito/callback',
+      redirectSignOut: 'http://localhost:5173/cognito/logout',
       responseType: 'code',
     },
     federationTarget: 'COGNITO_USER_POOLS',
