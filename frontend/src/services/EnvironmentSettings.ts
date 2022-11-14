@@ -20,4 +20,9 @@ export class EnvironmentSettings {
     }
 
     private environmentDisplayNameKey:string = 'fam_environment_display_name'
+
+    getFamCognitoRedirectUrl(): string {
+        const famCognitoRedirectUrl = window.localStorage.getItem('fam_cognito_redirect_url') as string;
+        return famCognitoRedirectUrl
+    }
 }
