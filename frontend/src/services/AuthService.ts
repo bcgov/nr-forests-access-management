@@ -51,9 +51,15 @@ async function handlePostLogin() {
         });
 }
 
+/**
+ * Amplify method currentSession() will automatically refresh the accessToken and idToken 
+ * if tokens are expired and a valid refreshToken presented.
+ * 
+ * Automatically logout if unable to get currentSession().
+ */
 async function refreshToken(): Promise<FamLoginUser | undefined> {
     try {
-        // By calling Amplify .currentSession()
+        console.log("Refreshing Token...")
         const refreshedToken: CognitoUserSession = await Auth.currentSession()
         
         // Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
@@ -66,7 +72,9 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
         return famLoginUser;
     }
     catch(error) {
-        console.error("Problem refreshing token:", error)
+        console.error("Problem refreshing token or token is invalidated:", error)
+        // logout and redirect to login.
+        logout()
     }
 }
 
@@ -85,7 +93,8 @@ function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
 const methods = {
     login,
     handlePostLogin,
-    logout
+    logout,
+    refreshToken
 }
 
 const getters = {

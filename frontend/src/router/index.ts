@@ -1,5 +1,6 @@
 import AuthCallback from '@/components/AuthCallbackHandler.vue'
 import NotFound from '@/components/NotFound.vue'
+import AuthService from '@/services/AuthService'
 import { createRouter, createWebHistory } from 'vue-router'
 import AboutView from '../views/AboutView.vue'
 import GrantAccessView from '../views/GrantAccessView.vue'
@@ -60,6 +61,15 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes
+})
+
+// Global Router Guard
+router.beforeEach(async (to, from) => {
+  // Refresh token first before navigation.
+  if (AuthService.state.value.famLoginUser) { // condition needed to prevent infinite redirect
+    await AuthService.methods.refreshToken()
+  }
+
 })
 
 export { routes }
