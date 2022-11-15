@@ -6,8 +6,8 @@ const config = {
     oauth: {
       domain: 'dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com',
       scope: ['openid'],
-      redirectSignIn: 'http://localhost:5173/cognito/callback',
-      redirectSignOut: 'http://localhost:5173/cognito/logout',
+      redirectSignIn: 'http://localhost:5173/cognitoCallback', // For some reason, vue nested path (/cognito/callback) does not work yet.
+      redirectSignOut: 'http://localhost:5173/cognitoLogout',
       responseType: 'code',
     },
     federationTarget: 'COGNITO_USER_POOLS',
