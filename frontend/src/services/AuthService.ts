@@ -1,15 +1,25 @@
 import router from '@/router';
 import { readonly, ref } from 'vue';
 import { Auth } from 'aws-amplify';
+import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+
+const FAM_LOGIN_USER = 'famLoginUser'
+
+export interface FamLoginUser {
+    username: string,
+    token: any
+}
 
 const state = ref({
-    famUser: localStorage.getItem('famUser')? JSON.parse(localStorage.getItem('famUser') as string): undefined,
+    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)? 
+                    JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as (FamLoginUser | undefined | null)
+                    : undefined,
 })
 
 // functions
 
 function isLoggedIn(): boolean {
-    const loggedIn = !!state.value.famUser?.token; // TODO check if token expired later?
+    const loggedIn = !!state.value.famLoginUser?.token; // TODO check if token expired later?
     return loggedIn;
 }
 
@@ -23,27 +33,51 @@ async function login() {
 }
 
 async function logout() {
-    state.value.famUser = null;
-    localStorage.removeItem('famUser');
-    // TODO: Probably need to call Amplify library for sign out from Cognito?
-    router.push('/');
+    Auth.signOut()
+    storeFamUser(undefined)
+    console.log("User logged out.")
+    router.push('/')
 }
 
 async function handlePostLogin() {
     return Auth.currentAuthenticatedUser()
-        .then(userData => {
-            console.log("userData: ", userData)
-
-            const famUser = {
-                username: userData.username,
-                token: 'token' // TODO to be retrived.
-            };
-            state.value.famUser = famUser;
-            localStorage.setItem('famUser', JSON.stringify(famUser));
-            console.log("famUser set: ", localStorage.getItem('famUser'))
-            return userData;
+        .then(async (userData) => {
+            await refreshToken()
         })
-        .catch((error) => console.log('Not signed in'));
+        .catch((error) => {
+            console.log('Not signed in')
+            console.log('Authentication Error:', error)
+            return logout()
+        });
+}
+
+async function refreshToken(): Promise<FamLoginUser | undefined> {
+    try {
+        // By calling Amplify .currentSession()
+        const refreshedToken: CognitoUserSession = await Auth.currentSession()
+        
+        // Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
+        // Which isn't what we really want to display. The display username is "custom:idp_username" from token.
+        const famLoginUser = {
+            username: refreshedToken.getIdToken().decodePayload()['custom:idp_username'],
+            token: refreshedToken
+        };
+        storeFamUser(famLoginUser)
+        return famLoginUser;
+    }
+    catch(error) {
+        console.error("Problem refreshing token:", error)
+    }
+}
+
+function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
+    state.value.famLoginUser = famLoginUser
+    if (famLoginUser) {
+        localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser))
+    }
+    else {
+        localStorage.removeItem(FAM_LOGIN_USER)
+    }
 }
 
 // -----

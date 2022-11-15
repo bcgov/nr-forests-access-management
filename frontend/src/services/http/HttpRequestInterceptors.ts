@@ -5,7 +5,7 @@ import authService from '@/services/AuthService';
 // See "https://www.npmjs.com/package/axios#interceptors" if there is a need for synchronous interceptors behaviour.
 
 function addAuthHeaderItcpt(config: any) {
-    const token = authService.state.value.famUser?.token;
+    const token = authService.state.value.famLoginUser?.token;
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
