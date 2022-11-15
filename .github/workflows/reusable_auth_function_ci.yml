@@ -43,6 +43,9 @@ jobs:
         env:
           FLYWAY_PLACEHOLDERS_API_DB_USERNAME: ${{ env.API_DB_USERNAME }}
           FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: ${{ env.API_DB_PASSWORD }}
+          FLYWAY_PLACEHOLDERS_client_id_fam_console: 26tltjjfe7ktm4bte7av998d78 
+          FLYWAY_PLACEHOLDERS_client_id_fom_public: 2c7lo6rqp983km60u3p3heqeds
+          FLYWAY_PLACEHOLDERS_client_id_fom_ministry: gsbm3p62isc2ju807f0imu29s          
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
