@@ -1,5 +1,6 @@
 import router from '@/router';
 import { readonly, ref } from 'vue';
+import { Auth } from 'aws-amplify';
 
 const state = ref({
     famUser: localStorage.getItem('famUser')? JSON.parse(localStorage.getItem('famUser') as string): undefined,
@@ -14,20 +15,11 @@ function isLoggedIn(): boolean {
 
 async function login() {
     /*
-        TODO: Use Amplify library to connect to aws for redirect and sign in 
-        to get user token and inject it for 'famUser'.
+        See Aws-Amplify documenation: 
+        https://docs.amplify.aws/lib/auth/social/q/platform/js/
+        https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
-    const famUser = {
-        name: 'fake_user',
-        token: 'fake_token'
-    };
-
-    // update famUser state
-    state.value.famUser = famUser;
-
-    // store user details and jwt in local storage to keep user logged in.
-    localStorage.setItem('famUser', JSON.stringify(famUser));
-    router.push('/');
+    Auth.federatedSignIn();
 }
 
 async function logout() {
@@ -37,10 +29,28 @@ async function logout() {
     router.push('/');
 }
 
+async function handlePostLogin() {
+    return Auth.currentAuthenticatedUser()
+        .then(userData => {
+            console.log("userData: ", userData)
+
+            const famUser = {
+                username: userData.username,
+                token: 'token' // TODO to be retrived.
+            };
+            state.value.famUser = famUser;
+            localStorage.setItem('famUser', JSON.stringify(famUser));
+            console.log("famUser set: ", localStorage.getItem('famUser'))
+            return userData;
+        })
+        .catch((error) => console.log('Not signed in'));
+}
+
 // -----
 
 const methods = {
     login,
+    handlePostLogin,
     logout
 }
 

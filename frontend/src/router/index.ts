@@ -4,6 +4,7 @@ import ManageAccessView from '../views/ManageAccessView.vue'
 import GrantAccessView from '../views/GrantAccessView.vue'
 import SelectApplicationView from '../views/SelectApplicationView.vue'
 import AboutView from '../views/AboutView.vue'
+import AuthCallback from '@/components/AuthCallbackHandler.vue'
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -43,6 +44,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutView,
+  },
+  {
+    path: '/authCallback',
+    name: 'Cognito Auth Callback',
+    component: AuthCallback
   }
 ]
 
