@@ -11,6 +11,7 @@
 * [Local Database Setup](#local-database-setup-containerized)
   * [DB - Reset Database](#db---reset-database)
   * [Local Flyway Install](#local-flyway-install)
+  * [Using Alembic with a Custom DB connection](#using-alembic-with-a-custom-db-connection)
 
 
 # TLDR: Migrations - How to
@@ -141,8 +142,13 @@ Create sql for only V2:
 # Local Database Setup (containerized)
 
 For local development, a docker-compose file has been created in `server/backend`
-that spins up a postgres database that will back the api.
+that spins up a postgres database, runs alembic migrations, and then starts the
+api.
 
+```bash
+cd server/backend
+docker-compose up
+```
 
 ## DB - Reset database
 
@@ -176,4 +182,23 @@ you.
 ```
 wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.0.1/flyway-commandline-9.0.1-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-9.0.1/flyway /usr/local/bin`
 ```
+
+## Using Alembic with a Custom DB connection
+
+see the docker-compose in server/backend for example.  In a nutshell the -x
+custom parameter has been implemented for database urls.  By default
+if the following env vars are populated:
+* POSTGRES_USER
+* POSTGRES_PASSWORD
+* POSTGRES_HOST
+* POSTGRES_DB
+* POSTGRES_PORT
+
+... then alembic will use them to connect to the database.  If for some reason
+you want to override default behaviour, call alembic using the
+`-x url=<postgres connection string>` in the alembic command.
+
+For example:
+
+`alembic -x url=postgresql+psycopg2://db_user:specialpassword@specialhost:5555/ians_db upgrade head`
 
