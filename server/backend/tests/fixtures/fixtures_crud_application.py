@@ -7,7 +7,6 @@ from typing import Any, Dict, Generator, Union
 import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
-from api.app.models import model as models
 
 
 LOGGER = logging.getLogger(__name__)
