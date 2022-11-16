@@ -142,7 +142,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
         "flywayMethod": "MIGRATE",
         "placeholders": {
           "api_db_username" : "${local.flyway_db_creds.username}",
-          "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}"
+          "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}",
+          "client_id_fam_console" : "${aws_cognito_user_pool_client.fam_console_oidc_client.id}",
+          "client_id_fom_public" : "${aws_cognito_user_pool_client.fom_ministry_oidc_client.id}",
+          "client_id_fom_ministry" : "${aws_cognito_user_pool_client.fom_public_oidc_client.id}"
         },
         "target": "latest"
     },
@@ -158,7 +161,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
   JSON
 
   depends_on = [
-    aws_db_cluster_snapshot.fam_pre_flyway_snapshot
+    aws_db_cluster_snapshot.fam_pre_flyway_snapshot,
+    aws_cognito_user_pool_client.fam_console_oidc_client,
+    aws_cognito_user_pool_client.fom_ministry_oidc_client,
+    aws_cognito_user_pool_client.fom_public_oidc_client,
   ]
 
   count = var.execute_flyway ? 1 : 0

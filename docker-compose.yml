@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=fam
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_PORT=5342
+      - POSTGRES_PORT=5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -31,14 +31,18 @@ services:
     volumes:
       - "./server/flyway/sql:/flyway/sql"
     environment:
-      - FLYWAY_URL=jdbc:postgresql://fam-database:5432/fam
+      - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=test
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
+      - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78 
+      - FLYWAY_PLACEHOLDERS_client_id_fom_public=2c7lo6rqp983km60u3p3heqeds
+      - FLYWAY_PLACEHOLDERS_client_id_fom_ministry=gsbm3p62isc2ju807f0imu29s
     depends_on:
-      - fam-database
+      fam-database:
+        condition: service_healthy
     networks:
       - fam
 networks:

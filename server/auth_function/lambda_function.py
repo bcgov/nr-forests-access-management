@@ -1,5 +1,6 @@
 import logging
 import psycopg2
+import psycopg2.sql
 import config
 import event_type
 from typing import Any
