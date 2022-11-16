@@ -24,8 +24,7 @@ def testApplication_fixture(testClient_fixture, dbSession_famApplication_withdat
 def application_roles(
         dbSession_famApplication_withRoledata,
         testClient_fixture,
-        applicationData1
-    ):
+        applicationData1):
     db = dbSession_famApplication_withRoledata
     # have to commit so that the session spun up by the client can see the data
     db.commit()
