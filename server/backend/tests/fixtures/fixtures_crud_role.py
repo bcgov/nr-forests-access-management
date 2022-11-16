@@ -39,7 +39,6 @@ def dbSession_famRoletype(
 
     yield db  # use the session in tests.
 
-
     try:
         roleTypeRecord = (
             db.query(models.FamRoleType)
@@ -72,9 +71,7 @@ def dbSession_famRoletype(
 
 
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> Dict[
-    str, Union[str, datetime.datetime]
-]:
+def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -84,8 +81,7 @@ def concreteRoleTypeRecord() -> Dict[
 
 
 @pytest.fixture(scope="function")
-def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime,
-                                                str]]:
+def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
