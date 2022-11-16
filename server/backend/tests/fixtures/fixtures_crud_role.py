@@ -27,7 +27,9 @@ def dbSession_famRoles_withSimpleData(dbSession_famRoletype, simpleRoleData):
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoletype(dbSession: session.Session, abstractRoleTypeRecord, concreteRoleTypeRecord):
+def dbSession_famRoletype(
+    dbSession: session.Session, abstractRoleTypeRecord, concreteRoleTypeRecord
+):
     db = dbSession
 
     roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
@@ -37,29 +39,39 @@ def dbSession_famRoletype(dbSession: session.Session, abstractRoleTypeRecord, co
 
     yield db  # use the session in tests.
 
-
     try:
-        roleTypeRecord = db.query(models.FamRoleType).filter(models.FamRoleType.role_type_code == abstractRoleTypeRecord['role_type_code']).one()
+        roleTypeRecord = (
+            db.query(models.FamRoleType)
+            .filter(
+                models.FamRoleType.role_type_code ==
+                abstractRoleTypeRecord["role_type_code"]
+            )
+            .one()
+        )
         db.delete(roleTypeRecord)
-        #db.flush()
+        # db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.error(f"wasn't committed: {e}")
         db.rollback()
 
     try:
-        roleTypeRecord = db.query(models.FamRoleType).filter(models.FamRoleType.role_type_code == concreteRoleTypeRecord['role_type_code']).one()
+        roleTypeRecord = (
+            db.query(models.FamRoleType)
+            .filter(
+                models.FamRoleType.role_type_code ==
+                concreteRoleTypeRecord["role_type_code"]
+            )
+            .one()
+        )
         db.delete(roleTypeRecord)
-        #db.flush()
+        # db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.debug(f"wasn't committed: {e}")
         db.rollback()
 
 
-
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> Dict[
-    str, Union[str, datetime.datetime]
-]:
+def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -69,8 +81,7 @@ def concreteRoleTypeRecord() -> Dict[
 
 
 @pytest.fixture(scope="function")
-def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime,
-                                                str]]:
+def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
