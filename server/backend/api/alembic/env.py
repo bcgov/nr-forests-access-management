@@ -1,6 +1,7 @@
 from logging.config import fileConfig
+import logging
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, create_engine
 from sqlalchemy import pool
 
 from alembic import context
@@ -19,6 +20,12 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+# override logging setup for debugging
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+LOGGER.debug("test test test")
+
+
 #from app.db.base import Base  # noqa
 
 # add your model's MetaData object here
@@ -32,6 +39,7 @@ target_metadata = app.models.model.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
 
 def process_revision_directives(context, revision, directives):
     # extract Migration
@@ -57,7 +65,17 @@ def get_url():
     # server = os.getenv("POSTGRES_SERVER", "db")
     # db = os.getenv("POSTGRES_DB", "app")
     # url = f"postgresql://{user}:{password}@{server}/{db}"
-    url = app.config.getDBString()
+    url = None
+    x_param_url = context.get_x_argument(as_dictionary=True).get('url')
+    LOGGER.debug(f"x_param_url: {x_param_url}")
+    if x_param_url:
+        url = x_param_url
+        LOGGER.debug(f"url from -x: {url}")
+
+    if not url:
+        url = app.config.getDBString()
+        LOGGER.debug(f"url from app config: {url}")
+    LOGGER.debug(f"captured the url string: {url}")
     return url
 
 def run_migrations_offline() -> None:
@@ -97,11 +115,16 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    #connectable = create_engine(get_url())
+    #    with connectable.connect() as connection:
+    # connectable = engine_from_config(
+    #     config.get_section(config.config_ini_section),
+    #     prefix="sqlalchemy.",
+    #     poolclass=pool.NullPool,
+    # )
+    url = get_url()
+    print(f"url: {url}")
+    connectable = create_engine(get_url())
 
     with connectable.connect() as connection:
         context.configure(

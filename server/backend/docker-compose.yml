@@ -14,7 +14,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=fam
-      - POSTGRES_PORT=5342
+      - POSTGRES_PORT=5432
       - POSTGRES_HOST_AUTH_METHOD=trust
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -30,19 +30,30 @@ services:
       - fam
   fam-api:
     container_name: fam-api
-    #build: ./
+    depends_on:
+      - db
     env_file:
       - env-db-dev.env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=fam
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - api_db_username=fam_proxy_api
+      - api_db_password=test
     entrypoint:
-      - sh
+      - bash
       - -c
       -  cd /usr/src &&
-        ls -la &&
-        python3 -m venv venvdc &&
-        . ./venvdc/bin/activate &&
+        python3 -m venv venv_docker &&
+        export &&
+        . ./venv_docker/bin/activate &&
         pip install -r requirements.txt  -r requirements-dev.txt &&
-        uvicorn api.app.main:app --reload --workers 1 --host localhost --port 8000
-    #command: uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+        cd api &&
+        alembic -x url=postgresql+psycopg2://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@db:$${POSTGRES_PORT}/$${POSTGRES_DB} upgrade head &&
+        cd .. &&
+        uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
       - ./:/usr/src/
     ports:
@@ -55,7 +66,6 @@ networks:
   fam:
     driver: bridge
     attachable: true
-    # ingress: true
 
       #     #driver: bridge
 #     name: pre-existing
