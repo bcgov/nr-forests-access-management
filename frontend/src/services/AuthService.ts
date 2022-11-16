@@ -1,12 +1,14 @@
 import router from '@/router';
-import { readonly, ref } from 'vue';
-import { Auth } from 'aws-amplify';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { Auth } from 'aws-amplify';
+import { readonly, ref } from 'vue';
 
 const FAM_LOGIN_USER = 'famLoginUser'
 
 export interface FamLoginUser {
     username?: string,
+    idpProvider?: string,
+    roles?: string[],
     token?: CognitoUserSession
 }
 
@@ -53,7 +55,7 @@ async function handlePostLogin() {
 
 /**
  * Amplify method currentSession() will automatically refresh the accessToken and idToken 
- * if tokens are expired and a valid refreshToken presented.
+ * if tokens are "expired" and a valid refreshToken presented.
  *   // console.log("currentAuthToken: ", currentAuthToken)
  *   // console.log("ID Token: ", currentAuthToken.getIdToken().getJwtToken())
  *   // console.log("Access Token: ", currentAuthToken.getAccessToken().getJwtToken())
@@ -64,13 +66,9 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
     try {
         console.log("Refreshing Token...")
         const currentAuthToken: CognitoUserSession = await Auth.currentSession()
+        console.log("currentAuthToken: ", currentAuthToken)
 
-        // Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
-        // Which isn't what we really want to display. The display username is "custom:idp_username" from token.
-        const famLoginUser = {
-            username: currentAuthToken.getIdToken().decodePayload()['custom:idp_username'],
-            token: currentAuthToken
-        };
+        const famLoginUser = parseToken(currentAuthToken)
         storeFamUser(famLoginUser)
         return famLoginUser;
     }
@@ -79,6 +77,24 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
         // logout and redirect to login.
         logout()
     }
+}
+
+/**
+ * See OIDC Attribute Mapping mapping reference: 
+ *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
+ * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
+ * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
+ */
+function parseToken(token: CognitoUserSession): FamLoginUser {
+    const decodedIdToken = token.getIdToken().decodePayload()
+    const decodedAccessToken = token.getAccessToken().decodePayload()
+    const famLoginUser = {
+        username: decodedIdToken['custom:idp_username'],
+        idpProvider: decodedIdToken['identities']['providerName'],
+        roles: decodedAccessToken['cognito:groups'],
+        token: token
+    };
+    return famLoginUser;
 }
 
 function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
