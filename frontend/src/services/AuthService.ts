@@ -6,8 +6,8 @@ import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 const FAM_LOGIN_USER = 'famLoginUser'
 
 export interface FamLoginUser {
-    username: string,
-    token: any
+    username?: string,
+    token?: CognitoUserSession
 }
 
 const state = ref({
@@ -41,7 +41,7 @@ async function logout() {
 
 async function handlePostLogin() {
     return Auth.currentAuthenticatedUser()
-        .then(async (userData) => {
+        .then(async (_userData) => {
             await refreshToken()
         })
         .catch((error) => {
@@ -54,19 +54,22 @@ async function handlePostLogin() {
 /**
  * Amplify method currentSession() will automatically refresh the accessToken and idToken 
  * if tokens are expired and a valid refreshToken presented.
+ *   // console.log("currentAuthToken: ", currentAuthToken)
+ *   // console.log("ID Token: ", currentAuthToken.getIdToken().getJwtToken())
+ *   // console.log("Access Token: ", currentAuthToken.getAccessToken().getJwtToken())
  * 
  * Automatically logout if unable to get currentSession().
  */
 async function refreshToken(): Promise<FamLoginUser | undefined> {
     try {
         console.log("Refreshing Token...")
-        const refreshedToken: CognitoUserSession = await Auth.currentSession()
-        
+        const currentAuthToken: CognitoUserSession = await Auth.currentSession()
+
         // Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
         // Which isn't what we really want to display. The display username is "custom:idp_username" from token.
         const famLoginUser = {
-            username: refreshedToken.getIdToken().decodePayload()['custom:idp_username'],
-            token: refreshedToken
+            username: currentAuthToken.getIdToken().decodePayload()['custom:idp_username'],
+            token: currentAuthToken
         };
         storeFamUser(famLoginUser)
         return famLoginUser;

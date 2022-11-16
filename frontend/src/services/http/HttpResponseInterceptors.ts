@@ -1,6 +1,6 @@
 
+import AuthService from "@/services/AuthService";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-
 /*
 Note! Any status other than 2xx will be rejected (default status handling from Axios unless changed).
 */
@@ -9,11 +9,11 @@ Note! Any status other than 2xx will be rejected (default status handling from A
 async function forbiddenStatusItcpt(error: any) {
     // 403 special handling.
     if(error.response.status == 403) {
-        await refreshToken(error.request, error.response);
+        await refreshTokenAndReTry(error.request, error.response);
     }
 }
 
-async function refreshToken(request: AxiosRequestConfig, response: AxiosResponse) {
+async function refreshTokenAndReTry(request: AxiosRequestConfig, response: AxiosResponse) {
     console.log("refreshing token...")
     // TODO implement in future.
 }
