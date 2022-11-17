@@ -1,7 +1,9 @@
 export class EnvironmentSettings {
 
+    readonly env = JSON.parse(window.localStorage.getItem('env_data') as string)
+
     getApiBaseUrl(): string {
-        const apiBaseUrl = window.localStorage.getItem('fam_api_base_url') as string;
+        const apiBaseUrl = this.env.VUE_APP_API_GW_BASE_URL.value;
         return apiBaseUrl
     }
 

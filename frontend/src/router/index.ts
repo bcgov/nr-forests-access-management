@@ -49,7 +49,7 @@ const routes = [
   },
   {
     path: '/authCallback',
-    name: 'Cognito Auth Callback',
+    name: 'Cognito Auth (success) Callback',
     component: AuthCallback
   },
   {
