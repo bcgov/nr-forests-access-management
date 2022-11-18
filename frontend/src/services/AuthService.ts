@@ -9,7 +9,7 @@ export interface FamLoginUser {
     username?: string,
     idpProvider?: string,
     roles?: string[],
-    token?: CognitoUserSession
+    authToken?: CognitoUserSession
 }
 
 const state = ref({
@@ -21,7 +21,7 @@ const state = ref({
 // functions
 
 function isLoggedIn(): boolean {
-    const loggedIn = !!state.value.famLoginUser?.token; // TODO check if token expired later?
+    const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
     return loggedIn;
 }
 
@@ -85,14 +85,14 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
  * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
  * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
  */
-function parseToken(token: CognitoUserSession): FamLoginUser {
-    const decodedIdToken = token.getIdToken().decodePayload()
-    const decodedAccessToken = token.getAccessToken().decodePayload()
+function parseToken(authToken: CognitoUserSession): FamLoginUser {
+    const decodedIdToken = authToken.getIdToken().decodePayload()
+    const decodedAccessToken = authToken.getAccessToken().decodePayload()
     const famLoginUser = {
         username: decodedIdToken['custom:idp_username'],
         idpProvider: decodedIdToken['identities']['providerName'],
         roles: decodedAccessToken['cognito:groups'],
-        token: token
+        authToken: authToken
     };
     return famLoginUser;
 }
