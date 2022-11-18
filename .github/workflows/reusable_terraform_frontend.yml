@@ -69,10 +69,10 @@ jobs:
           EOF
           terragrunt run-all output -json
 
-      - name: Create server.json file
+      - name: Create env.json file
         uses: DamianReeves/write-file-action@master
         with:
-          path: infrastructure/frontend/dist/server.json
+          path: infrastructure/frontend/dist/env.json
           contents: |
             ${{ steps.terragrunt-server-output.outputs.stdout }}
           write-mode: overwrite
@@ -81,9 +81,9 @@ jobs:
         working-directory: infrastructure/frontend/dist
         name: Terragrunt Server Output Verify
         run: |
-          echo "printing out contents of server.json"
+          echo "printing out contents of env.json"
           echo "===================================="
-          cat server.json
+          cat env.json
           echo "===================================="
 
       - name: Terragrunt ${{ inputs.tf_subcommand }}
