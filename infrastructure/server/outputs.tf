@@ -1,4 +1,4 @@
-output "VUE_APP_API_GW_BASE_URL" {
+output "fam_api_base_url" {
   description = "Base URL for API Gateway stage."
   value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
 }
@@ -17,7 +17,7 @@ output "fam_user_pool_id" {
 
 output "fam_console_web_client_id" {
   description = "Web client ID for the FAM OIDC client for front end connection"
-  value       = aws_cognito_user_pool_client.fom_public_oidc_client.id
+  value       = aws_cognito_user_pool_client.fam_console_oidc_client.id
 }
 
 output "fam_cognito_domain" {
