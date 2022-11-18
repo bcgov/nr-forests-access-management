@@ -12,7 +12,6 @@
     "test-coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-amplify/ui-vue": "^2.4.25",
     "@popperjs/core": "^2.11.6",
     "aws-amplify": "^4.3.43",
     "axios": "^1.1.3",
