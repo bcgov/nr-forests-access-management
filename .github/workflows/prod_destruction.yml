@@ -1,14 +1,14 @@
-name: DESTROY Development Backend
+name: Caution!! DESTROY Production Backend
 
 on:
   workflow_dispatch:
 
 jobs:
 
-  aws-dev-destruction-server:
+  aws-prod-destruction-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with: 
-      environment_name: dev
+      environment_name: prod
       tf_subcommand: destroy
     secrets: 
       licenceplate: ${{ secrets.LICENCEPLATE}}
@@ -19,11 +19,11 @@ jobs:
   # Commenting out the destroy because we want cloudfront domain to be persistent
   # for DNS configuration reasons
 
-  # aws-dev-destruction-frontend:
-  #   needs: aws-dev-destruction-server
+  # aws-prod-destruction-frontend:
+  #   needs: aws-prod-destruction-server
   #   uses: ./.github/workflows/reusable_terraform_frontend.yml
   #   with: 
-  #     environment_name: dev
+  #     environment_name: prod
   #     tf_subcommand: destroy
   #   secrets: 
   #     licenceplate: ${{ secrets.LICENCEPLATE}}
