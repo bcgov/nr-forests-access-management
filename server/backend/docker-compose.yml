@@ -47,9 +47,6 @@ services:
       - bash
       - -c
       -  cd /usr/src &&
-        python3 -m venv venv_docker &&
-        export &&
-        . ./venv_docker/bin/activate &&
         pip install -r requirements.txt  -r requirements-dev.txt &&
         cd api &&
         alembic -x url=postgresql+psycopg2://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB} upgrade head &&
