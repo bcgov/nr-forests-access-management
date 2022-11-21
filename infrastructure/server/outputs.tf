@@ -24,3 +24,8 @@ output "fam_cognito_domain" {
   description = "Domain associated with the Cognito user pool for front end connection"
   value       = aws_cognito_user_pool_domain.main.domain
 }
+
+output "target_env" {
+  description = "dev, test, or prod in AWS"
+  value = var.target_env
+}
