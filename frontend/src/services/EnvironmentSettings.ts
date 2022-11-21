@@ -4,7 +4,7 @@ export class EnvironmentSettings {
 
     constructor() {
         this.env = JSON.parse(window.localStorage.getItem('env_data') as string)
-        const environment = this.env?.env as string
+        const environment = this.env?.target_env as string
         if (environment && (environment == 'dev' || environment == 'test')) {
             this.setEnvironmentDisplayName(environment)
         }
