@@ -32,9 +32,13 @@ export default defineConfig(async ({ command, mode }) => {
     // root: path.resolve(__dirname, 'src'),
     server: {
       port: port,
-    },
-    define: {
-      "global": {}, // Important var defined for solving Aws-Amplify bug with Vite(https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49)
-    },
+    }
+
+    // Note: define 'global' to solve aws-amplify `global is not defined` error.
+    // but does not work when using Vitest and configured as using 'jsdom' above.
+    //    ,
+    //    define: {
+    //      "global": {}, // Important var defined for solving Aws-Amplify bug with Vite(https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49)
+    //    },
   }
 });

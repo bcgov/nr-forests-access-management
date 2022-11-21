@@ -1,9 +1,21 @@
 export class EnvironmentSettings {
 
-    readonly env = JSON.parse(window.localStorage.getItem('env_data') as string)
+    env: any
+
+    constructor() {
+        this.env = JSON.parse(window.localStorage.getItem('env_data') as string)
+        const environment = this.env?.env as string
+        if (environment && (environment == 'dev' || environment == 'test')) {
+            this.setEnvironmentDisplayName(environment)
+        }
+        else {
+            this.setEnvironmentDisplayName('') // environment == 'prod'
+        }
+    }
 
     getApiBaseUrl(): string {
-        const apiBaseUrl = this.env.VUE_APP_API_GW_BASE_URL.value;
+        let apiBaseUrl = this.env?.VUE_APP_API_GW_BASE_URL.value;
+        apiBaseUrl? null : apiBaseUrl = 'http://127.0.0.1:8000' // local api
         return apiBaseUrl
     }
 
