@@ -77,18 +77,6 @@ jobs:
             ${{ steps.terragrunt-server-output.outputs.stdout }}
           write-mode: overwrite
 
-      - name: Append Additional Environment Settings.
-        working-directory: infrastructure/frontend/dist
-        run: |
-          # Remove last line ( "}" )
-          head -n -1 env.json > env.tmp.json && mv env.tmp.json env.json
-
-          # Add the additional key/value pair to env.json
-          echo '  ,"env": "${{ inputs.environment_name }}"' >> env.json
-          
-          # Enclose end of json ( "}" )
-          echo '}' >> env.json
-
       - id: terragrunt-server-output-test
         working-directory: infrastructure/frontend/dist
         name: Terragrunt Server Output Verify
