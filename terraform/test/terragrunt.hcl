@@ -20,6 +20,6 @@ generate "test_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Test_aza_net"
   subnet_app_b = "App_Test_azb_net"
-  front-end-redirect-path = "https://d14evo4qtbdgsm.cloudfront.net"
+  front_end_redirect_path = "https://d14evo4qtbdgsm.cloudfront.net"
 EOF
 }
