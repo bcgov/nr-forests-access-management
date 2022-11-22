@@ -20,5 +20,6 @@ generate "dev_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Dev_aza_net"
   subnet_app_b = "App_Dev_azb_net"
+  front_end_redirect_path = "https://d2solh97t525i7.cloudfront.net"
 EOF
 }

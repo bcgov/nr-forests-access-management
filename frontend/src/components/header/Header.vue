@@ -57,11 +57,17 @@
 
     <div class="nav bc-nav">
       <RouterLink class="nav-link" to="/">Home</RouterLink> 
-      <RouterLink class="nav-link" to="/application" 
+      <RouterLink class="nav-link"
+        to="/application" 
         v-if="authService.getters.isLoggedIn()">
         Select Application
       </RouterLink> 
       <RouterLink class="nav-link" to="/about">About</RouterLink> 
+      <div style="flex-grow: 2;"></div>
+      <div class="user-label"
+        v-if="authService.getters.isLoggedIn()">
+        Welcome <span>{{authService.state.value.famLoginUser?.username}}</span> !
+      </div>
     </div>
   </header>
 

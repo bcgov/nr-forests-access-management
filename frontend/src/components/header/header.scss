@@ -85,6 +85,17 @@
       color: $mn-color;
     }
   }
+  .user-label{
+    display: flex; 
+    padding-right: 1rem;
+    padding-left: 1rem; 
+    align-items: center; 
+    text-align: right;
+    span {
+      margin: auto 7px;
+      color: $gold;
+    }
+  }
 }
 
 .nav-logo {

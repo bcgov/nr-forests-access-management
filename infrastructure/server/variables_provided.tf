@@ -108,3 +108,10 @@ variable "db_cluster_snapshot_identifier" {
   }
 }
 
+# Variables for front-end config
+
+variable "front_end_redirect_path" {
+  description = "Path to public FAM front-end (for redirect URI)"
+  type = string
+}
+
