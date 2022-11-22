@@ -84,4 +84,4 @@ def test_get_fam_application_roles(application_roles, applicationData1):
     resp = client.get(roleEndPoint)
     LOGGER.debug(f"resp status: {resp.status_code}")
     resp_data = resp.json()
-    LOGGER.debug(f"resp data: {resp_data}")
+    LOGGER.debug(f"resp data: {resp.text}")

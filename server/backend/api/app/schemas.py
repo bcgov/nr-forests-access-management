@@ -89,8 +89,10 @@ class FamRoleCreate(BaseModel):
         orm_mode = True
 
 
-class FamApplicationRoleGet(FamApplication):
+class FamApplicationRoleGet(FamApplicationCreate):
+    application_id: str
     fam_role: List[FamRoleCreate]
+
 
     class Config:
         orm_mode = True
