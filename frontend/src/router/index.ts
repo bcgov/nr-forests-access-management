@@ -4,6 +4,7 @@ import ManageAccessView from '../views/ManageAccessView.vue'
 import GrantAccessView from '../views/GrantAccessView.vue'
 import SelectApplicationView from '../views/SelectApplicationView.vue'
 import AboutView from '../views/AboutView.vue'
+import { useToast } from 'vue-toastification'
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -49,6 +50,11 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes
+})
+
+// Clear any toast messages before navigating to a new screen.
+router.beforeEach( ()=> {
+  useToast().clear()
 })
 
 export { routes }  
