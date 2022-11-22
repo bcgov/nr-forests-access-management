@@ -1,5 +1,11 @@
 const env = JSON.parse(window.localStorage.getItem('env_data'))
 
+/*
+  If there is a need to use this locally, replace below with:
+    'redirectSignIn': 'http://localhost:5173/authCallback' and 
+    'redirectSignOut': 'http://localhost:5173/authLogout' and 
+    'ADD (not replace)' these local values to AWS Cognito on that environment.
+*/
 const config = {
     aws_cognito_region: env.fam_cognito_region.value,
     aws_user_pools_id: env.fam_user_pool_id.value,
@@ -8,8 +14,8 @@ const config = {
     oauth: {
       domain: `${env.fam_cognito_domain.value}.auth.ca-central-1.amazoncognito.com`,
       scope: ['openid'],
-      redirectSignIn: 'http://localhost:5173/authCallback', // For some reason, vue nested path (/cognito/callback) does not work yet.
-      redirectSignOut: 'http://localhost:5173/authLogout',
+      redirectSignIn: `${env.front_end_redirect_base_url.value}/authCallback`, // For some reason, vue nested path (/cognito/callback) does not work yet.
+      redirectSignOut: `${env.front_end_redirect_base_url.value}/authLogout`,
       responseType: 'code',
     },
     federationTarget: 'COGNITO_USER_POOLS',

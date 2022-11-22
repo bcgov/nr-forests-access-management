@@ -14,7 +14,7 @@ export class EnvironmentSettings {
     }
 
     getApiBaseUrl(): string {
-        let apiBaseUrl = this.env?.VUE_APP_API_GW_BASE_URL.value;
+        let apiBaseUrl = this.env?.fam_api_base_url.value;
         apiBaseUrl? null : apiBaseUrl = 'http://127.0.0.1:8000' // local api
         return apiBaseUrl
     }
