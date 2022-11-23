@@ -2,11 +2,11 @@ import AuthCallback from '@/components/AuthCallbackHandler.vue'
 import NotFound from '@/components/NotFound.vue'
 import AuthService from '@/services/AuthService'
 import { createRouter, createWebHistory } from 'vue-router'
-import AboutView from '../views/AboutView.vue'
-import GrantAccessView from '../views/GrantAccessView.vue'
-import HomeView from '../views/HomeView.vue'
-import ManageAccessView from '../views/ManageAccessView.vue'
-import SelectApplicationView from '../views/SelectApplicationView.vue'
+import AboutView from '@/views/AboutView.vue'
+import GrantAccessView from '@/views/GrantAccessView.vue'
+import HomeView from '@/views/HomeView.vue'
+import ManageAccessView from '@/views/ManageAccessView.vue'
+import SelectApplicationView from '@/views/SelectApplicationView.vue'
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
