@@ -118,5 +118,5 @@ variable "front_end_redirect_path" {
 variable "local_frontend_redirect_path" {
   description = "Path to local FAM front-end (for redirect URI), only for dev"
   type = string
+  default = ""
 }
-
