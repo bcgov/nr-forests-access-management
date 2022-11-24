@@ -4,10 +4,12 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "${var.front_end_redirect_path}/authCallback"
+    "${var.front_end_redirect_path}/authCallback",
+    "${var.local_frontend_redirect_path}" != "" ? "${var.local_frontend_redirect_path}/authCallback" : ""
   ]
   logout_urls = [
-    "${var.front_end_redirect_path}/authLogout"
+    "${var.front_end_redirect_path}/authLogout",
+    "${var.local_frontend_redirect_path}" != "" ? "${var.local_frontend_redirect_path}/authLogout" : ""
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
