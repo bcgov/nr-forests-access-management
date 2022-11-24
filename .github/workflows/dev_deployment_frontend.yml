@@ -1,8 +1,12 @@
 name: DEPLOY Dev Environment (Frontend Only)
 
 on:
-  workflow_dispatch:
-
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "frontend/**"
+      
 jobs:
 
   aws-test-deployment-frontend:
