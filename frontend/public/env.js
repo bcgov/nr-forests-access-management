@@ -1,4 +1,5 @@
-import env from "./env.json" assert { type: "json" }; // type: "json" is needed or browser will not allow import json.
-
-window.localStorage.setItem('env_data', JSON.stringify(env))
-
+fetch('/env.json')
+.then(res => res.json())
+.then(data => {
+    window.localStorage.setItem('env_data', JSON.stringify(data))
+})
