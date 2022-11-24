@@ -7,7 +7,7 @@
      */
 
     authService.methods.handlePostLogin().then(data => {
-        router.push('/')
+        router.push('/application')
     })
 
 </script>

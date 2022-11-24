@@ -20,19 +20,14 @@ export class ApiService {
 
     async getApplications():Promise<Application[]> {
         const url = this.apiUrl + '/fam_applications'
-        try {
-            // TODO: Clean up logs and/or use logging solution?
-            console.log(`Retrieving applications from ${url}`)
-            const res = await Http.get(url);
-            var apps = res.data;
-            console.log(`Retrieved ${apps.length} applications`)
-            console.log(apps)
-            return apps;
-        } catch (error) {
-            // TODO: Better error handling
-            console.log(`Error retrieving applications via ${url}`)
-            throw error
+        // TODO: Clean up logs and/or use logging solution?
+        console.log(`Retrieving applications from ${url}`)
+        const res = await Http.get(url);
+        if (res == undefined) {
+            throw new Error(`Failure retrieving applications from ${url}`)
         }
+        var apps = res.data;
+        return apps;
     }
 
 }

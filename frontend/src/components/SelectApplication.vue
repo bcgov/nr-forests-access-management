@@ -3,6 +3,7 @@ import router from '../router'
 import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationState'
 import type { Application } from '@/services/ApplicationState'
 import { ApiService } from '@/services/ApiService';
+import { useToast } from 'vue-toastification'
 
 const apiService = new ApiService()
 
@@ -12,10 +13,10 @@ setTimeout( async () => {
   try {
     applicationsUserAdministers.value = await apiService.getApplications()
   } catch (error) {
-    // TODO: Better error handling.
-    alert('Error retrieving applications from API, using fake test data... Error: ' + error)
-
+    const toast = useToast();
+    toast.error("An error occurred loading applications. Please refresh the screen.\n If the error persists, try again later or contact support.")
     // TODO: Workaround broken front-end. Remove once front-end is stable.
+    toast.warning("Using fake test data as temporary working for applications not working. REMOVE BEFORE PRODUCTION.")
     applicationsUserAdministers.value = [
       { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 }, 
       { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
@@ -50,12 +51,9 @@ setTimeout( async () => {
     &nbsp;
     <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
     <br/>
-    <br/>
-    <p>Selection: {{selectedApplication}}</p>
-    <br/>
   </div>
   <div v-else>
-    <p>Loading...</p>
+    <p>Loading applications...</p>
   </div>
   </div>
 </template>
