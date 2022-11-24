@@ -7,6 +7,8 @@ import { applicationsUserAdministers, selectedApplicationShortDisplayText } from
   <span>
   <template v-if="$router.currentRoute.value.path == '/'">  
   </template>
+  <template v-else-if="$router.currentRoute.value.path == '/authCallback'">  
+  </template>
   <template v-else>
     <RouterLink to="/">Home</RouterLink> 
     <template v-if="$router.currentRoute.value.path == '/application'">
