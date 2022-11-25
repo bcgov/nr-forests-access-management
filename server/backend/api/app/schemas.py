@@ -96,6 +96,13 @@ class FamApplicationRoles(FamRoleCreate):
         fields = {'create_user': {'exclude': True}}
 
 
+class FamApplicationRoleGet(FamApplication):
+    fam_role: List[FamRoleCreate]
+
+    class Config:
+        orm_mode = True
+
+
 class FamUserGet(FamUser):
     user_id: int
     create_date: datetime

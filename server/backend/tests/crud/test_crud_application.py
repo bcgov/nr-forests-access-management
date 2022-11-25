@@ -182,7 +182,6 @@ def test_getFamApplications_nodata(dbSession):
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
 
-
 def test_createFamApplication(dbSession, applicationData1):
     # make sure we are starting off with no records
     famApps = crud_application.getFamApplications(dbSession)

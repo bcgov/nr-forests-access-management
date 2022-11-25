@@ -32,8 +32,6 @@ def dbSession_famRoletype(
 ):
     db = dbSession
 
-    roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
-    db.add(roleTypeModel_abstract)
     roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
     db.add(roleTypeModel_concrete)
 
@@ -52,21 +50,6 @@ def dbSession_famRoletype(
         # db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.error(f"wasn't committed: {e}")
-        db.rollback()
-
-    try:
-        roleTypeRecord = (
-            db.query(models.FamRoleType)
-            .filter(
-                models.FamRoleType.role_type_code
-                == concreteRoleTypeRecord["role_type_code"]
-            )
-            .one()
-        )
-        db.delete(roleTypeRecord)
-        # db.flush()
-    except sqlalchemy.exc.InvalidRequestError as e:
-        LOGGER.debug(f"wasn't committed: {e}")
         db.rollback()
 
 
@@ -106,15 +89,16 @@ def concreteRoleData() -> Dict[str, str]:
     }
     yield roleData
 
-@pytest.fixture(scope="function")
-def simpleRoleData2() -> Dict[str, str]:
-    roleData = {
-        "role_name": "FAM_TEST",
-        "role_purpose": "FAM Testing",
-        "create_user": "Patrick Roy",
-        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
-    }
-    yield roleData
+# @pytest.fixture(scope="function")
+# def simpleRoleData2() -> Dict[str, str]:
+#     roleData = {
+#         "role_name": "FAM_TEST",
+#         "role_purpose": "FAM Testing",
+#         "create_user": "Patrick Roy",
+#         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+#     }
+#     yield roleData
+
 
 
 @pytest.fixture(scope="function")
@@ -155,6 +139,17 @@ def abstractRoleData() -> Dict[str, str]:
 def abstractRoleData_asModel(abstractRoleData) -> Dict[str, str]:
     abstractRole = model.FamRole(**abstractRoleData)
     yield abstractRole
+
+
+# @pytest.fixture(scope="function")
+# def simpleRoleData2() -> Dict[str, str]:
+#     roleData = {
+#         "role_name": "FAM_TEST",
+#         "role_purpose": "FAM Testing",
+#         "create_user": "Patrick Roy",
+#         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+#     }
+#     yield roleData
 
 
 @pytest.fixture(scope="function")
