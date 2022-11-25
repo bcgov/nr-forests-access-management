@@ -22,6 +22,7 @@ def dbSession_famApplication(
     appData = crud_application.createFamApplication(
         famApplication=applicationData1AsPydantic, db=db
     )
+    yield db
 
     try:
         db.delete(appData)
