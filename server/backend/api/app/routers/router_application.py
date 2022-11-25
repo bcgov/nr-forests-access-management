@@ -21,6 +21,7 @@ router = APIRouter()
     "",
     response_model=List[schemas.FamApplication],
     status_code=200
+)
 def get_fam_applications(
     response: Response, db: Session = Depends(dependencies.get_db)
 ):
