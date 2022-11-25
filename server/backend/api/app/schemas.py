@@ -88,14 +88,12 @@ class FamRoleCreate(BaseModel):
     class Config:
         orm_mode = True
 
-
-class FamApplicationRoleGet(FamApplicationCreate):
-    application_id: str
-    fam_role: List[FamRoleCreate]
-
+class FamApplicationRoles(FamRoleCreate):
+    role_id: int
 
     class Config:
         orm_mode = True
+        fields = {'create_user': {'exclude': True}}
 
 
 class FamUserGet(FamUser):

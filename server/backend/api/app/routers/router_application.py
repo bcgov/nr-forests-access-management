@@ -71,7 +71,7 @@ def delete_fam_application(
 
 @router.get(
     "/{application_id}/fam_roles",
-    response_model=schemas.FamApplicationRoleGet,
+    response_model=List[schemas.FamApplicationRoles],
     status_code=200,
 )
 def get_fam_application_roles(

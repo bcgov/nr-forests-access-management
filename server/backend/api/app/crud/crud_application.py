@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import List
+from typing import List, Union
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
@@ -102,23 +102,25 @@ def deleteFamApplication(db: Session, application_id: int):
 
 
 def getFamApplicationRoles(
-    db: Session, application_id: int
-) -> List[models.FamApplication]:
-    """Given a database session and an application id, will return a
-    FamApplication model with related roles if any exist.
+        db: Session,
+        application_id: int) -> List[models.FamApplication]:
+    """Given a database session and an application id, will return a roles that
+    have been defined for the application id.  Currently does not return any
+    child roles.
 
     :param db: input database session object
     :param application_id: the application id who's roles are to be retrieved
-    :return: orm FamApplication model with join to roles table, listing related
-        roles if any exist.
+    :return: orm FamRole model listing related roles that have been created
+             for the given application.
     """
-    # Only return on record because querying on the primary key so there can
-    # only ever be one record.
+
     application = (
-        db.query(models.FamApplication)
+        db.query(models.FamRole)
         # .join(models.FamRole)
         # .options(load_only("application_id"))
-        .filter(models.FamApplication.application_id == application_id).one()
+        .filter(models.FamRole.application_id == application_id,
+                models.FamRole.parent_role_id == None)
+        .all()
     )
     return application
 

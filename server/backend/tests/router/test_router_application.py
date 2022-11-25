@@ -74,7 +74,9 @@ def test_post_fam_application(testClient_fixture, applicationData1):
     assert deleteResponse.status_code == 200
 
 
-def test_get_fam_application_roles(application_roles, applicationData1):
+def test_get_fam_application_roles(
+        application_roles,
+        applicationData1):
     client = application_roles['client']
     app_id = application_roles['app_id']
     # need to get the app id

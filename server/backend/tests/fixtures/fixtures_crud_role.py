@@ -13,16 +13,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoles_withSimpleData(dbSession_famRoletype, simpleRoleData):
+def dbSession_famRoles_concrete(dbSession_famRoletype, concreteRoleData_asModel):
     db = dbSession_famRoletype
 
     # add a record to the database
-    newRole = model.FamRole(**simpleRoleData)
-    db.add(newRole)
+    db.add(concreteRoleData_asModel)
+    # TODO: ideally re-use the db session and remove the commit
     db.commit()
     yield db  # use the session in tests.
-    LOGGER.debug(f"newRole: {newRole}")
-    db.delete(newRole)
+    LOGGER.debug(f"newRole: {concreteRoleData_asModel}")
+    db.delete(concreteRoleData_asModel)
     db.commit()
 
 
@@ -43,8 +43,8 @@ def dbSession_famRoletype(
         roleTypeRecord = (
             db.query(models.FamRoleType)
             .filter(
-                models.FamRoleType.role_type_code ==
-                abstractRoleTypeRecord["role_type_code"]
+                models.FamRoleType.role_type_code
+                == abstractRoleTypeRecord["role_type_code"]
             )
             .one()
         )
@@ -58,8 +58,8 @@ def dbSession_famRoletype(
         roleTypeRecord = (
             db.query(models.FamRoleType)
             .filter(
-                models.FamRoleType.role_type_code ==
-                concreteRoleTypeRecord["role_type_code"]
+                models.FamRoleType.role_type_code
+                == concreteRoleTypeRecord["role_type_code"]
             )
             .one()
         )
@@ -91,13 +91,13 @@ def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRoleCreate:
-    famRoleAsPydantic = schemas.FamRoleCreate(**simpleRoleData)
+def concreteRoleData_asPydantic(concreteRoleData) -> schemas.FamRoleCreate:
+    famRoleAsPydantic = schemas.FamRoleCreate(**concreteRoleData)
     yield famRoleAsPydantic
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData() -> Dict[str, str]:
+def concreteRoleData() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
@@ -118,7 +118,13 @@ def simpleRoleData2() -> Dict[str, str]:
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData2() -> Dict[str, str]:
+def concreteRoleData_asModel(concreteRoleData) -> Dict[str, str]:
+    concreteRole = model.FamRole(**concreteRoleData)
+    yield concreteRole
+
+
+@pytest.fixture(scope="function")
+def concreteRoleData2() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
@@ -126,6 +132,29 @@ def simpleRoleData2() -> Dict[str, str]:
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
+
+
+@pytest.fixture(scope="function")
+def concreteRoleData2_asModel(concreteRoleData2) -> Dict[str, str]:
+    concreteRole = model.FamRole(**concreteRoleData2)
+    yield concreteRole
+
+
+@pytest.fixture(scope="function")
+def abstractRoleData() -> Dict[str, str]:
+    roleData = {
+        "role_name": "FAM_ABS_ROLE",
+        "role_purpose": "FAM Testing abstract role",
+        "create_user": "PK Subban",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+    }
+    yield roleData
+
+
+@pytest.fixture(scope="function")
+def abstractRoleData_asModel(abstractRoleData) -> Dict[str, str]:
+    abstractRole = model.FamRole(**abstractRoleData)
+    yield abstractRole
 
 
 @pytest.fixture(scope="function")

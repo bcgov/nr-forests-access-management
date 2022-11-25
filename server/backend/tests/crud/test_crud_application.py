@@ -1,7 +1,7 @@
 import logging
 import os
 import sqlalchemy
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
@@ -9,8 +9,8 @@ from api.app.crud import crud_application as crud_application
 LOGGER = logging.getLogger(__name__)
 
 
-def test_getFamApplications(dbSession_famApplication_withdata, applicationData1):
-    db = dbSession_famApplication_withdata
+def test_getFamApplications(dbSession_famApplication, applicationData1):
+    db = dbSession_famApplication
 
     LOGGER.debug(f"applicationData1: {applicationData1}")
     application1 = crud_application.getApplicationByName(
@@ -24,13 +24,12 @@ def test_getFamApplications(dbSession_famApplication_withdata, applicationData1)
     assert apps[0].application_name == applicationData1["application_name"]
 
 
-def test_getFamApplicationRoles(
-    dbSession_famApplication_withRoledata: sqlalchemy.orm.session.Session,
-    applicationData1: Dict[str, Any],
-    applicationRoleData: Dict[str, Any],
-    simpleRoleData,
-    simpleRoleData2,
-):
+def test_getFamApplicationRoles_concrete(
+        dbSession_famApplication_concreteRoledata: sqlalchemy.orm.session.Session,
+        applicationData1: Dict[str, Any],
+        applicationRoleData: Dict[str, Any],
+        concreteRoleData: Dict[str, Any],
+        concreteRoleData2: Dict[str, Any]):
     """
     Tests the crud logic that sits behind the get application/roles
     dbSession_famApplication_withRoledata - database session with an test
@@ -40,37 +39,105 @@ def test_getFamApplicationRoles(
     applicationRoleData - A Dictionary that
     """
     # get the application_id from the database for the record that was already
-    # added in the fixture dbSession_famApplication_withRoledata
-    db = dbSession_famApplication_withRoledata
-    # getApplicationByName(db=db, application_name=)
+    # added in the fixture dbSession_famApplication_withRoledata, the app id
+    # is required to get the roles for that app
+    db = dbSession_famApplication_concreteRoledata
     app = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
     LOGGER.debug(f"applicationData1: {applicationData1}")
+    # double check that the app record was populated, and matches with the app
+    # record we are expecting
+    assert app.application_name == applicationData1["application_name"]
+
+    # get the app roles, this is what we want to test.
     appRoles = crud_application.getFamApplicationRoles(
         db=db, application_id=app.application_id
     )
-    # double check that the app record was populated
-    assert app.application_name == applicationData1["application_name"]
-    LOGGER.debug(f"application1: {appRoles}")
 
-    # need to convert this db query to a pydantic to see how
-    # to handle the relationship, and if it gets properly serialized
-    asSchema = schemas.FamApplicationRoleGet.from_orm(appRoles)
-    asDict = asSchema.dict()
-    LOGGER.debug(f"asDict: {asDict}")
+    # need to convert this db query to a pydantic to confirm the serialization
+    # definitions in schema.py are correct
+    roleList = []
+    for appRole in appRoles:
+        asSchema = schemas.FamApplicationRoles.from_orm(appRole)
+        roleList.append(asSchema)
+        LOGGER.debug(f"appRole: {asSchema.dict()}")
+        LOGGER.debug(f"appRole: {asSchema}")
 
     # assert that the roles we are expecting are present
-    assert len(asDict["fam_role"]) == 2
+    assert len(roleList) == 2
+
+    # assert that none of the roles have parents
+    for role in roleList:
+        assert role.parent_role_id is None
 
     # get the role names from the returned record
-    role_name_list = [role["role_name"] for role in asDict["fam_role"]]
-    assert simpleRoleData["role_name"] in role_name_list
-    assert simpleRoleData2["role_name"] in role_name_list
+    role_name_list = [role.role_name for role in roleList]
+    assert concreteRoleData["role_name"] in role_name_list
+    assert concreteRoleData2["role_name"] in role_name_list
+
+def test_getFamApplicationRoles_abstract(
+        dbSession_famApplication_abstractRoledata,
+        applicationData1: Dict[str, Any],
+        abstractRoleData,
+        concreteRoleData,
+        concreteRoleData2):
+    """as per https://github.com/bcgov/nr-forests-access-management/issues/126#issuecomment-1325532437
+    we do not want the end point to return nested roles atm.  This test
+    verifies that this does not happen
+
+    :param dbSession_famApplication_abstractRoledata: database session with the
+        a concrete role (assigned directly to the app), an abstract role, and
+        another concrete role that is assigned to the abstract role
+    :param applicationData1: The data that was used to set up the application
+        record that also comes along in the previous fixture.
+    """
+
+    db = dbSession_famApplication_abstractRoledata
+    # get the application record so we can retrieve its application-id
+    app = crud_application.getApplicationByName(
+        db=db, application_name=applicationData1["application_name"]
+    )
+    # using the app-id request the roles associated with it
+    appRoles = crud_application.getFamApplicationRoles(
+        db=db, application_id=app.application_id
+    )
+    LOGGER.debug(f"appRoles: {appRoles}")
+    # should be only two roles returned the abstract one and the concrete one
+    appRolesList = []
+    appRoleNames = {}
+    for appRole in appRoles:
+        asPydantic = schemas.FamApplicationRoles.from_orm(appRole)
+        appRolesList.append(asPydantic)
+        appRoleNames[asPydantic.role_name] = asPydantic
+        LOGGER.debug(f'role: {asPydantic.dict()}')
+
+    LOGGER.debug("appRolesSchema: {appRolesSchemaDict}")
+    # expected number of roles returned
+    assert len(appRolesList) == 2
+    # assert that the expected abstract role was returned
+    assert abstractRoleData['role_name'] in appRoleNames
+    # assert the purpose / app id / role type code
+    LOGGER.debug(f"name: {abstractRoleData['role_name']}")
+    LOGGER.debug(f"purpose: {abstractRoleData['role_purpose']}")
+    LOGGER.debug(f"appRoleNames: {appRoleNames[abstractRoleData['role_name']]}")
+    assert abstractRoleData['role_purpose'] == appRoleNames[abstractRoleData['role_name']].role_purpose
+    assert abstractRoleData['role_type_code'] == appRoleNames[abstractRoleData['role_name']].role_type_code
+    assert app.application_id == appRoleNames[abstractRoleData['role_name']].application_id
+
+    # This is a role that was added to the abstract role, so should not show up
+    # in the list of roles for the application
+    assert concreteRoleData['role_name'] not in appRoleNames
+
+    # checking that the expected concrete role is in the list
+    assert concreteRoleData2['role_name']  in appRoleNames
+    assert concreteRoleData2['role_purpose'] == appRoleNames[concreteRoleData2['role_name']].role_purpose
+    assert concreteRoleData2['role_type_code'] == appRoleNames[concreteRoleData2['role_name']].role_type_code
+    assert app.application_id == appRoleNames[concreteRoleData2['role_name']].application_id
 
 
-def test_deleteFamApplications(dbSession_famApplication_withdata, applicationData1):
-    db = dbSession_famApplication_withdata
+def test_deleteFamApplications(dbSession_famApplication, applicationData1):
+    db = dbSession_famApplication
     # get list of applications from the database
     apps = crud_application.getFamApplications(db=db)
     # iterate over all of them and delete them
@@ -82,8 +149,8 @@ def test_deleteFamApplications(dbSession_famApplication_withdata, applicationDat
     assert len(appsAfter) == 0
 
 
-def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
-    db = dbSession_famApplication_withdata
+def test_getFamApplication(dbSession_famApplication, applicationData1):
+    db = dbSession_famApplication
     apps = crud_application.getFamApplications(db=db)
     for app in apps:
         appById = crud_application.getFamApplication(
@@ -92,8 +159,8 @@ def test_getFamApplication(dbSession_famApplication_withdata, applicationData1):
         assert appById.application_id == app.application_id
 
 
-def test_getFamApplicationByName(dbSession_famApplication_withdata, applicationData1):
-    db = dbSession_famApplication_withdata
+def test_getFamApplicationByName(dbSession_famApplication, applicationData1):
+    db = dbSession_famApplication
     app = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
