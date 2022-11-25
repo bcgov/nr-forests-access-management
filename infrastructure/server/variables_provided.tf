@@ -120,4 +120,3 @@ variable "local_frontend_redirect_path" {
   type = string
   default = ""
 }
-
