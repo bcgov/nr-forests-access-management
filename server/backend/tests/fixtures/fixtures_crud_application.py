@@ -128,6 +128,7 @@ def dbSession_famApplication_abstractRoledata(
     concreteRoleData_asModel.application_id = app_id
     # add the abstract role to the db
     db.add(abstractRoleData_asModel)
+    db.flush()
 
     # get the role-id for the abstract role so we can populate the concrete
     # record, ie identify its parent

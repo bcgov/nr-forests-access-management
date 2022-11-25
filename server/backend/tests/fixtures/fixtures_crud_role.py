@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import List
+from typing import Dict, List, Union
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -12,42 +12,64 @@ LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoles_withSimpleData(dbSession_famRoletype, simpleRoleData):
+def dbSession_famRoles_concrete(dbSession_famRoletype, concreteRoleData_asModel):
     db = dbSession_famRoletype
 
     # add a record to the database
-    newRole = model.FamRole(**simpleRoleData)
-    db.add(newRole)
+    db.add(concreteRoleData_asModel)
+    # TODO: ideally re-use the db session and remove the commit
     db.commit()
     yield db  # use the session in tests.
-    LOGGER.debug(f"newRole: {newRole}")
-    db.delete(newRole)
+    LOGGER.debug(f"newRole: {concreteRoleData_asModel}")
+    db.delete(concreteRoleData_asModel)
     db.commit()
 
 
 @pytest.fixture(scope="function")
-def dbSession_famRoletype(dbSession, abstractRoleTypeRecord, concreteRoleTypeRecord):
+def dbSession_famRoletype(
+    dbSession: session.Session, abstractRoleTypeRecord, concreteRoleTypeRecord
+):
     db = dbSession
     roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
     db.add(roleTypeModel_abstract)
     roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
     db.add(roleTypeModel_concrete)
-    db.commit()
+
     yield db  # use the session in tests.
     
     try:
-        db.delete(roleTypeModel_abstract)
+        roleTypeRecord = (
+            db.query(model.FamRoleType)
+            .filter(
+                model.FamRoleType.role_type_code
+                == abstractRoleTypeRecord["role_type_code"]
+            )
+            .one()
+        )
+        db.delete(roleTypeRecord)
+        # db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.error(f"wasn't committed: {e}")
+        db.rollback()
 
     try:
-        db.delete(roleTypeModel_concrete)
+        roleTypeRecord = (
+            db.query(model.FamRoleType)
+            .filter(
+                model.FamRoleType.role_type_code
+                == concreteRoleTypeRecord["role_type_code"]
+            )
+            .one()
+        )
+        db.delete(roleTypeRecord)
+        # db.flush()
     except sqlalchemy.exc.InvalidRequestError as e:
         LOGGER.debug(f"wasn't committed: {e}")
+        db.rollback()
 
 
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> dict:
+def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -57,7 +79,7 @@ def concreteRoleTypeRecord() -> dict:
 
 
 @pytest.fixture(scope="function")
-def abstractRoleTypeRecord() -> dict:
+def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
@@ -67,13 +89,13 @@ def abstractRoleTypeRecord() -> dict:
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData_asPydantic(simpleRoleData) -> schemas.FamRoleCreate:
-    famRoleAsPydantic = schemas.FamRoleCreate(**simpleRoleData)
+def concreteRoleData_asPydantic(concreteRoleData) -> schemas.FamRoleCreate:
+    famRoleAsPydantic = schemas.FamRoleCreate(**concreteRoleData)
     yield famRoleAsPydantic
 
 
 @pytest.fixture(scope="function")
-def simpleRoleData() -> dict:
+def concreteRoleData() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
@@ -81,6 +103,46 @@ def simpleRoleData() -> dict:
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
+
+
+@pytest.fixture(scope="function")
+def concreteRoleData_asModel(concreteRoleData) -> Dict[str, str]:
+    concreteRole = model.FamRole(**concreteRoleData)
+    yield concreteRole
+
+
+@pytest.fixture(scope="function")
+def concreteRoleData2() -> Dict[str, str]:
+    roleData = {
+        "role_name": "FAM_TEST",
+        "role_purpose": "FAM Testing",
+        "create_user": "Patrick Roy",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+    }
+    yield roleData
+
+
+@pytest.fixture(scope="function")
+def concreteRoleData2_asModel(concreteRoleData2) -> Dict[str, str]:
+    concreteRole = model.FamRole(**concreteRoleData2)
+    yield concreteRole
+
+
+@pytest.fixture(scope="function")
+def abstractRoleData() -> Dict[str, str]:
+    roleData = {
+        "role_name": "FAM_ABS_ROLE",
+        "role_purpose": "FAM Testing abstract role",
+        "create_user": "PK Subban",
+        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+    }
+    yield roleData
+
+
+@pytest.fixture(scope="function")
+def abstractRoleData_asModel(abstractRoleData) -> Dict[str, str]:
+    abstractRole = model.FamRole(**abstractRoleData)
+    yield abstractRole
 
 
 @pytest.fixture(scope="function")

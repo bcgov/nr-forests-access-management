@@ -1,7 +1,5 @@
 import logging
 
-import pytest
-import json
 from api.app.main import apiPrefix
 
 LOGGER = logging.getLogger(__name__)
@@ -74,3 +72,18 @@ def test_post_fam_application(testClient_fixture, applicationData1):
     deleteEndPoint = f"{endPoint}/{testRecord['application_id']}"
     deleteResponse = testClient_fixture.delete(deleteEndPoint)
     assert deleteResponse.status_code == 200
+
+
+def test_get_fam_application_roles(
+        application_roles,
+        applicationData1):
+    client = application_roles['client']
+    app_id = application_roles['app_id']
+    # need to get the app id
+
+    roleEndPoint = endPoint + f"/{app_id}/fam_roles"
+    LOGGER.debug(f"roleEndPoint: {roleEndPoint}")
+    resp = client.get(roleEndPoint)
+    LOGGER.debug(f"resp status: {resp.status_code}")
+    resp_data = resp.json()
+    LOGGER.debug(f"resp data: {resp.text}")
