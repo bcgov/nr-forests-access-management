@@ -36,13 +36,12 @@ def dbSession_famRoletype(
     db.add(roleTypeModel_concrete)
 
     yield db  # use the session in tests.
-    
+
     try:
         roleTypeRecord = (
             db.query(model.FamRoleType)
             .filter(
-                model.FamRoleType.role_type_code
-                == abstractRoleTypeRecord["role_type_code"]
+                model.FamRoleType.role_type_code == abstractRoleTypeRecord["role_type_code"] # noqa
             )
             .one()
         )
@@ -56,8 +55,7 @@ def dbSession_famRoletype(
         roleTypeRecord = (
             db.query(model.FamRoleType)
             .filter(
-                model.FamRoleType.role_type_code
-                == concreteRoleTypeRecord["role_type_code"]
+                model.FamRoleType.role_type_code == concreteRoleTypeRecord["role_type_code"] # noqa
             )
             .one()
         )

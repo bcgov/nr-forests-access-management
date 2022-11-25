@@ -70,8 +70,8 @@ def dbSession_famApplication_concreteRoledata(
     # create a couple of roles for the application
     concreteRoleData_asModel.application_id = app_id
     concreteRoleData2_asModel.application_id = app_id
-    #roleData["application_id"] = app_id
-    #roleData2["application_id"] = app_id
+    # roleData["application_id"] = app_id
+    # roleData2["application_id"] = app_id
 
     # add the roles to the database
     # famRole: schemas.FamRoleCreate, db: Session
@@ -92,13 +92,15 @@ def dbSession_famApplication_concreteRoledata(
     db.delete(rl2)
     db.commit()
 
+
 @pytest.fixture(scope="function")
 def dbSession_famApplication_abstractRoledata(
-        dbSession_famApplication,
-        applicationData1,
-        abstractRoleData_asModel,
-        concreteRoleData_asModel,
-        concreteRoleData2_asModel) -> sqlalchemy.orm.session.Session:
+    dbSession_famApplication,
+    applicationData1,
+    abstractRoleData_asModel,
+    concreteRoleData_asModel,
+    concreteRoleData2_asModel,
+) -> sqlalchemy.orm.session.Session:
     """sets up a database session with some nested roles, where the application
     has:
       * 1 concrete roll that is assigned directly to the application

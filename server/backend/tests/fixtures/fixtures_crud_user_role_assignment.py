@@ -59,10 +59,14 @@ def simpleUserRoleAssignment_dbSession(
     db.commit()
     yield db
 
-    xref_db_item = db.query(model.FamUserRoleXref).filter(
-        model.FamUserRoleXref.user_id == user_role_assignment.user_id,
-        model.FamUserRoleXref.role_id == user_role_assignment.role_id,
-    ).one_or_none()
+    xref_db_item = (
+        db.query(model.FamUserRoleXref)
+        .filter(
+            model.FamUserRoleXref.user_id == user_role_assignment.user_id,
+            model.FamUserRoleXref.role_id == user_role_assignment.role_id,
+        )
+        .one_or_none()
+    )
 
     if xref_db_item:
         db.delete(xref_db_item)
@@ -109,9 +113,11 @@ def simpleFOMSubmitterRole_dbSession(
     db.commit()
     yield db
 
-    role_db_item = db.query(model.FamRole).filter(
-        model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME
-    ).one_or_none()
+    role_db_item = (
+        db.query(model.FamRole)
+        .filter(model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .one_or_none()
+    )
 
     if role_db_item:
         db.delete(role_db_item)
@@ -138,9 +144,11 @@ def simpleConcreteRole_dbSession(dbSession_famRoletype, simpleFamApplication_dbS
     db.commit()
     yield db
 
-    role_db_item = db.query(model.FamRole).filter(
-        model.FamRole.role_name == role_name
-    ).one_or_none()
+    role_db_item = (
+        db.query(model.FamRole)
+        .filter(model.FamRole.role_name == role_name)
+        .one_or_none()
+    )
 
     if role_db_item:
         db.delete(role_db_item)

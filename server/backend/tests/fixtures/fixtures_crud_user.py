@@ -27,9 +27,7 @@ class FamUserTD(TypedDict):
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUserTypes(
-    dbSession, idirUserTypeCodeRecord, bceidUserTypeCodeRecord
-):
+def dbSession_famUserTypes(dbSession, idirUserTypeCodeRecord, bceidUserTypeCodeRecord):
     db = dbSession
     idirUserTypeCode = model.FamUserType(**idirUserTypeCodeRecord)
     bceidUserTypeCode = model.FamUserType(**bceidUserTypeCodeRecord)
@@ -90,19 +88,22 @@ def testUserData3() -> FamUserTD:
         "cognito_user_id": "zzff",
         "user_name": "Billy Smith",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour"
+        "create_user": "Al Arbour",
     }
     yield userData
+
 
 @pytest.fixture(scope="function")
 def testUserData_asPydantic(testUserData) -> schemas.FamUser:
     famUserAsPydantic = schemas.FamUser(**testUserData)
     yield famUserAsPydantic
 
+
 @pytest.fixture(scope="function")
 def testUserData2_asPydantic(testUserData2) -> schemas.FamUser:
     famUserAsPydantic2 = schemas.FamUser(**testUserData2)
     yield famUserAsPydantic2
+
 
 @pytest.fixture(scope="function")
 def deleteAllUsers(dbSession: session.Session) -> None:
@@ -124,7 +125,7 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 def idirUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.IDIR,
-        "description": "User Type for IDIR users"
+        "description": "User Type for IDIR users",
     }
     yield userType
 
@@ -133,7 +134,7 @@ def idirUserTypeCodeRecord() -> dict:
 def bceidUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.BCEID,
-        "description": "User Type for IDIR users"
+        "description": "User Type for IDIR users",
     }
     yield userType
 
@@ -153,6 +154,7 @@ def testUserData() -> dict:
     }
     yield userData
 
+
 @pytest.fixture(scope="function")
 def testUserData2() -> FamUserTD:
     userData = {
@@ -167,6 +169,7 @@ def testUserData2() -> FamUserTD:
     }
     yield userData
 
+
 @pytest.fixture(scope="function")
 def userGroupXrefData():
     nowdatetime = datetime.datetime.now()
@@ -177,6 +180,7 @@ def userGroupXrefData():
         "update_date": nowdatetime,
     }
     yield xrefData
+
 
 @pytest.fixture(scope="function")
 def add_group(dbSession, testGroupData):
@@ -189,12 +193,13 @@ def add_group(dbSession, testGroupData):
     db.delete(testGroupData)
     db.commit()
 
+
 @pytest.fixture(scope="function")
 def testGroupData():
     testGroupData = {
         "group_name": "test group",
         "purpose": "testing",
         "create_user": "Brian Trotier",
-        "create_date": datetime.datetime.now()
+        "create_date": datetime.datetime.now(),
     }
     return testGroupData

@@ -1,15 +1,19 @@
+import datetime
 import logging
 import os
-import sqlalchemy
-from typing import Any, Dict, List
+from typing import Any, Dict, Union
 
 import api.app.schemas as schemas
+import sqlalchemy
 from api.app.crud import crud_application as crud_application
 
 LOGGER = logging.getLogger(__name__)
 
 
-def test_getFamApplications(dbSession_famApplication, applicationData1):
+def test_getFamApplications(
+    dbSession_famApplication: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+):
     db = dbSession_famApplication
 
     LOGGER.debug(f"applicationData1: {applicationData1}")
@@ -25,11 +29,12 @@ def test_getFamApplications(dbSession_famApplication, applicationData1):
 
 
 def test_getFamApplicationRoles_concrete(
-        dbSession_famApplication_concreteRoledata: sqlalchemy.orm.session.Session,
-        applicationData1: Dict[str, Any],
-        applicationRoleData: Dict[str, Any],
-        concreteRoleData: Dict[str, Any],
-        concreteRoleData2: Dict[str, Any]):
+    dbSession_famApplication_concreteRoledata: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+    applicationRoleData: Dict[str, Any],
+    concreteRoleData: Dict[str, Any],
+    concreteRoleData2: Dict[str, Any],
+):
     """
     Tests the crud logic that sits behind the get application/roles
     dbSession_famApplication_withRoledata - database session with an test
@@ -76,13 +81,16 @@ def test_getFamApplicationRoles_concrete(
     assert concreteRoleData["role_name"] in role_name_list
     assert concreteRoleData2["role_name"] in role_name_list
 
+
 def test_getFamApplicationRoles_abstract(
-        dbSession_famApplication_abstractRoledata,
-        applicationData1: Dict[str, Any],
-        abstractRoleData,
-        concreteRoleData,
-        concreteRoleData2):
-    """as per https://github.com/bcgov/nr-forests-access-management/issues/126#issuecomment-1325532437
+    dbSession_famApplication_abstractRoledata: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+    abstractRoleData: Dict[str, str],
+    concreteRoleData: Dict[str, str],
+    concreteRoleData2: Dict[str, str],
+):
+    """as per:
+    https://github.com/bcgov/nr-forests-access-management/issues/126#issuecomment-1325532437
     we do not want the end point to return nested roles atm.  This test
     verifies that this does not happen
 
@@ -110,33 +118,53 @@ def test_getFamApplicationRoles_abstract(
         asPydantic = schemas.FamApplicationRoles.from_orm(appRole)
         appRolesList.append(asPydantic)
         appRoleNames[asPydantic.role_name] = asPydantic
-        LOGGER.debug(f'role: {asPydantic.dict()}')
+        LOGGER.debug(f"role: {asPydantic.dict()}")
 
     LOGGER.debug("appRolesSchema: {appRolesSchemaDict}")
     # expected number of roles returned
     assert len(appRolesList) == 2
     # assert that the expected abstract role was returned
-    assert abstractRoleData['role_name'] in appRoleNames
+    assert abstractRoleData["role_name"] in appRoleNames
     # assert the purpose / app id / role type code
     LOGGER.debug(f"name: {abstractRoleData['role_name']}")
     LOGGER.debug(f"purpose: {abstractRoleData['role_purpose']}")
     LOGGER.debug(f"appRoleNames: {appRoleNames[abstractRoleData['role_name']]}")
-    assert abstractRoleData['role_purpose'] == appRoleNames[abstractRoleData['role_name']].role_purpose
-    assert abstractRoleData['role_type_code'] == appRoleNames[abstractRoleData['role_name']].role_type_code
-    assert app.application_id == appRoleNames[abstractRoleData['role_name']].application_id
+    assert (
+        abstractRoleData["role_purpose"] ==
+        appRoleNames[abstractRoleData["role_name"]].role_purpose
+    )
+    assert (
+        abstractRoleData["role_type_code"] ==
+        appRoleNames[abstractRoleData["role_name"]].role_type_code
+    )
+    assert (
+        app.application_id == appRoleNames[abstractRoleData["role_name"]].application_id
+    )
 
     # This is a role that was added to the abstract role, so should not show up
     # in the list of roles for the application
-    assert concreteRoleData['role_name'] not in appRoleNames
+    assert concreteRoleData["role_name"] not in appRoleNames
 
     # checking that the expected concrete role is in the list
-    assert concreteRoleData2['role_name']  in appRoleNames
-    assert concreteRoleData2['role_purpose'] == appRoleNames[concreteRoleData2['role_name']].role_purpose
-    assert concreteRoleData2['role_type_code'] == appRoleNames[concreteRoleData2['role_name']].role_type_code
-    assert app.application_id == appRoleNames[concreteRoleData2['role_name']].application_id
+    assert concreteRoleData2["role_name"] in appRoleNames
+    assert (
+        concreteRoleData2["role_purpose"] ==
+        appRoleNames[concreteRoleData2["role_name"]].role_purpose
+    )
+    assert (
+        concreteRoleData2["role_type_code"] ==
+        appRoleNames[concreteRoleData2["role_name"]].role_type_code
+    )
+    assert (
+        app.application_id ==
+        appRoleNames[concreteRoleData2["role_name"]].application_id
+    )
 
 
-def test_deleteFamApplications(dbSession_famApplication, applicationData1):
+def test_deleteFamApplications(
+    dbSession_famApplication: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+):
     db = dbSession_famApplication
     # get list of applications from the database
     apps = crud_application.getFamApplications(db=db)
@@ -149,7 +177,10 @@ def test_deleteFamApplications(dbSession_famApplication, applicationData1):
     assert len(appsAfter) == 0
 
 
-def test_getFamApplication(dbSession_famApplication, applicationData1):
+def test_getFamApplication(
+    dbSession_famApplication: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+):
     db = dbSession_famApplication
     apps = crud_application.getFamApplications(db=db)
     for app in apps:
@@ -159,14 +190,19 @@ def test_getFamApplication(dbSession_famApplication, applicationData1):
         assert appById.application_id == app.application_id
 
 
-def test_getFamApplicationByName(dbSession_famApplication, applicationData1):
+def test_getFamApplicationByName(
+    dbSession_famApplication: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+):
     db = dbSession_famApplication
     app = crud_application.getApplicationByName(
         db=db, application_name=applicationData1["application_name"]
     )
     assert app.application_name == applicationData1["application_name"]
 
-def test_getFamApplications_nodata(dbSession):
+
+# <sqlalchemy.orm.session.Session object at 0x7f9132c507c0>
+def test_getFamApplications_nodata(dbSession: sqlalchemy.orm.session.Session):
     """Was a starting place to figure out crud tests that work with the database
     session, not complete.  Assumes the database starts without any data.
 
@@ -181,7 +217,11 @@ def test_getFamApplications_nodata(dbSession):
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
 
-def test_createFamApplication(dbSession, applicationData1):
+
+def test_createFamApplication(
+    dbSession: sqlalchemy.orm.session.Session,
+    applicationData1: Dict[str, Union[str, datetime.datetime]],
+):
     # make sure we are starting off with no records
     famApps = crud_application.getFamApplications(dbSession)
     assert famApps == []
@@ -193,7 +233,7 @@ def test_createFamApplication(dbSession, applicationData1):
     )
     # the object returned by createFamApplication should contain the
     # application object that it was passed
-    assert appData.application_name == applicationData1['application_name']
+    assert appData.application_name == applicationData1["application_name"]
     # LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
