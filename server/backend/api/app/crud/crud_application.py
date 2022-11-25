@@ -1,5 +1,6 @@
 import datetime
 import logging
+from typing import List, Union
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
@@ -42,7 +43,10 @@ def getApplicationByName(db: Session, application_name: str):
     )
     return application
 
-def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Session):
+
+def createFamApplication(
+        famApplication: schemas.FamApplicationCreate,
+        db: Session) -> models.FamApplication:
     """used to add a new application record to the database
 
     :param famApplication: _description_
@@ -76,8 +80,8 @@ def createFamApplication(famApplication: schemas.FamApplicationCreate, db: Sessi
     db_item = models.FamApplication(**famAppDict)
     LOGGER.info(f"db_item: {db_item}")
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    db.flush()
+    # db.refresh(db_item)
     return db_item
 
 def deleteFamApplication(db: Session, application_id: int):
@@ -91,6 +95,31 @@ def deleteFamApplication(db: Session, application_id: int):
 
     db.commit()
     return application
+
+
+def getFamApplicationRoles(
+        db: Session,
+        application_id: int) -> List[models.FamApplication]:
+    """Given a database session and an application id, will return a roles that
+    have been defined for the application id.  Currently does not return any
+    child roles.
+
+    :param db: input database session object
+    :param application_id: the application id who's roles are to be retrieved
+    :return: orm FamRole model listing related roles that have been created
+             for the given application.
+    """
+
+    application = (
+        db.query(models.FamRole)
+        # .join(models.FamRole)
+        # .options(load_only("application_id"))
+        .filter(models.FamRole.application_id == application_id,
+                models.FamRole.parent_role_id == None)
+        .all()
+    )
+    return application
+
 
 if __name__ == "__main__":
     import database

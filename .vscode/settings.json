@@ -11,7 +11,7 @@
         "server/backend"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
+    "python.testing.pytestEnabled": false,
     "python.defaultInterpreterPath": "./server/backend/venv/bin/python",
     "python.pythonPath": "./server/backend/venv/bin/python",
     "python.formatting.provider": "black",
