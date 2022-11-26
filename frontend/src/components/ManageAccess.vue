@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import PageTitle from '@/components/PageTitle.vue';
 import router from '@/router';
-import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '@/services/ApplicationState'
+import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
 var foo = 2;
 </script>
@@ -8,7 +9,7 @@ var foo = 2;
 <template>
   <div>
   
-  <h1>Manage Access - {{selectedApplicationDisplayText}}</h1>
+  <PageTitle />
 
   <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
 

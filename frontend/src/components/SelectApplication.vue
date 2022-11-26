@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import router from '../router'
-import { applicationsUserAdministers, selectedApplication, isApplicationSelected } from '@/services/ApplicationState'
-import type { Application } from '@/services/ApplicationState'
+import PageTitle from '@/components/PageTitle.vue';
 import { ApiService } from '@/services/ApiService';
-import { useToast } from 'vue-toastification'
+import type { Application } from '@/services/ApplicationState';
+import { applicationsUserAdministers, isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
+import { useToast } from 'vue-toastification';
+import router from '../router';
 
 const apiService = new ApiService()
 
@@ -37,8 +38,7 @@ setTimeout( async () => {
 
 <template>
   <div>
-
-  <h1>Select Application</h1>
+    <PageTitle :withoutSelectedApplication=true></PageTitle>
 
   <div v-if="applicationsUserAdministers.length">
     <label>Select the application to administer</label>
