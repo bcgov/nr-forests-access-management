@@ -64,7 +64,7 @@ def test_getFamApplicationRoles_concrete(
     # definitions in schema.py are correct
     roleList = []
     for appRole in appRoles:
-        asSchema = schemas.FamApplicationRoles.from_orm(appRole)
+        asSchema = schemas.FamApplicationRole.from_orm(appRole)
         roleList.append(asSchema)
         LOGGER.debug(f"appRole: {asSchema.dict()}")
         LOGGER.debug(f"appRole: {asSchema}")
@@ -115,7 +115,7 @@ def test_getFamApplicationRoles_abstract(
     appRolesList = []
     appRoleNames = {}
     for appRole in appRoles:
-        asPydantic = schemas.FamApplicationRoles.from_orm(appRole)
+        asPydantic = schemas.FamApplicationRole.from_orm(appRole)
         appRolesList.append(asPydantic)
         appRoleNames[asPydantic.role_name] = asPydantic
         LOGGER.debug(f"role: {asPydantic.dict()}")

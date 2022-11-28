@@ -88,7 +88,7 @@ class FamRoleCreate(BaseModel):
     class Config:
         orm_mode = True
 
-class FamApplicationRoles(FamRoleCreate):
+class FamApplicationRole(FamRoleCreate):
     role_id: int
 
     class Config:
