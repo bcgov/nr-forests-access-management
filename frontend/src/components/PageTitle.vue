@@ -3,16 +3,14 @@ import { useRoute } from 'vue-router'
 import { selectedApplicationDisplayText } from '@/services/ApplicationState'
 
 const props = defineProps<{
-  withoutSelectedApplication?: boolean // TODO: use default value? Vue seems need to use special way.
+  displaySelectedApplication?: boolean
 }>()
-const displaySelectedApplicationText = !props.withoutSelectedApplication
+const displaySelectedApplicationText = props.displaySelectedApplication || true // default to true.
 
 </script>
 
 <template>
-  <!-- <div class="title" v-if="withoutSelectedApplication">{{useRoute().meta.title}}</div> -->
-  <!-- <div class="title" v-else>{{useRoute().meta.title}} - {{selectedApplicationDisplayText}}</div> -->
-
+  
   <div class="title" v-if="displaySelectedApplicationText">{{selectedApplicationDisplayText}}</div>
 
   <hr class="hr-text" :data-content="useRoute().meta.title"/>
@@ -22,7 +20,7 @@ const displaySelectedApplicationText = !props.withoutSelectedApplication
 <style lang="scss" scoped>
   @import "@/assets/styles/styles.scss";
   .title {
-    margin-top: 0;
+    margin-top: 0.2rem;
     font-weight: 600;
     line-height: 1.1;
     font-size: calc(1.3324rem + 0.9888vw);
@@ -59,7 +57,6 @@ const displaySelectedApplicationText = !props.withoutSelectedApplication
       padding: 0 .5em;
       line-height: 1em;
       // this is really the only tricky part, you need to specify the background color of the container element...
-      // color: #818078;
       background-color: #fcfcfa;
       font-size: 1.5rem;
       font-weight: 600;

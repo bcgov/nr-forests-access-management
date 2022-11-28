@@ -38,7 +38,7 @@ setTimeout( async () => {
 
 <template>
   <div>
-    <PageTitle :withoutSelectedApplication=true></PageTitle>
+    <PageTitle :displaySelectedApplication=false></PageTitle>
 
   <div v-if="applicationsUserAdministers.length">
     <label>Select the application to administer</label>
