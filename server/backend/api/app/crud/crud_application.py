@@ -99,7 +99,7 @@ def deleteFamApplication(db: Session, application_id: int):
 
 def getFamApplicationRoles(
         db: Session,
-        application_id: int) -> List[models.FamApplication]:
+        application_id: int) -> List[schemas.FamApplicationRoles]:
     """Given a database session and an application id, will return a roles that
     have been defined for the application id.  Currently does not return any
     child roles.
@@ -109,7 +109,6 @@ def getFamApplicationRoles(
     :return: orm FamRole model listing related roles that have been created
              for the given application.
     """
-
     application = (
         db.query(models.FamRole)
         # .join(models.FamRole)
