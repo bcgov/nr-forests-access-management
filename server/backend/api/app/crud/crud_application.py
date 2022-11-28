@@ -99,7 +99,7 @@ def deleteFamApplication(db: Session, application_id: int):
 
 def getFamApplicationRoles(
         db: Session,
-        application_id: int) -> List[schemas.FamApplicationRoles]:
+        application_id: int) -> List[schemas.FamApplicationRole]:
     """Given a database session and an application id, will return a roles that
     have been defined for the application id.  Currently does not return any
     child roles.
