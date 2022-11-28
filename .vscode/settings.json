@@ -22,7 +22,9 @@
     "python.testing.cwd": "",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"],
-    "python.languageServer": "Pylance"
+    "python.languageServer": "Pylance",
+    "files.trimTrailingWhitespace": true,
+    "files.eol": "\n",
 }
 
 

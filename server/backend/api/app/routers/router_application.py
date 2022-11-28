@@ -16,18 +16,10 @@ router = APIRouter()
 #     response_model=List[schemas.FamApplication],
 #     status_code=200
 # )
-@router.get(
-    "",
-    response_model=List[schemas.FamApplication],
-    status_code=200
-)
-@router.get(
-    "",
-    response_model=List[schemas.FamApplication],
-    status_code=200
-)
-def get_fam_applications(response: Response,
-                         db: Session = Depends(dependencies.get_db)):
+@router.get("", response_model=List[schemas.FamApplication], status_code=200)
+def get_fam_applications(
+    response: Response, db: Session = Depends(dependencies.get_db)
+):
     """
     List of different applications that are administered by FAM
     """
@@ -52,10 +44,8 @@ def create_fam_application(
     # return queryData
     return queryData
 
-@router.delete(
-    "/{application_id}",
-    response_model=schemas.FamApplication
-)
+
+@router.delete("/{application_id}", response_model=schemas.FamApplication)
 def delete_fam_application(
     application_id: int,
     db: Session = Depends(dependencies.get_db),
@@ -73,3 +63,24 @@ def delete_fam_application(
     LOGGER.debug(f"application_id: {application_id}")
     application = crud_application.deleteFamApplication(db=db, application_id=application_id)
     return application
+
+
+@router.get(
+    "/{application_id}/fam_roles",
+    response_model=List[schemas.FamApplicationRole],
+    status_code=200,
+)
+def get_fam_application_roles(
+    application_id: int,
+    db: Session = Depends(dependencies.get_db),
+):
+    """gets the roles associated with an application
+
+    :param application_id: application id
+    :param db: database session, defaults to Depends(dependencies.get_db)
+    """
+    LOGGER.debug(f"Recieved application id: {application_id}")
+    app_roles = crud_application.getFamApplicationRoles(
+        application_id=application_id, db=db
+    )
+    return app_roles

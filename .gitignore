@@ -70,3 +70,4 @@ infrastructure/server/github.auto.tfvars
 terraform/test/server.json
 terraform/test/.terraform.lock.hcl
 **/.terragrunt-cache/**
+test_db.db-journal
