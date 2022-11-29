@@ -84,3 +84,23 @@ def get_fam_application_roles(
         application_id=application_id, db=db
     )
     return app_roles
+
+@router.get(
+    "/{application_id}/user_role_assignment",
+    response_model=schemas.FamApplicationUserRoleAssignmentGet,
+    status_code=200,
+)
+def get_fam_application_user_role_assignment(
+        application_id: int,
+        db: Session = Depends(dependencies.get_db)):
+    """gets the roles associated with an application
+
+    :param application_id: application id
+    :param db: database session, defaults to Depends(dependencies.get_db)
+    """
+    LOGGER.debug(f"application_id: {application_id}")
+    appUserRoleAssignments = crud_application.getFamApplicationRoleAssignments(
+        db=db,
+        application_id=application_id)
+
+    return appUserRoleAssignments
