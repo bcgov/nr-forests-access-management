@@ -170,8 +170,8 @@ def applicationRoleData(applicationData1, concreteRoleType) -> Dict[str, Any]:
 def dbSession_famApplication_withRoleUserAssignment(
         applicationData1,
         dbSession_famApplication,
-        idirUserTypeCodeRecord_asModel,
-        bceidUserTypeCodeRecord_asModel,
+        idirUserTypeCode_asModel,
+        bceidUserTypeCode_asModel,
         abstractRoleData_asModel,
         concreteRoleData_asModel,
         concreteRoleType_asModel,
@@ -202,8 +202,8 @@ def dbSession_famApplication_withRoleUserAssignment(
     application_id = application.application_id
     concreteRoleData_asModel.application_id = application_id
 
-    db.add(idirUserTypeCodeRecord_asModel)
-    db.add(bceidUserTypeCodeRecord_asModel)
+    db.add(idirUserTypeCode_asModel)
+    db.add(bceidUserTypeCode_asModel)
     db.add(userData_asModel)
     #db.add(concreteRoleType_asModel)
     db.add(concreteRoleData_asModel)

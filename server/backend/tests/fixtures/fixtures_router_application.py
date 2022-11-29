@@ -51,7 +51,7 @@ def application_role_assignment(
         testClient_fixture,
         applicationData1,
         concreteRoleData,
-        testUserData):
+        userData_Dict):
     # TODO: concreteRoleData and userData not used yet, but should be part
     #       of the assertions as that is the test user and role user to be
     #       used for the role assignment

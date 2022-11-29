@@ -128,7 +128,7 @@ def test_get_fam_user_role_assignment(
         application_role_assignment,
         applicationData1,
         concreteRoleData,
-        testUserData):
+        userData_Dict):
 
     client = application_role_assignment['client']
     app_id = application_role_assignment['app_id']

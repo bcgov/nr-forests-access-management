@@ -17,16 +17,16 @@ def test_getFamUsers_nodata(dbSession):
     assert famUsers == []
 
 
-def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
+def test_getFamUsers_withdata(dbSession_famUsers, userData3_Dict):
     """gets a database session which has user data inserted into it, and a
     dictionary containing the data that was added to the database
 
-    :param dbSession_famUsers_withdata: sql alchemy database session
-    :type dbSession_famUsers_withdata: sqlalchemy.orm.Session
-    :param testUserData3: _description_
-    :type testUserData3: _type_
+    :param dbSession_famUsers: sql alchemy database session
+    :type dbSession_famUsers: sqlalchemy.orm.Session
+    :param userData3_Dict: _description_
+    :type userData3_Dict: _type_
     """
-    db = dbSession_famUsers_withdata
+    db = dbSession_famUsers
     users = crud_user.getFamUsers(db)
     LOGGER.debug(f"users: {users}")
     LOGGER.debug(f"number of users: {len(users)}")
@@ -36,23 +36,23 @@ def test_getFamUsers_withdata(dbSession_famUsers_withdata, testUserData3):
     # checking that the expected user is in the db
     for user in users:
         LOGGER.debug(f"user: {user.__dict__} {user.user_name}")
-        assert user.user_name == testUserData3["user_name"]
+        assert user.user_name == userData3_Dict["user_name"]
 
 
-def test_createFamUser(dbSession_famUserTypes, testUserData_asPydantic, deleteAllUsers):
+def test_createFamUser(dbSession_famUserTypes, userData_asPydantic, deleteAllUsers):
     db = dbSession_famUserTypes
-    LOGGER.debug(f"testUserData_asPydantic: {testUserData_asPydantic}")
+    LOGGER.debug(f"userData_asPydantic: {userData_asPydantic}")
 
     # get user count
     userBefore = crud_user.getFamUsers(db)
     numUsersStart = len(userBefore)
-    LOGGER.debug(f"testUserData_asPydantic: {testUserData_asPydantic}")
-    user = crud_user.createFamUser(famUser=testUserData_asPydantic, db=db)
+    LOGGER.debug(f"userData_asPydantic: {userData_asPydantic}")
+    user = crud_user.createFamUser(famUser=userData_asPydantic, db=db)
     LOGGER.debug(f"created the user: {user}")
 
     # make sure the user that was created has the same guid as the supplied
     # data
-    assert user.user_guid == testUserData_asPydantic.user_guid
+    assert user.user_guid == userData_asPydantic.user_guid
 
     #
     usersAfter = crud_user.getFamUsers(db)
@@ -60,19 +60,19 @@ def test_createFamUser(dbSession_famUserTypes, testUserData_asPydantic, deleteAl
     assert numUsersAfter > numUsersStart
 
 
-def test_getFamUser_withdata(dbSession_famUsers_withdata, testUserData3):
+def test_getFamUser_withdata(dbSession_famUsers, userData3_Dict):
     # test getting a single user
-    db = dbSession_famUsers_withdata
+    db = dbSession_famUsers
 
     # get one record from db... should only have one
     famUser = db.query(model.FamUser).one()
     LOGGER.debug(f"famUser: {famUser.user_id}")
     crud_user.getFamUser(db=db, user_id=famUser.user_id)
-    assert famUser.user_name == testUserData3["user_name"]
+    assert famUser.user_name == userData3_Dict["user_name"]
 
 
-def test_deleteFamUsers(dbSession_famUsers_withdata, testUserData2):
-    db = dbSession_famUsers_withdata
+def test_deleteFamUsers(dbSession_famUsers, userData2_Dict):
+    db = dbSession_famUsers
 
     # assert that we have a record in the database
     users = crud_user.getFamUsers(db)

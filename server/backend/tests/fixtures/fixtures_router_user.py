@@ -9,36 +9,36 @@ endPoint = test_router_user.endPoint
 
 @pytest.fixture(scope="function")
 def user_client_withUsersNoCleanup(
-    testClient_fixture, testUserData, dbSession_famUserTypes
+    testClient_fixture, userData_Dict, dbSession_famUserTypes
 ):
     # used for delete, assumption is the test user that was created
     # has been cleaned up.
-    testUserData["create_date"] = str(testUserData["create_date"])
-    testUserData["update_date"] = str(testUserData["update_date"])
+    userData_Dict["create_date"] = str(userData_Dict["create_date"])
+    userData_Dict["update_date"] = str(userData_Dict["update_date"])
 
-    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=userData_Dict)
     LOGGER.debug(f"setup user table with data: {resp.status_code} " + f"{resp.reason}")
     LOGGER.debug(f"setup user table with data: {resp.status_code} " + f"{resp.reason}")
-    LOGGER.debug(f"setup data: {testUserData}")
+    LOGGER.debug(f"setup data: {userData_Dict}")
     if resp.status_code != 200:
         raise ValueError(
             "should work! but... can't create this record: " +
-            f" {testUserData}, the response is: {resp.reason}"
+            f" {userData_Dict}, the response is: {resp.reason}"
         )
     return testClient_fixture
 
 
 @pytest.fixture(scope="function")
-def user_client_withUsers(testClient_fixture, testUserData, dbSession_famUserTypes):
-    testUserData["create_date"] = str(testUserData["create_date"])
-    testUserData["update_date"] = str(testUserData["update_date"])
+def user_client_withUsers(testClient_fixture, userData_Dict, dbSession_famUserTypes):
+    userData_Dict["create_date"] = str(userData_Dict["create_date"])
+    userData_Dict["update_date"] = str(userData_Dict["update_date"])
 
-    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=userData_Dict)
     LOGGER.debug(f"setup user table with data: {resp.status_code}" + f"  {resp.reason}")
     if resp.status_code != 200:
         raise ValueError(
             "should work! but... can't create this record: " +
-            f" {testUserData}, the response is: {resp.reason}"
+            f" {userData_Dict}, the response is: {resp.reason}"
         )
     yield testClient_fixture
 

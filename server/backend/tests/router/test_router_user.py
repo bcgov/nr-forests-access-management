@@ -63,14 +63,14 @@ def test_get_fam_user(user_client_withUsers):
         assert singleUserData == user
 
 
-def test_post_fam_users(testClient_fixture, testUserData, dbSession_famUserTypes):
+def test_post_fam_users(testClient_fixture, userData_Dict, dbSession_famUserTypes):
 
     # modify the user data to make it invalid
-    testUserData["user_type_code"] = "X"
-    testUserData['create_date'] = str(testUserData['create_date'])
-    testUserData['update_date'] = str(testUserData['update_date'])
+    userData_Dict["user_type_code"] = "X"
+    userData_Dict['create_date'] = str(userData_Dict['create_date'])
+    userData_Dict['update_date'] = str(userData_Dict['update_date'])
 
-    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
+    resp = testClient_fixture.post(f"{endPoint}", json=userData_Dict)
     body = resp.json()
     LOGGER.debug(f"body: {body}")
     assert resp.status_code == 422
@@ -78,8 +78,8 @@ def test_post_fam_users(testClient_fixture, testUserData, dbSession_famUserTypes
     assert body['detail'][0]['msg'] == expectedMessage
 
     # fix the data so the post should succeed
-    testUserData["user_type_code"] = famConstants.UserType.BCEID
-    resp = testClient_fixture.post(f"{endPoint}", json=testUserData)
+    userData_Dict["user_type_code"] = famConstants.UserType.BCEID
+    resp = testClient_fixture.post(f"{endPoint}", json=userData_Dict)
     respData = resp.json()
     LOGGER.debug(f"resp data: {resp.json()}")
     assert resp.status_code == 200
