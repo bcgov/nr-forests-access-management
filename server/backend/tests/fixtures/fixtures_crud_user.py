@@ -129,6 +129,12 @@ def idirUserTypeCodeRecord() -> dict:
     }
     yield userType
 
+# TODO: define return type
+@pytest.fixture(scope="function")
+def idirUserTypeCodeRecord_asModel(idirUserTypeCodeRecord) -> model.FamUserType:
+    idirUserType = model.FamUserType(**idirUserTypeCodeRecord)
+    yield idirUserType
+
 
 @pytest.fixture(scope="function")
 def bceidUserTypeCodeRecord() -> dict:
@@ -138,6 +144,12 @@ def bceidUserTypeCodeRecord() -> dict:
     }
     yield userType
 
+# TODO: run format on this file, fix format / linter conflicts
+# TODO: rename idir user type and this user type so doesn't incldue the word 'record'
+@pytest.fixture(scope="function")
+def bceidUserTypeCodeRecord_asModel(bceidUserTypeCodeRecord):
+    bceidUserType = model.FamUserType(**bceidUserTypeCodeRecord)
+    yield bceidUserType
 
 @pytest.fixture(scope="function")
 def testUserData() -> dict:
@@ -153,6 +165,19 @@ def testUserData() -> dict:
         "update_date": datetime.datetime.now(),
     }
     yield userData
+
+# TODO: standardize the fixture names in this module, remove test from UserData
+#       references
+@pytest.fixture(scope="function")
+def userData_asModel(testUserData):
+    newUser = model.FamUser(**testUserData)
+    yield newUser
+
+
+@pytest.fixture(scope="function")
+def userData_asPydantic(testUserData) -> schemas.FamUser:
+    famUserAsPydantic = schemas.FamUser(**testUserData)
+    yield famUserAsPydantic
 
 
 @pytest.fixture(scope="function")

@@ -27,12 +27,12 @@ def dbSession_famRoles_concrete(dbSession_famRoletype, concreteRoleData_asModel)
 
 @pytest.fixture(scope="function")
 def dbSession_famRoletype(
-    dbSession: session.Session, abstractRoleTypeRecord, concreteRoleTypeRecord
+    dbSession: session.Session, abstractRoleTypeRecord, concreteRoleType
 ):
     db = dbSession
     roleTypeModel_abstract = model.FamRoleType(**abstractRoleTypeRecord)
     db.add(roleTypeModel_abstract)
-    roleTypeModel_concrete = model.FamRoleType(**concreteRoleTypeRecord)
+    roleTypeModel_concrete = model.FamRoleType(**concreteRoleType)
     db.add(roleTypeModel_concrete)
 
     yield db  # use the session in tests.
@@ -55,7 +55,7 @@ def dbSession_famRoletype(
         roleTypeRecord = (
             db.query(model.FamRoleType)
             .filter(
-                model.FamRoleType.role_type_code == concreteRoleTypeRecord["role_type_code"] # noqa
+                model.FamRoleType.role_type_code == concreteRoleType["role_type_code"] # noqa
             )
             .one()
         )
@@ -67,7 +67,7 @@ def dbSession_famRoletype(
 
 
 @pytest.fixture(scope="function")
-def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
+def concreteRoleType() -> Dict[str, Union[str, datetime.datetime]]:
     roleType = {
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
@@ -75,7 +75,15 @@ def concreteRoleTypeRecord() -> Dict[str, Union[str, datetime.datetime]]:
     }
     yield roleType
 
+@pytest.fixture(scope="function")
+def concreteRoleType_asModel(concreteRoleType) -> model.FamRoleType:
+    concreteRoleModel = model.FamRoleType(**concreteRoleType)
+    yield concreteRoleModel
 
+
+# TODO: review duplicate code... remove duplicates with the word 'record' in their names
+# TODO: review fixtures that used abstractRoleTypeRecord and then create model to use
+#       abstractRoleTypeRecord_asModel, ditto for concrete
 @pytest.fixture(scope="function")
 def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
     roleType = {
@@ -84,6 +92,11 @@ def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
         "effective_date": datetime.datetime.now(),
     }
     yield roleType
+
+@pytest.fixture(scope="function")
+def abstractRoleTypeRecord_asModel(abstractRoleTypeRecord) -> model.FamRoleType:
+    abstractRoleModel = model.FamRoleType(**abstractRoleTypeRecord)
+    yield abstractRoleModel
 
 
 @pytest.fixture(scope="function")

@@ -8,6 +8,7 @@ import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
 from api.app.models import model as models
+import api.app.constants as constants
 
 
 LOGGER = logging.getLogger(__name__)
@@ -159,7 +160,64 @@ def dbSession_famApplication_abstractRoledata(
 
 
 @pytest.fixture(scope="function")
-def applicationRoleData(applicationData1, concreteRoleTypeRecord) -> Dict[str, Any]:
-    LOGGER.debug(f"concreteRoleTypeRecord: {concreteRoleTypeRecord}")
-    applicationData1["role"] = [concreteRoleTypeRecord]
+def applicationRoleData(applicationData1, concreteRoleType) -> Dict[str, Any]:
+    LOGGER.debug(f"concreteRoleType: {concreteRoleType}")
+    applicationData1["role"] = [concreteRoleType]
     yield applicationData1
+
+
+@pytest.fixture(scope="function")
+def dbSession_famApplication_withRoleUserAssignment(
+        applicationData1,
+        dbSession_famApplication,
+        idirUserTypeCodeRecord_asModel,
+        bceidUserTypeCodeRecord_asModel,
+        abstractRoleData_asModel,
+        concreteRoleData_asModel,
+        concreteRoleType_asModel,
+        abstractRoleTypeRecord_asModel,
+        userData_asModel):
+    # TODO: add method pydoc
+    # TODO: go back to user model and refactor to match other fixtures for naming
+    #        ie: userData, userData2, userData_asModel, etc...
+    #
+
+    # need:
+    #   fam_user as a model: userData_asModel
+    #   fam application: in session
+    #   fam_role types: abstractRoleTypeRecord_asModel / concreteRoleType_asModel
+    #   fam role as model:
+    #   fam user / role x ref as model
+    # then merge the models into the app session
+
+    # db session with the application data loaded
+    db = dbSession_famApplication
+    db.flush()
+    # get the application id
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_name ==
+                applicationData1['application_name']).one()
+    )
+    application_id = application.application_id
+    concreteRoleData_asModel.application_id = application_id
+
+    db.add(idirUserTypeCodeRecord_asModel)
+    db.add(bceidUserTypeCodeRecord_asModel)
+    db.add(userData_asModel)
+    #db.add(concreteRoleType_asModel)
+    db.add(concreteRoleData_asModel)
+
+    db.flush()  # flush required to populate the user_id and role_id pk cols
+
+    user_role_assignment = models.FamUserRoleXref(
+        user_id=userData_asModel.user_id,
+        role_id=concreteRoleData_asModel.role_id,
+        create_user=constants.FAM_PROXY_API_USER
+    )
+    db.add(user_role_assignment)
+    db.flush()
+
+    yield db
+
+    # TODO: teardown delete all above objects

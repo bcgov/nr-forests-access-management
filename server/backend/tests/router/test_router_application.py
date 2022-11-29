@@ -90,7 +90,10 @@ def test_post_fam_application(
 
 def test_get_fam_application_roles(
         application_roles: ClientAndAppID,
-        applicationData1: Dict[str, Union[str, datetime.datetime]]):
+        applicationData1: Dict[str, Union[str, datetime.datetime]],
+        concreteRoleData,
+        concreteRoleData2
+        ):
     client = application_roles["client"]
     app_id = application_roles["app_id"]
     # need to get the app id
@@ -102,3 +105,38 @@ def test_get_fam_application_roles(
     resp_data = resp.json()
     LOGGER.debug(f"resp data as JSON: {resp.text}")
     LOGGER.debug(f"resp data as dict: {resp_data}")
+
+    roleData = {}
+    for returnRole in resp_data:
+        roleData[returnRole['role_name']] = returnRole
+    # organize into a dict with key as role_name
+
+    roleName = concreteRoleData['role_name']
+    returnRole = roleData[roleName]
+    assert returnRole['role_purpose'] == concreteRoleData['role_purpose']
+    assert returnRole['role_purpose'] == concreteRoleData['role_purpose']
+    assert returnRole['application_id'] == app_id
+
+    roleName = concreteRoleData2['role_name']
+    returnRole = roleData[roleName]
+    assert returnRole['role_purpose'] == concreteRoleData2['role_purpose']
+    assert returnRole['role_purpose'] == concreteRoleData2['role_purpose']
+    assert returnRole['application_id'] == app_id
+
+
+def test_get_fam_user_role_assignment(
+        application_role_assignment,
+        applicationData1,
+        concreteRoleData,
+        testUserData):
+
+    client = application_role_assignment['client']
+    app_id = application_role_assignment['app_id']
+
+    roleEndPoint = endPoint + f"/{app_id}/user_role_assignment"
+    resp = client.get(roleEndPoint)
+    resp_data = resp.json()
+    LOGGER.debug(f"resp data: {resp_data}")
+    LOGGER.debug(f"json str: {resp.text}")
+    # TODO: Add assertions
+    # TODO: Revise return object so doesn't include application

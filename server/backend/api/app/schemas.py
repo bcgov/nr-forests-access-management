@@ -172,3 +172,28 @@ class FamForestClientGet(FamForestClientCreate):
 
     class Config:
         orm_mode = True
+
+
+class FamUserRoleXref(FamUserRoleAssignmentGet):
+    user: FamUser
+    application_id: Union[str, None]
+
+    class Config:
+        orm_mode = True
+
+# appUserRoleAssignments.fam_role[0].fam_user_role_xref
+class FamRole_FamUserRoleXref(FamRoleCreate):
+    fam_user_role_xref: List[FamUserRoleXref]
+
+    class Config:
+            orm_mode = True
+
+# [<api.app.models.model.FamRole object at 0x7f71842c26d0>]
+# FamApplicationUserRoleAssignmentGet
+# response -> fam_role -> 0 -> fam_user_role_xref -> 0 -> application_id
+#  field required (type=value_error.missing)
+class FamApplicationUserRoleAssignmentGet(FamApplicationCreate):
+    fam_role: List[FamRole_FamUserRoleXref]
+
+    class Config:
+        orm_mode = True

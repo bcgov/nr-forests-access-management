@@ -119,6 +119,35 @@ def getFamApplicationRoles(
     )
     return application
 
+def getFamApplicationRoleAssignments(db: Session, application_id: int):
+    """_summary_
+
+    :param db: _description_
+    :param application_id: _description_
+    :return: _description_
+
+    * query application table relates to roles that relates to user-role xref
+      that relates to users
+      FamApplication ->
+        FamRole ->
+            FamUserRoleXref ->
+                FamUser
+    """
+    # TODO: define return type
+    # TODO: complete doc string
+    LOGGER.debug(f"app id: {application_id}")
+
+    # query application for Roles / user role xref / users
+    # asking for one() as there should only be one application record where
+    # application_id == {app_id}
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_id == application_id)
+        .one()
+    )
+
+    LOGGER.debug(f"application: {application}")
+    return application
 
 if __name__ == "__main__":
     import database
