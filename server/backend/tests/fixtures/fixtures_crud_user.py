@@ -12,6 +12,7 @@ from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
+# TODO: describe return types, and arg types for methods in this module
 
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
@@ -27,10 +28,10 @@ class FamUserTD(TypedDict):
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUserTypes(dbSession, idirUserTypeCodeRecord, bceidUserTypeCodeRecord):
+def dbSession_famUserTypes(dbSession, idirUserTypeCode_Dict, bceidUserTypeCode_Dict):
     db = dbSession
-    idirUserTypeCode = model.FamUserType(**idirUserTypeCodeRecord)
-    bceidUserTypeCode = model.FamUserType(**bceidUserTypeCodeRecord)
+    idirUserTypeCode = model.FamUserType(**idirUserTypeCode_Dict)
+    bceidUserTypeCode = model.FamUserType(**bceidUserTypeCode_Dict)
     db.add(idirUserTypeCode)
     db.add(bceidUserTypeCode)
 
@@ -43,19 +44,20 @@ def dbSession_famUserTypes(dbSession, idirUserTypeCodeRecord, bceidUserTypeCodeR
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUsers_withdata(
-    dbSession_famUserTypes, testUserData3, testGroupData, userGroupXrefData
+def dbSession_famUsers(
+    dbSession_famUserTypes, userData3_Dict, groupData_Dict, userGroupXrefData
 ):
     """to add a user need to satisfy the integrity constraints.
 
-    :param dbSession: _description_
-    :type dbSession: _type_
-    :param testUserData: _description_
-    :type testUserData: _type_
-    :param add_group: _description_
-    :type add_group: _type_
-    :yield: _description_
-    :rtype: _type_
+    :param dbSession_famUserTypes: database session with the user type data
+        loaded.
+    :type dbSession_famUserTypes: sqlalchemy.orm.session.Session
+    :param userData3_Dict: Input dictionary describing a user record
+    :type userData3_Dict: dict
+    :param groupData_Dict: dictionary describing a group record
+    :type groupData_Dict: dict
+    :yield: Database session with the user record loaded along with group to
+        satisfy the database constraint
     """
     # the following link goes over working with related/associated tables
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
@@ -63,8 +65,8 @@ def dbSession_famUsers_withdata(
     db = dbSession_famUserTypes
     # trying to add to user without violating the integrity constraint
     # group was populated with a record by the add_group fixture.
-    newUser = model.FamUser(**testUserData3)
-    groupSchema = model.FamGroup(**testGroupData)
+    newUser = model.FamUser(**userData3_Dict)
+    groupSchema = model.FamGroup(**groupData_Dict)
     userGroupXrefData["group"] = groupSchema
     userGroupXrefData["user"] = newUser
 
@@ -82,7 +84,7 @@ def dbSession_famUsers_withdata(
 
 
 @pytest.fixture(scope="function")
-def testUserData3() -> FamUserTD:
+def userData3_Dict() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
@@ -94,14 +96,14 @@ def testUserData3() -> FamUserTD:
 
 
 @pytest.fixture(scope="function")
-def testUserData_asPydantic(testUserData) -> schemas.FamUser:
-    famUserAsPydantic = schemas.FamUser(**testUserData)
+def userData_asPydantic(userData_Dict) -> schemas.FamUser:
+    famUserAsPydantic = schemas.FamUser(**userData_Dict)
     yield famUserAsPydantic
 
 
 @pytest.fixture(scope="function")
-def testUserData2_asPydantic(testUserData2) -> schemas.FamUser:
-    famUserAsPydantic2 = schemas.FamUser(**testUserData2)
+def userData2_asPydantic(userData2_Dict) -> schemas.FamUser:
+    famUserAsPydantic2 = schemas.FamUser(**userData2_Dict)
     yield famUserAsPydantic2
 
 
@@ -122,7 +124,7 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 
 
 @pytest.fixture(scope="function")
-def idirUserTypeCodeRecord() -> dict:
+def idirUserTypeCode_Dict() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.IDIR,
         "description": "IDIR",
@@ -131,13 +133,13 @@ def idirUserTypeCodeRecord() -> dict:
 
 # TODO: define return type
 @pytest.fixture(scope="function")
-def idirUserTypeCodeRecord_asModel(idirUserTypeCodeRecord) -> model.FamUserType:
-    idirUserType = model.FamUserType(**idirUserTypeCodeRecord)
+def idirUserTypeCode_asModel(idirUserTypeCode_Dict) -> model.FamUserType:
+    idirUserType = model.FamUserType(**idirUserTypeCode_Dict)
     yield idirUserType
 
 
 @pytest.fixture(scope="function")
-def bceidUserTypeCodeRecord() -> dict:
+def bceidUserTypeCode_Dict() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.BCEID,
         "description": "BCeID",
@@ -147,12 +149,12 @@ def bceidUserTypeCodeRecord() -> dict:
 # TODO: run format on this file, fix format / linter conflicts
 # TODO: rename idir user type and this user type so doesn't incldue the word 'record'
 @pytest.fixture(scope="function")
-def bceidUserTypeCodeRecord_asModel(bceidUserTypeCodeRecord):
-    bceidUserType = model.FamUserType(**bceidUserTypeCodeRecord)
+def bceidUserTypeCode_asModel(bceidUserTypeCode_Dict):
+    bceidUserType = model.FamUserType(**bceidUserTypeCode_Dict)
     yield bceidUserType
 
 @pytest.fixture(scope="function")
-def testUserData() -> dict:
+def userData_Dict() -> dict:
 
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
@@ -169,19 +171,19 @@ def testUserData() -> dict:
 # TODO: standardize the fixture names in this module, remove test from UserData
 #       references
 @pytest.fixture(scope="function")
-def userData_asModel(testUserData):
-    newUser = model.FamUser(**testUserData)
+def userData_asModel(userData_Dict):
+    newUser = model.FamUser(**userData_Dict)
     yield newUser
 
 
 @pytest.fixture(scope="function")
-def userData_asPydantic(testUserData) -> schemas.FamUser:
-    famUserAsPydantic = schemas.FamUser(**testUserData)
+def userData_asPydantic(userData_Dict) -> schemas.FamUser:
+    famUserAsPydantic = schemas.FamUser(**userData_Dict)
     yield famUserAsPydantic
 
 
 @pytest.fixture(scope="function")
-def testUserData2() -> FamUserTD:
+def userData2_Dict() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
@@ -208,23 +210,23 @@ def userGroupXrefData():
 
 
 @pytest.fixture(scope="function")
-def add_group(dbSession, testGroupData):
+def add_group(dbSession, groupData_Dict):
     db = dbSession
-    groupSchema = schemas.FamGroupPost(**testGroupData)
+    groupSchema = schemas.FamGroupPost(**groupData_Dict)
 
     crud_group.createFamGroup(famGroup=groupSchema, db=db)
     yield db
 
-    db.delete(testGroupData)
+    db.delete(groupData_Dict)
     db.commit()
 
 
 @pytest.fixture(scope="function")
-def testGroupData():
-    testGroupData = {
+def groupData_Dict():
+    groupData_Dict = {
         "group_name": "test group",
         "purpose": "testing",
         "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     }
-    return testGroupData
+    return groupData_Dict
