@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { selectedApplication, selectedApplicationDisplayText } from '@/services/ApplicationState'
-
-import { useToast } from 'vue-toastification'
+import PageTitle from '@/components/PageTitle.vue';
+import { selectedApplication } from '@/services/ApplicationState';
+import { useToast } from 'vue-toastification';
 
 function save(result: boolean) {
   const toast = useToast();
@@ -22,11 +22,10 @@ function uncaughtError() {
 </script>
 
 <template>
-  <div>
-    
-    <h1>Grant Access - {{selectedApplicationDisplayText}}</h1>
+
+    <PageTitle />
   
-    <p>Selection: {{selectedApplication}}</p>
+    <!-- <p>Selection: {{selectedApplication}}</p> -->
 
     <br/>TODO<br/>
     <button @click="save(true)">Save</button>
@@ -36,7 +35,7 @@ function uncaughtError() {
     <button @click="saveError()">Save Error</button>
     &nbsp;
     <button @click="uncaughtError()">Uncaught Error</button>
-  </div>
+
 </template>
 
 <style scoped>
