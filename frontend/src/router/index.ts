@@ -28,21 +28,33 @@ const routes = [
   {
     path: '/',
     name: 'home',
+    meta: {
+      title: 'Welcome to FAM'
+    },
     component: HomeView
   },
   {
     path: '/application',
     name: 'application',
+    meta: {
+      title: 'Select Application'
+    },
     component: SelectApplicationView
   },
   {
     path: '/manage',
     name: 'manage',
+    meta: {
+      title: 'Manage Access'
+    },
     component: ManageAccessView
   },
   {
     path: '/grant',
     name: 'grant',
+    meta: {
+      title: 'Grant Access'
+    },
     component: GrantAccessView
   },
   {
@@ -57,6 +69,9 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
+    meta: {
+      requiresAuth: false
+    },
     component: NotFound,
   },
 ]
@@ -79,3 +94,4 @@ router.beforeEach(async (to, from) => {
 export { routes }
 
 export default router
+

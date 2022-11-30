@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import router from '@/router';
-import { selectedApplicationDisplayText } from '@/services/ApplicationState'
-
 import { ApiService } from '@/services/ApiService';
+import PageTitle from '@/components/PageTitle.vue';
+import router from '@/router';
 
 const apiService = new ApiService()
 
@@ -17,6 +16,7 @@ interface UserRoleAssignment {
 
 const userRoleAssignments = ref<UserRoleAssignment[]>([])
 
+// TODO: Eliminate test data
 userRoleAssignments.value = [
   {
     assignment_id: 1,
@@ -78,7 +78,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
 <template>
   <div>
 
-  <h1>Manage Access - {{selectedApplicationDisplayText}}</h1>
+  <PageTitle />
 
   <!-- TODO: Bootstrap styling. -->
   <span>
