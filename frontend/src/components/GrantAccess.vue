@@ -22,11 +22,20 @@ function save(result: boolean) {
           <label for="domainInput" class="control-label">Domain</label>
           <div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="domainRadioOptions" id="becidSelect" value="option1">
+              <input type="radio"
+                id="becidSelect" 
+                name="domainRadioOptions" 
+                class="form-check-input"  
+                value="option1">
               <label class="form-check-label" for="becidSelect">BCeID</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="domainRadioOptions" id="idirSelect" value="option2">
+              <input 
+                type="radio" 
+                id="idirSelect" 
+                name="domainRadioOptions"
+                class="form-check-input"  
+                value="option2">
               <label class="form-check-label" for="idirSelect">IDIR</label>
             </div>
           </div>
@@ -36,14 +45,19 @@ function save(result: boolean) {
       <div class="row">
         <div class="form-group col-md-3">
           <label for="userIdInput" class="control-label">User Id</label>
-          <input type="text" class="form-control" id="userIdInput" placeholder="User's Id">
+          <input type="text" 
+            id="userIdInput" 
+            class="form-control"  
+            placeholder="User's Id">
         </div>
       </div>
 
       <div class="row">
         <div class="form-group col-md-5">
           <label for="roleSelect" class="control-label">Role</label>
-          <select class="form-select" id="roleSelect" aria-label="Role Select">
+          <select id="roleSelect"
+            class="form-select" 
+            aria-label="Role Select">
             <option selected>Select A Role</option>
             <option value="fom_submitter">FOM Submitter</option>
             <option value="fom_reviewer">FOM Reviewer</option>
@@ -54,13 +68,22 @@ function save(result: boolean) {
       <div class="row">
         <div class="form-group col-md-3">
           <label for="forestClientInput" class="control-label">Forest Client</label>
-          <input type="number" class="form-control" id="forestClientInput" placeholder="Forest Client Id">
+          <input type="text"
+            id="forestClientInput"
+            class="form-control"
+            maxlength="8"
+            placeholder="Forest Client Id - 8 digits">
         </div>
       </div>
 
-      <div class="row">
+      <div class="row gy-3">
         <div class="col-auto">
-          <button type="submit" @click="save(true)" class="btn btn-primary mb-3">Grant Access</button>
+          <button type="submit"
+            id="grantAccessSubmit"
+            class="btn btn-primary mb-3"
+            @click="save(true)">
+            Grant Access
+          </button>
         </div>
       </div>
 

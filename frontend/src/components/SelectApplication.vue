@@ -37,24 +37,47 @@ setTimeout( async () => {
 </script>
 
 <template>
-  <div>
     <PageTitle :displaySelectedApplication=false></PageTitle>
 
-  <div v-if="applicationsUserAdministers.length">
-    <label>Select the application to administer</label>
-    <br/>
-    <select v-model="selectedApplication" :size="applicationsUserAdministers.length+1">
-      <option v-for="app in applicationsUserAdministers" :value="app">{{app.application_description}}</option>
-    </select>
-    <br/>
-    <button @click="router.push('/manage')" :disabled="isApplicationSelected">Manage Access</button>
-    &nbsp;
-    <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
-    <br/>
-  </div>
-  <div v-else>
-    <p>Loading applications...</p>
-  </div>
-  </div>
+    <form id="selectApplicationForm" class="form-container">
+      <div v-if="applicationsUserAdministers.length">
+        <div class="row">
+          <div class="form-group col-md-5">
+            <label>Select the application to administer</label>
+            
+            <select id="applicationSelect"
+              class="form-select" 
+              v-model="selectedApplication" 
+              :size="applicationsUserAdministers.length+1">
+              <option v-for="app in applicationsUserAdministers" :value="app">{{app.application_description}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row gy-3">
+          <div class="col-auto">
+            <button type="button"
+              id="goToManageAccessButton" 
+              class="btn btn-info mb-3"
+              :disabled="isApplicationSelected"
+              @click="router.push('/manage')">Manage Access</button>
+          </div>
+          <div class="col-auto">
+            <button type="button"
+              id="goToGrantAccessButton"
+              class="btn btn-primary mb-3"
+              :disabled="isApplicationSelected"
+              @click="router.push('/grant')">Grant Access</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div v-else>
+        <p>Loading applications...</p>
+      </div>
+    </form>
 </template>
 
+<style lang="scss" scoped>
+   @import "@/assets/styles/styles.scss";
+</style>

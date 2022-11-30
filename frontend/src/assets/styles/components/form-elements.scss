@@ -14,10 +14,14 @@ label {
   margin-bottom: 0.15rem;
 }
 
-.btn-primary
-{
+.btn-primary {
     background-color: $button-primary;
     border-color: $button-primary;
+}
+
+.btn-info {
+  background-color: $button-info;
+  border-color: $button-info;
 }
 
 // Remove Arrows/Spinners for input type=number
