@@ -78,14 +78,14 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
     <button @click="router.push('/grant')">Grant Access</button>
   </span>
   <br/>
-  <span>Filter By</span>
   <br/>
+  <span><strong>Filter By:</strong></span>
   <span>
-  User: <input placeholder="user" v-model="userFilter" size="10"/>
+  User <input placeholder="user" v-model="userFilter" size="10"/>
   &nbsp;
-  Role: <input placeholder="role" v-model="roleFilter" size="10"/>
+  Role <input placeholder="role" v-model="roleFilter" size="10"/>
   &nbsp;
-  Forest client: <input placeholder="client #" v-model="forestClientFilter" size="8"/>
+  Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/>
   </span>
 
   <table class="table">
