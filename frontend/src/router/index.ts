@@ -28,28 +28,33 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    meta: withMeta({
-      requiresAuth: false,
+    meta: {
       title: 'Welcome to FAM'
-    }),
+    },
     component: HomeView
   },
   {
     path: '/application',
     name: 'application',
-    meta: withMeta({title: 'Select Application'}),
+    meta: {
+      title: 'Select Application'
+    },
     component: SelectApplicationView
   },
   {
     path: '/manage',
     name: 'manage',
-    meta: withMeta({title: 'Manage Access'}),
+    meta: {
+      title: 'Manage Access'
+    },
     component: ManageAccessView
   },
   {
     path: '/grant',
     name: 'grant',
-    meta: withMeta({title: 'Grant Access'}),
+    meta: {
+      title: 'Grant Access'
+    },
     component: GrantAccessView
   },
   {
@@ -64,7 +69,6 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    meta: withMeta({requiresAuth: false}),
     component: NotFound,
   },
 ]
@@ -79,18 +83,10 @@ router.beforeEach(async (to, from) => {
   useToast().clear()
 
   // Refresh token first before navigation.
-  if (to.meta.requiresAuth && AuthService.state.value.famLoginUser) { // condition needed to prevent infinite redirect
+  if (AuthService.state.value.famLoginUser) { // condition needed to prevent infinite redirect
     await AuthService.methods.refreshToken()
   }
 })
-
-function withMeta(args: any) {
-  const meta = {
-    requiresAuth: true,  // default to each route
-    ...args
-  }
-  return meta
-}
 
 export { routes }
 
