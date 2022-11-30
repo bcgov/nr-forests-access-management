@@ -35,9 +35,9 @@ userRoleAssignments.value = [
   },
   {
     assignment_id: 3,
-    user_id: 'do-test',
-    user_domain: 'BCeID',
-    role: 'Submitter',
+    user_id: 'long-user-name',
+    user_domain: 'BC Services Card',
+    role: 'long-role-name',
     forest_client_number: '00008765'
   },
 ]
@@ -126,7 +126,7 @@ function uncaughtError() {
   <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
   &nbsp;
   <span><strong>{{showingMessage()}}</strong></span>
-  <table class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
+  <table style="maxWidth: 800px;margin-top:10px" class="table table-sm table-striped" aria-describedby="User assignments to application roles.">
     <thead>
       <tr>
         <th scope="col">User</th>
@@ -135,6 +135,7 @@ function uncaughtError() {
         <th scope="col">Forest Client</th>
       </tr>
     </thead>
+    <tbody>
     <template v-for="assignment in userRoleAssignments">
     <tr v-if="filterIncludes(assignment)">
       <th scope="row">{{assignment.user_id}}</th>
@@ -143,6 +144,7 @@ function uncaughtError() {
       <td>{{assignment.forest_client_number}}</td>
     </tr>
     </template>
+    </tbody>
   </table>
 
   </template>
@@ -153,11 +155,12 @@ function uncaughtError() {
 <br/>
 
 <p>Demo of toast messages:</p>
-  <button class="btn btn-info" @click="save(false)">Validation failure</button>
-  &nbsp;
-  <button class="btn btn-info" @click="saveError()">Save Error</button>
-  &nbsp;
-  <button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
+<button class="btn btn-info" @click="save(false)">Validation failure</button>
+&nbsp;
+<button class="btn btn-info" @click="saveError()">Save Error</button>
+&nbsp;
+<button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
+
 </template>
 
 <style lang="scss" scoped>
