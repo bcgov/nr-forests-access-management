@@ -14,7 +14,11 @@ label {
   margin-bottom: 0.15rem;
 }
 
-
+.btn-primary
+{
+    background-color: $button-primary;
+    border-color: $button-primary;
+}
 
 // Remove Arrows/Spinners for input type=number
 /* Chrome, Safari, Edge, Opera */
