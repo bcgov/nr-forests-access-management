@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { selectedApplication } from '@/services/ApplicationState';
 import { useToast } from 'vue-toastification';
 
 function save(result: boolean) {
@@ -11,14 +10,6 @@ function save(result: boolean) {
     toast.warning("Invalid selection.")
   }  
 }
-
-function saveError() {
-  useToast().error("Save failed due to an error. Please try again. If the error persists then contact support.")
-}
-
-function uncaughtError() {
-  throw new Error("test uncaught error thrown from function")
-}
 </script>
 
 <template>
@@ -26,13 +17,6 @@ function uncaughtError() {
     <PageTitle />
   
     <form id="grantAccessForm" class="form-container">
-      <div class="row">
-        <div class="form-group col-md-3">
-          <label for="userIdInput" class="control-label">User Id</label>
-          <input type="text" class="form-control" id="userIdInput" placeholder="User's Id">
-        </div>
-      </div>
-
       <div class="row">
         <div class="form-group col-md-3">
           <label for="domainInput" class="control-label">Domain</label>
@@ -47,7 +31,13 @@ function uncaughtError() {
             </div>
           </div>
         </div>
-        <div></div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-md-3">
+          <label for="userIdInput" class="control-label">User Id</label>
+          <input type="text" class="form-control" id="userIdInput" placeholder="User's Id">
+        </div>
       </div>
 
       <div class="row">
@@ -68,18 +58,13 @@ function uncaughtError() {
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-auto">
+          <button type="submit" @click="save(true)" class="btn btn-primary mb-3">Grant Access</button>
+        </div>
+      </div>
+
     </form>
-
-    <!-- <p>Selection: {{selectedApplication}}</p> -->
-
-    <br/>TODO<br/>
-    <button @click="save(true)">Save</button>
-    &nbsp;
-    <button @click="save(false)">Validation failure</button>
-    &nbsp;
-    <button @click="saveError()">Save Error</button>
-    &nbsp;
-    <button @click="uncaughtError()">Uncaught Error</button>
 
 </template>
 
