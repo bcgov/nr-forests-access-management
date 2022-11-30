@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { ApiService } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
 import router from '@/router';
-import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 import { useToast } from 'vue-toastification';
 
 const apiService = new ApiService()
@@ -126,7 +125,7 @@ function uncaughtError() {
   <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
   &nbsp;
   <span><strong>{{showingMessage()}}</strong></span>
-  <table style="maxWidth: 800px;margin-top:10px" class="table table-sm table-striped" aria-describedby="User assignments to application roles.">
+  <table style="max-width: 800px;margin-top:10px" class="table table-sm table-striped" aria-describedby="User assignments to application roles.">
     <thead>
       <tr>
         <th scope="col">User</th>
