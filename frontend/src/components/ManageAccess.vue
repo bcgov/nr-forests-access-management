@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import router from '@/router';
-import { selectedApplication, isApplicationSelected, selectedApplicationDisplayText } from '@/services/ApplicationState'
+import { selectedApplicationDisplayText } from '@/services/ApplicationState'
 
 import { ApiService } from '@/services/ApiService';
-import { useToast } from 'vue-toastification'
 
 const apiService = new ApiService()
 
@@ -32,8 +31,8 @@ userRoleAssignments.value = [
     role: 'Submitter',
     forest_client_number: '01234567'
   }
-
 ]
+
 // TODO: Need API
 // userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
 
@@ -74,11 +73,13 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
 
   <h1>Manage Access - {{selectedApplicationDisplayText}}</h1>
 
+  <!-- TODO: Bootstrap styling. -->
   <span>
     <button @click="router.push('/grant')">Grant Access</button>
   </span>
   <br/>
   <br/>
+  <template v-if="userRoleAssignments.length > 0">
   <span><strong>Filter By:</strong></span>
   <span>
   User <input placeholder="user" v-model="userFilter" size="10"/>
@@ -107,6 +108,10 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
     </template>
   </table>
 
+  </template>
+  <template v-else>
+    No user role assignments found.
+  </template>
 </div>
 </template>
 
