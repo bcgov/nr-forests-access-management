@@ -26,8 +26,30 @@ export class ApiService {
         if (res == undefined) {
             throw new Error(`Failure retrieving applications from ${url}`)
         }
-        var apps = res.data;
+        const apps = res.data;
         return apps;
     }
 
+    async getApplicationRoles(applicationId: number | undefined):Promise<ApplicationRoleResponse[] | null> {
+        if (!applicationId) return null
+        
+        const url = this.apiUrl + `/fam_applications/${applicationId}/fam_roles`
+        const res = await Http.get(url);
+        if (res == undefined) {
+            throw new Error(`Failure retrieving application roles from ${url}`)
+        }
+        const apps = res.data;
+        return apps;
+    }
+}
+
+export interface ApplicationRoleResponse {
+    role_name: string,
+    role_purpose: string,
+    parent_role_id: number,
+    application_id: number,
+    forest_client_number: string,
+    create_user: string,
+    role_type_code: string,
+    role_id: number
 }

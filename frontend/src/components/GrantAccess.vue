@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
+import { ApiService, type ApplicationRoleResponse } from '@/services/ApiService';
+import { selectedApplication } from '@/services/ApplicationState';
+import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const domainOptions = {IDIR: 'I', BCEID: 'B'}
+let applicationRoleOptions = ref<ApplicationRoleResponse[]>([])
 
-const formData = {
+const formData = ref({
   domain: domainOptions.BCEID,
   userId: null,
   forestClientNumber: null,
-  roleId: null
-}
+  role: null as unknown as ApplicationRoleResponse
+})
+
+const apiService = new ApiService()
+
+onMounted(async () => {
+  applicationRoleOptions.value = await apiService.getApplicationRoles(selectedApplication?.value?.application_id) as ApplicationRoleResponse[]
+})
 
 function onlyDigit(evt: KeyboardEvent) {
   if (isNaN(parseInt(evt.key))) {
@@ -78,15 +88,15 @@ function save(result: boolean) {
           <select id="roleSelect"
             class="form-select" 
             aria-label="Role Select"
-            v-model="formData.roleId">
-            <option selected>Select A Role</option>
-            <option value="fom_submitter">FOM Submitter</option>
-            <option value="fom_reviewer">FOM Reviewer</option>
+            v-model="formData.role">
+            <option 
+              v-for="role in applicationRoleOptions" 
+              :value="role">{{role.role_name}}</option>
           </select>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" v-if="formData.role?.role_type_code == 'A'">
         <div class="form-group col-md-3">
           <label for="forestClientInput" class="control-label">Forest Client</label>
           <input type="text"
@@ -104,7 +114,7 @@ function save(result: boolean) {
           <button type="submit"
             id="grantAccessSubmit"
             class="btn btn-primary mb-3"
-            @click="save(true)">
+            @click="$event.preventDefault();save(true)">
             Grant Access
           </button>
         </div>
