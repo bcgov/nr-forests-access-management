@@ -96,6 +96,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
 
   <table class="table table-sm table-striped table-hover">
+    <caption>User assignments to application roles.</caption>
     <thead>
       <tr>
         <th scope="col">User</th>
