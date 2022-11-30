@@ -40,9 +40,9 @@ def test_createUserRoleAssignment_violate_supportUserTypes(simpleUserRoleRequest
 
 # Make sure previous tests don't leave any role in db.
 def test_roleNotExist_raise_exception(
-    dbSession_famUserTypes: session.Session, simpleUserRoleRequest, deleteAllRoles
+    dbsession_fam_user_types: session.Session, simpleUserRoleRequest, deleteAllRoles
 ):
-    db = dbSession_famUserTypes
+    db = dbsession_fam_user_types
     LOGGER.debug(
         "Creating user/role assignment with not supported with no role id not exist in db."
     )
@@ -57,7 +57,7 @@ def test_roleNotExist_raise_exception(
 
 def test_userRoleAssignment_withAbstractRole_raise_exception(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    dbSession_famUserTypes,
+    dbsession_fam_user_types,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
@@ -89,7 +89,7 @@ def test_userRoleAssignment_withAbstractRole_raise_exception(
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    dbSession_famUserTypes,
+    dbsession_fam_user_types,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession
@@ -134,7 +134,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
 
 def test_create_userRoleAssignment_for_forestClientFOMSubmitter_twice_return_existing_one(
     simpleUserRoleRequest: schemas.FamUserRoleAssignmentCreate,
-    dbSession_famUserTypes,
+    dbsession_fam_user_types,
     simpleFOMSubmitterRole_dbSession: session.Session,
 ):
     db = simpleFOMSubmitterRole_dbSession

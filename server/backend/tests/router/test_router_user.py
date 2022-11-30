@@ -63,7 +63,7 @@ def test_get_fam_user(user_client_withUsers):
         assert singleUserData == user
 
 
-def test_post_fam_users(testClient_fixture, userData_Dict, dbSession_famUserTypes):
+def test_post_fam_users(testClient_fixture, userData_Dict, dbsession_fam_user_types):
 
     # modify the user data to make it invalid
     userData_Dict["user_type_code"] = "X"

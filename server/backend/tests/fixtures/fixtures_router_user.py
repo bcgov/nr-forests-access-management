@@ -9,7 +9,7 @@ endPoint = test_router_user.endPoint
 
 @pytest.fixture(scope="function")
 def user_client_withUsersNoCleanup(
-    testClient_fixture, userData_Dict, dbSession_famUserTypes
+    testClient_fixture, userData_Dict, dbsession_fam_user_types
 ):
     # used for delete, assumption is the test user that was created
     # has been cleaned up.
@@ -29,7 +29,7 @@ def user_client_withUsersNoCleanup(
 
 
 @pytest.fixture(scope="function")
-def user_client_withUsers(testClient_fixture, userData_Dict, dbSession_famUserTypes):
+def user_client_withUsers(testClient_fixture, userData_Dict, dbsession_fam_user_types):
     userData_Dict["create_date"] = str(userData_Dict["create_date"])
     userData_Dict["update_date"] = str(userData_Dict["update_date"])
 

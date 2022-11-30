@@ -13,7 +13,7 @@ def test_getPrimaryKey():
     pkColName = crudUtils.getPrimaryKey(model.FamUser)
     assert pkColName == "user_id"
 
-def test_getNext(dbSession_famUsers, userData2_asPydantic, deleteAllUsers):
+def test_getNext(dbsession_fam_users, userdata2_pydantic, delete_all_users):
     """fixture delivers a db session with one record in it, testing that
     the getNext method returns the primary key of the current record + 1
 
@@ -21,18 +21,18 @@ def test_getNext(dbSession_famUsers, userData2_asPydantic, deleteAllUsers):
     sqlalchemy wrapper to sqllite does not do the autoincrement / populate of
     primary keys.
 
-    :param dbSession_famUsers: a sql alchemy database session which is
+    :param dbsession_fam_users: a sql alchemy database session which is
         pre-populated with user data.
-    :type dbSession_famUsers: sqlalchemy.orm.Session
+    :type dbsession_fam_users: sqlalchemy.orm.Session
     """
-    db = dbSession_famUsers
+    db = dbsession_fam_users
     famUserModel = model.FamUser
     LOGGER.debug(f"famUserModel type: {type(famUserModel)}")
     nextValueBefore = crudUtils.getNext(db=db, model=famUserModel)
     assert nextValueBefore > 0
 
     # now add record and test again that the number is greater
-    crud_user.createFamUser(famUser=userData2_asPydantic, db=db)
+    crud_user.createFamUser(famUser=userdata2_pydantic, db=db)
 
     nextValueAfter = crudUtils.getNext(db=db, model=famUserModel)
     assert nextValueAfter > nextValueBefore

@@ -31,7 +31,7 @@ def simpleUserRoleRequest(simpleUserRoleData) -> schemas.FamUserRoleAssignmentCr
 
 @pytest.fixture(scope="function")
 def simpleUserRoleAssignment_dbSession(
-    request, dbSession_famUserTypes, simpleFOMSubmitterRole_dbSession: session.Session
+    request, dbsession_fam_user_types, simpleFOMSubmitterRole_dbSession: session.Session
 ):
     db = simpleFOMSubmitterRole_dbSession
     fam_role: model.FamRole = (db.query(model.FamRole).all())[0]

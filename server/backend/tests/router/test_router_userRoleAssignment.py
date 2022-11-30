@@ -12,7 +12,7 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 def test_create_user_role_assignment_associated_with_abstract_role(
     testClient_fixture,
-    dbSession_famUserTypes,
+    dbsession_fam_user_types,
     simpleFOMSubmitterRole_dbSession,
     simpleUserRoleData,
     clean_up_all_user_role_assignment,
@@ -69,7 +69,7 @@ def test_create_user_role_assignment_associated_with_abstract_role(
 
 def test_create_user_role_assignment_with_concrete_role(
     testClient_fixture,
-    dbSession_famUserTypes,
+    dbsession_fam_user_types,
     simpleConcreteRole_dbSession,
     simpleUserRoleData,
     clean_up_all_user_role_assignment,

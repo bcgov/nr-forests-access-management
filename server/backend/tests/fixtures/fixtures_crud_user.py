@@ -1,7 +1,7 @@
 import datetime
 import logging
 import uuid
-from typing import TypedDict
+from typing import TypedDict, Dict, Any, Union, Iterator
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -9,6 +9,7 @@ import api.app.constants as famConstants
 import pytest
 from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
+import test_constants
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,9 +29,9 @@ class FamUserTD(TypedDict):
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUserTypes(dbSession, idirUserTypeCode_Dict, bceidUserTypeCode_Dict):
+def dbsession_fam_user_types(dbSession, idir_user_type_code_dict, bceidUserTypeCode_Dict):
     db = dbSession
-    idirUserTypeCode = model.FamUserType(**idirUserTypeCode_Dict)
+    idirUserTypeCode = model.FamUserType(**idir_user_type_code_dict)
     bceidUserTypeCode = model.FamUserType(**bceidUserTypeCode_Dict)
     db.add(idirUserTypeCode)
     db.add(bceidUserTypeCode)
@@ -44,16 +45,16 @@ def dbSession_famUserTypes(dbSession, idirUserTypeCode_Dict, bceidUserTypeCode_D
 
 
 @pytest.fixture(scope="function")
-def dbSession_famUsers(
-    dbSession_famUserTypes, userData3_Dict, groupData_Dict, userGroupXrefData
+def dbsession_fam_users(
+    dbsession_fam_user_types, user_data3_dict: Dict[str, Any], groupData_Dict, userGroupXrefData
 ):
     """to add a user need to satisfy the integrity constraints.
 
-    :param dbSession_famUserTypes: database session with the user type data
+    :param dbsession_fam_user_types: database session with the user type data
         loaded.
-    :type dbSession_famUserTypes: sqlalchemy.orm.session.Session
-    :param userData3_Dict: Input dictionary describing a user record
-    :type userData3_Dict: dict
+    :type dbsession_fam_user_types: sqlalchemy.orm.session.Session
+    :param user_data3_dict: Input dictionary describing a user record
+    :type user_data3_dict: Dict[str, Any]
     :param groupData_Dict: dictionary describing a group record
     :type groupData_Dict: dict
     :yield: Database session with the user record loaded along with group to
@@ -62,10 +63,10 @@ def dbSession_famUsers(
     # the following link goes over working with related/associated tables
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
 
-    db = dbSession_famUserTypes
+    db = dbsession_fam_user_types
     # trying to add to user without violating the integrity constraint
     # group was populated with a record by the add_group fixture.
-    newUser = model.FamUser(**userData3_Dict)
+    newUser = model.FamUser(**user_data3_dict)
     groupSchema = model.FamGroup(**groupData_Dict)
     userGroupXrefData["group"] = groupSchema
     userGroupXrefData["user"] = newUser
@@ -84,38 +85,39 @@ def dbSession_famUsers(
 
 
 @pytest.fixture(scope="function")
-def userData3_Dict() -> FamUserTD:
-    userData = {
+def user_data3_dict() -> Iterator[Dict[str, Union[str, famConstants.UserType]]]:
+    user_data = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
         "user_name": "BSMITH",
         "user_guid": str(uuid.uuid4()),
         "create_user": famConstants.FAM_PROXY_API_USER,
     }
-    yield userData
-
+    # return user_data
+    # try return instead? yield user_data
+    yield user_data
 
 @pytest.fixture(scope="function")
-def userData_asPydantic(userData_Dict) -> schemas.FamUser:
+def userdata_pydantic(userData_Dict) -> schemas.FamUser:
     famUserAsPydantic = schemas.FamUser(**userData_Dict)
     yield famUserAsPydantic
 
 
 @pytest.fixture(scope="function")
-def userData2_asPydantic(userData2_Dict) -> schemas.FamUser:
+def userdata2_pydantic(userData2_Dict) -> schemas.FamUser:
     famUserAsPydantic2 = schemas.FamUser(**userData2_Dict)
     yield famUserAsPydantic2
 
 
 @pytest.fixture(scope="function")
-def deleteAllUsers(dbSession: session.Session) -> None:
+def delete_all_users(dbSession: session.Session) -> Iterator[None]:
     """Cleans up all users from the database after the test has been run
 
     :param dbSession: mocked up database session
     :type dbSession: sqlalchemy.orm.session.Session
     """
     LOGGER.debug(f"dbsession type: {type(dbSession)}")
-    yield
+    yield None
     db = dbSession
     famUsers = db.query(model.FamUser).all()
     for famUser in famUsers:
@@ -124,7 +126,7 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 
 
 @pytest.fixture(scope="function")
-def idirUserTypeCode_Dict() -> dict:
+def idir_user_type_code_dict() -> Iterator[Dict]:
     userType = {
         "user_type_code": famConstants.UserType.IDIR,
         "description": "IDIR",
@@ -133,8 +135,8 @@ def idirUserTypeCode_Dict() -> dict:
 
 # TODO: define return type
 @pytest.fixture(scope="function")
-def idirUserTypeCode_asModel(idirUserTypeCode_Dict) -> model.FamUserType:
-    idirUserType = model.FamUserType(**idirUserTypeCode_Dict)
+def idirUserTypeCode_asModel(idir_user_type_code_dict) -> model.FamUserType:
+    idirUserType = model.FamUserType(**idir_user_type_code_dict)
     yield idirUserType
 
 
@@ -177,7 +179,7 @@ def userData_asModel(userData_Dict):
 
 
 @pytest.fixture(scope="function")
-def userData_asPydantic(userData_Dict) -> schemas.FamUser:
+def userdata_pydantic(userData_Dict) -> schemas.FamUser:
     famUserAsPydantic = schemas.FamUser(**userData_Dict)
     yield famUserAsPydantic
 
