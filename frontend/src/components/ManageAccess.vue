@@ -49,6 +49,17 @@ const userFilter = ref<string>()
 const roleFilter = ref<string>()
 const forestClientFilter = ref<string>()
 
+function showingMessage(): string {
+  let visible = 0;
+  userRoleAssignments.value.forEach(assignment => {
+    if (filterIncludes(assignment)) {
+      visible++
+    }
+  })
+
+  return "Showing " + visible + " of " + userRoleAssignments.value.length + " records"
+}
+
 function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
 
   // TODO: Review this logic.
@@ -101,7 +112,7 @@ function uncaughtError() {
 
   <!-- TODO: Bootstrap styling. -->
   <span>
-    <button @click="router.push('/grant')">Grant Access</button>
+    <button class="btn btn-info"  @click="router.push('/grant')">Grant Access</button>
   </span>
   <br/>
   <br/>
@@ -113,7 +124,8 @@ function uncaughtError() {
   <span>Role <input placeholder="role" v-model="roleFilter" size="12"/></span>
   &nbsp;
   <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
-
+  &nbsp;
+  <span><strong>{{showingMessage()}}</strong></span>
   <table class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
     <thead>
       <tr>
@@ -138,13 +150,14 @@ function uncaughtError() {
     No user role assignments found.
   </template>
 </div>
-<p>Demo of toast messages:</p>
 <br/>
-  <button @click="save(false)">Validation failure</button>
+
+<p>Demo of toast messages:</p>
+  <button class="btn btn-info" @click="save(false)">Validation failure</button>
   &nbsp;
-  <button @click="saveError()">Save Error</button>
+  <button class="btn btn-info" @click="saveError()">Save Error</button>
   &nbsp;
-  <button @click="uncaughtError()">Uncaught Error</button>
+  <button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
 </template>
 
 <style lang="scss" scoped>
