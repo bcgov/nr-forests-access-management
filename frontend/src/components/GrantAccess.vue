@@ -2,7 +2,25 @@
 import PageTitle from '@/components/PageTitle.vue';
 import { useToast } from 'vue-toastification';
 
+const domainOptions = {IDIR: 'I', BCEID: 'B'}
+
+const formData = {
+  domain: domainOptions.BCEID,
+  userId: null,
+  forestClientNumber: null,
+  roleId: null
+}
+
+function onlyDigit(evt: KeyboardEvent) {
+  if (isNaN(parseInt(evt.key))) {
+    evt.preventDefault()
+  }
+}
+
 function save(result: boolean) {
+
+  console.log("formData: ", formData)
+
   const toast = useToast();
   if (result) {
     toast.success("Save successful")
@@ -25,8 +43,10 @@ function save(result: boolean) {
               <input type="radio"
                 id="becidSelect" 
                 name="domainRadioOptions" 
-                class="form-check-input"  
-                value="option1">
+                class="form-check-input"
+                :value="domainOptions.BCEID" 
+                v-model="formData.domain"
+                :checked="(formData.domain === domainOptions.BCEID)">
               <label class="form-check-label" for="becidSelect">BCeID</label>
             </div>
             <div class="form-check form-check-inline">
@@ -35,7 +55,9 @@ function save(result: boolean) {
                 id="idirSelect" 
                 name="domainRadioOptions"
                 class="form-check-input"  
-                value="option2">
+                :value="domainOptions.IDIR"
+                v-model="formData.domain"
+                :checked="(formData.domain === domainOptions.IDIR)">
               <label class="form-check-label" for="idirSelect">IDIR</label>
             </div>
           </div>
@@ -48,7 +70,8 @@ function save(result: boolean) {
           <input type="text" 
             id="userIdInput" 
             class="form-control"  
-            placeholder="User's Id">
+            placeholder="User's Id"
+            v-model="formData.userId">
         </div>
       </div>
 
@@ -57,7 +80,8 @@ function save(result: boolean) {
           <label for="roleSelect" class="control-label">Role</label>
           <select id="roleSelect"
             class="form-select" 
-            aria-label="Role Select">
+            aria-label="Role Select"
+            v-model="formData.roleId">
             <option selected>Select A Role</option>
             <option value="fom_submitter">FOM Submitter</option>
             <option value="fom_reviewer">FOM Reviewer</option>
@@ -72,7 +96,9 @@ function save(result: boolean) {
             id="forestClientInput"
             class="form-control"
             maxlength="8"
-            placeholder="Forest Client Id - 8 digits">
+            placeholder="Forest Client Id - 8 digits"
+            v-model="formData.forestClientNumber"
+            v-on:keypress="onlyDigit($event)">
         </div>
       </div>
 
