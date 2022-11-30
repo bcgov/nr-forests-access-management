@@ -18,9 +18,6 @@ function onlyDigit(evt: KeyboardEvent) {
 }
 
 function save(result: boolean) {
-
-  console.log("formData: ", formData)
-
   const toast = useToast();
   if (result) {
     toast.success("Save successful")
