@@ -30,7 +30,14 @@ userRoleAssignments.value = [
     user_domain: 'BCeID',
     role: 'Submitter',
     forest_client_number: '01234567'
-  }
+  },
+  {
+    assignment_id: 3,
+    user_id: 'do-test',
+    user_domain: 'BCeID',
+    role: 'Submitter',
+    forest_client_number: '00008765'
+  },
 ]
 
 // TODO: Need API
@@ -82,14 +89,13 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   <template v-if="userRoleAssignments.length > 0">
   <span><strong>Filter By:</strong></span>
   <span>
-  User <input placeholder="user" v-model="userFilter" size="10"/>
+  User <input placeholder="user" v-model="userFilter" size="12"/></span>
   &nbsp;
-  Role <input placeholder="role" v-model="roleFilter" size="10"/>
+  <span>Role <input placeholder="role" v-model="roleFilter" size="12"/></span>
   &nbsp;
-  Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/>
-  </span>
+  <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
 
-  <table class="table">
+  <table class="table table-sm table-striped table-hover">
     <thead>
       <tr>
         <th scope="col">User</th>
@@ -100,7 +106,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
     </thead>
     <template v-for="assignment in userRoleAssignments">
     <tr v-if="filterIncludes(assignment)">
-      <td>{{assignment.user_id}}</td>
+      <th scope="row">{{assignment.user_id}}</th>
       <td>{{assignment.user_domain}}</td>
       <td>{{assignment.role}}</td>
       <td>{{assignment.forest_client_number}}</td>
