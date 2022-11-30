@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { ApiService } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
 import router from '@/router';
+import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
+import { useToast } from 'vue-toastification';
 
 const apiService = new ApiService()
 
@@ -73,6 +75,23 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   return true
 }
 
+function save(result: boolean) {
+  const toast = useToast();
+  if (result) {
+    toast.success("Save successful")
+  } else {
+    toast.warning("Invalid selection.")
+  }
+}
+
+function saveError() {
+  useToast().error("Save failed due to an error. Please try again. If the error persists then contact support.")
+}
+
+function uncaughtError() {
+  throw new Error("test uncaught error thrown from function")
+}
+
 </script>
 
 <template>
@@ -119,8 +138,15 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
     No user role assignments found.
   </template>
 </div>
+<p>Demo of toast messages:</p>
+<br/>
+  <button @click="save(false)">Validation failure</button>
+  &nbsp;
+  <button @click="saveError()">Save Error</button>
+  &nbsp;
+  <button @click="uncaughtError()">Uncaught Error</button>
 </template>
 
-<style scoped>
-
+<style lang="scss" scoped>
+   @import "@/assets/styles/styles.scss";
 </style>

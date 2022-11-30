@@ -69,9 +69,6 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    meta: {
-      requiresAuth: false
-    },
     component: NotFound,
   },
 ]
