@@ -8,38 +8,87 @@ import { useToast } from 'vue-toastification';
 const apiService = new ApiService()
 
 interface UserRoleAssignment {
-    assignment_id: number;
-    user_id: string;
-    user_domain: string;
-    role: string
-    forest_client_number?: string;
+  user_role_xref_id: number,
+  user: {
+    user_type_code: string
+    user_type_desc?:string
+    cognito_user_id: string
+    user_name: string
+  },
+  role: {
+    role_name: string
+    role_type_code: string
+    client_number?: {
+      client_name: string,
+      forest_client_number: string
+    }
+  }
+
+    // assignment_id: number;
+    // user_id: string;
+    // user_domain: string;
+    // role: string
+    // forest_client_number?: string;
 }
 
 const userRoleAssignments = ref<UserRoleAssignment[]>([])
 
 // TODO: Eliminate test data
 userRoleAssignments.value = [
-  {
-    assignment_id: 1,
-    user_id: 'foo-test',
-    user_domain: 'IDIR',
-    role: 'Reviewer',
-  },
-  {
-    assignment_id: 2,
-    user_id: 'bar-test',
-    user_domain: 'BCeID',
-    role: 'Submitter',
-    forest_client_number: '01234567'
-  },
-  {
-    assignment_id: 3,
-    user_id: 'long-user-name',
-    user_domain: 'BC Services Card',
-    role: 'long-role-name',
-    forest_client_number: '00008765'
-  },
+    {
+        "user_role_xref_id": 1,
+        "user": {
+            "user_type_code": "I",
+            "cognito_user_id": "foo-test",
+            "user_name": "Foo Tester"
+        },
+        "role": {
+            "role_name": "Reviewer",
+            "role_type_code": "C"
+        }
+    },
+    {
+        "user_role_xref_id": 2,
+        "user": {
+            "user_type_code": "B",
+            "cognito_user_id": "bar-test",
+            "user_name": "Bar Tester"
+        },
+        "role": {
+            "role_name": "Submitter",
+            "role_type_code": "A",
+            "client_number": {
+                "client_name": "acme forestry",
+                "forest_client_number": "00009876"
+            }
+        }
+    },
+    {
+        "user_role_xref_id": 3,
+        "user": {
+            "user_type_code": "B",
+            "cognito_user_id": "longer_user_id",
+            "user_name": "ThisIsAVery LongNameHere"
+        },
+        "role": {
+            "role_name": "Submitter",
+            "role_type_code": "A",
+            "client_number": {
+                "client_name": "Long name of forestry company",
+                "forest_client_number": "12345678"
+            }
+        }
+    }
+
 ]
+
+userRoleAssignments.value.forEach(assignment => {
+  if (assignment.user.user_type_code == "B") {
+    assignment.user.user_type_desc = "BCeID"
+  } else if (assignment.user.user_type_code == "I") {
+    assignment.user.user_type_desc = "IDIR"
+  }
+})
 
 // TODO: Need API
 // userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
@@ -64,21 +113,21 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   // TODO: Review this logic.
 
   if (userFilter.value != null) {
-    if (!userRoleAssignment.user_id.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
+    if (!userRoleAssignment.user.cognito_user_id.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
       return false
     }
   }
 
   if (roleFilter.value != null) {
-    if (!userRoleAssignment.role.toLocaleUpperCase().includes(roleFilter.value.toLocaleUpperCase())) {
+    if (!userRoleAssignment.role.role_name.toLocaleUpperCase().includes(roleFilter.value.toLocaleUpperCase())) {
       return false
     }
   }
 
   if (forestClientFilter.value != null && forestClientFilter.value.length > 0) {
-    if (userRoleAssignment.forest_client_number == null) {
+    if (userRoleAssignment.role.client_number == null) {
       return false // If no forest client for the role then exclude this assignment when filtering by forest client
-    } else if (!userRoleAssignment.forest_client_number.includes(forestClientFilter.value)) {
+    } else if (!userRoleAssignment.role.client_number.forest_client_number.includes(forestClientFilter.value)) {
       return false
     }
   }
@@ -125,11 +174,12 @@ function uncaughtError() {
   <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
   &nbsp;
   <span><strong>{{showingMessage()}}</strong></span>
-  <table style="max-width: 800px;margin-top:10px" class="table table-sm table-striped" aria-describedby="User assignments to application roles.">
+  <table style="max-width: 1000px;margin-top:10px" class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
     <thead>
       <tr>
-        <th scope="col">User</th>
+        <th scope="col">User ID</th>
         <th scope="col">Domain</th>
+        <th scope="col">User Name</th>
         <th scope="col">Role</th>
         <th scope="col">Forest Client</th>
       </tr>
@@ -137,10 +187,12 @@ function uncaughtError() {
     <tbody>
     <template v-for="assignment in userRoleAssignments">
     <tr v-if="filterIncludes(assignment)">
-      <th scope="row">{{assignment.user_id}}</th>
-      <td>{{assignment.user_domain}}</td>
-      <td>{{assignment.role}}</td>
-      <td>{{assignment.forest_client_number}}</td>
+      <th scope="row">{{assignment.user.cognito_user_id}}</th>
+      <td>{{assignment.user.user_type_desc}}</td>
+      <td>{{assignment.user.user_name}}</td>
+      <td>{{assignment.role.role_name}}</td>
+      <td v-if="assignment.role.client_number">{{assignment.role.client_number?.client_name}} - {{assignment.role.client_number?.forest_client_number}}</td>
+      <td v-else></td>
     </tr>
     </template>
     </tbody>
