@@ -31,7 +31,7 @@ function onlyDigit(evt: KeyboardEvent) {
   }
 }
 
-async function save() {
+async function grantAccess() {
   const toast = useToast();
   const grantAccessRequest = toRequest(formData.value)
   try {
@@ -65,7 +65,9 @@ function toRequest(formData: any) {
 
     <PageTitle />
   
-    <form id="grantAccessForm" class="form-container">
+    <form id="grantAccessForm" 
+      class="form-container"
+      @submit.prevent="grantAccess">
       <div class="row">
         <div class="form-group col-md-3">
           <label for="domainInput" class="control-label">Domain</label>
@@ -73,7 +75,7 @@ function toRequest(formData: any) {
             <div class="form-check form-check-inline">
               <input type="radio"
                 id="becidSelect" 
-                name="domainRadioOptions" 
+                name="domainRadioOptions"
                 class="form-check-input"
                 :value="domainOptions.BCEID" 
                 v-model="formData.domain"
@@ -100,7 +102,9 @@ function toRequest(formData: any) {
           <label for="userIdInput" class="control-label">User Id</label>
           <input type="text" 
             id="userIdInput" 
-            class="form-control"  
+            class="form-control"
+            name="userId"
+            required
             placeholder="User's Id"
             v-model="formData.userId">
         </div>
@@ -110,6 +114,8 @@ function toRequest(formData: any) {
         <div class="form-group col-md-5">
           <label for="roleSelect" class="control-label">Role</label>
           <select id="roleSelect"
+            name="role"
+            required
             class="form-select" 
             aria-label="Role Select"
             v-model="formData.role">
@@ -126,6 +132,7 @@ function toRequest(formData: any) {
           <input type="text"
             id="forestClientInput"
             class="form-control"
+            required
             :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
             placeholder="Forest Client Id - 8 digits"
             v-model="formData.forestClientNumber"
@@ -138,7 +145,8 @@ function toRequest(formData: any) {
           <button type="submit"
             id="grantAccessSubmit"
             class="btn btn-primary mb-3"
-            @click="$event.preventDefault();save(true)">
+            >
+            <!-- @click="$event.preventDefault();grantAccess()"> -->
             Grant Access
           </button>
         </div>
