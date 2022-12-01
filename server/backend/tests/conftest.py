@@ -45,9 +45,9 @@ pytest_plugins = [
     "fixtures.fixtures_crud_user",
     "fixtures.fixtures_router_user",
     "fixtures.fixtures_crud_role",
-    "fixtures.fixtures_crud_user_role_assignment"
+    "fixtures.fixtures_crud_user_role_assignment",
+    "fixtures.fixtures_crud_forestclient"
 ]
-
 
 @pytest.fixture(scope="function")
 def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
@@ -159,12 +159,12 @@ def override_get_db():
 def getFixtureParams(request):
     """
     Helper function to pass custom param into fixture to do setup/dear-down logic mostly.
-    For example, in test, can mark the test that uses some fixture to pass param into the fixture: 
+    For example, in test, can mark the test that uses some fixture to pass param into the fixture:
         @pytest.mark.fixture_data({"clean_up": False})
 
     And then in that specific fixture, get the param individually by calling:
         need_cleanup = getFixtureParams(request)['clean_up']
-        
+
         Note, the fixture needs to have pytest 'request' as the argument passing into the function.
     """
     marker = request.node.get_closest_marker("fixture_data")

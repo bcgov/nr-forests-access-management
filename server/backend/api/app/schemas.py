@@ -88,6 +88,7 @@ class FamRoleCreate(BaseModel):
     class Config:
         orm_mode = True
 
+# TODO: check that this is still needed
 class FamApplicationRole(FamRoleCreate):
     role_id: int
 
@@ -174,26 +175,115 @@ class FamForestClientGet(FamForestClientCreate):
         orm_mode = True
 
 
-class FamUserRoleXref(FamUserRoleAssignmentGet):
-    user: FamUser
-    application_id: Union[str, None]
+# class FamUserRoleXref(FamUserRoleAssignmentGet):
+#     #oveerriding FamUserRoleAssignmentGet to make application optional
+#     user: FamUser
+#     role: FamRoleCreate
+#     application_id: Optional[Union[str, None]]
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
+#         #fields = {'create_user': {'exclude': True}}
 
 # appUserRoleAssignments.fam_role[0].fam_user_role_xref
-class FamRole_FamUserRoleXref(FamRoleCreate):
-    fam_user_role_xref: List[FamUserRoleXref]
+#class FamRole_FamUserRoleXref(FamRoleCreate):
+    #fam_user_role_xref: List[FamUserRoleXref]
 
-    class Config:
-            orm_mode = True
+
+    #class Config:
+    #        orm_mode = True
 
 # [<api.app.models.model.FamRole object at 0x7f71842c26d0>]
 # FamApplicationUserRoleAssignmentGet
 # response -> fam_role -> 0 -> fam_user_role_xref -> 0 -> application_id
 #  field required (type=value_error.missing)
-class FamApplicationUserRoleAssignmentGet(FamApplicationCreate):
-    fam_role: List[FamRole_FamUserRoleXref]
+# TODO: probably delete this class
+
+
+class FamForestClient(BaseModel):
+    client_name: str
+    forest_client_number: int
 
     class Config:
         orm_mode = True
+
+
+class FamRoleWithClient(FamRoleCreate):
+    role_id: int
+    client_number: Optional[FamForestClient]
+
+    class Config:
+        orm_mode = True
+        fields = {'update_user': {'exclude': True},
+                  'role_purpose': {'exclude': True},
+                  'parent_role_id': {'exclude': True},
+                  'application_id': {'exclude': True},
+                  'forest_client_number': {'exclude': True},
+                  'role_id': {'exclude': True},
+                  }
+
+class FamUserOnlyName(FamUser):
+    class Config:
+        orm_mode = True
+        fields = {'user_guid': {'exclude': True},
+                  'create_user': {'exclude': True},
+                  'update_user': {'exclude': True}
+                  }
+
+
+class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
+    user: FamUserOnlyName
+    role: FamRoleWithClient
+    application_id: Optional[Union[int, None]]
+
+    class Config:
+        orm_mode = True
+        fields = {'application_id': {'exclude': True},
+                  'user_id': {'exclude': True},
+                  'role_id': {'exclude': True}
+                  }
+
+
+
+"""
+LIST
+    user_role_xref_id: role assignment id
+
+
+    user_name
+    user_type (idir/bceid)
+    role_name
+    forest_client_number
+
+
+
+
+attributes:
+    application_id - thinking to verify that its working for now
+    fam_user_role_xref:
+        LIST
+            user_role_xref_id - assignment id
+            user:
+                user_id
+                user_name
+            role:
+                role_name
+                role_type_code
+                role_id
+
+
+    forest_client_id
+
+----- From Basil ----
+ assignment_id: 1,
+user_id: 'foo-test',
+user_domain: 'IDIR',
+role: 'Reviewer',
+},
+{
+assignment_id: 2,
+user_id: 'bar-test',
+user_domain: 'BCeID',
+role: 'Submitter',
+forest_client_number: '01234567'
+"""

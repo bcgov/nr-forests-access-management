@@ -133,6 +133,8 @@ def test_get_fam_user_role_assignment(
     client = application_role_assignment['client']
     app_id = application_role_assignment['app_id']
 
+    #app_id = '2'
+
     roleEndPoint = endPoint + f"/{app_id}/user_role_assignment"
     resp = client.get(roleEndPoint)
     resp_data = resp.json()

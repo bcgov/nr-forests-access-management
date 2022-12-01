@@ -6,6 +6,7 @@ from typing import Any, Dict, Union
 import api.app.schemas as schemas
 import sqlalchemy
 from api.app.crud import crud_application as crud_application
+from api.app.crud import crudUtils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -219,17 +220,18 @@ def test_getFamApplications_nodata(dbSession: sqlalchemy.orm.session.Session):
 
 
 def test_createFamApplication(
-    dbSession: sqlalchemy.orm.session.Session,
+    dbsession_delete: sqlalchemy.orm.session.Session,
     applicationData1: Dict[str, Union[str, datetime.datetime]],
 ):
+    db = dbsession_delete
     # make sure we are starting off with no records
-    famApps = crud_application.getFamApplications(dbSession)
+    famApps = crud_application.getFamApplications(db)
     assert famApps == []
 
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
     appData = crud_application.createFamApplication(
-        famApplication=appDataAsPydantic, db=dbSession
+        famApplication=appDataAsPydantic, db=db
     )
     # the object returned by createFamApplication should contain the
     # application object that it was passed
@@ -237,7 +239,7 @@ def test_createFamApplication(
     # LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
-    famAppsAfter = crud_application.getFamApplications(dbSession)
+    famAppsAfter = crud_application.getFamApplications(db)
     exists = False
     for famAppAfter in famAppsAfter:
         if famAppAfter.application_name == applicationData1["application_name"]:
@@ -245,3 +247,27 @@ def test_createFamApplication(
             break
 
     assert exists
+
+
+def test_get_fam_application_role_assignments(
+        dbSession_famApplication_withRoleUserAssignment,
+        applicationData1
+        ):
+    # TODO: come back and complete this test, grab code from router test for this end point
+    db = dbSession_famApplication_withRoleUserAssignment
+    app_id = crudUtils.get_application_id_from_name(db=db, application_name=applicationData1['application_name'])
+    LOGGER.debug("app_id is: {app_id}")
+
+
+    role_assignments = crud_application.getFamApplicationRoleAssignments(
+        db=db,
+        application_id=app_id)
+    LOGGER.debug(f"role_assignment: {role_assignments}")
+
+    # test the schema
+    for role_assignment in role_assignments:
+        roleAssignment = schemas.FamApplicationUserRoleAssignmentGet.from_orm(role_assignment)
+        LOGGER.debug(f"roleAssignment: {roleAssignment.dict()}")
+
+    # TODO: add a bunch of assertions
+    pass

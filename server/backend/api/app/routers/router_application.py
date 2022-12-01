@@ -85,9 +85,10 @@ def get_fam_application_roles(
     )
     return app_roles
 
+
 @router.get(
     "/{application_id}/user_role_assignment",
-    response_model=schemas.FamApplicationUserRoleAssignmentGet,
+    response_model=List[schemas.FamApplicationUserRoleAssignmentGet],
     status_code=200,
 )
 def get_fam_application_user_role_assignment(
@@ -102,5 +103,6 @@ def get_fam_application_user_role_assignment(
     appUserRoleAssignments = crud_application.getFamApplicationRoleAssignments(
         db=db,
         application_id=application_id)
+    LOGGER.debug(f"appUserRoleAssignments: {appUserRoleAssignments}")
 
     return appUserRoleAssignments
