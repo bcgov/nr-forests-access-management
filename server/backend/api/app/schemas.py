@@ -220,6 +220,7 @@ class FamRoleWithClient(FamRoleCreate):
                   'application_id': {'exclude': True},
                   'forest_client_number': {'exclude': True},
                   'role_id': {'exclude': True},
+                  'create_user': {'exclude': True},
                   }
 
 class FamUserOnlyName(FamUser):
