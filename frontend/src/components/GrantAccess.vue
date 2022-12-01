@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { ApiService, type ApplicationRoleResponse } from '@/services/ApiService';
+import { ApiService, type ApplicationRoleResponse, type GrantUserRoleRequest } from '@/services/ApiService';
 import { selectedApplication } from '@/services/ApplicationState';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
+const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'}
 let applicationRoleOptions = ref<ApplicationRoleResponse[]>([])
 
@@ -18,7 +19,9 @@ const formData = ref({
 const apiService = new ApiService()
 
 onMounted(async () => {
-  applicationRoleOptions.value = await apiService.getApplicationRoles(selectedApplication?.value?.application_id) as ApplicationRoleResponse[]
+  applicationRoleOptions.value = await apiService.getApplicationRoles(
+    selectedApplication?.value?.application_id
+  ) as ApplicationRoleResponse[]
 })
 
 function onlyDigit(evt: KeyboardEvent) {
@@ -28,6 +31,9 @@ function onlyDigit(evt: KeyboardEvent) {
 }
 
 function save(result: boolean) {
+
+  const grantAccessRequest = toRequest(formData.value)
+
   const toast = useToast();
   if (result) {
     toast.success("Save successful")
@@ -35,6 +41,20 @@ function save(result: boolean) {
     toast.warning("Invalid selection.")
   }  
 }
+
+function toRequest(formData: any) {
+  const request = {
+    user_name: formData.userId,
+    user_type_code: formData.domain,
+    role_id: formData.role.role_id,
+    ...(formData.forestClientNumber? 
+        {forest_client_number: formData.forestClientNumber.padStart(FOREST_CLIENT_INPUT_MAX_LENGTH, '0')}
+        : {})
+  } as GrantUserRoleRequest
+
+  return request
+}
+
 </script>
 
 <template>
@@ -102,7 +122,7 @@ function save(result: boolean) {
           <input type="text"
             id="forestClientInput"
             class="form-control"
-            maxlength="8"
+            :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
             placeholder="Forest Client Id - 8 digits"
             v-model="formData.forestClientNumber"
             v-on:keypress="onlyDigit($event)">

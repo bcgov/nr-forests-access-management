@@ -41,6 +41,17 @@ export class ApiService {
         const apps = res.data;
         return apps;
     }
+
+    async grantUserRole() {
+
+    }
+}
+
+export interface GrantUserRoleRequest {
+    user_name: string,
+    user_type_code: string,
+    role_id: number,
+    forest_client_number: string
 }
 
 export interface ApplicationRoleResponse {
