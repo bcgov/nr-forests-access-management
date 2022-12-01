@@ -9,12 +9,13 @@ const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'}
 let applicationRoleOptions = ref<ApplicationRoleResponse[]>([])
 
-const formData = ref({
+const defaultFormData = {
   domain: domainOptions.BCEID,
   userId: null,
   forestClientNumber: null,
   role: null as unknown as ApplicationRoleResponse
-})
+}
+const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone default input data.
 
 const apiService = new ApiService()
 
@@ -30,16 +31,19 @@ function onlyDigit(evt: KeyboardEvent) {
   }
 }
 
-function save(result: boolean) {
-
-  const grantAccessRequest = toRequest(formData.value)
-
+async function save() {
   const toast = useToast();
-  if (result) {
-    toast.success("Save successful")
-  } else {
-    toast.warning("Invalid selection.")
-  }  
+  const grantAccessRequest = toRequest(formData.value)
+  try {
+    await apiService.grantUserRole(grantAccessRequest)
+    toast.success(`User "${grantAccessRequest.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
+    formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
+  }
+  catch(err: any) {
+    useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.`)
+    useToast().error(`Message: ${err.response.data?.detail}`)
+    console.error("err: ", err)
+  } 
 }
 
 function toRequest(formData: any) {
