@@ -140,7 +140,6 @@ function tryDelete(assignment: UserRoleAssignment) {
   msg += '?'
   useToast().warning(msg, {
 
-    // color: 'orange',
     position: POSITION.TOP_CENTER,
     timeout: false,
 
@@ -215,7 +214,7 @@ function uncaughtError() {
       <td>{{assignment.role.role_name}}</td>
       <td v-if="assignment.role.client_number">{{assignment.role.client_number?.client_name}} - {{assignment.role.client_number?.forest_client_number}}</td>
       <td v-else></td>
-      <td><button class="btn" @click="tryDelete(assignment)">Delete</button></td>
+      <td><button class="btn btn-icon" @click="tryDelete(assignment)"><font-awesome-icon icon="fa-regular fa-trash-can" /></button></td>
     </tr>
     </template>
     </tbody>

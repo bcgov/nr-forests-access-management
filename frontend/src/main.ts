@@ -12,14 +12,26 @@ import awsExports from './aws-exports';
 import './assets/styles/styles.scss'
 import 'bootstrap'
 
+// import the fontawesome core
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+// import font awesome icon component
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// import specific icons
+import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
+
+// add specific icons to library for use throughout application
+library.add(faTrashCan)
+
 Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App)
 
 app.use(Toast, {
     // // Defaults for all toast messages
-    // position: POSITION.TOP_RIGHT,
-    // timeout: 5000, // milliseconds
+    position: POSITION.TOP_RIGHT,
+    timeout: 5000, // milliseconds
     newestOnTop: true,
 
     // Prevent having multiple messages with the same type and content from being displayed.
@@ -46,7 +58,6 @@ app.use(Toast, {
 });
 
 app.config.errorHandler = (err, instance, info) => {
-    // If triggered on component setup/initial render, this can display many times.
     // This can trigger on an uncaught error in a function.
     // This will NOT trigger on an uncaught error in an async setup operation.
     const toast = useToast();
@@ -54,6 +65,7 @@ app.config.errorHandler = (err, instance, info) => {
     console.log(`app.config.errorHandler error ${err} with info: ${info}`)
 }
 
-app.use(router)
-
-app.mount('#app')
+app
+  .use(router)
+  .component('font-awesome-icon', FontAwesomeIcon)
+  .mount('#app')
