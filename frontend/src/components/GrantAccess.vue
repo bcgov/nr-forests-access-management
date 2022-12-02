@@ -63,7 +63,7 @@ function toRequest(formData: any) {
 
 <template>
 
-    <PageTitle />
+    <PageTitle :displaySelectedApplication=true></PageTitle>
   
     <form id="grantAccessForm" 
       class="form-container"
@@ -105,6 +105,7 @@ function toRequest(formData: any) {
             class="form-control"
             name="userId"
             required
+            maxlength="20"
             placeholder="User's Id"
             v-model="formData.userId">
         </div>
@@ -146,7 +147,6 @@ function toRequest(formData: any) {
             id="grantAccessSubmit"
             class="btn btn-primary mb-3"
             >
-            <!-- @click="$event.preventDefault();grantAccess()"> -->
             Grant Access
           </button>
         </div>
