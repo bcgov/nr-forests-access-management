@@ -94,7 +94,6 @@ def upgrade() -> None:
         # make sure its not just a blank line
         if statement:
             op.execute(statement)
-            print(statement)
 
 
 def downgrade() -> None:
