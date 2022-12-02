@@ -3,16 +3,17 @@ import { ref } from 'vue'
 import { ApiService } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
 import router from '@/router';
-import { useToast } from 'vue-toastification';
+import { POSITION, useToast } from 'vue-toastification';
 
 const apiService = new ApiService()
 
 interface UserRoleAssignment {
   user_role_xref_id: number,
   user: {
-    user_type_code: string
-    user_type_desc?:string
-    cognito_user_id: string
+    user_type: {
+      code: string,
+      description: string
+    }
     user_name: string
   },
   role: {
@@ -24,11 +25,6 @@ interface UserRoleAssignment {
     }
   }
 
-    // assignment_id: number;
-    // user_id: string;
-    // user_domain: string;
-    // role: string
-    // forest_client_number?: string;
 }
 
 const userRoleAssignments = ref<UserRoleAssignment[]>([])
@@ -38,9 +34,11 @@ userRoleAssignments.value = [
     {
         "user_role_xref_id": 1,
         "user": {
-            "user_type_code": "I",
-            "cognito_user_id": "foo-test",
-            "user_name": "Foo Tester"
+          "user_type": {
+            code: "I",
+            description: "IDIR",
+          },
+          "user_name": "foo-test"
         },
         "role": {
             "role_name": "Reviewer",
@@ -50,9 +48,11 @@ userRoleAssignments.value = [
     {
         "user_role_xref_id": 2,
         "user": {
-            "user_type_code": "B",
-            "cognito_user_id": "bar-test",
-            "user_name": "Bar Tester"
+          "user_type": {
+            code: "B",
+            description: "BCeID",
+          },
+          "user_name": "bar-test"
         },
         "role": {
             "role_name": "Submitter",
@@ -66,9 +66,11 @@ userRoleAssignments.value = [
     {
         "user_role_xref_id": 3,
         "user": {
-            "user_type_code": "B",
-            "cognito_user_id": "longer_user_id",
-            "user_name": "ThisIsAVery LongNameHere"
+          "user_type": {
+            code: "B",
+            description: "BCeID",
+          },
+          "user_name": "longer-user-id"
         },
         "role": {
             "role_name": "Submitter",
@@ -82,13 +84,6 @@ userRoleAssignments.value = [
 
 ]
 
-userRoleAssignments.value.forEach(assignment => {
-  if (assignment.user.user_type_code == "B") {
-    assignment.user.user_type_desc = "BCeID"
-  } else if (assignment.user.user_type_code == "I") {
-    assignment.user.user_type_desc = "IDIR"
-  }
-})
 
 // TODO: Need API
 // userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
@@ -113,7 +108,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   // TODO: Review this logic.
 
   if (userFilter.value != null) {
-    if (!userRoleAssignment.user.cognito_user_id.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
+    if (!userRoleAssignment.user.user_name.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
       return false
     }
   }
@@ -127,11 +122,39 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   if (forestClientFilter.value != null && forestClientFilter.value.length > 0) {
     if (userRoleAssignment.role.client_number == null) {
       return false // If no forest client for the role then exclude this assignment when filtering by forest client
-    } else if (!userRoleAssignment.role.client_number.forest_client_number.includes(forestClientFilter.value)) {
+    } else if (!(
+      userRoleAssignment.role.client_number.forest_client_number.includes(forestClientFilter.value) ||
+      userRoleAssignment.role.client_number.client_name.toLocaleUpperCase().includes(forestClientFilter.value.toLocaleUpperCase())
+      )) {
       return false
     }
   }
   return true
+}
+
+function tryDelete(assignment: UserRoleAssignment) {
+  let msg = `"Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`
+  if (assignment.role.client_number) {
+    msg += ` for client ${assignment.role.client_number.forest_client_number}`
+  }
+  msg += '?'
+  useToast().warning(msg, {
+
+    // color: 'orange',
+    position: POSITION.TOP_CENTER,
+    timeout: false,
+
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+
+    // TODO: Add question mark icon https://fontawesome.com/docs/web/use-with/vue/add-icons
+    // E.g. icon: 'fas fa-rocket'
+    icon: true,
+
+    // TODO: Add yes/no actions using custom close button?
+    closeButton: "button",
+
+  })
 }
 
 function save(result: boolean) {
@@ -171,28 +194,28 @@ function uncaughtError() {
   &nbsp;
   <span>Role <input placeholder="role" v-model="roleFilter" size="12"/></span>
   &nbsp;
-  <span>Forest Client <input placeholder="client #" v-model="forestClientFilter" size="8"/></span>
+  <span>Forest Client <input placeholder="forest client" v-model="forestClientFilter" size="8"/></span>
   &nbsp;
-  <span><strong>{{showingMessage()}}</strong></span>
-  <table style="max-width: 1000px;margin-top:10px" class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
+  <span>{{showingMessage()}}</span>
+  <table style="max-width: 900px;margin-top:10px" class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
     <thead>
       <tr>
-        <th scope="col">User ID</th>
+        <th scope="col">Username</th>
         <th scope="col">Domain</th>
-        <th scope="col">User Name</th>
         <th scope="col">Role</th>
         <th scope="col">Forest Client</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
     <template v-for="assignment in userRoleAssignments">
     <tr v-if="filterIncludes(assignment)">
-      <th scope="row">{{assignment.user.cognito_user_id}}</th>
-      <td>{{assignment.user.user_type_desc}}</td>
-      <td>{{assignment.user.user_name}}</td>
+      <th scope="row">{{assignment.user.user_name}}</th>
+      <td>{{assignment.user.user_type.description}}</td>
       <td>{{assignment.role.role_name}}</td>
       <td v-if="assignment.role.client_number">{{assignment.role.client_number?.client_name}} - {{assignment.role.client_number?.forest_client_number}}</td>
       <td v-else></td>
+      <td><button class="btn" @click="tryDelete(assignment)">Delete</button></td>
     </tr>
     </template>
     </tbody>
@@ -206,6 +229,8 @@ function uncaughtError() {
 <br/>
 
 <p>Demo of toast messages:</p>
+<button class="btn btn-info" @click="save(true)">Save</button>
+&nbsp;
 <button class="btn btn-info" @click="save(false)">Validation failure</button>
 &nbsp;
 <button class="btn btn-info" @click="saveError()">Save Error</button>
