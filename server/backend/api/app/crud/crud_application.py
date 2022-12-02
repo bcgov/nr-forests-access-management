@@ -137,24 +137,9 @@ def getFamApplicationRoleAssignments(db: Session, application_id: int):
     # TODO: complete doc string
     LOGGER.debug(f"app id: {application_id}")
 
-    # query application for Roles / user role xref / users
-    # asking for one() as there should only be one application record where
-    # application_id == {app_id}
-    # application = (
-    #     db.query(models.FamApplication)
-    #     .filter(models.FamApplication.application_id == application_id)
-    #     .one()
-    # )
-
-    # roles = (
-    #     db.query(models.FamRole)
-    #     .filter(models.FamRole.application_id == application_id)
-    #     .all()
-    # )
-
-    # TODO: apply join conditions to avoid cartesian product
     crossref = (
         db.query(models.FamUserRoleXref)
+        .join(models.FamUser, models.FamRole, models.FamRoleType, models.FamUserType)
         .filter(models.FamRole.application_id == application_id).all()
     )
 
