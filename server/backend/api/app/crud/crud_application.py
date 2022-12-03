@@ -119,22 +119,19 @@ def getFamApplicationRoles(
     )
     return application
 
-def getFamApplicationRoleAssignments(db: Session, application_id: int):
-    """_summary_
+def getFamApplicationRoleAssignments(
+        db: Session,
+        application_id: int) -> List[models.FamUserRoleXref]:
+    """ query the user / role cross reference table to retrieve the role
+    assignments
 
-    :param db: _description_
-    :param application_id: _description_
-    :return: _description_
+    :param db: database session
+    :type db: Session
+    :param application_id: the application id that we want to retrieve the role
+        assignments for.
+    :return: the role assignments for the given application
 
-    * query application table relates to roles that relates to user-role xref
-      that relates to users
-      FamApplication ->
-        FamRole ->
-            FamUserRoleXref ->
-                FamUser
     """
-    # TODO: define return type
-    # TODO: complete doc string
     LOGGER.debug(f"app id: {application_id}")
 
     crossref = (

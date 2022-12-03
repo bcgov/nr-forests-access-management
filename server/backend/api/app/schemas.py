@@ -88,13 +88,13 @@ class FamRoleCreate(BaseModel):
     class Config:
         orm_mode = True
 
-# TODO: check that this is still needed
+
 class FamApplicationRole(FamRoleCreate):
     role_id: int
 
     class Config:
         orm_mode = True
-        fields = {'create_user': {'exclude': True}}
+        fields = {"create_user": {"exclude": True}}
 
 
 class FamUserGet(FamUser):
@@ -175,29 +175,7 @@ class FamForestClientGet(FamForestClientCreate):
         orm_mode = True
 
 
-# class FamUserRoleXref(FamUserRoleAssignmentGet):
-#     #oveerriding FamUserRoleAssignmentGet to make application optional
-#     user: FamUser
-#     role: FamRoleCreate
-#     application_id: Optional[Union[str, None]]
 
-#     class Config:
-#         orm_mode = True
-#         #fields = {'create_user': {'exclude': True}}
-
-# appUserRoleAssignments.fam_role[0].fam_user_role_xref
-#class FamRole_FamUserRoleXref(FamRoleCreate):
-    #fam_user_role_xref: List[FamUserRoleXref]
-
-
-    #class Config:
-    #        orm_mode = True
-
-# [<api.app.models.model.FamRole object at 0x7f71842c26d0>]
-# FamApplicationUserRoleAssignmentGet
-# response -> fam_role -> 0 -> fam_user_role_xref -> 0 -> application_id
-#  field required (type=value_error.missing)
-# TODO: probably delete this class
 
 
 class FamForestClient(BaseModel):
@@ -214,22 +192,39 @@ class FamRoleWithClient(FamRoleCreate):
 
     class Config:
         orm_mode = True
-        fields = {'update_user': {'exclude': True},
-                  'role_purpose': {'exclude': True},
-                  'parent_role_id': {'exclude': True},
-                  'application_id': {'exclude': True},
-                  'forest_client_number': {'exclude': True},
-                  'role_id': {'exclude': True},
-                  'create_user': {'exclude': True},
-                  }
+        fields = {
+            "update_user": {"exclude": True},
+            "role_purpose": {"exclude": True},
+            "parent_role_id": {"exclude": True},
+            "application_id": {"exclude": True},
+            "forest_client_number": {"exclude": True},
+            "role_id": {"exclude": True},
+            "create_user": {"exclude": True},
+        }
 
-class FamUserOnlyName(FamUser):
+
+class FamUserType(BaseModel):
+    user_type_code: famConstants.UserType = Field(alias="code")
+    description: str
+
     class Config:
         orm_mode = True
-        fields = {'user_guid': {'exclude': True},
-                  'create_user': {'exclude': True},
-                  'update_user': {'exclude': True}
-                  }
+        # required to be able to alias fields
+        allow_population_by_field_name = True
+
+
+class FamUserOnlyName(FamUser):
+    user_type_relation: FamUserType = Field(alias="user_type")
+
+    class Config:
+        orm_mode = True
+        fields = {
+            "user_guid": {"exclude": True},
+            "create_user": {"exclude": True},
+            "update_user": {"exclude": True},
+        }
+        # need this paramter to be able to alias a relationship field/property
+        allow_population_by_field_name = True
 
 
 class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
@@ -239,52 +234,8 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
     class Config:
         orm_mode = True
-        fields = {'application_id': {'exclude': True},
-                  'user_id': {'exclude': True},
-                  'role_id': {'exclude': True}
-                  }
-
-
-
-"""
-LIST
-    user_role_xref_id: role assignment id
-
-
-    user_name
-    user_type (idir/bceid)
-    role_name
-    forest_client_number
-
-
-
-
-attributes:
-    application_id - thinking to verify that its working for now
-    fam_user_role_xref:
-        LIST
-            user_role_xref_id - assignment id
-            user:
-                user_id
-                user_name
-            role:
-                role_name
-                role_type_code
-                role_id
-
-
-    forest_client_id
-
------ From Basil ----
- assignment_id: 1,
-user_id: 'foo-test',
-user_domain: 'IDIR',
-role: 'Reviewer',
-},
-{
-assignment_id: 2,
-user_id: 'bar-test',
-user_domain: 'BCeID',
-role: 'Submitter',
-forest_client_number: '01234567'
-"""
+        fields = {
+            "application_id": {"exclude": True},
+            "user_id": {"exclude": True},
+            "role_id": {"exclude": True},
+        }
