@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 
 import api.app.models.model as model
 import api.app.schemas as schemas
+import api.app.constants as constants
 import pytest
 import sqlalchemy.exc
 from sqlalchemy.orm import session
@@ -110,7 +111,7 @@ def concreteRoleData() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
-        "create_user": "John Doe",
+        "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
@@ -127,7 +128,7 @@ def concreteRoleData2() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
-        "create_user": "Patrick Roy",
+        "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
@@ -144,7 +145,7 @@ def abstractRoleData() -> Dict[str, str]:
     roleData = {
         "role_name": "FAM_ABS_ROLE",
         "role_purpose": "FAM Testing abstract role",
-        "create_user": "PK Subban",
+        "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
     }
     yield roleData
