@@ -52,20 +52,13 @@ def dbsession_delete(dbSession, applicationData1):
     db.delete(application_record)
 
 
-    # appData = models.FamApplication(**applicationData1)
-    # db.delete(appData)
-
-
-
-
-
 @pytest.fixture(scope="function")
 def applicationData1() -> Iterator[
     Dict[str, Union[str, datetime.datetime]]]:
     famAppData = {
         "application_name": "test app",
         "application_description": "a really good app",
-        "create_user": "cognito client",
+        "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
         "update_user": "Ron Duguey",
         "update_date": datetime.datetime.now(),

@@ -86,9 +86,9 @@ def testUserData3() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
-        "user_name": "Billy Smith",
+        "user_name": "BSMITH",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
     }
     yield userData
 
@@ -157,11 +157,11 @@ def testUserData() -> dict:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22ftw",
-        "user_name": "Mike Bossy",
+        "user_name": "MBOSSY",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield userData
@@ -185,11 +185,11 @@ def testUserData2() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
-        "user_name": "Dennis Potvin",
+        "user_name": "DPOTVIN",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield userData
@@ -199,9 +199,9 @@ def testUserData2() -> FamUserTD:
 def userGroupXrefData():
     nowdatetime = datetime.datetime.now()
     xrefData = {
-        "create_user": "serg",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": nowdatetime,
-        "update_user": "ron",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": nowdatetime,
     }
     yield xrefData
@@ -224,7 +224,7 @@ def testGroupData():
     testGroupData = {
         "group_name": "test group",
         "purpose": "testing",
-        "create_user": "Brian Trotier",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     }
     return testGroupData
