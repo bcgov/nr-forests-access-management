@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { ApiService } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
+import { DialogWrapper } from 'vue3-promise-dialog';
 import router from '@/router';
 import { POSITION, useToast } from 'vue-toastification';
 
@@ -132,12 +133,13 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
   return true
 }
 
-function tryDelete(assignment: UserRoleAssignment) {
+async function tryDelete(assignment: UserRoleAssignment) {
   let msg = `"Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`
   if (assignment.role.client_number) {
     msg += ` for client ${assignment.role.client_number.forest_client_number}`
   }
   msg += '?'
+  /*
   useToast().warning(msg, {
 
     position: POSITION.TOP_CENTER,
@@ -154,6 +156,20 @@ function tryDelete(assignment: UserRoleAssignment) {
     closeButton: "button",
 
   })
+*/
+  // TODO: This confirmation dialog is ugly. Different from the demo, not sure why...
+  // confirmation dialog only displays properly if invoked in app setup.
+  if (await confirm(msg) ) {
+    // Deletion confirmed.
+    // TODO: Call API
+
+    // Remove item deleted from list.
+    userRoleAssignments.value = userRoleAssignments.value.filter(a => {
+      return !(a.user_role_xref_id == assignment.user_role_xref_id)
+    })
+
+    useToast().success(`Access deleted for user ${assignment.user.user_name}.`)
+  }
 }
 
 function save(result: boolean) {

@@ -1,13 +1,14 @@
 import { createApp } from 'vue'
 
-import Toast, { useToast, POSITION, TYPE } from "vue-toastification";
-// Import the CSS or use your own!
-import "vue-toastification/dist/index.css";
+import Toast, { useToast, POSITION, TYPE } from "vue-toastification"
+import "vue-toastification/dist/index.css"
+
+import { Amplify } from 'aws-amplify'
+import awsExports from './aws-exports'
+import { PromiseDialog } from 'vue3-promise-dialog'
 
 import App from '@/App.vue'
 import router from '@/router'
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
 
 import './assets/styles/styles.scss'
 import 'bootstrap'
@@ -52,7 +53,6 @@ app.use(Toast, {
         [TYPE.SUCCESS]: {
             position: POSITION.TOP_RIGHT,
             timeout: 4000,
-            hideProgressBar: true,
         }
     }
 });
@@ -67,5 +67,6 @@ app.config.errorHandler = (err, instance, info) => {
 
 app
   .use(router)
+  .use(PromiseDialog)
   .component('font-awesome-icon', FontAwesomeIcon)
   .mount('#app')
