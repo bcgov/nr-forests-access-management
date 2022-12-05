@@ -125,7 +125,7 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 def idirUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.IDIR,
-        "description": "User Type for IDIR users",
+        "description": "IDIR",
     }
     yield userType
 
@@ -140,7 +140,7 @@ def idirUserTypeCodeRecord_asModel(idirUserTypeCodeRecord) -> model.FamUserType:
 def bceidUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.BCEID,
-        "description": "User Type for IDIR users",
+        "description": "BCeID",
     }
     yield userType
 
