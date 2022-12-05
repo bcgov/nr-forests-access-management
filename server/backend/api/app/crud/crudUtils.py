@@ -79,6 +79,16 @@ def getAddUser():
     """
     return "default adduser"
 
+def get_application_id_from_name(db, application_name):
+    # TODO: define types
+    # TODO: define docstring
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_name ==
+                application_name).one()
+    )
+    return application.application_id
+
 
 def raiseHTTPException(status_code: str, error_msg: str):
     LOGGER.error(error_msg)

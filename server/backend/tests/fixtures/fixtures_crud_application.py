@@ -2,16 +2,18 @@ import datetime
 import logging
 import pytest
 import sqlalchemy
-from typing import Any, Dict, Generator, Union
+from typing import Any, Dict, Generator, Union, Iterator
 
 import api.app.schemas as schemas
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
 from api.app.models import model as models
+import api.app.constants as constants
+from api.app.crud import crudUtils
 
 
 LOGGER = logging.getLogger(__name__)
-
+# TODO: look for application queries that retrieve the app_id and use the crudUtils.get_application_id_from_name method for that
 
 @pytest.fixture(scope="function")
 def dbSession_famApplication(
@@ -35,15 +37,28 @@ def dbSession_famApplication(
         LOGGER.debug(f"{type(e).__name__}")
         raise
 
+@pytest.fixture(scope="function")
+def dbsession_delete(dbSession, applicationData1):
+    db = dbSession
+    yield db
+
+    application_record = (
+        db.query(models.FamApplication)
+        .filter(
+            models.FamApplication.application_name == applicationData1["application_name"] # noqa
+        )
+        .one()
+    )
+    db.delete(application_record)
+
 
 @pytest.fixture(scope="function")
-def applicationData1() -> Generator[
-    Dict[str, Union[str, datetime.datetime]], None, None
-]:
+def applicationData1() -> Iterator[
+    Dict[str, Union[str, datetime.datetime]]]:
     famAppData = {
         "application_name": "test app",
         "application_description": "a really good app",
-        "create_user": "cognito client",
+        "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
         "update_user": "Ron Duguey",
         "update_date": datetime.datetime.now(),
@@ -159,7 +174,94 @@ def dbSession_famApplication_abstractRoledata(
 
 
 @pytest.fixture(scope="function")
-def applicationRoleData(applicationData1, concreteRoleTypeRecord) -> Dict[str, Any]:
-    LOGGER.debug(f"concreteRoleTypeRecord: {concreteRoleTypeRecord}")
-    applicationData1["role"] = [concreteRoleTypeRecord]
+def applicationRoleData(applicationData1, concreteRoleType) -> Dict[str, Any]:
+    LOGGER.debug(f"concreteRoleType: {concreteRoleType}")
+    applicationData1["role"] = [concreteRoleType]
     yield applicationData1
+
+
+@pytest.fixture(scope="function")
+def dbSession_famApplication_withRoleUserAssignment(
+        applicationData1,
+        dbSession_famApplication,
+        idirUserTypeCodeRecord_asModel,
+        bceidUserTypeCodeRecord_asModel,
+        abstractRoleData_asModel,
+        concreteRoleData_asModel,
+        concreteRoleType_asModel,
+        abstractRoleTypeRecord_asModel,
+        userData_asModel,
+        forest_client_model,
+        concreteRoleData2_asModel):
+    # TODO: add method pydoc
+    # TODO: go back to user model and refactor to match other fixtures for naming
+    #        ie: userData, userData2, userData_asModel, etc...
+    #
+
+    # need:
+    #   fam_user as a model: userData_asModel
+    #   fam application: in session
+    #   fam_role types: abstractRoleTypeRecord_asModel / concreteRoleType_asModel
+    #   fam role as model:
+    #   fam user / role x ref as model
+    # then merge the models into the app session
+
+    # db session with the application data loaded
+    db = dbSession_famApplication
+    db.flush()
+    # get the application id
+    application = (
+        db.query(models.FamApplication)
+        .filter(models.FamApplication.application_name ==
+                applicationData1['application_name']).one()
+    )
+    application_id = application.application_id
+    concreteRoleData_asModel.application_id = application_id
+    abstractRoleData_asModel.application_id = application_id
+
+    db.add(idirUserTypeCodeRecord_asModel)
+    db.add(bceidUserTypeCodeRecord_asModel)
+    db.add(userData_asModel)
+    #db.add(concreteRoleType_asModel)
+    db.add(concreteRoleData_asModel)
+    db.add(abstractRoleData_asModel)
+    db.add(forest_client_model)
+    # add forest client record
+    db.flush()  # flush required to populate the user_id and role_id pk cols
+    # add concrete role under abstract role with the forest client id
+    concreteRoleData2_asModel.parent_role_id = abstractRoleData_asModel.role_id
+    concreteRoleData2_asModel.client_number_id = forest_client_model.client_number_id
+    concreteRoleData2_asModel.application_id = application_id
+    db.add(concreteRoleData2_asModel)
+    db.flush()
+    user_role_assignment = models.FamUserRoleXref(
+        user_id=userData_asModel.user_id,
+        role_id=concreteRoleData_asModel.role_id,
+        create_user=constants.FAM_PROXY_API_USER
+    )
+    user_role_assignment_nested = models.FamUserRoleXref(
+        user_id=userData_asModel.user_id,
+        role_id=concreteRoleData2_asModel.role_id,
+        create_user=constants.FAM_PROXY_API_USER
+    )
+
+    db.add(user_role_assignment)
+    db.add(user_role_assignment_nested)
+
+    db.flush()
+
+    yield db
+
+    db.delete(user_role_assignment_nested)
+    db.delete(user_role_assignment)
+    db.delete(concreteRoleData2_asModel)
+    db.delete(forest_client_model)
+    db.delete(abstractRoleData_asModel)
+    db.delete(concreteRoleData_asModel)
+    db.delete(userData_asModel)
+    db.delete(bceidUserTypeCodeRecord_asModel)
+    db.delete(idirUserTypeCodeRecord_asModel)
+    db.flush()
+
+
+    # TODO: teardown delete all above objects

@@ -88,12 +88,13 @@ class FamRoleCreate(BaseModel):
     class Config:
         orm_mode = True
 
+
 class FamApplicationRole(FamRoleCreate):
     role_id: int
 
     class Config:
         orm_mode = True
-        fields = {'create_user': {'exclude': True}}
+        fields = {"create_user": {"exclude": True}}
 
 
 class FamUserGet(FamUser):
@@ -172,3 +173,69 @@ class FamForestClientGet(FamForestClientCreate):
 
     class Config:
         orm_mode = True
+
+
+
+
+
+class FamForestClient(BaseModel):
+    client_name: str
+    forest_client_number: int
+
+    class Config:
+        orm_mode = True
+
+
+class FamRoleWithClient(FamRoleCreate):
+    role_id: int
+    client_number: Optional[FamForestClient]
+
+    class Config:
+        orm_mode = True
+        fields = {
+            "update_user": {"exclude": True},
+            "role_purpose": {"exclude": True},
+            "parent_role_id": {"exclude": True},
+            "application_id": {"exclude": True},
+            "forest_client_number": {"exclude": True},
+            "role_id": {"exclude": True},
+            "create_user": {"exclude": True},
+        }
+
+
+class FamUserType(BaseModel):
+    user_type_code: famConstants.UserType = Field(alias="code")
+    description: str
+
+    class Config:
+        orm_mode = True
+        # required to be able to alias fields
+        allow_population_by_field_name = True
+
+
+class FamUserOnlyName(FamUser):
+    user_type_relation: FamUserType = Field(alias="user_type")
+
+    class Config:
+        orm_mode = True
+        fields = {
+            "user_guid": {"exclude": True},
+            "create_user": {"exclude": True},
+            "update_user": {"exclude": True},
+        }
+        # need this paramter to be able to alias a relationship field/property
+        allow_population_by_field_name = True
+
+
+class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
+    user: FamUserOnlyName
+    role: FamRoleWithClient
+    application_id: Optional[Union[int, None]]
+
+    class Config:
+        orm_mode = True
+        fields = {
+            "application_id": {"exclude": True},
+            "user_id": {"exclude": True},
+            "role_id": {"exclude": True},
+        }

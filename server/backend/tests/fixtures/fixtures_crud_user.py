@@ -86,9 +86,9 @@ def testUserData3() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "zzff",
-        "user_name": "Billy Smith",
+        "user_name": "BSMITH",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
     }
     yield userData
 
@@ -125,19 +125,31 @@ def deleteAllUsers(dbSession: session.Session) -> None:
 def idirUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.IDIR,
-        "description": "User Type for IDIR users",
+        "description": "IDIR",
     }
     yield userType
+
+# TODO: define return type
+@pytest.fixture(scope="function")
+def idirUserTypeCodeRecord_asModel(idirUserTypeCodeRecord) -> model.FamUserType:
+    idirUserType = model.FamUserType(**idirUserTypeCodeRecord)
+    yield idirUserType
 
 
 @pytest.fixture(scope="function")
 def bceidUserTypeCodeRecord() -> dict:
     userType = {
         "user_type_code": famConstants.UserType.BCEID,
-        "description": "User Type for IDIR users",
+        "description": "BCeID",
     }
     yield userType
 
+# TODO: run format on this file, fix format / linter conflicts
+# TODO: rename idir user type and this user type so doesn't incldue the word 'record'
+@pytest.fixture(scope="function")
+def bceidUserTypeCodeRecord_asModel(bceidUserTypeCodeRecord):
+    bceidUserType = model.FamUserType(**bceidUserTypeCodeRecord)
+    yield bceidUserType
 
 @pytest.fixture(scope="function")
 def testUserData() -> dict:
@@ -145,14 +157,27 @@ def testUserData() -> dict:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22ftw",
-        "user_name": "Mike Bossy",
+        "user_name": "MBOSSY",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield userData
+
+# TODO: standardize the fixture names in this module, remove test from UserData
+#       references
+@pytest.fixture(scope="function")
+def userData_asModel(testUserData):
+    newUser = model.FamUser(**testUserData)
+    yield newUser
+
+
+@pytest.fixture(scope="function")
+def userData_asPydantic(testUserData) -> schemas.FamUser:
+    famUserAsPydantic = schemas.FamUser(**testUserData)
+    yield famUserAsPydantic
 
 
 @pytest.fixture(scope="function")
@@ -160,11 +185,11 @@ def testUserData2() -> FamUserTD:
     userData = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
-        "user_name": "Dennis Potvin",
+        "user_name": "DPOTVIN",
         "user_guid": str(uuid.uuid4()),
-        "create_user": "Al Arbour",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": "Al Arbour",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield userData
@@ -174,9 +199,9 @@ def testUserData2() -> FamUserTD:
 def userGroupXrefData():
     nowdatetime = datetime.datetime.now()
     xrefData = {
-        "create_user": "serg",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": nowdatetime,
-        "update_user": "ron",
+        "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": nowdatetime,
     }
     yield xrefData
@@ -199,7 +224,7 @@ def testGroupData():
     testGroupData = {
         "group_name": "test group",
         "purpose": "testing",
-        "create_user": "Brian Trotier",
+        "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     }
     return testGroupData
