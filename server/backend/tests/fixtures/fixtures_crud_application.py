@@ -262,6 +262,3 @@ def dbSession_famApplication_withRoleUserAssignment(
     db.delete(bceidUserTypeCodeRecord_asModel)
     db.delete(idirUserTypeCodeRecord_asModel)
     db.flush()
-
-
-    # TODO: teardown delete all above objects

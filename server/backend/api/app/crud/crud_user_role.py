@@ -46,7 +46,7 @@ def createFamUserRoleAssignment(
     # Role is a 'Concrete' type, then create role assignment directly with the role.
     # Role is a 'Abstract' type, create role assignment with forst client child role.
     require_child_role = (
-        fam_role.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
+        fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
     if require_child_role:
@@ -56,7 +56,7 @@ def createFamUserRoleAssignment(
         )
 
         if not hasattr(request, "forest_client_number"):
-            error_msg = f"""Invalid role assignment request. Cannot assign user 
+            error_msg = f"""Invalid role assignment request. Cannot assign user
             {request.user_name} to abstract role {fam_role.role_name}"""
             crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
 
@@ -184,7 +184,7 @@ def findOrCreateForestClientChildRole(
                         forest_client_number,
                     ),
                     "create_user": famConstants.FAM_PROXY_API_USER,
-                    "role_type_code": models.FamRoleType.ROLE_TYPE_CONCRETE,
+                    "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                 }
             ),
             db,

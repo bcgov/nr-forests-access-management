@@ -106,7 +106,7 @@ def simpleFOMSubmitterRole_dbSession(
             "role_purpose": "Grant a user access to submit to FOM",
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": famApplication.application_id,
-            "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+            "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
         }
     )
     db.add(fomSubmitterRole)
@@ -137,7 +137,7 @@ def simpleConcreteRole_dbSession(dbSession_famRoletype, simpleFamApplication_dbS
             "role_purpose": "Concrete role for application",
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": famApplication.application_id,
-            "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+            "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
         }
     )
     db.add(simpleConcreteRole)
