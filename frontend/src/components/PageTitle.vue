@@ -5,13 +5,11 @@ import { selectedApplicationDisplayText } from '@/services/ApplicationState'
 const props = defineProps<{
   displaySelectedApplication?: boolean
 }>()
-const displaySelectedApplicationText = props.displaySelectedApplication || true // default to true.
-
 </script>
 
 <template>
   
-  <div class="title" v-if="displaySelectedApplicationText">{{selectedApplicationDisplayText}}</div>
+  <div class="title" v-if="props.displaySelectedApplication">{{selectedApplicationDisplayText}}</div>
 
   <hr class="hr-text" :data-content="useRoute().meta.title"/>
 

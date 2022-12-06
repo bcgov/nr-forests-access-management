@@ -28,7 +28,7 @@ function uncaughtError() {
 <template>
   <div>
   
-  <PageTitle />
+  <PageTitle :displaySelectedApplication=true></PageTitle>
 
   <button @click="router.push('/grant')" :disabled="isApplicationSelected">Grant Access</button>
 
