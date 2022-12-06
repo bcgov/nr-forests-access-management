@@ -7,6 +7,9 @@ class UserType(str, Enum):
     IDIR = 'I'
     BCEID = 'B'
 
+class RoleType(str, Enum):
+    ROLE_TYPE_ABSTRACT = 'A'
+    ROLE_TYPE_CONCRETE = 'C'
 
 FAM_PROXY_API_USER = 'fam_proxy_api'
 DUMMY_FOREST_CLIENT_NAME = 'DUMMY_FOREST_CLIENT_NAME'  # TODO: Only uses this before forest-client api integration from fronte-end.

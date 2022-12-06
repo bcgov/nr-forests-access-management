@@ -128,6 +128,8 @@ def test_get_fam_user_role_assignment(
         application_role_assignment,
         applicationData1,
         concreteRoleData,
+        concreteRoleData2,
+        abstractRoleData,
         testUserData):
 
     client = application_role_assignment['client']
@@ -135,13 +137,30 @@ def test_get_fam_user_role_assignment(
 
     roleEndPoint = endPoint + f"/{app_id}/user_role_assignment"
     resp = client.get(roleEndPoint)
-    resp_data = resp.json()
-    LOGGER.debug(f"resp data: {resp_data}")
+    role_assignments = resp.json()
+    LOGGER.debug(f"resp data: {role_assignments}")
     LOGGER.debug(f"json str: {resp.text}")
 
     # assert that there are 2 returned objects
-    assert len(resp_data) == 2
+    assert len(role_assignments) == 2
+
+    role_names = []
+    # getting the role names
+    for assignment in role_assignments:
+        role_names.append(assignment['role']['role_name'])
+
+    assert concreteRoleData['role_name'] in role_names
+    assert concreteRoleData2['role_name'] in role_names
+    assert abstractRoleData['role_name'] not in role_names
+
+    # assert the user that is assigned to the two roles is the correct user
+    user_properties_2_check = ['user_type_code', 'cognito_user_id', 'user_name']
+    for assignment in role_assignments:
+        for property_to_check in user_properties_2_check:
+            assert assignment['user'][property_to_check] == testUserData[property_to_check]
 
 
 
-    # TODO: Revise return object so doesn't include application
+
+
+

@@ -5,6 +5,7 @@ import api.app.schemas as schemas
 import pytest
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
+import api.app.constants as constants
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy import bindparam, text
@@ -71,7 +72,7 @@ def test_userRoleAssignment_withAbstractRole_raise_exception(
         .one_or_none()
     )
     # Verify this role is 'abstract' first.
-    assert famSubmitterRole.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
+    assert famSubmitterRole.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
     invalid_request = copy.deepcopy(simpleUserRoleRequest)
     invalid_request.role_id = famSubmitterRole.role_id
@@ -104,7 +105,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     # Verify parent role exist first.
     assert isinstance(fomSubmitterRole, models.FamRole)
     assert fomSubmitterRole.role_name == FOM_SUBMITTER_ROLE_NAME
-    assert fomSubmitterRole.role_type_code == models.FamRoleType.ROLE_TYPE_ABSTRACT
+    assert fomSubmitterRole.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
     simpleUserRoleRequest.role_id = fomSubmitterRole.role_id
 
@@ -126,7 +127,7 @@ def test_create_userRoleAssignment_for_forestClientFOMSubmitter(
     assert forestClientRole.parent_role_id == fomSubmitterRole.role_id
     assert user.user_id == user_role_assignment.user_id
     assert user.user_type_code == simpleUserRoleRequest.user_type_code
-    assert forestClientRole.role_type_code == models.FamRoleType.ROLE_TYPE_CONCRETE
+    assert forestClientRole.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     clean_up_user_role_assignment(db, user_role_assignment)
 
