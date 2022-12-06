@@ -56,12 +56,12 @@ services:
       - POSTGRES_DB=fam
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5432
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=fam-postgres
     entrypoint:
       - bash
       - -c
       - cd /usr/src &&
-        pip install -r requirements.txt  -r requirements-dev.txt &&
+        pip install -r requirements.txt &&
         uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
       - ./server/backend:/usr/src/
