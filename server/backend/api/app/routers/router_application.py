@@ -11,38 +11,30 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# @router.get(
-#     "/",
-#     response_model=List[schemas.FamApplication],
-#     status_code=200
-# )
+
 @router.get("", response_model=List[schemas.FamApplication], status_code=200)
-def get_fam_applications(
-    response: Response, db: Session = Depends(dependencies.get_db)
-):
+def get_applications(response: Response, db: Session = Depends(dependencies.get_db)):
     """
     List of different applications that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud_application.getFamApplications(db)
-    if len(queryData) == 0:
+    query_data = crud_application.get_applications(db)
+    if len(query_data) == 0:
         response.status_code = 204
-    return queryData
+    return query_data
 
-@router.post(
-    "", response_model=schemas.FamApplication
-)
-def create_fam_application(
-    famApplication: schemas.FamApplicationCreate,
+
+@router.post("", response_model=schemas.FamApplication)
+def create_application(
+    application: schemas.FamApplicationCreate,
     db: Session = Depends(dependencies.get_db),
 ):
     """
     Add Application/client to FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud_application.createFamApplication(famApplication, db)
-    # return queryData
-    return queryData
+    query_data = crud_application.create_application(application, db)
+    return query_data
 
 
 @router.delete("/{application_id}", response_model=schemas.FamApplication)
@@ -54,14 +46,16 @@ def delete_fam_application(
     Add Application/client to FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    application = crud_application.getFamApplication(application_id=application_id, db=db)
+    application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
             status_code=404, detail=f"application_id={application_id} does not exist"
         )
     application_id = application.application_id
     LOGGER.debug(f"application_id: {application_id}")
-    application = crud_application.deleteFamApplication(db=db, application_id=application_id)
+    application = crud_application.delete_application(
+        db=db, application_id=application_id
+    )
     return application
 
 
@@ -80,7 +74,7 @@ def get_fam_application_roles(
     :param db: database session, defaults to Depends(dependencies.get_db)
     """
     LOGGER.debug(f"Recieved application id: {application_id}")
-    app_roles = crud_application.getFamApplicationRoles(
+    app_roles = crud_application.get_application_roles(
         application_id=application_id, db=db
     )
     return app_roles
@@ -92,17 +86,17 @@ def get_fam_application_roles(
     status_code=200,
 )
 def get_fam_application_user_role_assignment(
-        application_id: int,
-        db: Session = Depends(dependencies.get_db)):
+    application_id: int, db: Session = Depends(dependencies.get_db)
+):
     """gets the roles associated with an application
 
     :param application_id: application id
     :param db: database session, defaults to Depends(dependencies.get_db)
     """
     LOGGER.debug(f"application_id: {application_id}")
-    appUserRoleAssignments = crud_application.getFamApplicationRoleAssignments(
-        db=db,
-        application_id=application_id)
-    LOGGER.debug(f"appUserRoleAssignments: {appUserRoleAssignments}")
+    app_user_role_assignment = crud_application.get_application_role_assignments(
+        db=db, application_id=application_id
+    )
+    LOGGER.debug(f"app_user_role_assignment: {app_user_role_assignment}")
 
-    return appUserRoleAssignments
+    return app_user_role_assignment

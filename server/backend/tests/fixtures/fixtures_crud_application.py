@@ -21,8 +21,8 @@ def dbSession_famApplication(
 ) -> sqlalchemy.orm.session.Session:
     db = dbSession_famRoletype
     applicationData1AsPydantic = schemas.FamApplicationCreate(**applicationData1)
-    appData = crud_application.createFamApplication(
-        famApplication=applicationData1AsPydantic, db=db
+    appData = crud_application.create_application(
+        fam_application=applicationData1AsPydantic, db=db
     )
     yield db
     try:
@@ -76,7 +76,7 @@ def dbSession_famApplication_concreteRoledata(
     db = dbSession_famApplication
     db.flush()
     # get the application id
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     app_id = app.application_id
@@ -135,7 +135,7 @@ def dbSession_famApplication_abstractRoledata(
     db.flush()
 
     # retrieve the application id, as the roles need to be tied to this app
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     app_id = app.application_id
@@ -259,6 +259,6 @@ def dbSession_famApplication_withRoleUserAssignment(
     db.delete(abstractRoleData_asModel)
     db.delete(concreteRoleData_asModel)
     db.delete(userData_asModel)
-    db.delete(bceidUserTypeCodeRecord_asModel)
-    db.delete(idirUserTypeCodeRecord_asModel)
+    db.delete(bceidUserTypeCode_asModel)
+    db.delete(idirUserTypeCode_asModel)
     db.flush()

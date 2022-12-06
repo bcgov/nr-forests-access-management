@@ -19,11 +19,11 @@ def test_getFamApplications(
     db = dbSession_famApplication
 
     LOGGER.debug(f"applicationData1: {applicationData1}")
-    application1 = crud_application.getApplicationByName(
+    application1 = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     LOGGER.debug(f"application1: {application1}")
-    apps = crud_application.getFamApplications(db=db)
+    apps = crud_application.get_applications(db=db)
 
     assert len(apps) == 1
     assert hasattr(apps[0], "application_name")
@@ -49,7 +49,7 @@ def test_getFamApplicationRoles_concrete(
     # added in the fixture dbSession_famApplication_withRoledata, the app id
     # is required to get the roles for that app
     db = dbSession_famApplication_concreteRoledata
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     LOGGER.debug(f"applicationData1: {applicationData1}")
@@ -58,7 +58,7 @@ def test_getFamApplicationRoles_concrete(
     assert app.application_name == applicationData1["application_name"]
 
     # get the app roles, this is what we want to test.
-    appRoles = crud_application.getFamApplicationRoles(
+    appRoles = crud_application.get_application_roles(
         db=db, application_id=app.application_id
     )
 
@@ -105,11 +105,11 @@ def test_getFamApplicationRoles_abstract(
 
     db = dbSession_famApplication_abstractRoledata
     # get the application record so we can retrieve its application-id
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     # using the app-id request the roles associated with it
-    appRoles = crud_application.getFamApplicationRoles(
+    appRoles = crud_application.get_application_roles(
         db=db, application_id=app.application_id
     )
     LOGGER.debug(f"appRoles: {appRoles}")
@@ -169,13 +169,13 @@ def test_deleteFamApplications(
 ):
     db = dbSession_famApplication
     # get list of applications from the database
-    apps = crud_application.getFamApplications(db=db)
+    apps = crud_application.get_applications(db=db)
     # iterate over all of them and delete them
     for app in apps:
-        crud_application.deleteFamApplication(db=db, application_id=app.application_id)
+        crud_application.delete_application(db=db, application_id=app.application_id)
 
     # finally assert that there are no apps left in the database
-    appsAfter = crud_application.getFamApplications(db=db)
+    appsAfter = crud_application.get_applications(db=db)
     assert len(appsAfter) == 0
 
 
@@ -184,9 +184,9 @@ def test_getFamApplication(
     applicationData1: Dict[str, Union[str, datetime.datetime]],
 ):
     db = dbSession_famApplication
-    apps = crud_application.getFamApplications(db=db)
+    apps = crud_application.get_applications(db=db)
     for app in apps:
-        appById = crud_application.getFamApplication(
+        appById = crud_application.get_application(
             db=db, application_id=app.application_id
         )
         assert appById.application_id == app.application_id
@@ -197,7 +197,7 @@ def test_getFamApplicationByName(
     applicationData1: Dict[str, Union[str, datetime.datetime]],
 ):
     db = dbSession_famApplication
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     assert app.application_name == applicationData1["application_name"]
@@ -215,7 +215,7 @@ def test_getFamApplications_nodata(dbSession: sqlalchemy.orm.session.Session):
     files = os.listdir(".")
     LOGGER.debug(f"files: {files}")
 
-    famApps = crud_application.getFamApplications(dbSession)
+    famApps = crud_application.get_applications(dbSession)
     assert famApps == []
     LOGGER.debug(f"famApps: {famApps}")
 
@@ -226,21 +226,21 @@ def test_createFamApplication(
 ):
     db = dbsession_delete
     # make sure we are starting off with no records
-    famApps = crud_application.getFamApplications(db)
+    famApps = crud_application.get_applications(db)
     assert famApps == []
 
     # add the data to the database
     appDataAsPydantic = schemas.FamApplicationCreate(**applicationData1)
-    appData = crud_application.createFamApplication(
-        famApplication=appDataAsPydantic, db=db
+    appData = crud_application.create_application(
+        fam_application=appDataAsPydantic, db=db
     )
-    # the object returned by createFamApplication should contain the
+    # the object returned by create_application should contain the
     # application object that it was passed
     assert appData.application_name == applicationData1["application_name"]
     # LOGGER.debug(f"appData: {}")
 
     # verify that the data is in the database
-    famAppsAfter = crud_application.getFamApplications(db)
+    famAppsAfter = crud_application.get_applications(db)
     exists = False
     for famAppAfter in famAppsAfter:
         if famAppAfter.application_name == applicationData1["application_name"]:
@@ -265,7 +265,7 @@ def test_get_fam_application_role_assignments(
     LOGGER.debug("app_id is: {app_id}")
 
 
-    role_assignments = crud_application.getFamApplicationRoleAssignments(
+    role_assignments = crud_application.get_application_role_assignments(
         db=db,
         application_id=app_id)
     LOGGER.debug(f"role_assignment: {role_assignments}")

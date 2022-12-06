@@ -35,7 +35,7 @@ def application_roles(
     # have to commit so that the session spun up by the client can see the data
     db.commit()
     # get the app id and pass on
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     LOGGER.debug(f"app: {app}")
@@ -59,7 +59,7 @@ def application_role_assignment(
     # have to commit the session for the api to be able to see it as each request
     # uses its own session
     db.commit()
-    app = crud_application.getApplicationByName(
+    app = crud_application.get_application_by_name(
         db=db, application_name=applicationData1["application_name"]
     )
     app_id = app.application_id
