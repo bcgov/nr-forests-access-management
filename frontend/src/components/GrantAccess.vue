@@ -6,7 +6,7 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
-const domainOptions = {IDIR: 'I', BCEID: 'B'}
+const domainOptions = {IDIR: 'I', BCEID: 'B'} // TODO, load it from backend when backend has the endpoint.
 let applicationRoleOptions = ref<ApplicationRoleResponse[]>([])
 
 const defaultFormData = {
