@@ -40,8 +40,7 @@ async function grantAccess() {
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
   }
   catch(err: any) {
-    useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.`)
-    useToast().error(`Message: ${err.response.data?.detail}`)
+    useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
     console.error("err: ", err)
   } 
 }
