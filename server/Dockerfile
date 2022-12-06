@@ -7,7 +7,8 @@ ENV POSTGRES_HOST_AUTH_METHOD=trust
 ENV POSTGRES_DB=fam
 ENV POSTGRES_HOST=fam-postgres
 
-COPY ./backend /usr/src/
+COPY ./backend/requirements.txt /usr/src/
+COPY ./backend/api /usr/src/api
 
 RUN cd /usr/src && pip install -r requirements.txt
 
