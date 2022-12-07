@@ -9,11 +9,11 @@ import api.app.constants as famConstants
 import pytest
 from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
-import test_constants
 
 LOGGER = logging.getLogger(__name__)
 
 # TODO: describe return types, and arg types for methods in this module
+
 
 class FamUserTD(TypedDict):
     # cludge... ideally this type should be derived from the
@@ -29,24 +29,29 @@ class FamUserTD(TypedDict):
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_user_types(dbSession, idir_user_type_code_dict, bceidUserTypeCode_Dict):
-    db = dbSession
-    idirUserTypeCode = model.FamUserType(**idir_user_type_code_dict)
-    bceidUserTypeCode = model.FamUserType(**bceidUserTypeCode_Dict)
-    db.add(idirUserTypeCode)
-    db.add(bceidUserTypeCode)
+def dbsession_fam_user_types(
+    dbsession, idir_user_type_code_dict, bceid_user_type_code_dict
+):
+    db = dbsession
+    idir_user_type_code = model.FamUserType(**idir_user_type_code_dict)
+    bceid_user_type_code = model.FamUserType(**bceid_user_type_code_dict)
+    db.add(idir_user_type_code)
+    db.add(bceid_user_type_code)
 
     db.commit()
     yield db
 
-    db.delete(idirUserTypeCode)
-    db.delete(bceidUserTypeCode)
+    db.delete(idir_user_type_code)
+    db.delete(bceid_user_type_code)
     db.commit()
 
 
 @pytest.fixture(scope="function")
 def dbsession_fam_users(
-    dbsession_fam_user_types, user_data3_dict: Dict[str, Any], groupData_Dict, userGroupXrefData
+    dbsession_fam_user_types,
+    user_data3_dict: Dict[str, Any],
+    group_dict,
+    user_group_xref_dict,
 ):
     """to add a user need to satisfy the integrity constraints.
 
@@ -55,8 +60,8 @@ def dbsession_fam_users(
     :type dbsession_fam_user_types: sqlalchemy.orm.session.Session
     :param user_data3_dict: Input dictionary describing a user record
     :type user_data3_dict: Dict[str, Any]
-    :param groupData_Dict: dictionary describing a group record
-    :type groupData_Dict: dict
+    :param group_dict: dictionary describing a group record
+    :type group_dict: dict
     :yield: Database session with the user record loaded along with group to
         satisfy the database constraint
     """
@@ -66,21 +71,21 @@ def dbsession_fam_users(
     db = dbsession_fam_user_types
     # trying to add to user without violating the integrity constraint
     # group was populated with a record by the add_group fixture.
-    newUser = model.FamUser(**user_data3_dict)
-    groupSchema = model.FamGroup(**groupData_Dict)
-    userGroupXrefData["group"] = groupSchema
-    userGroupXrefData["user"] = newUser
+    new_user = model.FamUser(**user_data3_dict)
+    group_schema = model.FamGroup(**group_dict)
+    user_group_xref_dict["group"] = group_schema
+    user_group_xref_dict["user"] = new_user
 
-    xrefTable = model.FamUserGroupXref(**userGroupXrefData)
+    xref_table = model.FamUserGroupXref(**user_group_xref_dict)
 
-    db.add(xrefTable)
+    db.add(xref_table)
     db.commit()
 
     yield db
 
-    db.delete(xrefTable)
-    db.delete(groupSchema)
-    db.delete(newUser)
+    db.delete(xref_table)
+    db.delete(group_schema)
+    db.delete(new_user)
     db.commit()
 
 
@@ -97,68 +102,72 @@ def user_data3_dict() -> Iterator[Dict[str, Union[str, famConstants.UserType]]]:
     # try return instead? yield user_data
     yield user_data
 
-@pytest.fixture(scope="function")
-def userdata_pydantic(userData_Dict) -> schemas.FamUser:
-    famUserAsPydantic = schemas.FamUser(**userData_Dict)
-    yield famUserAsPydantic
-
 
 @pytest.fixture(scope="function")
-def userdata2_pydantic(userData2_Dict) -> schemas.FamUser:
-    famUserAsPydantic2 = schemas.FamUser(**userData2_Dict)
-    yield famUserAsPydantic2
+def userdata_pydantic(user_data_dict) -> schemas.FamUser:
+    fam_user_pydantic = schemas.FamUser(**user_data_dict)
+    yield fam_user_pydantic
 
 
 @pytest.fixture(scope="function")
-def delete_all_users(dbSession: session.Session) -> Iterator[None]:
+def userdata2_pydantic(user_data2_dict) -> schemas.FamUser:
+    fam_user_as_pydantic2 = schemas.FamUser(**user_data2_dict)
+    yield fam_user_as_pydantic2
+
+
+@pytest.fixture(scope="function")
+def delete_all_users(dbsession: session.Session) -> Iterator[None]:
     """Cleans up all users from the database after the test has been run
 
-    :param dbSession: mocked up database session
-    :type dbSession: sqlalchemy.orm.session.Session
+    :param dbsession: mocked up database session
+    :type dbsession: sqlalchemy.orm.session.Session
     """
-    LOGGER.debug(f"dbsession type: {type(dbSession)}")
+    LOGGER.debug(f"dbsession type: {type(dbsession)}")
     yield None
-    db = dbSession
-    famUsers = db.query(model.FamUser).all()
-    for famUser in famUsers:
-        db.delete(famUser)
+    db = dbsession
+    fam_users = db.query(model.FamUser).all()
+    for fam_user in fam_users:
+        db.delete(fam_user)
     db.commit()
 
 
 @pytest.fixture(scope="function")
-def idir_user_type_code_dict() -> Iterator[Dict]:
-    userType = {
+def idir_user_type_code_dict() -> Iterator[Dict[str, str]]:
+    user_type = {
         "user_type_code": famConstants.UserType.IDIR,
         "description": "IDIR",
     }
-    yield userType
+    yield user_type
+
 
 # TODO: define return type
 @pytest.fixture(scope="function")
-def idirUserTypeCode_asModel(idir_user_type_code_dict) -> model.FamUserType:
-    idirUserType = model.FamUserType(**idir_user_type_code_dict)
-    yield idirUserType
+def idir_user_type_code_model(idir_user_type_code_dict) -> model.FamUserType:
+    idir_user_type = model.FamUserType(**idir_user_type_code_dict)
+    yield idir_user_type
 
 
 @pytest.fixture(scope="function")
-def bceidUserTypeCode_Dict() -> dict:
-    userType = {
+def bceid_user_type_code_dict() -> Iterator[Dict[str, str]]:
+    user_type = {
         "user_type_code": famConstants.UserType.BCEID,
         "description": "BCeID",
     }
-    yield userType
+    yield user_type
+
 
 # TODO: run format on this file, fix format / linter conflicts
 # TODO: rename idir user type and this user type so doesn't incldue the word 'record'
 @pytest.fixture(scope="function")
-def bceidUserTypeCode_asModel(bceidUserTypeCode_Dict):
-    bceidUserType = model.FamUserType(**bceidUserTypeCode_Dict)
-    yield bceidUserType
+def bceid_user_type_code_model(bceid_user_type_code_dict):
+    bceid_user_type = model.FamUserType(**bceid_user_type_code_dict)
+    yield bceid_user_type
+
 
 @pytest.fixture(scope="function")
-def userData_Dict() -> dict:
+def user_data_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
 
-    userData = {
+    user_data = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22ftw",
         "user_name": "MBOSSY",
@@ -168,25 +177,20 @@ def userData_Dict() -> dict:
         "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
-    yield userData
+    yield user_data
+
 
 # TODO: standardize the fixture names in this module, remove test from UserData
 #       references
 @pytest.fixture(scope="function")
-def userData_asModel(userData_Dict):
-    newUser = model.FamUser(**userData_Dict)
-    yield newUser
+def user_data_model(user_data_dict):
+    new_user = model.FamUser(**user_data_dict)
+    yield new_user
 
 
 @pytest.fixture(scope="function")
-def userdata_pydantic(userData_Dict) -> schemas.FamUser:
-    famUserAsPydantic = schemas.FamUser(**userData_Dict)
-    yield famUserAsPydantic
-
-
-@pytest.fixture(scope="function")
-def userData2_Dict() -> FamUserTD:
-    userData = {
+def user_data2_dict() -> Iterator[FamUserTD]:
+    user_data = {
         "user_type_code": famConstants.UserType.BCEID,
         "cognito_user_id": "22dfs",
         "user_name": "DPOTVIN",
@@ -196,39 +200,39 @@ def userData2_Dict() -> FamUserTD:
         "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
-    yield userData
+    yield user_data
 
 
 @pytest.fixture(scope="function")
-def userGroupXrefData():
+def user_group_xref_dict() -> Iterator[Dict[str, Union[datetime.datetime, str]]]:
     nowdatetime = datetime.datetime.now()
-    xrefData = {
+    x_ref_data = {
         "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": nowdatetime,
         "update_user": famConstants.FAM_PROXY_API_USER,
         "update_date": nowdatetime,
     }
-    yield xrefData
+    yield x_ref_data
 
 
 @pytest.fixture(scope="function")
-def add_group(dbSession, groupData_Dict):
-    db = dbSession
-    groupSchema = schemas.FamGroupPost(**groupData_Dict)
+def add_group(dbsession, group_dict):
+    db = dbsession
+    group_schema = schemas.FamGroupPost(**group_dict)
 
-    crud_group.createFamGroup(famGroup=groupSchema, db=db)
+    crud_group.createFamGroup(famGroup=group_schema, db=db)
     yield db
 
-    db.delete(groupData_Dict)
+    db.delete(group_dict)
     db.commit()
 
 
 @pytest.fixture(scope="function")
-def groupData_Dict():
-    groupData_Dict = {
+def group_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
+    group_dict = {
         "group_name": "test group",
         "purpose": "testing",
         "create_user": famConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     }
-    return groupData_Dict
+    yield group_dict

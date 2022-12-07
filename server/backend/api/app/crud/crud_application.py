@@ -3,10 +3,11 @@ import logging
 from typing import List
 
 from api.app.models import model as models
+import api.app.constants as constants
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
-from . import crudUtils as crudUtils
+from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,10 +63,10 @@ def create_application(
     LOGGER.debug(f"fam_application: {fam_application}")
     LOGGER.debug(f"fam_application as dict: {fam_application.dict()}")
 
-    next_val = crudUtils.getNext(models.FamApplication, db)
+    next_val = crud_utils.get_next(models.FamApplication, db)
     LOGGER.debug(f"next val: {next_val}")
     fam_app_dict = fam_application.dict()
-    pk_col_name = crudUtils.getPrimaryKey(models.FamApplication)
+    pk_col_name = crud_utils.get_primary_key(models.FamApplication)
     fam_app_dict[pk_col_name] = next_val
 
     # TODO: once integrate ian's db changes are merged, the dates will be calced
@@ -73,8 +74,8 @@ def create_application(
     now = datetime.datetime.now()
     fam_app_dict["create_date"] = now
     fam_app_dict["update_date"] = now
-    fam_app_dict["update_user"] = crudUtils.getUpdateUser()
-    fam_app_dict["create_user"] = crudUtils.getAddUser()
+    fam_app_dict["update_user"] = constants.FAM_PROXY_API_USER
+    fam_app_dict["create_user"] = constants.FAM_PROXY_API_USER
 
     # TODO: need to figure out a better way of handling application_client_id is null
     if "application_client_id" in fam_app_dict:
@@ -113,13 +114,15 @@ def get_application_roles(
     :return: orm FamRole model listing related roles that have been created
              for the given application.
     """
+    # the application query below has to have parent_role_id == None, is None
+    # doesn't translate to the correct query in sqlalchemy
     application = (
         db.query(models.FamRole)
         # .join(models.FamRole)
         # .options(load_only("application_id"))
         .filter(
             models.FamRole.application_id == application_id,
-            models.FamRole.parent_role_id == None,
+            models.FamRole.parent_role_id == None, # noqa
         ).all()
     )
     return application

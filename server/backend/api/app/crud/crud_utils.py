@@ -7,10 +7,12 @@ from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
+# from typing import
+
 LOGGER = logging.getLogger(__name__)
 
 
-def getPrimaryKey(model: models) -> str:
+def get_primary_key(model: models) -> str:
     """recieves a declarative base model and returns the primary key that
     is defined for the base
 
@@ -19,12 +21,12 @@ def getPrimaryKey(model: models) -> str:
     :return: name of the primarly key column as a string
     :rtype: str
     """
-    pkName = inspect(model).primary_key[0].name
-    LOGGER.debug(f"primary key for table {model.__table__}: {pkName}")
-    return pkName
+    pk_name = inspect(model).primary_key[0].name
+    LOGGER.debug(f"primary key for table {model.__table__}: {pk_name}")
+    return pk_name
 
 
-def getHighestValue(
+def get_highest_value(
     model: sqlalchemy.orm.decl_api.DeclarativeMeta, columnName: str, db: Session
 ):
     """Queries for the highest value found for a particular column
@@ -40,13 +42,13 @@ def getHighestValue(
         column
     :rtype: int
     """
-    columnObj = getattr(model, columnName)
-    queryResult = db.query(func.max(columnObj)).first()
-    LOGGER.debug(f"queryResult: {queryResult}")
-    return queryResult
+    column_obj = getattr(model, columnName)
+    query_result = db.query(func.max(column_obj)).first()
+    LOGGER.debug(f"queryResult: {query_result}")
+    return query_result
 
 
-def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
+def get_next(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     """calculates the next increment for the given model.  This is
     created because in development the autoincrement / populate feature
     for sqllite databases does not always work.
@@ -58,34 +60,21 @@ def getNext(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
     :return: the next value for the primary key
     :rtype: int
     """
-    pkName = getPrimaryKey(model)
-    queryResult = getHighestValue(model, pkName, db)
-    if queryResult[0] is None:
+    pk_name = get_primary_key(model)
+    query_result = get_highest_value(model, pk_name, db)
+    if query_result[0] is None:
         return 1
     else:
-        return queryResult[0] + 1
+        return query_result[0] + 1
 
-
-def getUpdateUser():
-    """A stub method, once the api has been integrated w/ Cognito the update
-    user will come from the JWT token that is a result of the authentication.
-    """
-    return "default updateuser"
-
-
-def getAddUser():
-    """A stub method, once the api has been integrated w/ Cognito the update
-    user will come from the JWT token that is a result of the authentication.
-    """
-    return "default adduser"
 
 def get_application_id_from_name(db, application_name):
     # TODO: define types
     # TODO: define docstring
     application = (
         db.query(models.FamApplication)
-        .filter(models.FamApplication.application_name ==
-                application_name).one()
+        .filter(models.FamApplication.application_name == application_name)
+        .one()
     )
     return application.application_id
 

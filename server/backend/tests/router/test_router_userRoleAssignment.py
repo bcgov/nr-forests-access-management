@@ -11,13 +11,13 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 
 def test_create_user_role_assignment_associated_with_abstract_role(
-    testClient_fixture,
+    test_client_fixture,
     dbsession_fam_user_types,
-    simpleFOMSubmitterRole_dbSession,
-    simpleUserRoleData,
+    dbsession_FOM_submitter_role,  # noqa NOSONAR
+    user_role_dict,
     clean_up_all_user_role_assignment,
 ):
-    db: Session = simpleFOMSubmitterRole_dbSession
+    db: Session = dbsession_FOM_submitter_role
 
     # Verify no assignment initially.
     user_role_assignment_db_items = db.query(model.FamUserRoleXref).all()
@@ -30,11 +30,11 @@ def test_create_user_role_assignment_associated_with_abstract_role(
     assert fom_submitter_role is not None
     assert fom_submitter_role.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
-    request_data = copy.deepcopy(simpleUserRoleData)
+    request_data = copy.deepcopy(user_role_dict)
     request_data["role_id"] = fom_submitter_role.role_id
 
     # Execute POST (concrete role created for role assignment and linked to parent role)
-    response = testClient_fixture.post(f"{endPoint}", json=request_data)
+    response = test_client_fixture.post(f"{endPoint}", json=request_data)
 
     # Verify status and body
     assert response.status_code == 200
@@ -68,13 +68,13 @@ def test_create_user_role_assignment_associated_with_abstract_role(
 
 
 def test_create_user_role_assignment_with_concrete_role(
-    testClient_fixture,
+    test_client_fixture,
     dbsession_fam_user_types,
-    simpleConcreteRole_dbSession,
-    simpleUserRoleData,
+    dbsession_concrete_role,
+    user_role_dict,
     clean_up_all_user_role_assignment,
 ):
-    db = simpleConcreteRole_dbSession
+    db = dbsession_concrete_role
 
     # Verify no assignment initially.
     user_role_assignment_db_items = db.query(model.FamUserRoleXref).all()
@@ -85,12 +85,12 @@ def test_create_user_role_assignment_with_concrete_role(
     assert role_db_item is not None
     assert role_db_item.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
-    request_data = copy.deepcopy(simpleUserRoleData)
+    request_data = copy.deepcopy(user_role_dict)
     request_data["role_id"] = role_db_item.role_id
     del request_data["forest_client_number"]
 
     # Execute POST (role assignment created)
-    response = testClient_fixture.post(f"{endPoint}", json=request_data)
+    response = test_client_fixture.post(f"{endPoint}", json=request_data)
 
     # Verify status and body
     assert response.status_code == 200
@@ -124,9 +124,9 @@ def test_create_user_role_assignment_with_concrete_role(
 
 
 def test_delete_user_role_assignment(
-    testClient_fixture, simpleUserRoleAssignment_dbSession
+    test_client_fixture, dbsession_user_role_assignment
 ):
-    db = simpleUserRoleAssignment_dbSession
+    db = dbsession_user_role_assignment
 
     # Verify 1 user/role assignment initially
     user_role_assignment_db_items = db.query(
@@ -135,7 +135,7 @@ def test_delete_user_role_assignment(
     assert len(user_role_assignment_db_items) == 1
 
     # Execute Delete
-    testClient_fixture.delete(
+    test_client_fixture.delete(
         f"{endPoint}/{user_role_assignment_db_items[0].user_role_xref_id}"
     )
 

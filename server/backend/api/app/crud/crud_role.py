@@ -10,14 +10,14 @@ from . import crud_forest_client
 LOGGER = logging.getLogger(__name__)
 
 
-def getFamRole(db: Session, role_id: int) -> Optional[models.FamRole]:
+def get_role(db: Session, role_id: int) -> Optional[models.FamRole]:
     # get a single role based on role_id
     return (
         db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one_or_none()
     )
 
 
-def getFamRoles(db: Session) -> List[models.FamRole]:
+def get_roles(db: Session) -> List[models.FamRole]:
     """gets all the existing FAM roles
 
     :param db: _description_
@@ -29,24 +29,24 @@ def getFamRoles(db: Session) -> List[models.FamRole]:
     return db.query(models.FamRole).all()
 
 
-def createFamRole(famRole: schemas.FamRoleCreate, db: Session) -> models.FamRole:
-    LOGGER.debug(f"Creating Fam role: {famRole}")
+def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
+    LOGGER.debug(f"Creating Fam role: {role}")
 
-    famRoleDict = famRole.dict()
-    forest_client_number = famRoleDict["forest_client_number"]
+    role_dict = role.dict()
+    forest_client_number = role_dict["forest_client_number"]
     if forest_client_number:
-        famRoleDict["client_number_id"] = crud_forest_client.getFamForestClient(
+        role_dict["client_number_id"] = crud_forest_client.get_forest_client(
             db, forest_client_number
         ).client_number_id
-    del famRoleDict["forest_client_number"]
+    del role_dict["forest_client_number"]
 
-    db_item = models.FamRole(**famRoleDict)
+    db_item = models.FamRole(**role_dict)
     db.add(db_item)
     db.flush()
     return db_item
 
 
-def getFamRoleByRoleName(db: Session, role_name: str) -> Optional[models.FamRole]:
+def get_role_by_role_name(db: Session, role_name: str) -> Optional[models.FamRole]:
     """
     Gets FAM roles by unique role_name
     """

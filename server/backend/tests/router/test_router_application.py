@@ -14,8 +14,9 @@ class ClientAndAppID(TypedDict):
 
 
 def test_get_fam_application_nodata(
-        testClient_fixture: starlette.testclient.TestClient):
-    response = testClient_fixture.get(f"{endPoint}")
+    test_client_fixture: starlette.testclient.TestClient,
+):
+    response = test_client_fixture.get(f"{endPoint}")
     LOGGER.debug(f"endPoint: {endPoint}")
     LOGGER.debug(f"response {response}")
     assert response.status_code == 204
@@ -25,118 +26,122 @@ def test_get_fam_application_nodata(
 
 
 def test_get_fam_application(
-        testApplication_fixture: starlette.testclient.TestClient,
-        applicationData1: Dict[str, Union[str, datetime.datetime]]):
-    response = testApplication_fixture.get(f"{endPoint}/")
+    client_application: starlette.testclient.TestClient,
+    application_dict: Dict[str, Union[str, datetime.datetime]],
+):
+    response = client_application.get(f"{endPoint}/")
     LOGGER.debug(f"response: {response}")
     data = response.json()
     LOGGER.debug(f"data: {data}")
     assert len(data) == 1
-    assert data[0]["application_name"] == applicationData1["application_name"]
+    assert data[0]["application_name"] == application_dict["application_name"]
 
 
 def test_delete_fam_application(
-        testApplication_fixture: starlette.testclient.TestClient,
-        applicationData1:  Dict[str, Union[str, datetime.datetime]]):
+    client_application: starlette.testclient.TestClient,
+    application_dict: Dict[str, Union[str, datetime.datetime]],
+):
     # verfiy that a record is being returned, so we have something to
     # be deleted
-    response = testApplication_fixture.get(f"{endPoint}/")
+    response = client_application.get(f"{endPoint}/")
     LOGGER.debug(f"response: {response}")
     data = response.json()
     assert len(data) == 1
 
     LOGGER.debug(f"data: {data}")
 
-    appId = data[0]["application_id"]
-    deleteEndPoint = f"{endPoint}/{appId}"
-    response = testApplication_fixture.delete(deleteEndPoint)
+    app_id = data[0]["application_id"]
+    delete_end_point = f"{endPoint}/{app_id}"
+    response = client_application.delete(delete_end_point)
     LOGGER.debug(f"response: {response.status_code}")
 
     # now verify that there are no application records
-    getResp = testApplication_fixture.get(f"{endPoint}/")
-    getData = getResp.json()
-    assert getResp.status_code == 204
-    assert getData == []
+    get_resp = client_application.get(f"{endPoint}/")
+    get_data = get_resp.json()
+    assert get_resp.status_code == 204
+    assert get_data == []
 
 
 def test_post_fam_application(
-        testClient_fixture: starlette.testclient.TestClient,
-        applicationData1: Dict[str, Union[str, datetime.datetime]]):
-    LOGGER.debug(f"applicationData1: {applicationData1}")
-    applicationData1["create_date"] = str(applicationData1["create_date"])
-    applicationData1["update_date"] = str(applicationData1["update_date"])
-    postResp = testClient_fixture.post(f"{endPoint}", json=applicationData1)
-    LOGGER.debug(f"resp status: {postResp.status_code}")
-    assert postResp.status_code == 200
+    test_client_fixture: starlette.testclient.TestClient,
+    application_dict: Dict[str, Union[str, datetime.datetime]],
+):
+    LOGGER.debug(f"application_dict: {application_dict}")
+    application_dict["create_date"] = str(application_dict["create_date"])
+    application_dict["update_date"] = str(application_dict["update_date"])
+    post_resp = test_client_fixture.post(f"{endPoint}", json=application_dict)
+    LOGGER.debug(f"resp status: {post_resp.status_code}")
+    assert post_resp.status_code == 200
 
     # make sure that there is data in the application
-    getResp = testClient_fixture.get(f"{endPoint}")
-    getData = getResp.json()
-    recordAdded = False
-    testRecord = None
-    for record in getData:
+    get_resp = test_client_fixture.get(f"{endPoint}")
+    get_data = get_resp.json()
+    record_added = False
+    test_record = None
+    for record in get_data:
         LOGGER.debug(f"data: record: {record}")
-        LOGGER.debug(f"applicationData1: {applicationData1}")
-        if applicationData1["application_name"] == record["application_name"]:
-            recordAdded = True
-            testRecord = record
-    assert recordAdded
+        LOGGER.debug(f"application_dict: {application_dict}")
+        if application_dict["application_name"] == record["application_name"]:
+            record_added = True
+            test_record = record
+    assert record_added
 
     # cleanup after test
-    deleteEndPoint = f"{endPoint}/{testRecord['application_id']}"
-    deleteResponse = testClient_fixture.delete(deleteEndPoint)
-    assert deleteResponse.status_code == 200
+    delete_end_point = f"{endPoint}/{test_record['application_id']}"
+    delete_response = test_client_fixture.delete(delete_end_point)
+    assert delete_response.status_code == 200
 
 
 def test_get_fam_application_roles(
-        application_roles: ClientAndAppID,
-        applicationData1: Dict[str, Union[str, datetime.datetime]],
-        concreteRoleData,
-        concreteRoleData2
-        ):
+    application_roles: ClientAndAppID,
+    application_dict: Dict[str, Union[str, datetime.datetime]],
+    concrete_role_dict,
+    concrete_role2_dict,
+):
     client = application_roles["client"]
     app_id = application_roles["app_id"]
     # need to get the app id
 
-    roleEndPoint = endPoint + f"/{app_id}/fam_roles"
-    LOGGER.debug(f"roleEndPoint: {roleEndPoint}")
-    resp = client.get(roleEndPoint)
+    role_end_point = endPoint + f"/{app_id}/fam_roles"
+    LOGGER.debug(f"role_end_point: {role_end_point}")
+    resp = client.get(role_end_point)
     LOGGER.debug(f"resp status: {resp.status_code}")
     resp_data = resp.json()
     LOGGER.debug(f"resp data as JSON: {resp.text}")
     LOGGER.debug(f"resp data as dict: {resp_data}")
 
-    roleData = {}
-    for returnRole in resp_data:
-        roleData[returnRole['role_name']] = returnRole
+    role_data = {}
+    for return_role in resp_data:
+        role_data[return_role["role_name"]] = return_role
     # organize into a dict with key as role_name
 
-    roleName = concreteRoleData['role_name']
-    returnRole = roleData[roleName]
-    assert returnRole['role_purpose'] == concreteRoleData['role_purpose']
-    assert returnRole['role_purpose'] == concreteRoleData['role_purpose']
-    assert returnRole['application_id'] == app_id
+    role_name = concrete_role_dict["role_name"]
+    return_role = role_data[role_name]
+    assert return_role["role_purpose"] == concrete_role_dict["role_purpose"]
+    assert return_role["role_purpose"] == concrete_role_dict["role_purpose"]
+    assert return_role["application_id"] == app_id
 
-    roleName = concreteRoleData2['role_name']
-    returnRole = roleData[roleName]
-    assert returnRole['role_purpose'] == concreteRoleData2['role_purpose']
-    assert returnRole['role_purpose'] == concreteRoleData2['role_purpose']
-    assert returnRole['application_id'] == app_id
+    role_name = concrete_role2_dict["role_name"]
+    return_role = role_data[role_name]
+    assert return_role["role_purpose"] == concrete_role2_dict["role_purpose"]
+    assert return_role["role_purpose"] == concrete_role2_dict["role_purpose"]
+    assert return_role["application_id"] == app_id
 
 
 def test_get_fam_user_role_assignment(
-        application_role_assignment,
-        applicationData1,
-        concreteRoleData,
-        concreteRoleData2,
-        abstractRoleData,
-        testUserData):
+    application_role_assignment,
+    application_dict,
+    concrete_role_dict,
+    concrete_role2_dict,
+    abstract_role_data,
+    user_data_dict,
+):
 
-    client = application_role_assignment['client']
-    app_id = application_role_assignment['app_id']
+    client = application_role_assignment["client"]
+    app_id = application_role_assignment["app_id"]
 
-    roleEndPoint = endPoint + f"/{app_id}/user_role_assignment"
-    resp = client.get(roleEndPoint)
+    role_end_point = endPoint + f"/{app_id}/user_role_assignment"
+    resp = client.get(role_end_point)
     role_assignments = resp.json()
     LOGGER.debug(f"resp data: {role_assignments}")
     LOGGER.debug(f"json str: {resp.text}")
@@ -147,20 +152,17 @@ def test_get_fam_user_role_assignment(
     role_names = []
     # getting the role names
     for assignment in role_assignments:
-        role_names.append(assignment['role']['role_name'])
+        role_names.append(assignment["role"]["role_name"])
 
-    assert concreteRoleData['role_name'] in role_names
-    assert concreteRoleData2['role_name'] in role_names
-    assert abstractRoleData['role_name'] not in role_names
+    assert concrete_role_dict["role_name"] in role_names
+    assert concrete_role2_dict["role_name"] in role_names
+    assert abstract_role_data["role_name"] not in role_names
 
     # assert the user that is assigned to the two roles is the correct user
-    user_properties_2_check = ['user_type_code', 'cognito_user_id', 'user_name']
+    user_properties_2_check = ["user_type_code", "cognito_user_id", "user_name"]
     for assignment in role_assignments:
         for property_to_check in user_properties_2_check:
-            assert assignment['user'][property_to_check] == testUserData[property_to_check]
-
-
-
-
-
-
+            assert (
+                assignment["user"][property_to_check]
+                == user_data_dict[property_to_check]
+            )
