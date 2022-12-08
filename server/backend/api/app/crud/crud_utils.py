@@ -27,7 +27,7 @@ def get_primary_key(model: models) -> str:
 
 
 def get_highest_value(
-    model: sqlalchemy.orm.decl_api.DeclarativeMeta, columnName: str, db: Session
+    model: sqlalchemy.orm.decl_api.DeclarativeMeta, column_name: str, db: Session
 ):
     """Queries for the highest value found for a particular column
 
@@ -42,7 +42,7 @@ def get_highest_value(
         column
     :rtype: int
     """
-    column_obj = getattr(model, columnName)
+    column_obj = getattr(model, column_name)
     query_result = db.query(func.max(column_obj)).first()
     LOGGER.debug(f"queryResult: {query_result}")
     return query_result
@@ -61,7 +61,7 @@ def get_next(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int
     :rtype: int
     """
     pk_name = get_primary_key(model)
-    query_result = get_highest_value(model, pk_name, db)
+    query_result = get_highest_value(model=model, column_name=pk_name, db=db)
     if query_result[0] is None:
         return 1
     else:
@@ -79,6 +79,6 @@ def get_application_id_from_name(db, application_name):
     return application.application_id
 
 
-def raiseHTTPException(status_code: str, error_msg: str):
+def raise_http_exception(status_code: str, error_msg: str):
     LOGGER.error(error_msg)
     raise HTTPException(status_code=status_code, detail=error_msg)

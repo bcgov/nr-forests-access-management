@@ -31,7 +31,7 @@ def fam_user_role_assignment_model(
         and request.user_type_code != famConstants.UserType.BCEID
     ):
         error_msg = f"Invalid user type: {request.user_type_code}."
-        crud_utils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
+        crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
     # Determine if user already exists or add a new user.
     fam_user = crud_user.find_or_create(db, request.user_type_code, request.user_name)
@@ -40,7 +40,7 @@ def fam_user_role_assignment_model(
     fam_role = crud_role.get_role(db, request.role_id)
     if not fam_role:
         error_msg = f"Role id {request.role_id} does not exist."
-        crud_utils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
+        crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
     LOGGER.debug(
         f"Role for user_role assignment found: {fam_role.role_name}" +
         f"({fam_role.role_id})."
@@ -63,7 +63,7 @@ def fam_user_role_assignment_model(
             error_msg = (
                 "Invalid role assignment request. Cannot assign user " +
                 f"{request.user_name} to abstract role {fam_role.role_name}")
-            crud_utils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
+            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
