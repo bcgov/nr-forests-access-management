@@ -89,6 +89,8 @@ userRoleAssignments.value = [
 // TODO: Need API
 // userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
 
+// TODO: Sort results by username.
+
 const userFilter = ref<string>()
 const roleFilter = ref<string>()
 const forestClientFilter = ref<string>()
@@ -205,7 +207,7 @@ function uncaughtError() {
   <template v-if="userRoleAssignments.length > 0">
   <span><strong>Filter By:</strong></span>
   <span>
-  User <input placeholder="user" v-model="userFilter" size="12"/></span>
+  Username <input placeholder="username" v-model="userFilter" size="12"/></span>
   &nbsp;
   <span>Role <input placeholder="role" v-model="roleFilter" size="12"/></span>
   &nbsp;
