@@ -56,9 +56,11 @@ def createFamUserRoleAssignment(
         )
 
 
-    if not hasattr(request, "forest_client_number") or request.forest_client_number is None:
-
-        crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
+        if not hasattr(request, "forest_client_number") or request.forest_client_number is None:
+            error_msg = (
+                "Invalid role assignment request. Cannot assign user " +
+                f"{request.user_name} to abstract role {fam_role.role_name}")
+            crudUtils.raiseHTTPException(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
