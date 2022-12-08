@@ -2,6 +2,7 @@ import copy
 import logging
 
 import api.app.models.model as model
+import api.app.constants as constants
 from api.app.main import apiPrefix
 from sqlmodel import Session
 
@@ -27,7 +28,7 @@ def test_create_user_role_assignment_associated_with_abstract_role(
         db.query(model.FamRole).filter(model.FamRole.role_name == "FOM_Submitter").one()
     )
     assert fom_submitter_role is not None
-    assert fom_submitter_role.role_type_code == model.FamRoleType.ROLE_TYPE_ABSTRACT
+    assert fom_submitter_role.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
     request_data = copy.deepcopy(simpleUserRoleData)
     request_data["role_id"] = fom_submitter_role.role_id
@@ -82,7 +83,7 @@ def test_create_user_role_assignment_with_concrete_role(
     # Verify one concrete role exists initially.
     role_db_item: model.FamRole = db.query(model.FamRole).one()
     assert role_db_item is not None
-    assert role_db_item.role_type_code == model.FamRoleType.ROLE_TYPE_CONCRETE
+    assert role_db_item.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     request_data = copy.deepcopy(simpleUserRoleData)
     request_data["role_id"] = role_db_item.role_id

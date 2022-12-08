@@ -7,6 +7,7 @@ import api.app.schemas as schemas
 import sqlalchemy
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crudUtils
+import api.app.constants as constants
 
 LOGGER = logging.getLogger(__name__)
 
@@ -251,11 +252,16 @@ def test_createFamApplication(
 
 def test_get_fam_application_role_assignments(
         dbSession_famApplication_withRoleUserAssignment,
-        applicationData1
+        applicationData1,
+        userData_asModel,
+        concreteRoleData,
+        concreteRoleData2,
+        abstractRoleData,
         ):
-    # TODO: come back and complete this test, grab code from router test for this end point
+
     db = dbSession_famApplication_withRoleUserAssignment
-    app_id = crudUtils.get_application_id_from_name(db=db, application_name=applicationData1['application_name'])
+    app_id = crudUtils.get_application_id_from_name(
+        db=db, application_name=applicationData1['application_name'])
     LOGGER.debug("app_id is: {app_id}")
 
 
@@ -264,12 +270,47 @@ def test_get_fam_application_role_assignments(
         application_id=app_id)
     LOGGER.debug(f"role_assignment: {role_assignments}")
 
-    # test the schema
+    pydantic_role_assignments = []
+    # test the schema definitions work, will raise error if they do not
     for role_assignment in role_assignments:
-        roleAssignment = schemas.FamApplicationUserRoleAssignmentGet.from_orm(role_assignment)
-        LOGGER.debug(f"roleAssignment: {roleAssignment.dict()}")
+        pydantic_role_assignment = schemas.FamApplicationUserRoleAssignmentGet.from_orm(
+            role_assignment)
+        pydantic_role_assignments.append(pydantic_role_assignment)
+        LOGGER.debug(f"roleAssignment: {pydantic_role_assignment.dict()}")
 
-    # TODO: add a bunch of assertions
-    pass
-    # TODO: add a test that creates a role for a different application and
-    # make sure it is not returned
+    assert len(role_assignments) == 2
+    # same user should belong to both role assignments
+    user_properties_2_check = ['user_type_code', 'cognito_user_id', 'user_name']
+    for pyd_role_assign in pydantic_role_assignments:
+        for user_prop in user_properties_2_check:
+
+            assert getattr(pyd_role_assign.user, user_prop) == getattr(userData_asModel, user_prop)
+        # make sure the user type related data is included in the response
+            assert pyd_role_assign.user.user_type_relation
+    role_names = []
+    for pyd_role_assign in pydantic_role_assignments:
+        # make sure all roles are for the requested application
+        assert pyd_role_assign.role.application_id == app_id
+        # checking that none of the roles are abstract
+        role_assignments[1].role.role_type_code
+        assert pyd_role_assign.role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
+        role_names.append(pyd_role_assign.role.role_name)
+
+    assert concreteRoleData['role_name'] in role_names
+    assert concreteRoleData2['role_name'] in role_names
+    assert abstractRoleData['role_name'] not in role_names
+
+def test_get_fam_application_role_assignments_wrong_application(
+    dbSession_famApplication_withRoleUserAssignment,
+    applicationData1):
+    db = dbSession_famApplication_withRoleUserAssignment
+    app_id = crudUtils.get_application_id_from_name(
+        db=db, application_name=applicationData1['application_name'])
+    LOGGER.debug("app_id is: {app_id}")
+
+    # get data from a non existant app
+    role_assignments = crud_application.getFamApplicationRoleAssignments(
+        db=db,
+        application_id=99)
+    LOGGER.debug(f"role_assignments: {role_assignments}")
+    assert not role_assignments
