@@ -196,7 +196,7 @@ function uncaughtError() {
 <template>
   <div>
 
-  <PageTitle />
+  <PageTitle :displaySelectedApplication=true></PageTitle>
 
   <!-- TODO: Bootstrap styling. -->
   <span>
