@@ -37,7 +37,7 @@ services:
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
-      - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78 
+      - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78
       - FLYWAY_PLACEHOLDERS_client_id_fom_public=2c7lo6rqp983km60u3p3heqeds
       - FLYWAY_PLACEHOLDERS_client_id_fom_ministry=gsbm3p62isc2ju807f0imu29s
     depends_on:
@@ -45,6 +45,19 @@ services:
         condition: service_healthy
     networks:
       - fam
+
+  fam-api:
+    container_name: fam-api
+    build:
+      context: server
+      dockerfile: Dockerfile
+    depends_on:
+      - fam-flyway
+    ports:
+      - 8000:8000
+    networks:
+      - fam
+
 networks:
   fam:
     driver: bridge
