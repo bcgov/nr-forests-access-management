@@ -8,16 +8,20 @@ LOGGER = logging.getLogger(__name__)
 # APP_ENV = os.getenv("APP_ENV", "dev")
 
 
-def getDBString():
+def getDBString(use_postgres=False):
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
-    db_conn_string = getAWSDBString() if on_aws else getLocalDBString()
+    db_conn_string = getAWSDBString() if on_aws else getLocalDBString(use_postgres)
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
 
-def getLocalDBString() -> str:
-    username = os.getenv("api_db_username", "fam_proxy_api")
-    password = os.getenv("api_db_password", "test")
+def getLocalDBString(use_postgres=False) -> str:
+    if use_postgres:
+        username = os.getenv("POSTGRES_USER", "postgres")
+        password = os.getenv("POSTGRES_PASSWORD", "postgres")
+    else:
+        username = os.getenv("api_db_username", "fam_proxy_api")
+        password = os.getenv("api_db_password", "test")
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")
