@@ -24,6 +24,11 @@ label {
   border-color: $button-info;
 }
 
+.btn-danger {
+  background-color: $red-400;
+  border-color: $red-400;
+}
+
 // Remove Arrows/Spinners for input type=number
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
