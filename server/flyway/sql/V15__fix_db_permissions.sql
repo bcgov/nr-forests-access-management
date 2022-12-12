@@ -4,7 +4,7 @@ BEGIN;
 
 GRANT SELECT, UPDATE, DELETE, INSERT
                 ON ALL TABLES IN SCHEMA app_fam TO
-                fam_proxy_api;
+                ${api_db_username};
 
 -- V12/13/14 didn't upgrade the alembic version so forcing to V15 to get it back
 -- in sync
