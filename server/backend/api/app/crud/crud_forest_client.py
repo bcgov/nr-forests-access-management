@@ -49,7 +49,7 @@ def find_or_create(db: Session, forest_client_number: str, client_name: str):
         request_forest_client = schemas.FamForestClientCreate(
             **{
                 "forest_client_number": forest_client_number,
-                "client_name": client_name,
+                #"client_name": client_name,
                 "create_user": famConstants.FAM_PROXY_API_USER,
             }
         )

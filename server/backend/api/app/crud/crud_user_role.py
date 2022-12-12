@@ -146,7 +146,9 @@ def construct_forest_client_role_name(parent_role_name: str, forest_client_numbe
 def construct_forest_client_role_purpose(
     parent_role_purpose: str, client_name: str, forest_client_number: str
 ):
-    return f"{parent_role_purpose} for {client_name} ({forest_client_number})"
+    LOGGER.debug(f"parent_role_purpose: {parent_role_purpose}")
+    client_purpose = f"{parent_role_purpose} for {forest_client_number})"
+    return client_purpose
 
 
 def find_or_create_forest_client_child_role(
@@ -154,7 +156,7 @@ def find_or_create_forest_client_child_role(
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
-    client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
+    #client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
 
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
@@ -187,7 +189,7 @@ def find_or_create_forest_client_child_role(
                     "role_name": forest_client_role_name,
                     "role_purpose": construct_forest_client_role_purpose(
                         parent_role.role_purpose,
-                        forest_client.client_name,
+                        #forest_client.client_name,
                         forest_client_number,
                     ),
                     "create_user": famConstants.FAM_PROXY_API_USER,

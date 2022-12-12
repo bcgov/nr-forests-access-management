@@ -159,7 +159,7 @@ class FamUserRoleAssignmentGet(BaseModel):
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: str
-    client_name: str
+    #client_name: str
     create_user: str
 
     class Config:
@@ -179,7 +179,7 @@ class FamForestClientGet(FamForestClientCreate):
 
 
 class FamForestClient(BaseModel):
-    client_name: str
+    #client_name: str
     forest_client_number: int
 
     class Config:
