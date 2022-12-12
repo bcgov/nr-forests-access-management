@@ -19,7 +19,7 @@ setTimeout( async () => {
     // TODO: Workaround broken front-end. Remove once front-end is stable.
     toast.warning("Using fake test data as temporary working for applications not working. REMOVE BEFORE PRODUCTION.")
     applicationsUserAdministers.value = [
-      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 }, 
+      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 },
       { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
     ] as Application[]
@@ -41,13 +41,35 @@ setTimeout( async () => {
 
     <form id="selectApplicationForm" class="form-container">
       <div v-if="applicationsUserAdministers.length">
+
+        <!-- Disabled - not needed for MVP -->
+        <!-- Logic in script section:
+        const environments = [
+          "Prod", "Test", "Dev" // Dynamically assemble from list of apps.
+        ]
+
+        const environmentFilter = ref<string>("Prod")
+        -->
+        <!--
+        <div class="row">
+          <label>Filter by environment</label>
+        </div>
+        <div class="row">
+          <div class="col-auto" v-for="env in environments">
+            <input type="radio" id="r-env-{{env}}" name="envRadio" class="form-check-input" :value="env"
+              v-model="environmentFilter" :checked="(environmentFilter === env)" />
+              &nbsp;
+            <label class="form-check-label" for="r-env-{{env}}">{{env}}</label>
+          </div>
+        </div>
+        -->
         <div class="row">
           <div class="form-group col-md-5">
             <label>Select the application to administer</label>
-            
+
             <select id="applicationSelect"
-              class="form-select" 
-              v-model="selectedApplication" 
+              class="form-select"
+              v-model="selectedApplication"
               :size="applicationsUserAdministers.length+1">
               <option v-for="app in applicationsUserAdministers" :value="app">{{app.application_description}}</option>
             </select>
@@ -56,7 +78,7 @@ setTimeout( async () => {
         <div class="row gy-3">
           <div class="col-auto">
             <button type="button"
-              id="goToManageAccessButton" 
+              id="goToManageAccessButton"
               class="btn btn-info mb-3"
               :disabled="isApplicationSelected"
               @click="router.push('/manage')">Manage Access</button>
