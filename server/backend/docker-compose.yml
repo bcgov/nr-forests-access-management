@@ -3,19 +3,22 @@ volumes:
   db:
     driver:
       local
+x-common-variables: &common-db-variables
+   POSTGRES_USER: postgres
+   POSTGRES_PASSWORD: postgres
+   POSTGRES_DB: fam
+   POSTGRES_PORT: 5432
+   POSTGRES_HOST_AUTH_METHOD: trust
+   api_db_username: fam_proxy_api
+   api_db_password: test
 services:
   # todo: add migration for database
   db:
     container_name: db
     image: postgres:14.1-alpine
-    env_file:
-      - env-db-dev.env
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=fam
-      - POSTGRES_PORT=5432
-      - POSTGRES_HOST_AUTH_METHOD=trust
+    #env_file:
+    #  - env-db-dev.env
+    environment: *common-db-variables
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -32,21 +35,16 @@ services:
     container_name: fam-api
     depends_on:
       - db
-    env_file:
-      - env-db-dev.env
+    #env_file:
+    #  - env-db-dev.env
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=fam
-      - POSTGRES_PORT=5432
-      - POSTGRES_HOST=db
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - api_db_username=fam_proxy_api
-      - api_db_password=test
+      <<: *common-db-variables
+      POSTGRES_DB: fam
+      POSTGRES_HOST: db
     entrypoint:
       - bash
       - -c
-      -  cd /usr/src &&
+      -  cd /usr/src && echo DB USER is $api_db_username &&
         pip install -r requirements.txt  -r requirements-dev.txt &&
         cd api &&
         alembic -x url=postgresql+psycopg2://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB} upgrade head &&
