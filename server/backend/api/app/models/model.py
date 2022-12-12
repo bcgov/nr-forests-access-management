@@ -409,8 +409,8 @@ class FamGroup(Base):
 class FamRoleType(Base):
     __tablename__ = "fam_role_type"
 
-    ROLE_TYPE_ABSTRACT = 'A'
-    ROLE_TYPE_CONCRETE = 'C'
+    #ROLE_TYPE_ABSTRACT = 'A'
+    #ROLE_TYPE_CONCRETE = 'C'
 
     role_type_code = Column(
         String(2),

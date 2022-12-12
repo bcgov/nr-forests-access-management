@@ -70,7 +70,7 @@ def dbSession_famRoletype(
 @pytest.fixture(scope="function")
 def concreteRoleType() -> Dict[str, Union[str, datetime.datetime]]:
     roleType = {
-        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+        "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -88,7 +88,7 @@ def concreteRoleType_asModel(concreteRoleType) -> model.FamRoleType:
 @pytest.fixture(scope="function")
 def abstractRoleTypeRecord() -> Dict[str, Union[datetime.datetime, str]]:
     roleType = {
-        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+        "role_type_code": constants.RoleType.ROLE_TYPE_ABSTRACT,
         "description": "describe describe describe",
         "effective_date": datetime.datetime.now(),
     }
@@ -112,7 +112,7 @@ def concreteRoleData() -> Dict[str, str]:
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
         "create_user": constants.FAM_PROXY_API_USER,
-        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+        "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
 
@@ -129,7 +129,7 @@ def concreteRoleData2() -> Dict[str, str]:
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
         "create_user": constants.FAM_PROXY_API_USER,
-        "role_type_code": model.FamRoleType.ROLE_TYPE_CONCRETE,
+        "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }
     yield roleData
 
@@ -146,7 +146,7 @@ def abstractRoleData() -> Dict[str, str]:
         "role_name": "FAM_ABS_ROLE",
         "role_purpose": "FAM Testing abstract role",
         "create_user": constants.FAM_PROXY_API_USER,
-        "role_type_code": model.FamRoleType.ROLE_TYPE_ABSTRACT,
+        "role_type_code": constants.RoleType.ROLE_TYPE_ABSTRACT,
     }
     yield roleData
 

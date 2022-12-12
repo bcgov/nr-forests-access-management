@@ -47,208 +47,236 @@ class MigrationFilePaths:
     """
 
     def __init__(self):
-        self.migrationFilePrefix = "V"
+        self.migration_file_prefix = "V"
 
-    def getAlembicIniFilePath(self):
-        alembicPath = os.path.realpath(
+    def get_alembic_ini_file_path(self):
+        alembic_path = os.path.realpath(
             os.path.join(os.path.dirname(__file__), "..", "alembic.ini")
         )
-        return alembicPath
+        return alembic_path
 
-    def getAlembicDir(self):
+    def get_alembic_dir(self):
         """gets the directory taht contains the alembic.ini... the directory
         from which alembic commands need to be run.
 
         :return: _description_
         :rtype: _type_
         """
-        alembicDir = os.path.realpath(
-            os.path.join(
-                os.path.dirname(__file__), ".."))
-        return alembicDir
+        alembic_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
+        return alembic_dir
 
-    def getAlembicVersionFromMigration(self, alembicMigrationFilePath):
-        fileName = os.path.basename(alembicMigrationFilePath)
+    def get_alembic_version_from_migration(self, alembic_migration_file_path):
+        file_name = os.path.basename(alembic_migration_file_path)
 
-        alembicVersion = fileName[: fileName.find("_")]
-        LOGGER.debug(f"alembicVersion: {alembicVersion}")
-        return alembicVersion
+        alembic_version = file_name[: file_name.find("_")]
+        LOGGER.debug(f"alembic_version: {alembic_version}")
+        return alembic_version
 
-    def getFlywayFilePath(self, alembicMigrationFilePath):
+    def get_flyway_file_path(self, alembic_migration_file_path):
         """remove the .py extension
         add and extra _ character after the versions string
         add a .sql suffix
         append the flyway directory to the path
 
-        :param alembicMigrationFilePath: _description_
-        :type alembicMigrationFilePath: _type_
+        :param alembic_migration_file_path: _description_
+        :type alembic_migration_file_path: _type_
         """
-        flywayFile = os.path.splitext(alembicMigrationFilePath)[0]
-        loc = flywayFile.find("_")
-        flywayFile = flywayFile[0:loc] + "_" + flywayFile[loc:] + ".sql"
-        flywayDir = self.getFlywayMigrationDirectory()
-        LOGGER.debug(f"flyway file: {flywayFile}")
-        flywayFileWithPath = os.path.join(flywayDir, flywayFile)
-        LOGGER.debug(f"flywayFileWithPath: {flywayFileWithPath}")
-        return flywayFileWithPath
+        flyway_file = os.path.splitext(alembic_migration_file_path)[0]
+        loc = flyway_file.find("_")
+        flyway_file = flyway_file[0:loc] + "_" + flyway_file[loc:] + ".sql"
+        flyway_dir = self.get_flyway_migration_directory()
+        LOGGER.debug(f"flyway file: {flyway_file}")
+        flyway_file_with_path = os.path.join(flyway_dir, flyway_file)
+        LOGGER.debug(f"flyway_file_with_path: {flyway_file_with_path}")
+        return flyway_file_with_path
 
-    def getAlembicMigrationFile(self):
+    def get_alembic_migration_file(self):
         """iterates through the files in the alembic version directory and
         returns a list of files that match the expected naming convension.
 
         :return: list of alembic version files
         :rtype: list
         """
-        versionDir = self.getAlembicVersionDir()
-        filesInVersionDir = os.listdir(versionDir)
-        versionRegex = re.compile(f"^{self.migrationFilePrefix}\d+_.*") # noqa
-        versionFiles = []
-        for versionFile in filesInVersionDir:
-            if versionRegex.match(versionFile):
-                versionFiles.append(versionFile)
-        print(f"versionFiles: {versionFiles}")
-        return versionFiles
+        version_dir = self.get_alembic_version_dir()
+        files_in_version_dir = os.listdir(version_dir)
+        version_regex = re.compile(f"^{self.migration_file_prefix}\d+_.*")  # noqa
+        version_files = []
+        for version_file in files_in_version_dir:
+            if version_regex.match(version_file):
+                version_files.append(version_file)
+        LOGGER.debug(f"version_files: {version_files}")
+        return version_files
 
-    def getPreviousAlembicVersionFromMigration(self, alembicMigrationFilePath):
-        curVer = self.getAlembicVersionFromMigration(alembicMigrationFilePath)
-        if curVer == f"{self.migrationFilePrefix}1":
+    def get_previous_alembic_version_from_migration(self, alembic_migration_file_path):
+        cur_ver = self.get_alembic_version_from_migration(alembic_migration_file_path)
+        if cur_ver == f"{self.migration_file_prefix}1":
             return None
-        prevVerNum = int(curVer.replace(self.migrationFilePrefix, ""))
-        prevVerNum -= 1
-        prevVer = f"{self.migrationFilePrefix}{prevVerNum}"
-        return prevVer
+        prev_ver_num = int(cur_ver.replace(self.migration_file_prefix, ""))
+        prev_ver_num -= 1
+        prev_ver = f"{self.migration_file_prefix}{prev_ver_num}"
+        return prev_ver
 
-    def getAlembicVersionDir(self):
+    def get_alembic_version_dir(self):
         """calculates the expected path to where the alembic migration version
         files should be located relative to the location of this file
 
         :return: path to the alembic version directory
         :rtype: str / path
         """
-        return os.path.realpath(
-            os.path.join(
-                os.path.dirname(__file__), "versions"))
+        return os.path.realpath(os.path.join(os.path.dirname(__file__), "versions"))
 
-    def getFlywayMigrationDirectory(self):
-        flywayDir = os.path.realpath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "..",
-                "..",
-                "..",
-                "flyway",
-                "sql")
+    def get_flyway_migration_directory(self):
+        flyway_dir = os.path.realpath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", "flyway", "sql")
         )
-        return flywayDir
+        return flyway_dir
 
-    def flywayMigrationExists(self, alembicMigrationFilePath):
+    def flyway_migration_exists(self, alembic_migration_file_path):
         """returns a boolean indicating if a flyway migration exists that
         corresponds with the supplied alembic migration file
 
-        :param alembicMigrationFilePath: _description_
-        :type alembicMigrationFilePath: _type_
+        :param alembic_migration_file_path: _description_
+        :type alembic_migration_file_path: _type_
         """
-        flywayFile = self.getFlywayFilePath(alembicMigrationFilePath)
-        LOGGER.debug(f"flywayFile: {flywayFile}")
-        return os.path.exists(flywayFile)
+        flyway_file = self.get_flyway_file_path(alembic_migration_file_path)
+        LOGGER.debug(f"flyway_file: {flyway_file}")
+        return os.path.exists(flyway_file)
+
+    def flyway_migration_version_exists(self, version: str) -> bool:
+        # get the 12 from V12 (version)
+        alembic_version_int = version[1:]
+        LOGGER.debug(f"alembic version int: {alembic_version_int}")
+        flyway_dir = self.get_flyway_migration_directory()
+        # get all the migration files
+        flyway_migration_files = [
+            f
+            for f in os.listdir(flyway_dir)
+            if os.path.isfile(os.path.join(flyway_dir, f))
+        ]
+        flyway_version_ints = []
+        # get the version numbers found in the flyway directory
+        for migration_file in flyway_migration_files:
+            migration_version = migration_file.split("__")[0][1:]
+            LOGGER.debug(f"migration_version: {migration_version}")
+            flyway_version_ints.append(migration_version)
+        # check to see if the version number for alembic exists in the versions
+        # just extracted from flyway migration files
+        flyway_version_exists = False
+        if alembic_version_int in flyway_version_ints:
+            flyway_version_exists = True
+        return flyway_version_exists
 
 
 class CreateFlywayMigraions:
     def __init__(self):
-        self.pathUtil = MigrationFilePaths()
+        self.path_utile = MigrationFilePaths()
 
-    def createFlywayMigrations(self):
+    def create_flyway_migrations(self):
         """
         iterates through the list of migrations in the alembic directory
         if a corresponding migration for flyway doesn't exist calls methods to
         create it
         """
-        alembicMigrations = self.pathUtil.getAlembicMigrationFile()
-        for alembicMigration in alembicMigrations:
-            if not self.pathUtil.flywayMigrationExists(alembicMigration):
-                self.createFlywayMigration(alembicMigration)
+        alembic_migrations = self.path_utile.get_alembic_migration_file()
+        for alembic_migration in alembic_migrations:
+            alembic_version = self.path_utile.get_alembic_version_from_migration(
+                alembic_migration
+            )
+            if not self.path_utile.flyway_migration_exists(alembic_migration):
+                if self.path_utile.flyway_migration_version_exists(alembic_version):
+                    msg = (
+                        f"A migration file for version {alembic_version}  " +
+                        "already exists in the flyway migration file directory"
+                    )
+                    raise ExistingFlywayMigrationError(msg)
+                LOGGER.info(
+                    f"creating a flyway migraiton for {alembic_migration}")
+                self.create_flyway_migration(alembic_migration)
 
-    def createFlywayMigration(self, alembicMigrationFilePath):
+    def create_flyway_migration(self, alembic_migration_file_path):
         """recieves an input alembic file and creates a corresponding flyway
         migration.
 
-        :param alembicMigrationFilePath: _description_
-        :type alembicMigrationFilePath: _type_
+        :param alembic_migration_file_path: _description_
+        :type alembic_migration_file_path: _type_
         """
-        LOGGER.debug(f"alembicMigrationFilePath: {alembicMigrationFilePath}")
+        LOGGER.debug(f"alembic_migration_file_path: {alembic_migration_file_path}")
         # extract the previous and the current version from the migration
         # can get migrations either from the names of the files or by
         # running `alembic show <version>` example: `alembic show V1`
         #
         # run the alembic migration
         # alembic upgrade <prev ver>:<cur ver> --sql > <flyway migration file>
-        alembicVersion = self.pathUtil.getAlembicVersionFromMigration(
-            alembicMigrationFilePath
+        alembic_version = self.path_utile.get_alembic_version_from_migration(
+            alembic_migration_file_path
         )
-        prevAlembicVersion = \
-            self.pathUtil.getPreviousAlembicVersionFromMigration(
-                alembicMigrationFilePath
+        prev_alembic_version = \
+            self.path_utile.get_previous_alembic_version_from_migration(
+                alembic_migration_file_path
             )
-        flywayMigrationFile = \
-            self.pathUtil.getFlywayFilePath(alembicMigrationFilePath)
+        flyway_migration_file = self.path_utile.get_flyway_file_path(
+            alembic_migration_file_path
+        )
         # line =
         LOGGER.debug(f"{'-'*40}")
-        LOGGER.debug(f"current alembic version: {alembicVersion}")
-        LOGGER.debug(f"previous alembic version: {prevAlembicVersion}")
-        LOGGER.debug(f"flywayMigrationFile: {flywayMigrationFile}")
+        LOGGER.debug(f"current alembic version: {alembic_version}")
+        LOGGER.debug(f"previous alembic version: {prev_alembic_version}")
+        LOGGER.debug(f"flyway_migration_file: {flyway_migration_file}")
 
-        if not prevAlembicVersion:
+        if not prev_alembic_version:
             # cli alembic migration command:
             # alembic upgrade <version> --sql > <flywayfile>
-            alembicArgs = alembicVersion
+            alembic_args = alembic_version
         else:
             #  alembic upgrade <prevver>:<curver> --sql <flywayfile>
-            alembicArgs = prevAlembicVersion + ":" + alembicVersion
-        self.alembic2Flyway(alembicArgs, flywayMigrationFile)
+            alembic_args = prev_alembic_version + ":" + alembic_version
+        self.alembic_to_flyway(alembic_args, flyway_migration_file)
 
-    def alembic2Flyway(self, inputAlembicArgs, outputFlyway):
+    def alembic_to_flyway(self, input_alembic_args, output_flyway):
         """could call this through the alembic api, but not sure how to capture
         the stream
 
         :param inputAlembic: _description_
         :type inputAlembic: _type_
-        :param outputFlyway: _description_
-        :type outputFlyway: _type_
+        :param output_flyway: _description_
+        :type output_flyway: _type_
         """
-        LOGGER.debug(f"outputFlyway: {outputFlyway}")
-        if os.path.exists(outputFlyway):
+        LOGGER.debug(f"output_flyway: {output_flyway}")
+        if os.path.exists(output_flyway):
             # don't want to EVER overwrite a flyway script, if need to
             # overwrite one it should be deleted manually assuming that it
             # hasn't been run through the pipeline yet
-            msg = f"The input alembic file: {inputAlembicArgs} aligns " + \
-                  "with the corresponding flyway migration file: " + \
-                  f"{outputFlyway}  which already exists!"
+            msg = (
+                f"The input alembic file: {input_alembic_args} aligns " +
+                "with the corresponding flyway migration file: " +
+                f"{output_flyway}  which already exists!"
+            )
             raise FileExistsError(msg)
 
         # first arg should be to the alembic config
-        iniFile = self.pathUtil.getAlembicIniFilePath()
-        config = alembic.config.Config(iniFile)
-        LOGGER.debug(f"iniFile: {iniFile}")
-        LOGGER.debug(f"inputAlembicArgs: {inputAlembicArgs}")
-        # alembic.config.main(argv=alembicArgs)
-        # config.main(argv=alembicArgs)
-        entryDir = os.getcwd()
-        alembicDir = self.pathUtil.getAlembicDir()
-        os.chdir(alembicDir)
-        with open(outputFlyway, "w") as write_stream:
+        ini_file = self.path_utile.get_alembic_ini_file_path()
+        config = alembic.config.Config(ini_file)
+        LOGGER.debug(f"ini_file: {ini_file}")
+        LOGGER.debug(f"input_alembic_args: {input_alembic_args}")
+        entry_dir = os.getcwd()
+        alembic_dir = self.path_utile.get_alembic_dir()
+        os.chdir(alembic_dir)
+        with open(output_flyway, "w") as write_stream:
             with contextlib.redirect_stdout(write_stream):
-                command.upgrade(
-                    config=config,
-                    revision=inputAlembicArgs,
-                    sql=True)
+                command.upgrade(config=config, revision=input_alembic_args, sql=True)
 
-        os.chdir(entryDir)
+        os.chdir(entry_dir)
+
+
+class ExistingFlywayMigrationError(Exception):
+    pass
 
 
 if __name__ == "__main__":
     # simple logging config
     LOGGER = logging.getLogger()
-    LOGGER.setLevel(logging.DEBUG)
+    logLevel = logging.INFO
+    LOGGER.setLevel(logLevel)
     hndlr = logging.StreamHandler()
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s"
@@ -258,4 +286,4 @@ if __name__ == "__main__":
     LOGGER.debug("test")
 
     makeMigrate = CreateFlywayMigraions()
-    makeMigrate.createFlywayMigrations()
+    makeMigrate.create_flyway_migrations()
