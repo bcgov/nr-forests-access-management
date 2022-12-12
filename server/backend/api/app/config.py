@@ -15,16 +15,16 @@ def getDBString():
     return db_conn_string
 
 
-def getLocalDBString():
-    username = os.getenv("POSTGRES_USER", "postgres")
-    password = os.getenv("POSTGRES_PASSWORD", "postgres")
+def getLocalDBString() -> str:
+    username = os.getenv("api_db_username", "fam_proxy_api")
+    password = os.getenv("api_db_password", "test")
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")
-    db_conn_string: str
+    LOGGER.debug(f"api db user: {username}")
 
     # if the POSTGRESQL_USER env var is populated then use a postgres
-    if "POSTGRES_USER" in os.environ:
+    if "api_db_username" in os.environ:
         db_conn_string = (
             f"postgresql+psycopg2://{username}" +
             f":{password}@{host}:{port}/" +
