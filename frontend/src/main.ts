@@ -13,6 +13,8 @@ import router from '@/router'
 import './assets/styles/styles.scss'
 import 'bootstrap'
 
+import VueFinalModal from "vue-final-modal";
+
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -71,5 +73,6 @@ app.config.errorHandler = (err, instance, info) => {
 app
   .use(router)
   .use(PromiseDialog)
+  .use(VueFinalModal)
   .component('font-awesome-icon', FontAwesomeIcon)
   .mount('#app')

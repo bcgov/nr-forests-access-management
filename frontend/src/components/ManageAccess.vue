@@ -2,12 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { ApiService, type UserRoleAssignment } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
-import { DialogWrapper } from 'vue3-promise-dialog';
 import router from '@/router';
 import { POSITION, useToast } from 'vue-toastification';
 import { selectedApplication } from '@/services/ApplicationState';
 
-const apiService = new ApiService()
+import { $vfm } from 'vue-final-modal';
+import Dialog from '@/components/Dialog/Dialog.vue'
+
+const apiService = new ApiService();
 
 const userRoleAssignments = ref<UserRoleAssignment[]>([])
 
@@ -36,7 +38,7 @@ function showingMessage(): string {
   return "Showing " + visible + " of " + userRoleAssignments.value.length + " records"
 }
 
-function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
+function filterIncludes(userRoleAssignment: UserRoleAssignment): boolean {
 
   // TODO: Review/test this logic.
 
@@ -58,7 +60,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
     } else if (!(
       userRoleAssignment.role.client_number.forest_client_number.includes(forestClientFilter.value) ||
       userRoleAssignment.role.client_number.client_name.toLocaleUpperCase().includes(forestClientFilter.value.toLocaleUpperCase())
-      )) {
+    )) {
       return false
     }
   }
@@ -66,42 +68,35 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
 }
 
 async function tryDelete(assignment: UserRoleAssignment) {
-  let msg = `"Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`
+  let msg = `Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`
   if (assignment.role.client_number) {
     msg += ` for client ${assignment.role.client_number.forest_client_number}`
   }
   msg += '?'
-  /*
-  useToast().warning(msg, {
 
-    position: POSITION.TOP_CENTER,
-    timeout: false,
+  $vfm.show({
+    component: Dialog,
+    bind: {
+      title: 'Are you sure?',
+      message: msg,
+      confirmText: 'Yes, delete'
+    },
+    on: {
+      confirm() {
+        // Deletion confirmed.
+        try {
+          apiService.deleteUserRoleAssignment(assignment.user_role_xref_id)
 
-    pauseOnFocusLoss: true,
-    pauseOnHover: true,
-
-    // TODO: Add question mark icon https://fontawesome.com/docs/web/use-with/vue/add-icons
-    // E.g. icon: 'fas fa-rocket'
-    icon: true,
-
-    // TODO: Add yes/no actions using custom close button?
-    closeButton: "button",
-
+          userRoleAssignments.value = userRoleAssignments.value.filter(a => {
+            return !(a.user_role_xref_id == assignment.user_role_xref_id);
+          })
+          useToast().success(`Access deleted for user ${assignment.user.user_name}.`);
+        } finally {
+          $vfm.hideAll();
+        }
+      },
+    }
   })
-*/
-  // TODO: This confirmation dialog is ugly. Different from the demo, not sure why...
-  // confirmation dialog only displays properly if invoked in app setup.
-  if (await confirm(msg) ) {
-    // Deletion confirmed.
-    apiService.deleteUserRoleAssignment(assignment.user_role_xref_id)
-
-    // Remove item deleted from list.
-    userRoleAssignments.value = userRoleAssignments.value.filter(a => {
-      return !(a.user_role_xref_id == assignment.user_role_xref_id)
-    })
-
-    useToast().success(`Access deleted for user ${assignment.user.user_name}.`)
-  }
 }
 
 function save(result: boolean) {
@@ -126,66 +121,68 @@ function uncaughtError() {
 <template>
   <div>
 
-  <PageTitle :displaySelectedApplication=true></PageTitle>
+    <PageTitle :displaySelectedApplication=true></PageTitle>
 
-  <!-- TODO: Bootstrap styling. -->
-  <span>
-    <button class="btn btn-info"  @click="router.push('/grant')">Grant Access</button>
-  </span>
-  <br/>
-  <br/>
-  <template v-if="userRoleAssignments.length > 0">
-  <span><strong>Filter By:</strong></span>
-  <span>
-  Username <input placeholder="username" v-model="userFilter" size="12"/></span>
-  &nbsp;
-  <span>Role <input placeholder="role" v-model="roleFilter" size="12"/></span>
-  &nbsp;
-  <span>Forest Client <input placeholder="forest client" v-model="forestClientFilter" size="8"/></span>
-  &nbsp;
-  <span>{{showingMessage()}}</span>
-  <table style="max-width: 900px;margin-top:10px" class="table table-sm table-striped table-hover" aria-describedby="User assignments to application roles.">
-    <thead>
-      <tr>
-        <th scope="col">Username</th>
-        <th scope="col">Domain</th>
-        <th scope="col">Role</th>
-        <th scope="col">Forest Client</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-    <template v-for="assignment in userRoleAssignments">
-    <tr v-if="filterIncludes(assignment)">
-      <th scope="row">{{assignment.user.user_name}}</th>
-      <td>{{assignment.user.user_type.description}}</td>
-      <td>{{assignment.role.role_name}}</td>
-      <td v-if="assignment.role.client_number">{{assignment.role.client_number?.forest_client_number}}</td>
-      <td v-else></td>
-      <td><button class="btn btn-icon" @click="tryDelete(assignment)"><font-awesome-icon icon="fa-regular fa-trash-can" /></button></td>
-    </tr>
+    <!-- TODO: Bootstrap styling. -->
+    <span>
+      <button class="btn btn-info" @click="router.push('/grant')">Grant Access</button>
+    </span>
+    <br />
+    <br />
+    <template v-if="userRoleAssignments.length > 0">
+      <span><strong>Filter By:</strong></span>
+      <span>
+        Username <input placeholder="username" v-model="userFilter" size="12" /></span>
+      &nbsp;
+      <span>Role <input placeholder="role" v-model="roleFilter" size="12" /></span>
+      &nbsp;
+      <span>Forest Client <input placeholder="forest client" v-model="forestClientFilter" size="8" /></span>
+      &nbsp;
+      <span>{{ showingMessage() }}</span>
+      <table style="max-width: 900px;margin-top:10px" class="table table-sm table-striped table-hover"
+        aria-describedby="User assignments to application roles.">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Domain</th>
+            <th scope="col">Role</th>
+            <th scope="col">Forest Client</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="assignment in userRoleAssignments">
+            <tr v-if="filterIncludes(assignment)">
+              <th scope="row">{{ assignment.user.user_name }}</th>
+              <td>{{ assignment.user.user_type.description }}</td>
+              <td>{{ assignment.role.role_name }}</td>
+              <td v-if="assignment.role.client_number">{{ assignment.role.client_number?.forest_client_number }}</td>
+              <td v-else></td>
+              <td><button class="btn btn-icon" @click="tryDelete(assignment)"><font-awesome-icon
+                    icon="fa-regular fa-trash-can" /></button></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
     </template>
-    </tbody>
-  </table>
+    <template v-else>
+      No user role assignments found.
+    </template>
+  </div>
+  <br />
 
-  </template>
-  <template v-else>
-    No user role assignments found.
-  </template>
-</div>
-<br/>
-
-<p>Demo of toast messages:</p>
-<button class="btn btn-info" @click="save(true)">Save</button>
-&nbsp;
-<button class="btn btn-info" @click="save(false)">Validation failure</button>
-&nbsp;
-<button class="btn btn-info" @click="saveError()">Save Error</button>
-&nbsp;
-<button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
+  <p>Demo of toast messages:</p>
+  <button class="btn btn-info" @click="save(true)">Save</button>
+  &nbsp;
+  <button class="btn btn-info" @click="save(false)">Validation failure</button>
+  &nbsp;
+  <button class="btn btn-info" @click="saveError()">Save Error</button>
+  &nbsp;
+  <button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
 
 </template>
 
 <style lang="scss" scoped>
-   @import "@/assets/styles/styles.scss";
+@import "@/assets/styles/styles.scss";
 </style>
