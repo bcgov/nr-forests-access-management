@@ -1,95 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ApiService } from '@/services/ApiService';
+import { onMounted, ref } from 'vue'
+import { ApiService, type UserRoleAssignment } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
 import { DialogWrapper } from 'vue3-promise-dialog';
 import router from '@/router';
 import { POSITION, useToast } from 'vue-toastification';
+import { selectedApplication } from '@/services/ApplicationState';
 
 const apiService = new ApiService()
 
-interface UserRoleAssignment {
-  user_role_xref_id: number,
-  user: {
-    user_type: {
-      code: string,
-      description: string
-    }
-    user_name: string
-  },
-  role: {
-    role_name: string
-    role_type_code: string
-    client_number?: {
-      client_name: string,
-      forest_client_number: string
-    }
-  }
-
-}
-
 const userRoleAssignments = ref<UserRoleAssignment[]>([])
 
-// TODO: Eliminate test data
-userRoleAssignments.value = [
-    {
-        "user_role_xref_id": 1,
-        "user": {
-          "user_type": {
-            code: "I",
-            description: "IDIR",
-          },
-          "user_name": "foo-test"
-        },
-        "role": {
-            "role_name": "Reviewer",
-            "role_type_code": "C"
-        }
-    },
-    {
-        "user_role_xref_id": 2,
-        "user": {
-          "user_type": {
-            code: "B",
-            description: "BCeID",
-          },
-          "user_name": "bar-test"
-        },
-        "role": {
-            "role_name": "Submitter",
-            "role_type_code": "A",
-            "client_number": {
-                "client_name": "acme forestry",
-                "forest_client_number": "00009876"
-            }
-        }
-    },
-    {
-        "user_role_xref_id": 3,
-        "user": {
-          "user_type": {
-            code: "B",
-            description: "BCeID",
-          },
-          "user_name": "longer-user-id"
-        },
-        "role": {
-            "role_name": "Submitter",
-            "role_type_code": "A",
-            "client_number": {
-                "client_name": "Long name of forestry company",
-                "forest_client_number": "12345678"
-            }
-        }
-    }
+onMounted(async () => {
+  if (selectedApplication.value) {
+    userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
+    // TODO: Sort results by username, role, etc.
+  } else {
+    // TODO: Redirect to select application screen?
+  }
+})
 
-]
-
-
-// TODO: Need API
-// userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
-
-// TODO: Sort results by username.
 
 const userFilter = ref<string>()
 const roleFilter = ref<string>()
@@ -108,7 +38,7 @@ function showingMessage(): string {
 
 function filterIncludes(userRoleAssignment: UserRoleAssignment):boolean {
 
-  // TODO: Review this logic.
+  // TODO: Review/test this logic.
 
   if (userFilter.value != null) {
     if (!userRoleAssignment.user.user_name.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
@@ -230,7 +160,7 @@ function uncaughtError() {
       <th scope="row">{{assignment.user.user_name}}</th>
       <td>{{assignment.user.user_type.description}}</td>
       <td>{{assignment.role.role_name}}</td>
-      <td v-if="assignment.role.client_number">{{assignment.role.client_number?.client_name}} - {{assignment.role.client_number?.forest_client_number}}</td>
+      <td v-if="assignment.role.client_number">{{assignment.role.client_number?.forest_client_number}}</td>
       <td v-else></td>
       <td><button class="btn btn-icon" @click="tryDelete(assignment)"><font-awesome-icon icon="fa-regular fa-trash-can" /></button></td>
     </tr>

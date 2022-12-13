@@ -9,7 +9,7 @@ export class ApiService {
 
     constructor() {
         const environmentSettings = new EnvironmentSettings()
-        
+
         this.apiUrl = environmentSettings.getApiBaseUrl()
         // Allow for case when URL is specified without trailing slash
         if (!this.apiUrl.endsWith('/')) {
@@ -32,7 +32,7 @@ export class ApiService {
 
     async getApplicationRoles(applicationId: number | undefined):Promise<ApplicationRoleResponse[] | null> {
         if (!applicationId) return null
-        
+
         const url = this.apiUrl + `/fam_applications/${applicationId}/fam_roles`
         const res = await Http.get(url);
         if (res == undefined) {
@@ -53,6 +53,39 @@ export class ApiService {
         const created = res.data;
         return created;
     }
+
+    async getUserRoleAssignments(applicationId: number):Promise<UserRoleAssignment[]> {
+        if (!applicationId) return []
+
+        const url = this.apiUrl + `/fam_applications/${applicationId}/user_role_assignment`
+        const res = await Http.get(url);
+        if (res == undefined) {
+            throw new Error(`Failure retrieving user role assignments from ${url}`)
+        }
+        const apps = res.data;
+        return apps;
+    }
+
+}
+
+export interface UserRoleAssignment {
+    user_role_xref_id: number,
+    user: {
+      user_type: {
+        code: string,
+        description: string
+      }
+      user_name: string
+    },
+    role: {
+      role_name: string
+      role_type_code: string
+      client_number?: {
+        client_name: string,
+        forest_client_number: string
+      }
+    }
+
 }
 
 export interface GrantUserRoleRequest {
