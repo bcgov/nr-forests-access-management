@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import router from '@/router';
+import { useToast } from 'vue-toastification';
 import { ApiService, type UserRoleAssignment } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
-import router from '@/router';
-import { POSITION, useToast } from 'vue-toastification';
-import { selectedApplication } from '@/services/ApplicationState';
+import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
 import { $vfm } from 'vue-final-modal';
 import Dialog from '@/components/Dialog/Dialog.vue'
 
 const apiService = new ApiService();
 
-const userRoleAssignments = ref<UserRoleAssignment[]>([])
+// Initialize as null to indicate not yet loaded.
+const userRoleAssignments = ref<UserRoleAssignment[]>()
 
 onMounted(async () => {
-  if (selectedApplication.value) {
-    userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value?.application_id)
+  if (isApplicationSelected) {
+    userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value!.application_id)
     // TODO: Sort results by username, role, etc.
   } else {
     // TODO: Redirect to select application screen?
@@ -28,6 +29,9 @@ const roleFilter = ref<string>()
 const forestClientFilter = ref<string>()
 
 function showingMessage(): string {
+  if (userRoleAssignments.value == null) {
+    return ""
+  }
   let visible = 0;
   userRoleAssignments.value.forEach(assignment => {
     if (filterIncludes(assignment)) {
@@ -87,7 +91,7 @@ async function tryDelete(assignment: UserRoleAssignment) {
         try {
           apiService.deleteUserRoleAssignment(assignment.user_role_xref_id)
 
-          userRoleAssignments.value = userRoleAssignments.value.filter(a => {
+          userRoleAssignments.value = userRoleAssignments.value!.filter(a => {
             return !(a.user_role_xref_id == assignment.user_role_xref_id);
           })
           useToast().success(`Access deleted for user ${assignment.user.user_name}.`);
@@ -99,37 +103,18 @@ async function tryDelete(assignment: UserRoleAssignment) {
   })
 }
 
-function save(result: boolean) {
-  const toast = useToast();
-  if (result) {
-    toast.success("Save successful")
-  } else {
-    toast.warning("Invalid selection.")
-  }
-}
-
-function saveError() {
-  useToast().error("Save failed due to an error. Please try again. If the error persists then contact support.")
-}
-
-function uncaughtError() {
-  throw new Error("test uncaught error thrown from function")
-}
-
 </script>
 
 <template>
   <div>
-
     <PageTitle :displaySelectedApplication=true></PageTitle>
 
-    <!-- TODO: Bootstrap styling. -->
     <span>
       <button class="btn btn-info" @click="router.push('/grant')">Grant Access</button>
     </span>
     <br />
     <br />
-    <template v-if="userRoleAssignments.length > 0">
+    <template v-if="userRoleAssignments != null && userRoleAssignments.length > 0">
       <span><strong>Filter By:</strong></span>
       <span>
         Username <input placeholder="username" v-model="userFilter" size="12" /></span>
@@ -164,25 +149,17 @@ function uncaughtError() {
           </template>
         </tbody>
       </table>
-
+    </template>
+    <template v-else-if="userRoleAssignments == null">
+      Loading user role assignments...
     </template>
     <template v-else>
       No user role assignments found.
     </template>
   </div>
-  <br />
-
-  <p>Demo of toast messages:</p>
-  <button class="btn btn-info" @click="save(true)">Save</button>
-  &nbsp;
-  <button class="btn btn-info" @click="save(false)">Validation failure</button>
-  &nbsp;
-  <button class="btn btn-info" @click="saveError()">Save Error</button>
-  &nbsp;
-  <button class="btn btn-info" @click="uncaughtError()">Uncaught Error</button>
 
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
+  @import "@/assets/styles/styles.scss";
 </style>
