@@ -66,6 +66,17 @@ export class ApiService {
         return apps;
     }
 
+    async deleteUserRoleAssignment(userRoleAssignmentId: number):Promise<null> {
+        if (!userRoleAssignmentId) return null
+
+        const url = this.apiUrl + `/user_role_assignment/${userRoleAssignmentId}`
+        const res = await Http.delete(url);
+        if (res.status != 204) {
+            throw new Error(`Failure deleting user role assignment via ${url}`)
+        }
+        return null;
+    }
+
 }
 
 export interface UserRoleAssignment {

@@ -93,7 +93,7 @@ async function tryDelete(assignment: UserRoleAssignment) {
   // confirmation dialog only displays properly if invoked in app setup.
   if (await confirm(msg) ) {
     // Deletion confirmed.
-    // TODO: Call API
+    apiService.deleteUserRoleAssignment(assignment.user_role_xref_id)
 
     // Remove item deleted from list.
     userRoleAssignments.value = userRoleAssignments.value.filter(a => {
