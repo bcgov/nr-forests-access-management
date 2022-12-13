@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 
-import Toast, { useToast, POSITION, TYPE } from "vue-toastification"
+import Toast, { useToast, type PluginOptions, POSITION, TYPE } from "vue-toastification"
 import "vue-toastification/dist/index.css"
 
 import { Amplify } from 'aws-amplify'
@@ -29,33 +29,36 @@ Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App)
 
-app.use(Toast, {
-    // // Defaults for all toast messages
-    position: POSITION.TOP_RIGHT,
-    timeout: 5000, // milliseconds
-    newestOnTop: true,
+const toastOptions: PluginOptions = {
+  // // Defaults for all toast messages
+  position: POSITION.TOP_RIGHT,
+  timeout: 5000, // milliseconds
+  newestOnTop: true,
 
-    // Prevent having multiple messages with the same type and content from being displayed.
-    filterBeforeCreate: (toast, toasts) => {
-      if (toasts.filter(t => t.type === toast.type && t.content === toast.content).length !== 0) {
-        // Returning false discards the toast
-        return false;
-      }
-      return toast;
-    },
-
-    toastDefaults: {
-        // ToastOptions object for each type of toast
-        [TYPE.ERROR]: {
-            position: POSITION.TOP_CENTER,
-            timeout: false,
-        },
-        [TYPE.SUCCESS]: {
-            position: POSITION.TOP_RIGHT,
-            timeout: 4000,
-        }
+  // Prevent having multiple messages with the same type and content from being displayed.
+  filterBeforeCreate: (toast, toasts) => {
+    if (toasts.filter(t => t.type === toast.type && t.content === toast.content).length !== 0) {
+      // Returning false discards the toast
+      return false;
     }
-});
+    return toast;
+  },
+
+  toastDefaults: {
+      // ToastOptions object for each type of toast
+      [TYPE.ERROR]: {
+          position: POSITION.TOP_CENTER,
+          timeout: false,
+      },
+      [TYPE.SUCCESS]: {
+          position: POSITION.TOP_RIGHT,
+          timeout: 4000,
+      }
+  }
+}
+
+
+app.use(Toast, );
 
 app.config.errorHandler = (err, instance, info) => {
     // This can trigger on an uncaught error in a function.
