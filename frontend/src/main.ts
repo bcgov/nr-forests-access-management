@@ -5,7 +5,7 @@ import "vue-toastification/dist/index.css"
 
 import { Amplify } from 'aws-amplify'
 import awsExports from './aws-exports'
-import { PromiseDialog } from 'vue3-promise-dialog'
+import { vfmPlugin } from 'vue-final-modal'
 
 import App from '@/App.vue'
 import router from '@/router'
@@ -13,7 +13,6 @@ import router from '@/router'
 import './assets/styles/styles.scss'
 import 'bootstrap'
 
-import VueFinalModal from "vue-final-modal";
 
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -44,8 +43,8 @@ const toastOptions: PluginOptions = {
       return false;
     }
     return toast;
-  },
 
+  },
   toastDefaults: {
       // ToastOptions object for each type of toast
       [TYPE.ERROR]: {
@@ -58,9 +57,13 @@ const toastOptions: PluginOptions = {
       }
   }
 }
+app.use(Toast, toastOptions);
 
-
-app.use(Toast, );
+app.use(vfmPlugin({
+  key: '$vfm',
+  componentName: 'VueFinalModal',
+  dynamicContainerName: 'ModalsContainer'
+}))
 
 app.config.errorHandler = (err, instance, info) => {
     // This can trigger on an uncaught error in a function.
@@ -72,7 +75,5 @@ app.config.errorHandler = (err, instance, info) => {
 
 app
   .use(router)
-  .use(PromiseDialog)
-  .use(VueFinalModal)
   .component('font-awesome-icon', FontAwesomeIcon)
   .mount('#app')

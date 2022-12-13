@@ -6,8 +6,11 @@ import { ApiService, type UserRoleAssignment } from '@/services/ApiService';
 import PageTitle from '@/components/PageTitle.vue';
 import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
-import { $vfm } from 'vue-final-modal';
+// import { $vfm } from 'vue-final-modal';
 import Dialog from '@/components/Dialog/Dialog.vue'
+
+import { $vfm } from 'vue-final-modal'
+
 
 const apiService = new ApiService();
 
@@ -15,7 +18,7 @@ const apiService = new ApiService();
 const userRoleAssignments = ref<UserRoleAssignment[]>()
 
 onMounted(async () => {
-  if (isApplicationSelected) {
+  if (selectedApplication.value != null) {
     const list = await apiService.getUserRoleAssignments(selectedApplication.value!.application_id)
     userRoleAssignments.value = list.sort((first,second) => {
       const nameCompare = first.user.user_name.localeCompare(second.user.user_name);
@@ -25,6 +28,7 @@ onMounted(async () => {
     })
   } else {
     // No application selected so redirect to select application screen
+    // Unsure if this actually works...
     router.push("/application")
   }
 })
