@@ -16,13 +16,18 @@ const userRoleAssignments = ref<UserRoleAssignment[]>()
 
 onMounted(async () => {
   if (isApplicationSelected) {
-    userRoleAssignments.value = await apiService.getUserRoleAssignments(selectedApplication.value!.application_id)
-    // TODO: Sort results by username, role, etc.
+    const list = await apiService.getUserRoleAssignments(selectedApplication.value!.application_id)
+    userRoleAssignments.value = list.sort((first,second) => {
+      const nameCompare = first.user.user_name.localeCompare(second.user.user_name);
+      if (nameCompare != 0) return nameCompare
+      const roleCompare = first.role.role_name.localeCompare(second.role.role_name)
+      return roleCompare
+    })
   } else {
-    // TODO: Redirect to select application screen?
+    // No application selected so redirect to select application screen
+    router.push("/application")
   }
 })
-
 
 const userFilter = ref<string>()
 const roleFilter = ref<string>()
