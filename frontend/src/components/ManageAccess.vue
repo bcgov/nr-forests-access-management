@@ -53,8 +53,6 @@ function showingMessage(): string {
 
 function filterIncludes(userRoleAssignment: UserRoleAssignment): boolean {
 
-  // TODO: Review/test this logic.
-
   if (userFilter.value != null) {
     if (!userRoleAssignment.user.user_name.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
       return false
@@ -71,8 +69,9 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment): boolean {
     if (userRoleAssignment.role.client_number == null) {
       return false // If no forest client for the role then exclude this assignment when filtering by forest client
     } else if (!(
-      userRoleAssignment.role.client_number.forest_client_number.includes(forestClientFilter.value) ||
-      userRoleAssignment.role.client_number.client_name.toLocaleUpperCase().includes(forestClientFilter.value.toLocaleUpperCase())
+      String(userRoleAssignment.role.client_number.forest_client_number).includes(forestClientFilter.value)
+      // Once we add forest client name add in check on client name.
+      // || userRoleAssignment.role.client_number.client_name.toLocaleUpperCase().includes(forestClientFilter.value.toLocaleUpperCase())
     )) {
       return false
     }
