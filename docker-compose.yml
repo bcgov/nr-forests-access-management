@@ -48,6 +48,11 @@ services:
 
   fam-api:
     container_name: fam-api
+    environment:
+      - POSTGRES_DB=fam
+      - POSTGRES_HOST=fam-database
+      - api_db_username=fam_proxy_api
+      - api_db_password=test
     build:
       context: server
       dockerfile: Dockerfile
