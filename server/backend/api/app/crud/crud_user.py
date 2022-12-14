@@ -57,19 +57,19 @@ def get_user_by_domain_and_name(
     return fam_user
 
 
-def create_user(famUser: schemas.FamUser, db: Session):
+def create_user(fam_user: schemas.FamUser, db: Session):
     """used to add a new FAM user to the database
 
-    :param famUser: _description_
-    :type famUser: schemas.FamUser
+    :param fam_user: _description_
+    :type fam_user: schemas.FamUser
     :param db: _description_
     :type db: Session
     :return: _description_
     :rtype: _type_
     """
-    LOGGER.debug(f"Creating Fam_User: {famUser}")
+    LOGGER.debug(f"Creating Fam_User: {fam_user}")
 
-    fam_user_dict = famUser.dict()
+    fam_user_dict = fam_user.dict()
     db_item = models.FamUser(**fam_user_dict)
     db.add(db_item)
     db.flush()

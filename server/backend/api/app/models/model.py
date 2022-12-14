@@ -81,7 +81,7 @@ class FamForestClient(Base):
     __table_args__ = (
         PrimaryKeyConstraint("client_number_id", name="fam_for_cli_pk"),
         UniqueConstraint("forest_client_number", name="fam_for_cli_num_uk"),
-        UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
+        #UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
         {
             "comment": "A forest client is a business, individual, or agency that is "
             'identified as an entity that a user can have a privilege "on '
@@ -109,7 +109,8 @@ class FamForestClient(Base):
         index=True,
         comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client."
     )
-    client_name = Column(String(100), nullable=True, index=True)
+    # client_name = Column(String(100), nullable=True, index=True)  # noqa NOSONAR
+
     create_user = Column(
         String(30),
         nullable=False,

@@ -25,7 +25,7 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
 
 @router.post("", response_model=schemas.FamRoleGet)
 def create_fam_role(
-    famRole: schemas.FamRoleCreate, db: Session = Depends(dependencies.get_db)
+    fam_role: schemas.FamRoleCreate, db: Session = Depends(dependencies.get_db)
 ):
     """
     Add a role to FAM
@@ -33,7 +33,7 @@ def create_fam_role(
     query_data = None
     LOGGER.debug(f"running router ... {db}")
     try:
-        query_data = crud_role.create_role(famRole, db)
+        query_data = crud_role.create_role(fam_role, db)
         LOGGER.debug(f"query_data: {query_data}")
     except IntegrityError as e:
         LOGGER.debug(f"error: {e}")

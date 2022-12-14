@@ -47,7 +47,7 @@ def test_create_user(dbsession_fam_user_types, userdata_pydantic, delete_all_use
     user_before = crud_user.get_users(db)
     num_users_start = len(user_before)
     LOGGER.debug(f"userdata_pydantic: {userdata_pydantic}")
-    user = crud_user.create_user(famUser=userdata_pydantic, db=db)
+    user = crud_user.create_user(fam_user=userdata_pydantic, db=db)
     LOGGER.debug(f"created the user: {user}")
 
     # make sure the user that was created has the same guid as the supplied

@@ -1,4 +1,5 @@
-""" setup for testing
+'''
+setup for testing
 
 based loosely on this:
 https://fastapi.tiangolo.com/advanced/testing-database/
@@ -7,14 +8,12 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 :rtype: _type_
 :yield: _description_
 :rtype: _type_
-"""
-# flake8: ignore=F402
+''' # flake8: ignore=F402
 
 import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-# sys.path.append(os.path.dirname(__file__))
 
 import logging
 import sys
