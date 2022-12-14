@@ -9,11 +9,11 @@ from .. import schemas
 LOGGER = logging.getLogger(__name__)
 
 
-def getFamForestClient(
+def get_forest_client(
     db: Session, forest_client_number: str
 ) -> models.FamForestClient:
     LOGGER.debug(
-        "Forest Client - 'getFamForestClient' with forest_client_number: "
+        "Forest Client - 'get_forest_client' with forest_client_number: "
         f"{forest_client_number}."
     )
     return (
@@ -23,7 +23,7 @@ def getFamForestClient(
     )
 
 
-def createFamForestClient(famForestClient: schemas.FamForestClientCreate, db: Session):
+def create_forest_client(famForestClient: schemas.FamForestClientCreate, db: Session):
     LOGGER.debug(f"Creating Fam_Forest_Client with: {famForestClient}")
 
     fam_forest_client_dict = famForestClient.dict()
@@ -33,13 +33,13 @@ def createFamForestClient(famForestClient: schemas.FamForestClientCreate, db: Se
     return db_item
 
 
-def findOrCreate(db: Session, forest_client_number: str, client_name: str):
+def find_or_create(db: Session, forest_client_number: str, client_name: str):
     LOGGER.debug(
-        "Forest Client - 'findOrCreate' with forest_client_number: "
+        "Forest Client - 'find_or_create' with forest_client_number: "
         f"{forest_client_number}."
     )
 
-    fam_forest_client = getFamForestClient(db, forest_client_number)
+    fam_forest_client = get_forest_client(db, forest_client_number)
     if not fam_forest_client:
         LOGGER.debug(
             f"Forest Client with forest_client_number {forest_client_number} "
@@ -53,7 +53,7 @@ def findOrCreate(db: Session, forest_client_number: str, client_name: str):
                 "create_user": famConstants.FAM_PROXY_API_USER,
             }
         )
-        fam_forest_client = createFamForestClient(request_forest_client, db)
+        fam_forest_client = create_forest_client(request_forest_client, db)
         LOGGER.debug(f"New Forest_Client added: {fam_forest_client.client_number_id}.")
         return fam_forest_client
 

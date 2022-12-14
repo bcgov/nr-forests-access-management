@@ -9,7 +9,7 @@ from . import config
 
 LOGGER = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URL = config.getDBString()
+SQLALCHEMY_DATABASE_URL = config.get_db_string()
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=False)
 LOGGER.debug("database engine created!")

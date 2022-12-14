@@ -72,7 +72,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 @pytest.fixture(scope="function")
-def testClient_fixture(getApp: FastAPI) -> TestClient:
+def test_client_fixture(getApp: FastAPI) -> TestClient:
     """returns a requests object of the current app backed by a test
     database, with the objects defined in the model created in it.
 
@@ -126,7 +126,7 @@ def dbEngine() -> Engine:
 
 
 @pytest.fixture(scope="function")
-def dbSession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
+def dbsession(dbEngine, sessionObjects) -> Generator[sessionObjects, Any, None]:
 
     connection = dbEngine.connect()
     # transaction = connection.begin()

@@ -12,14 +12,16 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.get("", response_model=List[schemas.FamUserGet])
-def get_fam_users(db: Session = Depends(dependencies.get_db)):
+def get_users(db: Session = Depends(dependencies.get_db)):
     """
     List of different users that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    queryData = crud_user.getFamUsers(db)
-    return queryData
+    query_data = crud_user.get_users(db)
+    return query_data
+
 
 @router.post("", response_model=schemas.FamUserGet)
 def create_fam_user(
@@ -28,11 +30,11 @@ def create_fam_user(
     """
     Add a user to FAM
     """
-    queryData = None
+    query_data = None
     LOGGER.debug(f"running router ... {db}")
     try:
-        queryData = crud_user.createFamUser(famUser, db)
-        LOGGER.debug(f"queryData: {queryData}")
+        query_data = crud_user.create_user(famUser, db)
+        LOGGER.debug(f"queryData: {query_data}")
     except IntegrityError as e:
         LOGGER.debug(f"error: {e}")
         raise HTTPException(status_code=422, detail=str(e))
@@ -40,31 +42,29 @@ def create_fam_user(
     #     logging.debug("------ ERROR ------ ")
     #     logging.exception(e)
 
-    return queryData
+    return query_data
 
-@router.delete(
-    "/{user_id}", response_model=schemas.FamUser
-)
+
+@router.delete("/{user_id}", response_model=schemas.FamUser)
 def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     """
     Delete a FAM user
     """
 
-    user = crud_user.getFamUser(user_id=user_id, db=db)
+    user = crud_user.get_user(user_id=user_id, db=db)
     LOGGER.debug(f"user: {user}")
     if not user:
         raise HTTPException(status_code=404, detail=f"user_id={user_id} does not exist")
-    user = crud_user.deleteUser(db=db, user_id=user_id)
+    user = crud_user.delete_user(db=db, user_id=user_id)
     return user
 
-@router.get(
-    "/{user_id}", response_model=schemas.FamUserGet
-)
+
+@router.get("/{user_id}", response_model=schemas.FamUserGet)
 def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     """
     Get a FAM user
     """
     LOGGER.debug(f"userid is: {user_id}")
-    user = crud_user.getFamUser(user_id=user_id, db=db)
+    user = crud_user.get_user(user_id=user_id, db=db)
     LOGGER.debug(f"userdata: {user}")
     return user

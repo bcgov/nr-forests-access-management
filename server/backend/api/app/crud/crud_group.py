@@ -5,7 +5,7 @@ from api.app.models import model as models
 from sqlalchemy.orm import Session
 
 from .. import schemas
-from . import crudUtils as crudUtils
+from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,8 +19,8 @@ def createFamGroup(famGroup: schemas.FamGroupPost, db: Session):
     :return: _description_
     :rtype: _type_
     """
-    pkColName = crudUtils.getPrimaryKey(models.FamGroup)
-    nextVal = crudUtils.getNext(models.FamGroup, db)
+    pkColName = crud_utils.get_primary_key(models.FamGroup)
+    nextVal = crud_utils.get_next(models.FamGroup, db)
     famGroupDict = famGroup.dict()
     famGroupDict[pkColName] = nextVal
 
