@@ -34,7 +34,7 @@ def test_get_next(dbsession_fam_users, userdata2_pydantic, delete_all_users):
     assert next_value_before > 0
 
     # now add record and test again that the number is greater
-    crud_user.create_user(famUser=userdata2_pydantic, db=db)
+    crud_user.create_user(fam_user=userdata2_pydantic, db=db)
 
     next_value_after = crud_utils.get_next(db=db, model=fam_user_model)
     assert next_value_after > next_value_before
