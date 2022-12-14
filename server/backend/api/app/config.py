@@ -9,12 +9,12 @@ LOGGER = logging.getLogger(__name__)
 
 def get_db_string(use_postgres=False):
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
-    db_conn_string = getAWSDBString() if on_aws else getLocalDBString(use_postgres)
+    db_conn_string = get_aws_db_string() if on_aws else get_local_db_string(use_postgres)
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
 
-def get_local_db_string():
+def get_local_db_string(use_postgres=False):
     if use_postgres:
         username = os.getenv("POSTGRES_USER", "postgres")
         password = os.getenv("POSTGRES_PASSWORD", "postgres")
