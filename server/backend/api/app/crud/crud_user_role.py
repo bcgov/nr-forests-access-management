@@ -144,7 +144,7 @@ def construct_forest_client_role_name(parent_role_name: str, forest_client_numbe
 
 
 def construct_forest_client_role_purpose(
-    parent_role_purpose: str, client_name: str, forest_client_number: str
+    parent_role_purpose: str, forest_client_number: str
 ):
     LOGGER.debug(f"parent_role_purpose: {parent_role_purpose}")
     client_purpose = f"{parent_role_purpose} for {forest_client_number})"
@@ -162,7 +162,7 @@ def find_or_create_forest_client_child_role(
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
     forest_client = crud_forest_client.find_or_create(
-        db, forest_client_number, client_name
+        db, forest_client_number
     )
 
     forest_client_role_name = construct_forest_client_role_name(
@@ -188,9 +188,8 @@ def find_or_create_forest_client_child_role(
                     "forest_client_number": forest_client_number,
                     "role_name": forest_client_role_name,
                     "role_purpose": construct_forest_client_role_purpose(
-                        parent_role.role_purpose,
-                        #forest_client.client_name,
-                        forest_client_number,
+                        parent_role_purpose=parent_role.role_purpose,
+                        forest_client_number=forest_client_number
                     ),
                     "create_user": famConstants.FAM_PROXY_API_USER,
                     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
