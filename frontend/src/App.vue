@@ -12,6 +12,7 @@
   <main class="container pt-0 mt-2">
     <Breadcrumb />
     <RouterView />
+    <modals-container></modals-container>
   </main>
 
   <Footer></Footer>
