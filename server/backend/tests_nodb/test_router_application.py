@@ -3,7 +3,7 @@ import starlette.testclient
 from api.app.main import apiPrefix
 import jose
 from time import time
-from Crypto.PublicKey import RSA
+# from Crypto.PublicKey import RSA
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -39,27 +39,27 @@ def test_get_application_success(
     assert data == []
 
 
-def test_create_test_jwt():
-    # key for demonstration purposes
-    key = RSA.generate(2048)
+# def test_create_test_jwt():
+#     # key for demonstration purposes
+#     key = RSA.generate(2048)
 
-    claims = {
-        'iss': 'http://www.example.com',
-        'exp': int(time()) + 3600,
-        'sub': 42,
-    }
+#     claims = {
+#         'iss': 'http://www.example.com',
+#         'exp': int(time()) + 3600,
+#         'sub': 42,
+#     }
 
-    # encrypt claims using the public key
-    pub_jwk = {'k': key.publickey().exportKey('PEM')}
+#     # encrypt claims using the public key
+#     pub_jwk = {'k': key.publickey().exportKey('PEM')}
 
-    jwe = jose.encrypt(claims, pub_jwk)
-    jwt = jose.serialize_compact(jwe)
+#     jwe = jose.encrypt(claims, pub_jwk)
+#     jwt = jose.serialize_compact(jwe)
 
 
-    # decrypt on the other end using the private key
-    priv_jwk = {'k': key.exportKey('PEM')}
+#     # decrypt on the other end using the private key
+#     priv_jwk = {'k': key.exportKey('PEM')}
 
-    jwt = jose.decrypt(jose.deserialize_compact(jwt), priv_jwk)
+#     jwt = jose.decrypt(jose.deserialize_compact(jwt), priv_jwk)
 
 
 
