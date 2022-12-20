@@ -12,3 +12,10 @@ sqlacodegen==3.0.0rc1
 
 # using this for the alembic migrations
 python-dotenv==0.21.0
+
+# used to mock out sqlalchemy for testing
+mock==4.0.3
+mock-alchemy==0.2.5
+
+# used to create test JWT
+Crypto==1.4.1
