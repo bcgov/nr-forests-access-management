@@ -1,19 +1,43 @@
 import logging
 from jose import jwt
 from fastapi import HTTPException
+import json
+from urllib.request import urlopen
 
 LOGGER = logging.getLogger(__name__)
+
+ERROR_TOKEN_DECODE = "Error decoding token headers."
+
+
+def get_rsa_key(kid):
+
+    jsonurl = urlopen("https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_5BOn4rGL8/.well-known/jwks.json")
+    jwks = json.loads(jsonurl.read().decode('utf-8'))
+
+    """Return the matching RSA key for kid, from the jwks array."""
+    rsa_key = {}
+    for key in jwks['keys']:
+        if key['kid'] == kid:
+            rsa_key = {
+                'kty': key['kty'],
+                'kid': key['kid'],
+                'use': key['use'],
+                'n': key['n'],
+                'e': key['e']
+            }
+    return rsa_key
+
 
 
 def validate_token(token, get_rsa_key_method):
 
     try:
         unverified_header = jwt.get_unverified_header(token)
-    except jwt.JWTError:
-        LOGGER.debug("Caught exception jwt.JWTError")
+    except jwt.JWTError as err:
+        LOGGER.debug(err)
         raise HTTPException(
             status_code=401,
-            detail="Not authenticated",
+            detail=ERROR_TOKEN_DECODE,
             headers={"WWW-Authenticate": "Bearer"},
         )
     if unverified_header['alg'] != 'RS256':
@@ -81,7 +105,8 @@ def validate_token(token, get_rsa_key_method):
                                 'Token has expired'},
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.JWTClaimsError:
+    except jwt.JWTClaimsError as err:
+        LOGGER.debug(err)
         LOGGER.debug("Caught exception incorrect issuer")
         raise HTTPException(
             status_code=401,
