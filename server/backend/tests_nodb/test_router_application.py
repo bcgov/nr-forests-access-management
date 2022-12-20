@@ -1,9 +1,9 @@
 import logging
 import starlette.testclient
 from api.app.main import apiPrefix
-import jose
+from jose import jws
 from time import time
-# from Crypto.PublicKey import RSA
+from Crypto.PublicKey import RSA
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -14,6 +14,7 @@ def test_get_application_noauthentication_failure(
     response = test_client_fixture.get(endPoint)
     LOGGER.debug(f"endPoint: {endPoint}")
     LOGGER.debug(f"response {response}")
+
     assert response.status_code == 401
 
 
@@ -39,30 +40,25 @@ def test_get_application_success(
     assert data == []
 
 
-# def test_create_test_jwt():
-#     # key for demonstration purposes
-#     key = RSA.generate(2048)
+def test_get_application_bad_client(
+        test_client_fixture: starlette.testclient.TestClient,
+        test_rsa_key):
 
-#     claims = {
-#         'iss': 'http://www.example.com',
-#         'exp': int(time()) + 3600,
-#         'sub': 42,
-#     }
+    # Create the test JWT
+    claims = {
+        'iss': 'http://www.example.com',
+        'exp': int(time()) + 3600,
+        'sub': 42,
+    }
+    token = jws.sign(claims, test_rsa_key, algorithm='RS256', headers={"kid": "12345"})
 
-#     # encrypt claims using the public key
-#     pub_jwk = {'k': key.publickey().exportKey('PEM')}
-
-#     jwe = jose.encrypt(claims, pub_jwk)
-#     jwt = jose.serialize_compact(jwe)
-
-
-#     # decrypt on the other end using the private key
-#     priv_jwk = {'k': key.exportKey('PEM')}
-
-#     jwt = jose.decrypt(jose.deserialize_compact(jwt), priv_jwk)
-
-
-
+    response = test_client_fixture.get(f"{endPoint}", headers={"Authorization": f"Bearer {token}"})
+    LOGGER.debug(f"endPoint: {endPoint}")
+    LOGGER.debug(f"response {response}")
+    assert response.status_code == 204
+    data = response.json()
+    LOGGER.debug(f"data: {data}")
+    assert data == []
 
 # def test_get_application_invalid_signature_failure
 # def test_get_application_bad_issuer
