@@ -15,7 +15,7 @@ from .utils import create_jwt_token, create_jwt_claims, assert_error_response
 from Crypto.PublicKey import RSA
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/fam_applications"
+endPoint = f"{apiPrefix}/fam_applications/secure"
 
 
 def test_get_application_success(

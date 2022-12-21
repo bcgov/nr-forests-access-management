@@ -3,7 +3,6 @@ import logging
 from typing import List
 from api.app.crud import crud_application
 from fastapi import APIRouter, Depends, HTTPException, Response
-from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.orm import Session
 from .. import dependencies, schemas, jwt_validation
 
@@ -12,20 +11,28 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl="https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/authorize",
-    tokenUrl="https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/token",
-    scopes=None,
-    scheme_name='26tltjjfe7ktm4bte7av998d78',
-    auto_error=True,
-)
-
 
 @router.get("", response_model=List[schemas.FamApplication], status_code=200)
 def get_applications(response: Response,
-                     db: Session = Depends(dependencies.get_db),
-                     token: str = Depends(oauth2_scheme),
-                     get_rsa_key_method: callable = Depends(dependencies.get_rsa_key_method)):
+                     db: Session = Depends(dependencies.get_db)):
+
+    """
+    List of different applications that are administered by FAM
+    """
+    LOGGER.debug(f"running router ... {db}")
+    query_data = crud_application.get_applications(db)
+    if len(query_data) == 0:
+        response.status_code = 204
+    return query_data
+
+
+# This is a temporary endpoint to validate the security before applying everywhere
+@router.get("/secure", response_model=List[schemas.FamApplication], status_code=200)
+def get_applications_secure(response: Response,
+                            db: Session = Depends(dependencies.get_db),
+                            token: str = Depends(jwt_validation.oauth2_scheme),
+                            get_rsa_key_method: callable =
+                            Depends(dependencies.get_rsa_key_method)):
 
     payload = jwt_validation.validate_token(token, get_rsa_key_method)
     LOGGER.debug(payload)
@@ -116,5 +123,3 @@ def get_fam_application_user_role_assignment(
     LOGGER.debug(f"app_user_role_assignment: {app_user_role_assignment}")
 
     return app_user_role_assignment
-
-

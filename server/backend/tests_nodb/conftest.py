@@ -31,25 +31,27 @@ def test_client_fixture() -> TestClient:
 
 
 @pytest.fixture(scope="function")
-def test_rsa_key() -> TestClient:
+def test_rsa_key():
 
     new_key = RSA.generate(2048)
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[dependencies.get_rsa_key_method] = override_get_rsa_key_method
+    app.dependency_overrides[dependencies.get_rsa_key_method] = \
+        override_get_rsa_key_method
 
     return new_key.exportKey("PEM")
 
 
 @pytest.fixture(scope="function")
-def test_rsa_key_missing() -> TestClient:
+def test_rsa_key_missing():
 
     new_key = RSA.generate(2048)
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[dependencies.get_rsa_key_method] = override_get_rsa_key_method_none
+    app.dependency_overrides[dependencies.get_rsa_key_method] = \
+        override_get_rsa_key_method_none
 
     return new_key.exportKey("PEM")
 

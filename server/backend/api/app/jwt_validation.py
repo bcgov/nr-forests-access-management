@@ -1,8 +1,12 @@
 import logging
 from jose import jwt
 from fastapi import HTTPException
+#, Depends
 import json
 from urllib.request import urlopen
+from .config import get_user_pool_domain_name, get_aws_region, \
+    get_user_pool_id, get_oidc_client_id
+from fastapi.security import OAuth2AuthorizationCodeBearer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,15 +19,39 @@ ERROR_EXPIRED_TOKEN = "invalid_token_expired"
 ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
 
+aws_region = get_aws_region()
+user_pool_id = get_user_pool_id()
+user_pool_domain_name = get_user_pool_domain_name()
+client_id = get_oidc_client_id()
+
+oauth2_scheme = OAuth2AuthorizationCodeBearer(
+    authorizationUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/authorize",
+    tokenUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/token",
+    scopes=None,
+    scheme_name=client_id,
+    auto_error=True,
+)
+
+_jwks = None
+
+
+def init_jwks():
+    aws_region = get_aws_region()
+    user_pool_id = get_user_pool_id()
+    jsonurl = urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json")
+    global _jwks
+    _jwks = json.loads(jsonurl.read().decode('utf-8'))
+
 
 def get_rsa_key(kid):
 
-    jsonurl = urlopen("https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_5BOn4rGL8/.well-known/jwks.json")
-    jwks = json.loads(jsonurl.read().decode('utf-8'))
+    global _jwks
+    if not _jwks:
+        init_jwks()
 
     """Return the matching RSA key for kid, from the jwks array."""
     rsa_key = {}
-    for key in jwks['keys']:
+    for key in _jwks['keys']:
         if key['kid'] == kid:
             rsa_key = {
                 'kty': key['kty'],
@@ -80,12 +108,15 @@ def validate_token(token, get_rsa_key_method):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    aws_region = get_aws_region()
+    user_pool_id = get_user_pool_id()
+
     try:
         jwt.decode(
             token,
             rsa_key,
             algorithms='RS256',
-            issuer="https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_5BOn4rGL8"
+            issuer=f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}"
         )
 
     except jwt.ExpiredSignatureError:
@@ -113,7 +144,7 @@ def validate_token(token, get_rsa_key_method):
 
     claims = jwt.get_unverified_claims(token)
 
-    if claims['client_id'] != "26tltjjfe7ktm4bte7av998d78":
+    if claims['client_id'] != get_oidc_client_id():
         raise HTTPException(
             status_code=401,
             detail={'code': ERROR_INVALID_CLIENT,

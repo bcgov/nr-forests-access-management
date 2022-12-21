@@ -6,7 +6,6 @@ import json
 LOGGER = logging.getLogger(__name__)
 
 
-
 def get_db_string(use_postgres=False):
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     db_conn_string = get_aws_db_string() if on_aws else get_local_db_string(use_postgres)
@@ -61,12 +60,27 @@ def get_aws_db_string():
     return db_conn_string
 
 
+def get_aws_region():
+    return os.environ.get("AWS_REGION")
+
+
+def get_user_pool_id():
+    return os.environ.get("AWS_USER_POOL_ID")
+
+
+def get_oidc_client_id():
+    return os.environ.get("OIDC_CLIENT_ID")
+
+
+def get_user_pool_domain_name():
+    return os.environ.get("AWS_USER_POOL_DOMAIN")
+
+
 def get_aws_db_secret():
     secret_name = os.environ.get("DB_SECRET")
-    region_name = "ca-central-1"
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=region_name)
+    client = session.client(service_name="secretsmanager", region_name=get_aws_region())
 
     return client.get_secret_value(SecretId=secret_name)
