@@ -42,6 +42,18 @@ def test_rsa_key() -> TestClient:
     return new_key.exportKey("PEM")
 
 
+@pytest.fixture(scope="function")
+def test_rsa_key_missing() -> TestClient:
+
+    new_key = RSA.generate(2048)
+    global public_rsa_key
+    public_rsa_key = new_key.publickey().exportKey("PEM")
+
+    app.dependency_overrides[dependencies.get_rsa_key_method] = override_get_rsa_key_method_none
+
+    return new_key.exportKey("PEM")
+
+
 def override_get_db():
     return UnifiedAlchemyMagicMock(data=[
         (
@@ -57,3 +69,11 @@ def override_get_rsa_key_method():
 def override_get_rsa_key(kid):
     global public_rsa_key
     return public_rsa_key
+
+
+def override_get_rsa_key_method_none():
+    return override_get_rsa_key_none
+
+
+def override_get_rsa_key_none(kid):
+    return None

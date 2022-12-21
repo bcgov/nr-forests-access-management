@@ -1,5 +1,6 @@
 from jose import jws
 import time
+import json
 
 
 def create_jwt_claims():
@@ -19,8 +20,15 @@ def create_jwt_claims():
     }
 
 
-def create_jwt_token(test_rsa_key, claims=create_jwt_claims()):
-    return jws.sign(claims, test_rsa_key, algorithm='RS256', headers={"kid": "12345"})
+def create_jwt_token(test_rsa_key,
+                     claims=create_jwt_claims(),
+                     test_algorithm='RS256',
+                     test_headers={"kid": "12345"}):
+    return jws.sign(claims, test_rsa_key, algorithm=test_algorithm,
+                    headers=test_headers)
 
 
+def assert_error_response(response, http_error_code, error_code_string):
+    assert response.status_code == http_error_code
+    assert json.loads(response.text)['detail']['code'] == error_code_string
 

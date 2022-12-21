@@ -6,7 +6,14 @@ from urllib.request import urlopen
 
 LOGGER = logging.getLogger(__name__)
 
-ERROR_TOKEN_DECODE = "Error decoding token headers."
+ERROR_TOKEN_DECODE = "invalid_token_cannot_be_decoded"
+ERROR_INVALID_CLIENT = "invalid_oidc_client"
+ERROR_INVALID_ALGORITHM = "invalid_algorithm"
+ERROR_MISSING_KID = "invalid_header_no_kid"
+ERROR_NO_RSA_KEY = "invalid_token_no_rsa_key_match"
+ERROR_EXPIRED_TOKEN = "invalid_token_expired"
+ERROR_CLAIMS = "invalid_token_claims"
+ERROR_VALIDATION = "validation_failed"
 
 
 def get_rsa_key(kid):
@@ -28,36 +35,35 @@ def get_rsa_key(kid):
     return rsa_key
 
 
-
 def validate_token(token, get_rsa_key_method):
 
     try:
         unverified_header = jwt.get_unverified_header(token)
-    except jwt.JWTError as err:
-        LOGGER.debug(err)
+    except jwt.JWTError:
         raise HTTPException(
             status_code=401,
-            detail=ERROR_TOKEN_DECODE,
+            detail={'code': ERROR_TOKEN_DECODE,
+                    'description':
+                        'Unable to decode token.'},
             headers={"WWW-Authenticate": "Bearer"},
         )
     if unverified_header['alg'] != 'RS256':
-        LOGGER.debug("Caught exception unverified header")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'invalid_header',
-                            'description':
-                                'Invalid header. '
-                                'Use an RS256 signed JWT Access Token'},
+            detail={'code': ERROR_INVALID_ALGORITHM,
+                    'description':
+                        'Invalid header. '
+                        'Use an RS256 signed JWT Access Token'},
             headers={"WWW-Authenticate": "Bearer"},
         )
     if 'kid' not in unverified_header:
         LOGGER.debug("Caught exception 'kid' not in header")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'invalid_header',
-                            'description':
-                                'Invalid header. '
-                                'No KID in token header'},
+            detail={'code': ERROR_MISSING_KID,
+                    'description':
+                        'Invalid header. '
+                        'No KID in token header'},
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -67,10 +73,10 @@ def validate_token(token, get_rsa_key_method):
         LOGGER.debug("Caught exception rsa key not found")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'invalid_header',
-                            'description':
-                                'Invalid header. '
-                                'Unable to find jwks key referenced in token'},
+            detail={'code': ERROR_NO_RSA_KEY,
+                    'description':
+                        'Invalid header. '
+                        'Unable to find jwks key referenced in token'},
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -82,47 +88,37 @@ def validate_token(token, get_rsa_key_method):
             issuer="https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_5BOn4rGL8"
         )
 
-        claims = jwt.get_unverified_claims(token)
-        if claims['client_id'] != "26tltjjfe7ktm4bte7av998d78":
-            raise HTTPException(
-                status_code=401,
-                detail={'code': 'invalid_claims',
-                                'description':
-                                    'Incorrect client ID. '
-                                    'Please check the client_id'},
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        return claims
-
     except jwt.ExpiredSignatureError:
         LOGGER.debug("Caught exception jwt expired")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'token_expired',
-                            'description':
-                                'Token expired. '
-                                'Token has expired'},
+            detail={'code': ERROR_EXPIRED_TOKEN,
+                    'description': 'Token has expired'},
             headers={"WWW-Authenticate": "Bearer"},
         )
     except jwt.JWTClaimsError as err:
-        LOGGER.debug(err)
-        LOGGER.debug("Caught exception incorrect issuer")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'invalid_claims',
-                            'description':
-                                'Incorrect issuer. '
-                                'Please check the issuer'},
+            detail={'code': ERROR_CLAIMS,
+                    'description': err.args[0]},
             headers={"WWW-Authenticate": "Bearer"},
         )
     except Exception:
-        LOGGER.debug("Caught exception unknown error parsing jwt")
         raise HTTPException(
             status_code=401,
-            detail={'code': 'invalid_header',
-                            'description':
-                                'Invalid header. '
-                                'Unable to parse authentication'},
+            detail={'code': ERROR_VALIDATION,
+                    'description': 'Unable to validate JWT'},
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    claims = jwt.get_unverified_claims(token)
+
+    if claims['client_id'] != "26tltjjfe7ktm4bte7av998d78":
+        raise HTTPException(
+            status_code=401,
+            detail={'code': ERROR_INVALID_CLIENT,
+                    'description': 'Incorrect client ID.'},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return claims
