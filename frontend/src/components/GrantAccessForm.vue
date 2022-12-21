@@ -126,11 +126,6 @@ export default {
         return { applicationRoleOptions: ref<ApplicationRoleResponse[]>([]), buttonDisabled: true }
     },
     computed: {
-        isDisabled() {
-            this.v$.$validate();
-            console.log("Oiiii", this.v$.$errors)
-            return this.v$.$error;
-        },
         onBlur() {
             this.v$.$validate();
             if (this.v$.$errors) this.buttonDisabled = true;
