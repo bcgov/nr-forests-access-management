@@ -17,6 +17,7 @@ ERROR_NO_RSA_KEY = "invalid_token_no_rsa_key_match"
 ERROR_EXPIRED_TOKEN = "invalid_token_expired"
 ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
+ERROR_GROUPS_REQUIRED = "authorization_group_required"
 
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
@@ -153,6 +154,19 @@ def validate_token(token: str = Depends(oauth2_scheme),
             status_code=401,
             detail={'code': ERROR_INVALID_CLIENT,
                     'description': 'Incorrect client ID.'},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return claims
+
+
+def authorize(claims: dict = Depends(validate_token)) -> dict:
+
+    if 'cognito:groups' not in claims or len(claims['cognito:groups']) == 0:
+        raise HTTPException(
+            status_code=403,
+            detail={'code': ERROR_GROUPS_REQUIRED,
+                    'description': 'At least one group required int cognito:groups claim'},
             headers={"WWW-Authenticate": "Bearer"},
         )
 

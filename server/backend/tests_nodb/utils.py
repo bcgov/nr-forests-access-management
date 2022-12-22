@@ -6,6 +6,9 @@ import json
 def create_jwt_claims():
     return {
         "sub": "51b661cf-4109-4616-b7a5-178daf51fc12",
+        "cognito:groups": [
+            "FAM_ADMIN"
+        ],
         "iss": "https://cognito-idp.ca-central-1.amazonaws.com/ca-central-1_5BOn4rGL8",
         "version": 2,
         "client_id": "26tltjjfe7ktm4bte7av998d78",
@@ -29,6 +32,7 @@ def create_jwt_token(test_rsa_key,
 
 
 def assert_error_response(response, http_error_code, error_code_string):
-    assert response.status_code == http_error_code
-    assert json.loads(response.text)['detail']['code'] == error_code_string
+    assert response.status_code == http_error_code, f"Expected status code {http_error_code} but received {response.status_code}"
+    error_detail_code = json.loads(response.text)['detail']['code']
+    assert error_detail_code == error_code_string, f"Expected error detail.code {error_code_string} but received {error_detail_code}"
 
