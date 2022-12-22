@@ -50,19 +50,19 @@ def get_aws_db_string():
 
 
 def get_aws_region():
-    return os.environ.get("AWS_REGION")
+    return os.environ.get("COGNITO_REGION")
 
 
 def get_user_pool_id():
-    return os.environ.get("AWS_USER_POOL_ID")
+    return os.environ.get("COGNITO_USER_POOL_ID")
 
 
 def get_oidc_client_id():
-    return os.environ.get("OIDC_CLIENT_ID")
+    return os.environ.get("COGNITO_CLIENT_ID")
 
 
 def get_user_pool_domain_name():
-    return os.environ.get("AWS_USER_POOL_DOMAIN")
+    return os.environ.get("COGNITO_USER_POOL_DOMAIN")
 
 
 def get_aws_db_secret():

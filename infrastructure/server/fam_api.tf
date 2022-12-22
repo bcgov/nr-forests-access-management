@@ -91,14 +91,14 @@ resource "aws_lambda_function" "fam-api-function" {
   environment {
 
     variables = {
-      DB_SECRET            = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
-      PG_DATABASE          = "${data.aws_rds_cluster.api_database.database_name}"
-      PG_PORT              = "5432"
-      PG_HOST              = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
-      AWS_REGION           = "${data.aws_region.current.name}"
-      AWS_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
-      OIDC_CLIENT_ID       = "${aws_cognito_user_pool_client.fam_console_oidc_client.id}"
-      AWS_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
+      DB_SECRET                = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
+      PG_DATABASE              = "${data.aws_rds_cluster.api_database.database_name}"
+      PG_PORT                  = "5432"
+      PG_HOST                  = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
+      COGNITO_REGION           = "${data.aws_region.current.name}"
+      COGNITO_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
+      COGNITO_CLIENT_ID        = "${aws_cognito_user_pool_client.fam_console_oidc_client.id}"
+      COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
     }
 
   }
