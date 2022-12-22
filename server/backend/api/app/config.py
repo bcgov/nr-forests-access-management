@@ -6,39 +6,27 @@ import json
 LOGGER = logging.getLogger(__name__)
 
 
-
-def get_db_string(use_postgres=False):
+def get_db_string():
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
-    db_conn_string = get_aws_db_string() if on_aws else get_local_db_string(use_postgres)
+    db_conn_string = get_aws_db_string() if on_aws \
+        else get_local_db_string()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
 
-def get_local_db_string(use_postgres=False):
-    if use_postgres:
-        username = os.getenv("POSTGRES_USER", "postgres")
-        password = os.getenv("POSTGRES_PASSWORD", "postgres")
-    else:
-        username = os.getenv("api_db_username", "fam_proxy_api")
-        password = os.getenv("api_db_password", "test")
-    host = os.getenv("POSTGRES_HOST", "localhost")
-    dbname = os.getenv("POSTGRES_DB", "fam")
-    port = os.getenv("POSTGRES_PORT", "5432")
+def get_local_db_string():
+    username = os.getenv("POSTGRES_USER")
+    password = os.getenv("POSTGRES_PASSWORD")
+    host = os.getenv("POSTGRES_HOST")
+    dbname = os.getenv("POSTGRES_DB")
+    port = os.getenv("POSTGRES_PORT")
     LOGGER.debug(f"api db user: {username}")
 
-    # if the POSTGRESQL_USER env var is populated then use a postgres
-    if "api_db_username" in os.environ:
-        db_conn_string = (
-            f"postgresql+psycopg2://{username}"
-            + f":{password}@{host}:{port}/"
-            + f"{dbname}"
+    db_conn_string = (
+        f"postgresql+psycopg2://{username}"
+        + f":{password}@{host}:{port}/"
+        + f"{dbname}"
         )
-    else:
-        # force default sqllite database if not POSTGRES vars not defined
-        curdir = os.path.dirname(__file__)
-        database_file = os.path.join(curdir, "..", "fam.db")
-        LOGGER.debug(f"databaseFile: {database_file}")
-        db_conn_string = f"sqlite:///{database_file}"
 
     return db_conn_string
 
@@ -61,12 +49,27 @@ def get_aws_db_string():
     return db_conn_string
 
 
+def get_aws_region():
+    return os.environ.get("AWS_REGION")
+
+
+def get_user_pool_id():
+    return os.environ.get("AWS_USER_POOL_ID")
+
+
+def get_oidc_client_id():
+    return os.environ.get("OIDC_CLIENT_ID")
+
+
+def get_user_pool_domain_name():
+    return os.environ.get("AWS_USER_POOL_DOMAIN")
+
+
 def get_aws_db_secret():
     secret_name = os.environ.get("DB_SECRET")
-    region_name = "ca-central-1"
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=region_name)
+    client = session.client(service_name="secretsmanager", region_name=get_aws_region())
 
     return client.get_secret_value(SecretId=secret_name)

@@ -13,6 +13,8 @@ from .routers import \
 
 from mangum import Mangum
 
+from .jwt_validation import init_jwks
+
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
     '..',
@@ -90,5 +92,8 @@ app.include_router(router_role.router,
 app.include_router(router_user_role_assignment.router,
                    prefix=apiPrefix + '/user_role_assignment',
                    tags=["FAM User Role Assignment"])
+
+# If we initialize this in main then it doesn't call Cognito on every api call
+init_jwks()
 
 handler = Mangum(app)

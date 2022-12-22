@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .. import dependencies, schemas
+from .. import database, schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.FamUserGet])
-def get_users(db: Session = Depends(dependencies.get_db)):
+def get_users(db: Session = Depends(database.get_db)):
     """
     List of different users that are administered by FAM
     """
@@ -25,7 +25,7 @@ def get_users(db: Session = Depends(dependencies.get_db)):
 
 @router.post("", response_model=schemas.FamUserGet)
 def create_fam_user(
-    famUser: schemas.FamUser, db: Session = Depends(dependencies.get_db)
+    famUser: schemas.FamUser, db: Session = Depends(database.get_db)
 ):
     """
     Add a user to FAM
@@ -46,7 +46,7 @@ def create_fam_user(
 
 
 @router.delete("/{user_id}", response_model=schemas.FamUser)
-def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
+def delete_fam_user(user_id: int, db: Session = Depends(database.get_db)):
     """
     Delete a FAM user
     """
@@ -60,7 +60,7 @@ def delete_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
 
 
 @router.get("/{user_id}", response_model=schemas.FamUserGet)
-def get_fam_user(user_id: int, db: Session = Depends(dependencies.get_db)):
+def get_fam_user(user_id: int, db: Session = Depends(database.get_db)):
     """
     Get a FAM user
     """
