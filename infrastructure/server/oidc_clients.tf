@@ -5,7 +5,8 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
     "${var.front_end_redirect_path}/authCallback",
-    "${var.local_frontend_redirect_path}" != "" ? "${var.local_frontend_redirect_path}/authCallback" : ""
+    "${var.local_frontend_redirect_path}" != "" ? "${var.local_frontend_redirect_path}/authCallback" : "",
+    "http://localhost:8000/docs/oauth2-redirect"
   ]
   logout_urls = [
     "${var.front_end_redirect_path}/authLogout",
@@ -30,6 +31,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
   write_attributes = var.minimum_write_list
 }
+
 
 resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   access_token_validity                         = "60"

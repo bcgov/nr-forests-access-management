@@ -6,6 +6,10 @@ ENV POSTGRES_PORT=5432
 ENV POSTGRES_HOST_AUTH_METHOD=trust
 ENV POSTGRES_DB=fam
 ENV POSTGRES_HOST=fam-postgres
+ENV COGNITO_REGION=ca-central-1
+ENV COGNITO_USER_POOL_ID=ca-central-1_5BOn4rGL8
+ENV COGNITO_CLIENT_ID=26tltjjfe7ktm4bte7av998d78
+ENV COGNITO_USER_POOL_DOMAIN=dev-fam-user-pool-domain
 
 COPY ./backend/requirements.txt /usr/src/
 COPY ./backend/api /usr/src/api
