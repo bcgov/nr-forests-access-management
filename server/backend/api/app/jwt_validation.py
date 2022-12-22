@@ -1,7 +1,6 @@
 import logging
 from jose import jwt
-from fastapi import HTTPException
-#, Depends
+from fastapi import HTTPException, Depends
 import json
 from urllib.request import urlopen
 from .config import get_user_pool_domain_name, get_aws_region, \
@@ -43,6 +42,10 @@ def init_jwks():
     _jwks = json.loads(jsonurl.read().decode('utf-8'))
 
 
+def get_rsa_key_method():
+    return get_rsa_key
+
+
 def get_rsa_key(kid):
 
     global _jwks
@@ -63,7 +66,8 @@ def get_rsa_key(kid):
     return rsa_key
 
 
-def validate_token(token, get_rsa_key_method):
+def validate_token(token: str = Depends(oauth2_scheme),
+                   get_rsa_key_method: callable = Depends(get_rsa_key_method)) -> dict:
 
     try:
         unverified_header = jwt.get_unverified_header(token)

@@ -18,7 +18,3 @@ def get_db():
         db.commit()
         LOGGER.debug("closing db session")
         db.close()
-
-
-def get_rsa_key_method():
-    return get_rsa_key

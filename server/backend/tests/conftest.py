@@ -8,7 +8,7 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 :rtype: _type_
 :yield: _description_
 :rtype: _type_
-''' # flake8: ignore=F402
+'''  # flake8: ignore=F402
 
 import os
 import sys
@@ -170,3 +170,10 @@ def getFixtureParams(request):
     params = marker.args[0]
     LOGGER.debug(f"Contains fixture params: {params}")
     return params
+
+    # came from config.py
+    #     # force default sqllite database if not POSTGRES vars not defined
+    #     curdir = os.path.dirname(__file__)
+    #     database_file = os.path.join(curdir, "..", "fam.db")
+    #     LOGGER.debug(f"databaseFile: {database_file}")
+    #     db_conn_string = f"sqlite:///{database_file}"

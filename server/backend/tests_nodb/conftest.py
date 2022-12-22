@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from api.app.main import app
 import api.app.dependencies as dependencies
+import api.app.jwt_validation as jwt_validation
 from api.app.models import model as models
 
 # global placeholder to be populated by fixtures for JWT test
@@ -37,7 +38,7 @@ def test_rsa_key():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[dependencies.get_rsa_key_method] = \
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = \
         override_get_rsa_key_method
 
     return new_key.exportKey("PEM")
@@ -50,7 +51,7 @@ def test_rsa_key_missing():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[dependencies.get_rsa_key_method] = \
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = \
         override_get_rsa_key_method_none
 
     return new_key.exportKey("PEM")
