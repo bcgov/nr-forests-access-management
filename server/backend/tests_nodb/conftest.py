@@ -12,7 +12,7 @@ import logging
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from api.app.main import app
-import api.app.dependencies as dependencies
+import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 from api.app.models import model as models
 
@@ -26,7 +26,7 @@ LOGGER = logging.getLogger(__name__)
 @pytest.fixture(scope="function")
 def test_client_fixture() -> TestClient:
 
-    app.dependency_overrides[dependencies.get_db] = override_get_db
+    app.dependency_overrides[database.get_db] = override_get_db
 
     return TestClient(app)
 

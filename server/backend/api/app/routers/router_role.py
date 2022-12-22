@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .. import dependencies, schemas
+from .. import database, schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.FamRoleGet])
-def get_fam_roles(db: Session = Depends(dependencies.get_db)):
+def get_fam_roles(db: Session = Depends(database.get_db)):
     """
     List of different roles that are administered by FAM
     """
@@ -25,7 +25,7 @@ def get_fam_roles(db: Session = Depends(dependencies.get_db)):
 
 @router.post("", response_model=schemas.FamRoleGet)
 def create_fam_role(
-    fam_role: schemas.FamRoleCreate, db: Session = Depends(dependencies.get_db)
+    fam_role: schemas.FamRoleCreate, db: Session = Depends(database.get_db)
 ):
     """
     Add a role to FAM

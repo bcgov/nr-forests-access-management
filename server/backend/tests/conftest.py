@@ -19,7 +19,7 @@ import logging
 import sys
 from typing import Any, Generator
 
-import api.app.dependencies as dependencies
+import api.app.database as database
 import api.app.models.model as model
 import pytest
 from api.app.database import Base
@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
+
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
@@ -56,7 +57,7 @@ def getApp(sessionObjects, dbEngine: Engine) -> Generator[FastAPI, Any, None]:
     Base.metadata.create_all(dbEngine)  # Create the tables.
     global testSession
     testSession = sessionObjects
-    app.dependency_overrides[dependencies.get_db] = override_get_db
+    app.dependency_overrides[database.get_db] = override_get_db
     yield app
 
 
