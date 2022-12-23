@@ -127,9 +127,10 @@ def get_fam_application_roles(
     response_model=List[schemas.FamApplicationRole],
     status_code=200,
 )
-def get_fam_application_roles(
+def get_fam_application_roles_authorize_app(
     application_id: int,
     db: Session = Depends(database.get_db),
+    token_claims: dict = Depends(jwt_validation.authorize_app)
 ):
     """gets the roles associated with an application
 

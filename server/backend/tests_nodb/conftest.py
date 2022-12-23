@@ -26,7 +26,8 @@ LOGGER = logging.getLogger(__name__)
 @pytest.fixture(scope="function")
 def test_client_fixture() -> TestClient:
 
-    app.dependency_overrides[database.get_db] = override_get_db
+    app.dependency_overrides[database.get_db] = \
+        lambda: UnifiedAlchemyMagicMock(data=[])
 
     return TestClient(app)
 
@@ -55,14 +56,6 @@ def test_rsa_key_missing():
         override_get_rsa_key_method_none
 
     return new_key.exportKey("PEM")
-
-
-def override_get_db():
-    return UnifiedAlchemyMagicMock(data=[
-        (
-            [mock.call.query(models.FamApplication), mock.call.all()], []
-        ),
-    ])
 
 
 def override_get_rsa_key_method():

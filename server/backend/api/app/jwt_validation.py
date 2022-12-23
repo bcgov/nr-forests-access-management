@@ -6,6 +6,13 @@ from urllib.request import urlopen
 from .config import get_user_pool_domain_name, get_aws_region, \
     get_user_pool_id, get_oidc_client_id
 from fastapi.security import OAuth2AuthorizationCodeBearer
+from starlette.requests import Request
+from sqlalchemy.orm import Session
+from api.app.crud import crud_application
+from api.app import database
+
+JWT_GROUPS_KEY = "cognito:groups"
+JWT_CLIENT_ID_KEY = "client_id"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +24,9 @@ ERROR_NO_RSA_KEY = "invalid_token_no_rsa_key_match"
 ERROR_EXPIRED_TOKEN = "invalid_token_expired"
 ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
-ERROR_GROUPS_REQUIRED = "authorization_group_required"
+ERROR_GROUPS_REQUIRED = "authorization_groups_required"
+ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
+ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
@@ -149,7 +158,7 @@ def validate_token(token: str = Depends(oauth2_scheme),
 
     claims = jwt.get_unverified_claims(token)
 
-    if claims['client_id'] != get_oidc_client_id():
+    if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(
             status_code=401,
             detail={'code': ERROR_INVALID_CLIENT,
@@ -162,7 +171,7 @@ def validate_token(token: str = Depends(oauth2_scheme),
 
 def authorize(claims: dict = Depends(validate_token)) -> dict:
 
-    if 'cognito:groups' not in claims or len(claims['cognito:groups']) == 0:
+    if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
         raise HTTPException(
             status_code=403,
             detail={'code': ERROR_GROUPS_REQUIRED,
@@ -171,3 +180,33 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
         )
 
     return claims
+
+
+def authorize_app(request: Request,
+                  db: Session = Depends(database.get_db),
+                  claims: dict = Depends(authorize)) -> dict:
+
+    application_id = request.path_params['application_id']
+
+    application = crud_application.get_application(application_id=application_id, db=db)
+    # if not application:
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail={'code': ERROR_INVALID_APPLICATION_ID,
+    #                 'description': f"Application ID {application_id} not found"},
+    #         headers={"WWW-Authenticate": "Bearer"},
+    #     )
+
+    required_group = f"{application.application_name.upper()}_ADMIN"
+    groups = claims[JWT_GROUPS_KEY]
+
+    if required_group not in groups:
+        raise HTTPException(
+            status_code=403,
+            detail={'code': ERROR_PERMISSION_REQUIRED,
+                    'description': 'At least one group required int cognito:groups claim'},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return claims
+

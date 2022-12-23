@@ -37,59 +37,61 @@ def test_get_fam_application(
     assert data[0]["application_name"] == application_dict["application_name"]
 
 
-def test_delete_fam_application(
-    client_application: starlette.testclient.TestClient,
-    application_dict: Dict[str, Union[str, datetime.datetime]],
-):
-    # verfiy that a record is being returned, so we have something to
-    # be deleted
-    response = client_application.get(f"{endPoint}/")
-    LOGGER.debug(f"response: {response}")
-    data = response.json()
-    assert len(data) == 1
+# Endpoint deleted because not in use
+# def test_delete_fam_application(
+#     client_application: starlette.testclient.TestClient,
+#     application_dict: Dict[str, Union[str, datetime.datetime]],
+# ):
+#     # verfiy that a record is being returned, so we have something to
+#     # be deleted
+#     response = client_application.get(f"{endPoint}/")
+#     LOGGER.debug(f"response: {response}")
+#     data = response.json()
+#     assert len(data) == 1
 
-    LOGGER.debug(f"data: {data}")
+#     LOGGER.debug(f"data: {data}")
 
-    app_id = data[0]["application_id"]
-    delete_end_point = f"{endPoint}/{app_id}"
-    response = client_application.delete(delete_end_point)
-    LOGGER.debug(f"response: {response.status_code}")
+#     app_id = data[0]["application_id"]
+#     delete_end_point = f"{endPoint}/{app_id}"
+#     response = client_application.delete(delete_end_point)
+#     LOGGER.debug(f"response: {response.status_code}")
 
-    # now verify that there are no application records
-    get_resp = client_application.get(f"{endPoint}/")
-    get_data = get_resp.json()
-    assert get_resp.status_code == 204
-    assert get_data == []
+#     # now verify that there are no application records
+#     get_resp = client_application.get(f"{endPoint}/")
+#     get_data = get_resp.json()
+#     assert get_resp.status_code == 204
+#     assert get_data == []
 
 
-def test_post_fam_application(
-    test_client_fixture: starlette.testclient.TestClient,
-    application_dict: Dict[str, Union[str, datetime.datetime]],
-):
-    LOGGER.debug(f"application_dict: {application_dict}")
-    application_dict["create_date"] = str(application_dict["create_date"])
-    application_dict["update_date"] = str(application_dict["update_date"])
-    post_resp = test_client_fixture.post(f"{endPoint}", json=application_dict)
-    LOGGER.debug(f"resp status: {post_resp.status_code}")
-    assert post_resp.status_code == 200
+# Endpoint deleted because not in use
+# def test_post_fam_application(
+#     test_client_fixture: starlette.testclient.TestClient,
+#     application_dict: Dict[str, Union[str, datetime.datetime]],
+# ):
+#     LOGGER.debug(f"application_dict: {application_dict}")
+#     application_dict["create_date"] = str(application_dict["create_date"])
+#     application_dict["update_date"] = str(application_dict["update_date"])
+#     post_resp = test_client_fixture.post(f"{endPoint}", json=application_dict)
+#     LOGGER.debug(f"resp status: {post_resp.status_code}")
+#     assert post_resp.status_code == 200
 
-    # make sure that there is data in the application
-    get_resp = test_client_fixture.get(f"{endPoint}")
-    get_data = get_resp.json()
-    record_added = False
-    test_record = None
-    for record in get_data:
-        LOGGER.debug(f"data: record: {record}")
-        LOGGER.debug(f"application_dict: {application_dict}")
-        if application_dict["application_name"] == record["application_name"]:
-            record_added = True
-            test_record = record
-    assert record_added
+#     # make sure that there is data in the application
+#     get_resp = test_client_fixture.get(f"{endPoint}")
+#     get_data = get_resp.json()
+#     record_added = False
+#     test_record = None
+#     for record in get_data:
+#         LOGGER.debug(f"data: record: {record}")
+#         LOGGER.debug(f"application_dict: {application_dict}")
+#         if application_dict["application_name"] == record["application_name"]:
+#             record_added = True
+#             test_record = record
+#     assert record_added
 
-    # cleanup after test
-    delete_end_point = f"{endPoint}/{test_record['application_id']}"
-    delete_response = test_client_fixture.delete(delete_end_point)
-    assert delete_response.status_code == 200
+#     # cleanup after test
+#     delete_end_point = f"{endPoint}/{test_record['application_id']}"
+#     delete_response = test_client_fixture.delete(delete_end_point)
+#     assert delete_response.status_code == 200
 
 
 def test_get_fam_application_roles(
