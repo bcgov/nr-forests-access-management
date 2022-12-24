@@ -197,14 +197,14 @@ def authorize_app(request: Request,
     #         headers={"WWW-Authenticate": "Bearer"},
     #     )
 
-    required_group = f"{application.application_name.upper()}_ADMIN"
+    required_group = f"{application.application_name.upper()}_ACCESS_ADMIN"
     groups = claims[JWT_GROUPS_KEY]
 
     if required_group not in groups:
         raise HTTPException(
             status_code=403,
             detail={'code': ERROR_PERMISSION_REQUIRED,
-                    'description': 'At least one group required int cognito:groups claim'},
+                    'description': f'Operation requires role {required_group}'},
             headers={"WWW-Authenticate": "Bearer"},
         )
 
