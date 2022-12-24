@@ -1,3 +1,4 @@
+DELETE FROM app_fam.fam_user_role_xref;
 DELETE FROM app_fam.fam_user;
 
 INSERT INTO app_fam.fam_user (
@@ -11,8 +12,6 @@ VALUES
 ('GATITEBI','I',CURRENT_USER),
 ('IANLIU','I',CURRENT_USER),
 ('PTOLLEST','I',CURRENT_USER);
-
-DELETE FROM app_fam.fam_user_role_xref;
 
 INSERT INTO app_fam.fam_user_role_xref (
     user_id,
