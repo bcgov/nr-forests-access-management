@@ -33,7 +33,6 @@ def context():
 @pytest.fixture(scope="function")
 def cognito_event():
     event_file_path = os.path.join(os.path.dirname(__file__), "login_event.json")
-    # event_file_path = "./login_event.json"
 
     with open(event_file_path, "r") as file:
         event = json.load(file)

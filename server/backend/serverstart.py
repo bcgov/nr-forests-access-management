@@ -1,3 +1,6 @@
+# Only for local development. You can debug this file and have the server
+# running in debug mode. Not packaged for production.
+
 import uvicorn
 
 import api.app.main as main
