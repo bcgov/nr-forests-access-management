@@ -1,15 +1,18 @@
-import logging
-from jose import jwt
-from fastapi import HTTPException, Depends
 import json
+import logging
+import os
 from urllib.request import urlopen
-from .config import get_user_pool_domain_name, get_aws_region, \
-    get_user_pool_id, get_oidc_client_id
-from fastapi.security import OAuth2AuthorizationCodeBearer
-from starlette.requests import Request
-from sqlalchemy.orm import Session
-from api.app.crud import crud_application
+
 from api.app import database
+from api.app.crud import crud_application
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2AuthorizationCodeBearer
+from jose import jwt
+from sqlalchemy.orm import Session
+from starlette.requests import Request
+
+from .config import (get_aws_region, get_oidc_client_id,
+                     get_user_pool_domain_name, get_user_pool_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -45,6 +48,7 @@ _jwks = None
 
 
 def init_jwks():
+    on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     aws_region = get_aws_region()
     user_pool_id = get_user_pool_id()
     # Add try/except due to urlopen() may have problem reaching AWS/Cognito.
@@ -56,6 +60,9 @@ def init_jwks():
     except Exception as e:
         LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
         LOGGER.error("Backend API will not work properly.")
+        # Raise original exception but tolerate this error for local development.
+        if on_aws:
+            raise e
 
 
 def get_rsa_key_method():
