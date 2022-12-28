@@ -47,9 +47,15 @@ _jwks = None
 def init_jwks():
     aws_region = get_aws_region()
     user_pool_id = get_user_pool_id()
-    jsonurl = urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json")
-    global _jwks
-    _jwks = json.loads(jsonurl.read().decode('utf-8'))
+    # Add try/except due to urlopen() may have problem reaching AWS/Cognito.
+    try:
+        with urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json") as response:
+            global _jwks
+            _jwks = json.loads(response.read().decode('utf-8'))
+
+    except Exception as e:
+        LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
+        LOGGER.error("Backend API will not work properly.")
 
 
 def get_rsa_key_method():
