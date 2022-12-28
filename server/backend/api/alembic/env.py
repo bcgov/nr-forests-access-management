@@ -64,7 +64,7 @@ def get_url():
         LOGGER.debug(f"url from -x: {url}")
 
     if not url:
-        url = app.config.getDBString(use_postgres=True)
+        url = app.config.get_db_string(use_postgres=True)
         LOGGER.debug(f"url from app config: {url}")
     LOGGER.debug(f"captured the url string: {url}")
     return url
