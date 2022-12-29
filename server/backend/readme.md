@@ -55,8 +55,8 @@ alembic upgrade head
 cd ..
 
 # create env vars - make sure in the `backend` directory
-# loads secrets in env-db-dev.env to env vars
-set -o allexport; source env-db-dev.env; set +o allexport
+# loads secrets in dev.env to env vars
+set -o allexport; source dev.env; set +o allexport
 
 # activate the virtualenv if not already activated
 . ./venv/bin/activate
