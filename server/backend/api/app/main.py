@@ -1,7 +1,7 @@
 import logging.config
 import os.path
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
@@ -43,6 +43,13 @@ to Define who has access to what apps, and what roles they will operate under
  once access is granted.
 """
 
+
+def custom_generate_unique_id(route: APIRouter):
+    # The outcome of this is on openapi spec's "operationId" field.
+    # When api client is generated, this will be used for function/method name.
+    return f"{route.name}"  # f"{route.tags[0]}-{route.name}"
+
+
 app = FastAPI(
     title="Forest Access Management - FAM - API",
     description=description,
@@ -56,7 +63,8 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
-    openapi_tags=tags_metadata
+    openapi_tags=tags_metadata,
+    generate_unique_id_function=custom_generate_unique_id
 )
 
 origins = [
@@ -73,7 +81,7 @@ app.add_middleware(
 )
 
 
-@app.get("/", include_in_schema=False)
+@app.get("/", include_in_schema=False, tags=["docs"])
 def main():
     # return RedirectResponse(url="/docs/", include_in_schema=False)
     return RedirectResponse(url="/docs/")
