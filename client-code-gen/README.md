@@ -41,6 +41,7 @@ npm install
 npm run gen-api
 
 The generated client is located at "./gen" directory specified by the "-o" option at the script.
+
 ```
 
 ## <mark>TODO</mark>: How to Use/Integrate with Generated Client/Lib
