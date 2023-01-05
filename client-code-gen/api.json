@@ -1,0 +1,11 @@
+{
+    "npmName": "typescript-axios",
+    "npmVersion": "1.0.0",
+    "snapshot": false,
+    "supportsES6": true,
+    "apiPackage": "api",
+    "modelPackage": "model",
+    "withSeparateModelsAndApi": true,
+    "withoutPrefixEnums": true,
+    "withInterfaces": true
+}
