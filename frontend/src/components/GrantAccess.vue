@@ -44,7 +44,7 @@ async function grantAccess() {
     await userRoleAssignmentApi.createUserRoleAssignment(newUserRoleAssignmentPayload)
     toast.success(`User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
-    router.push('/application')
+    router.push('/manage')
   }
   catch(err: any) {
     useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
