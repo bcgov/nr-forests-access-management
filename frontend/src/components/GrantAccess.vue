@@ -5,6 +5,9 @@ import { selectedApplication } from '@/services/ApplicationState';
 import type { FamApplicationRole, FAMApplicationsApi, FAMUserRoleAssignmentApi, FamUserRoleAssignmentCreate } from 'fam-api';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
+import router from '@/router';
+import { object, string } from 'yup';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'} // TODO, load it from backend when backend has the endpoint.
@@ -41,6 +44,7 @@ async function grantAccess() {
     await userRoleAssignmentApi.createUserRoleAssignment(newUserRoleAssignmentPayload)
     toast.success(`User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
+    router.push('/application')
   }
   catch(err: any) {
     useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
