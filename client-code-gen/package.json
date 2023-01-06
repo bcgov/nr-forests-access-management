@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "OpenAPI Generation for API Client Code",
   "scripts": {
-    "gen-api": "rm -rf gen && openapi-generator-cli generate -i openapi.json --generator-name typescript-axios -o gen --config api.json && npm install"
+    "gen-api": "rm -rf gen && openapi-generator-cli generate -i openapi.json --generator-name typescript-axios -o gen --config api.json"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.2"
