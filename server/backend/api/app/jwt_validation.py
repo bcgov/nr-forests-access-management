@@ -11,6 +11,11 @@ from jose import jwt
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
+# think that just importing config then access through its namespace makes code
+# easier to understand, ie:
+# import config
+# then
+# config.get_aws_region()
 from .config import (get_aws_region, get_oidc_client_id,
                      get_user_pool_domain_name, get_user_pool_id)
 
@@ -48,13 +53,14 @@ _jwks = None
 
 
 def init_jwks():
+    global _jwks
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
+    # why not use the global versions of these variables, lines 34, 35
     aws_region = get_aws_region()
     user_pool_id = get_user_pool_id()
     # Add try/except due to urlopen() may have problem reaching AWS/Cognito.
     try:
         with urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json") as response:
-            global _jwks
             _jwks = json.loads(response.read().decode('utf-8'))
 
     except Exception as e:

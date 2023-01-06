@@ -11,6 +11,10 @@ x-common-variables: &common-db-variables
    POSTGRES_HOST_AUTH_METHOD: trust
    api_db_username: fam_proxy_api
    api_db_password: test
+   COGNITO_REGION: ca-central-1
+   COGNITO_USER_POOL_ID: ca-central-1_5BOn4rGL8
+   COGNITO_CLIENT_ID: 26tltjjfe7ktm4bte7av998d78
+   COGNITO_USER_POOL_DOMAIN: dev-fam-user-pool-domain
 services:
   # todo: add migration for database
   db:
@@ -41,6 +45,9 @@ services:
       <<: *common-db-variables
       POSTGRES_DB: fam
       POSTGRES_HOST: db
+    # after conrads modifications needed to swap out api_db_username for
+    # POSTGRES_USER, but required postgres user to run the alembic migrations
+    # so modify after the alembic command is run
     entrypoint:
       - bash
       - -c
@@ -48,6 +55,9 @@ services:
         pip install -r requirements.txt  -r requirements-dev.txt &&
         cd api &&
         alembic -x url=postgresql+psycopg2://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB} upgrade head &&
+        export POSTGRES_USER=$${api_db_username} &&
+        export POSTGRES_PASSWORD=$${api_db_password} &&
+        echo postgres user is $${POSTGRES_USER} $POSTGRES_USER &&
         cd .. &&
         uvicorn api.app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
@@ -62,8 +72,3 @@ networks:
   fam:
     driver: bridge
     attachable: true
-
-      #     #driver: bridge
-#     name: pre-existing
-#     attachable: true
-#     external: true
