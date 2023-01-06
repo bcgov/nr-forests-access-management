@@ -180,7 +180,7 @@ class FamForestClientGet(FamForestClientCreate):
 
 class FamForestClient(BaseModel):
     #client_name: str
-    forest_client_number: int
+    forest_client_number: str
 
     class Config:
         orm_mode = True
