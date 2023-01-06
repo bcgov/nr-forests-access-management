@@ -1,5 +1,7 @@
 import logging
 from logging.config import fileConfig
+import os
+import dotenv
 
 import app.config
 import app.models.model
@@ -64,7 +66,20 @@ def get_url():
         LOGGER.debug(f"url from -x: {url}")
 
     if not url:
-        url = app.config.get_db_string(use_postgres=True)
+        # attempt to load the envs if they are not already loaded
+        if "POSTGRES_USER" not in os.environ:
+            # load from the env file used by the docker-compose
+            docker_env_file = os.path.join(
+                os.path.basename(__file__),
+                '..',
+                '..',
+                'env-docker-compose.env'
+            )
+            docker_env_file = os.path.realpath(docker_env_file)
+            LOGGER.debug(f"loading env params from the file: {docker_env_file}")
+            dotenv.load_dotenv(docker_env_file)
+
+        url = app.config.get_db_string()
         LOGGER.debug(f"url from app config: {url}")
     LOGGER.debug(f"captured the url string: {url}")
     return url

@@ -7,6 +7,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_db_string():
+    """ retrieves a database connection string for a variety of different
+    environments including:
+    * local dev with postgres db
+    * deployed app using amazon rds
+
+    """
     on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     db_conn_string = get_aws_db_string() if on_aws \
         else get_local_db_string()
