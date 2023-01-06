@@ -15,7 +15,7 @@ from mangum import Mangum
 
 from .jwt_validation import init_jwks
 
-from .config import get_openapi_url
+from .config import get_root_path
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -66,7 +66,7 @@ app = FastAPI(
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
     openapi_tags=tags_metadata,
-    openapi_url=get_openapi_url(),
+    root_path=get_root_path(),
     generate_unique_id_function=custom_generate_unique_id
 )
 

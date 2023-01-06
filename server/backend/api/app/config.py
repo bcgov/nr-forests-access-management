@@ -101,3 +101,13 @@ class MissingEnvironmentVariable(Exception):
 if __name__ == '__main__':
     var = get_user_pool_domain_name()
     print(f'var: {var}')
+
+
+def get_root_path():
+    root_path = ""
+
+    api_gateway_stage_name = os.environ.get("API_GATEWAY_STAGE_NAME")
+    if api_gateway_stage_name:
+        root_path = f"/{api_gateway_stage_name}"
+
+    return root_path
