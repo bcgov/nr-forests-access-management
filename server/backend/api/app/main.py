@@ -87,7 +87,7 @@ def main():
     return RedirectResponse(url="/docs/")
 
 
-apiPrefix = '/api/v1'
+apiPrefix = ''
 app.include_router(router_application.router,
                    prefix=apiPrefix + '/fam_applications',
                    tags=["FAM Applications"])
