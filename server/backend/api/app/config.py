@@ -88,6 +88,7 @@ def get_aws_db_secret():
 
     return client.get_secret_value(SecretId=secret_name)
 
+
 class MissingEnvironmentVariable(Exception):
     def __init__(self, env_var_name):
         self.message = (
@@ -95,6 +96,7 @@ class MissingEnvironmentVariable(Exception):
             'been populated'
         )
         super().__init__(self.message)
+
 
 if __name__ == '__main__':
     var = get_user_pool_domain_name()

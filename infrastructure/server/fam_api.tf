@@ -99,6 +99,7 @@ resource "aws_lambda_function" "fam-api-function" {
       COGNITO_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
       COGNITO_CLIENT_ID        = "${aws_cognito_user_pool_client.fam_console_oidc_client.id}"
       COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
+      API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
     }
 
   }

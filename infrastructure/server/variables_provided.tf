@@ -120,3 +120,9 @@ variable "local_frontend_redirect_path" {
   type = string
   default = ""
 }
+
+variable "api_gateway_stage_name" {
+  description = "Stage name for the REST API in API Gateway (appears in URI)"
+  type = string
+  default = "v1"
+}
