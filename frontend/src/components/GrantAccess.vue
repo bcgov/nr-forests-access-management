@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { ApiService, type ApplicationRoleResponse, type GrantUserRoleRequest } from '@/services/ApiService';
+import { ApiService, ApiServiceName } from '@/services/ApiService';
 import { selectedApplication } from '@/services/ApplicationState';
+import type { FamApplicationRole, FAMApplicationsApi, FAMUserRoleAssignmentApi, FamUserRoleAssignmentCreate } from 'fam-api';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'} // TODO, load it from backend when backend has the endpoint.
-let applicationRoleOptions = ref<ApplicationRoleResponse[]>([])
+let applicationRoleOptions = ref<FamApplicationRole[]>([])
 
 const defaultFormData = {
   domain: domainOptions.BCEID,
   userId: null,
   forestClientNumber: null,
-  role: null as unknown as ApplicationRoleResponse
+  role: null as unknown as FamApplicationRole
 }
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone default input data.
 
-const apiService = new ApiService()
+const apiServiceFactory = new ApiService()
+const applicationsApi = apiServiceFactory.getApiService(ApiServiceName.ApplicationsApi) as FAMApplicationsApi;
+const userRoleAssignmentApi = apiServiceFactory.getApiService(ApiServiceName.UserRoleAssignmentApi) as FAMUserRoleAssignmentApi;
 
 onMounted(async () => {
-  applicationRoleOptions.value = await apiService.getApplicationRoles(
-    selectedApplication?.value?.application_id
-  ) as ApplicationRoleResponse[]
+  applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
+    selectedApplication?.value?.application_id as number
+  )).data as FamApplicationRole[]
 })
 
 function onlyDigit(evt: KeyboardEvent) {
@@ -35,14 +38,14 @@ async function grantAccess() {
   const toast = useToast();
   const grantAccessRequest = toRequest(formData.value)
   try {
-    await apiService.grantUserRole(grantAccessRequest)
+    await userRoleAssignmentApi.createUserRoleAssignment(grantAccessRequest)
     toast.success(`User "${grantAccessRequest.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
   }
   catch(err: any) {
     useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
     console.error("err: ", err)
-  } 
+  }
 }
 
 function toRequest(formData: any) {
@@ -50,10 +53,10 @@ function toRequest(formData: any) {
     user_name: formData.userId,
     user_type_code: formData.domain,
     role_id: formData.role.role_id,
-    ...(formData.forestClientNumber? 
+    ...(formData.forestClientNumber?
         {forest_client_number: formData.forestClientNumber.padStart(FOREST_CLIENT_INPUT_MAX_LENGTH, '0')}
         : {})
-  } as GrantUserRoleRequest
+  } as FamUserRoleAssignmentCreate
 
   return request
 }
@@ -63,8 +66,8 @@ function toRequest(formData: any) {
 <template>
 
     <PageTitle :displaySelectedApplication=true></PageTitle>
-  
-    <form id="grantAccessForm" 
+
+    <form id="grantAccessForm"
       class="form-container"
       @submit.prevent="grantAccess">
       <div class="row">
@@ -73,20 +76,20 @@ function toRequest(formData: any) {
           <div>
             <div class="form-check form-check-inline">
               <input type="radio"
-                id="becidSelect" 
+                id="becidSelect"
                 name="domainRadioOptions"
                 class="form-check-input"
-                :value="domainOptions.BCEID" 
+                :value="domainOptions.BCEID"
                 v-model="formData.domain"
                 :checked="(formData.domain === domainOptions.BCEID)">
               <label class="form-check-label" for="becidSelect">BCeID</label>
             </div>
             <div class="form-check form-check-inline">
-              <input 
-                type="radio" 
-                id="idirSelect" 
+              <input
+                type="radio"
+                id="idirSelect"
                 name="domainRadioOptions"
-                class="form-check-input"  
+                class="form-check-input"
                 :value="domainOptions.IDIR"
                 v-model="formData.domain"
                 :checked="(formData.domain === domainOptions.IDIR)">
@@ -99,8 +102,8 @@ function toRequest(formData: any) {
       <div class="row">
         <div class="form-group col-md-3">
           <label for="userIdInput" class="control-label">User Id</label>
-          <input type="text" 
-            id="userIdInput" 
+          <input type="text"
+            id="userIdInput"
             class="form-control"
             name="userId"
             required
@@ -116,11 +119,11 @@ function toRequest(formData: any) {
           <select id="roleSelect"
             name="role"
             required
-            class="form-select" 
+            class="form-select"
             aria-label="Role Select"
             v-model="formData.role">
-            <option 
-              v-for="role in applicationRoleOptions" 
+            <option
+              v-for="role in applicationRoleOptions"
               :value="role">{{role.role_name}}</option>
           </select>
         </div>
