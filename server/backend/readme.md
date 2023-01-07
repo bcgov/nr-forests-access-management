@@ -52,6 +52,10 @@ cd server/backend
 # run the backend postgres db
 docker-compose up db
 
+# create env vars - make sure in the `backend` directory
+# loads secrets in env-docker-compose.env to env vars
+set -o allexport; source env-docker-compose.env; set +o allexport
+
 # run the migrations
 cd api
 alembic upgrade head
