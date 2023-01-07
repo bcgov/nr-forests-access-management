@@ -5,7 +5,8 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
     "${var.front_end_redirect_path}/authCallback",
-    "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
+    # This line creates a cycle between API Gateway, API Lambda, and Cognito :(
+    # "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
