@@ -1,6 +1,6 @@
 output "fam_api_base_url" {
   description = "Base URL for API Gateway stage."
-  value       = var.fam_api_base_url
+  value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
 }
 
 data "aws_region" "current" {}
@@ -32,5 +32,5 @@ output "front_end_redirect_base_url" {
 
 output "target_env" {
   description = "dev, test, or prod in AWS"
-  value = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
+  value = var.target_env
 }
