@@ -115,14 +115,32 @@ variable "front_end_redirect_path" {
   type = string
 }
 
-variable "local_frontend_redirect_path" {
-  description = "Path to local FAM front-end (for redirect URI), only for dev"
-  type = string
-  default = ""
-}
-
 variable "api_gateway_stage_name" {
   description = "Stage name for the REST API in API Gateway (appears in URI)"
   type = string
   default = "v1"
+}
+
+# Variables for OIDC client config
+
+variable "fam_api_base_url" {
+  description = "Base URL for API Gateway stage."
+  value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
+}
+
+variable "fam_console_callback_urls" {
+  description = "List of valid redirect urls for fam console oidc client"
+  type = List
+  default = [
+    "${var.front_end_redirect_path}/authCallback",
+    "${var.fam_api_base_url}/docs/oauth2-redirect"
+  ]
+}
+
+variable "fam_console_logout_urls" {
+  description = "List of valid logout urls for fam console oidc client"
+  type = List
+  default = [
+    "${var.front_end_redirect_path}/authLogout"
+  ]
 }

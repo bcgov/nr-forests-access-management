@@ -1,6 +1,6 @@
 output "fam_api_base_url" {
   description = "Base URL for API Gateway stage."
-  value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
+  value       = var.fam_api_base_url
 }
 
 data "aws_region" "current" {}
