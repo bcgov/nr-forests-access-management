@@ -5,6 +5,10 @@ import json
 
 LOGGER = logging.getLogger(__name__)
 
+def get_env_var(env_var_name):
+    if env_var_name not in os.environ:
+        raise MissingEnvironmentVariable(env_var_name)
+    return os.environ.get(env_var_name)
 
 def get_db_string():
     """ retrieves a database connection string for a variety of different
@@ -21,11 +25,11 @@ def get_db_string():
 
 
 def get_local_db_string():
-    username = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    host = os.getenv("POSTGRES_HOST")
-    dbname = os.getenv("POSTGRES_DB")
-    port = os.getenv("POSTGRES_PORT")
+    username = os.environ.get("POSTGRES_USER")
+    password = os.environ.get("POSTGRES_PASSWORD")
+    host = os.environ.get("POSTGRES_HOST")
+    dbname = os.environ.get("POSTGRES_DB")
+    port = os.environ.get("POSTGRES_PORT")
     LOGGER.debug(f"api db user: {username}")
 
     db_conn_string = (
@@ -36,7 +40,7 @@ def get_local_db_string():
 
     return db_conn_string
 
-#
+
 def get_aws_db_string():
     secret_value = get_aws_db_secret()
     secret_json = json.loads(secret_value["SecretString"])
@@ -44,9 +48,9 @@ def get_aws_db_string():
     username = secret_json.get("username")
     password = secret_json.get("password")
 
-    host = os.environ.get("PG_HOST")
-    port = os.environ.get("PG_PORT")
-    dbname = os.environ.get("PG_DATABASE")
+    host = get_env_var('PG_HOST')
+    port = get_env_var('PG_PORT')
+    dbname = get_env_var('PG_DATABASE')
     db_conn_string = (
         f"postgresql+psycopg2://{username}"
         + f":{password}@{host}:{port}/"
@@ -56,22 +60,23 @@ def get_aws_db_string():
 
 
 def get_aws_region():
-    # Thinking this is a required variable so if it isn't populated
-    # shouldn't it error
-    return os.environ.get("COGNITO_REGION")
+    env_var = "COGNITO_REGION"
+    return get_env_var(env_var)
 
 
 def get_user_pool_id():
-
-    return os.environ.get("COGNITO_USER_POOL_ID")
+    env_var = "COGNITO_USER_POOL_ID"
+    return get_env_var(env_var)
 
 
 def get_oidc_client_id():
-    return os.environ.get("COGNITO_CLIENT_ID")
+    env_var = "COGNITO_CLIENT_ID"
+    return get_env_var(env_var)
 
 
 def get_user_pool_domain_name():
-    return os.environ.get("COGNITO_USER_POOL_DOMAIN")
+    env_var = 'COGNITO_USER_POOL_DOMAIN'
+    return get_env_var(env_var)
 
 
 def get_aws_db_secret():
@@ -82,3 +87,15 @@ def get_aws_db_secret():
     client = session.client(service_name="secretsmanager", region_name=get_aws_region())
 
     return client.get_secret_value(SecretId=secret_name)
+
+class MissingEnvironmentVariable(Exception):
+    def __init__(self, env_var_name):
+        self.message = (
+            f'The required environment variable {env_var_name} has not ' +
+            'been populated'
+        )
+        super().__init__(self.message)
+
+if __name__ == '__main__':
+    var = get_user_pool_domain_name()
+    print(f'var: {var}')
