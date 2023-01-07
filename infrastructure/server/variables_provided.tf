@@ -128,19 +128,3 @@ variable "fam_api_base_url" {
   value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
 }
 
-variable "fam_console_callback_urls" {
-  description = "List of valid redirect urls for fam console oidc client"
-  type = List
-  default = [
-    "${var.front_end_redirect_path}/authCallback",
-    "${var.fam_api_base_url}/docs/oauth2-redirect"
-  ]
-}
-
-variable "fam_console_logout_urls" {
-  description = "List of valid logout urls for fam console oidc client"
-  type = List
-  default = [
-    "${var.front_end_redirect_path}/authLogout"
-  ]
-}

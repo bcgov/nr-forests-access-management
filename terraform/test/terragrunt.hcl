@@ -21,16 +21,5 @@ generate "test_tfvars" {
   subnet_app_a = "App_Test_aza_net"
   subnet_app_b = "App_Test_azb_net"
   front_end_redirect_path = "https://d14evo4qtbdgsm.cloudfront.net"
-  fam_console_callback_urls = [
-    "${var.front_end_redirect_path}/authCallback",
-    "${var.fam_api_base_url}/docs/oauth2-redirect",
-    "http://localhost:5173/authCallback",
-    "http://localhost:8000/docs/oauth2-redirect",
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
-  ]
-  fam_console_logout_urls = [
-    "${var.front_end_redirect_path}/authLogout",
-    "http://localhost:5173/authLogout"
-  ]
 EOF
 }
