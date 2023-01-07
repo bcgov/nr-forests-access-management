@@ -121,10 +121,3 @@ variable "api_gateway_stage_name" {
   default = "v1"
 }
 
-# Variables for OIDC client config
-
-variable "fam_api_base_url" {
-  description = "Base URL for API Gateway stage."
-  value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
-}
-

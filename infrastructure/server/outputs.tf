@@ -32,5 +32,5 @@ output "front_end_redirect_base_url" {
 
 output "target_env" {
   description = "dev, test, or prod in AWS"
-  value = var.target_env
+  value = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
 }
