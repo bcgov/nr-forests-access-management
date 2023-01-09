@@ -30,18 +30,21 @@ install the development dependencies (linter/formatters/utilities/etc)
 ```
 pip install -r requirements-dev.txt
 ```
-### potential gotchas running pip install above:
+### Potential gotchas running pip install above:
 
-sudo apt-get install libpq-dev
-(was missing pg_config executable)
+* `sudo apt-get install libpq-dev` -
+    (was missing pg_config executable)
 
-pip install wheel
-(needed to make this explicit)
+* `pip install wheel` -
+    (needed to make this explicit)
 
-sudo apt-get install python3-dev
-(build was failing without this)
+* `sudo apt-get install python3-dev` -
+    (build was failing without this, should make sure that you are running python 3.8. )
 
-## run the api - locally for development
+* `sudo apt-get install python3.8` -
+    Make sure you are running python 3.8
+
+## Run the api - locally for development
 
 ```
 cd server/backend
@@ -49,36 +52,52 @@ cd server/backend
 # run the backend postgres db
 docker-compose up db
 
+# create env vars - make sure in the `backend` directory
+# loads secrets in env-docker-compose.env to env vars
+set -o allexport; source env-docker-compose.env; set +o allexport
+
 # run the migrations
 cd api
 alembic upgrade head
 cd ..
 
-# create env vars - make sure in the `backend` directory
-# loads secrets in env-db-dev.env to env vars
-set -o allexport; source env-db-dev.env; set +o allexport
+# OPTIONAL:  the alembic env.py now looks for the file
+#            `env-docker-compose.env` and loads those env vars
+#            if the POSTGRES_USER env var is not populated
+#
+#            steps  below  show how to load env vars if you
+#            have a different env file.
+
+envfile=<some path to env file>
+set -o allexport; source $envfile; set +o allexport
 
 # activate the virtualenv if not already activated
 . ./venv/bin/activate
 
 # run the actual api
 uvicorn api.app.main:app --reload
+
+# --- OR ---
+
+#  run conrads handy script
+python serverstart.py
 ```
 
 ## potential gotchas with running the api above:
 
 if you get this error:
 
-```
-Command 'alembic' not found, but can be installed with:
-
-sudo apt install alembic
+``` bash
+Command 'alembic' not found:
 ```
 
-1. make sure you have [created / activated a virtualenv](#create-a-virtualenv-and-install-dependencies)
-1. make sure you have installed the dev dependencies
-
+* make sure the virtualenv is activated -
+``` bash
+source  venv/bin/activate
 ```
+
+* make sure the dev dependencies are installed -
+``` bash
 sudo apt-get install -r requirements-dev.txt
 ```
 
