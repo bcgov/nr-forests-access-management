@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { ApiService, ApiServiceName } from '@/services/ApiService';
+import { ApiServiceFactory, ApiServiceName } from '@/services/ApiServiceFactory';
 import { applicationsUserAdministers, isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 import type { FamApplication, FAMApplicationsApi } from 'fam-api';
 import { useToast } from 'vue-toastification';
 import router from '../router';
 
-const apiServiceFactory = new ApiService()
+const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApiService(ApiServiceName.ApplicationsApi) as FAMApplicationsApi;
 
 // Using timeout to implement lazy loading. Component will render and display loading message until this finishes.

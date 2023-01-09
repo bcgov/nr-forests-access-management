@@ -14,7 +14,7 @@ export enum ApiServiceName {
     UserRoleAssignmentApi = "UserRoleAssignmentApi",
 }
 
-export class ApiService {
+export class ApiServiceFactory {
     // No trailing slash
     private apiUrl:string
 
@@ -28,10 +28,10 @@ export class ApiService {
        this.apiUrl = environmentSettings.getApiBaseUrl()
 
        // Instanciation for generated 'fam-api' client.
-       this.applicationsApi = new FAMApplicationsApi(null, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
-       this.rolesApi = new FAMRolesApi(null, '', httpInstance)
-       this.usersApi = new FAMUsersApi(null, '', httpInstance)
-       this.userRoleAssignmentApi = new FAMUserRoleAssignmentApi(null, '', httpInstance)
+       this.applicationsApi = new FAMApplicationsApi(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
+       this.rolesApi = new FAMRolesApi(undefined, '', httpInstance)
+       this.usersApi = new FAMUsersApi(undefined, '', httpInstance)
+       this.userRoleAssignmentApi = new FAMUserRoleAssignmentApi(undefined, '', httpInstance)
    }
 
    getApiService(serviceName: ApiServiceName): FAMApplicationsApi | FAMRolesApi | FAMUsersApi | FAMUserRoleAssignmentApi {

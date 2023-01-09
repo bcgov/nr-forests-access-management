@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import router from '@/router';
 import { useToast } from 'vue-toastification';
-import { ApiService, ApiServiceName } from '@/services/ApiService';
+import { ApiServiceFactory, ApiServiceName } from '@/services/ApiServiceFactory';
 import PageTitle from '@/components/PageTitle.vue';
 import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
@@ -12,7 +12,7 @@ import Dialog from '@/components/Dialog/Dialog.vue'
 import { $vfm } from 'vue-final-modal'
 import type { FAMApplicationsApi, FamApplicationUserRoleAssignmentGet, FAMUserRoleAssignmentApi } from 'fam-api';
 
-const apiServiceFactory = new ApiService()
+const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApiService(ApiServiceName.ApplicationsApi) as FAMApplicationsApi;
 const userRoleAssignmentApi = apiServiceFactory.getApiService(ApiServiceName.UserRoleAssignmentApi) as FAMUserRoleAssignmentApi;
 
