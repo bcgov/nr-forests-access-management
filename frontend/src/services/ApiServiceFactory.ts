@@ -1,4 +1,3 @@
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import httpInstance from '@/services/http/HttpCommon';
 import {
     FAMApplicationsApi,
@@ -15,18 +14,12 @@ export enum ApiServiceName {
 }
 
 export class ApiServiceFactory {
-    // No trailing slash
-    private apiUrl:string
-
     private applicationsApi: FAMApplicationsApi
     private rolesApi: FAMRolesApi
     private usersApi: FAMUsersApi
     private userRoleAssignmentApi: FAMUserRoleAssignmentApi
 
    constructor() {
-       const environmentSettings = new EnvironmentSettings()
-       this.apiUrl = environmentSettings.getApiBaseUrl()
-
        // Instanciation for generated 'fam-api' client.
        this.applicationsApi = new FAMApplicationsApi(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
        this.rolesApi = new FAMRolesApi(undefined, '', httpInstance)

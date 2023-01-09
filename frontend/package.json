@@ -19,7 +19,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "@popperjs/core": "^2.11.6",
     "aws-amplify": "^4.3.43",
-    "axios": "^0.26.1",
+    "axios": "0.26.1",
     "bootstrap": "^5.2.2",
     "vue": "^3.2.38",
     "vue-final-modal": "^3.4.11",
