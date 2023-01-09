@@ -7,12 +7,17 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
 import router from '@/router';
+<<<<<<< HEAD
+=======
+// import * as yup from 'yup';
+>>>>>>> 026865f (Reducing bundle size by not importing everything from yup)
 import { object, string } from 'yup';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'} // TODO, load it from backend when backend has the endpoint.
 let applicationRoleOptions = ref<FamApplicationRole[]>([])
 
+<<<<<<< HEAD
 const defaultFormData = {
   domain: domainOptions.BCEID,
   userId: null,
@@ -24,6 +29,23 @@ const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone defau
 const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApplicationApi()
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
+=======
+const schema = object().shape({
+  userId: string()
+    .required('User ID is required')
+    .min(2, 'User ID must be at least 2 characters')
+    .nullable(),
+    role: object().required('Please select a value').nullable(),
+  forestClientNumber: string()
+    .nullable()
+    .when('role', {
+      is: (role: any) => role?.role_type_code == 'A',
+      then: string()
+        .required('Forest Client number is required')
+        .min(8, 'Forest Client number must be at least 8 characters')
+    })
+});
+>>>>>>> 026865f (Reducing bundle size by not importing everything from yup)
 
 onMounted(async () => {
   applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
