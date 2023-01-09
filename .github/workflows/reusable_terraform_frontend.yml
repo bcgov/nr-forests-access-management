@@ -34,7 +34,7 @@ jobs:
       - name: Build Frontend
         working-directory: frontend
         run: |
-          npm install
+          npm run install-frontend
           npm run build
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist
