@@ -2,8 +2,9 @@ import logging
 import copy
 
 import api.app.schemas as schemas
-import api.app.models.model as model
 import pytest
+from api.app.crud import crud_role
+from api.app.crud import crud_forest_client
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import session
 from api.app import constants
@@ -228,35 +229,47 @@ def test_create_role_with_no_existing_parent_role_violate_constraint(
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
 
-def test_create_role_with_same_role_name_and_application_violate_constraint(
-    concrete_role_pydantic: schemas.FamRoleCreate,
-    dbsession_role_types,
-    dbsession_application,
-    delete_all_role_types
-):
-    db = dbsession_application
-    db.commit()
-    application: model.FamApplication = db.query(model.FamApplication).one()
-    concrete_role_pydantic.application_id = application.application_id
+def test_create_fam_role_with_forest_client(
+        concrete_role_with_forest_client,
+        dbsession_role_types):
+    db = dbsession_role_types
+    role_data = concrete_role_with_forest_client
 
-    # Add simple role
-    role = crud_role.create_role(role=concrete_role_pydantic, db=db)
-    LOGGER.debug(f"New role is added: {role.role_name} role.")
+    # double check that the forest client number field is populated as
+    # that is core to this test
+    assert role_data['forest_client_number'] is not None
 
-    # Verify new role
+    # testing that the data can be converted to pydantic model
+    fam_role_as_pydantic = schemas.FamRoleCreate(**role_data)
+
+    # add the role with forest client to the database
+    role_in_db = crud_role.create_role(role=fam_role_as_pydantic, db=db)
+    LOGGER.debug(f"role from db: {role_in_db}")
+
+    # make a separate query to the database for all the roles (should only be
+    # the one)
     roles = crud_role.get_roles(db)
-    filtered = list(
-        filter(
-            lambda role: role.role_name == concrete_role_pydantic.role_name, roles
-        )
+    LOGGER.debug("roles from the database: {roles}")
+    assert len(roles) == 1
+    # assert that the data retured from the database is the same as the data
+    # that was used to create the database record
+    assert roles[0].role_name == role_data['role_name']
+    assert (
+        roles[0].client_number.forest_client_number ==
+        role_data['forest_client_number']
     )
-    assert len(filtered) == 1
+    assert roles[0].role_type_code == role_data['role_type_code']
+    assert roles[0].create_user == role_data['create_user']
+    LOGGER.debug(f"forest client number: {role_data['forest_client_number']}")
 
-    # Add same role => expect constraint violation
-    LOGGER.debug(f"Adding role {concrete_role_pydantic.role_name} again.")
-    with pytest.raises(IntegrityError) as e:
-        # invalid insert for the same role.
-        assert crud_role.create_role(role=concrete_role_pydantic, db=db)
-    assert str(e.value).find("UNIQUE constraint failed: fam_role.role_name, fam_role.application_id") != -1
-    db.rollback()
-    LOGGER.debug(f"Expected exception raised: {e.value}")
+    # make sure that a forest client record exists in the database
+    forest_client_from_db = crud_forest_client.get_forest_client(
+        db=db, forest_client_number=role_data['forest_client_number'])
+    assert (
+        forest_client_from_db.forest_client_number ==
+        role_data['forest_client_number']
+    )
+
+    # cleanup the roles that have been created in this test
+    #  db.delete(roles[0].client_number)
+    db.delete(roles[0])
