@@ -1,5 +1,8 @@
 import logging
 import copy
+
+import api.app.schemas as schemas
+import api.app.models.model as model
 import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import session
@@ -33,9 +36,9 @@ def test_get_roles_withdata(dbsession_fam_roles_concrete, concrete_role_dict):
 
 
 def test_create_role(
-    concrete_role_pydantic: schemas.FamRoleCreate, 
-    dbsession_role_types, 
-    dbsession_application, 
+    concrete_role_pydantic: schemas.FamRoleCreate,
+    dbsession_role_types,
+    dbsession_application,
     delete_all_roles
 ):
     db = dbsession_application
@@ -59,9 +62,9 @@ def test_create_role(
 
 
 def test_create_role_with_parent_role(
-    concrete_role_pydantic, 
+    concrete_role_pydantic,
     dbsession_role_types,
-    dbsession_application, 
+    dbsession_application,
     delete_all_roles
 ):
     db = dbsession_application
@@ -148,8 +151,8 @@ def test_create_fam_role_with_forest_client(
 
 
 def test_can_create_roles_with_same_name_different_applications(
-    concrete_role_pydantic: schemas.FamRoleCreate, 
-    dbsession_role_types, 
+    concrete_role_pydantic: schemas.FamRoleCreate,
+    dbsession_role_types,
     dbsession_application: session.Session
 ):
     db = dbsession_application
@@ -224,11 +227,11 @@ def test_create_role_with_no_existing_parent_role_violate_constraint(
     db.rollback()
     LOGGER.debug(f"Expected exception raised: {e.value}")
 
-    
+
 def test_create_role_with_same_role_name_and_application_violate_constraint(
-    concrete_role_pydantic: schemas.FamRoleCreate, 
-    dbsession_role_types, 
-    dbsession_application, 
+    concrete_role_pydantic: schemas.FamRoleCreate,
+    dbsession_role_types,
+    dbsession_application,
     delete_all_role_types
 ):
     db = dbsession_application
