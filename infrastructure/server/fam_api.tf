@@ -1,5 +1,13 @@
 # Looking up a few things so they can be changed for this file in one place only
 
+data "aws_secretsmanager_secret" "db_api_creds_secret" {
+  name = aws_secretsmanager_secret.famdb_apicreds_secret.name
+}
+
+data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
+  name = aws_secretsmanager_secretfam_oidc_client_id_secret.name
+}
+
 data "aws_rds_cluster" "api_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
@@ -99,14 +107,14 @@ resource "aws_lambda_function" "fam-api-function" {
   environment {
 
     variables = {
-      DB_SECRET                = "${aws_secretsmanager_secret.famdb_apicreds_secret.name}"
+      DB_SECRET                = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
       PG_DATABASE              = "${data.aws_rds_cluster.api_database.database_name}"
       PG_PORT                  = "5432"
       PG_HOST                  = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
       COGNITO_REGION           = "${data.aws_region.current.name}"
       COGNITO_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
       COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
-      COGNITO_CLIENT_ID_SECRET = "${aws_secretsmanager_secretfam_oidc_client_id_secret.name}"
+      COGNITO_CLIENT_ID_SECRET = "${data.aws_secretsmanager_secret.fam_oidc_client_id_secret.name}"
 
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
       # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
