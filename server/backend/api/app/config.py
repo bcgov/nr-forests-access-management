@@ -86,6 +86,7 @@ def get_oidc_client_id():
                                 region_name=get_aws_region())
         client_id = client.get_secret_value(SecretId=client_id_secret_name)
 
+    LOGGER.info(f"Using OIDC client ID: [{client_id}]")
     return client_id
 
 
