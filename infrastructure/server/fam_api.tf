@@ -5,7 +5,7 @@ data "aws_secretsmanager_secret" "db_api_creds_secret" {
 }
 
 data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
-  name = aws_secretsmanager_secretfam_oidc_client_id_secret.name
+  name = aws_secretsmanager_secret.fam_oidc_client_id_secret.name
 }
 
 data "aws_rds_cluster" "api_database" {
