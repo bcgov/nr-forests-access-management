@@ -58,8 +58,8 @@ def fam_user_role_assignment_model(
             "for user/role assignment."
         )
 
-
-        if not hasattr(request, "forest_client_number") or request.forest_client_number is None:
+        if (not hasattr(request, "forest_client_number")
+                or request.forest_client_number is None):
             error_msg = (
                 "Invalid role assignment request. Cannot assign user " +
                 f"{request.user_name} to abstract role {fam_role.role_name}")

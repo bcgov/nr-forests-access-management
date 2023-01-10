@@ -1,6 +1,7 @@
 import logging
 
 import api.app.schemas as schemas
+import api.app.models.model as model
 import pytest
 from api.app.crud import crud_role
 from sqlalchemy.exc import IntegrityError
@@ -130,3 +131,60 @@ def test_create_role_with_no_existing_parent_role_violate_constraint(
         assert crud_role.create_role(role=fam_role, db=db)
     assert str(e.value).find("FOREIGN KEY constraint failed") != -1
     LOGGER.debug(f"Expected exception raised: {e.value}")
+
+
+def test_create_fam_role_with_forest_client(
+        concrete_role_with_forest_client,
+        dbsession_role_types):
+    db = dbsession_role_types
+    role_data = concrete_role_with_forest_client
+
+    # create a forest client record
+    fc_record = {"forest_client_number": '00001011',
+        "create_user": 'test_user'
+    }
+
+    # create the data struct that the crud function is expecting
+    forest_client_number = role_data['forest_client_number']
+    del role_data['forest_client_number']
+
+    # test if input data can be put in a model (role, and forest client)
+    #concrete_role_with_forest_client_dict['client_number']
+    role_asModel = model.FamRole(**role_data)
+    forest_client_asModel = model.FamForestClient(**fc_record)
+    '''
+    # adding the forest client record to the model
+    role_asModel.client_number = forest_client_asModel
+    db.add(role_asModel)
+    db.flush()
+
+    # delete what was just done and now try same pattern from the
+    # crud_role.createFamRole method
+    LOGGER.debug(f"famRoleAsPydantic: {role_asModel}")
+    db.delete(forest_client_asModel)
+    db.delete(role_asModel)
+    db.flush()
+
+    role_data['forest_client_number'] = fc_record['forest_client_number']
+    LOGGER.debug(f"concrete_role_with_forest_client_dict: {role_data}")
+    # now try from the crud method
+    '''
+    role_data['forest_client_number'] = forest_client_number
+    famRoleAsPydantic = schemas.FamRoleCreate(**role_data)
+
+
+    parentRole = crud_role.create_role(role=famRoleAsPydantic, db=db)
+    LOGGER.debug("parentRole: {parentRole}")
+
+    # now assert that the database contains the information we are expecting
+    roles = crud_role.get_roles(db)
+    LOGGER.debug("roles: {roles}")
+    assert len(roles) == 1
+    assert roles[0].role_name == role_data['role_name']
+    assert roles[0].client_number.forest_client_number == forest_client_number
+    assert roles[0].role_type_code == role_data['role_type_code']
+    assert roles[0].create_user == role_data['create_user']
+    LOGGER.debug(f"forest client number: {forest_client_number}")
+
+    db.delete(roles[0].client_number)
+    db.delete(roles[0])
