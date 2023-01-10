@@ -5,8 +5,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
     "${var.front_end_redirect_path}/authCallback",
-    # This line creates a cycle between API Gateway, API Lambda, and Cognito :(
-    # "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
+    "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
@@ -35,6 +34,27 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   write_attributes = var.minimum_write_list
 }
 
+# Need to write the client ID to an AWS Secret so that the API lambda can
+# read it at run time. At build time, specifying it as an env variable will
+# create a dependency cycle
+
+resource "random_pet" "fam_oidc_client_id_secret_name" {
+  prefix = "fam_oidc_id"
+  length = 2
+}
+
+resource "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
+  name = random_pet.fam_oidc_client_id_secret_name.id
+
+  tags = {
+    managed-by = "terraform"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "fam_oidc_client_id_secret_version" {
+  secret_id     = aws_secretsmanager_secret.famdb_mastercrfam_oidc_client_id_secreteds_secret.id
+  secret_string = aws_cognito_user_pool_client.fam_console_oidc_client.id
+}
 
 resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   access_token_validity                         = "60"
@@ -61,7 +81,6 @@ resource "aws_cognito_user_pool_client" "fom_ministry_oidc_client" {
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
   write_attributes = var.all_write_list_idir
 }
-
 
 resource "aws_cognito_user_pool_client" "fom_public_oidc_client" {
   access_token_validity                         = "60"

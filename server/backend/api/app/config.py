@@ -5,10 +5,12 @@ import json
 
 LOGGER = logging.getLogger(__name__)
 
+
 def get_env_var(env_var_name):
     if env_var_name not in os.environ:
         raise MissingEnvironmentVariable(env_var_name)
     return os.environ.get(env_var_name)
+
 
 def get_db_string():
     """ retrieves a database connection string for a variety of different
@@ -70,8 +72,18 @@ def get_user_pool_id():
 
 
 def get_oidc_client_id():
-    env_var = "COGNITO_CLIENT_ID"
-    return get_env_var(env_var)
+
+    # Outside of AWS, you can set COGNITO_CLIENT_ID
+    # Inside AWS, you have to get this value from an AWS Secret
+    client_id = os.environ.get("COGNITO_CLIENT_ID")
+    if not client_id:
+        client_id_secret_name = os.environ.get("COGNITO_CLIENT_ID_SECRET")
+        session = boto3.session.Session()
+        client = session.client(service_name="secretsmanager",
+                                region_name=get_aws_region())
+        client_id = client.get_secret_value(SecretId=client_id_secret_name)
+
+    return client_id
 
 
 def get_user_pool_domain_name():
