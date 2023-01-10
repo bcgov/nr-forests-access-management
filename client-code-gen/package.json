@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "OpenAPI Generation for API Client Code",
   "scripts": {
+    "gen-api-docker": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v6.2.1 generate -i local/openapi.json -g typescript-axios --config local/api.json -o /local/gen",
     "gen-api": "rm -rf gen && openapi-generator-cli generate -i openapi.json --generator-name typescript-axios -o gen --config api.json"
   },
   "dependencies": {
