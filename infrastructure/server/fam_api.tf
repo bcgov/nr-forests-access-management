@@ -119,6 +119,7 @@ resource "aws_lambda_function" "fam-api-function" {
       COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
       COGNITO_CLIENT_ID_SECRET = "${random_pet.fam_oidc_client_id_secret_name.id}"
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
+      COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
     }
 
   }
