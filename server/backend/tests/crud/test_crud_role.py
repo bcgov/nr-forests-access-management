@@ -1,9 +1,9 @@
 import logging
 
 import api.app.schemas as schemas
-import api.app.models.model as model
 import pytest
 from api.app.crud import crud_role
+from api.app.crud import crud_forest_client
 from sqlalchemy.exc import IntegrityError
 
 LOGGER = logging.getLogger(__name__)
@@ -139,52 +139,41 @@ def test_create_fam_role_with_forest_client(
     db = dbsession_role_types
     role_data = concrete_role_with_forest_client
 
-    # create a forest client record
-    fc_record = {"forest_client_number": '00001011',
-        "create_user": 'test_user'
-    }
+    # double check that the forest client number field is populated as
+    # that is core to this test
+    assert role_data['forest_client_number'] is not None
 
-    # create the data struct that the crud function is expecting
-    forest_client_number = role_data['forest_client_number']
-    del role_data['forest_client_number']
+    # testing that the data can be converted to pydantic model
+    fam_role_as_pydantic = schemas.FamRoleCreate(**role_data)
 
-    # test if input data can be put in a model (role, and forest client)
-    #concrete_role_with_forest_client_dict['client_number']
-    role_asModel = model.FamRole(**role_data)
-    forest_client_asModel = model.FamForestClient(**fc_record)
-    '''
-    # adding the forest client record to the model
-    role_asModel.client_number = forest_client_asModel
-    db.add(role_asModel)
-    db.flush()
+    # add the role with forest client to the database
+    role_in_db = crud_role.create_role(role=fam_role_as_pydantic, db=db)
+    LOGGER.debug(f"role from db: {role_in_db}")
 
-    # delete what was just done and now try same pattern from the
-    # crud_role.createFamRole method
-    LOGGER.debug(f"famRoleAsPydantic: {role_asModel}")
-    db.delete(forest_client_asModel)
-    db.delete(role_asModel)
-    db.flush()
-
-    role_data['forest_client_number'] = fc_record['forest_client_number']
-    LOGGER.debug(f"concrete_role_with_forest_client_dict: {role_data}")
-    # now try from the crud method
-    '''
-    role_data['forest_client_number'] = forest_client_number
-    famRoleAsPydantic = schemas.FamRoleCreate(**role_data)
-
-
-    parentRole = crud_role.create_role(role=famRoleAsPydantic, db=db)
-    LOGGER.debug("parentRole: {parentRole}")
-
-    # now assert that the database contains the information we are expecting
+    # make a separate query to the database for all the roles (should only be
+    # the one)
     roles = crud_role.get_roles(db)
-    LOGGER.debug("roles: {roles}")
+    LOGGER.debug("roles from the database: {roles}")
     assert len(roles) == 1
+    # assert that the data retured from the database is the same as the data
+    # that was used to create the database record
     assert roles[0].role_name == role_data['role_name']
-    assert roles[0].client_number.forest_client_number == forest_client_number
+    assert (
+        roles[0].client_number.forest_client_number ==
+        role_data['forest_client_number']
+    )
     assert roles[0].role_type_code == role_data['role_type_code']
     assert roles[0].create_user == role_data['create_user']
-    LOGGER.debug(f"forest client number: {forest_client_number}")
+    LOGGER.debug(f"forest client number: {role_data['forest_client_number']}")
 
-    db.delete(roles[0].client_number)
+    # make sure that a forest client record exists in the database
+    forest_client_from_db = crud_forest_client.get_forest_client(
+        db=db, forest_client_number=role_data['forest_client_number'])
+    assert (
+        forest_client_from_db.forest_client_number ==
+        role_data['forest_client_number']
+    )
+
+    # cleanup the roles that have been created in this test
+    #  db.delete(roles[0].client_number)
     db.delete(roles[0])
