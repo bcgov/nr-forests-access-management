@@ -71,25 +71,6 @@ def get_user_pool_id():
     return get_env_var(env_var)
 
 
-def get_oidc_client_id():
-
-    # Outside of AWS, you can set COGNITO_CLIENT_ID
-    # Inside AWS, you have to get this value from an AWS Secret
-    client_id = os.environ.get("COGNITO_CLIENT_ID")
-
-    if not client_id:
-        LOGGER.info("Did not find the COGNITO_CLIENT_ID env variable")
-        client_id_secret_name = os.environ.get("COGNITO_CLIENT_ID_SECRET")
-        LOGGER.info(f"COGNITO_CLIENT_ID_SECRET value is {client_id_secret_name}")
-        session = boto3.session.Session()
-        client = session.client(service_name="secretsmanager",
-                                region_name=get_aws_region())
-        client_id = client.get_secret_value(SecretId=client_id_secret_name)
-
-    LOGGER.info(f"Using OIDC client ID: [{client_id}]")
-    return client_id
-
-
 def get_user_pool_domain_name():
     env_var = 'COGNITO_USER_POOL_DOMAIN'
     return get_env_var(env_var)
