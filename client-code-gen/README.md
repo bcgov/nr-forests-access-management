@@ -41,7 +41,8 @@ Update OpenAPI Spec:
 To generate, build and compile the typescript sources to javascript use:
 ```
 With Docker:
->> npm run gen-api-docker
+>> npm run dockergen-api-bash
+or for Windows(CMD/Powershell), use script >>(npm run dockergen-api-win)
 
 With CLI:
 >> npm install
