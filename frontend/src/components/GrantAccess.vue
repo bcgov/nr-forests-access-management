@@ -36,10 +36,10 @@ function onlyDigit(evt: KeyboardEvent) {
 
 async function grantAccess() {
   const toast = useToast();
-  const grantAccessRequest = toRequest(formData.value)
+  const newUserRoleAssignmentPayload = toRequestPayload(formData.value)
   try {
-    await userRoleAssignmentApi.createUserRoleAssignment(grantAccessRequest)
-    toast.success(`User "${grantAccessRequest.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
+    await userRoleAssignmentApi.createUserRoleAssignment(newUserRoleAssignmentPayload)
+    toast.success(`User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
   }
   catch(err: any) {
@@ -48,7 +48,7 @@ async function grantAccess() {
   }
 }
 
-function toRequest(formData: any) {
+function toRequestPayload(formData: any) {
   const request = {
     user_name: formData.userId,
     user_type_code: formData.domain,
