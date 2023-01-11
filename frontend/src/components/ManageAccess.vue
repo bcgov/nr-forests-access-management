@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import router from '@/router';
 import { useToast } from 'vue-toastification';
-import { ApiServiceFactory, ApiServiceName } from '@/services/ApiServiceFactory';
+import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import PageTitle from '@/components/PageTitle.vue';
 import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
@@ -10,11 +10,11 @@ import { isApplicationSelected, selectedApplication } from '@/services/Applicati
 import Dialog from '@/components/Dialog/Dialog.vue'
 
 import { $vfm } from 'vue-final-modal'
-import type { FAMApplicationsApi, FamApplicationUserRoleAssignmentGet, FAMUserRoleAssignmentApi } from 'fam-api';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-api';
 
 const apiServiceFactory = new ApiServiceFactory()
-const applicationsApi = apiServiceFactory.getApiService(ApiServiceName.ApplicationsApi) as FAMApplicationsApi;
-const userRoleAssignmentApi = apiServiceFactory.getApiService(ApiServiceName.UserRoleAssignmentApi) as FAMUserRoleAssignmentApi;
+const applicationsApi = apiServiceFactory.getApplicationApi()
+const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
 
 // Initialize as null to indicate not yet loaded.
 const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>()

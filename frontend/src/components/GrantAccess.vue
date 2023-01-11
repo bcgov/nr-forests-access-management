@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { ApiServiceFactory, ApiServiceName } from '@/services/ApiServiceFactory';
+import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { selectedApplication } from '@/services/ApplicationState';
 import type { FamApplicationRole, FAMApplicationsApi, FAMUserRoleAssignmentApi, FamUserRoleAssignmentCreate } from 'fam-api';
 import { onMounted, ref } from 'vue';
@@ -19,8 +19,8 @@ const defaultFormData = {
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone default input data.
 
 const apiServiceFactory = new ApiServiceFactory()
-const applicationsApi = apiServiceFactory.getApiService(ApiServiceName.ApplicationsApi) as FAMApplicationsApi;
-const userRoleAssignmentApi = apiServiceFactory.getApiService(ApiServiceName.UserRoleAssignmentApi) as FAMUserRoleAssignmentApi;
+const applicationsApi = apiServiceFactory.getApplicationApi()
+const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
 
 onMounted(async () => {
   applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
