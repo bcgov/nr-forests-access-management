@@ -7,45 +7,40 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
 import router from '@/router';
-<<<<<<< HEAD
-=======
 // import * as yup from 'yup';
->>>>>>> 026865f (Reducing bundle size by not importing everything from yup)
 import { object, string } from 'yup';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = {IDIR: 'I', BCEID: 'B'} // TODO, load it from backend when backend has the endpoint.
 let applicationRoleOptions = ref<FamApplicationRole[]>([])
 
-<<<<<<< HEAD
 const defaultFormData = {
-  domain: domainOptions.BCEID,
-  userId: null,
-  forestClientNumber: null,
-  role: null as unknown as FamApplicationRole
+    domain: domainOptions.BCEID,
+    userId: null,
+    forestClientNumber: null,
+    role: null as unknown as FamApplicationRole,
+    roleUI: null as unknown as FamApplicationRole
 }
-const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone default input data.
+const formData = ref(JSON.parse(JSON.stringify(defaultFormData))) // clone default input
 
 const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApplicationApi()
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
-=======
 const schema = object().shape({
   userId: string()
     .required('User ID is required')
     .min(2, 'User ID must be at least 2 characters')
     .nullable(),
-    role: object().required('Please select a value').nullable(),
+    roleUI: object().required('Please select a value').nullable(),
   forestClientNumber: string()
     .nullable()
-    .when('role', {
+    .when('roleUI', {
       is: (role: any) => role?.role_type_code == 'A',
       then: string()
         .required('Forest Client number is required')
         .min(8, 'Forest Client number must be at least 8 characters')
     })
 });
->>>>>>> 026865f (Reducing bundle size by not importing everything from yup)
 
 onMounted(async () => {
   applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
@@ -85,6 +80,10 @@ function toRequestPayload(formData: any) {
   } as FamUserRoleAssignmentCreate
 
   return request
+}
+
+function statusSelected(evt: any) {
+  formData.value.role = JSON.parse(evt.target.value)
 }
 
 </script>
@@ -141,17 +140,22 @@ function toRequestPayload(formData: any) {
 
       <div class="row">
         <div class="form-group col-md-5">
-          <label for="roleSelect" class="control-label">Role</label>
-          <select id="roleSelect"
-            name="role"
-            required
+          <label for="roleSelect" class="control-label">Role</label><span class="text-danger"> *</span>
+          <Field id="roleSelect"
+            as="select"
+            name="roleUI"
             class="form-select"
             aria-label="Role Select"
-            v-model="formData.role">
+            v-model="formData.roleUI"
+            :class="{ 'is-invalid': errors.roleUI }"
+            @change="statusSelected"
+            >
             <option
               v-for="role in applicationRoleOptions"
-              :value="role">{{role.role_name}}</option>
-          </select>
+              :key="role.role_id"
+              :value="JSON.stringify(role)">{{role.role_name}}</option>
+          </Field>
+          <ErrorMessage class="invalid-feedback" name="roleUI"/>
         </div>
       </div>
 
