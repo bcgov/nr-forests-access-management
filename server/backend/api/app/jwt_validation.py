@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from urllib.request import urlopen
-import boto3
 
 from api.app import database
 from api.app.crud import crud_application
