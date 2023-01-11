@@ -33,12 +33,12 @@ const schema = object().shape({
     .nullable(),
     roleUI: object().required('Please select a value').nullable(),
   forestClientNumber: string()
-    .nullable()
     .when('roleUI', {
       is: (role: any) => role?.role_type_code == 'A',
       then: string()
         .required('Forest Client number is required')
         .min(8, 'Forest Client number must be at least 8 characters')
+        .nullable()
     })
 });
 
