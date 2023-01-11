@@ -9,24 +9,24 @@ from .. import schemas
 LOGGER = logging.getLogger(__name__)
 
 
-def get_forest_client(
-    db: Session, forest_client_number: str
-) -> models.FamForestClient:
+def get_forest_client(db: Session, forest_client_number: str) -> models.FamForestClient:
     LOGGER.debug(
         "Forest Client - 'get_forest_client' with forest_client_number: "
         f"{forest_client_number}."
     )
-    return (
+    fam_forest_client = (
         db.query(models.FamForestClient)
         .filter(models.FamForestClient.forest_client_number == forest_client_number)
         .one_or_none()
     )
+    LOGGER.debug(f"fam_forest_client: {fam_forest_client}")
+    return fam_forest_client
 
 
-def create_forest_client(famForestClient: schemas.FamForestClientCreate, db: Session):
-    LOGGER.debug(f"Creating Fam_Forest_Client with: {famForestClient}")
+def create_forest_client(fam_forest_client: schemas.FamForestClientCreate, db: Session):
+    LOGGER.debug(f"Creating Fam_Forest_Client with: {fam_forest_client}")
 
-    fam_forest_client_dict = famForestClient.dict()
+    fam_forest_client_dict = fam_forest_client.dict()
     db_item = models.FamForestClient(**fam_forest_client_dict)
     db.add(db_item)
     db.flush()

@@ -138,6 +138,24 @@ def concrete_role2_dict() -> Iterator[Dict[str, str]]:
 
 
 @pytest.fixture(scope="function")
+def concrete_role_with_forest_client() -> Iterator[Dict[str, str]]:
+    # "client_number": {
+    #     "forest_client_number": '00014903',
+    #     "client_name": 'dummy client',
+    #     "create_user": 'test_user'
+    # }
+
+    role_data = {
+        "role_name": "FAM_TEST_FC",
+        "role_purpose": "FAM Testing role with forest client",
+        "create_user": constants.FAM_PROXY_API_USER,
+        "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
+        "forest_client_number": '00014903'
+    }
+    yield role_data
+
+
+@pytest.fixture(scope="function")
 def concrete_role2_model(
     concrete_role2_dict: Iterator[Dict[str, str]]
 ) -> Iterator[Dict[str, str]]:

@@ -58,8 +58,8 @@ def fam_user_role_assignment_model(
             "for user/role assignment."
         )
 
-
-        if not hasattr(request, "forest_client_number") or request.forest_client_number is None:
+        if (not hasattr(request, "forest_client_number")
+                or request.forest_client_number is None):
             error_msg = (
                 "Invalid role assignment request. Cannot assign user " +
                 f"{request.user_name} to abstract role {fam_role.role_name}")
@@ -161,9 +161,12 @@ def find_or_create_forest_client_child_role(
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
-    forest_client = crud_forest_client.find_or_create(
+    forest_client = crud_forest_client.find_or_create(  # NOSONAR
         db, forest_client_number
     )
+    LOGGER.debug(f'forest client number from db: {forest_client.forest_client_number}')
+    LOGGER.debug(f'forest client client id from db: {forest_client.client_number_id}')
+
 
     forest_client_role_name = construct_forest_client_role_name(
         parent_role.role_name, forest_client_number

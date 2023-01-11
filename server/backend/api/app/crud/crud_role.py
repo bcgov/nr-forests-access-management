@@ -3,9 +3,11 @@ from typing import List, Optional
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session
+import api.app.constants as constants
 
 from .. import schemas
 from . import crud_forest_client
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,18 +34,46 @@ def get_roles(db: Session) -> List[models.FamRole]:
 def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
     LOGGER.debug(f"Creating Fam role: {role}")
 
-    role_dict = role.dict()
-    forest_client_number = role_dict["forest_client_number"]
-    if forest_client_number:
-        role_dict["client_number_id"] = crud_forest_client.get_forest_client(
-            db, forest_client_number
-        ).client_number_id
-    del role_dict["forest_client_number"]
+    fam_role_dict = role.dict()
+    forest_client_number = fam_role_dict["forest_client_number"]
+    del fam_role_dict["forest_client_number"]
 
-    db_item = models.FamRole(**role_dict)
-    db.add(db_item)
+    # start by creating a role record
+    fam_role_model = models.FamRole(**fam_role_dict)
+
+    if forest_client_number:
+        # need to create a forest client record
+
+        # check if a forest client record already exists
+        forest_client_record = crud_forest_client.get_forest_client(
+            db, forest_client_number
+        )
+
+        # if no forest client record is found then create one
+        if not forest_client_record:
+            LOGGER.debug("creating a forest client record")
+            fc_dict = {
+                "forest_client_number": forest_client_number,
+                "client_name": "going to delete anyways when complete issue"
+                + f" 327 / {forest_client_number}",
+                "create_user": constants.FAM_PROXY_API_USER,
+            }
+            fc_pydantic = schemas.FamForestClientCreate(**fc_dict)
+            forest_client_model = crud_forest_client.create_forest_client(
+                db=db, fam_forest_client=fc_pydantic
+            )
+            LOGGER.debug(
+                "forest client id: " + f"{forest_client_model.client_number_id}"
+            )
+
+            # finally add the forests client record to the role
+            fam_role_model.client_number = forest_client_model
+        else:
+            fam_role_model.client_number = forest_client_record
+
+    db.add(fam_role_model)
     db.flush()
-    return db_item
+    return fam_role_model
 
 
 def get_role_by_role_name(db: Session, role_name: str) -> Optional[models.FamRole]:
