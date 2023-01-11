@@ -1,0 +1,5 @@
+KC_HOST=https://dev.oidc.gov.bc.ca
+KC_CLIENTID=<client id for service account>
+KC_SECRET=<secret for client id>
+KC_REALM=ichqx89w
+KC_FOM_CLIENTID=<fom client id>
