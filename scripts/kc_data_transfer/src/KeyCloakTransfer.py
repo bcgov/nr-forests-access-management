@@ -30,7 +30,6 @@ KCIdirAtributes = TypedDict(
     },
 )
 
-
 KCUser = TypedDict(
     "KCUser",
     {
@@ -50,7 +49,6 @@ KCUser = TypedDict(
         "idir_user_guid": List[str],
     },
 )
-
 
 FamApplication = TypedDict(
     "FamApplication",
@@ -89,7 +87,6 @@ FamForestClient = TypedDict(
     {"forest_client_number": str, "create_user": Optional[Union[None, str]]},
 )
 
-
 FamRole = TypedDict(
     "FamRole",
     {
@@ -125,7 +122,8 @@ class KeyCloakToFAM:
 
     def copy_users(self) -> None:
 
-        # make sure the parent role exists and create it if it does not
+        # make sure the parent role exists and create it if it does not, the
+        # parent role is defined in the parameter `fam_fom_abstract_role_name`
         app_id = self.fam.get_fom_app_id()
         if not self.fam.get_role(
             role_type="A", role_name=self.fam_fom_abstract_role_name
@@ -163,7 +161,7 @@ class KeyCloakToFAM:
         fc_roles = self.extract_forest_client_roles(roles)
         LOGGER.info(f"number of forest client roles: {len(fc_roles)}")
 
-        # iterate over each forest client based role for FOM in Keycloak
+        # iterate over each forest client based role from FOM in Keycloak
         for role in fc_roles:
             # extract the fc 8 digit id / string from the role name
             forest_client_string = self.extract_forest_client(role["name"])
@@ -172,7 +170,8 @@ class KeyCloakToFAM:
             )
 
             # create the equivalent fam role if it doesn't exist
-            role_name = f"{self.fam_fom_abstract_role_name}_{forest_client_string}"
+            role_name = self.get_fam_forest_client_role_name(forest_client_string)
+
             if not self.fam.get_role(role_type="C", role_name=role_name, app_id=app_id):
                 LOGGER.info(f"concrete fole name to be created: {role_name}")
                 self.fam.create_role(
@@ -183,7 +182,7 @@ class KeyCloakToFAM:
                     forest_client_number=forest_client_string,
                     parent_role_id=fom_parent_id,
                 )
-            # retrieve the FAM role based on its name, so we can find out its ID
+            # retrieve the FAM role, based on its name, so we can find out its ID
             fam_role = self.fam.get_role(
                 role_type="C", role_name=role_name, app_id=app_id
             )
@@ -281,6 +280,16 @@ class KeyCloakToFAM:
             if regex.match(role["name"]):
                 fom_fc_roles.append(role)
         return fom_fc_roles
+
+    def get_fam_forest_client_role_name(self, forest_client_number: str) -> str:
+        """calculates the name of the forest client number based role that will
+        be used in FAM
+
+        :param forest_client_number: the input forest client number
+        :return: calculated forest client number based role.
+        """
+        role_name = f"{self.fam_fom_abstract_role_name}_{forest_client_number}"
+        return role_name
 
 
 class FamWrapper:

@@ -268,7 +268,6 @@ class KeycloakWrapper:
         LOGGER.debug(f"users: {response.text}")
         return user_roles
 
-
     def get_fom_client_id(self):
         """Looks up the FOM client 'id' using the 'clientid'
 
@@ -389,4 +388,3 @@ class KeycloakWrapper:
 
         response = requests.post(url=url, headers=headers, json=roles)
         response.raise_for_status()
-

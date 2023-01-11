@@ -13,12 +13,9 @@ a .env file in this directory
 
 LOGGER = logging.getLogger(__name__)
 
-
-
 # populate the env vars from an .env file if it exists
 localEnvPath = os.path.join(os.path.dirname(__file__), '..', '.env')
 
-#localEnvPath = os.path.join(os.getcwd(), '..', '.env')
 LOGGER.debug(f"envPath: {localEnvPath}")
 
 if os.path.exists(localEnvPath):
