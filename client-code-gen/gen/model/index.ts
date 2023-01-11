@@ -2,6 +2,7 @@ export * from './fam-application';
 export * from './fam-application-role';
 export * from './fam-application-user-role-assignment-get';
 export * from './fam-forest-client';
+export * from './fam-forest-client-create';
 export * from './fam-role-create';
 export * from './fam-role-get';
 export * from './fam-role-with-client';

@@ -41,7 +41,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
          * @throws {RequiredError}
          */
         getApplications: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/fam_applications`;
+            const localVarPath = `/fam_applications`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -71,7 +71,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
          * @throws {RequiredError}
          */
         getApplicationsAuthorized: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/fam_applications/authorize`;
+            const localVarPath = `/fam_applications/authorize`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -83,9 +83,9 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication OAuth2AuthorizationCodeBearer required
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "OAuth2AuthorizationCodeBearer", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
 
 
     
@@ -105,7 +105,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
          * @throws {RequiredError}
          */
         getApplicationsSecure: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/fam_applications/secure`;
+            const localVarPath = `/fam_applications/secure`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -117,9 +117,9 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication OAuth2AuthorizationCodeBearer required
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "OAuth2AuthorizationCodeBearer", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
 
 
     
@@ -142,7 +142,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         getFamApplicationRoles: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationRoles', 'applicationId', applicationId)
-            const localVarPath = `/api/v1/fam_applications/{application_id}/fam_roles`
+            const localVarPath = `/fam_applications/{application_id}/fam_roles`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -176,7 +176,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         getFamApplicationRolesAuthorizeApp: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationRolesAuthorizeApp', 'applicationId', applicationId)
-            const localVarPath = `/api/v1/fam_applications/{application_id}/fam_roles/authorize`
+            const localVarPath = `/fam_applications/{application_id}/fam_roles/authorize`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -189,9 +189,9 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication OAuth2AuthorizationCodeBearer required
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "OAuth2AuthorizationCodeBearer", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
 
 
     
@@ -214,7 +214,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         getFamApplicationUserRoleAssignment: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationUserRoleAssignment', 'applicationId', applicationId)
-            const localVarPath = `/api/v1/fam_applications/{application_id}/user_role_assignment`
+            const localVarPath = `/fam_applications/{application_id}/user_role_assignment`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

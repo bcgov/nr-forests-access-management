@@ -67,15 +67,15 @@ export interface FamRoleWithClient {
     'role_type_code': string;
     /**
      * 
-     * @type {number}
-     * @memberof FamRoleWithClient
-     */
-    'role_id': number;
-    /**
-     * 
      * @type {FamForestClient}
      * @memberof FamRoleWithClient
      */
     'client_number'?: FamForestClient;
+    /**
+     * 
+     * @type {number}
+     * @memberof FamRoleWithClient
+     */
+    'role_id': number;
 }
 

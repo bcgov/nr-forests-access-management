@@ -42,7 +42,7 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
         createUserRoleAssignment: async (famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famUserRoleAssignmentCreate' is not null or undefined
             assertParamExists('createUserRoleAssignment', 'famUserRoleAssignmentCreate', famUserRoleAssignmentCreate)
-            const localVarPath = `/api/v1/user_role_assignment`;
+            const localVarPath = `/user_role_assignment`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -78,7 +78,7 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
         deleteUserRoleAssignment: async (userRoleXrefId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userRoleXrefId' is not null or undefined
             assertParamExists('deleteUserRoleAssignment', 'userRoleXrefId', userRoleXrefId)
-            const localVarPath = `/api/v1/user_role_assignment/{user_role_xref_id}`
+            const localVarPath = `/user_role_assignment/{user_role_xref_id}`
                 .replace(`{${"user_role_xref_id"}}`, encodeURIComponent(String(userRoleXrefId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
