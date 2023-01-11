@@ -117,7 +117,7 @@ resource "aws_lambda_function" "fam-api-function" {
       COGNITO_CLIENT_ID_SECRET = "${data.aws_secretsmanager_secret.fam_oidc_client_id_secret.name}"
 
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
-      COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
+      # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
     }
 
   }

@@ -54,6 +54,8 @@ def get_oidc_client_id():
 
     if not _client_id:
         _client_id = os.environ.get("COGNITO_CLIENT_ID")
+        if _client_id:
+            LOGGER.info("Found the COGNITO_CLIENT_ID env variable")
 
     if not _client_id:
         LOGGER.info("Did not find the COGNITO_CLIENT_ID env variable")
@@ -63,7 +65,8 @@ def get_oidc_client_id():
         client = session.client(service_name="secretsmanager",
                                 region_name=get_aws_region())
         secret_value = client.get_secret_value(SecretId=client_id_secret_name)
-        _client_id = json.loads(secret_value["SecretString"])
+        LOGGER.info(f"Secret retrieved -- value: [{secret_value}]")
+        _client_id = secret_value["SecretString"]
 
     LOGGER.info(f"Using OIDC client ID: [{_client_id}]")
     return _client_id
