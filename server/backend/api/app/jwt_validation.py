@@ -19,7 +19,8 @@ from starlette.requests import Request
 # config.get_aws_region()
 from .config import (get_aws_region,
                      get_user_pool_domain_name,
-                     get_user_pool_id)
+                     get_user_pool_id,
+                     get_oidc_client_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -41,36 +42,6 @@ ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
 user_pool_domain_name = get_user_pool_domain_name()
-
-_client_id = None
-
-
-def get_oidc_client_id():
-
-    # Outside of AWS, you can set COGNITO_CLIENT_ID
-    # Inside AWS, you have to get this value from an AWS Secret
-
-    global _client_id
-
-    if not _client_id:
-        _client_id = os.environ.get("COGNITO_CLIENT_ID")
-        if _client_id:
-            LOGGER.info("Found the COGNITO_CLIENT_ID env variable")
-
-    if not _client_id:
-        LOGGER.info("Did not find the COGNITO_CLIENT_ID env variable")
-        client_id_secret_name = os.environ.get("COGNITO_CLIENT_ID_SECRET")
-        LOGGER.info(f"COGNITO_CLIENT_ID_SECRET value is {client_id_secret_name}")
-        session = boto3.session.Session()
-        client = session.client(service_name="secretsmanager",
-                                region_name=get_aws_region())
-        secret_value = client.get_secret_value(SecretId=client_id_secret_name)
-        LOGGER.info(f"Secret retrieved -- value: [{secret_value}]")
-        _client_id = secret_value["SecretString"]
-
-    LOGGER.info(f"Using OIDC client ID: [{_client_id}]")
-    return _client_id
-
 
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
     authorizationUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/authorize",
