@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue';
-import { ApiService } from '@/services/ApiService';
-import type { Application } from '@/services/ApplicationState';
+import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { applicationsUserAdministers, isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
+import type { FamApplication, FAMApplicationsApi } from 'fam-api';
 import { useToast } from 'vue-toastification';
 import router from '../router';
 
-const apiService = new ApiService()
+const apiServiceFactory = new ApiServiceFactory()
+const applicationsApi = apiServiceFactory.getApplicationApi()
 
 // Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
 setTimeout( async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
-    applicationsUserAdministers.value = await apiService.getApplications()
+    applicationsUserAdministers.value = (await applicationsApi.getApplications()).data
   } catch (error) {
     const toast = useToast();
     toast.error("An error occurred loading applications. Please refresh the screen.\n If the error persists, try again later or contact support.")
@@ -22,7 +23,7 @@ setTimeout( async () => {
       { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 },
       { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
-    ] as Application[]
+    ] as FamApplication[]
 
   }
 

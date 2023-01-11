@@ -4,14 +4,14 @@ import { it, describe, expect, beforeEach } from 'vitest'
 import { routes } from '@/router'
 import { createRouter, createWebHistory, type Router } from 'vue-router'
 import { applicationsUserAdministers, selectedApplication } from '@/services/ApplicationState'
-import type { Application } from '@/services/ApplicationState'
+import type { FamApplication } from 'fam-api'
 import type { Plugin } from 'vue'
 
 describe('Breadcrumb Component', () => {
 
   let wrapper: VueWrapper;
   let router: Router;
-  
+
   beforeEach(async() => {
     router = createRouter({
       history: createWebHistory(),
@@ -35,7 +35,7 @@ describe('Breadcrumb Component', () => {
   it('should not show SelectApplication when user can administer only one app', async () => {
     applicationsUserAdministers.value = [
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
-    ] as Application[]
+    ] as FamApplication[]
     selectedApplication.value = applicationsUserAdministers.value[0]
 
     router.push('/manage')
@@ -47,7 +47,7 @@ describe('Breadcrumb Component', () => {
     applicationsUserAdministers.value = [
       { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 },
       { application_name: 'FAKE2', application_description: 'Fake 2 Test App', application_id: 9998 }
-    ] as Application[]
+    ] as FamApplication[]
     selectedApplication.value = applicationsUserAdministers.value[0]
 
     router.push('/manage')

@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import router from '@/router';
 import { useToast } from 'vue-toastification';
-import { ApiService, type UserRoleAssignment } from '@/services/ApiService';
+import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import PageTitle from '@/components/PageTitle.vue';
 import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
 
@@ -10,16 +10,18 @@ import { isApplicationSelected, selectedApplication } from '@/services/Applicati
 import Dialog from '@/components/Dialog/Dialog.vue'
 
 import { $vfm } from 'vue-final-modal'
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-api';
 
-
-const apiService = new ApiService();
+const apiServiceFactory = new ApiServiceFactory()
+const applicationsApi = apiServiceFactory.getApplicationApi()
+const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
 
 // Initialize as null to indicate not yet loaded.
-const userRoleAssignments = ref<UserRoleAssignment[]>()
+const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>()
 
 onMounted(async () => {
   if (selectedApplication.value != null) {
-    const list = await apiService.getUserRoleAssignments(selectedApplication.value!.application_id)
+    const list = (await applicationsApi.getFamApplicationUserRoleAssignment(selectedApplication.value!.application_id)).data
     userRoleAssignments.value = list.sort((first,second) => {
       const nameCompare = first.user.user_name.localeCompare(second.user.user_name);
       if (nameCompare != 0) return nameCompare
@@ -51,7 +53,7 @@ function showingMessage(): string {
   return "Showing " + visible + " of " + userRoleAssignments.value.length + " records"
 }
 
-function filterIncludes(userRoleAssignment: UserRoleAssignment): boolean {
+function filterIncludes(userRoleAssignment: FamApplicationUserRoleAssignmentGet): boolean {
 
   if (userFilter.value != null) {
     if (!userRoleAssignment.user.user_name.toLocaleUpperCase().includes(userFilter.value.toLocaleUpperCase())) {
@@ -79,7 +81,7 @@ function filterIncludes(userRoleAssignment: UserRoleAssignment): boolean {
   return true
 }
 
-async function tryDelete(assignment: UserRoleAssignment) {
+async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
   let msg = `Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`
   if (assignment.role.client_number) {
     msg += ` for client ${assignment.role.client_number.forest_client_number}`
@@ -97,8 +99,7 @@ async function tryDelete(assignment: UserRoleAssignment) {
       confirm() {
         // Deletion confirmed.
         try {
-          apiService.deleteUserRoleAssignment(assignment.user_role_xref_id)
-
+          userRoleAssignmentApi.deleteUserRoleAssignment(assignment.user_role_xref_id)
           userRoleAssignments.value = userRoleAssignments.value!.filter(a => {
             return !(a.user_role_xref_id == assignment.user_role_xref_id);
           })

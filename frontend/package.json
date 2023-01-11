@@ -2,6 +2,7 @@
   "name": "fam-frontend",
   "version": "0.0.0",
   "scripts": {
+    "install-frontend": "cd ../client-code-gen/gen && npm ci && cd ../../frontend && npm ci",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview --port 5173",
@@ -18,12 +19,13 @@
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "@popperjs/core": "^2.11.6",
     "aws-amplify": "^4.3.43",
-    "axios": "^1.1.3",
+    "axios": "0.26.1",
     "bootstrap": "^5.2.2",
     "vue": "^3.2.38",
     "vue-final-modal": "^3.4.11",
     "vue-router": "^4.1.5",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-toastification": "^2.0.0-rc.5",
+    "fam-api": "file:../client-code-gen/gen"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.5",
