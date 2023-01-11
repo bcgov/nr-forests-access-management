@@ -16,8 +16,10 @@ from starlette.requests import Request
 # import config
 # then
 # config.get_aws_region()
-from .config import (get_aws_region, get_oidc_client_id,
-                     get_user_pool_domain_name, get_user_pool_id)
+from .config import (get_aws_region,
+                     get_user_pool_domain_name,
+                     get_user_pool_id,
+                     get_oidc_client_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -39,13 +41,12 @@ ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
 user_pool_domain_name = get_user_pool_domain_name()
-client_id = get_oidc_client_id()
 
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
     authorizationUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/authorize",
     tokenUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/token",
     scopes=None,
-    scheme_name=client_id,
+    scheme_name=get_oidc_client_id(),
     auto_error=True,
 )
 
@@ -208,13 +209,13 @@ def authorize_app(request: Request,
     application_id = request.path_params['application_id']
 
     application = crud_application.get_application(application_id=application_id, db=db)
-    # if not application:
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail={'code': ERROR_INVALID_APPLICATION_ID,
-    #                 'description': f"Application ID {application_id} not found"},
-    #         headers={"WWW-Authenticate": "Bearer"},
-    #     )
+    if not application:
+        raise HTTPException(
+            status_code=403,
+            detail={'code': ERROR_INVALID_APPLICATION_ID,
+                    'description': f"Application ID {application_id} not found"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     required_group = f"{application.application_name.upper()}_ACCESS_ADMIN"
     groups = claims[JWT_GROUPS_KEY]
@@ -228,4 +229,3 @@ def authorize_app(request: Request,
         )
 
     return claims
-

@@ -4,6 +4,10 @@ data "aws_secretsmanager_secret" "db_api_creds_secret" {
   name = aws_secretsmanager_secret.famdb_apicreds_secret.name
 }
 
+data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
+  name = aws_secretsmanager_secret.fam_oidc_client_id_secret.name
+}
+
 data "aws_rds_cluster" "api_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
@@ -21,7 +25,6 @@ resource "random_pet" "api_lambda_name" {
   prefix = "fam-api-lambda"
   length = 2
 }
-
 
 resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
   name   = "${random_pet.api_lambda_name.id}-access-policy"
@@ -51,6 +54,14 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
           "secretsmanager:GetSecretValue"
         ],
         "Resource": "${data.aws_secretsmanager_secret.db_api_creds_secret.arn}"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "${data.aws_secretsmanager_secret.fam_oidc_client_id_secret.arn}"
       }
     ]
   }
@@ -72,6 +83,11 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
   name               = "${random_pet.api_lambda_name.id}-role"
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
+
+# Had to move COGNITO_CLIENT_ID out of ENV and into an AWS Secret because of a
+# cycle dependency in the build. That's why it's not here. You still need it
+# when running local or in docker.
+# Need to supply COGNITO_CLIENT_ID_SECRET_NAME when deploying with terraform
 
 resource "aws_lambda_function" "fam-api-function" {
   filename      = "fam-ui-api.zip"
@@ -97,8 +113,11 @@ resource "aws_lambda_function" "fam-api-function" {
       PG_HOST                  = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
       COGNITO_REGION           = "${data.aws_region.current.name}"
       COGNITO_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
-      COGNITO_CLIENT_ID        = "${aws_cognito_user_pool_client.fam_console_oidc_client.id}"
       COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
+      COGNITO_CLIENT_ID_SECRET = "${data.aws_secretsmanager_secret.fam_oidc_client_id_secret.name}"
+
+      API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
+      # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
     }
 
   }

@@ -15,6 +15,8 @@ from mangum import Mangum
 
 from .jwt_validation import init_jwks
 
+from .config import get_root_path
+
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
     '..',
@@ -64,6 +66,7 @@ app = FastAPI(
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
     openapi_tags=tags_metadata,
+    root_path=get_root_path(),
     generate_unique_id_function=custom_generate_unique_id
 )
 
@@ -87,7 +90,7 @@ def main():
     return RedirectResponse(url="/docs/")
 
 
-apiPrefix = '/api/v1'
+apiPrefix = ''
 app.include_router(router_application.router,
                    prefix=apiPrefix + '/fam_applications',
                    tags=["FAM Applications"])

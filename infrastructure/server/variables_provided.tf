@@ -115,8 +115,9 @@ variable "front_end_redirect_path" {
   type = string
 }
 
-variable "local_frontend_redirect_path" {
-  description = "Path to local FAM front-end (for redirect URI), only for dev"
+variable "api_gateway_stage_name" {
+  description = "Stage name for the REST API in API Gateway (appears in URI)"
   type = string
-  default = ""
+  default = "v1"
 }
+
