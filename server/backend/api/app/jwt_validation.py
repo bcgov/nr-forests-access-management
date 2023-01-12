@@ -3,13 +3,10 @@ import logging
 import os
 from urllib.request import urlopen
 
-from api.app import database
 from api.app.crud import crud_application
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
-from sqlalchemy.orm import Session
-from starlette.requests import Request
 
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
@@ -96,8 +93,10 @@ def get_rsa_key(kid):
     return rsa_key
 
 
-def validate_token(token: str = Depends(oauth2_scheme),
-                   get_rsa_key_method: callable = Depends(get_rsa_key_method)) -> dict:
+def validate_token(
+    token: str = Depends(oauth2_scheme),
+    get_rsa_key_method: callable = Depends(get_rsa_key_method)
+) -> dict:
 
     try:
         unverified_header = jwt.get_unverified_header(token)
@@ -202,12 +201,11 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
     return claims
 
 
-def authorize_app(request: Request,
-                  db: Session = Depends(database.get_db),
-                  claims: dict = Depends(authorize)) -> dict:
-
-    application_id = request.path_params['application_id']
-
+def authorize_by_app_id(
+    application_id,
+    db,
+    claims
+):
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
@@ -227,5 +225,3 @@ def authorize_app(request: Request,
                     'description': f'Operation requires role {required_group}'},
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    return claims

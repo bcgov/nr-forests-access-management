@@ -1,11 +1,11 @@
 from http import HTTPStatus
 import logging
 
-from api.app.crud import crud_user_role
+from api.app.crud import crud_user_role, crud_application
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from .. import database, schemas
+from .. import database, schemas, jwt_validation
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,21 +14,29 @@ router = APIRouter()
 
 @router.post("", response_model=schemas.FamUserRoleAssignmentGet)
 def create_user_role_assignment(
-    userRoleAssignmentRequset: schemas.FamUserRoleAssignmentCreate,
+    role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
+    token_claims: dict =
+        Depends(jwt_validation.authorize)
 ):
     """
     Create FAM user_role_xref association.
     """
     LOGGER.debug(f"running router ... {db}")
-    createData = crud_user_role.fam_user_role_assignment_model(
-        db, userRoleAssignmentRequset
+
+    # Enforce application-level security
+    application_id = crud_application.get_application_id_by_role_id(
+        role_assignment_request.role_id)
+    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
+
+    create_data = crud_user_role.fam_user_role_assignment_model(
+        db, role_assignment_request
     )
     LOGGER.debug(
         "User/Role assignment executed successfully, "
-        f"id: {createData.user_role_xref_id}"
+        f"id: {create_data.user_role_xref_id}"
     )
-    return createData
+    return create_data
 
 
 @router.delete(
@@ -37,7 +45,10 @@ def create_user_role_assignment(
     response_class=Response
 )
 def delete_user_role_assignment(
-    user_role_xref_id: int, db: Session = Depends(database.get_db)
+    user_role_xref_id: int,
+    db: Session = Depends(database.get_db),
+    token_claims: dict =
+        Depends(jwt_validation.authorize)
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -48,5 +59,11 @@ def delete_user_role_assignment(
     To fix: see this => https://lightrun.com/answers/tiangolo-fastapi-response-content-longer-than-content-length-error-for-delete-and-nocontent
     (response_class=Response) is added to @router.delete with 204 status.
     """
+
+    # Enforce application-level security
+    application_id = crud_application.get_application_id_by_user_role_xref_id(
+        user_role_xref_id)
+    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
+
     crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
     LOGGER.debug(f"User/Role assignment deleted successfully, id: {user_role_xref_id}")
