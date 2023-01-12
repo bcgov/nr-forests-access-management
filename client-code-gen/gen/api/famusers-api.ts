@@ -42,7 +42,7 @@ export const FAMUsersApiAxiosParamCreator = function (configuration?: Configurat
         createFamUser: async (famUser: FamUser, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famUser' is not null or undefined
             assertParamExists('createFamUser', 'famUser', famUser)
-            const localVarPath = `/api/v1/fam_users`;
+            const localVarPath = `/fam_users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -78,7 +78,7 @@ export const FAMUsersApiAxiosParamCreator = function (configuration?: Configurat
         deleteFamUser: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteFamUser', 'userId', userId)
-            const localVarPath = `/api/v1/fam_users/{user_id}`
+            const localVarPath = `/fam_users/{user_id}`
                 .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -112,7 +112,7 @@ export const FAMUsersApiAxiosParamCreator = function (configuration?: Configurat
         getFamUser: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getFamUser', 'userId', userId)
-            const localVarPath = `/api/v1/fam_users/{user_id}`
+            const localVarPath = `/fam_users/{user_id}`
                 .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -143,7 +143,7 @@ export const FAMUsersApiAxiosParamCreator = function (configuration?: Configurat
          * @throws {RequiredError}
          */
         getUsers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/fam_users`;
+            const localVarPath = `/fam_users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

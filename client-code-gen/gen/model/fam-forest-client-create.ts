@@ -17,14 +17,20 @@
 /**
  * 
  * @export
- * @interface FamForestClient
+ * @interface FamForestClientCreate
  */
-export interface FamForestClient {
+export interface FamForestClientCreate {
     /**
      * 
      * @type {string}
-     * @memberof FamForestClient
+     * @memberof FamForestClientCreate
      */
     'forest_client_number': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamForestClientCreate
+     */
+    'create_user': string;
 }
 

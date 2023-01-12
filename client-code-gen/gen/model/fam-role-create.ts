@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { FamForestClientCreate } from './fam-forest-client-create';
 
 /**
  * 
@@ -62,5 +65,11 @@ export interface FamRoleCreate {
      * @memberof FamRoleCreate
      */
     'role_type_code': string;
+    /**
+     * 
+     * @type {FamForestClientCreate}
+     * @memberof FamRoleCreate
+     */
+    'client_number'?: FamForestClientCreate;
 }
 

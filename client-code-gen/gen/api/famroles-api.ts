@@ -42,7 +42,7 @@ export const FAMRolesApiAxiosParamCreator = function (configuration?: Configurat
         createFamRole: async (famRoleCreate: FamRoleCreate, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famRoleCreate' is not null or undefined
             assertParamExists('createFamRole', 'famRoleCreate', famRoleCreate)
-            const localVarPath = `/api/v1/fam_roles`;
+            const localVarPath = `/fam_roles`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -75,7 +75,7 @@ export const FAMRolesApiAxiosParamCreator = function (configuration?: Configurat
          * @throws {RequiredError}
          */
         getFamRoles: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/fam_roles`;
+            const localVarPath = `/fam_roles`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
