@@ -5,6 +5,8 @@ import api.app.models.model as model
 import api.app.constants as constants
 from api.app.main import apiPrefix
 from sqlmodel import Session
+import tests.jwt_utils as jwt_utils
+import api.app.jwt_validation as jwt_validation
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -16,6 +18,7 @@ def test_create_user_role_assignment_associated_with_abstract_role(
     dbsession_FOM_submitter_role,  # noqa NOSONAR
     user_role_dict,
     clean_up_all_user_role_assignment,
+    test_rsa_key
 ):
     db: Session = dbsession_FOM_submitter_role
 
@@ -33,8 +36,16 @@ def test_create_user_role_assignment_associated_with_abstract_role(
     request_data = copy.deepcopy(user_role_dict)
     request_data["role_id"] = fom_submitter_role.role_id
 
+    claims = jwt_utils.create_jwt_claims()
+    claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
+    token = jwt_utils.create_jwt_token(test_rsa_key, claims)
+
     # Execute POST (concrete role created for role assignment and linked to parent role)
-    response = test_client_fixture.post(f"{endPoint}", json=request_data)
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=request_data,
+        headers=jwt_utils.headers(token)
+    )
 
     # Verify status and body
     assert response.status_code == 200
@@ -73,6 +84,7 @@ def test_create_user_role_assignment_with_concrete_role(
     dbsession_concrete_role,
     user_role_dict,
     clean_up_all_user_role_assignment,
+    test_rsa_key
 ):
     db = dbsession_concrete_role
 
@@ -89,8 +101,16 @@ def test_create_user_role_assignment_with_concrete_role(
     request_data["role_id"] = role_db_item.role_id
     del request_data["forest_client_number"]
 
+    claims = jwt_utils.create_jwt_claims()
+    claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
+    token = jwt_utils.create_jwt_token(test_rsa_key, claims)
+
     # Execute POST (role assignment created)
-    response = test_client_fixture.post(f"{endPoint}", json=request_data)
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=request_data,
+        headers=jwt_utils.headers(token)
+    )
 
     # Verify status and body
     assert response.status_code == 200
@@ -124,7 +144,7 @@ def test_create_user_role_assignment_with_concrete_role(
 
 
 def test_delete_user_role_assignment(
-    test_client_fixture, dbsession_user_role_assignment
+    test_client_fixture, dbsession_user_role_assignment, test_rsa_key
 ):
     db = dbsession_user_role_assignment
 
@@ -134,9 +154,14 @@ def test_delete_user_role_assignment(
     ).all()
     assert len(user_role_assignment_db_items) == 1
 
+    claims = jwt_utils.create_jwt_claims()
+    claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
+    token = jwt_utils.create_jwt_token(test_rsa_key, claims)
+
     # Execute Delete
     test_client_fixture.delete(
-        f"{endPoint}/{user_role_assignment_db_items[0].user_role_xref_id}"
+        f"{endPoint}/{user_role_assignment_db_items[0].user_role_xref_id}",
+        headers=jwt_utils.headers(token)
     )
 
     # Verify user/role assignment has been deleted

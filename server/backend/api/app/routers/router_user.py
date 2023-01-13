@@ -51,20 +51,34 @@ def delete_fam_user(user_id: int, db: Session = Depends(database.get_db)):
     Delete a FAM user
     """
 
-    user = crud_user.get_user(user_id=user_id, db=db)
-    LOGGER.debug(f"user: {user}")
-    if not user:
-        raise HTTPException(status_code=404, detail=f"user_id={user_id} does not exist")
-    user = crud_user.delete_user(db=db, user_id=user_id)
-    return user
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+
+    # user = crud_user.get_user(user_id=user_id, db=db)
+    # LOGGER.debug(f"user: {user}")
+    # if not user:
+    #     raise HTTPException(status_code=404, detail=f"user_id={user_id} does not exist")
+    # user = crud_user.delete_user(db=db, user_id=user_id)
+    # return user
 
 
 @router.get("/{user_id}", response_model=schemas.FamUserGet)
 def get_fam_user(user_id: int, db: Session = Depends(database.get_db)):
+
     """
     Get a FAM user
     """
-    LOGGER.debug(f"userid is: {user_id}")
-    user = crud_user.get_user(user_id=user_id, db=db)
-    LOGGER.debug(f"userdata: {user}")
-    return user
+
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+
+    # LOGGER.debug(f"userid is: {user_id}")
+    # user = crud_user.get_user(user_id=user_id, db=db)
+    # LOGGER.debug(f"userdata: {user}")
+    # return user

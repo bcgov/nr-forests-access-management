@@ -4,7 +4,6 @@ import os
 import sys
 import pytest
 from fastapi.testclient import TestClient
-import mock
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from Crypto.PublicKey import RSA
 import logging
@@ -14,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from api.app.main import app
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
-from api.app.models import model as models
+
 
 # global placeholder to be populated by fixtures for JWT test
 # sessions, required to override the get_drsa_key method.

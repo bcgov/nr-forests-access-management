@@ -155,7 +155,7 @@ def get_application_role_assignments(
     return crossref
 
 
-def get_application_id_by_role_id(role_id):
+def get_application_id_by_role_id(db: Session, role_id):
     application_id =\
         db.query(models.FamApplication.application_id)\
         .join(models.FamRole)\
@@ -165,7 +165,7 @@ def get_application_id_by_role_id(role_id):
     return application_id
 
 
-def get_application_id_by_user_role_xref_id(user_role_xref_id):
+def get_application_id_by_user_role_xref_id(db: Session, user_role_xref_id):
     application_id =\
         db.query(models.FamApplication.application_id)\
         .join(models.FamRole)\

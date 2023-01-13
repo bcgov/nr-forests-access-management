@@ -16,8 +16,7 @@ router = APIRouter()
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
-    token_claims: dict =
-        Depends(jwt_validation.authorize)
+    token_claims: dict = Depends(jwt_validation.authorize)
 ):
     """
     Create FAM user_role_xref association.
@@ -26,7 +25,7 @@ def create_user_role_assignment(
 
     # Enforce application-level security
     application_id = crud_application.get_application_id_by_role_id(
-        role_assignment_request.role_id)
+        db, role_assignment_request.role_id)
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
     create_data = crud_user_role.fam_user_role_assignment_model(
@@ -47,8 +46,7 @@ def create_user_role_assignment(
 def delete_user_role_assignment(
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    token_claims: dict =
-        Depends(jwt_validation.authorize)
+    token_claims: dict = Depends(jwt_validation.authorize)
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -62,7 +60,7 @@ def delete_user_role_assignment(
 
     # Enforce application-level security
     application_id = crud_application.get_application_id_by_user_role_xref_id(
-        user_role_xref_id)
+        db, user_role_xref_id)
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
     crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)

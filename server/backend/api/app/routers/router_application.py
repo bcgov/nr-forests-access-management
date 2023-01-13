@@ -29,43 +29,6 @@ def get_applications(
     return query_data
 
 
-# Not used at this time. Deleted for security reasons
-# @router.post("", response_model=schemas.FamApplication)
-# def create_application(
-#     application: schemas.FamApplicationCreate,
-#     db: Session = Depends(database.get_db),
-# ):
-#     """
-#     Add Application/client to FAM
-#     """
-#     LOGGER.debug(f"running router ... {db}")
-#     query_data = crud_application.create_application(application, db)
-#     return query_data
-
-
-# Not used at this time. Deleted for security reasons
-# @router.delete("/{application_id}", response_model=schemas.FamApplication)
-# def delete_fam_application(
-#     application_id: int,
-#     db: Session = Depends(database.get_db),
-# ):
-#     """
-#     Add Application/client to FAM
-#     """
-#     LOGGER.debug(f"running router ... {db}")
-#     application = crud_application.get_application(application_id=application_id, db=db)
-#     if not application:
-#         raise HTTPException(
-#             status_code=404, detail=f"application_id={application_id} does not exist"
-#         )
-#     application_id = application.application_id
-#     LOGGER.debug(f"application_id: {application_id}")
-#     application = crud_application.delete_application(
-#         db=db, application_id=application_id
-#     )
-#     return application
-
-
 @router.get(
     "/{application_id}/fam_roles",
     response_model=List[schemas.FamApplicationRole],

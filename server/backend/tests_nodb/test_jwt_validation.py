@@ -23,7 +23,7 @@ from Crypto.PublicKey import RSA
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/fam_applications/secure"
+endPoint = f"{apiPrefix}/fam_applications"
 
 
 def test_get_application_success(

@@ -30,10 +30,17 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 
+from Crypto.PublicKey import RSA
+import api.app.jwt_validation as jwt_validation
+
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
 testSession = None
+
+# global placeholder to be populated by fixtures for JWT test
+# sessions, required to override the get_drsa_key method.
+public_rsa_key = None
 
 LOGGER = logging.getLogger(__name__)
 
@@ -178,3 +185,45 @@ def getFixtureParams(request):
     #     database_file = os.path.join(curdir, "..", "fam.db")
     #     LOGGER.debug(f"databaseFile: {database_file}")
     #     db_conn_string = f"sqlite:///{database_file}"
+
+@pytest.fixture(scope="function")
+def test_rsa_key():
+
+    new_key = RSA.generate(2048)
+    global public_rsa_key
+    public_rsa_key = new_key.publickey().exportKey("PEM")
+
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = \
+        override_get_rsa_key_method
+
+    return new_key.exportKey("PEM")
+
+
+@pytest.fixture(scope="function")
+def test_rsa_key_missing():
+
+    new_key = RSA.generate(2048)
+    global public_rsa_key
+    public_rsa_key = new_key.publickey().exportKey("PEM")
+
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = \
+        override_get_rsa_key_method_none
+
+    return new_key.exportKey("PEM")
+
+
+def override_get_rsa_key_method():
+    return override_get_rsa_key
+
+
+def override_get_rsa_key(kid):
+    global public_rsa_key
+    return public_rsa_key
+
+
+def override_get_rsa_key_method_none():
+    return override_get_rsa_key_none
+
+
+def override_get_rsa_key_none(kid):
+    return None

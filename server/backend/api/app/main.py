@@ -7,9 +7,9 @@ from starlette.responses import RedirectResponse
 
 from .routers import \
     router_application, \
-    router_user_role_assignment
-    # router_role, \
-    # router_user, \
+    router_user_role_assignment, \
+    router_role, \
+    router_user
 
 
 from mangum import Mangum
@@ -98,14 +98,14 @@ app.include_router(router_user_role_assignment.router,
                    prefix=apiPrefix + '/user_role_assignment',
                    tags=["FAM User Role Assignment"])
 
-# Removing these two routers because they are not in scope for MVP
+# These two routers are disabled for MVP
 
-# app.include_router(router_user.router,
-#                    prefix=apiPrefix + '/fam_users',
-#                    tags=["FAM Users"])
-# app.include_router(router_role.router,
-#                    prefix=apiPrefix + '/fam_roles',
-#                    tags=["FAM Roles"])
+app.include_router(router_user.router,
+                   prefix=apiPrefix + '/fam_users',
+                   tags=["FAM Users"])
+app.include_router(router_role.router,
+                   prefix=apiPrefix + '/fam_roles',
+                   tags=["FAM Roles"])
 
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()

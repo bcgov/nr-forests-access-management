@@ -16,10 +16,7 @@ from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     JWT_GROUPS_KEY)
 
 LOGGER = logging.getLogger(__name__)
-fam_applications_endpoint = f"{apiPrefix}/fam_applications/authorize"
-
-test_role_id = 1
-fam_application_roles_endpoint = f"{apiPrefix}/fam_applications/{test_role_id}/fam_roles/authorize"
+fam_applications_endpoint = f"{apiPrefix}/fam_applications"
 
 
 def test_get_application_missing_groups_failure(
@@ -48,4 +45,3 @@ def test_get_application_no_groups_failure(
                                        headers=headers(token))
 
     assert_error_response(response, 403, ERROR_GROUPS_REQUIRED)
-
