@@ -18,9 +18,16 @@ def get_users(db: Session = Depends(database.get_db)):
     """
     List of different users that are administered by FAM
     """
-    LOGGER.debug(f"running router ... {db}")
-    query_data = crud_user.get_users(db)
-    return query_data
+
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+
+    # LOGGER.debug(f"running router ... {db}")
+    # query_data = crud_user.get_users(db)
+    # return query_data
 
 
 @router.post("", response_model=schemas.FamUserGet)
@@ -30,19 +37,23 @@ def create_fam_user(
     """
     Add a user to FAM
     """
-    query_data = None
-    LOGGER.debug(f"running router ... {db}")
-    try:
-        query_data = crud_user.create_user(famUser, db)
-        LOGGER.debug(f"queryData: {query_data}")
-    except IntegrityError as e:
-        LOGGER.debug(f"error: {e}")
-        raise HTTPException(status_code=422, detail=str(e))
-    # except Exception as e:
-    #     logging.debug("------ ERROR ------ ")
-    #     logging.exception(e)
 
-    return query_data
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+
+    # query_data = None
+    # LOGGER.debug(f"running router ... {db}")
+    # try:
+    #     query_data = crud_user.create_user(famUser, db)
+    #     LOGGER.debug(f"queryData: {query_data}")
+    # except IntegrityError as e:
+    #     LOGGER.debug(f"error: {e}")
+    #     raise HTTPException(status_code=422, detail=str(e))
+
+    # return query_data
 
 
 @router.delete("/{user_id}", response_model=schemas.FamUser)
