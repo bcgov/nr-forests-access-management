@@ -18,9 +18,15 @@ def get_fam_roles(db: Session = Depends(database.get_db)):
     """
     List of different roles that are administered by FAM
     """
-    LOGGER.debug(f"running router ... {db}")
-    query_data = crud_role.get_roles(db)
-    return query_data
+
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+    # LOGGER.debug(f"running router ... {db}")
+    # query_data = crud_role.get_roles(db)
+    # return query_data
 
 
 @router.post("", response_model=schemas.FamRoleGet)
@@ -30,13 +36,20 @@ def create_fam_role(
     """
     Add a role to FAM
     """
-    query_data = None
-    LOGGER.debug(f"running router ... {db}")
-    try:
-        query_data = crud_role.create_role(fam_role, db)
-        LOGGER.debug(f"query_data: {query_data}")
-    except IntegrityError as e:
-        LOGGER.debug(f"error: {e}")
-        raise HTTPException(status_code=422, detail=str(e))
 
-    return query_data
+    raise HTTPException(
+        status_code=501,
+        detail={'code': 'not_implemented',
+                'description': 'This endpoint is not yet implemented'}
+    )
+
+    # query_data = None
+    # LOGGER.debug(f"running router ... {db}")
+    # try:
+    #     query_data = crud_role.create_role(fam_role, db)
+    #     LOGGER.debug(f"query_data: {query_data}")
+    # except IntegrityError as e:
+    #     LOGGER.debug(f"error: {e}")
+    #     raise HTTPException(status_code=422, detail=str(e))
+
+    # return query_data

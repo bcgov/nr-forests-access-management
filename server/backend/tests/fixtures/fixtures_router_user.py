@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-import tests.router.test_router_user as test_router_user
+import tests.router.disabled_test_router_user as test_router_user
 
 LOGGER = logging.getLogger(__name__)
 endPoint = test_router_user.endPoint

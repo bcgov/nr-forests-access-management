@@ -2,7 +2,7 @@ import logging
 
 from typing import List
 from api.app.crud import crud_application
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from .. import database, schemas, jwt_validation
 
@@ -13,8 +13,11 @@ router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.FamApplication], status_code=200)
-def get_applications(response: Response,
-                     db: Session = Depends(database.get_db)):
+def get_applications(
+    response: Response,
+    db: Session = Depends(database.get_db),
+    token_claims: dict = Depends(jwt_validation.authorize)
+):
 
     """
     List of different applications that are administered by FAM
@@ -24,79 +27,6 @@ def get_applications(response: Response,
     if len(query_data) == 0:
         response.status_code = 204
     return query_data
-
-
-# This is a temporary endpoint to validate the security before applying everywhere
-@router.get("/secure", response_model=List[schemas.FamApplication], status_code=200)
-def get_applications_secure(response: Response,
-                            db: Session = Depends(database.get_db),
-                            token_claims: dict = Depends(jwt_validation.validate_token)):
-
-    LOGGER.debug(token_claims)
-
-    """
-    List of different applications that are administered by FAM
-    """
-    LOGGER.debug(f"running router ... {db}")
-    query_data = crud_application.get_applications(db)
-    if len(query_data) == 0:
-        response.status_code = 204
-    return query_data
-
-
-# This is a temporary endpoint to validate the authorization before applying everywhere
-@router.get("/authorize", response_model=List[schemas.FamApplication], status_code=200)
-def get_applications_authorized(response: Response,
-                                db: Session = Depends(database.get_db),
-                                token_claims: dict = Depends(jwt_validation.authorize)):
-
-    LOGGER.debug(token_claims)
-
-    """
-    List of different applications that are administered by FAM
-    """
-    LOGGER.debug(f"running router ... {db}")
-    query_data = crud_application.get_applications(db)
-    if len(query_data) == 0:
-        response.status_code = 204
-    return query_data
-
-
-# Not used at this time. Deleted for security reasons
-# @router.post("", response_model=schemas.FamApplication)
-# def create_application(
-#     application: schemas.FamApplicationCreate,
-#     db: Session = Depends(database.get_db),
-# ):
-#     """
-#     Add Application/client to FAM
-#     """
-#     LOGGER.debug(f"running router ... {db}")
-#     query_data = crud_application.create_application(application, db)
-#     return query_data
-
-
-# Not used at this time. Deleted for security reasons
-# @router.delete("/{application_id}", response_model=schemas.FamApplication)
-# def delete_fam_application(
-#     application_id: int,
-#     db: Session = Depends(database.get_db),
-# ):
-#     """
-#     Add Application/client to FAM
-#     """
-#     LOGGER.debug(f"running router ... {db}")
-#     application = crud_application.get_application(application_id=application_id, db=db)
-#     if not application:
-#         raise HTTPException(
-#             status_code=404, detail=f"application_id={application_id} does not exist"
-#         )
-#     application_id = application.application_id
-#     LOGGER.debug(f"application_id: {application_id}")
-#     application = crud_application.delete_application(
-#         db=db, application_id=application_id
-#     )
-#     return application
 
 
 @router.get(
@@ -107,36 +37,17 @@ def get_applications_authorized(response: Response,
 def get_fam_application_roles(
     application_id: int,
     db: Session = Depends(database.get_db),
+    token_claims: dict = Depends(jwt_validation.authorize)
 ):
     """gets the roles associated with an application
 
     :param application_id: application id
     :param db: database session, defaults to Depends(database.get_db)
     """
-    LOGGER.debug(f"Recieved application id: {application_id}")
-    app_roles = crud_application.get_application_roles(
-        application_id=application_id, db=db
-    )
-    return app_roles
 
+    # Enforce application-level security
+    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
-
-# This is a temporary endpoint to validate the security before applying everywhere
-@router.get(
-    "/{application_id}/fam_roles/authorize",
-    response_model=List[schemas.FamApplicationRole],
-    status_code=200,
-)
-def get_fam_application_roles_authorize_app(
-    application_id: int,
-    db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize_app)
-):
-    """gets the roles associated with an application
-
-    :param application_id: application id
-    :param db: database session, defaults to Depends(database.get_db)
-    """
     LOGGER.debug(f"Recieved application id: {application_id}")
     app_roles = crud_application.get_application_roles(
         application_id=application_id, db=db
@@ -150,13 +61,19 @@ def get_fam_application_roles_authorize_app(
     status_code=200,
 )
 def get_fam_application_user_role_assignment(
-    application_id: int, db: Session = Depends(database.get_db)
+    application_id: int,
+    db: Session = Depends(database.get_db),
+    token_claims: dict = Depends(jwt_validation.authorize)
 ):
     """gets the roles associated with an application
 
     :param application_id: application id
     :param db: database session, defaults to Depends(database.get_db)
     """
+
+    # Enforce application-level security
+    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
+
     LOGGER.debug(f"application_id: {application_id}")
     app_user_role_assignment = crud_application.get_application_role_assignments(
         db=db, application_id=application_id

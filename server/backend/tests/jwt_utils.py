@@ -14,7 +14,7 @@ def create_jwt_claims():
     return {
         "sub": "51b661cf-4109-4616-b7a5-178daf51fc12",
         "cognito:groups": [
-            "FAM_ADMIN"
+            "FAM_ACCESS_ADMIN"
         ],
         "iss": f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}",
         "version": 2,

@@ -59,7 +59,7 @@ def dbsession_delete(dbsession, application_dict):
 @pytest.fixture(scope="function")
 def application_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
     fam_app_data = {
-        "application_name": "test app",
+        "application_name": "FAM",
         "application_description": "a really good app",
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
