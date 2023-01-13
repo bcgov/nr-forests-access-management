@@ -31,31 +31,84 @@ variable "github_event" {
   type = string
 }
 
-# Variables for IDP setup
+# OIDC issuers at Pathfinder SSO (Keycloak)
 
-variable "oidc_idir_idp_issuer" {
+variable "dev_oidc_idp_issuer" {
   type = string
 }
 
-variable "oidc_idir_idp_client_id" {
+variable "test_oidc_idp_issuer" {
   type = string
 }
 
-variable "oidc_idir_idp_client_secret" {
+variable "prod_oidc_idp_issuer" {
+  type = string
+}
+
+
+# Variables for dev IDIR IDP setup
+
+variable "dev_oidc_idir_idp_client_id" {
+  type = string
+}
+
+variable "dev_oidc_idir_idp_client_secret" {
   type = string
   sensitive = true
 }
 
+# Variables for test IDIR IDP setup
 
-variable "oidc_bceid_business_idp_issuer" {
+variable "test_oidc_idir_idp_client_id" {
   type = string
 }
 
-variable "oidc_bceid_business_idp_client_id" {
+variable "test_oidc_idir_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+# Variables for prod IDIR IDP setup
+
+variable "prod_oidc_idir_idp_client_id" {
   type = string
 }
 
-variable "oidc_bceid_business_idp_client_secret" {
+variable "prod_oidc_idir_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+# Variables for dev BCeID IDP setup
+
+variable "dev_oidc_bceid_business_idp_client_id" {
+  type = string
+}
+
+variable "dev_oidc_bceid_business_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+# Variables for test BCeID IDP setup
+
+
+variable "test_oidc_bceid_business_idp_client_id" {
+  type = string
+}
+
+variable "test_oidc_bceid_business_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+# Variables for prod BCeID IDP setup
+
+variable "prod_oidc_bceid_business_idp_client_id" {
+  type = string
+}
+
+variable "prod_oidc_bceid_business_idp_client_secret" {
   type = string
   sensitive = true
 }
