@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 
 from Crypto.PublicKey import RSA
 import api.app.jwt_validation as jwt_validation
@@ -90,6 +91,15 @@ def test_client_fixture(getApp: FastAPI) -> TestClient:
     """
     client = TestClient(getApp)
     yield client
+
+
+@pytest.fixture(scope="function")
+def test_client_fixture_unit() -> TestClient:
+
+    app.dependency_overrides[database.get_db] = \
+        lambda: UnifiedAlchemyMagicMock(data=[])
+
+    return TestClient(app)
 
 
 @pytest.fixture(scope="module")
