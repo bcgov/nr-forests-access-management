@@ -166,8 +166,9 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
   depends_on = [
     aws_db_cluster_snapshot.fam_pre_flyway_snapshot,
     aws_cognito_user_pool_client.fam_console_oidc_client,
-    aws_cognito_user_pool_client.fom_ministry_oidc_client,
-    aws_cognito_user_pool_client.fom_public_oidc_client,
+    aws_cognito_user_pool_client.dev_fom_oidc_client,
+    aws_cognito_user_pool_client.test_fom_oidc_client,
+    aws_cognito_user_pool_client.prod_fom_oidc_client,
   ]
 
   count = var.execute_flyway ? 1 : 0
