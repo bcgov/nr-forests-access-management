@@ -32,6 +32,12 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
   write_attributes = var.minimum_write_list
+
+  depends_on = [
+    aws_cognito_identity_provider.dev_idir_oidc_provider,
+    aws_cognito_identity_provider.test_idir_oidc_provider,
+    aws_cognito_identity_provider.prod_idir_oidc_provider
+  ]
 }
 
 # Need to write the client ID to an AWS Secret so that the API lambda can
