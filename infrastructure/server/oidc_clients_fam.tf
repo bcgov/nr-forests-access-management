@@ -22,7 +22,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_read_list
   refresh_token_validity                        = "30"
-  supported_identity_providers                  = ["PROD_IDIR"] # TODO: make configurable
+  supported_identity_providers                  = [ var.fam_console_idp_name ]
 
   token_validity_units {
     access_token  = "minutes"

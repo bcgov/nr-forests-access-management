@@ -35,32 +35,36 @@ variable "github_event" {
 
 variable "dev_oidc_idp_issuer" {
   type = string
+  default = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
 variable "test_oidc_idp_issuer" {
   type = string
+  default = "https://test.loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
 variable "prod_oidc_idp_issuer" {
   type = string
+  default = "https://loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
+# Variables for Pathfinder SSO client ID (same in dev, test, prod)
 
-# Variables for dev IDIR IDP setup
-
-variable "dev_oidc_idir_idp_client_id" {
+variable "oidc_idir_idp_client_id" {
   type = string
+  default = "fsa-cognito-idir-dev-4088"
 }
+
+variable "oidc_bceid_business_idp_client_id" {
+  type = string
+  default = "fsa-cognito-b-ce-id-business-dev-4090"
+}
+
+# Client secrets for IDIR and BCeID in each environment
 
 variable "dev_oidc_idir_idp_client_secret" {
   type = string
   sensitive = true
-}
-
-# Variables for test IDIR IDP setup
-
-variable "test_oidc_idir_idp_client_id" {
-  type = string
 }
 
 variable "test_oidc_idir_idp_client_secret" {
@@ -68,21 +72,9 @@ variable "test_oidc_idir_idp_client_secret" {
   sensitive = true
 }
 
-# Variables for prod IDIR IDP setup
-
-variable "prod_oidc_idir_idp_client_id" {
-  type = string
-}
-
 variable "prod_oidc_idir_idp_client_secret" {
   type = string
   sensitive = true
-}
-
-# Variables for dev BCeID IDP setup
-
-variable "dev_oidc_bceid_business_idp_client_id" {
-  type = string
 }
 
 variable "dev_oidc_bceid_business_idp_client_secret" {
@@ -90,22 +82,9 @@ variable "dev_oidc_bceid_business_idp_client_secret" {
   sensitive = true
 }
 
-# Variables for test BCeID IDP setup
-
-
-variable "test_oidc_bceid_business_idp_client_id" {
-  type = string
-}
-
 variable "test_oidc_bceid_business_idp_client_secret" {
   type = string
   sensitive = true
-}
-
-# Variables for prod BCeID IDP setup
-
-variable "prod_oidc_bceid_business_idp_client_id" {
-  type = string
 }
 
 variable "prod_oidc_bceid_business_idp_client_secret" {
@@ -172,5 +151,10 @@ variable "api_gateway_stage_name" {
   description = "Stage name for the REST API in API Gateway (appears in URI)"
   type = string
   default = "v1"
+}
+
+variable "fam_console_idp_name" {
+  description = "Identifies which version of IDIR to use (DEV, TEST, or PROD)"
+  type = string
 }
 

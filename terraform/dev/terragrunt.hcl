@@ -13,7 +13,7 @@ generate "dev_tfvars" {
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
   oidc_idir_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
   oidc_bceid_business_idp_client_id = "fsa-cognito-b-ce-id-business-dev-4090"
-  oidc_bceid_business_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"    
+  oidc_bceid_business_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
   aws_security_group_data = "Data_sg"
   subnet_data_a = "Data_Dev_aza_net"
   subnet_data_b = "Data_Dev_azb_net"
@@ -22,5 +22,6 @@ generate "dev_tfvars" {
   subnet_app_b = "App_Dev_azb_net"
   front_end_redirect_path = "https://d2solh97t525i7.cloudfront.net"
   local_frontend_redirect_path = "http://localhost:5173"
+  fam_console_idp_name = "DEV_IDIR"
 EOF
 }
