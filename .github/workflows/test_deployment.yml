@@ -7,23 +7,27 @@ jobs:
 
   aws-test-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
-    with: 
+    with:
       environment_name: test
       tf_subcommand: apply
       execute_flyway: true
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
-      oidc_idir_idp_client_secret: "${{ secrets.OIDC_IDIR_IDP_CLIENT_SECRET }}"
-      oidc_bceid_business_idp_client_secret: "${{ secrets.OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
 
   aws-test-deployment-frontend:
     needs: aws-test-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
-    with: 
+    with:
       environment_name: test
       tf_subcommand: apply
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}   
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
