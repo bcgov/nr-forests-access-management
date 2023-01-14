@@ -19,16 +19,6 @@ metadata = Base.metadata
 
 class FamApplication(Base):
     __tablename__ = "fam_application"
-    __table_args__ = (
-        PrimaryKeyConstraint("application_id", name="fam_app_pk"),
-        UniqueConstraint("application_name", name="fam_app_name_uk"),
-        {
-            "comment": "An application is a digital product that fulfills a  "
-            "specific user goal. It can be a front-end application, a back-end "
-            "API, a combination of these, or something else entirely.",
-            "schema": "app_fam",
-        },
-    )
 
     application_id = Column(
         BigInteger().with_variant(Integer, "sqlite"),
@@ -45,6 +35,12 @@ class FamApplication(Base):
     )
     application_name = Column(String(100), nullable=False)
     application_description = Column(String(200), nullable=False)
+    app_environment_type_code = Column(
+        String(4),
+        nullable=False,
+        default="DEV",
+        comment="Identifies which environment the application is for; DEV, TEST, PROD etc."
+    )
     create_user = Column(
         String(30),
         nullable=False,
@@ -73,6 +69,19 @@ class FamApplication(Base):
     fam_role = relationship("FamRole", back_populates="application")
     fam_application_group_xref = relationship(
         "FamApplicationGroupXref", back_populates="application"
+    )
+    __table_args__ = (
+        PrimaryKeyConstraint("application_id", name="fam_app_pk"),
+        UniqueConstraint("application_name", name="fam_app_name_uk"),
+        ForeignKeyConstraint(
+            [app_environment_type_code], ["app_fam.fam_app_environment_type.app_environment_type_code"], name="reffam_app_env_type"
+        ),
+        {
+            "comment": "An application is a digital product that fulfills a  "
+            "specific user goal. It can be a front-end application, a back-end "
+            "API, a combination of these, or something else entirely.",
+            "schema": "app_fam",
+        },
     )
 
 
@@ -774,3 +783,48 @@ class FamUserRoleXref(Base):
 
     role = relationship("FamRole", back_populates="fam_user_role_xref")
     user = relationship("FamUser", back_populates="fam_user_role_xref")
+
+
+class FamAppEnvironmentType(Base):
+    __tablename__ = "fam_app_environment_type"
+
+    app_environment_type_code = Column(
+        String(4),
+        nullable=False,
+        comment='application environment type code'
+    )
+
+    description = Column(
+        String(100),
+        nullable=True,
+        comment='Description of what the app_environment_type_code represents.'
+    )
+
+    effective_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the code was effective.",
+    )
+
+    expiry_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=True,
+        default=None,
+        comment="The date and time the code expired.",
+    )
+
+    update_date = Column(
+        TIMESTAMP(precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+
+    __table_args__ = (
+        PrimaryKeyConstraint("app_environment_type_code", name="fam_app_environment_type_pk"),
+        {
+            "comment": "A environment type is a code that is associated with "
+            "the application to indicate its nvironment.",
+            "schema": "app_fam",
+        },
+    )
