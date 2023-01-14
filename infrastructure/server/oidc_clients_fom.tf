@@ -1,4 +1,4 @@
-resource "aws_cognito_user_pool_client" "dev_fom_ministry_oidc_client" {
+resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
@@ -27,7 +27,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_ministry_oidc_client" {
   write_attributes = var.minimum_write_list
 }
 
-resource "aws_cognito_user_pool_client" "test_fom_ministry_oidc_client" {
+resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
@@ -56,7 +56,7 @@ resource "aws_cognito_user_pool_client" "test_fom_ministry_oidc_client" {
   write_attributes = var.minimum_write_list
 }
 
-resource "aws_cognito_user_pool_client" "prod_fom_ministry_oidc_client" {
+resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   access_token_validity                         = "60"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
