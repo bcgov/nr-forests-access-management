@@ -2,7 +2,7 @@
 
 resource "aws_cognito_identity_provider" "dev_idir_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "DEV_IDIR"
+  provider_name = "DEV-IDIR"
   provider_type = "OIDC"
 
   provider_details = {
@@ -25,7 +25,7 @@ resource "aws_cognito_identity_provider" "dev_idir_oidc_provider" {
 
 resource "aws_cognito_identity_provider" "test_idir_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "TEST_IDIR"
+  provider_name = "TEST-IDIR"
   provider_type = "OIDC"
 
   provider_details = {
@@ -49,7 +49,7 @@ resource "aws_cognito_identity_provider" "test_idir_oidc_provider" {
 
 resource "aws_cognito_identity_provider" "prod_idir_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "PROD_IDIR"
+  provider_name = "PROD-IDIR"
   provider_type = "OIDC"
 
   provider_details = {

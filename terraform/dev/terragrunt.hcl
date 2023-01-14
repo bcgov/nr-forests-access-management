@@ -22,6 +22,6 @@ generate "dev_tfvars" {
   subnet_app_b = "App_Dev_azb_net"
   front_end_redirect_path = "https://d2solh97t525i7.cloudfront.net"
   local_frontend_redirect_path = "http://localhost:5173"
-  fam_console_idp_name = "DEV_IDIR"
+  fam_console_idp_name = "DEV-IDIR"
 EOF
 }

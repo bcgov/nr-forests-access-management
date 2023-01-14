@@ -2,7 +2,7 @@
 
 resource "aws_cognito_identity_provider" "dev_bceid_business_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "DEV_BCEIDBUSINESS"
+  provider_name = "DEV-BCEIDBUSINESS"
   provider_type = "OIDC"
 
   provider_details = {
@@ -27,7 +27,7 @@ resource "aws_cognito_identity_provider" "dev_bceid_business_oidc_provider" {
 
 resource "aws_cognito_identity_provider" "test_bceid_business_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "TEST_BCEIDBUSINESS"
+  provider_name = "TEST-BCEIDBUSINESS"
   provider_type = "OIDC"
 
   provider_details = {
@@ -55,7 +55,7 @@ resource "aws_cognito_identity_provider" "test_bceid_business_oidc_provider" {
 # Will need to put in the GitHub Secret at that time as well
 resource "aws_cognito_identity_provider" "prod_bceid_business_oidc_provider" {
   user_pool_id  = aws_cognito_user_pool.fam_user_pool.id
-  provider_name = "PROD_BCEIDBUSINESS"
+  provider_name = "PROD-BCEIDBUSINESS"
   provider_type = "OIDC"
 
   provider_details = {
