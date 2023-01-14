@@ -5,10 +5,10 @@ on:
     inputs:
       environment_name:
         required: true
-        type: string        
+        type: string
       tf_subcommand:
         required: true
-        type: string    
+        type: string
       execute_flyway:
         required: false
         type: string
@@ -18,9 +18,17 @@ on:
         required: true
       tfc_team_token:
         required: true
-      oidc_idir_idp_client_secret:
+      dev_oidc_idir_idp_client_secret:
         required: true
-      oidc_bceid_business_idp_client_secret:
+      test_oidc_bceid_business_idp_client_secret:
+        required: true
+      prod_oidc_idir_idp_client_secret:
+        required: true
+      dev_oidc_bceid_business_idp_client_secret:
+        required: true
+      test_oidc_idir_idp_client_secret:
+        required: true
+      prod_oidc_bceid_business_idp_client_secret:
         required: true
 
 env:
@@ -60,7 +68,7 @@ jobs:
         with:
           name: fam-auth-function
           path: ./infrastructure/server/fam_auth_function.zip
-          if-no-files-found: error   
+          if-no-files-found: error
 
       # Steps to deploy Ian's python as a lambda
       - name: Install and Package Dependencies - FAM API
@@ -85,7 +93,7 @@ jobs:
           name: fam-ui-api
           path: ./infrastructure/server/fam-ui-api.zip
           if-no-files-found: error
-       
+
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
@@ -119,16 +127,20 @@ jobs:
           github_branch = "${{ github.ref_name }}"
           github_commit = "${{ github.sha }}"
           github_event = "${{ github.event_name }}"
-          oidc_idir_idp_client_secret = "${{ secrets.oidc_idir_idp_client_secret }}"
-          oidc_bceid_business_idp_client_secret = "${{ secrets.oidc_bceid_business_idp_client_secret }}"
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           execute_flyway = ${{ inputs.execute_flyway }}
+          dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
+          test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
+          prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
+          dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
+          test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
+          prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
           EOF
 
-      - name: Terragrunt ${{ inputs.tf_subcommand }} 
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
-          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive       
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
