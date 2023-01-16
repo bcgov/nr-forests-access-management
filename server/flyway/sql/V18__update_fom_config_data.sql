@@ -1,7 +1,7 @@
 -- Rename application fom to fom_dev
 UPDATE app_fam.fam_application
 SET (application_name, application_description, update_user, update_date) =
-	('fom_dev', 'Forest Operations Map DEV)', CURRENT_USER, CURRENT_DATE)
+	('fom_dev', 'Forest Operations Map (DEV)', CURRENT_USER, CURRENT_DATE)
 WHERE application_name = 'fom';
 
 -- Rename role FOM_ACCESS_ADMIN to FOM_DEV_ACCESS_ADMIN
