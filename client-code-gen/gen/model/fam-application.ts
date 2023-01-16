@@ -61,12 +61,12 @@ export interface FamApplication {
      * @type {string}
      * @memberof FamApplication
      */
-    'update_user': string;
+    'update_user'?: string;
     /**
      * 
      * @type {string}
      * @memberof FamApplication
      */
-    'update_date': string;
+    'update_date'?: string;
 }
 
