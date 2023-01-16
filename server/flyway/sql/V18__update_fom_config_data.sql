@@ -1,7 +1,7 @@
 -- Rename application fom to fom_dev
 UPDATE app_fam.fam_application
 SET (application_name, application_description, update_user, update_date) =
-	('fom_dev', 'Forest Operations Map DEV)', 'flyway', CURRENT_DATE)
+	('fom_dev', 'Forest Operations Map DEV)', CURRENT_USER, CURRENT_DATE)
 WHERE application_name = 'fom';
 
 -- Rename role FOM_ACCESS_ADMIN to FOM_DEV_ACCESS_ADMIN
@@ -20,7 +20,7 @@ INSERT INTO app_fam.fam_application (
 VALUES (
     'fom_test',
     'Forest Operations Map (TEST)',
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -39,7 +39,7 @@ VALUES (
     'Provides the privilege to assign or unassign all roles for FOM (TEST)',
     (select application_id from app_fam.fam_application where application_name = 'fom_test'),
     'C',
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -54,7 +54,7 @@ INSERT INTO app_fam.fam_application (
 VALUES (
     'fom_prod',
     'Forest Operations Map (PROD)',
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -73,7 +73,7 @@ VALUES (
     'Provides the privilege to assign or unassign all roles for FOM (PROD)',
     (select application_id from app_fam.fam_application where application_name = 'fom_prod'),
     'C',
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -89,7 +89,7 @@ INSERT INTO app_fam.fam_application_client (
 VALUES (
     '${client_id_dev_fom_oidc_client}',
     (select application_id from app_fam.fam_application where application_name = 'fom_dev'),
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -103,7 +103,7 @@ INSERT INTO app_fam.fam_application_client (
 VALUES (
     '${client_id_test_fom_oidc_client}',
     (select application_id from app_fam.fam_application where application_name = 'fom_test'),
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
@@ -117,7 +117,7 @@ INSERT INTO app_fam.fam_application_client (
 VALUES (
     '${client_id_prod_fom_oidc_client}',
     (select application_id from app_fam.fam_application where application_name = 'fom_prod'),
-    'flyway',
+    CURRENT_USER,
     CURRENT_DATE
 )
 ;
