@@ -11,7 +11,7 @@ class FamGroupPost(BaseModel):
     purpose: str
     create_user: str
     parent_group_id: int
-    update_user: str
+    update_user: Optional[str]
 
     class Config:
         orm_mode = True
@@ -20,7 +20,7 @@ class FamGroupPost(BaseModel):
 class FamGroupGet(FamGroupPost):
     group_id: int
     create_date: datetime
-    update_date: datetime
+    update_date: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -31,7 +31,7 @@ class FamApplicationClient(BaseModel):
     cognito_client_id: str
     create_user: str
     create_date: datetime
-    update_user: str
+    update_user: Optional[str]
     update_date: datetime
 
     class Config:
@@ -51,8 +51,8 @@ class FamApplication(FamApplicationCreate):
     application_id: int
     create_user: str
     create_date: datetime
-    update_user: str
-    update_date: datetime
+    update_user: Optional[str]
+    update_date: Optional[datetime]
 
     class Config:
         orm_mode = True

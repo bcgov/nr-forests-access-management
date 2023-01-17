@@ -53,70 +53,6 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get Applications Authorized
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getApplicationsAuthorized: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/fam_applications/authorize`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication 26tltjjfe7ktm4bte7av998d78 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get Applications Secure
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getApplicationsSecure: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/fam_applications/secure`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
             // authentication 26tltjjfe7ktm4bte7av998d78 required
             // oauth required
             await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
@@ -143,40 +79,6 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationRoles', 'applicationId', applicationId)
             const localVarPath = `/fam_applications/{application_id}/fam_roles`
-                .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
-         * @summary Get Fam Application Roles Authorize App
-         * @param {number} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getFamApplicationRolesAuthorizeApp: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'applicationId' is not null or undefined
-            assertParamExists('getFamApplicationRolesAuthorizeApp', 'applicationId', applicationId)
-            const localVarPath = `/fam_applications/{application_id}/fam_roles/authorize`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -227,6 +129,10 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -259,26 +165,6 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Get Applications Authorized
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getApplicationsAuthorized(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplication>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getApplicationsAuthorized(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get Applications Secure
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getApplicationsSecure(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplication>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getApplicationsSecure(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application Roles
          * @param {number} applicationId 
@@ -287,17 +173,6 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
          */
         async getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationRole>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationRoles(applicationId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
-         * @summary Get Fam Application Roles Authorize App
-         * @param {number} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getFamApplicationRolesAuthorizeApp(applicationId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationRole>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationRolesAuthorizeApp(applicationId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -331,24 +206,6 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
             return localVarFp.getApplications(options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Get Applications Authorized
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getApplicationsAuthorized(options?: any): AxiosPromise<Array<FamApplication>> {
-            return localVarFp.getApplicationsAuthorized(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get Applications Secure
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getApplicationsSecure(options?: any): AxiosPromise<Array<FamApplication>> {
-            return localVarFp.getApplicationsSecure(options).then((request) => request(axios, basePath));
-        },
-        /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application Roles
          * @param {number} applicationId 
@@ -357,16 +214,6 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
          */
         getFamApplicationRoles(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationRole>> {
             return localVarFp.getFamApplicationRoles(applicationId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
-         * @summary Get Fam Application Roles Authorize App
-         * @param {number} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getFamApplicationRolesAuthorizeApp(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationRole>> {
-            return localVarFp.getFamApplicationRolesAuthorizeApp(applicationId, options).then((request) => request(axios, basePath));
         },
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
@@ -397,24 +244,6 @@ export interface FAMApplicationsApiInterface {
     getApplications(options?: AxiosRequestConfig): AxiosPromise<Array<FamApplication>>;
 
     /**
-     * 
-     * @summary Get Applications Authorized
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApiInterface
-     */
-    getApplicationsAuthorized(options?: AxiosRequestConfig): AxiosPromise<Array<FamApplication>>;
-
-    /**
-     * 
-     * @summary Get Applications Secure
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApiInterface
-     */
-    getApplicationsSecure(options?: AxiosRequestConfig): AxiosPromise<Array<FamApplication>>;
-
-    /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application Roles
      * @param {number} applicationId 
@@ -423,16 +252,6 @@ export interface FAMApplicationsApiInterface {
      * @memberof FAMApplicationsApiInterface
      */
     getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationRole>>;
-
-    /**
-     * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
-     * @summary Get Fam Application Roles Authorize App
-     * @param {number} applicationId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApiInterface
-     */
-    getFamApplicationRolesAuthorizeApp(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationRole>>;
 
     /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
@@ -465,28 +284,6 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     }
 
     /**
-     * 
-     * @summary Get Applications Authorized
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApi
-     */
-    public getApplicationsAuthorized(options?: AxiosRequestConfig) {
-        return FAMApplicationsApiFp(this.configuration).getApplicationsAuthorized(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get Applications Secure
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApi
-     */
-    public getApplicationsSecure(options?: AxiosRequestConfig) {
-        return FAMApplicationsApiFp(this.configuration).getApplicationsSecure(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application Roles
      * @param {number} applicationId 
@@ -496,18 +293,6 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
      */
     public getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig) {
         return FAMApplicationsApiFp(this.configuration).getFamApplicationRoles(applicationId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
-     * @summary Get Fam Application Roles Authorize App
-     * @param {number} applicationId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FAMApplicationsApi
-     */
-    public getFamApplicationRolesAuthorizeApp(applicationId: number, options?: AxiosRequestConfig) {
-        return FAMApplicationsApiFp(this.configuration).getFamApplicationRolesAuthorizeApp(applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

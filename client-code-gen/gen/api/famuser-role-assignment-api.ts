@@ -54,6 +54,10 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -90,6 +94,10 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication 26tltjjfe7ktm4bte7av998d78 required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "26tltjjfe7ktm4bte7av998d78", [], configuration)
 
 
     
