@@ -34,7 +34,7 @@ def fam_user_role_assignment_model(
         crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
     # Determine if user already exists or add a new user.
-    fam_user = crud_user.find_or_create(db, request.user_type_code, request.user_name)
+    fam_user = crud_user.find_or_create(db, request.user_type_code, request.user_name.upper())
 
     # Verify if role exists.
     fam_role = crud_role.get_role(db, request.role_id)
@@ -117,12 +117,13 @@ def find_or_create(db: Session, user_id: int, role_id: int):
         db.flush()
         LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
         return new_fam_user_role
-
-    LOGGER.debug(
-        "FamUserRoleXref already exists with id: " +
-        f"{fam_user_role_xref.user_role_xref_id}."
-    )
-    return fam_user_role_xref
+    else:
+        LOGGER.debug(
+            "FamUserRoleXref already exists with id: " +
+            f"{fam_user_role_xref.user_role_xref_id}."
+        )
+        error_msg = f'{"Role already assigned to user."}'
+        crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
 
 
 def get_use_role_by_user_id_and_role_id(

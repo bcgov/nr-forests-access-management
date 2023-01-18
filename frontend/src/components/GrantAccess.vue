@@ -62,8 +62,12 @@ async function grantAccess() {
     router.push('/manage')
   }
   catch (err: any) {
-    useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
-    console.error("err: ", err)
+    console.error(err.response)
+    if (err.response.status == 409) {
+      useToast().warning(`Request not completed: ${err.response.data?.detail}`)
+    } else {
+      useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
+    }
   }
 }
 
@@ -130,6 +134,7 @@ function statusSelected(evt: any) {
             maxlength="20"
             placeholder="User's Id"
             v-model="formData.userId"
+            @input="(val) => (formData.userId = formData.userId.toUpperCase())"
             :validateOnChange="true"
             :class="{ 'is-invalid': errors.userId }"/>
           <ErrorMessage class="invalid-feedback" name="userId"/>
