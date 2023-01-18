@@ -8,6 +8,7 @@ on:
       - "main"
     paths:
       - "server/**"
+      - ".github/workflows/**"
 
 
 jobs:
