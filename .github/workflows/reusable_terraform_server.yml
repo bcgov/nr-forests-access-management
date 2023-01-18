@@ -142,5 +142,7 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
+          # Generate resource graph for debugging.
+          terragrunt run-all graph -verbose -draw-cycles -type=plan-destory --terragrunt-non-interactive
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
