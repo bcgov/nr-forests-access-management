@@ -1,20 +1,28 @@
 import datetime
 import logging
-from typing import Dict, List, Union, Iterator
+from typing import Dict, Iterator, List, Union
 
-import api.app.models.model as model
-import api.app.schemas as schemas
-import api.app.constants as constants
 import pytest
 import sqlalchemy.exc
 from sqlalchemy.orm import session
+
+import api.app.constants as constants
+import api.app.models.model as model
+import api.app.schemas as schemas
 
 LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_roles_concrete(dbsession_role_types, concrete_role_model):
-    db = dbsession_role_types
+def dbsession_fam_roles_concrete(
+    dbsession_role_types, 
+    dbsession_application: session.Session, 
+    concrete_role_model: model.FamRole
+):
+    # db = dbsession_role_types
+    db = dbsession_application
+    application: model.FamApplication = db.query(model.FamApplication).one()
+    concrete_role_model.application_id = application.application_id
 
     # add a record to the database
     db.add(concrete_role_model)
