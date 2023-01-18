@@ -62,7 +62,7 @@ async function grantAccess() {
     router.push('/manage')
   }
   catch (err: any) {
-    console.error(err.response)
+    console.error("err: ", err)
     if (err.response.status == 409) {
       useToast().warning(`Request not completed: ${err.response.data?.detail}`)
     } else {
