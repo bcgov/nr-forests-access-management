@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    func,
     text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
@@ -37,8 +38,8 @@ class FamApplication(Base):
     application_description = Column(String(200), nullable=False)
     app_environment_type_code = Column(
         String(4),
-        nullable=False,
-        default="DEV",
+        nullable=True,
+        server_default='DEV',
         comment="Identifies which environment the application is for; DEV, TEST, PROD etc."
     )
     create_user = Column(
@@ -489,7 +490,7 @@ class FamRole(Base):
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=False)
-    application_id = Column(BigInteger, nullable=True, index=True)
+    application_id = Column(BigInteger, nullable=False, index=True)
     client_number_id = Column(
         BigInteger,
         nullable=True,
@@ -557,7 +558,7 @@ class FamRole(Base):
             ["parent_role_id"], ["app_fam.fam_role.role_id"], name="reffam_role23"
         ),
         PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
-        UniqueConstraint("role_name", name="fam_rle_name_uk"),
+        UniqueConstraint("role_name", "application_id", name="fam_rlnm_app_uk"),
         ForeignKeyConstraint(
             [role_type_code], ["app_fam.fam_role_type.role_type_code"], name="reffam_role_type"
         ),
@@ -804,6 +805,7 @@ class FamAppEnvironmentType(Base):
         TIMESTAMP(precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
+        server_default=func.now(),
         comment="The date and time the code was effective.",
     )
 
