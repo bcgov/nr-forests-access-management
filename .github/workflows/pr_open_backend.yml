@@ -1,4 +1,4 @@
-name: DEPLOY Development Environment
+name: PLAN dev deploy
 
 on:
   workflow_dispatch:
