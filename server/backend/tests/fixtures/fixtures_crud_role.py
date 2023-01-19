@@ -15,11 +15,10 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def dbsession_fam_roles_concrete(
-    dbsession_role_types, 
-    dbsession_application: session.Session, 
+    dbsession_role_types,
+    dbsession_application: session.Session,
     concrete_role_model: model.FamRole
 ):
-    # db = dbsession_role_types
     db = dbsession_application
     application: model.FamApplication = db.query(model.FamApplication).one()
     concrete_role_model.application_id = application.application_id
