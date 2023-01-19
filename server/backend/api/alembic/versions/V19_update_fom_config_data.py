@@ -1,0 +1,235 @@
+"""update_fom_config_data
+
+Revision ID: V19
+Revises: V18
+Create Date: 2023-01-18 22:56:44.678454
+
+"""
+from alembic import op
+import sqlalchemy as sa
+import sqlmodel
+
+
+
+# revision identifiers, used by Alembic.
+revision = 'V19'
+down_revision = 'V18'
+branch_labels = None
+depends_on = None
+
+client_id_dev_fom_oidc_client = '1a8pkq0psq0daj5e6ir3ppcjkj'
+client_id_test_fom_oidc_client = '7b6eki43nahus9ca0lhjs6m568'
+client_id_prod_fom_oidc_client = '1rhdfiek5ntmk2kg39d6e31p46'
+
+migrate_sql_str = f"""
+UPDATE app_fam.fam_application SET (application_name, application_description, update_user, update_date) =
+	('fom_dev', 'Forest Operations Map (DEV)', CURRENT_USER, CURRENT_DATE)
+WHERE application_name = 'fom'
+;
+
+UPDATE app_fam.fam_role SET (role_name, role_purpose, update_user, update_date) =
+	('FOM_DEV_ACCESS_ADMIN', 'Provides the privilege to assign or unassign all roles for FOM (DEV)', CURRENT_USER, CURRENT_DATE)
+WHERE role_id =
+	(SELECT role_id FROM app_fam.fam_role WHERE role_name = 'FOM_ACCESS_ADMIN')
+;
+
+INSERT INTO app_fam.fam_application (
+    application_name,
+    application_description,
+    app_environment_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'fom_test',
+    'Forest Operations Map (TEST)',
+    'TEST',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_application (
+    application_name,
+    application_description,
+    app_environment_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'fom_prod',
+    'Forest Operations Map (PROD)',
+    'PROD',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_TEST_ACCESS_ADMIN',
+    'Provides the privilege to assign or unassign all roles for FOM (TEST)',
+    (select application_id from app_fam.fam_application where application_name = 'fam'),
+    'C',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_PROD_ACCESS_ADMIN',
+    'Provides the privilege to assign or unassign all roles for FOM (PROD)',
+    (select application_id from app_fam.fam_application where application_name = 'fam'),
+    'C',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_SUBMITTER',
+    'Provides the privilege to submit a FOM (on behalf of a specific forest client)',
+    (select application_id from app_fam.fam_application where application_name = 'fom_test'),
+    'A',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_REVIEWER',
+    'Provides the privilege to review all FOMs in the system',
+    (select application_id from app_fam.fam_application where application_name = 'fom_test'),
+    'C',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_SUBMITTER',
+    'Provides the privilege to submit a FOM (on behalf of a specific forest client)',
+    (select application_id from app_fam.fam_application where application_name = 'fom_prod'),
+    'A',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_role (
+    role_name,
+    role_purpose,
+    application_id,
+    role_type_code,
+    create_user,
+    create_date
+)
+VALUES (
+    'FOM_REVIEWER',
+    'Provides the privilege to review all FOMs in the system',
+    (select application_id from app_fam.fam_application where application_name = 'fom_prod'),
+    'C',
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_application_client (
+    cognito_client_id,
+    application_id,
+    create_user,
+    create_date
+)
+VALUES (
+    '{client_id_dev_fom_oidc_client}',
+    (select application_id from app_fam.fam_application where application_name = 'fom_dev'),
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_application_client (
+    cognito_client_id,
+    application_id,
+    create_user,
+    create_date
+)
+VALUES (
+    '{client_id_test_fom_oidc_client}',
+    (select application_id from app_fam.fam_application where application_name = 'fom_test'),
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+INSERT INTO app_fam.fam_application_client (
+    cognito_client_id,
+    application_id,
+    create_user,
+    create_date
+)
+VALUES (
+    '{client_id_prod_fom_oidc_client}',
+    (select application_id from app_fam.fam_application where application_name = 'fom_prod'),
+    CURRENT_USER,
+    CURRENT_DATE
+)
+;
+
+
+"""
+
+
+def upgrade() -> None:
+    # ### commands auto generated by Alembic - please adjust! ###
+    # None autogenerated
+    # ### end Alembic commands ###
+    statements = migrate_sql_str.replace('\n', '').split(';')
+    for statement in statements:
+        # make sure its not just a blank line
+        if statement:
+            op.execute(statement)
+
+def downgrade() -> None:
+    # ### commands auto generated by Alembic - please adjust! ###
+    pass
+    # ### end Alembic commands ###
