@@ -15,6 +15,7 @@ on:
 
 jobs:
   terraform:
+    runs-on: ubuntu-latest
     environment: dev
     steps:
       - name: backend-terraform-plan
