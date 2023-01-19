@@ -42,6 +42,7 @@ class FamApplicationCreate(BaseModel):
     application_name: str
     application_description: str
     application_client_id: Optional[int]
+    app_environment_type_code: famConstants.AppEnvType
 
     class Config:
         orm_mode = True
