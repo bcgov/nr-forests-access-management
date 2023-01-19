@@ -32,7 +32,7 @@ jobs:
       prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
 
   frontend-terraform-plan:
-    needs: backend-terraform-plan
+    # needs: backend-terraform-plan
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
       environment_name: dev
@@ -42,13 +42,13 @@ jobs:
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
   backend-terraform-plan-destroy:
-    needs: frontend-terraform-plan
+    # needs: frontend-terraform-plan
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: dev
       # This command can detect issues with the terraform destory: graph -verbose -draw-cycles -type=plan-destroy
       # Only need for the backend because we don't destroy the frontend.
-      tf_subcommand: plan -destory
+      tf_subcommand: plan -destroy
       execute_flyway: false
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
