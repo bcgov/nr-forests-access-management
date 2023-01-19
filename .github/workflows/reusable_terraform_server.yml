@@ -137,17 +137,6 @@ jobs:
           prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
           EOF
 
-      - name: Terragrunt Graph
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-        env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-        run: |
-          # Generate resource graphs for debugging.
-          terragrunt run-all graph -verbose -draw-cycles -type=plan --terragrunt-non-interactive
-
-          # Destroy-plan.
-          terragrunt run-all graph -verbose -draw-cycles -type=plan-destroy --terragrunt-non-interactive
-
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
