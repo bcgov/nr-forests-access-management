@@ -134,7 +134,6 @@ function statusSelected(evt: any) {
             maxlength="20"
             placeholder="User's Id"
             v-model="formData.userId"
-            @input="(val) => (formData.userId = formData.userId.toUpperCase())"
             :validateOnChange="true"
             :class="{ 'is-invalid': errors.userId }"/>
           <ErrorMessage class="invalid-feedback" name="userId"/>
