@@ -117,7 +117,7 @@ class FamForestClientCreate(BaseModel):
 
 class FamRoleCreate(BaseModel):
     role_name: str
-    role_purpose: str
+    role_purpose: Union[str, None]
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
