@@ -28,11 +28,16 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
+  aliases             = ["fam-dev.nrs.gov.bc.ca"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
+
+  viewer_certificate {
+    acm_certificate_arn = "arn:aws:acm:us-east-1:521834415778:certificate/d9407a0e-98b4-47d0-be73-adefe7011d34"
+  }
 
   origin {
     domain_name = aws_s3_bucket.web_distribution.bucket_regional_domain_name
