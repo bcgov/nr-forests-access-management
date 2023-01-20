@@ -34,7 +34,7 @@ export interface FamApplicationRole {
      * @type {string}
      * @memberof FamApplicationRole
      */
-    'role_purpose': string;
+    'role_purpose'?: string;
     /**
      * 
      * @type {number}
@@ -46,7 +46,7 @@ export interface FamApplicationRole {
      * @type {number}
      * @memberof FamApplicationRole
      */
-    'application_id'?: number;
+    'application_id': number;
     /**
      * 
      * @type {string}
