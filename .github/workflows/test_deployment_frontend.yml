@@ -1,4 +1,4 @@
-name: DEPLOY Test Environment (Frontend Only)
+name: DEPLOY Test Frontend
 
 on:
   workflow_dispatch:
@@ -7,10 +7,10 @@ jobs:
 
   aws-test-deployment-frontend:
     uses: ./.github/workflows/reusable_terraform_frontend.yml
-    with: 
+    with:
       environment_name: test
       tf_subcommand: apply
-    secrets: 
+    secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}      
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
