@@ -121,8 +121,8 @@ class FamRoleCreate(BaseModel):
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    application_id: Union[int, None] = Field(
-        default=None, title="Application this role is associated with"
+    application_id: int = Field(
+        title="Application this role is associated with"
     )
     forest_client_number: Union[str, None] = Field(
         default=None, title="Forest Client this role is associated with"

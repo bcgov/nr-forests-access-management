@@ -105,6 +105,7 @@ def test_create_fam_role_with_forest_client(
     db = dbsession_role_types
     application: model.FamApplication = db.query(model.FamApplication).one()
     role_data = concrete_role_with_forest_client
+    role_data["application_id"] = application.application_id
 
     # double check that the forest client number field is populated as
     # that is core to this test
@@ -112,7 +113,6 @@ def test_create_fam_role_with_forest_client(
 
     # testing that the data can be converted to pydantic model
     fam_role_as_pydantic = schemas.FamRoleCreate(**role_data)
-    fam_role_as_pydantic.application_id = application.application_id
 
     # add the role with forest client to the database
     role_in_db = crud_role.create_role(role=fam_role_as_pydantic, db=db)
@@ -180,10 +180,10 @@ def test_can_create_roles_with_same_name_different_applications(
     role_2_pydantic = schemas.FamRoleCreate(**{
         "role_name": role.role_name,
         "role_purpose": "Role Purpose for Second Role",
+        "application_id": application_2_db_item.application_id,
         "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     })
-    role_2_pydantic.application_id = application_2_db_item.application_id
     role_2 = crud_role.create_role(role=role_2_pydantic, db=db)
     LOGGER.debug(f"created the role: {role_2}")
 

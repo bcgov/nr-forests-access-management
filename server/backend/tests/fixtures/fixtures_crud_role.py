@@ -121,6 +121,7 @@ def concrete_role_dict() -> Iterator[Dict[str, str]]:
     role_data = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
+        "application_id": 99999,  # fake id, set it to test id in real testing code.
         "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }
