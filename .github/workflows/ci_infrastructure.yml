@@ -1,7 +1,17 @@
-name: Terraform CI
+name: Continuous Integration Infrastructure
 
 on:
   workflow_dispatch:
+
+  push:
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+      - "terraform-frontend/**"
+      - "infrastructure/**"
+      - ".github/workflows/reusable_terraform_server.yml"
+      - ".github/workflows/pr_open_terraform_ci.yml"
 
   pull_request:
     branches:
