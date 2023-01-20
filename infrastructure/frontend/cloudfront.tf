@@ -28,7 +28,7 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
-  aliases             = ["fam-dev.nrs.gov.bc.ca"]
+  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
@@ -36,7 +36,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   price_class         = "PriceClass_100"
 
   viewer_certificate {
-    acm_certificate_arn = "arn:aws:acm:us-east-1:521834415778:certificate/d9407a0e-98b4-47d0-be73-adefe7011d34"
+    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
