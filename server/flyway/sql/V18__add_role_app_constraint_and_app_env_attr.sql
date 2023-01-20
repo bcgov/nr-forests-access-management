@@ -3,11 +3,11 @@ BEGIN;
 -- Running upgrade V17 -> V18
 
 CREATE TABLE app_fam.fam_app_environment_type (
-    app_environment_type_code VARCHAR(4) NOT NULL, 
-    description VARCHAR(100), 
-    effective_date TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
-    expiry_date TIMESTAMP(6) WITHOUT TIME ZONE, 
-    update_date TIMESTAMP(6) WITHOUT TIME ZONE, 
+    app_environment_type_code VARCHAR(4) NOT NULL,
+    description VARCHAR(100),
+    effective_date TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    expiry_date TIMESTAMP(6) WITHOUT TIME ZONE,
+    update_date TIMESTAMP(6) WITHOUT TIME ZONE,
     CONSTRAINT fam_app_environment_type_pk PRIMARY KEY (app_environment_type_code)
 );
 
@@ -36,6 +36,8 @@ COMMENT ON COLUMN app_fam.fam_application.app_environment_type_code IS 'Identifi
 ALTER TABLE app_fam.fam_application ADD CONSTRAINT reffam_app_env_type FOREIGN KEY(app_environment_type_code) REFERENCES app_fam.fam_app_environment_type (app_environment_type_code);
 
 ALTER TABLE app_fam.fam_role ALTER COLUMN application_id SET NOT NULL;
+
+ALTER TABLE app_fam.fam_role ALTER COLUMN role_purpose DROP NOT NULL;
 
 ALTER TABLE app_fam.fam_role DROP CONSTRAINT fam_rle_name_uk;
 

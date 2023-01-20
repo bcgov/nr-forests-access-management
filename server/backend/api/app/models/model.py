@@ -489,7 +489,7 @@ class FamRole(Base):
                 "of a Role within the FAM Application",
     )
     role_name = Column(String(100), nullable=False)
-    role_purpose = Column(String(200), nullable=False)
+    role_purpose = Column(String(200), nullable=True)
     application_id = Column(BigInteger, nullable=False, index=True)
     client_number_id = Column(
         BigInteger,
