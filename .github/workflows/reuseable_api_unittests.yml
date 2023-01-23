@@ -1,4 +1,4 @@
-name: api unit tests
+name: Run CI API Function
 
 on:
   workflow_call:

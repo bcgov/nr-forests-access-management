@@ -20,7 +20,7 @@ generate "dev_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Dev_aza_net"
   subnet_app_b = "App_Dev_azb_net"
-  front_end_redirect_path = "https://d2solh97t525i7.cloudfront.net"
+  front_end_redirect_path = "https://fam-dev.nrs.gov.bc.ca"
   local_frontend_redirect_path = "http://localhost:5173"
   fam_console_idp_name = "DEV-IDIR"
 EOF
