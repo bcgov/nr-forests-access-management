@@ -1,6 +1,5 @@
-name: Pull Request Checks
-
-on: 
+name: Continuous Integration Backend
+on:
   push:
     branches:
       - "main"

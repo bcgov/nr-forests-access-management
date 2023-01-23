@@ -28,11 +28,18 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
+  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
+
+  viewer_certificate {
+    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
+    ssl_support_method = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
 
   origin {
     domain_name = aws_s3_bucket.web_distribution.bucket_regional_domain_name
@@ -69,10 +76,6 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     max_ttl                = 86400
 
 
-  }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
   }
 
   restrictions {

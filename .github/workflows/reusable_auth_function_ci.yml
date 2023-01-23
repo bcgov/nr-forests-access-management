@@ -1,4 +1,4 @@
-name: CI for Auth Function (Build and Test)
+name: Run CI Auth Function
 
 on:
   workflow_call:

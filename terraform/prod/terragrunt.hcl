@@ -20,7 +20,7 @@ generate "prod_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Prod_aza_net"
   subnet_app_b = "App_Prod_azb_net"
-  front_end_redirect_path = "https://d10xdo206efg91.cloudfront.net"
+  front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
   local_frontend_redirect_path = "http://localhost:5173"
   fam_console_idp_name = "PROD-IDIR"
 EOF
