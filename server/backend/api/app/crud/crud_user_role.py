@@ -75,7 +75,18 @@ def create_user_role(
     associate_role_id = child_role.role_id if require_child_role else fam_role.role_id
 
     # Create user/role assignment.
-    fam_user_role_xref = find_or_create(db, fam_user.user_id, associate_role_id)
+    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, fam_user.user_id, associate_role_id)
+
+    if fam_user_role_xref:
+        LOGGER.debug(
+             "FamUserRoleXref already exists with id: " +
+             f"{fam_user_role_xref.user_role_xref_id}."
+        )
+
+        error_msg = "Role already assigned to user."
+        crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+    else:
+        fam_user_role_xref = create(db, fam_user.user_id, associate_role_id)
 
     xref_dict = fam_user_role_xref.__dict__
     xref_dict["application_id"] = (
@@ -97,33 +108,23 @@ def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
     db.flush()
 
 
-def find_or_create(db: Session, user_id: int, role_id: int):
+def create(db: Session, user_id: int, role_id: int):
     LOGGER.debug(
-        f"FamUserRoleXref - 'find_or_create' with user_id: {user_id}, " +
+        f"FamUserRoleXref - 'create' with user_id: {user_id}, " +
         f"role_id: {role_id}."
     )
 
-    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user_id, role_id)
-
-    if not fam_user_role_xref:
-        new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
-            **{
-                "user_id": user_id,
-                "role_id": role_id,
-                "create_user": famConstants.FAM_PROXY_API_USER,
-            }
-        )
-        db.add(new_fam_user_role)
-        db.flush()
-        LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
-        return new_fam_user_role
-    else:
-        LOGGER.debug(
-            "FamUserRoleXref already exists with id: " +
-            f"{fam_user_role_xref.user_role_xref_id}."
-        )
-        error_msg = "Role already assigned to user."
-        crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+        **{
+            "user_id": user_id,
+            "role_id": role_id,
+            "create_user": famConstants.FAM_PROXY_API_USER,
+        }
+    )
+    db.add(new_fam_user_role)
+    db.flush()
+    LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
+    return new_fam_user_role
 
 
 def get_use_role_by_user_id_and_role_id(
