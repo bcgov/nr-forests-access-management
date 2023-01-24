@@ -52,7 +52,7 @@ def test_role_not_exist_raise_exception(
     )
 
     with pytest.raises(HTTPException) as e:
-        assert crud_user_role.fam_user_role_assignment_model(
+        assert crud_user_role.create_user_role(
             db, user_role_assignment_model
         )
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
@@ -89,7 +89,7 @@ def test_user_role_assignment_with_abstract_role_raise_exception(
     del invalid_request.forest_client_number
 
     with pytest.raises(HTTPException) as e:
-        assert crud_user_role.fam_user_role_assignment_model(db, invalid_request)
+        assert crud_user_role.create_user_role(db, invalid_request)
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Cannot assign") != -1
     db.rollback()
@@ -118,7 +118,7 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter(  # NOSONAR
     user_role_assignment_model.role_id = fom_submitter_role.role_id
 
     # User/Role assignment created.
-    user_role_assignment = crud_user_role.fam_user_role_assignment_model(
+    user_role_assignment = crud_user_role.create_user_role(
         db, user_role_assignment_model
     )
 
@@ -141,7 +141,7 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter(  # NOSONAR
     clean_up_user_role_assignment(db, user_role_assignment)
 
 
-def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_return_existing_one( # noqa NOSONAR
+def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_raises_exception( # noqa NOSONAR
     user_role_assignment_model: schemas.FamUserRoleAssignmentCreate,
     dbsession_fam_user_types,
     dbsession_FOM_submitter_role: session.Session,  # noqa NOSONAR
@@ -149,7 +149,7 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_retur
     db = dbsession_FOM_submitter_role
     LOGGER.debug(
         "Creating twice forest client FOM Submitter user/role assignment "
-        "will return existing record."
+        "will raise an exception."
     )
 
     fam_submitter_role = (
@@ -164,34 +164,19 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_retur
     user_role_assignment_model.role_id = fam_submitter_role.role_id
 
     # User/Role assignment created.
-    user_role_assignment1 = crud_user_role.fam_user_role_assignment_model(
+    user_role_assignment1 = crud_user_role.create_user_role(
         db, user_role_assignment_model
     )
 
     # Call create twice with the same request.
-    user_role_assignment2 = crud_user_role.fam_user_role_assignment_model(
-        db, user_role_assignment_model
-    )
-
-    # Verify no extra role is created.
-    parent_child_roles = set(
-        (
-            user_role_assignment_model.role_id,
-            user_role_assignment1.role_id,
-            user_role_assignment2.role_id,
+    with pytest.raises(HTTPException) as e:
+        crud_user_role.create_user_role(
+            db, user_role_assignment_model
         )
-    )
-    assert len(parent_child_roles) == 2  # contains only parent and child 2 roles.
+
+    LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     fam_roles = crud_role.get_roles(db)  # all db roles created.
     assert len(fam_roles) == 2
-
-    # Verify user/role assignment creation returns the same fam_user_role_xref from db.
-    assert user_role_assignment1.role_id == user_role_assignment2.role_id
-    assert user_role_assignment1.user_id == user_role_assignment2.user_id
-    assert (
-        user_role_assignment1.user_role_xref_id
-        == user_role_assignment2.user_role_xref_id
-    )
 
     clean_up_user_role_assignment(db, user_role_assignment1)
 

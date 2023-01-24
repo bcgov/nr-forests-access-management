@@ -62,8 +62,12 @@ async function grantAccess() {
     router.push('/manage')
   }
   catch (err: any) {
-    useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
     console.error("err: ", err)
+    if (err.response.status == 409) {
+      useToast().warning(`Request not completed: ${err.response.data?.detail}`)
+    } else {
+      useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
+    }
   }
 }
 

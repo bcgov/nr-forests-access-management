@@ -11,7 +11,7 @@ from . import crud_forest_client, crud_role, crud_user, crud_utils
 LOGGER = logging.getLogger(__name__)
 
 
-def fam_user_role_assignment_model(
+def create_user_role(
     db: Session, request: schemas.FamUserRoleAssignmentCreate
 ) -> schemas.FamUserRoleAssignmentGet:
     """
@@ -75,7 +75,18 @@ def fam_user_role_assignment_model(
     associate_role_id = child_role.role_id if require_child_role else fam_role.role_id
 
     # Create user/role assignment.
-    fam_user_role_xref = find_or_create(db, fam_user.user_id, associate_role_id)
+    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, fam_user.user_id, associate_role_id)
+
+    if fam_user_role_xref:
+        LOGGER.debug(
+             "FamUserRoleXref already exists with id: " +
+             f"{fam_user_role_xref.user_role_xref_id}."
+        )
+
+        error_msg = "Role already assigned to user."
+        crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+    else:
+        fam_user_role_xref = create(db, fam_user.user_id, associate_role_id)
 
     xref_dict = fam_user_role_xref.__dict__
     xref_dict["application_id"] = (
@@ -97,32 +108,23 @@ def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
     db.flush()
 
 
-def find_or_create(db: Session, user_id: int, role_id: int):
+def create(db: Session, user_id: int, role_id: int):
     LOGGER.debug(
-        f"FamUserRoleXref - 'find_or_create' with user_id: {user_id}, " +
+        f"FamUserRoleXref - 'create' with user_id: {user_id}, " +
         f"role_id: {role_id}."
     )
 
-    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user_id, role_id)
-
-    if not fam_user_role_xref:
-        new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
-            **{
-                "user_id": user_id,
-                "role_id": role_id,
-                "create_user": famConstants.FAM_PROXY_API_USER,
-            }
-        )
-        db.add(new_fam_user_role)
-        db.flush()
-        LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
-        return new_fam_user_role
-
-    LOGGER.debug(
-        "FamUserRoleXref already exists with id: " +
-        f"{fam_user_role_xref.user_role_xref_id}."
+    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+        **{
+            "user_id": user_id,
+            "role_id": role_id,
+            "create_user": famConstants.FAM_PROXY_API_USER,
+        }
     )
-    return fam_user_role_xref
+    db.add(new_fam_user_role)
+    db.flush()
+    LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
+    return new_fam_user_role
 
 
 def get_use_role_by_user_id_and_role_id(
@@ -156,7 +158,7 @@ def find_or_create_forest_client_child_role(
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
-    #client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
+    # client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
 
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
@@ -166,7 +168,6 @@ def find_or_create_forest_client_child_role(
     )
     LOGGER.debug(f'forest client number from db: {forest_client.forest_client_number}')
     LOGGER.debug(f'forest client client id from db: {forest_client.client_number_id}')
-
 
     forest_client_role_name = construct_forest_client_role_name(
         parent_role.role_name, forest_client_number

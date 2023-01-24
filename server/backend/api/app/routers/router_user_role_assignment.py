@@ -28,7 +28,7 @@ def create_user_role_assignment(
         db, role_assignment_request.role_id)
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
-    create_data = crud_user_role.fam_user_role_assignment_model(
+    create_data = crud_user_role.create_user_role(
         db, role_assignment_request
     )
     LOGGER.debug(
