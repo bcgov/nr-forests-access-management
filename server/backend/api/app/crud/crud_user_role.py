@@ -11,7 +11,7 @@ from . import crud_forest_client, crud_role, crud_user, crud_utils
 LOGGER = logging.getLogger(__name__)
 
 
-def fam_user_role_assignment_model(
+def create_user_role(
     db: Session, request: schemas.FamUserRoleAssignmentCreate
 ) -> schemas.FamUserRoleAssignmentGet:
     """
@@ -122,13 +122,8 @@ def find_or_create(db: Session, user_id: int, role_id: int):
             "FamUserRoleXref already exists with id: " +
             f"{fam_user_role_xref.user_role_xref_id}."
         )
-        error_msg = f'{"Role already assigned to user."}'
+        error_msg = "Role already assigned to user."
         crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
-    # LOGGER.debug(
-    #     "FamUserRoleXref already exists with id: " +
-    #     f"{fam_user_role_xref.user_role_xref_id}."
-    # )
-    # return fam_user_role_xref
 
 
 def get_use_role_by_user_id_and_role_id(
@@ -162,7 +157,7 @@ def find_or_create_forest_client_child_role(
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
-    #client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
+    # client_name = f"{famConstants.DUMMY_FOREST_CLIENT_NAME}_{forest_client_number}"
 
     # Note, this is current implementation for fam_forest_client as to programmatically
     # insert a record into the table. Later FAM will be interfacing with Forest
@@ -172,7 +167,6 @@ def find_or_create_forest_client_child_role(
     )
     LOGGER.debug(f'forest client number from db: {forest_client.forest_client_number}')
     LOGGER.debug(f'forest client client id from db: {forest_client.client_number_id}')
-
 
     forest_client_role_name = construct_forest_client_role_name(
         parent_role.role_name, forest_client_number
