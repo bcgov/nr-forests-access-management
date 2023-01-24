@@ -2,38 +2,38 @@ BEGIN;
 
 -- Running upgrade V17 -> V18
 
-CREATE TABLE app_fam.fam_app_environment_type (
-    app_environment_type_code VARCHAR(4) NOT NULL,
+CREATE TABLE app_fam.fam_app_environment (
+    app_environment VARCHAR(4) NOT NULL,
     description VARCHAR(100),
     effective_date TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     expiry_date TIMESTAMP(6) WITHOUT TIME ZONE,
     update_date TIMESTAMP(6) WITHOUT TIME ZONE,
-    CONSTRAINT fam_app_environment_type_pk PRIMARY KEY (app_environment_type_code)
+    CONSTRAINT fam_app_environment_pk PRIMARY KEY (app_environment)
 );
 
-COMMENT ON TABLE app_fam.fam_app_environment_type IS 'A environment type is a code that is associated with the application to indicate its nvironment.';
+COMMENT ON TABLE app_fam.fam_app_environment IS 'Used by the application to indicate its environment.';
 
-COMMENT ON COLUMN app_fam.fam_app_environment_type.app_environment_type_code IS 'application environment type code';
+COMMENT ON COLUMN app_fam.fam_app_environment.app_environment IS 'Application environment.';
 
-COMMENT ON COLUMN app_fam.fam_app_environment_type.description IS 'Description of what the app_environment_type_code represents.';
+COMMENT ON COLUMN app_fam.fam_app_environment.description IS 'Description of what the app_environmentrepresents.';
 
-COMMENT ON COLUMN app_fam.fam_app_environment_type.effective_date IS 'The date and time the code was effective.';
+COMMENT ON COLUMN app_fam.fam_app_environment.effective_date IS 'The date and time the record was effective.';
 
-COMMENT ON COLUMN app_fam.fam_app_environment_type.expiry_date IS 'The date and time the code expired.';
+COMMENT ON COLUMN app_fam.fam_app_environment.expiry_date IS 'The date and time the record expired.';
 
-COMMENT ON COLUMN app_fam.fam_app_environment_type.update_date IS 'The date and time the record was created or last updated.';
+COMMENT ON COLUMN app_fam.fam_app_environment.update_date IS 'The date and time the record was created or last updated.';
 
-INSERT INTO app_fam.fam_app_environment_type (app_environment_type_code, description) VALUES ('DEV', 'DEV Environment for Applicaitons.');
+INSERT INTO app_fam.fam_app_environment (app_environment, description) VALUES ('DEV', 'DEV Environment for Applicaitons.');
 
-INSERT INTO app_fam.fam_app_environment_type (app_environment_type_code, description) VALUES ('TEST', 'TEST Environment for Applicaitons.');
+INSERT INTO app_fam.fam_app_environment (app_environment, description) VALUES ('TEST', 'TEST Environment for Applicaitons.');
 
-INSERT INTO app_fam.fam_app_environment_type (app_environment_type_code, description) VALUES ('PROD', 'PROD Environment for Applicaitons.');
+INSERT INTO app_fam.fam_app_environment (app_environment, description) VALUES ('PROD', 'PROD Environment for Applicaitons.');
 
-ALTER TABLE app_fam.fam_application ADD COLUMN app_environment_type_code VARCHAR(4) DEFAULT 'DEV';
+ALTER TABLE app_fam.fam_application ADD COLUMN app_environment VARCHAR(4);
 
-COMMENT ON COLUMN app_fam.fam_application.app_environment_type_code IS 'Identifies which environment the application is for; DEV, TEST, PROD etc.';
+COMMENT ON COLUMN app_fam.fam_application.app_environment IS 'Identifies which environment the application is for; DEV, TEST, PROD etc.';
 
-ALTER TABLE app_fam.fam_application ADD CONSTRAINT reffam_app_env_type FOREIGN KEY(app_environment_type_code) REFERENCES app_fam.fam_app_environment_type (app_environment_type_code);
+ALTER TABLE app_fam.fam_application ADD CONSTRAINT reffam_app_env FOREIGN KEY(app_environment) REFERENCES app_fam.fam_app_environment (app_environment);
 
 ALTER TABLE app_fam.fam_role ALTER COLUMN application_id SET NOT NULL;
 

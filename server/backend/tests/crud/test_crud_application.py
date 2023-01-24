@@ -222,7 +222,7 @@ def test_get_applications_nodata(dbsession: sqlalchemy.orm.session.Session):
 
 
 def test_create_application(
-    dbsession_fam_app_environment_types: sqlalchemy.orm.session.Session,
+    dbsession_fam_app_environment: sqlalchemy.orm.session.Session,
     dbsession_delete: sqlalchemy.orm.session.Session,
     application_dict: Dict[str, Union[str, datetime.datetime]],
 ):

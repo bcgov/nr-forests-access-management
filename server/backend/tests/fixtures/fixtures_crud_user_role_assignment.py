@@ -77,8 +77,8 @@ def dbsession_user_role_assignment(
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_application(dbsession_fam_app_environment_types):
-    db = dbsession_fam_app_environment_types
+def dbsession_fam_application(dbsession_fam_app_environment):
+    db = dbsession_fam_app_environment
     fam_application = model.FamApplication(
         **{
             "application_name": "FOM",

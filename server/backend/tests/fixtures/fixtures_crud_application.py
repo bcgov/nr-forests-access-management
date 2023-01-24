@@ -18,8 +18,8 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def dbsession_application(
-    dbsession_role_types, 
-    dbsession_fam_app_environment_types,
+    dbsession_role_types,
+    dbsession_fam_app_environment,
     application_dict
 ) -> sqlalchemy.orm.session.Session:
     db = dbsession_role_types
@@ -63,7 +63,7 @@ def application_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
     fam_app_data = {
         "application_name": "FAM",
         "application_description": "a really good app",
-        "app_environment_type_code": constants.AppEnvType.APP_ENV_TYPE_DEV,
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
         "update_user": "Ron Duguey",
@@ -265,31 +265,31 @@ def dbsession_application_with_role_user_assignment(
     db.flush()
 
 @pytest.fixture(scope="function")
-def dbsession_fam_app_environment_types(
+def dbsession_fam_app_environment(
     dbsession
 ):
     db = dbsession
 
-    dev_app_environment_type_code = models.FamAppEnvironmentType(**{
-        "app_environment_type_code": constants.AppEnvType.APP_ENV_TYPE_DEV,
+    dev_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
         "description": "DEV",
     })
-    test_app_environment_type_code = models.FamAppEnvironmentType(**{
-        "app_environment_type_code": constants.AppEnvType.APP_ENV_TYPE_TEST,
+    test_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_TEST,
         "description": "TEST",
     })
-    prod_app_environment_type_code = models.FamAppEnvironmentType(**{
-        "app_environment_type_code": constants.AppEnvType.APP_ENV_TYPE_PROD,
+    prod_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_PROD,
         "description": "PROD",
     })
-    db.add(dev_app_environment_type_code)
-    db.add(test_app_environment_type_code)
-    db.add(prod_app_environment_type_code)
+    db.add(dev_app_environment)
+    db.add(test_app_environment)
+    db.add(prod_app_environment)
 
     db.flush()
     yield db
 
-    db.delete(dev_app_environment_type_code)
-    db.delete(test_app_environment_type_code)
-    db.delete(prod_app_environment_type_code)
+    db.delete(dev_app_environment)
+    db.delete(test_app_environment)
+    db.delete(prod_app_environment)
     db.flush()

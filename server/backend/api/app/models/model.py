@@ -36,10 +36,9 @@ class FamApplication(Base):
     )
     application_name = Column(String(100), nullable=False)
     application_description = Column(String(200), nullable=False)
-    app_environment_type_code = Column(
+    app_environment = Column(
         String(4),
         nullable=True,
-        server_default='DEV',
         comment="Identifies which environment the application is for; DEV, TEST, PROD etc."
     )
     create_user = Column(
@@ -75,7 +74,7 @@ class FamApplication(Base):
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
         UniqueConstraint("application_name", name="fam_app_name_uk"),
         ForeignKeyConstraint(
-            [app_environment_type_code], ["app_fam.fam_app_environment_type.app_environment_type_code"], name="reffam_app_env_type"
+            [app_environment], ["app_fam.fam_app_environment.app_environment"], name="reffam_app_env"
         ),
         {
             "comment": "An application is a digital product that fulfills a  "
@@ -786,19 +785,19 @@ class FamUserRoleXref(Base):
     user = relationship("FamUser", back_populates="fam_user_role_xref")
 
 
-class FamAppEnvironmentType(Base):
-    __tablename__ = "fam_app_environment_type"
+class FamAppEnvironment(Base):
+    __tablename__ = "fam_app_environment"
 
-    app_environment_type_code = Column(
+    app_environment = Column(
         String(4),
         nullable=False,
-        comment='application environment type code'
+        comment='Application environment.'
     )
 
     description = Column(
         String(100),
         nullable=True,
-        comment='Description of what the app_environment_type_code represents.'
+        comment='Description of what the app_environment represents.'
     )
 
     effective_date = Column(
@@ -823,10 +822,9 @@ class FamAppEnvironmentType(Base):
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint("app_environment_type_code", name="fam_app_environment_type_pk"),
+        PrimaryKeyConstraint("app_environment", name="fam_app_environment_pk"),
         {
-            "comment": "A environment type is a code that is associated with "
-            "the application to indicate its nvironment.",
+            "comment": "Used by the application to indicate its environment.",
             "schema": "app_fam",
         },
     )

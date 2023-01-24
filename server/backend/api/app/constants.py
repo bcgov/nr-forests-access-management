@@ -12,7 +12,7 @@ class RoleType(str, Enum):
     ROLE_TYPE_CONCRETE = "C"
 
 
-class AppEnvType(str, Enum):
+class AppEnv(str, Enum):
     APP_ENV_TYPE_DEV = "DEV"
     APP_ENV_TYPE_TEST = "TEST"
     APP_ENV_TYPE_PROD = "PROD"
