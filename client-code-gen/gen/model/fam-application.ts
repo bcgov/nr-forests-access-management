@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AppEnvType } from './app-env-type';
+import { AppEnv } from './app-env';
 
 /**
  * 
@@ -43,10 +43,10 @@ export interface FamApplication {
     'application_client_id'?: number;
     /**
      * 
-     * @type {AppEnvType}
+     * @type {AppEnv}
      * @memberof FamApplication
      */
-    'app_environment_type_code': AppEnvType;
+    'app_environment'?: AppEnv;
     /**
      * 
      * @type {number}
