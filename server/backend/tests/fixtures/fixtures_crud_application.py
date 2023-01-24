@@ -11,7 +11,6 @@ from api.app.models import model as models
 import api.app.constants as constants
 from api.app.crud import crud_utils
 
-
 LOGGER = logging.getLogger(__name__)
 # TODO: look for application queries that retrieve the app_id and use the
 #       crudUtils.get_application_id_from_name method for that
@@ -19,7 +18,9 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def dbsession_application(
-    dbsession_role_types, application_dict
+    dbsession_role_types,
+    dbsession_fam_app_environment,
+    application_dict
 ) -> sqlalchemy.orm.session.Session:
     db = dbsession_role_types
     application_data1_as_pydantic = schemas.FamApplicationCreate(**application_dict)
@@ -54,6 +55,7 @@ def dbsession_delete(dbsession, application_dict):
         .one()
     )
     db.delete(application_record)
+    db.flush()
 
 
 @pytest.fixture(scope="function")
@@ -61,6 +63,7 @@ def application_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
     fam_app_data = {
         "application_name": "FAM",
         "application_description": "a really good app",
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
         "update_user": "Ron Duguey",
@@ -259,4 +262,34 @@ def dbsession_application_with_role_user_assignment(
     db.delete(user_data_model)
     db.delete(bceid_user_type_code_model)
     db.delete(idir_user_type_code_model)
+    db.flush()
+
+@pytest.fixture(scope="function")
+def dbsession_fam_app_environment(
+    dbsession
+):
+    db = dbsession
+
+    dev_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
+        "description": "DEV",
+    })
+    test_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_TEST,
+        "description": "TEST",
+    })
+    prod_app_environment = models.FamAppEnvironment(**{
+        "app_environment": constants.AppEnv.APP_ENV_TYPE_PROD,
+        "description": "PROD",
+    })
+    db.add(dev_app_environment)
+    db.add(test_app_environment)
+    db.add(prod_app_environment)
+
+    db.flush()
+    yield db
+
+    db.delete(dev_app_environment)
+    db.delete(test_app_environment)
+    db.delete(prod_app_environment)
     db.flush()
