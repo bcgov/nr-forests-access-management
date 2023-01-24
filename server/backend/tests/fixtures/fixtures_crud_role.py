@@ -1,20 +1,27 @@
 import datetime
 import logging
-from typing import Dict, List, Union, Iterator
+from typing import Dict, Iterator, List, Union
 
-import api.app.models.model as model
-import api.app.schemas as schemas
-import api.app.constants as constants
 import pytest
 import sqlalchemy.exc
 from sqlalchemy.orm import session
+
+import api.app.constants as constants
+import api.app.models.model as model
+import api.app.schemas as schemas
 
 LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_roles_concrete(dbsession_role_types, concrete_role_model):
-    db = dbsession_role_types
+def dbsession_fam_roles_concrete(
+    dbsession_role_types,
+    dbsession_application: session.Session,
+    concrete_role_model: model.FamRole
+):
+    db = dbsession_application
+    application: model.FamApplication = db.query(model.FamApplication).one()
+    concrete_role_model.application_id = application.application_id
 
     # add a record to the database
     db.add(concrete_role_model)
@@ -114,6 +121,7 @@ def concrete_role_dict() -> Iterator[Dict[str, str]]:
     role_data = {
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
+        "application_id": 99999,  # fake id, set it to test id in real testing code.
         "create_user": constants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }

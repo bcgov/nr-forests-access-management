@@ -42,6 +42,7 @@ class FamApplicationCreate(BaseModel):
     application_name: str
     application_description: str
     application_client_id: Optional[int]
+    app_environment: Optional[famConstants.AppEnv]
 
     class Config:
         orm_mode = True
@@ -116,12 +117,12 @@ class FamForestClientCreate(BaseModel):
 
 class FamRoleCreate(BaseModel):
     role_name: str
-    role_purpose: str
+    role_purpose: Union[str, None]
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    application_id: Union[int, None] = Field(
-        default=None, title="Application this role is associated with"
+    application_id: int = Field(
+        title="Application this role is associated with"
     )
     forest_client_number: Union[str, None] = Field(
         default=None, title="Forest Client this role is associated with"

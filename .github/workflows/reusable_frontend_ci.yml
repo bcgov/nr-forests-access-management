@@ -1,4 +1,4 @@
-name: CI for Frontend
+name: Run CI Frontend
 
 on:
   workflow_call:
@@ -21,6 +21,3 @@ jobs:
         working-directory: frontend
         run: |
           npm run test-coverage
-
-      # TODO: upload coverage results to SonarCloud
-

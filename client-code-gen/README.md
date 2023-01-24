@@ -53,7 +53,13 @@ The generated client is located at "./gen" directory specified by the "-o" optio
 
 Note:
 
+```
 Depending on the Axios version used at frontend, please be aware different axios versions used between in generatred code and frontend dependency will cause integration headache, even if it is a patch version change. So if in the future there is a need to upgrade frontend to higher version Vue, then it would probably mean it needs to bump up the OpenAPI generator (either from cli or docker) version for client code compatibility reason. Use `npm ls axios` to check dependency tree after installation if not sure.
+```
+
+```
+In some cases, it would be good idea to delete "/gen" directory before running script to regenerate new api client code to avoid leaving unnecessary files from last version generated code.
+```
 
 ## How to Use/Integrate with Generated Client/Lib
 The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs (currently named it as 'fam-api').

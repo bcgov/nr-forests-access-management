@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    func,
     text
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
@@ -19,16 +20,6 @@ metadata = Base.metadata
 
 class FamApplication(Base):
     __tablename__ = "fam_application"
-    __table_args__ = (
-        PrimaryKeyConstraint("application_id", name="fam_app_pk"),
-        UniqueConstraint("application_name", name="fam_app_name_uk"),
-        {
-            "comment": "An application is a digital product that fulfills a  "
-            "specific user goal. It can be a front-end application, a back-end "
-            "API, a combination of these, or something else entirely.",
-            "schema": "app_fam",
-        },
-    )
 
     application_id = Column(
         BigInteger().with_variant(Integer, "sqlite"),
@@ -45,6 +36,11 @@ class FamApplication(Base):
     )
     application_name = Column(String(100), nullable=False)
     application_description = Column(String(200), nullable=False)
+    app_environment = Column(
+        String(4),
+        nullable=True,
+        comment="Identifies which environment the application is for; DEV, TEST, PROD etc."
+    )
     create_user = Column(
         String(30),
         nullable=False,
@@ -73,6 +69,19 @@ class FamApplication(Base):
     fam_role = relationship("FamRole", back_populates="application")
     fam_application_group_xref = relationship(
         "FamApplicationGroupXref", back_populates="application"
+    )
+    __table_args__ = (
+        PrimaryKeyConstraint("application_id", name="fam_app_pk"),
+        UniqueConstraint("application_name", name="fam_app_name_uk"),
+        ForeignKeyConstraint(
+            [app_environment], ["app_fam.fam_app_environment.app_environment"], name="reffam_app_env"
+        ),
+        {
+            "comment": "An application is a digital product that fulfills a  "
+            "specific user goal. It can be a front-end application, a back-end "
+            "API, a combination of these, or something else entirely.",
+            "schema": "app_fam",
+        },
     )
 
 
@@ -479,8 +488,8 @@ class FamRole(Base):
                 "of a Role within the FAM Application",
     )
     role_name = Column(String(100), nullable=False)
-    role_purpose = Column(String(200), nullable=False)
-    application_id = Column(BigInteger, nullable=True, index=True)
+    role_purpose = Column(String(200), nullable=True)
+    application_id = Column(BigInteger, nullable=False, index=True)
     client_number_id = Column(
         BigInteger,
         nullable=True,
@@ -548,7 +557,7 @@ class FamRole(Base):
             ["parent_role_id"], ["app_fam.fam_role.role_id"], name="reffam_role23"
         ),
         PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
-        UniqueConstraint("role_name", name="fam_rle_name_uk"),
+        UniqueConstraint("role_name", "application_id", name="fam_rlnm_app_uk"),
         ForeignKeyConstraint(
             [role_type_code], ["app_fam.fam_role_type.role_type_code"], name="reffam_role_type"
         ),
@@ -774,3 +783,48 @@ class FamUserRoleXref(Base):
 
     role = relationship("FamRole", back_populates="fam_user_role_xref")
     user = relationship("FamUser", back_populates="fam_user_role_xref")
+
+
+class FamAppEnvironment(Base):
+    __tablename__ = "fam_app_environment"
+
+    app_environment = Column(
+        String(4),
+        nullable=False,
+        comment='Application environment.'
+    )
+
+    description = Column(
+        String(100),
+        nullable=True,
+        comment='Description of what the app_environment represents.'
+    )
+
+    effective_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        server_default=func.now(),
+        comment="The date and time the code was effective.",
+    )
+
+    expiry_date = Column(
+        TIMESTAMP(precision=6),
+        nullable=True,
+        default=None,
+        comment="The date and time the code expired.",
+    )
+
+    update_date = Column(
+        TIMESTAMP(precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+
+    __table_args__ = (
+        PrimaryKeyConstraint("app_environment", name="fam_app_environment_pk"),
+        {
+            "comment": "Used by the application to indicate its environment.",
+            "schema": "app_fam",
+        },
+    )

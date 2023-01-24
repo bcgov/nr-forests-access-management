@@ -1,3 +1,4 @@
+export * from './app-env';
 export * from './fam-application';
 export * from './fam-application-role';
 export * from './fam-application-user-role-assignment-get';
