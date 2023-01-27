@@ -3,20 +3,21 @@ import logging
 import os
 from urllib.request import urlopen
 
-from api.app.crud import crud_application
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
+from sqlalchemy.orm import Session
 
+from api.app.crud import crud_application
+
+from . import database
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
 # then
 # config.get_aws_region()
-from .config import (get_aws_region,
-                     get_user_pool_domain_name,
-                     get_user_pool_id,
-                     get_oidc_client_id)
+from .config import (get_aws_region, get_oidc_client_id,
+                     get_user_pool_domain_name, get_user_pool_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -203,10 +204,17 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
 
 def authorize_by_app_id(
     application_id,
-    db,
-    claims
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(authorize)
 ):
-    application = crud_application.get_application(application_id=application_id, db=db)
+    """
+        Check request/user authorization.
+        From the valid token, verify if the request is granted
+        for application(by id) access.
+
+        :return: Request's auth groups. Example: ['FOM_DEV_ACCESS_ADMIN', 'FAM_ACCESS_ADMIN']
+    """
+    application = crud_application.get_application(db, application_id)
     if not application:
         raise HTTPException(
             status_code=403,
@@ -225,3 +233,5 @@ def authorize_by_app_id(
                     'description': f'Operation requires role {required_group}'},
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    return groups

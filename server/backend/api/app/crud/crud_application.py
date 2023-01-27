@@ -34,7 +34,7 @@ def get_application(db: Session, application_id: int):
     application = (
         db.query(models.FamApplication)
         .filter(models.FamApplication.application_id == application_id)
-        .one()
+        .one_or_none()
     )
     return application
 
