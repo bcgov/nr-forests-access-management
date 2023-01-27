@@ -1,11 +1,13 @@
 import json
 import logging
 import os
+from typing import List, Union
 from urllib.request import urlopen
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from api.app.crud import crud_application
@@ -49,6 +51,16 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 _jwks = None
+
+class AccessUser(BaseModel):
+    """
+    Class holding user who access FAM system after authenticated.
+    """
+    username: str
+    user_id: Union[str, None]
+    idp_provider: Union[str, None]
+    roles: Union[List[str], None]
+    token_claim: dict
 
 
 def init_jwks():
@@ -235,3 +247,4 @@ def authorize_by_app_id(
         )
 
     return groups
+
