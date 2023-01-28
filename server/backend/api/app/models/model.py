@@ -84,6 +84,9 @@ class FamApplication(Base):
         },
     )
 
+    def __repr__(self):
+        return f'FamApplication({self.application_id}, {self.application_name}, {self.app_environment})'
+
 
 class FamForestClient(Base):
     __tablename__ = "fam_forest_client"

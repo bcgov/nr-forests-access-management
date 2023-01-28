@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import sqlalchemy
 from api.app.models import model as models
@@ -10,6 +11,13 @@ from sqlalchemy.orm import Session
 # from typing import
 
 LOGGER = logging.getLogger(__name__)
+
+def to_upper(elements: List[str]) -> List[str]:
+    return [x.upper() for x in elements]
+
+
+def replace_str_list(elements: List[str], str_to_replace: str, replace_with: str) -> List[str]:
+    return list(map(lambda r: r.replace(str_to_replace, replace_with), elements))
 
 
 def get_primary_key(model: models) -> str:
