@@ -22,7 +22,7 @@ services:
       - fam
 
   fam-flyway:
-    image: flyway/flyway:latest-alpine
+    image: flyway/flyway:latest
     container_name: fam-api-migrations
     command:
       - info
