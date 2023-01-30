@@ -13,11 +13,11 @@ from sqlalchemy.orm import Session
 LOGGER = logging.getLogger(__name__)
 
 def to_upper(elements: List[str]) -> List[str]:
-    return [x.upper() for x in elements]
+    return [x.upper() for x in elements] if elements else None
 
 
 def replace_str_list(elements: List[str], str_to_replace: str, replace_with: str) -> List[str]:
-    return list(map(lambda r: r.replace(str_to_replace, replace_with), elements))
+    return list(map(lambda r: r.replace(str_to_replace, replace_with), elements)) if elements else None
 
 
 def get_primary_key(model: models) -> str:
