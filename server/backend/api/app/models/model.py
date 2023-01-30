@@ -9,7 +9,7 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
     func,
-    text
+    text,
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
@@ -31,15 +31,15 @@ class FamApplication(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness " +
-                "of an Application registered under FAM",
+        comment="Automatically generated key used to identify the uniqueness "
+        + "of an Application registered under FAM",
     )
     application_name = Column(String(100), nullable=False)
     application_description = Column(String(200), nullable=False)
     app_environment = Column(
         String(4),
         nullable=True,
-        comment="Identifies which environment the application is for; DEV, TEST, PROD etc."
+        comment="Identifies which environment the application is for; DEV, TEST, PROD etc.",
     )
     create_user = Column(
         String(30),
@@ -47,18 +47,18 @@ class FamApplication(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated " +
-                "the record.",
+        comment="The user or proxy account that created or last updated "
+        + "the record.",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
@@ -74,7 +74,9 @@ class FamApplication(Base):
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
         UniqueConstraint("application_name", name="fam_app_name_uk"),
         ForeignKeyConstraint(
-            [app_environment], ["app_fam.fam_app_environment.app_environment"], name="reffam_app_env"
+            [app_environment],
+            ["app_fam.fam_app_environment.app_environment"],
+            name="reffam_app_env",
         ),
         {
             "comment": "An application is a digital product that fulfills a  "
@@ -90,13 +92,13 @@ class FamForestClient(Base):
     __table_args__ = (
         PrimaryKeyConstraint("client_number_id", name="fam_for_cli_pk"),
         UniqueConstraint("forest_client_number", name="fam_for_cli_num_uk"),
-        #UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
+        # UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
         {
             "comment": "A forest client is a business, individual, or agency that is "
             'identified as an entity that a user can have a privilege "on '
             'behalf of".',
             "schema": "app_fam",
-        }
+        },
     )
 
     client_number_id = Column(
@@ -116,7 +118,7 @@ class FamForestClient(Base):
         String,
         nullable=False,
         index=True,
-        comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client."
+        comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client.",
     )
     # client_name = Column(String(100), nullable=True, index=True)  # noqa NOSONAR
 
@@ -126,7 +128,7 @@ class FamForestClient(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
@@ -136,7 +138,7 @@ class FamForestClient(Base):
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
@@ -148,37 +150,33 @@ class FamForestClient(Base):
 class FamUserType(Base):
     __tablename__ = "fam_user_type_code"
 
-    USER_TYPE_IDIR = 'I'
-    USER_TYPE_BCEID = 'B'
+    USER_TYPE_IDIR = "I"
+    USER_TYPE_BCEID = "B"
 
-    user_type_code = Column(
-        String(2),
-        nullable=False,
-        comment='user type code'
-    )
+    user_type_code = Column(String(2), nullable=False, comment="user type code")
 
     description = Column(
         String(100),
         nullable=True,
-        comment='Description of what the user_type_code represents.'
+        comment="Description of what the user_type_code represents.",
     )
 
     effective_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the code was effective.",
     )
 
     expiry_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=True,
         default=None,
         comment="The date and time the code expired.",
     )
 
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
@@ -208,12 +206,13 @@ class FamUser(Base):
             cache=1,
         ),
         comment="Automatically generated key used to identify the "
-                "uniqueness of a User within the FAM Application",
+        "uniqueness of a User within the FAM Application",
     )
     user_type_code = Column(
         String(2),
         nullable=False,
-        comment="Identifies which type of the user it belongs to; IDIR, BCeID etc.")
+        comment="Identifies which type of the user it belongs to; IDIR, BCeID etc.",
+    )
     user_name = Column(String(100), nullable=False)
     create_user = Column(
         String(30),
@@ -221,7 +220,7 @@ class FamUser(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
@@ -230,17 +229,16 @@ class FamUser(Base):
     cognito_user_id = Column(String(100))
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the "
-                "record.",
+        comment="The user or proxy account that created or last updated the " "record.",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
     fam_user_group_xref = relationship(
-        "FamUserGroupXref", back_populates="user" , cascade="all, delete-orphan"
+        "FamUserGroupXref", back_populates="user", cascade="all, delete-orphan"
     )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
@@ -250,7 +248,9 @@ class FamUser(Base):
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
         UniqueConstraint("user_type_code", "user_name", name="fam_usr_uk"),
         ForeignKeyConstraint(
-            [user_type_code], ["app_fam.fam_user_type_code.user_type_code"], name="reffam_user_type"
+            [user_type_code],
+            ["app_fam.fam_user_type_code.user_type_code"],
+            name="reffam_user_type",
         ),
         {
             "comment": "A user is a person or system that can authenticate "
@@ -260,14 +260,13 @@ class FamUser(Base):
     )
 
     def __str__(self):
-        return f'FamUser({self.user_id}, {self.user_name}, {self.user_type_code})'
+        return f"FamUser({self.user_id}, {self.user_name}, {self.user_type_code})"
 
 
 class FamApplicationClient(Base):
     __tablename__ = "fam_application_client"
     __table_args__ = (
-        UniqueConstraint('cognito_client_id', 'application_id', name='cognito_app_uk'),
-
+        UniqueConstraint("cognito_client_id", "application_id", name="cognito_app_uk"),
         ForeignKeyConstraint(
             ["application_id"],
             ["app_fam.fam_application.application_id"],
@@ -283,7 +282,6 @@ class FamApplicationClient(Base):
             "re-use it (at the OIDC level).",
             "schema": "app_fam",
         },
-
     )
 
     application_client_id = Column(
@@ -297,8 +295,8 @@ class FamApplicationClient(Base):
             cycle=False,
             cache=1,
         ),
-        comment="Automatically generated key used to identify the uniqueness " +
-                " of an OIDC as it corresponds to an identified client ",
+        comment="Automatically generated key used to identify the uniqueness "
+        + " of an OIDC as it corresponds to an identified client ",
     )
     cognito_client_id = Column(String(32), nullable=False)
     create_user = Column(
@@ -307,24 +305,24 @@ class FamApplicationClient(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
     application_id = Column(
         BigInteger,
-        comment="Automatically generated key used to identify the uniqueness " +
-                "of an Application registered under FAM",
+        comment="Automatically generated key used to identify the uniqueness "
+        + "of an Application registered under FAM",
     )
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the " +
-                "record. ",
+        comment="The user or proxy account that created or last updated the "
+        + "record. ",
     )
     update_date = Column(
-        #String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
-        TIMESTAMP(precision=6),
+        # String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
@@ -381,7 +379,7 @@ class FamGroup(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
@@ -397,7 +395,7 @@ class FamGroup(Base):
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
@@ -419,44 +417,40 @@ class FamGroup(Base):
 class FamRoleType(Base):
     __tablename__ = "fam_role_type"
 
-    #ROLE_TYPE_ABSTRACT = 'A'
-    #ROLE_TYPE_CONCRETE = 'C'
+    # ROLE_TYPE_ABSTRACT = 'A'
+    # ROLE_TYPE_CONCRETE = 'C'
 
-    role_type_code = Column(
-        String(2),
-        nullable=False,
-        comment='role type code'
-    )
+    role_type_code = Column(String(2), nullable=False, comment="role type code")
 
     description = Column(
         String(100),
         nullable=True,
-        comment='Description of what the role_type_code represents'
+        comment="Description of what the role_type_code represents",
     )
 
     effective_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the code was effective.",
     )
 
     expiry_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=True,
         default=None,
         comment="The date and time the code expired.",
     )
 
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
     __table_args__ = (
         PrimaryKeyConstraint("role_type_code", name="fam_role_type_code_pk"),
-        #CheckConstraint(role_type_code.in_(['C', 'A'])),
+        # CheckConstraint(role_type_code.in_(['C', 'A'])),
         {
             "comment": "A role type is a code that is associated with roles "
             "that will influence what can be associate with a role.  At time "
@@ -485,7 +479,7 @@ class FamRole(Base):
             cache=1,
         ),
         comment="Automatically generated key used to identify the uniqueness "
-                "of a Role within the FAM Application",
+        "of a Role within the FAM Application",
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(200), nullable=True)
@@ -502,7 +496,7 @@ class FamRole(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
@@ -511,24 +505,24 @@ class FamRole(Base):
         BigInteger,
         nullable=True,
         index=True,
-        comment="Automatically generated key used to identify the uniqueness " +
-                "of a Role within the FAM Application",
+        comment="Automatically generated key used to identify the uniqueness "
+        + "of a Role within the FAM Application",
     )
     update_user = Column(
         String(30),
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
     role_type_code = Column(
         String(2),
         nullable=False,
-        comment="Identifies if the role is an abstract or concrete role. " +
-                "Users should only be assigned to roles where " +
-                "role_type=concrete",
+        comment="Identifies if the role is an abstract or concrete role. "
+        + "Users should only be assigned to roles where "
+        + "role_type=concrete",
     )
 
     application = relationship("FamApplication", back_populates="fam_role")
@@ -559,7 +553,9 @@ class FamRole(Base):
         PrimaryKeyConstraint("role_id", name="fam_rle_pk"),
         UniqueConstraint("role_name", "application_id", name="fam_rlnm_app_uk"),
         ForeignKeyConstraint(
-            [role_type_code], ["app_fam.fam_role_type.role_type_code"], name="reffam_role_type"
+            [role_type_code],
+            ["app_fam.fam_role_type.role_type_code"],
+            name="reffam_role_type",
         ),
         {
             "comment": "A role is a qualifier that can be assigned to a user "
@@ -593,7 +589,7 @@ class FamApplicationGroupXref(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
@@ -603,7 +599,7 @@ class FamApplicationGroupXref(Base):
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
@@ -633,7 +629,7 @@ class FamGroupRoleXref(Base):
         nullable=False,
         index=True,
         comment="Automatically generated key used to identify the uniqueness "
-                "of a Role within the FAM Application",
+        "of a Role within the FAM Application",
     )
     create_user = Column(
         String(30),
@@ -641,7 +637,7 @@ class FamGroupRoleXref(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
@@ -651,7 +647,7 @@ class FamGroupRoleXref(Base):
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
@@ -683,7 +679,7 @@ class FamUserGroupXref(Base):
         nullable=False,
         index=True,
         comment="Automatically generated key used to identify the uniqueness "
-                "of a User within the FAM Application",
+        "of a User within the FAM Application",
     )
     group_id = Column(BigInteger, nullable=False, index=True)
     create_user = Column(
@@ -692,7 +688,7 @@ class FamUserGroupXref(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
@@ -700,10 +696,10 @@ class FamUserGroupXref(Base):
     update_user = Column(
         String(30),
         comment="The user or proxy account that created or last updated the "
-                "record. ",
+        "record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created or last updated.",
     )
@@ -722,12 +718,11 @@ class FamUserRoleXref(Base):
             ["user_id"], ["app_fam.fam_user.user_id"], name="reffam_user10"
         ),
         PrimaryKeyConstraint("user_role_xref_id", name="fam_usr_rle_xrf_pk"),
-        UniqueConstraint("user_id", "role_id",
-                         name="fam_usr_rle_usr_id_rle_id_uk"),
+        UniqueConstraint("user_id", "role_id", name="fam_usr_rle_usr_id_rle_id_uk"),
         {
             "comment": "User Role Xref is a cross-reference object that allows for the identification of Roles assigned to a user, as well as the users that belong to a given Role",
-            "schema": "app_fam"
-        }  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
+            "schema": "app_fam",
+        },  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
     )
 
     user_role_xref_id = Column(
@@ -742,7 +737,7 @@ class FamUserRoleXref(Base):
             cache=1,
         ),
         comment="Automatically generated key used to identify the uniqueness "
-                "of a FamUserRoleXref within the FAM Application"
+        "of a FamUserRoleXref within the FAM Application",
     )
 
     user_id = Column(
@@ -750,14 +745,14 @@ class FamUserRoleXref(Base):
         nullable=False,
         index=True,
         comment="Automatically generated key used to identify the uniqueness "
-                "of a User within the FAM Application",
+        "of a User within the FAM Application",
     )
     role_id = Column(
         BigInteger,
         nullable=False,
         index=True,
         comment="Automatically generated key used to identify the uniqueness "
-                "of a Role within the FAM Application",
+        "of a Role within the FAM Application",
     )
     create_user = Column(
         String(30),
@@ -765,7 +760,7 @@ class FamUserRoleXref(Base):
         comment="The user or proxy account that created the record.",
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
@@ -773,10 +768,10 @@ class FamUserRoleXref(Base):
     update_user = Column(
         String(30),
         comment="The user or proxy account that created or last updated "
-                "the record. ",
+        "the record. ",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
@@ -789,19 +784,17 @@ class FamAppEnvironment(Base):
     __tablename__ = "fam_app_environment"
 
     app_environment = Column(
-        String(4),
-        nullable=False,
-        comment='Application environment.'
+        String(4), nullable=False, comment="Application environment."
     )
 
     description = Column(
         String(100),
         nullable=True,
-        comment='Description of what the app_environment represents.'
+        comment="Description of what the app_environment represents.",
     )
 
     effective_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         default=datetime.datetime.utcnow,
         server_default=func.now(),
@@ -809,14 +802,14 @@ class FamAppEnvironment(Base):
     )
 
     expiry_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         nullable=True,
         default=None,
         comment="The date and time the code expired.",
     )
 
     update_date = Column(
-        TIMESTAMP(precision=6),
+        TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
