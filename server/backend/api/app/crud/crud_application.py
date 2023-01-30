@@ -31,7 +31,7 @@ def get_applications(db: Session):
     return fam_apps
 
 
-def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> models.FamApplication:
+def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> List[models.FamApplication]:
     """ Get applications based on access roles that are associated with.
         Note, this isn't to find the applications that the 'roles belong to'.
 
