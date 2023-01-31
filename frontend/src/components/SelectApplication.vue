@@ -2,7 +2,6 @@
 import PageTitle from '@/components/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { applicationsUserAdministers, isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
-import type { FamApplication, FAMApplicationsApi } from 'fam-api';
 import { useToast } from 'vue-toastification';
 import router from '../router';
 
@@ -15,16 +14,8 @@ setTimeout( async () => {
   try {
     applicationsUserAdministers.value = (await applicationsApi.getApplications()).data
   } catch (error) {
-    const toast = useToast();
+    const toast = useToast()
     toast.error("An error occurred loading applications. Please refresh the screen.\n If the error persists, try again later or contact support.")
-    // TODO: Workaround broken front-end. Remove once front-end is stable.
-    toast.warning("Using fake test data as temporary working for applications not working. REMOVE BEFORE PRODUCTION.")
-    applicationsUserAdministers.value = [
-      { application_name: 'FOM', application_description: 'Forest Operations Map', application_id: 1001 },
-      { application_name: 'FAM', application_description: 'Forest Access Management', application_id: 1002 },
-      { application_name: 'FAKE', application_description: 'Fake Test App', application_id: 9999 }
-    ] as FamApplication[]
-
   }
 
   // If user can only manage one application redirect to manage access screen
