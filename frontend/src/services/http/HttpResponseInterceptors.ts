@@ -1,6 +1,6 @@
 import AuthService from "@/services/AuthService";
 import Http from '@/services/http/HttpCommon';
-import type { AxiosResponse } from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import { ref } from 'vue';
 import router from '../../router';
 
@@ -15,12 +15,12 @@ const MAX_RETRY = 2
 
 // Assume it is caught in error block based on default handling.
 async function accessErrorResponsesItcpt(error: any) {
-    if(error.response.status == 401) {
+    if (error.response.status == 401) {
         router.push('/')
         return Promise.reject(error);
     }
     // 403 special handling; until MAX_RETRY reached.
-    if(error.response.status == 403 && (retryCount.value < MAX_RETRY)) {
+    if (error.response.status == 403 && (retryCount.value < MAX_RETRY)) {
         return refreshTokenAndReTry(error.request.responseURL, error.response);
     }
 
@@ -28,17 +28,17 @@ async function accessErrorResponsesItcpt(error: any) {
     return Promise.reject(error);
 }
 
-async function refreshTokenAndReTry(request: any, response: AxiosResponse) {
+async function refreshTokenAndReTry(request: AxiosRequestConfig, response: AxiosResponse) {
     // Refresh token.
     await AuthService.methods.refreshToken()
 
     // Try original request again.
     retryCount.value++
     return Http.request(request)
-    .catch((error) => {
-        console.log("Still encountered error after request retried: ", error)
-        return Promise.reject(error);
-    })
+        .catch((error) => {
+            console.log("Still encountered error after request retried: ", error)
+            return Promise.reject(error);
+        })
 }
 
 export default {
