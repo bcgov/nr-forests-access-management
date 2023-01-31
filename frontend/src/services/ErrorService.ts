@@ -15,7 +15,7 @@ function onError(error: unknown, info: string) {
       return
     }
     if (err.response?.status == 409) {
-      toast.warning(`${error}`)
+      toast.warning(`${err.response?.data.detail}`)
       return
     }
     toast.error('An application error has occurred. Please try again. If the error persists contact support.')
