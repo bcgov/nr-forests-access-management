@@ -1,5 +1,5 @@
 # nr-forests-access-management
-Authorization solution for BC natural resource sector
+Authorization solution for BC natural resource sector using Cognito
 
 Built with AWS.
 
