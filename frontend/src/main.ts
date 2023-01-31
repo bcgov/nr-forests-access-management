@@ -1,17 +1,14 @@
 import { createApp } from 'vue'
 
-import Toast, { useToast, type PluginOptions, POSITION, TYPE } from "vue-toastification"
-import "vue-toastification/dist/index.css"
-
-import { Amplify } from 'aws-amplify'
-import awsExports from './aws-exports'
 import { vfmPlugin } from 'vue-final-modal'
+import Toast, { POSITION, TYPE, useToast, type PluginOptions } from "vue-toastification"
+import "vue-toastification/dist/index.css"
 
 import App from '@/App.vue'
 import router from '@/router'
 
-import './assets/styles/styles.scss'
 import 'bootstrap'
+import './assets/styles/styles.scss'
 
 
 // import the fontawesome core
@@ -25,8 +22,6 @@ import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
 
 // add specific icons to library for use throughout application
 library.add(faTrashCan)
-
-Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App)
 
