@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
-
+import { Amplify } from 'aws-amplify'
+import awsExports from './aws-exports'
 import { vfmPlugin } from 'vue-final-modal'
 import Toast, { POSITION, TYPE, useToast, type PluginOptions } from "vue-toastification"
 import "vue-toastification/dist/index.css"
@@ -7,10 +8,8 @@ import "vue-toastification/dist/index.css"
 import App from '@/App.vue'
 import router from '@/router'
 
-import { Amplify } from 'aws-amplify'
 import 'bootstrap'
 import './assets/styles/styles.scss'
-import awsExports from './aws-exports'
 
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -20,6 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // import specific icons
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
+import ErrorService from './services/ErrorService'
 
 // add specific icons to library for use throughout application
 library.add(faTrashCan)
@@ -47,12 +47,16 @@ const toastOptions: PluginOptions = {
       // ToastOptions object for each type of toast
       [TYPE.ERROR]: {
           position: POSITION.TOP_CENTER,
-          timeout: false,
+          timeout: 5000,
       },
       [TYPE.SUCCESS]: {
           position: POSITION.TOP_RIGHT,
           timeout: 4000,
-      }
+      },
+      [TYPE.WARNING]: {
+        position: POSITION.TOP_RIGHT,
+        timeout: 4000,
+    }
   }
 }
 app.use(Toast, toastOptions);
@@ -64,11 +68,7 @@ app.use(vfmPlugin({
 }))
 
 app.config.errorHandler = (err, instance, info) => {
-    // This can trigger on an uncaught error in a function.
-    // This will NOT trigger on an uncaught error in an async setup operation.
-    const toast = useToast();
-    toast.error("An application error has occurred. Please try again. If the error persists contact support.")
-    console.log(`app.config.errorHandler error ${err} with info: ${info}`)
+  ErrorService.onError(err, info)
 }
 
 app

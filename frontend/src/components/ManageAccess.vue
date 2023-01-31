@@ -4,7 +4,7 @@ import router from '@/router';
 import { useToast } from 'vue-toastification';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import PageTitle from '@/components/PageTitle.vue';
-import { isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
+import { selectedApplication } from '@/services/ApplicationState';
 
 // import { $vfm } from 'vue-final-modal';
 import Dialog from '@/components/Dialog/Dialog.vue'
@@ -20,18 +20,18 @@ const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi()
 const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>()
 
 onMounted(async () => {
-  if (selectedApplication.value != null) {
+  try {
     const list = (await applicationsApi.getFamApplicationUserRoleAssignment(selectedApplication.value!.application_id)).data
-    userRoleAssignments.value = list.sort((first,second) => {
+    userRoleAssignments.value = list.sort((first, second) => {
       const nameCompare = first.user.user_name.localeCompare(second.user.user_name);
       if (nameCompare != 0) return nameCompare
       const roleCompare = first.role.role_name.localeCompare(second.role.role_name)
       return roleCompare
     })
-  } else {
-    // No application selected so redirect to select application screen
-    // Unsure if this actually works...
-    router.push("/application")
+  }
+  catch (error: unknown) {
+    router.push('/application')
+    return Promise.reject(error)
   }
 })
 
