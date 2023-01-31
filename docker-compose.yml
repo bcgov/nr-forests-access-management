@@ -7,7 +7,7 @@ services:
     mem_limit: 128m
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=fam
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5432
@@ -33,7 +33,7 @@ services:
     environment:
       - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
       - FLYWAY_USER=postgres
-      - FLYWAY_PASSWORD=test
+      - FLYWAY_PASSWORD=postgres
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
