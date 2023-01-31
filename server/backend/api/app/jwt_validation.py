@@ -52,11 +52,11 @@ _jwks = None
 
 def init_jwks():
     global _jwks
-    on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
     # why not use the global versions of these variables, lines 34, 35
     aws_region = get_aws_region()
     user_pool_id = get_user_pool_id()
     # Add try/except due to urlopen() may have problem reaching AWS/Cognito.
+    LOGGER.debug(f"Requesting aws jwks with region {aws_region} and user pood id {user_pool_id}...")
     try:
         with urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json") as response:
             _jwks = json.loads(response.read().decode('utf-8'))
@@ -64,9 +64,7 @@ def init_jwks():
     except Exception as e:
         LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
         LOGGER.error("Backend API will not work properly.")
-        # Raise original exception but tolerate this error for local development.
-        if on_aws:
-            raise e
+        raise e
 
 
 def get_rsa_key_method():
