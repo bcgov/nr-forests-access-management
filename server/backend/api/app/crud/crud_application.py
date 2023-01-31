@@ -40,16 +40,19 @@ def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> Li
     """
     LOGGER.debug(f"Running get_applications_by_granted_app, access_roles: {access_roles}")
 
-    # Convert to Upper Case.
-    REPLACE_STR_KEY = "_ACCESS_ADMIN"
-    upper_app_names = crud_utils.replace_str_list(crud_utils.to_upper(access_roles), REPLACE_STR_KEY, "")
-    
-    LOGGER.debug(f"Running db lookup for app name: {upper_app_names}")
+    # Filter out others and only contains Access Admin roles
+    ACCESS_ADMIN_ROLE_SUFFIX = "_ACCESS_ADMIN"
+    admin_access_roles = filter(
+        lambda x: x.endswith(ACCESS_ADMIN_ROLE_SUFFIX), access_roles
+    )
+    app_names = crud_utils.replace_str_list(admin_access_roles, ACCESS_ADMIN_ROLE_SUFFIX, "")
 
-    fam_apps = ( 
+    LOGGER.debug(f"Running db lookup for app name: {app_names}")
+
+    fam_apps = (
         db.query(models.FamApplication)
         .filter(
-            func.upper(models.FamApplication.application_name).in_(upper_app_names)
+            models.FamApplication.application_name.in_(app_names)
         )
         .distinct(models.FamApplication.application_name)
         .all()
