@@ -52,13 +52,9 @@ services:
 
   fam-api:
     container_name: fam-api
-    environment:
-      - POSTGRES_DB=fam
-      - POSTGRES_HOST=fam-database
-      - api_db_username=fam_proxy_api
-      - api_db_password=test
+    env_file: server/backend/local-dev.env
     build:
-      context: server
+      context: server/backend
       dockerfile: Dockerfile
     depends_on:
       - fam-flyway
