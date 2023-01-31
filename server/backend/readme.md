@@ -16,7 +16,7 @@ This will do three things:
 
 Potential "gotchas":
 
-* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `env-docker-compose.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and`COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment.
+* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and`COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment.
 * When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
 * Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
 
@@ -59,14 +59,16 @@ Potential gotchas (developer notes -- may not need!):
 
 ```
 cd server/backend
-set -o allexport; source env-docker-compose.env; set +o allexport
+set -o allexport; source local-dev.env; set +o allexport
 ```
 
 ## Run the API from the command line
 
+Depending on where python3 is installed, the command might be "python" or "python3"
+
 ```
 cd server/backend
-python serverstart.py
+python3 serverstart.py
 ```
 
 ## Alternatively, run the API from VS Code in debug mode

@@ -1,5 +1,10 @@
 FROM python:3.8
 
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
+
+USER nonroot
+
 COPY requirements.txt /usr/src/
 COPY api /usr/src/api
 
