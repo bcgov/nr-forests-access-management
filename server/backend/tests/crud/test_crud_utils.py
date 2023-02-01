@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 import api.app.models.model as model
 from api.app.crud import crud_user
 from api.app.crud import crud_utils
@@ -38,3 +40,37 @@ def test_get_next(dbsession_fam_users, userdata2_pydantic, delete_all_users):
 
     next_value_after = crud_utils.get_next(db=db, model=fam_user_model)
     assert next_value_after > next_value_before
+
+
+@pytest.mark.parametrize("str_list_to_test, expcted_str_list",[
+    (['fam', 'fom', 'aws'], ['FAM', 'FOM', 'AWS']),
+    (['FAM', 'FOM', 'AWS'], ['FAM', 'FOM', 'AWS']),
+    (None, None)
+])
+def test_to_upper(str_list_to_test, expcted_str_list):
+    result = crud_utils.to_upper(str_list_to_test)
+    if result:
+        for index, r in enumerate(result):
+            assert r == expcted_str_list[index]
+    else:
+        assert result == expcted_str_list
+
+
+@pytest.mark.parametrize("str_list_to_test, str_to_replace, replace_with, expcted_str_list",[
+    (['FAM_ACCESS_ADMIN', 'FOM_DEV_ACCESS_ADMIN', 'FOM_TEST_ACCESS_ADMIN'], 
+     "_ACCESS_ADMIN", "",
+     ['FAM', 'FOM_DEV', 'FOM_TEST']
+    ),
+    (['FAM_ACCESS', 'FOM_DEV', 'FOM'], 
+     "_ACCESS", "_ACCESS_ADMIN",
+     ['FAM_ACCESS_ADMIN', 'FOM_DEV', 'FOM']
+    ),
+    (None, "something", "some_other_thing", None)
+])
+def test_replace_str_list(str_list_to_test, str_to_replace, replace_with, expcted_str_list):
+    result = crud_utils.replace_str_list(str_list_to_test, str_to_replace, replace_with)
+    if result:
+        for index, r in enumerate(result):
+            assert r == expcted_str_list[index]
+    else:
+        assert result == expcted_str_list

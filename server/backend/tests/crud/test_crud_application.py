@@ -323,3 +323,67 @@ def test_get_application_role_assignments_wrong_application(
     )
     LOGGER.debug(f"role_assignments: {role_assignments}")
     assert not role_assignments
+
+
+def test_get_applications_by_granted_apps(
+    dbsession_different_envs_apps: sqlalchemy.orm.session.Session
+):
+    # This db session contains apps: ['fam', 'fom_dev', 'fom_test, 'fom_prod'] setup.
+    db = dbsession_different_envs_apps
+
+    # Testing 'get_applications_by_granted_apps' with Accss Roles: FAM_ACCESS_ADMIN only
+    access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
+    LOGGER.debug(f"Testing 'get_applications_by_granted_apps' with Accss Roles: {access_roles_fam_only}...")
+    fam_apps = crud_application.get_applications_by_granted_apps(
+        db=db, access_roles=access_roles_fam_only
+    )
+    LOGGER.debug(f"Apps: {fam_apps}")
+    assert len(fam_apps) == 1
+    assert str(fam_apps[0].application_name).lower() == "fam"
+
+    # Testing 'get_applications_by_granted_apps' with Accss Roles: FOM_DEV_ACCESS_ADMIN only
+    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    LOGGER.debug(f"Testing 'get_applications_by_granted_apps' with Accss Roles: {access_roles_fom_dev_only}...")
+    fam_apps = crud_application.get_applications_by_granted_apps(
+        db=db, access_roles=access_roles_fom_dev_only
+    )
+    LOGGER.debug(f"Apps: {fam_apps}")
+    assert len(fam_apps) == 1
+    assert str(fam_apps[0].application_name).lower() == "fom_dev"
+
+    # Testing 'get_applications_by_granted_apps' with Accss Roles: both FAM_ACCESS_ADMIN and FOM_DEV_ACCESS_ADMIN
+    access_roles_fam__fom_dev = ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
+    LOGGER.debug(f"Testing 'get_applications_by_granted_apps' with Accss Roles: {access_roles_fam__fom_dev}...")
+    fam_apps = crud_application.get_applications_by_granted_apps(
+        db=db, access_roles=access_roles_fam__fom_dev
+    )
+    LOGGER.debug(f"Apps: {fam_apps}")
+    assert len(fam_apps) == 2
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fam"]) == 1
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_dev"]) == 1
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_test"]) == 0
+
+    # Testing 'get_applications_by_granted_apps' with Accss Roles: on FOM_DEV_ACCESS_ADMIN and FOM_TEST_ACCESS_ADMIN
+    access_roles_fom_dev_test = ["FOM_DEV_ACCESS_ADMIN", "FOM_TEST_ACCESS_ADMIN"]
+    LOGGER.debug(f"Testing 'get_applications_by_granted_apps' with Accss Roles: {access_roles_fom_dev_test}...")
+    fam_apps = crud_application.get_applications_by_granted_apps(
+        db=db, access_roles=access_roles_fom_dev_test
+    )
+    LOGGER.debug(f"Apps: {fam_apps}")
+    assert len(fam_apps) == 2
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fam"]) == 0
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_dev"]) == 1
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_test"]) == 1
+
+    # Testing 'get_applications_by_granted_apps' with Accss Roles: on NO_APP_ACCESS_ADMIN
+    access_roles_no_app = ["NO_APP_ACCESS_ADMIN"]
+    LOGGER.debug(f"Testing 'get_applications_by_granted_apps' with Accss Roles: {access_roles_no_app}...")
+    fam_apps = crud_application.get_applications_by_granted_apps(
+        db=db, access_roles=access_roles_no_app
+    )
+    # Shold have empty apps result.
+    LOGGER.debug(f"Apps: {fam_apps}")
+    assert len(fam_apps) == 0
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fam"]) == 0
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_dev"]) == 0
+    assert len([app for app in fam_apps if str(app.application_name).lower() == "fom_test"]) == 0

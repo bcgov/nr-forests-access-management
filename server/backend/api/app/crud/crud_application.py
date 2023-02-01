@@ -2,9 +2,11 @@ import datetime
 import logging
 from typing import List
 
-from api.app.models import model as models
-import api.app.constants as constants
+from sqlalchemy import func
 from sqlalchemy.orm import Session, load_only
+
+import api.app.constants as constants
+from api.app.models import model as models
 
 from .. import schemas
 from . import crud_utils as crud_utils
@@ -26,6 +28,38 @@ def get_applications(db: Session):
     # LOGGER.debug(f"db parameters {db.parameters}")
     fam_apps = db.query(models.FamApplication).all()
     LOGGER.debug(f"famApplications: {fam_apps}, {type(fam_apps)}")
+    return fam_apps
+
+
+def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> List[models.FamApplication]:
+    """ Get applications based on access roles that are associated with.
+        Note, this isn't to find the applications that the 'roles belong to'.
+
+    :param access_roles: Cognito token custom groups (aka the Role(s) for FAM).
+    :return: list of applications granted to view.
+    """
+    LOGGER.debug(f"Running get_applications_by_granted_app, access_roles: {access_roles}")
+
+    # Filter out others and only contains Access Admin roles
+    ACCESS_ADMIN_ROLE_SUFFIX = "_ACCESS_ADMIN"
+    admin_access_roles = filter(
+        lambda x: x.endswith(ACCESS_ADMIN_ROLE_SUFFIX), access_roles
+    )
+    app_names = crud_utils.replace_str_list(admin_access_roles, ACCESS_ADMIN_ROLE_SUFFIX, "")
+
+    LOGGER.debug(f"Running db lookup for app name: {app_names}")
+
+    fam_apps = (
+        db.query(models.FamApplication)
+        .filter(
+            models.FamApplication.application_name.in_(app_names)
+        )
+        .distinct(models.FamApplication.application_name)
+        .all()
+    )
+    LOGGER.debug(
+        f"FamApplications: {fam_apps} {'found.' if fam_apps  else 'not found.'}"
+    )
     return fam_apps
 
 
