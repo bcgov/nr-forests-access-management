@@ -302,28 +302,28 @@ def dbsession_different_envs_apps(
     db = dbsession_fam_app_environment
 
     fam_app = models.FamApplication(**{
-        "application_name": "fam",
+        "application_name": "FAM",
         "application_description": "Forests Access Management",
         "app_environment": None,
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     dev_fom_app = models.FamApplication(**{
-        "application_name": "fom_dev",
+        "application_name": "FOM_DEV",
         "application_description": "Forest Operations Map (DEV)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     test_fom_app = models.FamApplication(**{
-        "application_name": "fom_test",
+        "application_name": "FOM_TEST",
         "application_description": "Forest Operations Map (TEST)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_TEST,
         "create_user": constants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     prod_fom_app = models.FamApplication(**{
-        "application_name": "fom_prod",
+        "application_name": "FOM_PROD",
         "application_description": "Forest Operations Map (PROD)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_PROD,
         "create_user": constants.FAM_PROXY_API_USER,
