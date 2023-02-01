@@ -151,7 +151,7 @@ def create_test_fam_role(auth_object, test_role_name):
         ('{}',
         'just for testing',
         (select application_id from app_fam.fam_application
-            where application_name = 'fam'),
+            where application_name = 'FAM'),
         'C',
         CURRENT_USER,
         CURRENT_USER)
@@ -229,7 +229,7 @@ def create_test_fam_cognito_client(auth_object):
     values(
         '{}',
         (select application_id from app_fam.fam_application
-            where application_name = 'fam'),
+            where application_name = 'FAM'),
         CURRENT_USER,
         CURRENT_USER)
     """
@@ -300,7 +300,7 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
         ('{role_name}',
         'just for testing',
         (select application_id from app_fam.fam_application
-            where application_name = 'fam'),
+            where application_name = 'FAM'),
         '{role_type}',
         CURRENT_USER,
         CURRENT_USER {parent_value})
