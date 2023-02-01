@@ -5,7 +5,7 @@ import { readonly, ref } from 'vue';
 import awsExports from '@/aws-exports';
 
 const FAM_LOGIN_USER = 'famLoginUser'
-Auth.configure(awsExports); // Config Amplify for Cognito resource.
+setTimeout(() => Auth.configure(awsExports), 1000); // Config Amplify for Cognito resource.
 
 export interface FamLoginUser {
     username?: string,

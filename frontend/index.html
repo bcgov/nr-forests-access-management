@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="favicon.ico" />
+    <link rel="preload" href="/env.json" as="fetch" crossorigin="anonymous" type="application/json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FAM - Forest Access Management</title>
     <script>
       // Fix `global is not defined` error caused by 'amazon-cognito-identity-js/es/AuthenticationHelper.js'.
       // The best solution might be in vite.config.ts, but for some reason, the fix in vite.config.ts (works) conflicts with
-      // configured "Vitest" internally. If we use --dom option for npm test (happy-dom), the fix in config will have no problem; 
+      // configured "Vitest" internally. If we use --dom option for npm test (happy-dom), the fix in config will have no problem;
       // but we are using jsdom currently. So, instead, define 'global' here at index.html.
       // vite.config.ts (add this, but does not work for 'jsdom'):
       //  define: {
@@ -18,7 +19,7 @@
 
     </script>
     <script src="/env.js">
-    </script> 
+    </script>
   </head>
   <body id="fam-body" class="fam-body">
     <div id="main-body">
