@@ -1,3 +1,12 @@
+/**
+ * This aws-exports is the configuration for Amplify library to communicate with AWS Cognito.
+ * It uses generated (different in each environment) "env.json" static file that is
+ * being loaded and stored in user's browser storage at run time. (See env.js at index.html)
+ *
+ * A note for purpose of using optional ("env?.") is that this is not to skip values when "env"
+ * is not loaded. When there is no "env.json" loaded yet, the error message is strange; so give it
+ * optional "?" simply let the down stram Amplify to throw more meaningful error.
+ */
 const env = JSON.parse(window.localStorage.getItem('env_data'))
 
 const config = {
@@ -14,5 +23,5 @@ const config = {
     },
     federationTarget: 'COGNITO_USER_POOLS',
   };
-  
+
   export default config;
