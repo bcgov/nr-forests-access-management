@@ -5,13 +5,13 @@ function onError(error: unknown, info: string) {
     const toast = useToast();
     const err = error as AxiosError
 
-    console.log(`app.config.errorHandler error ${err} with info: ${info}`)
+    console.error(`app.config.errorHandler error ${err} with info: ${info}`)
     if (err.response?.status == 401) {
-      toast.error('Not logged in. Please log in.')
+      toast.error('You are not logged in. Please log in.')
       return
     }
     if (err.response?.status == 403) {
-      toast.error('You are not allowed to do that.')
+      toast.error('You do not have the necessary authorization for the requested action.')
       return
     }
     if (err.response?.status == 409) {
