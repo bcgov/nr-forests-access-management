@@ -13,7 +13,7 @@ export interface FamLoginUser {
 }
 
 const state = ref({
-    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)? 
+    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)?
                     JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as (FamLoginUser | undefined | null)
                     : undefined,
 })
@@ -27,7 +27,7 @@ function isLoggedIn(): boolean {
 
 async function login() {
     /*
-        See Aws-Amplify documenation: 
+        See Aws-Amplify documenation:
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
         https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
@@ -54,12 +54,12 @@ async function handlePostLogin() {
 }
 
 /**
- * Amplify method currentSession() will automatically refresh the accessToken and idToken 
+ * Amplify method currentSession() will automatically refresh the accessToken and idToken
  * if tokens are "expired" and a valid refreshToken presented.
  *   // console.log("currentAuthToken: ", currentAuthToken)
  *   // console.log("ID Token: ", currentAuthToken.getIdToken().getJwtToken())
  *   // console.log("Access Token: ", currentAuthToken.getAccessToken().getJwtToken())
- * 
+ *
  * Automatically logout if unable to get currentSession().
  */
 async function refreshToken(): Promise<FamLoginUser | undefined> {
@@ -80,7 +80,7 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
 }
 
 /**
- * See OIDC Attribute Mapping mapping reference: 
+ * See OIDC Attribute Mapping mapping reference:
  *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
  * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
  * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
@@ -123,5 +123,5 @@ const getters = {
 export default {
     state: readonly(state), // readonly to prevent direct state change; force it through methods if needed to.
     methods,
-    getters 
+    getters
 }

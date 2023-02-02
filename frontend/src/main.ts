@@ -1,18 +1,16 @@
 import { createApp } from 'vue'
 
-import Toast, { useToast, type PluginOptions, POSITION, TYPE } from "vue-toastification"
-import "vue-toastification/dist/index.css"
-
-import { Amplify } from 'aws-amplify'
-import awsExports from './aws-exports'
 import { vfmPlugin } from 'vue-final-modal'
+import Toast, { POSITION, TYPE, useToast, type PluginOptions } from "vue-toastification"
+import "vue-toastification/dist/index.css"
 
 import App from '@/App.vue'
 import router from '@/router'
 
-import './assets/styles/styles.scss'
+import { Amplify } from 'aws-amplify'
 import 'bootstrap'
-
+import './assets/styles/styles.scss'
+import awsExports from './aws-exports'
 
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core'
