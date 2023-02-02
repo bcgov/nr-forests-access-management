@@ -7,9 +7,9 @@ import "vue-toastification/dist/index.css"
 import App from '@/App.vue'
 import router from '@/router'
 
+import { Amplify } from 'aws-amplify'
 import 'bootstrap'
 import './assets/styles/styles.scss'
-import { Amplify } from 'aws-amplify'
 import awsExports from './aws-exports'
 
 // import the fontawesome core

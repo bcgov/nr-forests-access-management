@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="favicon.ico" />
-    <link rel="preload" href="/env.json" as="fetch" crossorigin="anonymous" type="application/json">
+    <!-- 
+      Important to preload static environment settings 'env.json' first at run time.
+      It is to prepare for later App needs, especially for Amplify's configuring for Cognito communication for login.
+      Some reference here: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload
+    -->
+    <link rel="preload" href="/env.json" as="fetch" crossorigin="anonymous" type="application/json" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FAM - Forest Access Management</title>
     <script>
