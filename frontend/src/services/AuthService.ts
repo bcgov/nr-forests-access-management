@@ -2,13 +2,10 @@ import router from '@/router';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
-import awsExports from '@/aws-exports';
-import { configDefaults } from 'vitest/config'
+// import awsExports from '@/aws-exports';
 
 const FAM_LOGIN_USER = 'famLoginUser'
-if (!process.env.VITEST) { // if Test mode, skip Auth configuring.
-    setTimeout(() => Auth.configure(awsExports), 1000); // Config Amplify for Cognito resource.
-}
+// setTimeout(() => Auth.configure(awsExports), 1000); // Config Amplify for Cognito resource.
 
 
 export interface FamLoginUser {

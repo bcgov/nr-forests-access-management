@@ -9,7 +9,8 @@ import router from '@/router'
 
 import 'bootstrap'
 import './assets/styles/styles.scss'
-
+import { Amplify } from 'aws-amplify'
+import awsExports from './aws-exports'
 
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -22,6 +23,8 @@ import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
 
 // add specific icons to library for use throughout application
 library.add(faTrashCan)
+
+Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App)
 
