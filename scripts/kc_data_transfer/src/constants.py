@@ -26,7 +26,7 @@ else:
 
 # env vars that should be populated for script to run
 ENV_VARS = ['KC_HOST', 'KC_CLIENTID', 'KC_REALM', 'KC_SECRET',
-            'KC_FOM_CLIENTID']
+            'KC_FOM_CLIENTID', 'FAM_JWT', 'FAM_URL', 'FOM_APP_NAME_IN_FAM']
 # KC_SA_CLIENTID
 
 module = sys.modules[__name__]

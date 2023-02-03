@@ -18,6 +18,7 @@ class KeycloakWrapper:
         self.kc_realm_url = (
             f"{constants.KC_HOST}/auth/admin/realms/{constants.KC_REALM}"
         )
+        self.client_id = constants.KC_CLIENTID
 
     def get_access_token(self):
         """using client id and secret queries keycloak for access token"""
@@ -258,8 +259,9 @@ class KeycloakWrapper:
 
         return roles
 
-    def get_role_users(self, client_id, role_name):
+    def get_role_users(self, role_name):
         # GET /{realm}/clients/{id}/roles/{role-name}/users
+        client_id = self.get_fom_client_id()
         role_user_url = (
             f"{self.kc_realm_url}/clients/{client_id}/roles/{role_name}/users"
         )

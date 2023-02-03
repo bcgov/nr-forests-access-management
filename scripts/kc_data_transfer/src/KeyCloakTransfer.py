@@ -5,6 +5,7 @@ import time
 
 import KeyCloak
 import requests
+import constants
 
 # types
 
@@ -115,118 +116,73 @@ class KeyCloakToFAM:
         # so for each concrete / forest client based role will create a
         # role that looks like:
         #   FOM_SUBMITTER_TESTING_00001011, FOM_SUBMITTER_TESTING_00001012... etc
-        self.fam_fom_abstract_role_name = "FOM_SUBMITTER"
+        self.fom_submitter_parent_role_name = "FOM_SUBMITTER"
+        self.fom_reviewer_role_name = "FOM_REVIEWER"
         self.fam = FamWrapper(
-            fom_forest_client_role_parent=self.fam_fom_abstract_role_name
+            fom_forest_client_role_parent=self.fom_submitter_parent_role_name
         )
 
-    def copy_users(self) -> None:
+    def copy_users(self):
 
-        # make sure the parent role exists and create it if it does not, the
-        # parent role is defined in the parameter `fam_fom_abstract_role_name`
+        # Need 4 items to create a role assignment:
+        # user_name: str
+        # user_type_code: famConstants.UserType
+        # role_id: int
+        # forest_client_number: Union[str, None]
+
         app_id = self.fam.get_fom_app_id()
-        if not self.fam.get_role(
-            role_type="A", role_name=self.fam_fom_abstract_role_name
-        ):
-            resp = self.fam.create_role(
-                role_name=self.fam_fom_abstract_role_name,
-                role_purpose="parent role for fom submitters",
-                application_id=app_id,
-                role_type_code="A",
-            )
-            LOGGER.debug(f"return from create fom submitter role: {resp}")
-            LOGGER.info(f"created parent role: {self.fam_fom_abstract_role_name}")
 
         # retrieve the role id for the parent role
-        parent_role = self.fam.get_role(
-            role_type="A", role_name=self.fam_fom_abstract_role_name
+        fom_submitter_parent_role = self.fam.get_role(
+            role_name=self.fom_submitter_parent_role_name, app_id=app_id
         )
-        fom_parent_id = parent_role["role_id"]
-        LOGGER.debug(f"parent role id: {fom_parent_id}")
+        fom_submitter_role_id = fom_submitter_parent_role["role_id"]
 
-        # as we iterate, create the child concrete roles
-        #      this is required as it allows us to associate the role
-        #      with an application.  We cannot do this ATM via the
-        #      user_role_assignment end point
+        fom_reviewer_role = self.fam.get_role(
+            role_name=self.fom_reviewer_role_name, app_id=app_id
+        )
+        fom_reviewer_role_id = fom_reviewer_role["role_id"]
 
-        # Retrieve the FOM client id from Keycloak
-        client_id = self.kc.get_fom_client_id()
-        LOGGER.debug(f"Keycloak client_id: {client_id}")
-
-        # getting roles for the keycloak client
-        roles = self.kc.get_roles(client_id=client_id)
-        LOGGER.info(f"number of keycloak roles: {len(roles)}")
-
-        # filter out any non forest client roles
-        fc_roles = self.extract_forest_client_roles(roles)
-        LOGGER.info(f"number of forest client roles: {len(fc_roles)}")
+        keycloak_roles = self.get_keycloak_roles()
 
         # iterate over each forest client based role from FOM in Keycloak
-        for role in fc_roles:
+        for role in keycloak_roles:
+
             # extract the fc 8 digit id / string from the role name
             forest_client_string = self.extract_forest_client(role["name"])
-            LOGGER.info(
-                "forest_client_string for current role: " + f"{forest_client_string}"
-            )
-
-            # create the equivalent fam role if it doesn't exist
-            role_name = self.get_fam_forest_client_role_name(forest_client_string)
-
-            if not self.fam.get_role(role_type="C", role_name=role_name, app_id=app_id):
-                LOGGER.info(f"concrete fole name to be created: {role_name}")
-                self.fam.create_role(
-                    role_name=role_name,
-                    role_purpose=f"fom role for forest client: {forest_client_string}",
-                    role_type_code="C",
-                    application_id=app_id,
-                    forest_client_number=forest_client_string,
-                    parent_role_id=fom_parent_id,
-                )
-            # retrieve the FAM role, based on its name, so we can find out its ID
-            fam_role = self.fam.get_role(
-                role_type="C", role_name=role_name, app_id=app_id
-            )
-            LOGGER.debug(f"fam_role: {fam_role}")
-            fam_role_id = fam_role["role_id"]
-            LOGGER.info(f"{role_name} has fam role id of: {fam_role_id}")
 
             # get the keycloak users for the current forest client role
-            users = self.kc.get_role_users(client_id=client_id, role_name=role["name"])
-            LOGGER.info(f"number of users in role {role_name}: {len(users)}")
+            users = self.kc.get_role_users(role_name=role["name"])
 
             # iterate over each of the keycloak users and call the role assignment
             # end point to add them to FAM
             for user in users:
                 user_type_code = self.get_user_type_code(user)
-                LOGGER.debug(f"user_type: {user_type_code}")
 
                 # do the role assignment
-                fam_user_name = self.extract_user_name(user["username"])
-                LOGGER.info(
-                    "creating role assignment for user: "
-                    + f"{fam_user_name} role: {fam_role['role_id']} / "
-                    + f"{fam_role['role_name']}"
+                fam_user_name = self.extract_user_name(user, user_type_code)
+                LOGGER.debug(
+                    f", {fom_submitter_role_id}, {forest_client_string}, {user_type_code}, {fam_user_name}"
                 )
-                self.fam.create_user_role_assignment(
-                    user_type_code=user_type_code,
-                    user_name=fam_user_name,
-                    role_id=fam_role_id,
-                    role_type_code="C",
-                    forest_client_number=forest_client_string,
-                )
+                # self.fam.create_user_role_assignment(
+                #     user_type_code=user_type_code,
+                #     user_name=fam_user_name,
+                #     role_id=fom_submitter_role_id,
+                #     role_type_code="C",
+                #     forest_client_number=forest_client_string,
+                # )
 
-    def extract_user_name(self, kc_user):
+    def extract_user_name(self, kc_user, user_type_code):
         """extracts the bceid user or the idir user from the user depending
         on the user type
 
         :param kc_user: _description_
         """
         LOGGER.debug(f"kc_user: {kc_user}")
-        user_type_code = self.get_user_type_code(kc_user)
         if user_type_code == "B":
-            username = kc_user.split("@")[0]
+            username = kc_user["username"]
         elif user_type_code == "I":
-            username = kc_user["attributes"]["idir_username"]
+            username = kc_user["attributes"]["idir_username"][0].upper()
         return username
 
     def get_user_type_code(self, kc_user: KCUser) -> str:
@@ -245,6 +201,8 @@ class KeyCloakToFAM:
             idir_attribs = ["idir_user_guid", "idir_userid", "idir_username"]
             if set(idir_attribs).issubset(set(kc_user["attributes"])):
                 return_type = "I"
+            else:
+                return_type = "B"
         return return_type
 
     def extract_forest_client(self, role_name: str) -> Union[None, str]:
@@ -279,6 +237,8 @@ class KeyCloakToFAM:
             LOGGER.debug(f"current role: {role}")
             if regex.match(role["name"]):
                 fom_fc_roles.append(role)
+            else:
+                LOGGER.info(role["name"])
         return fom_fc_roles
 
     def get_fam_forest_client_role_name(self, forest_client_number: str) -> str:
@@ -288,8 +248,19 @@ class KeyCloakToFAM:
         :param forest_client_number: the input forest client number
         :return: calculated forest client number based role.
         """
-        role_name = f"{self.fam_fom_abstract_role_name}_{forest_client_number}"
+        role_name = f"{self.fom_submitter_parent_role_name}_{forest_client_number}"
         return role_name
+
+    def get_keycloak_roles(self):
+        # Retrieve the FOM client id from Keycloak
+        client_id = self.kc.get_fom_client_id()
+        LOGGER.debug(f"Keycloak client_id: {client_id}")
+
+        # getting roles for the keycloak client
+        roles = self.kc.get_roles(client_id=client_id)
+        LOGGER.debug(f"number of keycloak roles: {len(roles)}")
+
+        return roles
 
 
 class FamWrapper:
@@ -302,13 +273,12 @@ class FamWrapper:
             forest client roles (concrete roles) will be related to.
         """
         # url to the FAM implementation
-        self.url = "http://localhost:8000"
-        # path to the api
-        self.api_path = "/api/v1"
+        self.url = constants.FAM_URL
         # default headers
         self.default_headers = {
             "accept": "application/json",
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + constants.FAM_JWT
         }
         self.fom_forest_client_roles_parent = fom_forest_client_role_parent
         self.fom_forest_client_role_prefix = f"{fom_forest_client_role_parent}_"
@@ -338,50 +308,45 @@ class FamWrapper:
             "role_type_code": role_type_code,
             "user_type_code": user_type_code,
         }
-        url = f"{self.url}{self.api_path}/user_role_assignment"
+        url = f"{self.url}/user_role_assignment"
         resp = requests.post(url=url, headers=self.default_headers, json=payload)
         LOGGER.debug(f"status_code: {resp.status_code}")
 
-    def get_roles(self) -> List[FamRole]:
+    def get_roles(self, app_id) -> List[FamRole]:
         """Returns a list of objects the describe the fam_roles
 
         :return: list[dict]
         """
-        url = f"{self.url}{self.api_path}/fam_roles"
+        url = f"{self.url}/fam_applications/{app_id}/fam_roles"
         resp = requests.get(url=url, headers=self.default_headers)
         LOGGER.debug(f"resp.text: {resp.text}")
         data = resp.json()
         return data
 
     def get_role(
-        self, role_name: str, role_type: str, app_id: Union[None, int] = None
+        self, role_name: str, app_id: int
     ) -> Union[FamRole, None]:
-        """retrieves all the fam roles, then iterates over the returned roles
+        """retrieves all the fam role for an application, then iterates over the returned roles
         searching for a role that matches the input args
 
         :param role_name: The name of the role that should be returned
         :param role_type: The type of the role that should be returned
         :param app_id: If supplied the application id that the roles should
-            be a part of, defaults to None
+            be a part of
         :return: a role object that matches criteria above
         """
         return_role = None
-        roles = self.get_roles()
+        roles = self.get_roles(app_id)
         LOGGER.debug(f"role name to get: {role_name}")
         LOGGER.debug(f"role names: {[role['role_name'] for role in roles]}")
         for role in roles:
-            if role["role_type_code"] == role_type and role["role_name"] == role_name:
-                if app_id:
-                    if role["application_id"] == app_id:
-                        return_role = role
-                        break
-                else:
-                    return_role = role
-                    break
+            if role["role_name"] == role_name:
+                return_role = role
+                break
         return return_role
 
     def get_apps(self) -> List[FamApplication]:
-        url = f"{self.url}{self.api_path}/fam_applications"
+        url = f"{self.url}/fam_applications"
         resp = requests.get(url=url, headers=self.default_headers)
         LOGGER.debug(f"status_code: {resp.status_code}")
         LOGGER.debug(f"apps: {resp.text}")
@@ -389,6 +354,7 @@ class FamWrapper:
         return data
 
     def get_fom_app_id(self) -> Union[int, None]:
+
         app_id = None
         # app id isn't going to change so should only get it once, then cache
         # it in the property fom_app_id
@@ -396,50 +362,18 @@ class FamWrapper:
             apps = self.get_apps()
             app_id = None
             for app in apps:
-                if app["application_name"] == "fom":
+                if app["application_name"] == constants.FOM_APP_NAME_IN_FAM:
                     app_id = app["application_id"]
                     self.fom_app_id = app_id
                     break
         return app_id
-
-    def create_role(
-        self,
-        role_name: str,
-        role_purpose: str,
-        role_type_code: str,
-        application_id: int,
-        forest_client_number: Union[str, None] = None,
-        parent_role_id=None,
-    ) -> FamRole:
-        payload = {
-            "role_name": role_name,
-            "role_purpose": role_purpose,
-            "application_id": application_id,
-            "role_type_code": role_type_code,
-            "create_user": self.create_user_name,
-        }
-        if forest_client_number:
-            payload["forest_client_number"] = forest_client_number
-        if parent_role_id:
-            payload["parent_role_id"] = parent_role_id
-        LOGGER.debug(f"payload: {payload}")
-
-        url = f"{self.url}{self.api_path}/fam_roles"
-        resp = requests.post(url=url, headers=self.default_headers, json=payload)
-        LOGGER.debug(f"create_role status code: {resp.status_code}")
-        LOGGER.debug(f"resp json: {resp.text}")
-        data = resp.json()
-        # waiting to ensure the record exists, when requested later
-        time.sleep(0.5)
-
-        return data
 
 
 if __name__ == "__main__":
 
     # simple logger setup
     LOGGER = logging.getLogger()
-    LOGGER.setLevel(logging.DEBUG)
+    LOGGER.setLevel(logging.INFO)
     hndlr = logging.StreamHandler()
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s"
