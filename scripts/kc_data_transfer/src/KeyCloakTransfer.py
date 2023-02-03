@@ -1,7 +1,6 @@
 import logging
 import re
 from typing import Union, List, TypedDict, Optional
-import time
 
 import KeyCloak
 import requests
@@ -124,35 +123,40 @@ class KeyCloakToFAM:
 
     def copy_users(self):
 
-        # Need 4 items to create a role assignment:
-        # user_name: str
-        # user_type_code: famConstants.UserType
-        # role_id: int
-        # forest_client_number: Union[str, None]
-
         app_id = self.fam.get_fom_app_id()
 
-        # retrieve the role id for the parent role
-        fom_submitter_parent_role = self.fam.get_role(
-            role_name=self.fom_submitter_parent_role_name, app_id=app_id
-        )
-        fom_submitter_role_id = fom_submitter_parent_role["role_id"]
-
-        fom_reviewer_role = self.fam.get_role(
-            role_name=self.fom_reviewer_role_name, app_id=app_id
-        )
-        fom_reviewer_role_id = fom_reviewer_role["role_id"]
+        # Initialize the correct IDs for FOM_SUBMITTER and FOM_REVIEWER
+        roles = self.get_roles(app_id)
+        for fam_role in roles:
+            role_name = fam_role["role_name"]
+            role_id = fam_role["role_id"]
+            if role_name == self.fom_reviewer_role_name:
+                self.fom_reviewer_role_id = role_id
+            if role_name == self.fom_submitter_parent_role_name:
+                self.fom_submitter_parent_role_id = role_id
 
         keycloak_roles = self.get_keycloak_roles()
 
         # iterate over each forest client based role from FOM in Keycloak
-        for role in keycloak_roles:
+        for kc_role in keycloak_roles:
+
+            kc_role_name = kc_role["name"]
+
+            # These two roles are not used in FOM -- mistaken confign to ignore
+            if kc_role_name in ['fom_forest_client_1011', 'fom_forest_client_1012']:
+                continue
 
             # extract the fc 8 digit id / string from the role name
-            forest_client_string = self.extract_forest_client(role["name"])
+            forest_client_string = self.extract_forest_client(kc_role_name)
+
+            fam_role_id = None
+            if kc_role_name == 'fom_ministry':
+                fam_role_id = self.fom_reviewer_role_id
+            else:
+                fam_role_id = self.fom_submitter_parent_role_id
 
             # get the keycloak users for the current forest client role
-            users = self.kc.get_role_users(role_name=role["name"])
+            users = self.kc.get_role_users(role_name=kc_role["name"])
 
             # iterate over each of the keycloak users and call the role assignment
             # end point to add them to FAM
@@ -161,8 +165,9 @@ class KeyCloakToFAM:
 
                 # do the role assignment
                 fam_user_name = self.extract_user_name(user, user_type_code)
+
                 LOGGER.debug(
-                    f", {fom_submitter_role_id}, {forest_client_string}, {user_type_code}, {fam_user_name}"
+                    f", {fam_role_id}, {forest_client_string}, {user_type_code}, {fam_user_name}"
                 )
                 # self.fam.create_user_role_assignment(
                 #     user_type_code=user_type_code,
