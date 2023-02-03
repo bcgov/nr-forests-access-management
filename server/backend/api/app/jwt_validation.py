@@ -213,13 +213,18 @@ def authorize_by_app_id(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    required_group = f"{application.application_name.upper()}_ACCESS_ADMIN"
-    groups = claims[JWT_GROUPS_KEY]
+    required_role = f"{application.application_name.upper()}_ACCESS_ADMIN"
+    access_roles = get_access_roles(claims)
 
-    if required_group not in groups:
+    if required_role not in access_roles:
         raise HTTPException(
             status_code=403,
             detail={'code': ERROR_PERMISSION_REQUIRED,
-                    'description': f'Operation requires role {required_group}'},
+                    'description': f'Operation requires role {required_role}'},
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+def get_access_roles(claims: dict = Depends(authorize)):
+    groups = claims[JWT_GROUPS_KEY]
+    return groups

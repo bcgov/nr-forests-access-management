@@ -16,14 +16,14 @@ router = APIRouter()
 def get_applications(
     response: Response,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize)
+    access_roles: dict = Depends(jwt_validation.get_access_roles)
 ):
 
     """
     List of different applications that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    query_data = crud_application.get_applications(db)
+    query_data = crud_application.get_applications_by_granted_apps(db, access_roles)
     if len(query_data) == 0:
         response.status_code = 204
     return query_data

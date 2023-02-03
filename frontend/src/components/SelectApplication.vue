@@ -2,29 +2,24 @@
 import PageTitle from '@/components/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { applicationsUserAdministers, isApplicationSelected, selectedApplication } from '@/services/ApplicationState';
-import { useToast } from 'vue-toastification';
+import { onMounted } from 'vue';
 import router from '../router';
 
 const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApplicationApi()
 
-// Using timeout to implement lazy loading. Component will render and display loading message until this finishes.
-setTimeout( async () => {
-  // Reload list each time we navigate to this page. This could be cached, as user's token determines roles granting access to applications.
+onMounted(async () => {
+  // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
     applicationsUserAdministers.value = (await applicationsApi.getApplications()).data
-  } catch (error) {
-    const toast = useToast()
-    toast.error("An error occurred loading applications. Please refresh the screen.\n If the error persists, try again later or contact support.")
-    console.log(`Error loading applications due to ${error}`)
+    // If user can only manage one application redirect to manage access screen
+    if (applicationsUserAdministers.value.length == 1) {
+      selectedApplication.value = applicationsUserAdministers.value[0]
+      router.push("/manage")
+    }
+  } catch (error: any) {
+    return Promise.reject(error)
   }
-
-  // If user can only manage one application redirect to manage access screen
-  if (applicationsUserAdministers.value.length == 1) {
-    selectedApplication.value = applicationsUserAdministers.value[0]
-    router.push("/manage")
-  }
-
 })
 
 </script>
