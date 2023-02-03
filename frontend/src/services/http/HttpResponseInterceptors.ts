@@ -15,16 +15,16 @@ const MAX_RETRY = 2
 
 // Assume it is caught in error block based on default handling.
 async function accessErrorResponsesItcpt(error: any) {
+    // 401 special handling; until MAX_RETRY reached.
     if (error.response.status == 401 && (retryCount.value < MAX_RETRY)) {
-        return refreshTokenAndReTry(error.request.responseURL, error.response);
+        return refreshTokenAndReTry(error.config, error.response);
     }
-    // 403 special handling; until MAX_RETRY reached.
     if (error.response.status == 403) {
         router.push('/')
         return Promise.reject(error);
     }
 
-    retryCount.value = 0 // reset counter when retry ends or not 403.
+    retryCount.value = 0 // reset counter when retry ends or not 401.
     return Promise.reject(error);
 }
 
