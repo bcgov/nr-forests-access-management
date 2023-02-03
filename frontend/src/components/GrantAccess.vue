@@ -2,12 +2,13 @@
 import PageTitle from '@/components/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { selectedApplication } from '@/services/ApplicationState';
-import type { FamApplicationRole, FAMApplicationsApi, FAMUserRoleAssignmentApi, FamUserRoleAssignmentCreate } from 'fam-api';
+import type { FamApplicationRole, FamUserRoleAssignmentCreate } from 'fam-api';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
 import router from '@/router';
 import { object, string } from 'yup';
+
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8
 const domainOptions = { IDIR: 'I', BCEID: 'B' } // TODO, load it from backend when backend has the endpoint.
@@ -41,9 +42,15 @@ const schema = object().shape({
 });
 
 onMounted(async () => {
-  applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
-     selectedApplication?.value?.application_id as number
-   )).data as FamApplicationRole[]
+  try {
+    applicationRoleOptions.value = (await applicationsApi.getFamApplicationRoles(
+      selectedApplication?.value?.application_id as number
+    )).data as FamApplicationRole[]
+  }
+  catch (error: unknown) {
+    router.push('/application')
+    return Promise.reject(error)
+  }
 });
 
 function onlyDigit(evt: KeyboardEvent) {
@@ -53,21 +60,15 @@ function onlyDigit(evt: KeyboardEvent) {
 }
 
 async function grantAccess() {
-  const toast = useToast();
   const newUserRoleAssignmentPayload = toRequestPayload(formData.value)
   try {
     await userRoleAssignmentApi.createUserRoleAssignment(newUserRoleAssignmentPayload)
-    toast.success(`User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
+    useToast().success(`User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`)
     formData.value = JSON.parse(JSON.stringify(defaultFormData)) // clone default input data.
     router.push('/manage')
   }
   catch (err: any) {
-    console.error("err: ", err)
-    if (err.response.status == 409) {
-      useToast().warning(`Request not completed: ${err.response.data?.detail}`)
-    } else {
-      useToast().error(`Grant Access failed due to an error. Please try again.If the error persists then contact support.\nMessage: ${err.response.data?.detail}`)
-    }
+    return Promise.reject(err)
   }
 }
 

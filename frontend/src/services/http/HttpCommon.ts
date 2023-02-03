@@ -32,7 +32,7 @@ httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
 httpInstance.interceptors.request.use(HttpReqInterceptors.addAuthHeaderItcpt);
 
 // Response Interceptors
-httpInstance.interceptors.response.use(response => response, HttpResInterceptors.forbiddenStatusItcpt); // Provide error block handling.
+httpInstance.interceptors.response.use(response => response, HttpResInterceptors.accessErrorResponsesItcpt); // Provide error block handling.
 
 
 
