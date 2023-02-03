@@ -1,36 +1,47 @@
 # FAM API
 
-<img src="https://lh3.googleusercontent.com/pw/AL9nZEXIJhongvBS1KY6jUfB-SN2TxFIL0ZdoeUaByYMCgErBVCIu8tqKzEF5Ln3skKl1F7yy7o01bpNl7QqUNWtJvcSzP1BRMqQkPFqs4uyQa7BVAF8vz3RrjC72TfkISs2sycGiu6BQ2yJFmVOhrytVRU6RQ=w1592-h896-no?authuser=0" width="700">
-
 Backend API for Forest Access Management
 
-* [Setup / Running code locally](#setup--running)
-* [Running Tests using CLI](#running-the-tests)
-* [Manual update of Lambda](#manually-create-lambda-package)
+# Running the API with Docker Compose
 
-# Setup / Running
+* On the command line, go to the root of the repository
+* Enter the command: `docker-compose up`
 
-## Create a virtualenv and install dependencies
+This will do three things:
+
+1. Bring up PostgreSQL (empty) in a local docker container
+2. Bring up a temporary local container that will run flyway against PostgreSQL
+3. Bring up a local container with the FAM-API that connects to the local DB
+4. Test the solution at <http://localhost:8000/docs>
+
+Potential "gotchas":
+
+* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and`COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
+* When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
+* Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
+
+# Running the API locally
+
+These instructions assume running **without** a python virtual environment (VENV). See below for VENV considerations. If you want to be able to debug with VS Code, don't use VENV.
+
+## Start the Database
+
+When running the API locally, you still need to have a working database to connect to. Docker compose can run everything **other than the API** with the command:
+
+`docker-compose fam-flyway up`
+
+This command will run the services in the Docker Compose definition but will omit the API.
+
+## Install all the necessary Python libraries
+
+Assuming you have Python3 installed locally (or are running VENV with Python3 installed):
 
 ```
 cd server/backend
-
-# creating venv
-python3 -m venv venv
-
-# activate venv
-. ./venv/bin/activate
-
-# install deps
 pip install -r requirements.txt
 ```
 
-install the development dependencies (linter/formatters/utilities/etc)
-
-```
-pip install -r requirements-dev.txt
-```
-### Potential gotchas running pip install above:
+Potential gotchas (developer notes -- may not need!):
 
 * `sudo apt-get install libpq-dev` -
     (was missing pg_config executable)
@@ -44,73 +55,74 @@ pip install -r requirements-dev.txt
 * `sudo apt-get install python3.8` -
     Make sure you are running python 3.8
 
-## Run the api - locally for development
+## Create or update the necessary environment variables
 
 ```
 cd server/backend
+set -o allexport; source local-dev.env; set +o allexport
+```
 
-# run the backend postgres db
-docker-compose up db
+## Run the API from the command line
 
-# create env vars - make sure in the `backend` directory
-# loads secrets in env-docker-compose.env to env vars
-set -o allexport; source env-docker-compose.env; set +o allexport
+Depending on where python3 is installed, the command might be "python" or "python3"
 
-# run the migrations
-cd api
-alembic upgrade head
-cd ..
+```
+cd server/backend
+python3 serverstart.py
+```
 
-# OPTIONAL:  the alembic env.py now looks for the file
-#            `env-docker-compose.env` and loads those env vars
-#            if the POSTGRES_USER env var is not populated
-#
-#            steps  below  show how to load env vars if you
-#            have a different env file.
+## Alternatively, run the API from VS Code in debug mode
 
-envfile=<some path to env file>
-set -o allexport; source $envfile; set +o allexport
+1. Open `serverstart.py` in VS Code
+2. Click "Run and Debug" on the VS Code toolbar (or use Ctrl+Shift+D)
+3. Click "Run and Debug" button
+4. Select "Debug the currently active Python file"
 
-# activate the virtualenv if not already activated
+# Using Virtual Environment
+
+If you have multiple python projects locally and you want to isolate your FAM developments, you can use a virtual environment. VS Code does not debug into the virtual environment (that we can determine).
+
+```
+cd server/backend
+python3 -m venv venv
 . ./venv/bin/activate
-
-# run the actual api
-uvicorn api.app.main:app --reload
-
-# --- OR ---
-
-#  run conrads handy script
+pip install -r requirements.txt
 python serverstart.py
-```
-
-## potential gotchas with running the api above:
-
-if you get this error:
-
-``` bash
-Command 'alembic' not found:
-```
-
-* make sure the virtualenv is activated -
-``` bash
-source  venv/bin/activate
-```
-
-* make sure the dev dependencies are installed -
-``` bash
-sudo apt-get install -r requirements-dev.txt
 ```
 
 # Running the tests
 
-instructions here are for running tests in vscode, you can also run them manually on the
-the command line.  Tests use the [pytest](https://docs.pytest.org/en/7.1.x/) testing framework
+Tests are running using pytest. They can be run from the command line or using VS Code tools.
 
-## Tell VS Code what framework to use
+The API tests do not connect to the PostgreSQL database at this time. There are true unit tests (no integration to a running database) and also integration tests that run SQLite in-memory. You can run the API tests without having docker-compose database running.
 
-If you created your virtualenv in the folder `backend` then the
-.vscode/settings.json should be able to find the virtualenv that you are looking
-for, and the tests should be configured.
+## Install test dependencies
+
+Assuming you've already installed the dependencies from requirements.txt, you just need to install the dependencies from requirements-dev.txt. If you are running in a VENV, make sure you run the install command in the same VENV.
+
+```
+cd server/backend
+pip install -r requirements-dev.txt
+```
+
+## Run tests from the command line
+
+```
+cd server/backend
+pytest
+```
+
+Potential gotchas:
+
+* `server/backend/pytest.ini` includes some default env values. These are not actually used (confirm), but need to be provided with some value for the code to run in test mode.
+
+## Run tests from VS Code
+
+Some developers run tests from VS Code. This author (Conrad) has never gotten the VS Code configuration correct, so YMMV. Notes from previous developer (please fix if you verify that it works for you!). If it's working, you can go to the "Testing" icon on the VS Code menu (looks like a test tube) and VS Code should discover all the tests for you.
+
+Kevin had it working by running VENV and pointing to it from `.vscode/settings.json` (which controls the VS Code behaviour).
+
+If you created your virtualenv in the folder `backend` then the `.vscode/settings.json` should be able to find the virtualenv that you are looking for, and the tests should be configured.
 
 If for some reason not then:
 * <ctrl><shift>P
@@ -123,36 +135,5 @@ for test Output,
 * select `Python Test Log` in from the pulldown, top right of the output window
 
 
-# Manually create Lambda Package
-
-When testing the lambda to save time you can manually create the package
-using these commands:
-
-```
-# setup
-cd server/backend
-mkdir packaging
-cd packaging
-
-# get the dependencies
-pip3 install -t . -r ../requirements.txt
-zip -r9 ../../fam-api.zip .
-cd ..
-
-# install the actual app
-cd ../../
-cd server/backend
-zip -u ../fam-api.zip -r api/
-cd ../..
-```
-
-to verify the contents of the zip file
-`unzip -l fam-api.zip`
-
-update the zip file with only updates to api:
-```
-zip --delete ../fam-api.zip "api/*"
-zip -u ../fam-api.zip -r api/
-```
 
 
