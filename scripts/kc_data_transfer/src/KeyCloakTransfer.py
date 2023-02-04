@@ -126,7 +126,7 @@ class KeyCloakToFAM:
         app_id = self.fam.get_fom_app_id()
 
         # Initialize the correct IDs for FOM_SUBMITTER and FOM_REVIEWER
-        roles = self.get_roles(app_id)
+        roles = self.fam.get_roles(app_id)
         for fam_role in roles:
             role_name = fam_role["role_name"]
             role_id = fam_role["role_id"]
@@ -166,16 +166,16 @@ class KeyCloakToFAM:
                 # do the role assignment
                 fam_user_name = self.extract_user_name(user, user_type_code)
 
-                LOGGER.debug(
+                LOGGER.info(
                     f", {fam_role_id}, {forest_client_string}, {user_type_code}, {fam_user_name}"
                 )
-                # self.fam.create_user_role_assignment(
-                #     user_type_code=user_type_code,
-                #     user_name=fam_user_name,
-                #     role_id=fom_submitter_role_id,
-                #     role_type_code="C",
-                #     forest_client_number=forest_client_string,
-                # )
+                self.fam.create_user_role_assignment(
+                    user_type_code=user_type_code,
+                    user_name=fam_user_name,
+                    role_id=fam_role_id,
+                    role_type_code="C",
+                    forest_client_number=forest_client_string,
+                )
 
     def extract_user_name(self, kc_user, user_type_code):
         """extracts the bceid user or the idir user from the user depending
