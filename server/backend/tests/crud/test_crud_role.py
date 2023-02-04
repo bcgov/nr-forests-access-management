@@ -1,10 +1,6 @@
 import logging
 import copy
-
-import api.app.schemas as schemas
 import pytest
-from api.app.crud import crud_role
-from api.app.crud import crud_forest_client
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import session
 from api.app import constants
@@ -225,5 +221,39 @@ def test_create_role_with_no_existing_parent_role_violate_constraint(
         # invalid insert for the same role.
         assert crud_role.create_role(role=fam_role, db=db)
     assert str(e.value).find("FOREIGN KEY constraint failed") != -1
+    db.rollback()
+    LOGGER.debug(f"Expected exception raised: {e.value}")
+
+
+def test_create_role_with_same_role_name_and_application_violate_constraint(
+    concrete_role_pydantic: schemas.FamRoleCreate,
+    dbsession_role_types,
+    dbsession_application,
+    delete_all_role_types
+):
+    db = dbsession_application
+    db.commit()
+    application: model.FamApplication = db.query(model.FamApplication).one()
+    concrete_role_pydantic.application_id = application.application_id
+
+    # Add simple role
+    role = crud_role.create_role(role=concrete_role_pydantic, db=db)
+    LOGGER.debug(f"New role is added: {role.role_name} role.")
+
+    # Verify new role
+    roles = crud_role.get_roles(db)
+    filtered = list(
+        filter(
+            lambda role: role.role_name == concrete_role_pydantic.role_name, roles
+        )
+    )
+    assert len(filtered) == 1
+
+    # Add same role => expect constraint violation
+    LOGGER.debug(f"Adding role {concrete_role_pydantic.role_name} again.")
+    with pytest.raises(IntegrityError) as e:
+        # invalid insert for the same role.
+        assert crud_role.create_role(role=concrete_role_pydantic, db=db)
+    assert str(e.value).find("UNIQUE constraint failed: fam_role.role_name, fam_role.application_id") != -1
     db.rollback()
     LOGGER.debug(f"Expected exception raised: {e.value}")
