@@ -13,10 +13,27 @@ variable "famdb_cluster_name" {
   type        = string
 }
 
-
 variable "famdb_subnet_group_name" {
   description = "Name for the FAM database subnet group"
   type        = string
+}
+
+variable "famdb_parameter_group_name" {
+  description = "Name for the FAM database parameter group"
+  type        = string
+}
+
+variable "famdb_master_username" {
+  description = "The username for the DB master user"
+  type        = string
+  default     = "sysadmin"
+  sensitive   = true
+}
+
+variable "famdb_database_name" {
+  description = "The name of the database"
+  type        = string
+  default     = "famdb"
 }
 
 # Variables for flyway invocation

@@ -8,19 +8,6 @@ resource "random_password" "famdb_master_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-variable "famdb_master_username" {
-  description = "The username for the DB master user"
-  type        = string
-  default     = "sysadmin"
-  sensitive   = true
-}
-
-variable "famdb_database_name" {
-  description = "The name of the database"
-  type        = string
-  default     = "famdb"
-}
-
 resource "aws_db_subnet_group" "famdb_subnet_group" {
   description = "For Aurora cluster ${var.famdb_cluster_name}"
   name        = "${var.famdb_subnet_group_name}"
@@ -88,9 +75,9 @@ module "aurora_postgresql_v2" {
 }
 
 resource "aws_db_parameter_group" "famdb_postgresql13" {
-  name        = "${var.famdb_cluster_name}-parameter-group"
+  name        = "${var.famdb_parameter_group_name}"
   family      = "aurora-postgresql13"
-  description = "${var.famdb_cluster_name}-parameter-group"
+  description = "Parameter group for famdb cluster"
   tags = {
     managed-by = "terraform"
   }
