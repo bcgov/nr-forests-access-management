@@ -88,7 +88,7 @@ resource "aws_lambda_function" "fam-auth-function" {
     subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
   }
 
-  # Increase timeout to avoid failures due to slow starts or slow queries.
+  # Increase timeout to 15 seconds avoid failures due to slow starts or slow queries.
   timeout = 15
 
   environment {
