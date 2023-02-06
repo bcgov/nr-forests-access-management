@@ -104,6 +104,10 @@ resource "aws_lambda_function" "fam-api-function" {
     subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
   }
 
+  timeout {
+    10
+  }
+
   environment {
 
     variables = {
