@@ -88,5 +88,5 @@ def get_application_id_from_name(db, application_name):
 
 
 def raise_http_exception(status_code: str, error_msg: str):
-    LOGGER.error(error_msg)
+    LOGGER.info(error_msg)
     raise HTTPException(status_code=status_code, detail=error_msg)
