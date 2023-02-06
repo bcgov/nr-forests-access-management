@@ -9,7 +9,8 @@ generate "test_tfvars" {
   contents          = <<-EOF
   fam_user_pool_name = "test-fam-user-pool"
   fam_user_pool_domain_name = "test-fam-user-pool-domain"
-  famdb_cluster_name = "test-fam-cluster"
+  famdb_cluster_name = "test-fam-db"
+  famdb_subnet_group_name = "test-fam-db-subnet-group"
   aws_security_group_data = "Data_sg"
   subnet_data_a = "Data_Test_aza_net"
   subnet_data_b = "Data_Test_azb_net"

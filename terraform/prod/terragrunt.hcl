@@ -9,7 +9,8 @@ generate "prod_tfvars" {
   contents          = <<-EOF
   fam_user_pool_name = "prod-fam-user-pool"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
-  famdb_cluster_name = "prod-fam-cluster-restore-cluster"
+  famdb_cluster_name = "prod-fam-db"
+  famdb_subnet_group_name = "prod-fam-db-subnet-group"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
   oidc_idir_idp_issuer = "https://loginproxy.gov.bc.ca/auth/realms/standard"
   oidc_bceid_business_idp_client_id = "fsa-cognito-b-ce-id-business-dev-4090"

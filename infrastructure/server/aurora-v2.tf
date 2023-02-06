@@ -1,8 +1,3 @@
-resource "random_pet" "famdb_subnet_group_name" {
-  prefix = "famdb-subnet-group"
-  length = 2
-}
-
 data "aws_kms_alias" "rds_key" {
   name = "alias/aws/rds"
 }
@@ -28,7 +23,7 @@ variable "famdb_database_name" {
 
 resource "aws_db_subnet_group" "famdb_subnet_group" {
   description = "For Aurora cluster ${var.famdb_cluster_name}"
-  name        = "${var.famdb_cluster_name}-subnet-group"
+  name        = "${var.famdb_subnet_group_name}"
   subnet_ids  = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
   tags = {

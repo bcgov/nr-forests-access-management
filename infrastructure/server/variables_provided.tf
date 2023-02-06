@@ -9,7 +9,13 @@ variable "fam_user_pool_domain_name" {
 }
 
 variable "famdb_cluster_name" {
-  description = "Name for the FAM database cluster -- must be unique"
+  description = "Name for the FAM database cluster"
+  type        = string
+}
+
+
+variable "famdb_subnet_group_name" {
+  description = "Name for the FAM database subnet group"
   type        = string
 }
 
