@@ -36,7 +36,7 @@ async function login() {
 
 async function logout() {
     Auth.signOut()
-    storeFamUser(undefined)
+    removeFamUser()
     console.log("User logged out.")
     router.push('/')
 }
@@ -97,6 +97,10 @@ function parseToken(authToken: CognitoUserSession): FamLoginUser {
     return famLoginUser;
 }
 
+function removeFamUser() {
+    storeFamUser(undefined)
+}
+
 function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
     state.value.famLoginUser = famLoginUser
     if (famLoginUser) {
@@ -113,7 +117,8 @@ const methods = {
     login,
     handlePostLogin,
     logout,
-    refreshToken
+    refreshToken,
+    removeFamUser
 }
 
 const getters = {

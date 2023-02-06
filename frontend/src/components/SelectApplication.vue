@@ -7,7 +7,6 @@ import router from '../router';
 
 const apiServiceFactory = new ApiServiceFactory()
 const applicationsApi = apiServiceFactory.getApplicationApi()
-
 onMounted(async () => {
   // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
   try {
@@ -68,14 +67,14 @@ onMounted(async () => {
             <button type="button"
               id="goToManageAccessButton"
               class="btn btn-info mb-3"
-              :disabled="isApplicationSelected"
+              :disabled="!isApplicationSelected"
               @click="router.push('/manage')">Manage Access</button>
           </div>
           <div class="col-auto">
             <button type="button"
               id="goToGrantAccessButton"
               class="btn btn-primary mb-3"
-              :disabled="isApplicationSelected"
+              :disabled="!isApplicationSelected"
               @click="router.push('/grant')">Grant Access</button>
           </div>
         </div>
