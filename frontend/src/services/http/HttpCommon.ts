@@ -6,7 +6,7 @@ import axios from 'axios';
 const environmentSettings = new EnvironmentSettings()
 const apiBaseUrl = environmentSettings.getApiBaseUrl()
 const DEFAULT_CONTENT_TYPE = 'application/json';
-const DEFAULT_REQUEST_TIMEOUT = 5000;
+const DEFAULT_REQUEST_TIMEOUT = 20000;
 
 const defaultAxiosConfig = {
     baseURL: apiBaseUrl,
