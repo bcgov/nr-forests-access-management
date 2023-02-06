@@ -8,7 +8,7 @@ export const applicationsUserAdministers = ref<FamApplication[]>([])
 export const selectedApplication = ref<FamApplication>()
 
 export const isApplicationSelected = computed( () => {
-    return selectedApplication.value == null
+    return selectedApplication.value != undefined
   })
 
 export const selectedApplicationShortDisplayText = computed( () => {
