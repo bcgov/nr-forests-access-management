@@ -9,7 +9,7 @@ generate "prod_tfvars" {
   contents          = <<-EOF
   fam_user_pool_name = "prod-fam-user-pool"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
-  famdb_cluster_name = "prod-fam-db"
+  famdb_cluster_name = "prod-fam-db-2-cluster"
   famdb_subnet_group_name = "prod-fam-db-subnet-group"
   famdb_parameter_group_name = "prod-fam-cluster-parameter-group"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
