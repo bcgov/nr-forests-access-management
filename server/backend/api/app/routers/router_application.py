@@ -74,10 +74,10 @@ def get_fam_application_user_role_assignment(
     # Enforce application-level security
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
-    LOGGER.debug(f"application_id: {application_id}")
+    LOGGER.debug(f"Loading application role assigments for application_id: {application_id}")
     app_user_role_assignment = crud_application.get_application_role_assignments(
         db=db, application_id=application_id
     )
-    LOGGER.debug(f"app_user_role_assignment: {app_user_role_assignment}")
+    LOGGER.debug(f"Finished loading application role assigments - # of results = {len(app_user_role_assignment)}")
 
     return app_user_role_assignment
