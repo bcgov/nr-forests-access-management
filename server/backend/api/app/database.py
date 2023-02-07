@@ -9,6 +9,9 @@ from . import config
 
 LOGGER = logging.getLogger(__name__)
 
+# Log SQL queries from SQLalcheny
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+
 SQLALCHEMY_DATABASE_URL = config.get_db_string()
 
 Base = declarative_base()

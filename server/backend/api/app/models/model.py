@@ -245,7 +245,7 @@ class FamUser(Base):
     )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
-    user_type_relation = relationship("FamUserType", backref="user_relation")
+    user_type_relation = relationship("FamUserType", backref="user_relation", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
@@ -779,8 +779,8 @@ class FamUserRoleXref(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    role = relationship("FamRole", back_populates="fam_user_role_xref")
-    user = relationship("FamUser", back_populates="fam_user_role_xref")
+    role = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
+    user = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
 
 
 class FamAppEnvironment(Base):
