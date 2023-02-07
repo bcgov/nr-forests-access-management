@@ -104,6 +104,10 @@ resource "aws_lambda_function" "fam-api-function" {
     subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
   }
 
+  # Increase memory to avoid thrashing and slowing performance
+  # Size is in MB, based on limited testing in dev
+  memory_size = 512
+
   # Increase timeout to 15 seconds to avoid failures due to slow starts or slow queries.
   # We have seen transactions taking 7+ seconds in dev.
   timeout = 15

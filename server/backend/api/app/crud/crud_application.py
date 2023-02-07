@@ -175,7 +175,7 @@ def get_application_role_assignments(
     :return: the role assignments for the given application
 
     """
-    LOGGER.debug(f"app id: {application_id}")
+    LOGGER.debug(f"Query for user role assignments for app id: {application_id}")
 
     crossref = (
         db.query(models.FamUserRoleXref)
@@ -185,7 +185,7 @@ def get_application_role_assignments(
         .all()
     )
 
-    LOGGER.debug(f"crossref: {crossref}")
+    LOGGER.debug(f"Query for user role assignment complete with # of results = {len(crossref)}")
     return crossref
 
 
