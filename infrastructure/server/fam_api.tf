@@ -11,7 +11,7 @@ data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
 data "aws_rds_cluster" "api_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
-    module.aurora_postgresql_v2
+    module.aurora_postgresql_v2.fam_db_database
   ]
 }
 

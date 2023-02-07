@@ -27,7 +27,7 @@ data "aws_rds_engine_version" "postgresql" {
   version = "13.6"
 }
 
-module "aurora_postgresql_v2" {
+module "aurora_postgresql_v2" "fam_db_database" {
   source = "terraform-aws-modules/rds-aurora/aws"
 
   name              = var.famdb_cluster_name
@@ -241,11 +241,11 @@ resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
 }
 
 resource "aws_db_proxy_target" "famdb_proxy_api_target" {
-  db_cluster_identifier = module.aurora_postgresql_v2.cluster_id
+  db_cluster_identifier = module.aurora_postgresql_v2.fam_db_database.cluster_id
   db_proxy_name         = aws_db_proxy.famdb_proxy_api.name
   target_group_name     = aws_db_proxy_default_target_group.famdb_proxy_api_target_group.name
 
   depends_on = [
-    module.aurora_postgresql_v2
+    module.aurora_postgresql_v2.fam_db_database
   ]
 }

@@ -7,7 +7,7 @@ data "aws_secretsmanager_secret" "db_auth_creds_secret" {
 data "aws_rds_cluster" "auth_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
-    module.aurora_postgresql_v2
+    module.aurora_postgresql_v2.fam_db_database
   ]
 }
 

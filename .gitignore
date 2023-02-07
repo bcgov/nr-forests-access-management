@@ -72,3 +72,4 @@ terraform/test/.terraform.lock.hcl
 **/.terragrunt-cache/**
 test_db.db-journal
 server/backend/openapi.json
+terraform/prod/github.auto.tfvars
