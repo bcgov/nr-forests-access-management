@@ -529,7 +529,7 @@ class FamRole(Base):
     )
 
     application = relationship("FamApplication", back_populates="fam_role")
-    client_number = relationship("FamForestClient", back_populates="fam_role")
+    client_number = relationship("FamForestClient", back_populates="fam_role", lazy="joined")
     parent_role = relationship(
         "FamRole", remote_side=[role_id], back_populates="parent_role_reverse"
     )
