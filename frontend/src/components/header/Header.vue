@@ -19,11 +19,11 @@
       </a>
 
       <h2 class="title">Forest Access Management {{environmentLabel}}</h2>
-      
-      <button class="navbar-toggler" type="button" 
+
+      <button class="navbar-toggler" type="button"
         title="Toggle Main Navigation"
-        aria-controls="navbarNav" 
-        aria-expanded="false" 
+        aria-controls="navbarNav"
+        aria-expanded="false"
         aria-label="Toggle navigation"
         data-bs-toggle="collapse"
         data-bs-target="#navbarNav">
@@ -46,23 +46,17 @@
               <span>Log Out</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" title="Contact Us">
-              <span>Contact Us</span>
-            </a>
-          </li>
         </ul>
       </div>
     </nav>
 
     <div class="nav bc-nav">
-      <RouterLink class="nav-link" to="/">Home</RouterLink> 
+      <RouterLink class="nav-link" to="/">Home</RouterLink>
       <RouterLink class="nav-link"
-        to="/application" 
+        to="/application"
         v-if="authService.getters.isLoggedIn()">
         Select Application
-      </RouterLink> 
-      <RouterLink class="nav-link" to="/about">About</RouterLink> 
+      </RouterLink>
       <div style="flex-grow: 2;"></div>
       <div class="user-label"
         v-if="authService.getters.isLoggedIn()">
