@@ -187,9 +187,19 @@ class FamForestClient(BaseModel):
         orm_mode = True
 
 
+class FamRoleMin(BaseModel):
+    role_name: str
+    role_type_code: str
+    application_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class FamRoleWithClient(FamRoleCreate):
     role_id: int
     client_number: Optional[FamForestClient]
+    parent_role: Optional[FamRoleMin]
 
     class Config:
         orm_mode = True

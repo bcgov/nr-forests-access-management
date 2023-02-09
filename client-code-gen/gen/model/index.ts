@@ -6,6 +6,7 @@ export * from './fam-forest-client';
 export * from './fam-forest-client-create';
 export * from './fam-role-create';
 export * from './fam-role-get';
+export * from './fam-role-min';
 export * from './fam-role-with-client';
 export * from './fam-user';
 export * from './fam-user-get';
