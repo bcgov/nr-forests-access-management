@@ -2,8 +2,7 @@ import datetime
 import logging
 from typing import List
 
-from sqlalchemy import func
-from sqlalchemy.orm import Session, load_only
+from sqlalchemy.orm import Session, load_only, joinedload
 
 import api.app.constants as constants
 from api.app.models import model as models
@@ -179,8 +178,8 @@ def get_application_role_assignments(
 
     crossref = (
         db.query(models.FamUserRoleXref)
-        .join(models.FamUser, models.FamRole, models.FamRoleType, models.FamUserType)
-        .outerjoin(models.FamForestClient)
+        .join(models.FamRole)
+        .options(joinedload('role.parent_role'))
         .filter(models.FamRole.application_id == application_id)
         .all()
     )

@@ -149,7 +149,8 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
             <tr v-if="filterIncludes(assignment)">
               <th scope="row">{{ assignment.user.user_name }}</th>
               <td>{{ assignment.user.user_type.description }}</td>
-              <td>{{ assignment.role.role_name }}</td>
+              <td v-if="assignment.role.parent_role">{{ assignment.role.parent_role?.role_name }}</td>
+              <td v-else="assignment.role.parent_role">{{ assignment.role.role_name }}</td>
               <td v-if="assignment.role.client_number">{{ assignment.role.client_number?.forest_client_number }}</td>
               <td v-else></td>
               <td><button class="btn btn-icon" @click="tryDelete(assignment)"><font-awesome-icon
