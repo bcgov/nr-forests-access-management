@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthCallback from '@/components/AuthCallbackHandler.vue'
 import NotFound from '@/components/NotFound.vue'
 import AuthService from '@/services/AuthService'
-import AboutView from '@/views/AboutView.vue'
 import GrantAccessView from '@/views/GrantAccessView.vue'
 import HomeView from '@/views/HomeView.vue'
 import ManageAccessView from '@/views/ManageAccessView.vue'
@@ -55,11 +54,6 @@ const routes = [
       title: 'Grant Access'
     },
     component: GrantAccessView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: AboutView,
   },
   {
     path: '/authCallback',

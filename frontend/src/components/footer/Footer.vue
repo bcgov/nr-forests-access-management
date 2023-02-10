@@ -13,7 +13,7 @@
             <li><a href="http://www2.gov.bc.ca/gov/content/home/privacy" target="_blank" rel="noopener">Privacy</a></li>
             <li><a href="http://www2.gov.bc.ca/gov/content/home/accessibility" target="_blank" rel="noopener">Accessibility</a></li>
             <li>
-              <a class="small-screen feedback-link" href="mailto:Fam.Admin@gov.bc.ca">Feedback</a>
+              <a href="mailto:SIBIFSAF@Victoria1.gov.bc.ca">Contact Us</a>
             </li>
           </ul>
         </div>
