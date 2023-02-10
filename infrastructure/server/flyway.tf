@@ -158,6 +158,7 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     "gitRequest": {
         "gitRepository": "${var.github_repository}",
         "gitBranch": "${var.github_branch}",
+        "commit": "${var.github_commit}",
         "folders": "server/flyway/sql"
     }
   }
