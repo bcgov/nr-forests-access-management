@@ -69,7 +69,6 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
     "https://fom.nrs.gov.bc.ca/admin",
   ]
   enable_propagate_additional_user_context_data = "false"
