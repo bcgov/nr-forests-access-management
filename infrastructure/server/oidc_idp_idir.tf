@@ -83,7 +83,7 @@ variable "minimum_read_list" {
 variable "minimum_write_list" {
   description = "The list of required write attributes for all clients"
   type        = list(string)
-  default     = ["email", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = ["email", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_display_name"]
 }
 
 variable "all_read_list_idir" {
