@@ -45,9 +45,9 @@ async function logout() {
   // todo: refactor this part, should get these config variables from backend
   const env = JSON.parse(window.localStorage.getItem("env_data") || "");
   const cognitoConfig = {
-    domain: env?.fam_cognito_domain.value,
-    region: env?.fam_cognito_region.value,
-    userPoolWebClientId: env?.fam_console_web_client_id.value,
+    domain: env ? env.fam_cognito_domain.value : "",
+    region: env ? env.fam_cognito_region.value : "",
+    userPoolWebClientId: env ? env.fam_console_web_client_id.value : "",
   };
 
   const postLogoutUrl = window.location.origin;
@@ -56,7 +56,9 @@ async function logout() {
     `logout?client_id=${cognitoConfig.userPoolWebClientId}&logout_uri=` +
     postLogoutUrl;
 
-  const logoutUrl = env?.frontend_logout_chain_url.value + cognitoLogoutUrl;
+  const logoutUrl = env
+    ? env.frontend_logout_chain_url.value + cognitoLogoutUrl
+    : cognitoLogoutUrl;
 
   router.push(logoutUrl);
 }
