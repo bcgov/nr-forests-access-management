@@ -49,11 +49,6 @@ async function logout() {
     region: env?.fam_cognito_region.value,
     userPoolWebClientId: env?.fam_console_web_client_id.value,
   };
-  const keycloakConfig = {
-    url: "https://dev.oidc.gov.bc.ca/auth",
-    realm: "ichqx89w",
-    siteMinderUrl: "https://logontest7.gov.bc.ca",
-  };
 
   const postLogoutUrl = window.location.origin;
   const cognitoLogoutUrl =
@@ -61,19 +56,9 @@ async function logout() {
     `logout?client_id=${cognitoConfig.userPoolWebClientId}&logout_uri=` +
     postLogoutUrl;
 
-  const keycloakLogoutUrl =
-    keycloakConfig.url +
-    "/realms/" +
-    keycloakConfig.realm +
-    "/protocol/openid-connect/logout?post_logout_redirect_uri=" +
-    cognitoLogoutUrl;
+  const logoutUrl = env?.frontend_logout_chain_url.value + cognitoLogoutUrl;
 
-  const siteMinderLogoutUrl =
-    keycloakConfig.siteMinderUrl +
-    "/clp-cgi/logoff.cgi?retnow=1&returl=" +
-    keycloakLogoutUrl;
-
-  router.push(siteMinderLogoutUrl);
+  router.push(logoutUrl);
 }
 
 async function handlePostLogin() {
