@@ -43,7 +43,7 @@ async function logout() {
   console.log("User logged out.");
 
   // todo: refactor this part, should get these config variables from backend
-  const env = JSON.parse(window.localStorage.getItem("env_data"));
+  const env = JSON.parse(window.localStorage.getItem("env_data") || "");
   const cognitoConfig = {
     domain: env?.fam_cognito_domain.value,
     region: env?.fam_cognito_region.value,
