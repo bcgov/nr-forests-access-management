@@ -11,7 +11,7 @@ function addAuthHeaderItcpt(config: AxiosRequestConfig) {
         const authHeader = `Bearer ${authToken.getAccessToken().getJwtToken()}`
         const idTokenHeader = authToken.getIdToken().getJwtToken()
         config.headers? (config.headers['Authorization'] = authHeader, config.headers['id-token'] = idTokenHeader)
-                      : (config.headers = {'Authorization': authHeader}, {'id-token': idTokenHeader})
+                      : (config.headers = {'Authorization': authHeader}, config.headers = {'id-token': idTokenHeader})
     }
     return config
 }
