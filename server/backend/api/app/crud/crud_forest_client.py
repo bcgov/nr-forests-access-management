@@ -33,7 +33,7 @@ def create_forest_client(fam_forest_client: schemas.FamForestClientCreate, db: S
     return db_item
 
 
-def find_or_create(db: Session, forest_client_number: str):
+def find_or_create(db: Session, forest_client_number: str, requester: str):
     LOGGER.debug(
         "Forest Client - 'find_or_create' with forest_client_number: "
         f"{forest_client_number}."
@@ -50,7 +50,7 @@ def find_or_create(db: Session, forest_client_number: str):
             **{
                 "forest_client_number": forest_client_number,
                 #"client_name": client_name,
-                "create_user": famConstants.FAM_PROXY_API_USER,
+                "create_user": requester,
             }
         )
         fam_forest_client = create_forest_client(request_forest_client, db)

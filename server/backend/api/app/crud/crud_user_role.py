@@ -167,7 +167,7 @@ def find_or_create_forest_client_child_role(
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
     forest_client = crud_forest_client.find_or_create(  # NOSONAR
-        db, forest_client_number
+        db, forest_client_number, requester
     )
     LOGGER.debug(f'forest client number from db: {forest_client.forest_client_number}')
     LOGGER.debug(f'forest client client id from db: {forest_client.client_number_id}')
