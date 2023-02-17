@@ -97,7 +97,7 @@ def delete_user(db: Session, user_id: int):
     return fam_user
 
 
-def find_or_create(db: Session, user_type_code: str, user_name: str):
+def find_or_create(db: Session, user_type_code: str, user_name: str, requester: str):
     LOGGER.debug(
         f"User - 'find_or_create' with user_type: {user_type_code}, " +
         f"user_name: {user_name}."
@@ -109,7 +109,7 @@ def find_or_create(db: Session, user_type_code: str, user_name: str):
             **{
                 "user_type_code": user_type_code,
                 "user_name": user_name,
-                "create_user": famConstants.FAM_PROXY_API_USER,
+                "create_user": requester
             }
         )
         fam_user = create_user(request_user, db)
