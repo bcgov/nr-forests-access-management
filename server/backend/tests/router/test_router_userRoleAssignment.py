@@ -11,6 +11,9 @@ import api.app.jwt_validation as jwt_validation
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
+id_claims = jwt_utils.create_jwt_id_claims()
+claims = jwt_utils.create_jwt_claims()
+
 
 def test_create_user_role_assignment_associated_with_abstract_role(
     test_client_fixture,
@@ -36,8 +39,6 @@ def test_create_user_role_assignment_associated_with_abstract_role(
     request_data = copy.deepcopy(user_role_dict)
     request_data["role_id"] = fom_submitter_role.role_id
 
-    claims = jwt_utils.create_jwt_claims()
-    id_claims = jwt_utils.create_jwt_id_claims()
     claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
     token = jwt_utils.create_jwt_token(test_rsa_key, claims)
     id_token = jwt_utils.create_jwt_id_token(test_rsa_key, id_claims)
@@ -103,8 +104,6 @@ def test_create_user_role_assignment_with_concrete_role(
     request_data["role_id"] = role_db_item.role_id
     del request_data["forest_client_number"]
 
-    claims = jwt_utils.create_jwt_claims()
-    id_claims = jwt_utils.create_jwt_id_claims()
     claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
     token = jwt_utils.create_jwt_token(test_rsa_key, claims)
     id_token = jwt_utils.create_jwt_id_token(test_rsa_key, id_claims)
@@ -158,7 +157,6 @@ def test_delete_user_role_assignment(
     ).all()
     assert len(user_role_assignment_db_items) == 1
 
-    claims = jwt_utils.create_jwt_claims()
     claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
     token = jwt_utils.create_jwt_token(test_rsa_key, claims)
 

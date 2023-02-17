@@ -249,9 +249,9 @@ def get_username_from_id_token(
 
     if JWT_USERNAME_KEY not in unverified_claims:
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail={'code': ERROR_USERNAME_REQUIRED,
-                    'description': 'Required custom:idp_username in claim'},
+                    'description': 'Requires custom:idp_username in claim'},
             headers={"WWW-Authenticate": "Bearer"},
         )
 

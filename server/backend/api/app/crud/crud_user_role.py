@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 def create_user_role(
     db: Session, request: schemas.FamUserRoleAssignmentCreate,
-    user_creator: str
+    requester: str
 ) -> schemas.FamUserRoleAssignmentGet:
     """
     Create fam_user_role_xref Association
@@ -35,7 +35,7 @@ def create_user_role(
         crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
     # Determine if user already exists or add a new user.
-    fam_user = crud_user.find_or_create(db, request.user_type_code, request.user_name, user_creator)
+    fam_user = crud_user.find_or_create(db, request.user_type_code, request.user_name, requester)
 
     # Verify if role exists.
     fam_role = crud_role.get_role(db, request.role_id)
@@ -69,7 +69,7 @@ def create_user_role(
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
         child_role = find_or_create_forest_client_child_role(
-            db, request.forest_client_number, fam_role, user_creator
+            db, request.forest_client_number, fam_role, requester
         )
 
     # Role Id for associating with user
@@ -87,7 +87,7 @@ def create_user_role(
         error_msg = "Role already assigned to user."
         crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
     else:
-        fam_user_role_xref = create(db, fam_user.user_id, associate_role_id, user_creator)
+        fam_user_role_xref = create(db, fam_user.user_id, associate_role_id, requester)
 
     xref_dict = fam_user_role_xref.__dict__
     xref_dict["application_id"] = (
@@ -109,7 +109,7 @@ def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
     db.flush()
 
 
-def create(db: Session, user_id: int, role_id: int, user_creator: str):
+def create(db: Session, user_id: int, role_id: int, requester: str):
     LOGGER.debug(
         f"FamUserRoleXref - 'create' with user_id: {user_id}, " +
         f"role_id: {role_id}."
@@ -120,7 +120,7 @@ def create(db: Session, user_id: int, role_id: int, user_creator: str):
             "user_id": user_id,
             "role_id": role_id,
             # "create_user": famConstants.FAM_PROXY_API_USER,
-            "create_user": user_creator
+            "create_user": requester
         }
     )
     db.add(new_fam_user_role)
@@ -157,7 +157,7 @@ def construct_forest_client_role_purpose(
 
 def find_or_create_forest_client_child_role(
     db: Session, forest_client_number: str, parent_role: models.FamRole,
-    user_creator: str
+    requester: str
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
@@ -198,7 +198,7 @@ def find_or_create_forest_client_child_role(
                         parent_role_purpose=parent_role.role_purpose,
                         forest_client_number=forest_client_number
                     ),
-                    "create_user": user_creator,
+                    "create_user": requester,
                     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                 }
             ),
