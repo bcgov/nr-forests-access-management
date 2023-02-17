@@ -2,7 +2,7 @@ from http import HTTPStatus
 import logging
 
 from api.app.crud import crud_user_role, crud_application
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request
 from sqlalchemy.orm import Session
 
 from .. import database, schemas, jwt_validation
@@ -14,6 +14,7 @@ router = APIRouter()
 
 @router.post("", response_model=schemas.FamUserRoleAssignmentGet)
 def create_user_role_assignment(
+    request: Request,
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize)
@@ -28,8 +29,11 @@ def create_user_role_assignment(
         db, role_assignment_request.role_id)
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
+    id_token = request.headers.get('id-token')
+    username = jwt_validation.get_username_from_id_token(id_token)
+
     create_data = crud_user_role.create_user_role(
-        db, role_assignment_request
+        db, role_assignment_request, username
     )
     LOGGER.debug(
         "User/Role assignment executed successfully, "
