@@ -38,10 +38,6 @@ async function login() {
 }
 
 async function logout() {
-  Auth.signOut();
-  removeFamUser();
-  console.log("User logged out.");
-
   // todo: refactor this part, should get these config variables from backend
   const env = JSON.parse(window.localStorage.getItem("env_data") || "");
   const cognitoConfig = {
@@ -59,6 +55,10 @@ async function logout() {
   const logoutUrl = env.frontend_logout_chain_url.value + cognitoLogoutUrl;
 
   window.location.href = logoutUrl;
+
+  await Auth.signOut();
+  removeFamUser();
+  console.log("User logged out.");
 
   // router.push(logoutUrl);
 }
