@@ -103,17 +103,17 @@ def test_create_user_role_assignment_with_concrete_role(
     request_data["role_id"] = role_db_item.role_id
     del request_data["forest_client_number"]
 
-    claims = jwt_utils.create_jwt_claims() # noqa NOSONAR
-    id_claims = jwt_utils.create_jwt_id_claims() # noqa NOSONAR
-    claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN" # noqa NOSONAR
-    token = jwt_utils.create_jwt_token(test_rsa_key, claims) # noqa NOSONAR
-    id_token = jwt_utils.create_jwt_id_token(test_rsa_key, id_claims) # noqa NOSONAR
+    claims = jwt_utils.create_jwt_claims()
+    token_id_claims = jwt_utils.create_jwt_id_claims()
+    claims[jwt_validation.JWT_GROUPS_KEY] = "FOM_ACCESS_ADMIN"
+    token = jwt_utils.create_jwt_token(test_rsa_key, claims)
+    id_token_header = jwt_utils.create_jwt_id_token(test_rsa_key, token_id_claims)
 
     # Execute POST (role assignment created)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=request_data,
-        headers=jwt_utils.headers_with_id_token(token, id_token) # noqa NOSONAR
+        headers=jwt_utils.headers_with_id_token(token, id_token_header)
     )
 
     # Verify status and body
