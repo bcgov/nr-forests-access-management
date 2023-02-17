@@ -58,7 +58,9 @@ async function logout() {
 
   const logoutUrl = env.frontend_logout_chain_url.value + cognitoLogoutUrl;
 
-  router.push(logoutUrl);
+  window.location.href = logoutUrl;
+
+  // router.push(logoutUrl);
 }
 
 async function handlePostLogin() {
