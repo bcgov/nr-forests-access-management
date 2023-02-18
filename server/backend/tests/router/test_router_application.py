@@ -15,11 +15,16 @@ class ClientAndAppID(TypedDict):
 
 
 def test_get_fam_application_nodata(
-    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    test_id_token
 ):
 
-    token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))
+    access_token = jwt_utils.create_jwt_access_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}",
+        headers=jwt_utils.headers(test_id_token, access_token)
+    )
 
     LOGGER.debug(f"endPoint: {endPoint}")
     LOGGER.debug(f"response {response}")
@@ -32,10 +37,14 @@ def test_get_fam_application_nodata(
 def test_get_fam_application(
     client_application: starlette.testclient.TestClient,
     test_rsa_key,
+    test_id_token,
     application_dict: Dict[str, Union[str, datetime.datetime]],
 ):
-    token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = client_application.get(f"{endPoint}", headers=jwt_utils.headers(token))
+    access_token = jwt_utils.create_jwt_access_token(test_rsa_key)
+    response = client_application.get(
+        f"{endPoint}",
+        headers=jwt_utils.headers(test_id_token, access_token)
+    )
 
     LOGGER.debug(f"response: {response}")
     data = response.json()
@@ -49,7 +58,8 @@ def test_get_fam_application_roles(
     application_dict: Dict[str, Union[str, datetime.datetime]],
     concrete_role_dict,
     concrete_role2_dict,
-    test_rsa_key
+    test_rsa_key,
+    test_id_token
 ):
     client = application_roles["client"]
     app_id = application_roles["app_id"]
@@ -58,8 +68,11 @@ def test_get_fam_application_roles(
     role_end_point = endPoint + f"/{app_id}/fam_roles"
     LOGGER.debug(f"role_end_point: {role_end_point}")
 
-    token = jwt_utils.create_jwt_token(test_rsa_key)
-    resp = client.get(role_end_point, headers=jwt_utils.headers(token))
+    access_token = jwt_utils.create_jwt_access_token(test_rsa_key)
+    resp = client.get(
+        role_end_point,
+        headers=jwt_utils.headers(test_id_token, access_token)
+    )
     LOGGER.debug(f"resp status: {resp.status_code}")
     resp_data = resp.json()
     LOGGER.debug(f"resp data as JSON: {resp.text}")
@@ -90,7 +103,8 @@ def test_get_fam_user_role_assignment(
     concrete_role2_dict,
     abstract_role_data,
     user_data_dict,
-    test_rsa_key
+    test_rsa_key,
+    test_id_token
 ):
 
     client = application_role_assignment["client"]
@@ -98,8 +112,11 @@ def test_get_fam_user_role_assignment(
 
     role_end_point = endPoint + f"/{app_id}/user_role_assignment"
 
-    token = jwt_utils.create_jwt_token(test_rsa_key)
-    resp = client.get(role_end_point, headers=jwt_utils.headers(token))
+    access_token = jwt_utils.create_jwt_access_token(test_rsa_key)
+    resp = client.get(
+        role_end_point,
+        headers=jwt_utils.headers(test_id_token, access_token)
+    )
     role_assignments = resp.json()
     LOGGER.debug(f"resp data: {role_assignments}")
     LOGGER.debug(f"json str: {resp.text}")
