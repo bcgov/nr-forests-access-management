@@ -88,4 +88,5 @@ module "fam_api_cors" {
 
   api_id          = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
   api_resource_id = aws_api_gateway_resource.fam_api_gateway_resource.id
+  allow_origin = ["${var.cloudfront_vanity_domain}"]
 }
