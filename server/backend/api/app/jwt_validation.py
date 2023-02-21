@@ -19,7 +19,6 @@ from .config import (get_aws_region,
                      get_oidc_client_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
-JWT_USERNAME_KEY = "custom:idp_username"
 JWT_CLIENT_ID_KEY = "client_id"
 
 LOGGER = logging.getLogger(__name__)
@@ -33,7 +32,6 @@ ERROR_EXPIRED_TOKEN = "invalid_token_expired"
 ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
 ERROR_GROUPS_REQUIRED = "authorization_groups_required"
-ERROR_USERNAME_REQUIRED = "custom_idp_username_required"
 ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
 ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 
@@ -97,10 +95,9 @@ def validate_token(
     token: str = Depends(oauth2_scheme),
     get_rsa_key_method: callable = Depends(get_rsa_key_method)
 ) -> dict:
-    json_token = json.loads(token)
-    access_token = json_token.get("access_token")
+
     try:
-        unverified_header = jwt.get_unverified_header(access_token)
+        unverified_header = jwt.get_unverified_header(token)
     except jwt.JWTError:
         raise HTTPException(
             status_code=401,
@@ -147,11 +144,12 @@ def validate_token(
 
     try:
         jwt.decode(
-            access_token,
+            token,
             rsa_key,
             algorithms='RS256',
             issuer=f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}"
         )
+
     except jwt.ExpiredSignatureError:
         LOGGER.debug("Caught exception jwt expired")
         raise HTTPException(
@@ -175,7 +173,7 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    claims = jwt.get_unverified_claims(access_token)
+    claims = jwt.get_unverified_claims(token)
 
     if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(
@@ -230,29 +228,3 @@ def authorize_by_app_id(
 def get_access_roles(claims: dict = Depends(authorize)):
     groups = claims[JWT_GROUPS_KEY]
     return groups
-
-
-def get_username_from_id_token(
-    id_token: str
-) -> dict:
-    # TODO: The ID Token should be validated
-    try:
-        unverified_claims = jwt.get_unverified_claims(id_token)
-    except jwt.JWTError:
-        raise HTTPException(
-            status_code=401,
-            detail={'code': ERROR_TOKEN_DECODE,
-                    'description':
-                    'Unable to decode ID token.'},
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    if JWT_USERNAME_KEY not in unverified_claims:
-        raise HTTPException(
-            status_code=401,
-            detail={'code': ERROR_USERNAME_REQUIRED,
-                    'description': 'Requires custom:idp_username in claim'},
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    return unverified_claims[JWT_USERNAME_KEY]

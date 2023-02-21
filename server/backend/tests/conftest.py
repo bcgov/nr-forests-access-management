@@ -13,8 +13,6 @@ https://fastapi.tiangolo.com/advanced/testing-database/
 import os
 import sys
 
-from jwt_utils import create_jwt_id_token
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import logging
@@ -22,18 +20,20 @@ import sys
 from typing import Any, Generator
 
 import api.app.database as database
-import api.app.jwt_validation as jwt_validation
 import api.app.models.model as model
 import pytest
 from api.app.database import Base
 from api.app.main import app
-from Crypto.PublicKey import RSA
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock
+
+from Crypto.PublicKey import RSA
+import api.app.jwt_validation as jwt_validation
+
 
 # global placeholder to be populated by fixtures for database test
 # sessions, required to override the get_db method.
@@ -237,8 +237,3 @@ def override_get_rsa_key_method_none():
 
 def override_get_rsa_key_none(kid):
     return None
-
-
-@pytest.fixture(scope="function")
-def test_id_token(test_rsa_key):
-    return create_jwt_id_token(test_rsa_key)
