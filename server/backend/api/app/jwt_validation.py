@@ -97,10 +97,9 @@ def validate_token(
     token: str = Depends(oauth2_scheme),
     get_rsa_key_method: callable = Depends(get_rsa_key_method)
 ) -> dict:
-    json_token = json.loads(token)
-    access_token = json_token.get("access_token")
+
     try:
-        unverified_header = jwt.get_unverified_header(access_token)
+        unverified_header = jwt.get_unverified_header(token)
     except jwt.JWTError:
         raise HTTPException(
             status_code=401,
@@ -147,11 +146,12 @@ def validate_token(
 
     try:
         jwt.decode(
-            access_token,
+            token,
             rsa_key,
             algorithms='RS256',
             issuer=f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}"
         )
+
     except jwt.ExpiredSignatureError:
         LOGGER.debug("Caught exception jwt expired")
         raise HTTPException(
@@ -175,7 +175,7 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    claims = jwt.get_unverified_claims(access_token)
+    claims = jwt.get_unverified_claims(token)
 
     if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(

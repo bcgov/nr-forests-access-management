@@ -1,5 +1,4 @@
 from http import HTTPStatus
-import json
 import logging
 
 from api.app.crud import crud_user_role, crud_application
@@ -30,8 +29,7 @@ def create_user_role_assignment(
         db, role_assignment_request.role_id)
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
-    token = str(request.headers.get("Authorization"))
-    id_token = json.loads(token[len("Bearer "):]).get("id_token")
+    id_token = request.headers.get('id-token')
     username = jwt_validation.get_username_from_id_token(id_token)
 
     create_data = crud_user_role.create_user_role(
