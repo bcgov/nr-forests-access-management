@@ -30,20 +30,6 @@ def create_jwt_claims():
     }
 
 
-def create_jwt_id_claims():
-    return {
-        "custom:idp_username": "TEST_USER"
-    }
-
-
-def create_jwt_id_token(test_rsa_key,
-                        claims=create_jwt_id_claims(),
-                        test_algorithm='RS256',
-                        test_headers={"kid": "12345"}):
-    return jws.sign(claims, test_rsa_key, algorithm=test_algorithm,
-                    headers=test_headers)
-
-
 def create_jwt_token(test_rsa_key,
                      claims=create_jwt_claims(),
                      test_algorithm='RS256',
@@ -60,7 +46,3 @@ def assert_error_response(response, http_error_code, error_code_string):
 
 def headers(token):
     return {"Authorization": f"Bearer {token}"}
-
-
-def headers_with_id_token(token, id_token):
-    return {"Authorization": f"Bearer {token}", "id-token": id_token}

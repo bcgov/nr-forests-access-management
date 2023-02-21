@@ -9,14 +9,13 @@ function addAuthHeaderItcpt(config: AxiosRequestConfig) {
     const authToken = authService.state.value.famLoginUser?.authToken
     if (authToken) {
         const authHeader = `Bearer ${authToken.getAccessToken().getJwtToken()}`
-        const idTokenHeader = authToken.getIdToken().getJwtToken()
-        config.headers? (config.headers['Authorization'] = authHeader, config.headers['id-token'] = idTokenHeader)
-                      : (config.headers = {'Authorization': authHeader}, config.headers = {'id-token': idTokenHeader})
+        config.headers? config.headers['Authorization'] = authHeader
+                      : config.headers = {'Authorization': authHeader}
     }
     return config
 }
 
 
-export default {
+export default { 
     addAuthHeaderItcpt
 }
