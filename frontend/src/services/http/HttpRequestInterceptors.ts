@@ -1,4 +1,3 @@
-
 import authService from '@/services/AuthService';
 import type { AxiosRequestConfig } from 'axios';
 
@@ -6,16 +5,16 @@ import type { AxiosRequestConfig } from 'axios';
 // See "https://www.npmjs.com/package/axios#interceptors" if there is a need for synchronous interceptors behaviour.
 
 function addAuthHeaderItcpt(config: AxiosRequestConfig) {
-    const authToken = authService.state.value.famLoginUser?.authToken
+    const authToken = authService.state.value.famLoginUser?.authToken;
     if (authToken) {
-        const authHeader = `Bearer ${authToken.getAccessToken().getJwtToken()}`
-        config.headers? config.headers['Authorization'] = authHeader
-                      : config.headers = {'Authorization': authHeader}
+        const authHeader = `Bearer ${authToken.getAccessToken().getJwtToken()}`;
+        config.headers
+            ? (config.headers['Authorization'] = authHeader)
+            : (config.headers = { Authorization: authHeader });
     }
-    return config
+    return config;
 }
 
-
-export default { 
-    addAuthHeaderItcpt
-}
+export default {
+    addAuthHeaderItcpt,
+};
