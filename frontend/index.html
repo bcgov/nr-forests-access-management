@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="favicon.ico" />
-    <!-- 
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" href="favicon.ico" />
+        <!--
       Important to preload static environment settings 'env.json' first at run time.
       It is to prepare for later App needs, especially for Amplify's configuring for Cognito communication for login.
       Some reference here: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload
     -->
-    <link rel="preload" href="/env.json" as="fetch" crossorigin="anonymous" type="application/json" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FAM - Forest Access Management</title>
-    <script>
-      // Fix `global is not defined` error caused by 'amazon-cognito-identity-js/es/AuthenticationHelper.js'.
-      // The best solution might be in vite.config.ts, but for some reason, the fix in vite.config.ts (works) conflicts with
-      // configured "Vitest" internally. If we use --dom option for npm test (happy-dom), the fix in config will have no problem;
-      // but we are using jsdom currently. So, instead, define 'global' here at index.html.
-      // vite.config.ts (add this, but does not work for 'jsdom'):
-      //  define: {
-      //   "global": {}, // Important var defined for solving Aws-Amplify bug with Vite(https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49)
-      //  },
-      global = window
+        <link
+            rel="preload"
+            href="/env.json"
+            as="fetch"
+            crossorigin="anonymous"
+            type="application/json"
+        />
 
-    </script>
-    <script src="/env.js">
-    </script>
-  </head>
-  <body id="fam-body" class="fam-body">
-    <div id="main-body">
-      <div id="app"></div>
-    </div>
-    <script type="module" src="src/main.ts"></script>
-  </body>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FAM - Forest Access Management</title>
+        <script>
+            // Fix `global is not defined` error caused by 'amazon-cognito-identity-js/es/AuthenticationHelper.js'.
+            // The best solution might be in vite.config.ts, but for some reason, the fix in vite.config.ts (works) conflicts with
+            // configured "Vitest" internally. If we use --dom option for npm test (happy-dom), the fix in config will have no problem;
+            // but we are using jsdom currently. So, instead, define 'global' here at index.html.
+            // vite.config.ts (add this, but does not work for 'jsdom'):
+            //  define: {
+            //   "global": {}, // Important var defined for solving Aws-Amplify bug with Vite(https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49)
+            //  },
+            global = window;
+        </script>
+        <script src="/env.js"></script>
+    </head>
+    <body id="fam-body" class="fam-body">
+        <div id="main-body">
+            <div id="app"></div>
+        </div>
+        <script type="module" src="src/main.ts"></script>
+    </body>
 </html>
