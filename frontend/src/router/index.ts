@@ -1,13 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
 
-import AuthCallback from '@/components/AuthCallbackHandler.vue'
-import NotFound from '@/components/NotFound.vue'
-import AuthService from '@/services/AuthService'
-import GrantAccessView from '@/views/GrantAccessView.vue'
-import HomeView from '@/views/HomeView.vue'
-import ManageAccessView from '@/views/ManageAccessView.vue'
-import SelectApplicationView from '@/views/SelectApplicationView.vue'
-
+import AuthCallback from '@/components/AuthCallbackHandler.vue';
+import NotFound from '@/components/NotFound.vue';
+import AuthService from '@/services/AuthService';
+import GrantAccessView from '@/views/GrantAccessView.vue';
+import HomeView from '@/views/HomeView.vue';
+import ManageAccessView from '@/views/ManageAccessView.vue';
+import SelectApplicationView from '@/views/SelectApplicationView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -23,62 +22,62 @@ import SelectApplicationView from '@/views/SelectApplicationView.vue'
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    meta: {
-      title: 'Welcome to FAM'
+    {
+        path: '/',
+        name: 'home',
+        meta: {
+            title: 'Welcome to FAM',
+        },
+        component: HomeView,
     },
-    component: HomeView
-  },
-  {
-    path: '/application',
-    name: 'application',
-    meta: {
-      title: 'Select Application'
+    {
+        path: '/application',
+        name: 'application',
+        meta: {
+            title: 'Select Application',
+        },
+        component: SelectApplicationView,
     },
-    component: SelectApplicationView
-  },
-  {
-    path: '/manage',
-    name: 'manage',
-    meta: {
-      title: 'Manage Access'
+    {
+        path: '/manage',
+        name: 'manage',
+        meta: {
+            title: 'Manage Access',
+        },
+        component: ManageAccessView,
     },
-    component: ManageAccessView
-  },
-  {
-    path: '/grant',
-    name: 'grant',
-    meta: {
-      title: 'Grant Access'
+    {
+        path: '/grant',
+        name: 'grant',
+        meta: {
+            title: 'Grant Access',
+        },
+        component: GrantAccessView,
     },
-    component: GrantAccessView
-  },
-  {
-    path: '/authCallback',
-    name: 'Cognito Auth (success) Callback',
-    component: AuthCallback
-  },
-  {
-    path: "/:catchAll(.*)",
-    component: NotFound,
-  },
-]
+    {
+        path: '/authCallback',
+        name: 'Cognito Auth (success) Callback',
+        component: AuthCallback,
+    },
+    {
+        path: '/:catchAll(.*)',
+        component: NotFound,
+    },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes
-})
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: routes,
+});
 
 router.beforeEach(async (to, from) => {
-  // Refresh token first before navigation.
-  if (AuthService.state.value.famLoginUser) { // condition needed to prevent infinite redirect
-    await AuthService.methods.refreshToken()
-  }
-})
+    // Refresh token first before navigation.
+    if (AuthService.state.value.famLoginUser) {
+        // condition needed to prevent infinite redirect
+        await AuthService.methods.refreshToken();
+    }
+});
 
-export { routes }
+export { routes };
 
-export default router
-
+export default router;
