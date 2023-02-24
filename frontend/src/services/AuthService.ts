@@ -38,29 +38,9 @@ async function login() {
 }
 
 async function logout() {
-  // todo: refactor this part, should get these config variables from backend
-  const env = JSON.parse(window.localStorage.getItem("env_data") || "");
-  const cognitoConfig = {
-    domain: env.fam_cognito_domain.value,
-    region: env.fam_cognito_region.value,
-    userPoolWebClientId: env.fam_console_web_client_id.value,
-  };
-
-  const postLogoutUrl = window.location.origin;
-  const cognitoLogoutUrl =
-    `${cognitoConfig.domain}.auth.${cognitoConfig.region}.amazoncognito.com/` +
-    `logout?client_id=${cognitoConfig.userPoolWebClientId}&logout_uri=` +
-    postLogoutUrl;
-
-  const logoutUrl = env.frontend_logout_chain_url.value + cognitoLogoutUrl;
-
-  window.location.href = logoutUrl;
-
   await Auth.signOut();
   removeFamUser();
   console.log("User logged out.");
-
-  // router.push(logoutUrl);
 }
 
 async function handlePostLogin() {
