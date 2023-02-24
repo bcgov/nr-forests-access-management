@@ -1,7 +1,7 @@
-import router from "@/router";
-import type { CognitoUserSession } from "amazon-cognito-identity-js";
-import { Auth } from "aws-amplify";
-import { readonly, ref } from "vue";
+import router from '@/router';
+import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { Auth } from 'aws-amplify';
+import { readonly, ref } from 'vue';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -24,17 +24,17 @@ const state = ref({
 // functions
 
 function isLoggedIn(): boolean {
-  const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
-  return loggedIn;
+    const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
+    return loggedIn;
 }
 
 async function login() {
-  /*
+    /*
         See Aws-Amplify documenation:
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
         https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
-  Auth.federatedSignIn();
+    Auth.federatedSignIn();
 }
 
 async function logout() {

@@ -11,8 +11,8 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   logout_urls = [
-    "${var.front_end_redirect_path}",
-    "http://localhost:5173"
+    "${var.frontend_logout_chain_url}${var.front_end_redirect_path}",
+    "${var.frontend_logout_chain_url}http://localhost:5173"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
