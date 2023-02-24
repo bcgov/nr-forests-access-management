@@ -1,0 +1,12 @@
+{
+    "editor.tabSize": 4,
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.startupEditor": "none",
+    "json.indent": "4",
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 4,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+}

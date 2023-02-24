@@ -1,17 +1,16 @@
-
 .form-container {
-  margin: auto 0;
+    margin: auto 0;
 
-  .row {
-    margin: 1rem auto;
-  }
+    .row {
+        margin: 1rem auto;
+    }
 }
 
 label {
-  font-size: 1rem;
-  font-weight: bold;
-  color: $gray7;
-  margin-bottom: 0.15rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: $gray7;
+    margin-bottom: 0.15rem;
 }
 
 .btn-primary {
@@ -20,24 +19,24 @@ label {
 }
 
 .btn-info {
-  background-color: $button-info;
-  border-color: $button-info;
+    background-color: $button-info;
+    border-color: $button-info;
 }
 
 .btn-danger {
-  background-color: $red-400;
-  border-color: $red-400;
+    background-color: $red-400;
+    border-color: $red-400;
 }
 
 // Remove Arrows/Spinners for input type=number
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
+input[type='number'] {
+    -moz-appearance: textfield;
 }

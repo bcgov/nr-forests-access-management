@@ -77,7 +77,7 @@ resource "aws_cognito_identity_provider" "prod_idir_oidc_provider" {
 variable "minimum_read_list" {
   description = "The list of required read attributes for all clients"
   type        = list(string)
-  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_display_name"]
+  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
 }
 
 variable "minimum_write_list" {

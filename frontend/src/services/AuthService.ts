@@ -3,22 +3,22 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
 import { Auth } from "aws-amplify";
 import { readonly, ref } from "vue";
 
-const FAM_LOGIN_USER = "famLoginUser";
+const FAM_LOGIN_USER = 'famLoginUser';
 
 export interface FamLoginUser {
-  username?: string;
-  idpProvider?: string;
-  roles?: string[];
-  authToken?: CognitoUserSession;
+    username?: string;
+    idpProvider?: string;
+    roles?: string[];
+    authToken?: CognitoUserSession;
 }
 
 const state = ref({
-  famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
-    ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-        | FamLoginUser
-        | undefined
-        | null)
-    : undefined,
+    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
+        ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
+              | FamLoginUser
+              | undefined
+              | null)
+        : undefined,
 });
 
 // functions
@@ -38,21 +38,21 @@ async function login() {
 }
 
 async function logout() {
-  await Auth.signOut();
-  removeFamUser();
-  console.log("User logged out.");
+    Auth.signOut();
+    removeFamUser();
+    console.log('User logged out.');
 }
 
 async function handlePostLogin() {
-  return Auth.currentAuthenticatedUser()
-    .then(async (_userData) => {
-      await refreshToken();
-    })
-    .catch((error) => {
-      console.log("Not signed in");
-      console.log("Authentication Error:", error);
-      return logout();
-    });
+    return Auth.currentAuthenticatedUser()
+        .then(async (_userData) => {
+            await refreshToken();
+        })
+        .catch((error) => {
+            console.log('Not signed in');
+            console.log('Authentication Error:', error);
+            return logout();
+        });
 }
 
 /**
@@ -65,19 +65,23 @@ async function handlePostLogin() {
  * Automatically logout if unable to get currentSession().
  */
 async function refreshToken(): Promise<FamLoginUser | undefined> {
-  try {
-    console.log("Refreshing Token...");
-    const currentAuthToken: CognitoUserSession = await Auth.currentSession();
-    console.log("currentAuthToken: ", currentAuthToken);
+    try {
+        console.log('Refreshing Token...');
+        const currentAuthToken: CognitoUserSession =
+            await Auth.currentSession();
+        console.log('currentAuthToken: ', currentAuthToken);
 
-    const famLoginUser = parseToken(currentAuthToken);
-    storeFamUser(famLoginUser);
-    return famLoginUser;
-  } catch (error) {
-    console.error("Problem refreshing token or token is invalidated:", error);
-    // logout and redirect to login.
-    logout();
-  }
+        const famLoginUser = parseToken(currentAuthToken);
+        storeFamUser(famLoginUser);
+        return famLoginUser;
+    } catch (error) {
+        console.error(
+            'Problem refreshing token or token is invalidated:',
+            error
+        );
+        // logout and redirect to login.
+        logout();
+    }
 }
 
 /**
@@ -87,46 +91,46 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
  * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
  */
 function parseToken(authToken: CognitoUserSession): FamLoginUser {
-  const decodedIdToken = authToken.getIdToken().decodePayload();
-  const decodedAccessToken = authToken.getAccessToken().decodePayload();
-  const famLoginUser = {
-    username: decodedIdToken["custom:idp_username"],
-    idpProvider: decodedIdToken["identities"]["providerName"],
-    roles: decodedAccessToken["cognito:groups"],
-    authToken: authToken,
-  };
-  return famLoginUser;
+    const decodedIdToken = authToken.getIdToken().decodePayload();
+    const decodedAccessToken = authToken.getAccessToken().decodePayload();
+    const famLoginUser = {
+        username: decodedIdToken['custom:idp_username'],
+        idpProvider: decodedIdToken['identities']['providerName'],
+        roles: decodedAccessToken['cognito:groups'],
+        authToken: authToken,
+    };
+    return famLoginUser;
 }
 
 function removeFamUser() {
-  storeFamUser(undefined);
+    storeFamUser(undefined);
 }
 
 function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
-  state.value.famLoginUser = famLoginUser;
-  if (famLoginUser) {
-    localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
-  } else {
-    localStorage.removeItem(FAM_LOGIN_USER);
-  }
+    state.value.famLoginUser = famLoginUser;
+    if (famLoginUser) {
+        localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
+    } else {
+        localStorage.removeItem(FAM_LOGIN_USER);
+    }
 }
 
 // -----
 
 const methods = {
-  login,
-  handlePostLogin,
-  logout,
-  refreshToken,
-  removeFamUser,
+    login,
+    handlePostLogin,
+    logout,
+    refreshToken,
+    removeFamUser,
 };
 
 const getters = {
-  isLoggedIn,
+    isLoggedIn,
 };
 
 export default {
-  state: readonly(state), // readonly to prevent direct state change; force it through methods if needed to.
-  methods,
-  getters,
+    state: readonly(state), // readonly to prevent direct state change; force it through methods if needed to.
+    methods,
+    getters,
 };

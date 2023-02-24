@@ -3,8 +3,8 @@ import HttpReqInterceptors from '@/services/http/HttpRequestInterceptors';
 import HttpResInterceptors from '@/services/http/HttpResponseInterceptors';
 import axios from 'axios';
 
-const environmentSettings = new EnvironmentSettings()
-const apiBaseUrl = environmentSettings.getApiBaseUrl()
+const environmentSettings = new EnvironmentSettings();
+const apiBaseUrl = environmentSettings.getApiBaseUrl();
 const DEFAULT_CONTENT_TYPE = 'application/json';
 const DEFAULT_REQUEST_TIMEOUT = 20000;
 
@@ -32,9 +32,13 @@ httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
 httpInstance.interceptors.request.use(HttpReqInterceptors.addAuthHeaderItcpt);
 
 // Response Interceptors
-httpInstance.interceptors.response.use(response => response, HttpResInterceptors.authenticationErrorResponsesItcpt); // 401 error handler
-httpInstance.interceptors.response.use(response => response, HttpResInterceptors.forbiddenErrorResponseItcpt); // 403 error handler
-
-
+httpInstance.interceptors.response.use(
+    (response) => response,
+    HttpResInterceptors.authenticationErrorResponsesItcpt
+); // 401 error handler
+httpInstance.interceptors.response.use(
+    (response) => response,
+    HttpResInterceptors.forbiddenErrorResponseItcpt
+); // 403 error handler
 
 export default httpInstance;
