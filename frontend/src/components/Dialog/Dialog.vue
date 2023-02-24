@@ -35,29 +35,13 @@
     </vue-final-modal>
 </template>
 
-<script>
-export default {
-    inheritAttrs: false,
-    emits: ['confirm'],
-    props: {
-        message: {
-            type: String,
-            default: '',
-        },
-        title: {
-            type: String,
-            default: '',
-        },
-        confirmText: {
-            type: String,
-            default: 'Confirm',
-        },
-        cancelText: {
-            type: String,
-            default: 'Cancel',
-        },
-    },
-};
+<script setup lang="ts">
+const props = defineProps({
+    message: String,
+    title: String,
+    confirmText: { type: String, default: 'Confirm' },
+    cancelText: { type: String, default: 'Cancel' },
+});
 </script>
 
 <style scoped>
