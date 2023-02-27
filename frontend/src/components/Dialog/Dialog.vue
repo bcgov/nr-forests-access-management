@@ -35,7 +35,7 @@
     </vue-final-modal>
 </template>
 
-<script setup lang="ts">
+<script setup inherit-attrs="false" lang="ts">
 const props = defineProps({
     message: String,
     title: String,
