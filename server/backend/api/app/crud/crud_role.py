@@ -56,7 +56,7 @@ def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
                 "forest_client_number": forest_client_number,
                 "client_name": "going to delete anyways when complete issue"
                 + f" 327 / {forest_client_number}",
-                "create_user": constants.FAM_PROXY_API_USER,
+                "create_user": fam_role_model.create_user,
             }
             fc_pydantic = schemas.FamForestClientCreate(**fc_dict)
             forest_client_model = crud_forest_client.create_forest_client(
