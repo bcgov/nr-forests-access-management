@@ -61,8 +61,8 @@ resource "aws_cognito_identity_provider" "prod_bceid_business_oidc_provider" {
   provider_details = {
     authorize_scopes          = "openid profile email bceidbusiness"
     client_id                 = var.oidc_bceid_business_idp_client_id
-    client_secret             = var.test_oidc_bceid_business_idp_client_secret
-    oidc_issuer               = var.test_oidc_idp_issuer
+    client_secret             = var.prod_oidc_bceid_business_idp_client_secret
+    oidc_issuer               = var.prod_oidc_idp_issuer
     attributes_request_method = "GET"
   }
 
