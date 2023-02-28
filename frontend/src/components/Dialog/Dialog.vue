@@ -1,45 +1,47 @@
 <template>
-    <vue-final-modal v-slot="{ close }" v-bind="$attrs" classes="modal-container" content-class="modal-content">
+    <vue-final-modal
+        v-slot="{ close }"
+        v-bind="$attrs"
+        classes="modal-container"
+        content-class="modal-content"
+    >
         <div class="modal__content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ title }}</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @click="close">
-                </button>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                    @click="close"
+                ></button>
             </div>
             <div class="modal-body">
                 <p>{{ message }}</p>
             </div>
             <div class="modal-footer modal__action">
-                <button type="button" class="btn btn-danger" v-on:click="$emit('confirm', close)">{{confirmText}}</button>
-                <button type="button" class="btn btn-info" @click="close">{{cancelText}}</button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    v-on:click="$emit('confirm', close)"
+                >
+                    {{ confirmText }}
+                </button>
+                <button type="button" class="btn btn-info" @click="close">
+                    {{ cancelText }}
+                </button>
             </div>
         </div>
     </vue-final-modal>
 </template>
 
-<script>
-export default {
-    inheritAttrs: false,
-    emits: ['confirm'],
-    props: {
-        message: {
-            type: String,
-            default: ''
-        },
-        title: {
-            type: String,
-            default: ''
-        },
-        confirmText: {
-            type: String,
-            default: 'Confirm'
-        },
-        cancelText: {
-            type: String,
-            default: 'Cancel'
-        }
-    }
-}
+<script setup inherit-attrs="false" lang="ts">
+const props = defineProps({
+    message: String,
+    title: String,
+    confirmText: { type: String, default: 'Confirm' },
+    cancelText: { type: String, default: 'Cancel' },
+});
 </script>
 
 <style scoped>
@@ -78,7 +80,7 @@ export default {
 .modal-body {
     padding-top: 15px;
     padding-bottom: 15px;
-    border-top:  1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
 }
 

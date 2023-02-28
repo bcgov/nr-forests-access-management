@@ -13,7 +13,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fom_dev"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = var.minimum_read_list
+  read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
@@ -27,7 +27,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = var.minimum_write_list
+  write_attributes = "${concat(var.minimum_write_list, ["custom:idp_display_name"])}"
 }
 
 resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
@@ -46,7 +46,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fom_test"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = var.minimum_read_list
+  read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
@@ -60,7 +60,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = var.minimum_write_list
+  write_attributes = "${concat(var.minimum_write_list, ["custom:idp_display_name"])}"
 }
 
 resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
@@ -77,7 +77,7 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fom_prod"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = var.minimum_read_list
+  read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
@@ -91,5 +91,5 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = var.minimum_write_list
+  write_attributes = "${concat(var.minimum_write_list, ["custom:idp_display_name"])}"
 }
