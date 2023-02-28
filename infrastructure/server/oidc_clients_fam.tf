@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
-  access_token_validity                = "60"
+  access_token_validity                = "5"
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
@@ -21,13 +21,13 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_read_list
-  refresh_token_validity                        = "30"
+  refresh_token_validity                        = "24"
   supported_identity_providers                  = [ var.fam_console_idp_name ]
 
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "days"
+    refresh_token = "hours"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id

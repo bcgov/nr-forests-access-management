@@ -8,6 +8,8 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
 
+from api.app.constants import COGNITO_USERNAME_KEY
+
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
@@ -228,3 +230,9 @@ def authorize_by_app_id(
 def get_access_roles(claims: dict = Depends(authorize)):
     groups = claims[JWT_GROUPS_KEY]
     return groups
+
+
+def get_request_username(claims: dict = Depends(authorize)):
+    requester = claims[COGNITO_USERNAME_KEY]
+    LOGGER.debug(f"Current requester for API: {requester}")
+    return requester
