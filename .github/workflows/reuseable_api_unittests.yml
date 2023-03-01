@@ -11,10 +11,15 @@ on:
 env:
   environment: dev
   organization: bcgov
-  POSTGRES_DB: fam
-  POSTGRES_USER: fam_test
-  POSTGRES_PASSWORD: test
+  # POSTGRES_DB: fam
+  # POSTGRES_USER: fam_test
+  # POSTGRES_PASSWORD: test
   USE_POSTGRES: false
+  POSTGRES_USER: fam_proxy_api
+  POSTGRES_PASSWORD: test
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: fam
+  POSTGRES_PORT: 5432
 
 jobs:
   api-unit-tests:
@@ -36,9 +41,6 @@ jobs:
           python --version
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
-          # set local env variable for testing
-          set -o allexport; source local-dev.env; set +o allexport
-          unset DB_SECRET
 
       - name: API function run pytest on sqllite
         uses: pavelzw/pytest-action@v2
