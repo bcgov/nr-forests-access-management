@@ -1,7 +1,7 @@
 import logging
 import starlette.testclient
 from api.app.main import apiPrefix
-import testspg.jwt_utils as jwt_utils
+import tests.tests.jwt_utils as jwt_utils
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
