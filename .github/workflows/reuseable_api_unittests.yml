@@ -47,8 +47,9 @@ jobs:
 
       - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
+        working-directory: server/backend
         with:
           emoji: true
           verbose: true
           job-summary: true
-          custom-arguments: 'server/backend --ignore server/backend/tests'
+          custom-arguments: '--ignore tests'

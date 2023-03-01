@@ -56,7 +56,7 @@ def test_client_fixture() -> TestClient:
     :rtype: starlette.testclient
     """
     client = TestClient(app)
-    yield client
+    return client
 
 
 @pytest.fixture(scope="function")
