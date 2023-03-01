@@ -36,6 +36,9 @@ jobs:
           python --version
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
+          # set local env variable for testing
+          set -o allexport; source local-dev.env; set +o allexport
+          unset DB_SECRET
 
       - name: API function run pytest on sqllite
         uses: pavelzw/pytest-action@v2
