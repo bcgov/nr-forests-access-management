@@ -20,5 +20,7 @@ class AppEnv(str, Enum):
 
 FAM_PROXY_API_USER = "fam_proxy_api"
 
+COGNITO_USERNAME_KEY = "username"
+
 # TODO: Only uses this before forest-client api integration from front-end.
 DUMMY_FOREST_CLIENT_NAME = "DUMMY_FOREST_CLIENT_NAME"

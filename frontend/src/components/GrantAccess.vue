@@ -65,7 +65,7 @@ async function grantAccess() {
             newUserRoleAssignmentPayload
         );
         useToast().success(
-            `User "${newUserRoleAssignmentPayload.user_name}"" is granted with "${formData.value.role.role_name}" access.`
+            `User "${newUserRoleAssignmentPayload.user_name}" is granted with "${formData.value.role.role_name}" access.`
         );
         formData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
         router.push('/manage');
