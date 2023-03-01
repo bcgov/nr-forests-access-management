@@ -9,7 +9,7 @@ endPoint = f"{apiPrefix}/fam_applications"
 
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
+    test_rsa_key
 ):
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))

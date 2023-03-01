@@ -17,10 +17,11 @@ from api.app.main import app
 
 
 LOGGER = logging.getLogger(__name__)
-COMPOSE_PATH = os.path.dirname(__file__)  # the folder contains test docker-compose.yml
+# the folder contains test docker-compose.yml, ours in the root directory
+COMPOSE_PATH = os.path.join(os.path.dirname(__file__), '../../../')
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dbPgContainer():
     compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
     compose.start()
@@ -29,7 +30,7 @@ def dbPgContainer():
     compose.stop()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dbPgEngine() -> Engine:
     engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/fam")
     return engine
