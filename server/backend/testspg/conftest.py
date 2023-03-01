@@ -9,10 +9,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
-import api.app.jwt_validation as jwt_validation
-from api.app.main import app
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+import api.app.jwt_validation as jwt_validation
+from api.app.main import app
 
 
 LOGGER = logging.getLogger(__name__)
