@@ -1,19 +1,18 @@
 import pytest
 import time
 import logging
+import os
+import sys
 import testcontainers.compose
 from sqlalchemy.engine.base import Engine
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 
 LOGGER = logging.getLogger(__name__)
