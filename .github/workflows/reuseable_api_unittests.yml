@@ -36,8 +36,6 @@ jobs:
           python --version
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
-          # could remove this line after removing the sqllite test
-          set -o allexport; source local-dev.env; set +o allexport
 
       - name: API function run pytest on sqllite
         uses: pavelzw/pytest-action@v2
