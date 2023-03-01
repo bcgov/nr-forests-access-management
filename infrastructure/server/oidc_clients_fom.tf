@@ -5,7 +5,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
-    "http://localhost:4200/admin"
+    "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
     "${var.frontend_logout_chain_url}http://localhost:4200/admin/not-authorized?loggedout=true"
@@ -40,8 +40,8 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
-    "https://fom-test.nrs.gov.bc.ca/admin",
-    "http://localhost:4200/admin"
+    "https://fom-test.nrs.gov.bc.ca/admin/search",
+    "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
     "${var.frontend_logout_chain_url}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
@@ -75,7 +75,7 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://fom.nrs.gov.bc.ca/admin",
+    "https://fom.nrs.gov.bc.ca/admin/search",
   ]
   logout_urls                                   = [
     "${var.frontend_logout_chain_url}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
