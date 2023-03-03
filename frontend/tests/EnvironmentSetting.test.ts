@@ -1,5 +1,5 @@
 import { it, describe, expect, test } from 'vitest';
-import { EnvironmentSettings } from '../src/services/EnvironmentSettings';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
 describe('getEnvironmentDisplayName', () => {
     it('value with prefix/suffix should include prefix/suffix', () => {
