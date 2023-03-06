@@ -34,15 +34,10 @@ async function login() {
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
         https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
-    // Auth.federatedSignIn();
 
     const env = JSON.parse(window.localStorage.getItem('env_data') || '');
 
-    window.location.href =
-        `https://${env?.fam_cognito_domain.value}.auth.${env?.fam_cognito_region.value}.amazoncognito.com/` +
-        `oauth2/authorize?identity_provider=${env?.target_env.value.toUpperCase()}-IDIR&` +
-        `redirect_uri=${env?.front_end_redirect_base_url.value}/authCallback&response_type=CODE&` +
-        `client_id=${env?.fam_console_web_client_id.value}&state=&scope=openid`;
+    Auth.federatedSignIn({ customProvider: env?.fam_console_idp_name.value });
 }
 
 async function logout() {
