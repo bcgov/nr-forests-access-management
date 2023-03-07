@@ -13,6 +13,10 @@ export class EnvironmentSettings {
         }
     }
 
+    getIdentityProvider(): string {
+        return this.env?.fam_console_idp_name.value;
+    }
+
     getApiBaseUrl(): string {
         let apiBaseUrl = this.env?.fam_api_base_url.value;
         apiBaseUrl ? null : (apiBaseUrl = 'http://127.0.0.1:8000'); // local api

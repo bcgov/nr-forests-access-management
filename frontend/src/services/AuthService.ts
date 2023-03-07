@@ -2,6 +2,7 @@ import router from '@/router';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -35,9 +36,11 @@ async function login() {
         https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
 
-    const env = JSON.parse(window.localStorage.getItem('env_data') || '');
+    const environmentSettings = new EnvironmentSettings();
 
-    Auth.federatedSignIn({ customProvider: env?.fam_console_idp_name.value });
+    Auth.federatedSignIn({
+        customProvider: environmentSettings.getIdentityProvider(),
+    });
 }
 
 async function logout() {
