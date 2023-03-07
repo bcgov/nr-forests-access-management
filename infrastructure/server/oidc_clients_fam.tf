@@ -3,14 +3,20 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls = [
+  callback_urls = var.fam_console_idp_name == "PROD-IDIR" ? [
+    "${var.front_end_redirect_path}/authCallback",
+    "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
+    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
+  ] :[
     "${var.front_end_redirect_path}/authCallback",
     "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
-  logout_urls = [
+  logout_urls = var.fam_console_idp_name == "PROD-IDIR" ? [
+    "${var.frontend_logout_chain_url}${var.front_end_redirect_path}"
+  ] : [
     "${var.frontend_logout_chain_url}${var.front_end_redirect_path}",
     "${var.frontend_logout_chain_url}http://localhost:5173"
   ]
