@@ -53,7 +53,7 @@ def test_role_not_exist_raise_exception(
 
     with pytest.raises(HTTPException) as e:
         assert crud_user_role.create_user_role(
-            db, user_role_assignment_model
+            db, user_role_assignment_model, constants.FAM_PROXY_API_USER
         )
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Role id ") != -1
@@ -89,7 +89,7 @@ def test_user_role_assignment_with_abstract_role_raise_exception(
     del invalid_request.forest_client_number
 
     with pytest.raises(HTTPException) as e:
-        assert crud_user_role.create_user_role(db, invalid_request)
+        assert crud_user_role.create_user_role(db, invalid_request, constants.FAM_PROXY_API_USER)
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Cannot assign") != -1
     db.rollback()
@@ -119,7 +119,7 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter(  # NOSONAR
 
     # User/Role assignment created.
     user_role_assignment = crud_user_role.create_user_role(
-        db, user_role_assignment_model
+        db, user_role_assignment_model, constants.FAM_PROXY_API_USER
     )
 
     # Find child role
@@ -165,13 +165,13 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_raise
 
     # User/Role assignment created.
     user_role_assignment1 = crud_user_role.create_user_role(
-        db, user_role_assignment_model
+        db, user_role_assignment_model, constants.FAM_PROXY_API_USER
     )
 
     # Call create twice with the same request.
     with pytest.raises(HTTPException) as e:
         crud_user_role.create_user_role(
-            db, user_role_assignment_model
+            db, user_role_assignment_model, constants.FAM_PROXY_API_USER
         )
 
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")

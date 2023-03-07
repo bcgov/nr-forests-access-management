@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
-  access_token_validity                         = "60"
+  access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
@@ -14,7 +14,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   name                                          = "fom_dev"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
-  refresh_token_validity                        = "30"
+  refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}"
@@ -23,7 +23,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "days"
+    refresh_token = "hours"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
@@ -31,7 +31,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
 }
 
 resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
-  access_token_validity                         = "60"
+  access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
@@ -47,7 +47,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   name                                          = "fom_test"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
-  refresh_token_validity                        = "30"
+  refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}"
@@ -56,7 +56,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "days"
+    refresh_token = "hours"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
@@ -64,7 +64,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
 }
 
 resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
-  access_token_validity                         = "60"
+  access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
@@ -78,7 +78,7 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   name                                          = "fom_prod"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
-  refresh_token_validity                        = "30"
+  refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}"
@@ -87,7 +87,7 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "days"
+    refresh_token = "hours"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id

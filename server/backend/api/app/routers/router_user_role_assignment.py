@@ -16,7 +16,8 @@ router = APIRouter()
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize)
+    token_claims: dict = Depends(jwt_validation.authorize),
+    requester: str = Depends(jwt_validation.get_request_username)
 ):
     """
     Create FAM user_role_xref association.
@@ -29,7 +30,7 @@ def create_user_role_assignment(
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
 
     create_data = crud_user_role.create_user_role(
-        db, role_assignment_request
+        db, role_assignment_request, requester
     )
     LOGGER.debug(
         "User/Role assignment executed successfully, "
@@ -41,7 +42,8 @@ def create_user_role_assignment(
 @router.delete(
     "/{user_role_xref_id}",
     status_code=HTTPStatus.NO_CONTENT,
-    response_class=Response
+    response_class=Response,
+    dependencies=[Depends(jwt_validation.get_request_username)]
 )
 def delete_user_role_assignment(
     user_role_xref_id: int,
