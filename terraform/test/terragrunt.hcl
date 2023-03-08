@@ -20,7 +20,6 @@ generate "test_tfvars" {
   front_end_redirect_path = "https://fam-tst.nrs.gov.bc.ca"
   fam_callback_urls = [
     "https://fam-tst.nrs.gov.bc.ca/authCallback",
-    "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
