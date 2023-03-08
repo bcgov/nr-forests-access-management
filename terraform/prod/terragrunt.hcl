@@ -28,7 +28,7 @@ generate "prod_tfvars" {
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://fam.nrs.gov.bc.ca",
+    "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://fam.nrs.gov.bc.ca",
   ]
   fam_console_idp_name = "PROD-IDIR"
 EOF
