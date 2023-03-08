@@ -142,6 +142,11 @@ variable "db_cluster_snapshot_identifier" {
 
 # Variables for front-end config
 
+variable "frontend_logout_chain_url" {
+  description = "Url of Siteminder and Keycloak logout chain for frontend"
+  type = string
+}
+
 variable "front_end_redirect_path" {
   description = "Path to public FAM front-end (for redirect URI)"
   type = string
@@ -151,6 +156,16 @@ variable "api_gateway_stage_name" {
   description = "Stage name for the REST API in API Gateway (appears in URI)"
   type = string
   default = "v1"
+}
+
+variable "fam_callback_urls" {
+  description = "Callback urls for Cognito login redirect for FAM"
+  type = list
+}
+
+variable "fam_logout_urls" {
+  description = "Log urls for Cognito logout redirect for FAM"
+  type = list
 }
 
 variable "fam_console_idp_name" {

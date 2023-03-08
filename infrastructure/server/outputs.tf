@@ -25,6 +25,11 @@ output "fam_cognito_domain" {
   value       = aws_cognito_user_pool_domain.main.domain
 }
 
+output "frontend_logout_chain_url" {
+  description = "Url of Siteminder and Keycloak logout chain for frontend"
+  value = var.frontend_logout_chain_url
+}
+
 output "front_end_redirect_base_url" {
   description = "Frontend CloudFront base url"
   value = var.front_end_redirect_path
