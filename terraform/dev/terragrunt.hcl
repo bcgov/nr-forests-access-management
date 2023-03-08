@@ -24,7 +24,7 @@ generate "dev_tfvars" {
   front_end_redirect_path = "https://fam-dev.nrs.gov.bc.ca"
   local_frontend_redirect_path = "http://localhost:5173"
   fam_callback_urls = [
-    "${front_end_redirect_path}/authCallback",
+    "https://fam-dev.nrs.gov.bc.ca/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
