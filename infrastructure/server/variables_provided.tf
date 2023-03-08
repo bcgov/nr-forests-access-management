@@ -158,6 +158,16 @@ variable "api_gateway_stage_name" {
   default = "v1"
 }
 
+variable "fam_callback_urls" {
+  description = "Callback urls for Cognito login redirect for FAM"
+  type = list
+}
+
+variable "fam_logout_urls" {
+  description = "Log urls for Cognito logout redirect for FAM"
+  type = list
+}
+
 variable "fam_console_idp_name" {
   description = "Identifies which version of IDIR to use (DEV, TEST, or PROD)"
   type = string
