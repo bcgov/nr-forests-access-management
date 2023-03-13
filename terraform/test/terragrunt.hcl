@@ -16,7 +16,18 @@ generate "test_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Test_aza_net"
   subnet_app_b = "App_Test_azb_net"
+  frontend_logout_chain_url = "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
   front_end_redirect_path = "https://fam-tst.nrs.gov.bc.ca"
+  fam_callback_urls = [
+    "https://fam-tst.nrs.gov.bc.ca/authCallback",
+    "http://localhost:5173/authCallback",
+    "http://localhost:8000/docs/oauth2-redirect",
+    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
+  ]
+  fam_logout_urls = [
+    "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://fam-tst.nrs.gov.bc.ca",
+    "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=http://localhost:5173"
+  ]
   fam_console_idp_name = "TEST-IDIR"
 EOF
 }

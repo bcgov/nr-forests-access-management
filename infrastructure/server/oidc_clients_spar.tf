@@ -1,20 +1,22 @@
-resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
+resource "aws_cognito_user_pool_client" "dev_spar_oidc_client" {
   access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
-    "http://localhost:4200/admin/search"
+    "http://localhost:3000/dashboard",
+    "http://localhost:3000/silent-check-sso"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}http://localhost:4200/admin/not-authorized?loggedout=true"
+    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "http://localhost:3000/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
   id_token_validity                             = "60"
-  name                                          = "fom_dev"
+  name                                          = "spar_dev"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"
@@ -33,24 +35,23 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   write_attributes = "${concat(var.minimum_write_list, ["custom:idp_display_name"])}"
 }
 
-resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
+resource "aws_cognito_user_pool_client" "test_spar_oidc_client" {
   access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
-    "https://fom-test.nrs.gov.bc.ca/admin/search",
-    "http://localhost:4200/admin/search"
+    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
   id_token_validity                             = "60"
-  name                                          = "fom_test"
+  name                                          = "spar_test"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"
@@ -69,22 +70,22 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   write_attributes = "${concat(var.minimum_write_list, ["custom:idp_display_name"])}"
 }
 
-resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
+resource "aws_cognito_user_pool_client" "prod_spar_oidc_client" {
   access_token_validity                         = "5"
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://fom.nrs.gov.bc.ca/admin/search",
+    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
   id_token_validity                             = "60"
-  name                                          = "fom_prod"
+  name                                          = "spar_prod"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = "${concat(var.minimum_read_list, ["custom:idp_display_name"])}"
   refresh_token_validity                        = "24"

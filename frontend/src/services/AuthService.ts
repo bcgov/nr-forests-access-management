@@ -47,7 +47,6 @@ async function logout() {
     Auth.signOut();
     removeFamUser();
     console.log('User logged out.');
-    router.push('/');
 }
 
 async function handlePostLogin() {
