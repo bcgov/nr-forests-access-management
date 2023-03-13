@@ -71,14 +71,14 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id
 )
 
-origins = [
+allow_origins = [
     "*",
     "http://127.0.0.1:5432"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=allow_origins,
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
