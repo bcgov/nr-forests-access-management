@@ -1,0 +1,27 @@
+{
+    "flywayRequest": {
+        "flywayMethod": "MIGRATE",
+        "placeholders": {
+            "api_db_username": "fam_proxy_api",
+            "api_db_password": "notused123",
+            "client_id_fam_console": "notused123",
+            "client_id_fom_public": "notused123",
+            "client_id_fom_ministry": "notused123",
+            "client_id_dev_fom_oidc_client": "notused123",
+            "client_id_test_fom_oidc_client": "notused123",
+            "client_id_prod_fom_oidc_client": "notused123",
+            "client_id_dev_spar_oidc_client": "notused123",
+            "client_id_test_spar_oidc_client": "notused123",
+            "client_id_prod_spar_oidc_client": "notused123"
+        },
+        "target": "latest"
+    },
+    "dbRequest": {
+        "connectionString": "jdbc:postgresql://dev-fam-cluster.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
+    },
+    "gitRequest": {
+        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
+        "gitBranch": "main",
+        "folders": "server/flyway/sql"
+    }
+}
