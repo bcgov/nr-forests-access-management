@@ -154,8 +154,6 @@ resource "aws_s3_bucket_object" "sql_files" {
   source = "${local.src_dir}/${each.value}"
   etag = filemd5("${local.src_dir}/${each.value}")
   content_type = "text/txt"
-
-  count = var.execute_flyway ? 1 : 0
 }
 
 # Everything below here is for invoking flyway.
