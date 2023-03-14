@@ -12,6 +12,10 @@ def get_env_var(env_var_name):
     return os.environ.get(env_var_name)
 
 
+def is_on_aws():
+    return os.environ.get("DB_SECRET") is not None  # This key only presents on aws.
+
+
 def get_db_string():
     """ retrieves a database connection string for a variety of different
     environments including:
@@ -19,8 +23,7 @@ def get_db_string():
     * deployed app using amazon rds
 
     """
-    on_aws = os.environ.get("DB_SECRET")  # This key only presents on aws.
-    db_conn_string = get_aws_db_string() if on_aws \
+    db_conn_string = get_aws_db_string() if is_on_aws() \
         else get_local_db_string()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
@@ -134,3 +137,10 @@ def get_oidc_client_id():
         _client_id = os.environ.get("COGNITO_CLIENT_ID")
 
     return _client_id
+
+
+def get_allow_origins():
+    allow_origins = "*"
+    if is_on_aws():
+        allow_origins = get_env_var("ALLOW_ORIGINS")
+    return allow_origins
