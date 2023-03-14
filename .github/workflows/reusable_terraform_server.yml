@@ -94,6 +94,10 @@ jobs:
           path: ./infrastructure/server/fam-ui-api.zip
           if-no-files-found: error
 
+      - name: Stage Flyway SQL files
+        run: |
+          mkdir infrastructure/server/sql
+          rsync -r server/flyway/sql/* infrastructure/server/sql
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2

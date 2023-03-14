@@ -31,7 +31,7 @@ resource "random_pet" "flyway_lambda_name" {
   length = 2
 }
 
-# IAM role to allow lambda to run and access secret
+# IAM role to allow lambda to run, access secret, and access sql from s3
 
 resource "aws_iam_role_policy" "flyway_access_policy" {
   name   = "${random_pet.flyway_lambda_name.id}-access-policy"
@@ -47,6 +47,13 @@ resource "aws_iam_role_policy" "flyway_access_policy" {
           "secretsmanager:GetSecretValue"
         ],
         "Resource": "${data.aws_secretsmanager_secret.db_flyway_master_creds.arn}"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject"
+        ],
+        "Resource": ["arn:aws:s3:::${aws_s3_bucket.flyway_scripts.arn}/*"]
       },
       {
         "Effect": "Allow",
@@ -118,6 +125,48 @@ resource "aws_lambda_function" "flyway-migrations" {
   }
 }
 
+# This section writes the flyway scripts to an S3 bucket
+
+resource "aws_s3_bucket" "flyway_scripts" {
+  bucket = "flyway-scripts"
+}
+
+data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
+  statement {
+    actions = ["s3:GetObject"]
+    principals {
+      type        = "AWS"
+      identifiers = ["${aws_lambda_function.flyway-migrations.iam_arn}"]
+    }
+    resources = ["${aws_s3_bucket.flyway_scripts.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
+  bucket = aws_s3_bucket.flyway_scripts.id
+  policy = data.aws_iam_policy_document.flyway_scripts_policy_doc.json
+}
+
+locals {
+  src_dir = "./sql/"
+  files_raw = fileset(local.src_dir, "**")
+  files = toset([
+    for sqlFile in local.files_raw:
+      sqlFile if sqlFile != ".terragrunt-source-manifest" && sqlFile != "assets/.terragrunt-source-manifest"
+  ])
+}
+
+resource "aws_s3_bucket_object" "sql_files" {
+  for_each = local.files
+
+  # Create an object from each
+  bucket = aws_s3_bucket.flyway_scripts.id
+  key    = each.value
+  source = "${local.src_dir}/${each.value}"
+  etag = filemd5("${local.src_dir}/${each.value}")
+  content_type = "text/txt"
+}
+
 # Everything below here is for invoking flyway.
 
 resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
@@ -148,10 +197,7 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_fom_ministry" : "nolongerinuse2",
           "client_id_dev_fom_oidc_client" : "${aws_cognito_user_pool_client.dev_fom_oidc_client.id}",
           "client_id_test_fom_oidc_client" : "${aws_cognito_user_pool_client.test_fom_oidc_client.id}",
-          "client_id_prod_fom_oidc_client" : "${aws_cognito_user_pool_client.prod_fom_oidc_client.id}",
-          "client_id_dev_spar_oidc_client" : "${aws_cognito_user_pool_client.dev_spar_oidc_client.id}",
-          "client_id_test_spar_oidc_client" : "${aws_cognito_user_pool_client.test_spar_oidc_client.id}",
-          "client_id_prod_spar_oidc_client" : "${aws_cognito_user_pool_client.prod_spar_oidc_client.id}"
+          "client_id_prod_fom_oidc_client" : "${aws_cognito_user_pool_client.prod_fom_oidc_client.id}"
         },
         "target": "latest"
     },
