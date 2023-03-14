@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
 }
 
 resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
-  bucket = aws_s3_bucket.flyway_scripts.id
+  bucket = aws_s3_bucket.flyway_scripts.bucket
   policy = data.aws_iam_policy_document.flyway_scripts_policy_doc.json
 }
 

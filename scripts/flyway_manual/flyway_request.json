@@ -19,9 +19,7 @@
     "dbRequest": {
         "connectionString": "jdbc:postgresql://dev-fam-cluster.cluster-cp9oqzf51oiq.ca-central-1.rds.amazonaws.com/famdb"
     },
-    "gitRequest": {
-        "gitRepository": "https://github.com/bcgov/nr-forests-access-management",
-        "gitBranch": "main",
-        "folders": "server/flyway/sql"
+    "s3Request": {
+        "bucket": "flyway-scripts"
     }
 }
