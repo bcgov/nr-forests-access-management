@@ -53,7 +53,7 @@ resource "aws_iam_role_policy" "flyway_access_policy" {
         "Action": [
           "s3:GetObject"
         ],
-        "Resource": ["arn:aws:s3:::${aws_s3_bucket.flyway_scripts.arn}/*"]
+        "Resource": ["${aws_s3_bucket.flyway_scripts.arn}/*"]
       },
       {
         "Effect": "Allow",
