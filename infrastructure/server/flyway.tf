@@ -51,9 +51,14 @@ resource "aws_iam_role_policy" "flyway_access_policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:GetObjectAcl",
+          "s3:ListBucket"
         ],
-        "Resource": ["${aws_s3_bucket.flyway_scripts.arn}/*"]
+        "Resource": [
+          "${aws_s3_bucket.flyway_scripts.arn}",
+          "${aws_s3_bucket.flyway_scripts.arn}/*"
+        ]
       },
       {
         "Effect": "Allow",
@@ -131,21 +136,21 @@ resource "aws_s3_bucket" "flyway_scripts" {
   bucket = "flyway-scripts"
 }
 
-data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
-  statement {
-    actions = ["s3:GetObject"]
-    principals {
-      type        = "AWS"
-      identifiers = ["${aws_lambda_function.flyway-migrations.arn}"]
-    }
-    resources = ["${aws_s3_bucket.flyway_scripts.arn}/*"]
-  }
-}
+# data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
+#   statement {
+#     actions = ["s3:GetObject"]
+#     principals {
+#       type        = "AWS"
+#       identifiers = ["${aws_lambda_function.flyway-migrations.arn}"]
+#     }
+#     resources = ["${aws_s3_bucket.flyway_scripts.arn}/*"]
+#   }
+# }
 
-resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
-  bucket = aws_s3_bucket.flyway_scripts.id
-  policy = data.aws_iam_policy_document.flyway_scripts_policy_doc.json
-}
+# resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
+#   bucket = aws_s3_bucket.flyway_scripts.id
+#   policy = data.aws_iam_policy_document.flyway_scripts_policy_doc.json
+# }
 
 locals {
   src_dir = "./sql/"
