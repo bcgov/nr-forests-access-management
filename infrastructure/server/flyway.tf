@@ -136,7 +136,7 @@ data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
     actions = ["s3:GetObject"]
     principals {
       type        = "AWS"
-      identifiers = ["${aws_lambda_function.flyway-migrations.iam_arn}"]
+      identifiers = ["${aws_lambda_function.flyway-migrations.arn}"]
     }
     resources = ["${aws_s3_bucket.flyway_scripts.arn}/*"]
   }
