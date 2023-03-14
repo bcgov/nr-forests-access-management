@@ -116,11 +116,9 @@ jobs:
         run: |
           # calculate the db_cluster_snapshot_identifier, attempting to ensure it
           # is less than 63 characters.
-          refname=${{ github.ref_name:0:12 }}
-          echo $refname
-          commit=${{ github.sha:0:7 }}
-          echo $commit
-          db_cluster_snapshot_identifier="pre-flyway-${{ refname }}-${{ commit }}"
+          refname=${{ github.ref_name }}
+          commit=${{ github.sha }}
+          db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
           echo $db_cluster_snapshot_identifier
 
           # remove non alphanumeric characters
