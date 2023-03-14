@@ -112,6 +112,10 @@ resource "aws_lambda_function" "fam-api-function" {
   # We have seen transactions taking 7+ seconds in dev.
   timeout = 15
 
+  locals {
+    is_production = var.target_env == "prod"
+  }
+
   environment {
 
     variables = {
@@ -126,6 +130,9 @@ resource "aws_lambda_function" "fam-api-function" {
 
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
       # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
+
+      IS_PRODUCTION = local.is_production
+      ALLOW_ORIGINS = compact(["${var.front_end_redirect_path}", local.is_production? "": "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca"])
     }
 
   }
