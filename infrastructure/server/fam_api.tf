@@ -84,6 +84,10 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
 
+locals {
+  is_production = var.target_env == "prod"
+}
+
 # Had to move COGNITO_CLIENT_ID out of ENV and into an AWS Secret because of a
 # cycle dependency in the build. That's why it's not here. You still need it
 # when running local or in docker.
@@ -111,10 +115,6 @@ resource "aws_lambda_function" "fam-api-function" {
   # Increase timeout to 15 seconds to avoid failures due to slow starts or slow queries.
   # We have seen transactions taking 7+ seconds in dev.
   timeout = 15
-
-  locals {
-    is_production = var.target_env == "prod"
-  }
 
   environment {
 
