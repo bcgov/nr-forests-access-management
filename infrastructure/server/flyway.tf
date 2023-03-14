@@ -136,22 +136,6 @@ resource "aws_s3_bucket" "flyway_scripts" {
   bucket = "flyway-scripts"
 }
 
-# data "aws_iam_policy_document" "flyway_scripts_policy_doc" {
-#   statement {
-#     actions = ["s3:GetObject"]
-#     principals {
-#       type        = "AWS"
-#       identifiers = ["${aws_lambda_function.flyway-migrations.arn}"]
-#     }
-#     resources = ["${aws_s3_bucket.flyway_scripts.arn}/*"]
-#   }
-# }
-
-# resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
-#   bucket = aws_s3_bucket.flyway_scripts.id
-#   policy = data.aws_iam_policy_document.flyway_scripts_policy_doc.json
-# }
-
 locals {
   src_dir = "./sql/"
   files_raw = fileset(local.src_dir, "**")
@@ -170,6 +154,8 @@ resource "aws_s3_bucket_object" "sql_files" {
   source = "${local.src_dir}/${each.value}"
   etag = filemd5("${local.src_dir}/${each.value}")
   content_type = "text/txt"
+
+  count = var.execute_flyway ? 1 : 0
 }
 
 # Everything below here is for invoking flyway.
@@ -209,10 +195,8 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     "dbRequest": {
         "connectionString": "jdbc:postgresql://${data.aws_rds_cluster.flyway_database.endpoint}/${data.aws_rds_cluster.flyway_database.database_name}"
     },
-    "gitRequest": {
-        "gitRepository": "${var.github_repository}",
-        "gitBranch": "${var.github_branch}",
-        "folders": "server/flyway/sql"
+    "s3Request": {
+        "bucket": "${aws_s3_bucket.flyway_scripts.bucket}"
     }
   }
   JSON
@@ -226,6 +210,7 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     aws_cognito_user_pool_client.dev_spar_oidc_client,
     aws_cognito_user_pool_client.test_spar_oidc_client,
     aws_cognito_user_pool_client.prod_spar_oidc_client,
+    aws_s3_bucket_object.sql_files,
   ]
 
   count = var.execute_flyway ? 1 : 0

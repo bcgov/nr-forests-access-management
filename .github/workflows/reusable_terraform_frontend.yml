@@ -58,10 +58,6 @@ jobs:
         run: |
           # Run terraform
           cat > github.auto.tfvars <<EOF
-          github_repository = "NA"
-          github_branch = "NA"
-          github_commit = "NA"
-          github_event = "NA"
           oidc_idir_idp_client_secret = "NA"
           oidc_bceid_business_idp_client_secret = "NA"
           db_cluster_snapshot_identifier = "NA"

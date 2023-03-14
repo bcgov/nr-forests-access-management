@@ -13,24 +13,6 @@ variable "famdb_cluster_name" {
   type        = string
 }
 
-# Variables for flyway invocation
-
-variable "github_repository" {
-  type = string
-}
-
-variable "github_branch" {
-  type = string
-}
-
-variable "github_commit" {
-  type = string
-}
-
-variable "github_event" {
-  type = string
-}
-
 # OIDC issuers at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_issuer" {
