@@ -132,7 +132,7 @@ resource "aws_lambda_function" "fam-api-function" {
       # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
 
       IS_PRODUCTION = local.is_production
-      ALLOW_ORIGINS = compact(["${var.front_end_redirect_path}", local.is_production? "": "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca"])
+      ALLOW_ORIGINS = join(",", compact(["${var.front_end_redirect_path}", local.is_production? "": "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca"]))
     }
 
   }
