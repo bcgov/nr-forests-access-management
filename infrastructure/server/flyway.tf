@@ -220,7 +220,7 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     aws_cognito_user_pool_client.dev_spar_oidc_client,
     aws_cognito_user_pool_client.test_spar_oidc_client,
     aws_cognito_user_pool_client.prod_spar_oidc_client,
-    aws_s3_bucket_object.sql_files,
+    aws_s3_object.sql_files,
   ]
 
   count = var.execute_flyway ? 1 : 0
