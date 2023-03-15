@@ -35,10 +35,6 @@ workspaces {
 # Create a github.auto.tfvars file
 
 ```
-github_branch = "<github branch>"
-github_commit = "<github commit>"
-github_repository = "nr-forests-access-management"
-github_event = "push"
 organization = "bcgov"
 oidc_idir_dev_idp_client_id = "dummy"
 oidc_idir_dev_idp_client_secret = "dummy"
