@@ -136,6 +136,32 @@ resource "aws_s3_bucket" "flyway_scripts" {
   bucket = "flyway-scripts"
 }
 
+resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
+  bucket = aws_s3_bucket.flyway_scripts.bucket
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "flyway_scripts_policy"
+    Statement = [
+      {
+        Sid       = "HTTPSOnly"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.mycompliantbucket.arn,
+          "${aws_s3_bucket.flyway_scripts.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
+}
+
 locals {
   src_dir = "./sql/"
   files_raw = fileset(local.src_dir, "**")
