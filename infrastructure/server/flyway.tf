@@ -132,8 +132,13 @@ resource "aws_lambda_function" "flyway-migrations" {
 
 # This section writes the flyway scripts to an S3 bucket
 
+resource "random_pet" "flyway_scripts_bucket_name" {
+  prefix = "flyway-scripts"
+  length = 2
+}
+
 resource "aws_s3_bucket" "flyway_scripts" {
-  bucket = "flyway-scripts"
+  bucket = random_pet.flyway_scripts_bucket_name.id
 }
 
 resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
