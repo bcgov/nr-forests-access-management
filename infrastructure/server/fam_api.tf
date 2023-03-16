@@ -84,10 +84,6 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
 
-locals {
-  is_dev = var.target_env == "dev"
-}
-
 # Had to move COGNITO_CLIENT_ID out of ENV and into an AWS Secret because of a
 # cycle dependency in the build. That's why it's not here. You still need it
 # when running local or in docker.
@@ -131,7 +127,7 @@ resource "aws_lambda_function" "fam-api-function" {
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
       # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
 
-      ALLOW_ORIGIN = local.is_dev? "*" : "${var.front_end_redirect_path}"
+      ALLOW_ORIGIN = "${var.front_end_redirect_path}"
     }
 
   }
