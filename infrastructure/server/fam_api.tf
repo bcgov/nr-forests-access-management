@@ -85,7 +85,7 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
 }
 
 locals {
-  is_production = var.target_env == "prod"
+  is_dev = var.target_env == "dev"
 }
 
 # Had to move COGNITO_CLIENT_ID out of ENV and into an AWS Secret because of a
@@ -131,8 +131,7 @@ resource "aws_lambda_function" "fam-api-function" {
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
       # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
 
-      IS_PRODUCTION = local.is_production
-      ALLOW_ORIGINS = join(",", compact(["${var.front_end_redirect_path}", local.is_production? "": "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca"]))
+      ALLOW_ORIGIN = local.is_dev? "*" : "${var.front_end_redirect_path}"
     }
 
   }

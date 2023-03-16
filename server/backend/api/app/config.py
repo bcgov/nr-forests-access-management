@@ -140,8 +140,6 @@ def get_oidc_client_id():
 
 
 def get_allow_origins():
-    allow_origins = ["*"]
-    if is_on_aws():
-        allow_origins = get_env_var("ALLOW_ORIGINS").split(",")
+    allow_origins = [get_env_var("ALLOW_ORIGIN")] if is_on_aws() else ["*"]
     LOGGER.info(f"allow_origins -- {allow_origins}")
     return allow_origins
