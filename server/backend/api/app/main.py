@@ -16,7 +16,7 @@ from mangum import Mangum
 
 from .jwt_validation import init_jwks
 
-from .config import get_root_path
+from .config import get_allow_origins, get_root_path
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -71,14 +71,9 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id
 )
 
-origins = [
-    "*",
-    "http://127.0.0.1:5432"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=get_allow_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
