@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.0](https://github.com/bcgov/nr-forests-access-management/compare/v0.1.0...v1.0.0) (2023-03-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* #485 remove unused script ([#509](https://github.com/bcgov/nr-forests-access-management/issues/509))
+
+### Miscellaneous
+
+* [#485](https://github.com/bcgov/nr-forests-access-management/issues/485) expand release please types ([d807b1a](https://github.com/bcgov/nr-forests-access-management/commit/d807b1abfc10ae063fb6842fdcb5d6390a2440e6))
+* [#485](https://github.com/bcgov/nr-forests-access-management/issues/485) fix release-please syntax ([1766a70](https://github.com/bcgov/nr-forests-access-management/commit/1766a7005985c2e3d13ffb2dde978d499eac3328))
+* [#485](https://github.com/bcgov/nr-forests-access-management/issues/485) remove unused script ([#509](https://github.com/bcgov/nr-forests-access-management/issues/509)) ([ca792e9](https://github.com/bcgov/nr-forests-access-management/commit/ca792e9da5c2685c2ccca5ee020a1584f276cea9))
+* another repair to release-please syntax ([cfd1957](https://github.com/bcgov/nr-forests-access-management/commit/cfd1957cdb8b7af75a0e10893d0fe06e0243a220))
+
 ## [0.1.0](https://github.com/bcgov/nr-forests-access-management/compare/v0.0.3...v0.1.0) (2023-03-18)
 
 
