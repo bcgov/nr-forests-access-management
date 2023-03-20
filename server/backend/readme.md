@@ -116,6 +116,9 @@ Potential gotchas:
 
 * `server/backend/pytest.ini` includes some default env values. These are not actually used (confirm), but need to be provided with some value for the code to run in test mode.
 
+* Currently existing tests are under transition to use postgres than sqllite. So locally, when runn tests for only 'testpg', use command:
+`pytest --ignore tests` or `pytest --ignore testspg`
+
 ## Run tests from VS Code
 
 Some developers run tests from VS Code. This author (Conrad) has never gotten the VS Code configuration correct, so YMMV. Notes from previous developer (please fix if you verify that it works for you!). If it's working, you can go to the "Testing" icon on the VS Code menu (looks like a test tube) and VS Code should discover all the tests for you.
