@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
 
 // The application selected by the user to admin
-export const selectedApplication = ref<FamApplication>();
+export const selectedApplication = ref<FamApplication | null>();
 
 export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
