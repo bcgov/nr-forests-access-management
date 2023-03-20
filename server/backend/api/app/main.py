@@ -16,7 +16,7 @@ from mangum import Mangum
 
 from .jwt_validation import init_jwks
 
-from .config import get_allow_origins, get_root_path
+from api.config.config import get_allow_origins, get_root_path
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
