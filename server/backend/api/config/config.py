@@ -143,3 +143,13 @@ def get_allow_origins():
     allow_origins = [get_env_var("ALLOW_ORIGIN")] if is_on_aws() else ["*"]
     LOGGER.info(f"allow_origins -- {allow_origins}")
     return allow_origins
+
+
+def get_forest_client_api_token():
+    # TODO Where to store the api token?
+    return "MY_SECRET_TOKEN"
+
+
+def get_forest_client_api_baseurl():
+    # TODO Add this to env?
+    return "https://nr-forest-client-api-test.api.gov.bc.ca/api"
