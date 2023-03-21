@@ -170,17 +170,8 @@ class FamApplicationRole(FamRoleCreate):
         fields = {"create_user": {"exclude": True}}
 
 
-class FamForestClientGet(FamForestClientCreate):
-    update_user: Union[str, None]
-    create_date: Union[datetime, None]
-    update_date: Union[datetime, None]
-
-    class Config:
-        orm_mode = True
-
-
 class FamForestClient(BaseModel):
-    #client_name: str
+    client_name: Optional[str]
     forest_client_number: str
 
     class Config:

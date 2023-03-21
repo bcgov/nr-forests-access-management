@@ -1,22 +1,16 @@
 import logging.config
 import os.path
 
-from fastapi import APIRouter, FastAPI
+from api.app import jwt_validation
+from api.config.config import get_allow_origins, get_root_path
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from starlette.responses import RedirectResponse
 
-from .routers import \
-    router_application, \
-    router_user_role_assignment, \
-    router_role, \
-    router_user
-
-
-from mangum import Mangum
-
 from .jwt_validation import init_jwks
-
-from api.config.config import get_allow_origins, get_root_path
+from .routers import (router_application, router_forest_client, router_role,
+                      router_user, router_user_role_assignment)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -92,6 +86,10 @@ app.include_router(router_application.router,
 app.include_router(router_user_role_assignment.router,
                    prefix=apiPrefix + '/user_role_assignment',
                    tags=["FAM User Role Assignment"])
+app.include_router(router_forest_client.router,
+                   prefix=apiPrefix + '/forest_clients',
+                   dependencies=[Depends(jwt_validation.authorize)],
+                   tags=["FAM Forest Clients"])
 
 # These two routers are disabled for MVP
 

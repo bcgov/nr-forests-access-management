@@ -1,6 +1,5 @@
 import logging
 
-from api.app import constants as famConstants
 from api.app.models import model as models
 from sqlalchemy.orm import Session
 
@@ -58,3 +57,8 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
 
     LOGGER.debug(f"Forest_Client {fam_forest_client.client_number_id} found.")
     return fam_forest_client
+
+
+def search(db: Session, p_client_number: str):
+    LOGGER.debug(f"Forest Client - 'search' with parameter: {p_client_number}.")
+    pass
