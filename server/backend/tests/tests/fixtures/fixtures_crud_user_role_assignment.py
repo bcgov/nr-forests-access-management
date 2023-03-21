@@ -77,29 +77,30 @@ def dbsession_user_role_assignment(
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_application(dbsession_fam_app_environment):
+def dbsession_fom_dev_application(dbsession_fam_app_environment):
     db = dbsession_fam_app_environment
-    fam_application = model.FamApplication(
+    fom_dev_application = model.FamApplication(
         **{
             "application_name": "FOM",
             "application_description": "Forest Operations Map",
             "create_user": famConstants.FAM_PROXY_API_USER,
+            "app_environment": famConstants.AppEnv.APP_ENV_TYPE_DEV
         }
     )
-    db.add(fam_application)
+    db.add(fom_dev_application)
     db.commit()
     yield db
 
-    db.delete(fam_application)
+    db.delete(fom_dev_application)
     db.commit()
 
 
 @pytest.fixture(scope="function")
 def dbsession_FOM_submitter_role(  # noqa NOSONAR
-    dbsession_role_types, dbsession_fam_application
+    dbsession_role_types, dbsession_fom_dev_application
 ):
-    db = dbsession_fam_application
-    fam_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
+    db: session.Session = dbsession_fom_dev_application
+    fom_dev_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
     fom_submitter_role = model.FamRole(
@@ -107,7 +108,7 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
             "role_name": FOM_SUBMITTER_ROLE_NAME,
             "role_purpose": "Grant a user access to submit to FOM",
             "create_user": famConstants.FAM_PROXY_API_USER,
-            "application_id": fam_application.application_id,
+            "application_id": fom_dev_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
         }
     )
@@ -127,8 +128,8 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
 
 
 @pytest.fixture(scope="function")
-def dbsession_concrete_role(dbsession_role_types, dbsession_fam_application):
-    db = dbsession_fam_application
+def dbsession_concrete_role(dbsession_role_types, dbsession_fom_dev_application):
+    db = dbsession_fom_dev_application
     fam_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
