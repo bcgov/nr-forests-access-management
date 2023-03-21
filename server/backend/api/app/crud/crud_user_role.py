@@ -73,7 +73,10 @@ def create_user_role(
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
         child_role = find_or_create_forest_client_child_role(
-            db, request.forest_client_number, fam_role, requester
+            db,
+            request.forest_client_number,
+            fam_role,
+            requester
         )
 
     # Role Id for associating with user
@@ -178,9 +181,10 @@ def find_or_create_forest_client_child_role(
         parent_role.role_name, forest_client_number
     )
     # Verify if Forest Client role (child role) exist
-    child_role = crud_role.get_role_by_role_name(
+    child_role = crud_role.get_role_by_role_name_and_app_id(
         db,
         forest_client_role_name,
+        parent_role.application_id
     )
     LOGGER.debug(
         "Forest Client child role for role_name "
