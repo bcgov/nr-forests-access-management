@@ -1,6 +1,6 @@
 [flake8]
 verbose
 ignore=E24,W504,W503
-max-line-length=88
+max-line-length=110
 per-file-ignores =
     backend/tests/conftest.py: E402
