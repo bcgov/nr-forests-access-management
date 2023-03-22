@@ -1,12 +1,13 @@
 import copy
 import logging
 
-import api.app.models.model as model
 import api.app.constants as constants
+import api.app.jwt_validation as jwt_validation
+import api.app.models.model as model
+import tests.jwt_utils as jwt_utils
+import tests.tests.test_constants as testConstants
 from api.app.main import apiPrefix
 from sqlmodel import Session
-import tests.jwt_utils as jwt_utils
-import api.app.jwt_validation as jwt_validation
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -198,20 +199,20 @@ def test_assign_same_application_roles_for_different_environments(
             model.FamApplication.app_environment == constants.AppEnv.APP_ENV_TYPE_TEST)
         .one()
     )
-    assert fom_dev_application.application_name == constants.FOM_APP_DEV_NAME
-    assert fom_test_application.application_name == constants.FOM_APP_TEST_NAME
+    assert fom_dev_application.application_name == testConstants.FOM_APP_DEV_NAME
+    assert fom_test_application.application_name == testConstants.FOM_APP_TEST_NAME
 
     fom_dev_submitter_role: model.FamRole = (
         db.query(model.FamRole)
         .filter(
-            model.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
+            model.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME,
             model.FamRole.application_id == fom_dev_application.application_id)
         .one()
     )
     fom_test_submitter_role: model.FamRole = (
         db.query(model.FamRole)
         .filter(
-            model.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
+            model.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME,
             model.FamRole.application_id == fom_test_application.application_id)
         .one()
     )

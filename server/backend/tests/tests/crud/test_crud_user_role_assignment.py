@@ -2,11 +2,12 @@ import copy
 import logging
 from typing import List
 
+import api.app.constants as constants
 import api.app.schemas as schemas
 import pytest
+import tests.tests.test_constants as testConstants
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
-import api.app.constants as constants
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy import bindparam, text
@@ -53,7 +54,7 @@ def test_role_not_exist_raise_exception(
 
     with pytest.raises(HTTPException) as e:
         assert crud_user_role.create_user_role(
-            db, user_role_assignment_model, constants.FAM_PROXY_API_USER
+            db, user_role_assignment_model, testConstants.FAM_PROXY_API_USER
         )
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Role id ") != -1
@@ -76,7 +77,7 @@ def test_user_role_assignment_with_abstract_role_raise_exception(
 
     fam_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify this role is 'abstract' first.
@@ -89,7 +90,7 @@ def test_user_role_assignment_with_abstract_role_raise_exception(
     del invalid_request.forest_client_number
 
     with pytest.raises(HTTPException) as e:
-        assert crud_user_role.create_user_role(db, invalid_request, constants.FAM_PROXY_API_USER)
+        assert crud_user_role.create_user_role(db, invalid_request, testConstants.FAM_PROXY_API_USER)
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
     assert str(e._excinfo).find("Cannot assign") != -1
     db.rollback()
@@ -107,19 +108,19 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter(  # NOSONAR
     )
     fom_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify parent role exist first.
     assert isinstance(fom_submitter_role, models.FamRole)
-    assert fom_submitter_role.role_name == constants.FOM_SUBMITTER_ROLE_NAME
+    assert fom_submitter_role.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME
     assert fom_submitter_role.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
     user_role_assignment_model.role_id = fom_submitter_role.role_id
 
     # User/Role assignment created.
     user_role_assignment = crud_user_role.create_user_role(
-        db, user_role_assignment_model, constants.FAM_PROXY_API_USER
+        db, user_role_assignment_model, testConstants.FAM_PROXY_API_USER
     )
 
     # Find child role
@@ -154,24 +155,24 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_raise
 
     fam_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify parent role exist first.
     assert isinstance(fam_submitter_role, models.FamRole)
-    assert fam_submitter_role.role_name == constants.FOM_SUBMITTER_ROLE_NAME
+    assert fam_submitter_role.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME
 
     user_role_assignment_model.role_id = fam_submitter_role.role_id
 
     # User/Role assignment created.
     user_role_assignment1 = crud_user_role.create_user_role(
-        db, user_role_assignment_model, constants.FAM_PROXY_API_USER
+        db, user_role_assignment_model, testConstants.FAM_PROXY_API_USER
     )
 
     # Call create twice with the same request.
     with pytest.raises(HTTPException) as e:
         crud_user_role.create_user_role(
-            db, user_role_assignment_model, constants.FAM_PROXY_API_USER
+            db, user_role_assignment_model, testConstants.FAM_PROXY_API_USER
         )
 
     LOGGER.debug(f"Expected exception raised: {str(e._excinfo)}")
@@ -241,14 +242,14 @@ def test_create_user_role_on_different_environments_with_same_role_name_should_p
     fom_dev_submitter_role: models.FamRole = (
         db.query(models.FamRole)
         .filter(
-            models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
+            models.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME,
             models.FamRole.application_id == fom_dev_application.application_id)
         .one()
     )
     fom_test_submitter_role: models.FamRole = (
         db.query(models.FamRole)
         .filter(
-            models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
+            models.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME,
             models.FamRole.application_id == fom_test_application.application_id)
         .one()
     )
@@ -269,7 +270,7 @@ def test_create_user_role_on_different_environments_with_same_role_name_should_p
         forest_client_number=forest_client_number)
     # User/Role assignment created - dev.
     user_role_assignment_dev = crud_user_role.create_user_role(
-        db, user_role_assignment_dev_model, constants.FAM_PROXY_API_USER
+        db, user_role_assignment_dev_model, testConstants.FAM_PROXY_API_USER
     )
 
     user_role_assignment_test_model = schemas.FamUserRoleAssignmentCreate(
@@ -279,7 +280,7 @@ def test_create_user_role_on_different_environments_with_same_role_name_should_p
         forest_client_number=forest_client_number)
     # User/Role assignment created - test.
     user_role_assignment_test = crud_user_role.create_user_role(
-        db, user_role_assignment_test_model, constants.FAM_PROXY_API_USER
+        db, user_role_assignment_test_model, testConstants.FAM_PROXY_API_USER
     )
 
     assert user_role_assignment_dev.role_id != user_role_assignment_test.role_id

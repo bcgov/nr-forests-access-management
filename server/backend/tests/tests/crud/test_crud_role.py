@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import session
 from api.app import constants
+import tests.tests.test_constants as testConstants
 
 import api.app.models.model as model
 import api.app.schemas as schemas
@@ -182,7 +183,7 @@ def test_can_create_roles_with_same_name_different_applications(
         "role_name": role.role_name,
         "role_purpose": "Role Purpose for Second Role",
         "application_id": application_2_db_item.application_id,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     })
     role_2 = crud_role.create_role(role=role_2_pydantic, db=db)
@@ -218,7 +219,7 @@ def test_get_role_by_role_name_and_app_id(
     ))[0]
 
     roles: List[model.FamRole] = db.query(model.FamRole).filter(
-        model.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME
+        model.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME
     ).all()
     assert len(roles) == 2
     dev_fom_submitter_role: model.FamRole = list(filter(
