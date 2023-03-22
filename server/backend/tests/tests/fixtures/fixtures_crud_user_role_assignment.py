@@ -10,8 +10,6 @@ from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
-FOM_SUBMITTER_ROLE_NAME = "FOM_Submitter"
-FOM_APP_DESC = "Forest Operations Map"
 
 @pytest.fixture(scope="function")
 def user_role_dict() -> Iterator[Dict[str, Union[str, int]]]:
@@ -82,7 +80,7 @@ def dbsession_fom_dev_application(dbsession_fam_app_environment):
     fom_dev_application = model.FamApplication(
         **{
             "application_name": "FOM",
-            "application_description": FOM_APP_DESC,
+            "application_description": famConstants.FOM_APP_DESC,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "app_environment": famConstants.AppEnv.APP_ENV_TYPE_DEV
         }
@@ -100,8 +98,8 @@ def dbsession_fom_dev_test_applications(dbsession_fam_app_environment):
     db = dbsession_fam_app_environment
     fom_dev_application = model.FamApplication(
         **{
-            "application_name": "fom_dev",
-            "application_description": FOM_APP_DESC,
+            "application_name": famConstants.FOM_APP_DEV_NAME,
+            "application_description": famConstants.FOM_APP_DESC,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "app_environment": famConstants.AppEnv.APP_ENV_TYPE_DEV
         }
@@ -110,8 +108,8 @@ def dbsession_fom_dev_test_applications(dbsession_fam_app_environment):
 
     fom_test_application = model.FamApplication(
         **{
-            "application_name": "fom_test",
-            "application_description": FOM_APP_DESC,
+            "application_name": famConstants.FOM_APP_TEST_NAME,
+            "application_description": famConstants.FOM_APP_DESC,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "app_environment": famConstants.AppEnv.APP_ENV_TYPE_TEST
         }
@@ -136,8 +134,8 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
     # add a role record to db
     fom_submitter_role = model.FamRole(
         **{
-            "role_name": FOM_SUBMITTER_ROLE_NAME,
-            "role_purpose": "Grant a user access to submit to FOM",
+            "role_name": famConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": famConstants.FOM_ROLE_PURPOSE,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": fom_dev_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
@@ -149,7 +147,7 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
 
     role_db_item = (
         db.query(model.FamRole)
-        .filter(model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .filter(model.FamRole.role_name == famConstants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
 
@@ -171,8 +169,8 @@ def dbsession_fom_submitter_role_dev_test(
     # add role records to db
     fom_dev_submitter_role = model.FamRole(
         **{
-            "role_name": FOM_SUBMITTER_ROLE_NAME,
-            "role_purpose": "Grant a user access to submit to FOM",
+            "role_name": famConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": famConstants.FOM_ROLE_PURPOSE,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": fom_dev_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
@@ -182,8 +180,8 @@ def dbsession_fom_submitter_role_dev_test(
 
     fom_test_submitter_role = model.FamRole(
         **{
-            "role_name": FOM_SUBMITTER_ROLE_NAME,
-            "role_purpose": "Grant a user access to submit to FOM",
+            "role_name": famConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": famConstants.FOM_ROLE_PURPOSE,
             "create_user": famConstants.FAM_PROXY_API_USER,
             "application_id": fom_test_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
@@ -195,7 +193,7 @@ def dbsession_fom_submitter_role_dev_test(
     yield db
 
     db.query(model.FamRole)\
-        .filter(model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)\
+        .filter(model.FamRole.role_name == famConstants.FOM_SUBMITTER_ROLE_NAME)\
         .delete()
     db.commit()
 

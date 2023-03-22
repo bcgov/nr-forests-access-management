@@ -1,5 +1,6 @@
 import logging
 import copy
+from typing import List
 import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import session
@@ -200,6 +201,54 @@ def test_can_create_roles_with_same_name_different_applications(
     roles = crud_role.get_roles(db)
     for role in roles:
         db.delete(role)
+
+
+def test_get_role_by_role_name_and_app_id(
+    dbsession_fom_submitter_role_dev_test: session.Session
+):
+    db = dbsession_fom_submitter_role_dev_test
+
+    applications: List[model.FamApplication] = db.query(model.FamApplication).all()
+    assert len(applications) == 2
+    dev_application: model.FamApplication = list(filter(
+        lambda x: (x.app_environment == constants.AppEnv.APP_ENV_TYPE_DEV), applications
+    ))[0]
+    test_application = list(filter(
+        lambda x: (x.app_environment == constants.AppEnv.APP_ENV_TYPE_TEST), applications
+    ))[0]
+
+    roles: List[model.FamRole] = db.query(model.FamRole).filter(
+        model.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME
+    ).all()
+    assert len(roles) == 2
+    dev_fom_submitter_role: model.FamRole = list(filter(
+        lambda x: (x.application_id == dev_application.application_id), roles
+    ))[0]
+    test_fom_submitter_role: model.FamRole = list(filter(
+        lambda x: (x.application_id == test_application.application_id), roles
+    ))[0]
+
+    role_dev = crud_role.get_role_by_role_name_and_app_id(
+        role_name=dev_fom_submitter_role.role_name,
+        application_id=dev_application.application_id,
+        db=db
+    )
+    assert role_dev.role_id == dev_fom_submitter_role.role_id
+
+    role_test = crud_role.get_role_by_role_name_and_app_id(
+        role_name=test_fom_submitter_role.role_name,
+        application_id=test_application.application_id,
+        db=db
+    )
+    assert role_test.role_id == test_fom_submitter_role.role_id
+
+    invalid_app_id = 999
+    none_role = crud_role.get_role_by_role_name_and_app_id(
+        role_name=test_fom_submitter_role.role_name,
+        application_id=invalid_app_id,
+        db=db
+    )
+    assert none_role is None
 
 
 def test_create_role_with_no_existing_parent_role_violate_constraint(

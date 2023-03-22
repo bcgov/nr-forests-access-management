@@ -12,7 +12,6 @@ from pydantic import ValidationError
 from sqlalchemy import bindparam, text
 from sqlalchemy.orm import session
 from sqlalchemy.orm.exc import NoResultFound
-from tests.fixtures.fixtures_crud_user_role_assignment import FOM_SUBMITTER_ROLE_NAME  # noqa
 
 LOGGER = logging.getLogger(__name__)
 
@@ -77,7 +76,7 @@ def test_user_role_assignment_with_abstract_role_raise_exception(
 
     fam_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify this role is 'abstract' first.
@@ -108,12 +107,12 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter(  # NOSONAR
     )
     fom_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify parent role exist first.
     assert isinstance(fom_submitter_role, models.FamRole)
-    assert fom_submitter_role.role_name == FOM_SUBMITTER_ROLE_NAME
+    assert fom_submitter_role.role_name == constants.FOM_SUBMITTER_ROLE_NAME
     assert fom_submitter_role.role_type_code == constants.RoleType.ROLE_TYPE_ABSTRACT
 
     user_role_assignment_model.role_id = fom_submitter_role.role_id
@@ -155,12 +154,12 @@ def test_create_user_role_assignment_for_forest_client_FOM_submitter_twice_raise
 
     fam_submitter_role = (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .filter(models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
     # Verify parent role exist first.
     assert isinstance(fam_submitter_role, models.FamRole)
-    assert fam_submitter_role.role_name == FOM_SUBMITTER_ROLE_NAME
+    assert fam_submitter_role.role_name == constants.FOM_SUBMITTER_ROLE_NAME
 
     user_role_assignment_model.role_id = fam_submitter_role.role_id
 
@@ -242,14 +241,14 @@ def test_create_user_role_on_different_environments_with_same_role_name_should_p
     fom_dev_submitter_role: models.FamRole = (
         db.query(models.FamRole)
         .filter(
-            models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME,
+            models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
             models.FamRole.application_id == fom_dev_application.application_id)
         .one()
     )
     fom_test_submitter_role: models.FamRole = (
         db.query(models.FamRole)
         .filter(
-            models.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME,
+            models.FamRole.role_name == constants.FOM_SUBMITTER_ROLE_NAME,
             models.FamRole.application_id == fom_test_application.application_id)
         .one()
     )
