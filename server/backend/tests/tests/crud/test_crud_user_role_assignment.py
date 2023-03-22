@@ -220,9 +220,9 @@ def test_given_invalid_id_when_delete_assignment_raise_exception(
 
 def test_create_user_role_on_different_environments_with_same_role_name_should_pass(
     dbsession_fam_user_types: session.Session,
-    dbsession_FOM_submitter_role_dev_test: session.Session
+    dbsession_fom_submitter_role_dev_test: session.Session
 ):
-    db = dbsession_FOM_submitter_role_dev_test
+    db = dbsession_fom_submitter_role_dev_test
     LOGGER.debug(
         "Creating forest client FOM Submitter user/role assignment in dev and test "
     )
