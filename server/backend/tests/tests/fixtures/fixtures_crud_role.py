@@ -2,13 +2,13 @@ import datetime
 import logging
 from typing import Dict, Iterator, List, Union
 
-import pytest
-import sqlalchemy.exc
-from sqlalchemy.orm import session
-
 import api.app.constants as constants
 import api.app.models.model as model
 import api.app.schemas as schemas
+import pytest
+import sqlalchemy.exc
+import tests.tests.test_constants as testConstants
+from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -122,7 +122,7 @@ def concrete_role_dict() -> Iterator[Dict[str, str]]:
         "role_name": "FAM_ADMIN",
         "role_purpose": "FAM Admin",
         "application_id": 99999,  # fake id, set it to test id in real testing code.
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }
     yield role_data
@@ -139,7 +139,7 @@ def concrete_role2_dict() -> Iterator[Dict[str, str]]:
     role_data = {
         "role_name": "FAM_TEST",
         "role_purpose": "FAM Testing",
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
     }
     yield role_data
@@ -156,7 +156,7 @@ def concrete_role_with_forest_client() -> Iterator[Dict[str, str]]:
     role_data = {
         "role_name": "FAM_TEST_FC",
         "role_purpose": "FAM Testing role with forest client",
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
         "forest_client_number": '00014903'
     }
@@ -176,7 +176,7 @@ def abstract_role_data() -> Iterator[Dict[str, str]]:
     role_data = {
         "role_name": "FAM_ABS_ROLE",
         "role_purpose": "FAM Testing abstract role",
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "role_type_code": constants.RoleType.ROLE_TYPE_ABSTRACT,
     }
     yield role_data
