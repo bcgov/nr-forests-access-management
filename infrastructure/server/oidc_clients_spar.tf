@@ -9,8 +9,8 @@ resource "aws_cognito_user_pool_client" "dev_spar_oidc_client" {
     "http://localhost:3000/silent-check-sso"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
-    "${var.frontend_logout_chain_url}http://localhost:3000/"
+    "${var.cognito_app_client_logout_chain_url.dev}https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -45,7 +45,7 @@ resource "aws_cognito_user_pool_client" "test_spar_oidc_client" {
     "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -79,7 +79,7 @@ resource "aws_cognito_user_pool_client" "prod_spar_oidc_client" {
     "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
