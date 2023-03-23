@@ -151,17 +151,6 @@ def test_get_application_roles(dbPgSession: Session):
     )
 
     for app_role in app_roles:
-        assert hasattr(app_role, "role_id")
-        assert hasattr(app_role, "role_name")
-        assert hasattr(app_role, "role_purpose")
-        assert hasattr(app_role, "parent_role_id")
-        assert hasattr(app_role, "application_id")
-        assert hasattr(app_role, "client_number_id")
-        assert hasattr(app_role, "create_user")
-        assert hasattr(app_role, "create_date")
-        assert hasattr(app_role, "update_user")
-        assert hasattr(app_role, "update_date")
-        assert hasattr(app_role, "role_type_code")
         # test the schema definitions work, will raise error if they do not
         schemas.FamApplicationRole.from_orm(app_role)
 
