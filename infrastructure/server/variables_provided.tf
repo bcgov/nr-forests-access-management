@@ -135,6 +135,7 @@ variable "cognito_app_client_logout_chain_url" {
 variable "frontend_logout_chain_url" {
   description = "Url of Siteminder and Keycloak logout chain for frontend"
   type = string
+  default = "${var.cognito_app_client_logout_chain_url.dev}"
 }
 
 variable "front_end_redirect_path" {
