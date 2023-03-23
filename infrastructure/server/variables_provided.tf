@@ -122,7 +122,15 @@ variable "db_cluster_snapshot_identifier" {
   }
 }
 
-# Variables for front-end config
+# Variables for Cognito Client config
+
+variable "cognito_app_client_logout_chain_url" {
+  description = "Url of Siteminder and Keycloak logout chain for Cognito client on all environments(dev, test, prod)"
+  type = map
+}
+
+
+# Variables for FAM front-end config
 
 variable "frontend_logout_chain_url" {
   description = "Url of Siteminder and Keycloak logout chain for frontend"

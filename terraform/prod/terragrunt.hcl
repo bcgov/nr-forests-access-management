@@ -2,6 +2,10 @@ include {
   path = find_in_parent_folders()
 }
 
+locals {
+  common_vars = read_terragrunt_config(find_in_parent_folders("common_vars.hcl"))
+}
+
 generate "prod_tfvars" {
   path              = "prod.auto.tfvars"
   if_exists         = "overwrite"
@@ -20,15 +24,19 @@ generate "prod_tfvars" {
   aws_security_group_app = "App_sg"
   subnet_app_a = "App_Prod_aza_net"
   subnet_app_b = "App_Prod_azb_net"
-  frontend_logout_chain_url = "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
   front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
   local_frontend_redirect_path = "http://localhost:5173"
+  cognito_app_client_logout_chain_url = {
+    dev = "${local.common_vars.idp_logout_chain_dev_url}"
+    test = "${local.common_vars.idp_logout_chain_test_url}"
+    prod = "${local.common_vars.idp_logout_chain_prod_url}"
+  }
   fam_callback_urls = [
     "https://fam.nrs.gov.bc.ca/authCallback",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://fam.nrs.gov.bc.ca",
+    "${local.common_vars.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",
   ]
   fam_console_idp_name = "PROD-IDIR"
 EOF
