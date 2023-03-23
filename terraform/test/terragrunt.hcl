@@ -21,9 +21,9 @@ generate "test_tfvars" {
   subnet_app_a = "App_Test_aza_net"
   subnet_app_b = "App_Test_azb_net"
   cognito_app_client_logout_chain_url = {
-    dev = "${local.common_vars.idp_logout_chain_dev_url}"
-    test = "${local.common_vars.idp_logout_chain_test_url}"
-    prod = "${local.common_vars.idp_logout_chain_prod_url}"
+    dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
+    test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
+    prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
   }
   front_end_redirect_path = "https://fam-tst.nrs.gov.bc.ca"
   fam_callback_urls = [
@@ -33,8 +33,8 @@ generate "test_tfvars" {
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "${local.common_vars.idp_logout_chain_test_url}https://fam-tst.nrs.gov.bc.ca",
-    "${local.common_vars.idp_logout_chain_test_url}http://localhost:5173"
+    "${local.common_vars.inputs.idp_logout_chain_test_url}https://fam-tst.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_test_url}http://localhost:5173"
   ]
   fam_console_idp_name = "TEST-IDIR"
 EOF

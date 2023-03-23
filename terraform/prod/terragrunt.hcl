@@ -27,16 +27,16 @@ generate "prod_tfvars" {
   front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
   local_frontend_redirect_path = "http://localhost:5173"
   cognito_app_client_logout_chain_url = {
-    dev = "${local.common_vars.idp_logout_chain_dev_url}"
-    test = "${local.common_vars.idp_logout_chain_test_url}"
-    prod = "${local.common_vars.idp_logout_chain_prod_url}"
+    dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
+    test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
+    prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
   }
   fam_callback_urls = [
     "https://fam.nrs.gov.bc.ca/authCallback",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "${local.common_vars.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",
   ]
   fam_console_idp_name = "PROD-IDIR"
 EOF
