@@ -67,7 +67,7 @@ def get_application(db: Session, application_id: int):
     application = (
         db.query(models.FamApplication)
         .filter(models.FamApplication.application_id == application_id)
-        .one()
+        .one_or_none()
     )
     return application
 
@@ -76,7 +76,7 @@ def get_application_by_name(db: Session, application_name: str):
     application = (
         db.query(models.FamApplication)
         .filter(models.FamApplication.application_name == application_name)
-        .one()
+        .one_or_none()
     )
     return application
 
@@ -189,6 +189,9 @@ def get_application_role_assignments(
 
 
 def get_application_id_by_role_id(db: Session, role_id):
+    # question: why we need to go to fam_application table?
+    # the fam_role table has the application_id already
+
     application_id =\
         db.query(models.FamApplication.application_id)\
         .join(models.FamRole)\

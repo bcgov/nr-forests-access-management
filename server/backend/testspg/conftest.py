@@ -7,6 +7,7 @@ import testcontainers.compose
 from sqlalchemy.engine.base import Engine
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 
@@ -33,6 +34,7 @@ def dbPgContainer():
 @pytest.fixture(scope="session")
 def dbPgEngine() -> Engine:
     engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/fam")
+    engine.echo = False
     return engine
 
 
@@ -45,7 +47,7 @@ def dbPgConnection(dbPgContainer, dbPgEngine: Engine):
 
 
 @pytest.fixture(scope="function")
-def dbPgSession(dbPgConnection: sessionmaker) -> sessionmaker:
+def dbPgSession(dbPgConnection: Session) -> Session:
     return dbPgConnection
 
 
