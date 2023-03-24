@@ -51,10 +51,10 @@ values.
 
 ## Get the FAM_JWT token
 
--   Make sure you have the admin access to the application specified for "FOM_APP_NAME_IN_FAM" in the .env file
+-   Make sure you have the admin access to the application you specified for the "FOM_APP_NAME_IN_FAM" variable in the .env file
 -   Go to our api website, the url can be found through AWS API Gateway -> Stages -> v1 -> Invoke URL
 -   In our api website, click on the "Authorized" button, and then paste the client id (client id is the big bold string on the screen), then click "Authorize"
--   Click on the GET fam_applications api, and try to execute it. In the response section, there will be curl command with the Bearer token, that's token we used for "FAM_JWT" in the .env file
+-   Click on the GET fam_applications api, and try to execute it. In the response section, it shows the curl command with the Bearer token, that's the token we want to use for the "FAM_JWT" variable in the .env file. If you grant yourself any new access, make sure to re-generate the token so it can include the new roles
 
 ## Run the script
 
