@@ -46,8 +46,14 @@ class AuthorizationQuery(object):
 
     # testing: bool = False
     def __init__(self, event: event_type.Event) -> None:
-        self.user_type_code_dict = {"idir": "I", "bceidbusiness": "B"}
-        # self.testing = testing
+        self.user_type_code_dict = {
+            "idir": "I",
+            "bceidbusiness": "B",
+            "ca.bc.gov.flnr.fam.dev": "CD",
+            "ca.bc.gov.flnr.fam.test": "CT",
+            "ca.bc.gov.flnr.fam": "CP"
+        }
+
         self.event = event
         self.obtain_db_connection()
 
@@ -132,10 +138,13 @@ class AuthorizationQuery(object):
         user_type = self.event["request"]["userAttributes"]["custom:idp_name"]
         user_guid = self.event["request"]["userAttributes"]["custom:idp_user_id"]
         cognito_user_id = self.event["userName"]
-        user_name = self.event["request"]["userAttributes"]["custom:idp_username"]
 
-        user_type_code_dict = {"idir": "I", "bceidbusiness": "B"}
-        user_type_code = user_type_code_dict[user_type]
+        user_type_code = self.user_type_code_dict[user_type]
+
+        if user_type_code in ["CD", "CT", "CP"]:
+            user_name = user_guid
+        else:
+            user_name = self.event["request"]["userAttributes"]["custom:idp_username"]
 
         raw_query = """INSERT INTO app_fam.fam_user
             (user_type_code, user_guid, cognito_user_id, user_name,

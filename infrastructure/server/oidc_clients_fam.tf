@@ -11,7 +11,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = var.minimum_read_list
+  read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [ var.fam_console_idp_name ]
 
@@ -22,7 +22,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = var.minimum_write_list
+  write_attributes = var.minimum_oidc_attribute_list
 
   depends_on = [
     aws_cognito_identity_provider.dev_idir_oidc_provider,
