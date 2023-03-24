@@ -62,6 +62,7 @@ resource "aws_cognito_identity_provider" "prod_idir_oidc_provider" {
 
   attribute_mapping = {
     email                      = "email",
+    email_verified             = "email_verified",
     "custom:idp_name"          = "identity_provider",
     "custom:idp_user_id"       = "idir_user_guid",
     "custom:idp_username"      = "idir_username",
@@ -69,31 +70,4 @@ resource "aws_cognito_identity_provider" "prod_idir_oidc_provider" {
     "custom:keycloak_username" = "preferred_username"
   }
 
-}
-
-# Developer notes: we're capturing all the fields from the upstream IDP, but we really don't need them all. Only scope necessary is openid.
-# It's more secure to only enable the exact fields that you need so that personal information isn't passed around in tokens unnecessarily
-
-variable "minimum_read_list" {
-  description = "The list of required read attributes for all clients"
-  type        = list(string)
-  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
-}
-
-variable "minimum_write_list" {
-  description = "The list of required write attributes for all clients"
-  type        = list(string)
-  default     = ["email", "custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
-}
-
-variable "all_read_list_idir" {
-  description = "The list of all read attributes for IDIR clients"
-  type        = list(string)
-  default     = ["email", "email_verified", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:keycloak_username"]
-}
-
-variable "all_write_list_idir" {
-  description = "The list of all write attributes for IDIR clients"
-  type        = list(string)
-  default     = ["email", "name", "family_name", "given_name", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:keycloak_username"]
 }

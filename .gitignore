@@ -75,3 +75,7 @@ server/backend/openapi.json
 terraform/dev/github.auto.tfvars
 terraform/prod/github.auto.tfvars
 terraform/dev/.terraform.lock.hcl
+infrastructure/server/fam_auth_function.zip
+terraform/test/github.auto.tfvars
+infrastructure/fam-ui-api.zip
+infrastructure/server/fam-ui-api.zip
