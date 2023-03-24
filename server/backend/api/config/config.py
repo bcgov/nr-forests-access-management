@@ -70,6 +70,11 @@ def get_aws_region():
     return get_env_var(env_var)
 
 
+def get_bcsc_key_id():
+    env_var = "BCSC_KEY_ID"
+    return get_env_var(env_var)
+
+
 def get_user_pool_id():
     env_var = "COGNITO_USER_POOL_ID"
     return get_env_var(env_var)
@@ -156,3 +161,8 @@ def get_forest_client_api_baseurl():
         else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
+
+
+# For local development, you can override this function since it doesn't work outside AWS
+def is_bcsc_key_enabled():
+    return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == 'True'

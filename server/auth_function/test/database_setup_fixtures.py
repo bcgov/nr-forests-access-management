@@ -307,6 +307,3 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
     """
     return raw_query
 
-
-def get_role_sql(role_name):
-    pass
