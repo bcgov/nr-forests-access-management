@@ -23,8 +23,10 @@ VALUES ('SPAR_SPR_BC_TIMBER_SALES', 'SPR_BC_TIMBER_SALES', (select application_i
        ('SPAR_SPR_MIN_FOREST_GENETICS', 'SPR_MIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_ORCHARD', 'SPR_MINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_VIEW_AND_REPT', 'SPR_MINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPAR_SPR_NONMIN_FOREST_GENETICS', 'SPR_NONMIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_ORCHARD', 'SPR_NONMINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_VIEW_AND_REPT', 'SPR_NONMINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_PRIVATE_NURSERY', 'SPR_PRIVATE_NURSERY', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_SILVICULTURE_STAFF', 'SPR_SILVICULTURE_STAFF', (select application_id from app_fam.fam_application where application_name = 'SPAR_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
@@ -50,8 +52,10 @@ VALUES ('SPAR_SPR_BC_TIMBER_SALES', 'SPR_BC_TIMBER_SALES', (select application_i
        ('SPAR_SPR_MIN_FOREST_GENETICS', 'SPR_MIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_ORCHARD', 'SPR_MINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_VIEW_AND_REPT', 'SPR_MINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPAR_SPR_NONMIN_FOREST_GENETICS', 'SPR_NONMIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_ORCHARD', 'SPR_NONMINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_VIEW_AND_REPT', 'SPR_NONMINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_PRIVATE_NURSERY', 'SPR_PRIVATE_NURSERY', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_SILVICULTURE_STAFF', 'SPR_SILVICULTURE_STAFF', (select application_id from app_fam.fam_application where application_name = 'SPAR_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
@@ -77,8 +81,10 @@ VALUES ('SPAR_SPR_BC_TIMBER_SALES', 'SPR_BC_TIMBER_SALES', (select application_i
        ('SPAR_SPR_MIN_FOREST_GENETICS', 'SPR_MIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_ORCHARD', 'SPR_MINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_MINISTRY_VIEW_AND_REPT', 'SPR_MINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPAR_SPR_NONMIN_FOREST_GENETICS', 'SPR_NONMIN_FOREST_GENETICS', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_ORCHARD', 'SPR_NONMINISTRY_ORCHARD', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SPR_NONMINISTRY_SUPERVISOR', 'SPR_NONMINISTRY_SUPERVISOR', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_NONMINISTRY_VIEW_AND_REPT', 'SPR_NONMINISTRY_VIEW_AND_REPT', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_PRIVATE_NURSERY', 'SPR_PRIVATE_NURSERY', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPAR_SPR_SILVICULTURE_STAFF', 'SPR_SILVICULTURE_STAFF', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
@@ -90,7 +96,6 @@ VALUES ('SPAR_SPR_BC_TIMBER_SALES', 'SPR_BC_TIMBER_SALES', (select application_i
        ('SPAR_SPR_TREE_SEED_CENTRE_STF_TST', 'SPR_TREE_SEED_CENTRE_STF_TST', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('SPR_ALT_SUPERVISOR', 'Additional alternative access for Supervisors', (select application_id from app_fam.fam_application where application_name = 'SPAR_PROD'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
-
 
 
 
