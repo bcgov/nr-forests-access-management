@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.1.0...v1.1.1) (2023-03-25)
+
+
+### Bug Fixes
+
+* [#506](https://github.com/bcgov/nr-forests-access-management/issues/506) move SPAR role deletions to new migration ([#525](https://github.com/bcgov/nr-forests-access-management/issues/525)) ([0ca70a9](https://github.com/bcgov/nr-forests-access-management/commit/0ca70a9ef65b73e6351eefe282467bde5bcfc53f))
+
 ## [1.1.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.0.0...v1.1.0) (2023-03-25)
 
 
