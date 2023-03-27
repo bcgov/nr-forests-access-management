@@ -8,7 +8,7 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
     "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}http://localhost:4200/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -44,7 +44,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
     "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.test}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -78,7 +78,7 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
     "https://fom.nrs.gov.bc.ca/admin/search",
   ]
   logout_urls                                   = [
-    "${var.frontend_logout_chain_url}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.prod}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"

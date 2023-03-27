@@ -5,12 +5,11 @@ import api.app.constants as famConstants
 import api.app.models.model as model
 import api.app.schemas as schemas
 import pytest
+import tests.tests.test_constants as testConstants
 from sqlalchemy import text
 from sqlalchemy.orm import session
 
 LOGGER = logging.getLogger(__name__)
-
-FOM_SUBMITTER_ROLE_NAME = "FOM_Submitter"
 
 
 @pytest.fixture(scope="function")
@@ -42,8 +41,8 @@ def dbsession_user_role_assignment(
     fam_user = model.FamUser(
         **{
             "user_type_code": famConstants.UserType.IDIR,
-            "user_name": famConstants.DUMMY_FOREST_CLIENT_NAME,
-            "create_user": famConstants.FAM_PROXY_API_USER,
+            "user_name": testConstants.DUMMY_FOREST_CLIENT_NAME,
+            "create_user": testConstants.FAM_PROXY_API_USER,
         }
     )
     db.add(fam_user)
@@ -54,7 +53,7 @@ def dbsession_user_role_assignment(
         **{
             "user_id": fam_user.user_id,
             "role_id": fam_role.role_id,
-            "create_user": famConstants.FAM_PROXY_API_USER,
+            "create_user": testConstants.FAM_PROXY_API_USER,
         }
     )
     db.add(user_role_assignment)
@@ -77,37 +76,69 @@ def dbsession_user_role_assignment(
 
 
 @pytest.fixture(scope="function")
-def dbsession_fam_application(dbsession_fam_app_environment):
+def dbsession_fom_dev_application(dbsession_fam_app_environment):
     db = dbsession_fam_app_environment
-    fam_application = model.FamApplication(
+    fom_dev_application = model.FamApplication(
         **{
             "application_name": "FOM",
-            "application_description": "Forest Operations Map",
-            "create_user": famConstants.FAM_PROXY_API_USER,
+            "application_description": testConstants.FOM_APP_DESC,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "app_environment": famConstants.AppEnv.APP_ENV_TYPE_DEV
         }
     )
-    db.add(fam_application)
+    db.add(fom_dev_application)
     db.commit()
     yield db
 
-    db.delete(fam_application)
+    db.delete(fom_dev_application)
+    db.commit()
+
+
+@pytest.fixture(scope="function")
+def dbsession_fom_dev_test_applications(dbsession_fam_app_environment):
+    db = dbsession_fam_app_environment
+    fom_dev_application = model.FamApplication(
+        **{
+            "application_name": testConstants.FOM_APP_DEV_NAME,
+            "application_description": testConstants.FOM_APP_DESC,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "app_environment": famConstants.AppEnv.APP_ENV_TYPE_DEV
+        }
+    )
+    db.add(fom_dev_application)
+
+    fom_test_application = model.FamApplication(
+        **{
+            "application_name": testConstants.FOM_APP_TEST_NAME,
+            "application_description": testConstants.FOM_APP_DESC,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "app_environment": famConstants.AppEnv.APP_ENV_TYPE_TEST
+        }
+    )
+    db.add(fom_test_application)
+
+    db.commit()
+    yield db
+
+    db.delete(fom_test_application)
+    db.delete(fom_dev_application)
     db.commit()
 
 
 @pytest.fixture(scope="function")
 def dbsession_FOM_submitter_role(  # noqa NOSONAR
-    dbsession_role_types, dbsession_fam_application
+    dbsession_role_types, dbsession_fom_dev_application
 ):
-    db = dbsession_fam_application
-    fam_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
+    db: session.Session = dbsession_fom_dev_application
+    fom_dev_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
     fom_submitter_role = model.FamRole(
         **{
-            "role_name": FOM_SUBMITTER_ROLE_NAME,
-            "role_purpose": "Grant a user access to submit to FOM",
-            "create_user": famConstants.FAM_PROXY_API_USER,
-            "application_id": fam_application.application_id,
+            "role_name": testConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": testConstants.FOM_ROLE_PURPOSE,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "application_id": fom_dev_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
         }
     )
@@ -117,7 +148,7 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
 
     role_db_item = (
         db.query(model.FamRole)
-        .filter(model.FamRole.role_name == FOM_SUBMITTER_ROLE_NAME)
+        .filter(model.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME)
         .one_or_none()
     )
 
@@ -127,8 +158,50 @@ def dbsession_FOM_submitter_role(  # noqa NOSONAR
 
 
 @pytest.fixture(scope="function")
-def dbsession_concrete_role(dbsession_role_types, dbsession_fam_application):
-    db = dbsession_fam_application
+def dbsession_fom_submitter_role_dev_test(
+    dbsession_role_types, dbsession_fom_dev_test_applications
+):
+    db: session.Session = dbsession_fom_dev_test_applications
+    fom_dev_application: model.FamApplication = db.query(model.FamApplication)\
+        .filter(model.FamApplication.app_environment == famConstants.AppEnv.APP_ENV_TYPE_DEV).one()
+    fom_test_application: model.FamApplication = db.query(model.FamApplication)\
+        .filter(model.FamApplication.app_environment == famConstants.AppEnv.APP_ENV_TYPE_TEST).one()
+
+    # add role records to db
+    fom_dev_submitter_role = model.FamRole(
+        **{
+            "role_name": testConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": testConstants.FOM_ROLE_PURPOSE,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "application_id": fom_dev_application.application_id,
+            "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
+        }
+    )
+    db.add(fom_dev_submitter_role)
+
+    fom_test_submitter_role = model.FamRole(
+        **{
+            "role_name": testConstants.FOM_SUBMITTER_ROLE_NAME,
+            "role_purpose": testConstants.FOM_ROLE_PURPOSE,
+            "create_user": testConstants.FAM_PROXY_API_USER,
+            "application_id": fom_test_application.application_id,
+            "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
+        }
+    )
+    db.add(fom_test_submitter_role)
+
+    db.commit()
+    yield db
+
+    db.query(model.FamRole)\
+        .filter(model.FamRole.role_name == testConstants.FOM_SUBMITTER_ROLE_NAME)\
+        .delete()
+    db.commit()
+
+
+@pytest.fixture(scope="function")
+def dbsession_concrete_role(dbsession_role_types, dbsession_fom_dev_application):
+    db = dbsession_fom_dev_application
     fam_application: model.FamApplication = (db.query(model.FamApplication).all())[0]
 
     # add a role record to db
@@ -137,7 +210,7 @@ def dbsession_concrete_role(dbsession_role_types, dbsession_fam_application):
         **{
             "role_name": role_name,
             "role_purpose": "Concrete role for application",
-            "create_user": famConstants.FAM_PROXY_API_USER,
+            "create_user": testConstants.FAM_PROXY_API_USER,
             "application_id": fam_application.application_id,
             "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
         }

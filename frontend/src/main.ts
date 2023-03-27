@@ -16,6 +16,8 @@ import router from '@/router';
 import 'bootstrap';
 import './assets/styles/styles.scss';
 
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+
 // import the fontawesome core
 import { library } from '@fortawesome/fontawesome-svg-core';
 
