@@ -147,9 +147,12 @@ def get_allow_origins():
 
 def get_forest_client_api_token():
     # TODO Where to store the api token?
-    return "MY_SECRET_TOKEN"
+    api_token = os.getenv("FC_API_TOKEN", "4r0dn5wC0JTs6N1tdw6NDzpjBRQwEJ6u")  # Test env token.
+    return api_token
 
 
 def get_forest_client_api_baseurl():
-    # TODO Add this to env?
-    return "https://nr-forest-client-api-test.api.gov.bc.ca/api"
+    # TODO Add this to env...
+    forest_client_api_baseurl = os.getenv("FC_API_BASE_URL", "https://nr-forest-client-api-test.api.gov.bc.ca")
+    LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
+    return forest_client_api_baseurl
