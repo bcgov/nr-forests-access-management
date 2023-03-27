@@ -38,7 +38,7 @@ pip install -r src/requirements.txt
 Either set these env vars or stuff them into .env file. If the .env file
 exists in the ./scripts/kc_data_transfer directory it will automatically
 get loaded by the code. Just copy the envExample file to .env and change the
-values.
+values. **Do not check in the .env file with sercets.**
 
 -   KC_HOST - url to keycloak instance (e.g. https://oidc.gov.bc.ca)
 -   KC_CLIENTID - The client id that has been configured as a service account
