@@ -42,7 +42,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "13.6"
+  version = "13.9"
 }
 
 module "aurora_postgresql_v2" {
@@ -70,6 +70,7 @@ module "aurora_postgresql_v2" {
 
   apply_immediately   = true
   skip_final_snapshot = true
+  auto_minor_version_upgrade = false
 
   db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql13.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql13.id

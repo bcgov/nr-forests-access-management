@@ -6,8 +6,12 @@ import {
     isApplicationSelected,
     selectedApplication,
 } from '@/services/ApplicationState';
-import { onMounted } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import router from '../router';
+
+const environments = ['All', 'Prod', 'Test', 'Dev']; // TODO: this could be dynamically loaded from the backend in the future
+
+const environmentFilter = ref<string>(environments[0]); // Array item 0 is for the All options
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -26,6 +30,21 @@ onMounted(async () => {
         return Promise.reject(error);
     }
 });
+
+function filterEnv(selectedEnv: string) {
+    environmentFilter.value = selectedEnv;
+    selectedApplication.value = null;
+}
+
+const filteredOptions = computed(() => {
+    return environmentFilter.value === environments[0] // If the option is All, show everything. Otherwise, filter it
+        ? applicationsUserAdministers.value
+        : applicationsUserAdministers.value.filter((item) => {
+              return item.app_environment?.includes(
+                  environmentFilter.value.toUpperCase()
+              );
+          });
+});
 </script>
 
 <template>
@@ -33,41 +52,26 @@ onMounted(async () => {
 
     <form id="selectApplicationForm" class="form-container">
         <div v-if="applicationsUserAdministers.length">
-            <!-- Disabled - not needed for MVP -->
-            <!-- Logic in script section:
-        const environments = [
-          "Prod", "Test", "Dev" // Dynamically assemble from list of apps.
-        ]
-
-        const environmentFilter = ref<string>("Prod")
-        -->
-            <!--
-        <div class="row">
-          <label>Filter by environment</label>
-        </div>
-        <div class="row">
-          <div class="col-auto" v-for="env in environments">
-            <input type="radio" id="r-env-{{env}}" name="envRadio" class="form-check-input" :value="env"
-              v-model="environmentFilter" :checked="(environmentFilter === env)" />
-              &nbsp;
-            <label class="form-check-label" for="r-env-{{env}}">{{env}}</label>
-          </div>
-        </div>
-        -->
+            <div class="row">
+                <label>Filter by environment</label>
+            </div>
+            <div class="row">
+                <RadioGroup
+                    :options="environments"
+                    :initialValue="environmentFilter"
+                    @change="filterEnv"
+                ></RadioGroup>
+            </div>
             <div class="row">
                 <div class="form-group col-md-5">
                     <label>Select the application to administer</label>
-
                     <select
                         id="applicationSelect"
                         class="form-select"
                         v-model="selectedApplication"
                         :size="applicationsUserAdministers.length + 1"
                     >
-                        <option
-                            v-for="app in applicationsUserAdministers"
-                            :value="app"
-                        >
+                        <option v-for="app in filteredOptions" :value="app">
                             {{ app.application_description }}
                         </option>
                     </select>

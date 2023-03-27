@@ -76,13 +76,20 @@ def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
     return fam_role_model
 
 
-def get_role_by_role_name(db: Session, role_name: str) -> Optional[models.FamRole]:
+def get_role_by_role_name_and_app_id(
+        db: Session,
+        role_name: str,
+        application_id: int
+) -> Optional[models.FamRole]:
     """
-    Gets FAM roles by unique role_name
+    Gets FAM role based on role_name and application_id.
     """
-    LOGGER.debug(f"Getting FamRole by role_name: {role_name}")
+    LOGGER.debug(f"Getting FamRole by role_name: {role_name} and application_di: {application_id}")
     return (
         db.query(models.FamRole)
-        .filter(models.FamRole.role_name == role_name)
+        .filter(
+            models.FamRole.role_name == role_name,
+            models.FamRole.application_id == application_id
+        )
         .one_or_none()
     )

@@ -1,12 +1,13 @@
 import datetime
 import logging
 import uuid
-from typing import TypedDict, Dict, Any, Union, Iterator
+from typing import Any, Dict, Iterator, TypedDict, Union
 
+import api.app.constants as famConstants
 import api.app.models.model as model
 import api.app.schemas as schemas
-import api.app.constants as famConstants
 import pytest
+import tests.tests.test_constants as testConstants
 from api.app.crud import crud_group as crud_group
 from sqlalchemy.orm import session
 
@@ -96,7 +97,7 @@ def user_data3_dict() -> Iterator[Dict[str, Union[str, famConstants.UserType]]]:
         "cognito_user_id": "zzff",
         "user_name": "BSMITH",
         "user_guid": str(uuid.uuid4()),
-        "create_user": famConstants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
     }
     # return user_data
     # try return instead? yield user_data
@@ -172,9 +173,9 @@ def user_data_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
         "cognito_user_id": "22ftw",
         "user_name": "MBOSSY",
         "user_guid": str(uuid.uuid4()),
-        "create_user": famConstants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": famConstants.FAM_PROXY_API_USER,
+        "update_user": testConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield user_data
@@ -195,9 +196,9 @@ def user_data2_dict() -> Iterator[FamUserTD]:
         "cognito_user_id": "22dfs",
         "user_name": "DPOTVIN",
         "user_guid": str(uuid.uuid4()),
-        "create_user": famConstants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
-        "update_user": famConstants.FAM_PROXY_API_USER,
+        "update_user": testConstants.FAM_PROXY_API_USER,
         "update_date": datetime.datetime.now(),
     }
     yield user_data
@@ -207,9 +208,9 @@ def user_data2_dict() -> Iterator[FamUserTD]:
 def user_group_xref_dict() -> Iterator[Dict[str, Union[datetime.datetime, str]]]:
     nowdatetime = datetime.datetime.now()
     x_ref_data = {
-        "create_user": famConstants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": nowdatetime,
-        "update_user": famConstants.FAM_PROXY_API_USER,
+        "update_user": testConstants.FAM_PROXY_API_USER,
         "update_date": nowdatetime,
     }
     yield x_ref_data
@@ -232,7 +233,7 @@ def group_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
     group_dict = {
         "group_name": "test group",
         "purpose": "testing",
-        "create_user": famConstants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     }
     yield group_dict

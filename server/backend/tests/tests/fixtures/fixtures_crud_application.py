@@ -1,15 +1,16 @@
 import datetime
 import logging
+from typing import Any, Dict, Iterator, Union
+
+import api.app.constants as constants
+import api.app.schemas as schemas
 import pytest
 import sqlalchemy
-from typing import Any, Dict, Union, Iterator
-
-import api.app.schemas as schemas
+import tests.tests.test_constants as testConstants
 from api.app.crud import crud_application as crud_application
 from api.app.crud import crud_role as crud_role
-from api.app.models import model as models
-import api.app.constants as constants
 from api.app.crud import crud_utils
+from api.app.models import model as models
 
 LOGGER = logging.getLogger(__name__)
 # TODO: look for application queries that retrieve the app_id and use the
@@ -64,7 +65,7 @@ def application_dict() -> Iterator[Dict[str, Union[str, datetime.datetime]]]:
         "application_name": "FAM",
         "application_description": "a really good app",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
         "update_user": "Ron Duguey",
         "update_date": datetime.datetime.now(),
@@ -238,12 +239,12 @@ def dbsession_application_with_role_user_assignment(
     user_role_assignment = models.FamUserRoleXref(
         user_id=user_data_model.user_id,
         role_id=concrete_role_model.role_id,
-        create_user=constants.FAM_PROXY_API_USER,
+        create_user=testConstants.FAM_PROXY_API_USER,
     )
     user_role_assignment_nested = models.FamUserRoleXref(
         user_id=user_data_model.user_id,
         role_id=concrete_role2_model.role_id,
-        create_user=constants.FAM_PROXY_API_USER,
+        create_user=testConstants.FAM_PROXY_API_USER,
     )
 
     db.add(user_role_assignment)
@@ -305,28 +306,28 @@ def dbsession_different_envs_apps(
         "application_name": "FAM",
         "application_description": "Forests Access Management",
         "app_environment": None,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     dev_fom_app = models.FamApplication(**{
         "application_name": "FOM_DEV",
         "application_description": "Forest Operations Map (DEV)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_DEV,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     test_fom_app = models.FamApplication(**{
         "application_name": "FOM_TEST",
         "application_description": "Forest Operations Map (TEST)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_TEST,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     prod_fom_app = models.FamApplication(**{
         "application_name": "FOM_PROD",
         "application_description": "Forest Operations Map (PROD)",
         "app_environment": constants.AppEnv.APP_ENV_TYPE_PROD,
-        "create_user": constants.FAM_PROXY_API_USER,
+        "create_user": testConstants.FAM_PROXY_API_USER,
         "create_date": datetime.datetime.now(),
     })
     db.add(fam_app)
