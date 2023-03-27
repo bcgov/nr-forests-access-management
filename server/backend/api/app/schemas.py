@@ -171,11 +171,13 @@ class FamApplicationRole(FamRoleCreate):
 
 
 class FamForestClient(BaseModel):
-    client_name: Optional[str]
-    forest_client_number: str
+    # Use Field(alias=) to parse json data from API call.
+    client_name: Optional[str] = Field(alias="clientName")
+    forest_client_number: str = Field(alias="clientNumber")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
 class FamRoleMin(BaseModel):

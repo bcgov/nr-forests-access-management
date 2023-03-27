@@ -1,8 +1,11 @@
 import logging
+from http import HTTPStatus
+from typing import List
 
+import requests
+from api.app.schemas import FamForestClient
 from api.config import config
-from pydantic import constr
-from requests import Session
+from pydantic import constr, parse_obj_as
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,12 +21,12 @@ class ForestClient:
     """
     def __init__(self):
         self.api_base_url = config.get_forest_client_api_baseurl()
-        self.api_clients_url = f"{self.apiBaseUri}/api/clients"
+        self.api_clients_url = f"{self.api_base_url}/api/clients"
         self.API_TOKEN = config.get_forest_client_api_token()
-        self.headers = {"accepts": "application/json", "X-API-KEY": self.API_TOKEN}
+        self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 
         # See Python: https://requests.readthedocs.io/en/latest/user/advanced/
-        self.session = Session()
+        self.session = requests.Session()
         self.session.headers.update(self.headers)
 
     def find_by_client_number(self, p_client_number: constr(min_length=8, max_length=8)):
@@ -35,7 +38,12 @@ class ForestClient:
                                 '/api/clients/findByClientNumber/{clientNumber}'
         :return: Search result for a Forest Client information object.
         """
-        uri = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
-        LOGGER.debug(f"ForestClient find_by_client_number() - uri: {uri}")
-        r = self.session.get(uri)
-        return r.json()
+        url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
+        LOGGER.debug(f"ForestClient find_by_client_number() - url: {url}")
+        r = self.session.get(url)
+        status_code = r.status_code
+        api_result = r.json() if r.status_code == HTTPStatus.OK else r.content
+        LOGGER.debug(f"API status code: {status_code}")
+        LOGGER.debug(f"API result: {api_result}")
+        return parse_obj_as(List[FamForestClient], [r.json()]) if r.status_code == HTTPStatus.OK else []
+

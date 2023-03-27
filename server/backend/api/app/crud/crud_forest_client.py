@@ -1,5 +1,6 @@
 import logging
 
+from api.app.integration.forest_client.forest_client import ForestClient
 from api.app.models import model as models
 from sqlalchemy.orm import Session
 
@@ -61,4 +62,7 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
 
 def search(db: Session, p_client_number: str):
     LOGGER.debug(f"Forest Client - 'search' with parameter: {p_client_number}.")
-    pass
+    fc_api = ForestClient()
+    fc = fc_api.find_by_client_number(p_client_number)
+    LOGGER.debug(f"Result: {fc}")
+    return fc
