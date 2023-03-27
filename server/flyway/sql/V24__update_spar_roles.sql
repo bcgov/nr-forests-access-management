@@ -107,4 +107,3 @@ VALUES ('SPAR_SPR_BC_TIMBER_SALES', 'SPR_BC_TIMBER_SALES', (select application_i
 
 
 
-
