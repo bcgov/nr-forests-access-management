@@ -1,11 +1,9 @@
 import logging
 from http import HTTPStatus
-from typing import List
 
 import requests
-from api.app.schemas import FamForestClient
 from api.config import config
-from pydantic import constr, parse_obj_as
+from pydantic import constr
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class ForestClient:
         :param p_client_number: Forest Client Number string (8 digits).
                                 Note! Current Forest Client API can only do exact match.
                                 '/api/clients/findByClientNumber/{clientNumber}'
-        :return: Search result for a Forest Client information object.
+        :return: Search result (JSON) for a Forest Client information object.
         """
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClient find_by_client_number() - url: {url}")
@@ -45,5 +43,7 @@ class ForestClient:
         api_result = r.json() if r.status_code == HTTPStatus.OK else r.content
         LOGGER.debug(f"API status code: {status_code}")
         LOGGER.debug(f"API result: {api_result}")
-        return parse_obj_as(List[FamForestClient], [r.json()]) if r.status_code == HTTPStatus.OK else []
 
+        # !! Don't map and return schema.FamForestClient or object from scheam as that
+        # will create circular dependency issue. let crud to map the result.
+        return [r.json()] if r.status_code == HTTPStatus.OK else []

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, constr
 
 from . import constants as famConstants
 
@@ -89,7 +89,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: str
     user_type_code: famConstants.UserType
     role_id: int
-    forest_client_number: Union[str, None]
+    forest_client_number: Union[constr(min_length=1, max_length=8), None]
 
     class Config:
         orm_mode = True

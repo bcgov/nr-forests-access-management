@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from api.app.integration.forest_client.forest_client import ForestClient
 from api.app.models import model as models
@@ -60,7 +61,7 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
     return fam_forest_client
 
 
-def search(db: Session, p_client_number: str):
+def search(db: Session, p_client_number: str) -> List[schemas.FamForestClient]:
     LOGGER.debug(f"Forest Client - 'search' with parameter: {p_client_number}.")
     fc_api = ForestClient()
     fc = fc_api.find_by_client_number(p_client_number)
