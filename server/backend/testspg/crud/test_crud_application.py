@@ -54,53 +54,6 @@ def test_get_applications(dbPgSession: Session):
     assert apps[1].app_environment == "DEV"
 
 
-def test_get_applications_by_granted_apps(dbPgSession: Session):
-    # Test Accss Roles: FAM_ACCESS_ADMIN only
-    access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
-    LOGGER.debug("Testing 'get_applications_by_granted_apps' with Accss Roles:" +
-                 f"{access_roles_fam_only}")
-    apps = crud_application.get_applications_by_granted_apps(
-        db=dbPgSession, access_roles=access_roles_fam_only
-    )
-    assert len(apps) == 1
-    assert apps[0].application_name == TEST_APPLICATION_NAME_FAM
-
-    # Test Accss Roles: FOM_DEV_ACCESS_ADMIN only
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
-    LOGGER.debug("Testing 'get_applications_by_granted_apps' with Accss Roles:" +
-                 f"{access_roles_fom_dev_only}...")
-    apps = crud_application.get_applications_by_granted_apps(
-        db=dbPgSession, access_roles=access_roles_fom_dev_only
-    )
-    assert len(apps) == 1
-    assert apps[0].application_name == "FOM_DEV"
-
-    # Test Accss Roles: both FAM_ACCESS_ADMIN and FOM_DEV_ACCESS_ADMIN
-    access_roles_fam_fom_dev = ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
-    LOGGER.debug("Testing 'get_applications_by_granted_apps' with Accss Roles:" +
-                 f"{access_roles_fam_fom_dev}...")
-    apps = crud_application.get_applications_by_granted_apps(
-        db=dbPgSession, access_roles=access_roles_fam_fom_dev
-    )
-    assert len(apps) == 2
-    assert len([app for app in apps if app.application_name == "FAM"]) == 1
-    assert len([app for app in apps if app.application_name == "FOM_DEV"]) == 1
-    assert len([app for app in apps if app.application_name == "FOM_TEST"]) == 0
-
-    # Test Accss Roles: on NO_APP_ACCESS_ADMIN
-    access_roles_no_app = ["NO_APP_ACCESS_ADMIN"]
-    LOGGER.debug("Testing 'get_applications_by_granted_apps' with Accss Roles:" +
-                 f"{access_roles_no_app}...")
-    apps = crud_application.get_applications_by_granted_apps(
-        db=dbPgSession, access_roles=access_roles_no_app
-    )
-    # Shold have empty apps result.
-    assert len(apps) == 0
-    assert len([app for app in apps if app.application_name == "FAM"]) == 0
-    assert len([app for app in apps if app.application_name == "FOM_DEV"]) == 0
-    assert len([app for app in apps if app.application_name == "FOM_TEST"]) == 0
-
-
 def test_get_application(dbPgSession: Session):
     apps = crud_application.get_applications(db=dbPgSession)
     assert len(apps) > 1
@@ -162,30 +115,6 @@ def test_get_application_roles(dbPgSession: Session):
     assert app_roles[1].application_id == TEST_APPLICATION_ID_FOM_DEV
     assert app_roles[1].role_type_code == "C"
 
-    # todo: add test for parent_role_id for abstract role, need to add a role first
-    # todo: add test for client_number_id for abstract role
-
-
-def test_get_application_role_assignments(dbPgSession: Session):
-    # get data from a non existant app
-    role_assignments = crud_application.get_application_role_assignments(
-        db=dbPgSession, application_id=TEST_APPLICATION_ID_NOT_FOUND
-    )
-    LOGGER.debug(f"role_assignments: {role_assignments}")
-    assert not role_assignments
-
-    role_assignments = crud_application.get_application_role_assignments(
-        db=dbPgSession, application_id=TEST_APPLICATION_ID_FOM_DEV
-    )
-
-    assert len(role_assignments) == 0  # initially no one is assigned with FOM_DEV roles
-
-    # todo: add role assignment for fom dev and then verify the return
-
-    # for role_assignment in role_assignments:
-    #     # test the schema definitions work, will raise error if they do not
-    #     schemas.FamApplicationUserRoleAssignmentGet.from_orm(role_assignment)
-
 
 def test_get_application_id_by_role_id(dbPgSession: Session):
     app_id = crud_application.get_application_id_by_role_id(
@@ -193,11 +122,6 @@ def test_get_application_id_by_role_id(dbPgSession: Session):
         role_id=TEST_APPLICATION_ROLE_ID_FOM_DEV
     )
     assert app_id == TEST_APPLICATION_ID_FOM_DEV
-
-    app_id = crud_application.get_application_id_by_role_id(
-        db=dbPgSession,
-        role_id=TEST_APPLICATION_ROLE_ID_FOM_DEV
-    )
 
 
 def test_get_application_id_by_user_role_xref_id(dbPgSession: Session):

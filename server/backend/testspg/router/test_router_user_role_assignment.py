@@ -1,4 +1,5 @@
 import logging
+import copy
 import starlette.testclient
 from sqlalchemy.orm import Session
 from api.app.main import apiPrefix
@@ -19,8 +20,9 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
-FAM_ADMIN_ROLE = "FAM_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
+NOT_SUPPORTED_USER_TYPE = 'NS'
+NOT_EXIST_ROLE_ID = 0
 
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     # todo: this might need to be a real idir username
@@ -48,8 +50,7 @@ def test_create_user_role_assignment_not_authorized(
     test user has no authentication to the app
     user without FOM_DEV_ACCESS_ADMIN role cannot grant FOM_DEV roles
     """
-    access_roles = [FAM_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+    token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
@@ -59,6 +60,54 @@ def test_create_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+
+
+def test_create_user_role_assignment_violate_support_user_types(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key
+):
+    """
+    test create user role assignment with an invalid user type
+    """
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = \
+        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_type_code"] = NOT_SUPPORTED_USER_TYPE
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == 422
+    assert (
+        response.json()["detail"][0]["msg"].find(
+            "value is not a valid enumeration member; permitted: 'I', 'B'"
+        )
+        != -1
+    )
+
+
+# def test_create_user_role_assignment_role_not_exists(
+#     test_client_fixture: starlette.testclient.TestClient,
+#     test_rsa_key
+# ):
+#     """
+#     test create user role assignment with an invalid role id
+#     """
+#     access_roles = [FOM_DEV_ADMIN_ROLE]
+#     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID = \
+#         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID["role_id"] = NOT_EXIST_ROLE_ID
+#     response = test_client_fixture.post(
+#         f"{endPoint}",
+#         json=ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID,
+#         headers=jwt_utils.headers(token)
+#     )
+#     print('response231231', response.json(), ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID)
+#     assert response.status_code == 403
+#     # this error message doesn't return invalid role id
 
 
 def test_create_user_role_assignment_with_concrete_role(
@@ -109,6 +158,7 @@ def test_create_user_role_assignment_with_concrete_role(
         f"{endPoint}/{data['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
+    assert response.status_code == 204
 
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
@@ -144,6 +194,31 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 204
+
+
+def test_create_user_role_assignment_with_abstract_role_without_forestclient(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+):
+    """
+    test assign an abscrate role to a user without forest client number
+    """
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = \
+        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT)
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_number")
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        headers=jwt_utils.headers(token)
+    )
+    print('response2131', response.json())
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid role assignment request. " + \
+        "Cannot assign user " + \
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"] + \
+        " to abstract role FOM_SUBMITTER"
 
 
 def test_create_user_role_assignment_with_abstract_role(

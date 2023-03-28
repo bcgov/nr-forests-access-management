@@ -120,6 +120,7 @@ def test_get_fam_application_roles(
         f"{apiPrefix}/user_role_assignment/{xref_id}",
         headers=jwt_utils.headers(token)
     )
+    assert response.status_code == 204
 
 
 def test_get_fam_application_user_role_assignment(
