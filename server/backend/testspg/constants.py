@@ -6,6 +6,11 @@ TEST_FOM_DEV_REVIEWER_ROLE_ID = 4
 
 TEST_FOM_TEST_REVIEWER_ROLE_ID = 8
 
+TEST_NOT_EXIST_ROLE_ID = 0
+TEST_NOT_EXIST_APPLICATION_ID = 0
+
+TEST_CREATOR = "TESTER"
+
 
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     # todo: this might need to be a real idir username
@@ -20,7 +25,7 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = {
     "user_name": "fom_user_test",
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00000001"
+    "forest_client_number": "10000000"
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     # todo: this might need to be a real idir username

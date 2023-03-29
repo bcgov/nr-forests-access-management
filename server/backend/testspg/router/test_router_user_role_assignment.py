@@ -13,7 +13,8 @@ from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
     TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE, \
     TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
     TEST_FOM_DEV_APPLICATION_ID, \
-    TEST_FOM_TEST_APPLICATION_ID
+    TEST_FOM_TEST_APPLICATION_ID, \
+    TEST_NOT_EXIST_ROLE_ID
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -22,7 +23,6 @@ FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 NOT_SUPPORTED_USER_TYPE = 'NS'
-NOT_EXIST_ROLE_ID = 0
 
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     # todo: this might need to be a real idir username
@@ -73,7 +73,8 @@ def test_create_user_role_assignment_violate_support_user_types(
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = \
         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
-    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_type_code"] = NOT_SUPPORTED_USER_TYPE
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_type_code"] = \
+        NOT_SUPPORTED_USER_TYPE
     response = test_client_fixture.post(
         f"{endPoint}",
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
@@ -99,7 +100,7 @@ def test_create_user_role_assignment_violate_support_user_types(
 #     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 #     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID = \
 #         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
-#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID["role_id"] = NOT_EXIST_ROLE_ID
+#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID["role_id"] = TEST_NOT_EXIST_ROLE_ID
 #     response = test_client_fixture.post(
 #         f"{endPoint}",
 #         json=ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID,
@@ -213,7 +214,6 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
         headers=jwt_utils.headers(token)
     )
-    print('response2131', response.json())
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid role assignment request. " + \
         "Cannot assign user " + \

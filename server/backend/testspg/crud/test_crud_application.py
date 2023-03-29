@@ -9,12 +9,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from api.app.crud import crud_application
 import api.app.schemas as schemas
 import api.app.constants as constants
-
+from testspg.constants import TEST_NOT_EXIST_APPLICATION_ID
 
 LOGGER = logging.getLogger(__name__)
 
 TEST_APPLICATION_NAME_NOT_FOUND = "NOT_FOUND"
-TEST_APPLICATION_ID_NOT_FOUND = 0
 
 TEST_APPLICATION_NAME_FAM = "FAM"
 TEST_APPLICATION_ID_FAM = 1
@@ -71,7 +70,7 @@ def test_get_application(dbPgSession: Session):
     assert app_by_id.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_name = crud_application.get_application(
-        db=dbPgSession, application_id=TEST_APPLICATION_ID_NOT_FOUND
+        db=dbPgSession, application_id=TEST_NOT_EXIST_APPLICATION_ID
     )
     assert app_by_name is None
 
@@ -133,7 +132,7 @@ def test_get_application_id_by_user_role_xref_id(dbPgSession: Session):
 
 
 def test_create_application(dbPgSession: Session):
-    # verify that the data is not in the database
+    # get non existing application
     app_by_name = crud_application.get_application_by_name(
         db=dbPgSession, application_name=NEW_APPLICATION["application_name"]
     )
