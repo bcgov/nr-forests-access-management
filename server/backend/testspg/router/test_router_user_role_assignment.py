@@ -62,33 +62,6 @@ def test_create_user_role_assignment_not_authorized(
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
 
 
-def test_create_user_role_assignment_violate_support_user_types(
-    test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
-):
-    """
-    test create user role assignment with an invalid user type
-    """
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
-    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_type_code"] = \
-        TEST_NOT_EXIST_USER_TYPE
-    response = test_client_fixture.post(
-        f"{endPoint}",
-        json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == 422
-    assert (
-        response.json()["detail"][0]["msg"].find(
-            "value is not a valid enumeration member; permitted: 'I', 'B'"
-        )
-        != -1
-    )
-
-
 def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,

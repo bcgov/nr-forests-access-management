@@ -3,13 +3,15 @@ import logging
 import pytest
 from fastapi import HTTPException
 import copy
+from pydantic import ValidationError
 from api.app.crud import crud_user_role, crud_role
 import api.app.schemas as schemas
 from testspg.constants import TEST_FOM_DEV_REVIEWER_ROLE_ID, \
     TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
     TEST_CREATOR, \
     TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
-    TEST_NOT_EXIST_ROLE_ID
+    TEST_NOT_EXIST_ROLE_ID, \
+    TEST_NOT_EXIST_USER_TYPE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,6 +32,27 @@ def test_create_user_role_with_role_not_exists(dbPgSession: Session):
     assert str(e._excinfo).find("does not exist") != -1
     # Note, this will make sure intermediate object created by the crud call is
     #       rollback after exception is raised.
+    dbPgSession.rollback()
+
+
+def test_create_user_role_with_user_types_not_exists(
+    dbPgSession: Session
+):
+    # Create a user_type_code with not supported type.
+    user_role = \
+        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+    user_role["user_type_code"] = \
+        TEST_NOT_EXIST_USER_TYPE
+
+    with pytest.raises(ValidationError) as e:
+        assert schemas.FamUserRoleAssignmentCreate(**user_role)
+    assert (
+        str(e.value).find(
+            "value is not a valid enumeration member; permitted: 'I', 'B'"
+        )
+        != -1
+    )
+    LOGGER.debug(f"Expected exception raised: {e.value}")
     dbPgSession.rollback()
 
 

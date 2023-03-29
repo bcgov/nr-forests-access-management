@@ -21,6 +21,11 @@ TEST_FOREST_CLIENT_NUMBER = "00000002"
 TEST_FOREST_CLIENT_NUMBER_TWO = "00000003"
 
 
+def test_get_roles(dbPgSession: Session):
+    roles = crud_role.get_roles(dbPgSession)
+    assert len(roles) > 1
+
+
 def test_get_role(dbPgSession: Session):
     # get non exists role
     found_role = crud_role.get_role(dbPgSession, TEST_NOT_EXIST_ROLE_ID)
