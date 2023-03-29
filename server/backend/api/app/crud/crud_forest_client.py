@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import List
 
@@ -64,6 +65,18 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
 def search(db: Session, p_client_number: str) -> List[schemas.FamForestClient]:
     LOGGER.debug(f"Forest Client - 'search' with parameter: {p_client_number}.")
     fc_api = ForestClient()
-    fc = fc_api.find_by_client_number(p_client_number)
-    LOGGER.debug(f"Result: {fc}")
-    return fc
+    fc_json_list = fc_api.find_by_client_number(p_client_number)  # json object List
+    results = list(map(__map_api_results, fc_json_list))
+    LOGGER.debug(f"Result: {results}")
+    return results
+
+
+def __map_api_results(item) -> schemas.FamForestClient:
+    """
+    Private method to map api result to schemas.FamForestClient
+    """
+    parsed = json.loads(
+        json.dumps(item),  # need json string format, so dumps it.
+        object_hook=schemas.FamForestClient.from_api_json
+    )
+    return parsed

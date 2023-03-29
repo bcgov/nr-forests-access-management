@@ -1,11 +1,9 @@
 import logging
 from http import HTTPStatus
-from typing import List
 
 from api.app import constants as famConstants
 from api.app.models import model as models
 from api.app.integration.forest_client.forest_client import ForestClient
-from pydantic import parse_obj_as
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
@@ -78,6 +76,12 @@ def create_user_role(
             error_msg = (
                 "Invalid role assignment request. " +
                 f"Forest Client Number {request.forest_client_number} does not exist.")
+            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+        if (not validator.forest_client_active()):
+            error_msg = (
+                "Invalid role assignment request. Forest Client is not in Active status: " +
+                f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
             crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Note: current FSA design in the 'request body' contains a
@@ -229,7 +233,8 @@ def find_or_create_forest_client_child_role(
 
 class UserRoleValidator:
     """
-    Purpose: More validations on inputs (other than basic) and business rules (if any).
+    Purpose: More validations on inputs (other than basic validations) and
+             business rules validations (if any).
     Cautious: Do not instantiate the class for more than one time per request.
               It calls Forest Client API remotely if needs to.
     """
@@ -245,14 +250,21 @@ class UserRoleValidator:
             fc_api = ForestClient()
 
             # Locally stored (if any) for later use to prevent api calls again.
-            self.fc: List[schemas.FamForestClient] = parse_obj_as(
-                List[schemas.FamForestClient],
-                fc_api.find_by_client_number(forest_client_number)
-            )
-            LOGGER.debug(f"Forest Client object retrieved: {self.fc}")
+            # Exact client number search - should only contain 1 result.
+            self.fc = fc_api.find_by_client_number(forest_client_number)
+            LOGGER.debug(f"Forest Client(s) retrieved: {self.fc}")
 
     def forest_client_number_exists(self) -> bool:
-        return len(self.fc) != 0
+        # Exact client number search - should only contain 1 result.
+        return len(self.fc) == 1
 
-    def get_forest_clients(self):
-        return self.fc
+    def forest_client_active(self) -> bool:
+        return (
+            (self.get_forest_client()[famConstants.FOREST_CLIENT_STATUS["KEY"]]
+                == famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"])
+            if self.forest_client_number_exists()
+            else False
+        )
+
+    def get_forest_client(self):
+        return self.fc[0] if self.forest_client_number_exists() else None

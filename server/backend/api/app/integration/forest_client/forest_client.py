@@ -44,6 +44,6 @@ class ForestClient:
         LOGGER.debug(f"API status code: {status_code}")
         LOGGER.debug(f"API result: {api_result}")
 
-        # !! Don't map and return schema.FamForestClient or object from scheam as that
+        # !! Don't map and return schema.FamForestClient or object from "scheam.py" as that
         # will create circular dependency issue. let crud to map the result.
         return [r.json()] if r.status_code == HTTPStatus.OK else []
