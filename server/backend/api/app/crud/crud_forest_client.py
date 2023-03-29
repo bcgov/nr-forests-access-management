@@ -62,7 +62,7 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
     return fam_forest_client
 
 
-def search(db: Session, p_client_number: str) -> List[schemas.FamForestClient]:
+def search(p_client_number: str) -> List[schemas.FamForestClient]:
     LOGGER.debug(f"Forest Client - 'search' with parameter: {p_client_number}.")
     fc_api = ForestClient()
     fc_json_list = fc_api.find_by_client_number(p_client_number)  # json object List

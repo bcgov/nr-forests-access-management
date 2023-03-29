@@ -14,8 +14,7 @@ router = APIRouter()
 
 @router.get("/search", response_model=List[schemas.FamForestClient])
 def search(
-    client_number: str = Query(min_length=8, max_length=8),
-    db: Session = Depends(database.get_db)
+    client_number: str = Query(min_length=8, max_length=8)
 ):
     """
     Forest Client(s) search (by defined query parameter(s)).
@@ -26,7 +25,7 @@ def search(
     return: List of found FamForestClient. However, currently only 1 exact match returns.
     """
     LOGGER.debug(f"Searching Forest Clients with parameter client_number: {client_number}")
-    forest_clients = crud_forest_client.search(db, client_number)
+    forest_clients = crud_forest_client.search(client_number)
     LOGGER.debug(f"Returning {0 if forest_clients is None else len(forest_clients)} result.")
     return forest_clients
 
