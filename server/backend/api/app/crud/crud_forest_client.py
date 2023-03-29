@@ -76,7 +76,7 @@ def __map_api_results(item) -> schemas.FamForestClient:
     Private method to map api result to schemas.FamForestClient
     """
     parsed = json.loads(
-        json.dumps(item),  # need json string format, so dumps it.
+        json.dumps(item),  # need json string format, so dumps from 'dic' type 'item'.
         object_hook=schemas.FamForestClient.from_api_json
     )
     return parsed

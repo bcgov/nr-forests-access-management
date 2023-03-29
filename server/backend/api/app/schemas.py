@@ -173,7 +173,7 @@ class FamApplicationRole(FamRoleCreate):
         fields = {"create_user": {"exclude": True}}
 
 
-# This is not an object from model. It is an helper class to map Forest Client API
+# This is not an object from FAM model. It is an helper class to map Forest Client API
 # client status into FAM's status needs (Active/Inactive).
 class FamForestClientStatus(BaseModel):
     status_code: famConstants.FamForestClientStatusType

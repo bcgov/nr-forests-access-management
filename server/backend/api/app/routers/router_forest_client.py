@@ -25,9 +25,6 @@ def search(
 
     return: List of found FamForestClient. However, currently only 1 exact match returns.
     """
-    # TODO: For some reason FastAPI use camelCase instead of snake_case in this endpoint. # NOSONAR
-    # Hope to fix it.
-
     LOGGER.debug(f"Searching Forest Clients with parameter client_number: {client_number}")
     forest_clients = crud_forest_client.search(db, client_number)
     LOGGER.debug(f"Returning {0 if forest_clients is None else len(forest_clients)} result.")
