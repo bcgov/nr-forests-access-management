@@ -34,3 +34,10 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     "user_type_code": "I",
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID
 }
+
+TEST_NEW_USER = {
+    "user_type_code": "I",
+    "user_name": "TEST_USER",
+    "create_user": TEST_CREATOR,
+}
+TEST_NOT_EXIST_USER_TYPE = 'NS'

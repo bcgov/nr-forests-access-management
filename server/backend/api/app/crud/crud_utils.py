@@ -82,9 +82,9 @@ def get_application_id_from_name(db, application_name):
     application = (
         db.query(models.FamApplication)
         .filter(models.FamApplication.application_name == application_name)
-        .one()
+        .one_or_none()
     )
-    return application.application_id
+    return application.application_id if application else None
 
 
 def raise_http_exception(status_code: str, error_msg: str):
