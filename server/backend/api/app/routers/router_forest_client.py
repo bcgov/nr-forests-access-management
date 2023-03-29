@@ -1,11 +1,11 @@
+import json
 import logging
 from typing import List
 
-from api.app.crud import crud_forest_client
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
+from api.app.integration.forest_client.forest_client import ForestClient
+from fastapi import APIRouter, Query
 
-from .. import database, schemas
+from .. import schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,20 @@ def search(
     return: List of found FamForestClient. However, currently only 1 exact match returns.
     """
     LOGGER.debug(f"Searching Forest Clients with parameter client_number: {client_number}")
-    forest_clients = crud_forest_client.search(client_number)
+    fc_api = ForestClient()
+    fc_json_list = fc_api.find_by_client_number(client_number)  # json object List
+    forest_clients = list(map(__map_api_results, fc_json_list))
     LOGGER.debug(f"Returning {0 if forest_clients is None else len(forest_clients)} result.")
     return forest_clients
+
+
+def __map_api_results(item) -> schemas.FamForestClient:
+    """
+    Private method to map api result to schemas.FamForestClient
+    """
+    parsed = json.loads(
+        json.dumps(item),  # need json string format, so dumps from 'dic' type 'item'.
+        object_hook=schemas.FamForestClient.from_api_json
+    )
+    return parsed
 
