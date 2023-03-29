@@ -18,6 +18,16 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
+class FamForestClientStatusType(str, Enum):
+    ACTIVE = "A"
+    INACTIVE = "I"
+
+
+FOREST_CLIENT_STATUS = {
+    "KEY": "clientStatusCode",
+    "CODE_ACTIVE": "ACT"
+}
+
 FAM_PROXY_API_USER = "fam_proxy_api"
 
 COGNITO_USERNAME_KEY = "username"

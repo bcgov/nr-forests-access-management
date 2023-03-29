@@ -1,9 +1,12 @@
 from datetime import datetime
+import logging
 from typing import Optional, Union
 
 from pydantic import BaseModel, Field, constr
 
 from . import constants as famConstants
+
+LOGGER = logging.getLogger(__name__)
 
 
 class FamGroupPost(BaseModel):
@@ -170,14 +173,56 @@ class FamApplicationRole(FamRoleCreate):
         fields = {"create_user": {"exclude": True}}
 
 
+# This is not an object from model. It is an helper class to map Forest Client API
+# client status into FAM's status needs (Active/Inactive).
+class FamForestClientStatus(BaseModel):
+    status_code: famConstants.FamForestClientStatusType
+    description: str
+
+    @staticmethod
+    def to_fam_status(forest_client_status_code: str):
+        # Map Forest Client API's 'clientStatusCode' to FAM
+        accepted_api_active_codes = [famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"]]
+        DESCRIPTION_ACTIVE = "Active"
+        DESCRIPTION_INACTIVE = "Inactive"
+        status_code = (
+            famConstants.FamForestClientStatusType.ACTIVE
+            if forest_client_status_code in accepted_api_active_codes
+            else famConstants.FamForestClientStatusType.INACTIVE
+        )
+        description = (
+            DESCRIPTION_ACTIVE
+            if status_code == famConstants.FamForestClientStatusType.ACTIVE
+            else DESCRIPTION_INACTIVE
+        )
+        status = FamForestClientStatus(
+            status_code=status_code,
+            description=description
+        )
+        return status
+
+
 class FamForestClient(BaseModel):
-    # Use Field(alias=) to parse json data from API call.
-    client_name: Optional[str] = Field(alias="clientName")
-    forest_client_number: str = Field(alias="clientNumber")
+    client_name: Optional[str]
+    forest_client_number: str
+    status: Optional[FamForestClientStatus]
 
     class Config:
         orm_mode = True
-        allow_population_by_field_name = True
+
+    @staticmethod
+    def from_api_json(json_dict):
+        LOGGER.debug(f"from_api_json - {json_dict}")
+        client_name = json_dict['clientName']
+        forest_client_number = json_dict['clientNumber']
+        forest_client_status_code = json_dict[famConstants.FOREST_CLIENT_STATUS["KEY"]]
+        status = FamForestClientStatus.to_fam_status(forest_client_status_code)
+        fc = FamForestClient(
+            client_name=client_name,
+            forest_client_number=forest_client_number,
+            status=status
+        )
+        return fc
 
 
 class FamRoleMin(BaseModel):
