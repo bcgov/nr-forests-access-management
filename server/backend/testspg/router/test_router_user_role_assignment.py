@@ -14,7 +14,6 @@ from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
     TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
     TEST_FOM_DEV_APPLICATION_ID, \
     TEST_FOM_TEST_APPLICATION_ID, \
-    TEST_NOT_EXIST_ROLE_ID, \
     TEST_NOT_EXIST_USER_TYPE
 
 LOGGER = logging.getLogger(__name__)
@@ -88,28 +87,6 @@ def test_create_user_role_assignment_violate_support_user_types(
         )
         != -1
     )
-
-
-# def test_create_user_role_assignment_role_not_exists(
-#     test_client_fixture: starlette.testclient.TestClient,
-#     test_rsa_key
-# ):
-#     """
-#     test create user role assignment with an invalid role id
-#     """
-#     access_roles = [FOM_DEV_ADMIN_ROLE]
-#     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID = \
-#         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
-#     ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID["role_id"] = TEST_NOT_EXIST_ROLE_ID
-#     response = test_client_fixture.post(
-#         f"{endPoint}",
-#         json=ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID,
-#         headers=jwt_utils.headers(token)
-#     )
-#     print('response231231', response.json(), ASSIGNMENT_FOM_DEV_NON_SUPPORT_ROLE_ID)
-#     assert response.status_code == 403
-#     # this error message doesn't return invalid role id
 
 
 def test_create_user_role_assignment_with_concrete_role(

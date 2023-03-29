@@ -1,19 +1,36 @@
-import os
-import sys
 from sqlalchemy.orm import Session
 import logging
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-
+import pytest
+from fastapi import HTTPException
+import copy
 from api.app.crud import crud_user_role, crud_role
+import api.app.schemas as schemas
 from testspg.constants import TEST_FOM_DEV_REVIEWER_ROLE_ID, \
     TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
-    TEST_CREATOR
+    TEST_CREATOR, \
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
+    TEST_NOT_EXIST_ROLE_ID
 
 LOGGER = logging.getLogger(__name__)
 
 TEST_USER_ID = 1
 TEST_FOREST_CLIENT_NUMBER = "00000001"
+
+
+def test_create_user_role_with_role_not_exists(dbPgSession: Session):
+    user_role = \
+        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+    user_role["role_id"] = TEST_NOT_EXIST_ROLE_ID
+
+    with pytest.raises(HTTPException) as e:
+        assert crud_user_role.create_user_role(
+            dbPgSession, schemas.FamUserRoleAssignmentCreate(**user_role), TEST_CREATOR
+        )
+    assert str(e._excinfo).find("Role id ") != -1
+    assert str(e._excinfo).find("does not exist") != -1
+    # Note, this will make sure intermediate object created by the crud call is
+    #       rollback after exception is raised.
+    dbPgSession.rollback()
 
 
 def test_create(dbPgSession: Session):

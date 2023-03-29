@@ -1,12 +1,7 @@
-import os
-import sys
 from sqlalchemy.orm import Session
 import logging
 import pytest
 from sqlalchemy.exc import IntegrityError
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-
 from api.app.crud import crud_role, crud_user_role, crud_forest_client
 import api.app.schemas as schemas
 import api.app.constants as constants
@@ -68,6 +63,7 @@ def test_create_role(dbPgSession: Session):
 
 
 def test_create_role_duplicate(dbPgSession: Session):
+    # can not create the role with same role name, even with a different creator
     with pytest.raises(IntegrityError) as e:
         crud_role.create_role(
             schemas.FamRoleCreate(
@@ -75,7 +71,7 @@ def test_create_role_duplicate(dbPgSession: Session):
                     "application_id": TEST_FOM_DEV_APPLICATION_ID,
                     "role_name": TEST_NEW_ROLE,
                     "role_purpose": "test role",
-                    "create_user": TEST_CREATOR,
+                    "create_user": "ANOTHER_CREATOR",
                     "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
                 }
             ),

@@ -1,14 +1,8 @@
-import os
-import sys
 from sqlalchemy.orm import Session
 import logging
-import copy
 import pytest
-from pydantic import ValidationError
+# from pydantic import ValidationError
 from sqlalchemy.exc import NoResultFound
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-
 from api.app.crud import crud_user
 import api.app.schemas as schemas
 from testspg.constants import TEST_NEW_USER, TEST_NOT_EXIST_USER_TYPE

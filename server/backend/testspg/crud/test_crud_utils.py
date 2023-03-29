@@ -1,11 +1,6 @@
-import os
-import sys
 import logging
 import pytest
 from sqlalchemy.orm import Session
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-
 import api.app.models.model as model
 import api.app.schemas as schemas
 from api.app.crud import crud_user

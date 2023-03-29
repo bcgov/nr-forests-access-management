@@ -1,11 +1,6 @@
-import os
-import sys
 from sqlalchemy.orm import Session
 import logging
 import datetime
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-
 from api.app.crud import crud_application
 import api.app.schemas as schemas
 import api.app.constants as constants
