@@ -15,31 +15,25 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamForestClientStatus } from './fam-forest-client-status';
+import { FamForestClientStatusType } from './fam-forest-client-status-type';
 
 /**
  * 
  * @export
- * @interface FamForestClient
+ * @interface FamForestClientStatus
  */
-export interface FamForestClient {
+export interface FamForestClientStatus {
+    /**
+     * 
+     * @type {FamForestClientStatusType}
+     * @memberof FamForestClientStatus
+     */
+    'status_code': FamForestClientStatusType;
     /**
      * 
      * @type {string}
-     * @memberof FamForestClient
+     * @memberof FamForestClientStatus
      */
-    'client_name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClient
-     */
-    'forest_client_number': string;
-    /**
-     * 
-     * @type {FamForestClientStatus}
-     * @memberof FamForestClient
-     */
-    'status'?: FamForestClientStatus;
+    'description': string;
 }
 
