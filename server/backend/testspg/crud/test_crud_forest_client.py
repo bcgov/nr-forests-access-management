@@ -93,9 +93,9 @@ def test_find_or_create(db_pg_connection: Session):
         TEST_FOEST_CLIENT_DATA["forest_client_number"],
         TEST_FOEST_CLIENT_DATA["create_user"]
     )
-    all = db_pg_connection.query(models.FamForestClient).all()
+    all_forest_clients = db_pg_connection.query(models.FamForestClient).all()
     # verify no new forest client add
-    assert len(all) == len(after_add_all)
+    assert len(all_forest_clients) == len(after_add_all)
 
     # cleanup
     db_pg_connection.delete(found_forest_client)

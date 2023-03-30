@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 import logging
 import pytest
-# from pydantic import ValidationError
 from sqlalchemy.exc import NoResultFound
 from api.app.crud import crud_user
 import api.app.schemas as schemas
@@ -62,20 +61,6 @@ def test_get_user_by_domain_and_name(db_pg_connection: Session):
 
 
 def test_create_user(db_pg_connection: Session):
-    # create user with non exist user type
-    # todo: test error doesn't got catched correctly
-    # copy_user = copy.deepcopy(TEST_NEW_USER)
-    # copy_user["user_type_code"] = TEST_NOT_EXIST_USER_TYPE
-    # request_user = schemas.FamUser(**copy_user)
-    # with pytest.raises(ValidationError) as e:
-    #     assert schemas.FamUserRoleAssignmentCreate(**request_user)
-    # assert (
-    #     str(e.value).find(
-    #         "value is not a valid enumeration member; permitted: 'I', 'B'"
-    #     )
-    #     != -1
-    # )
-
     # create user and verify can get that new user
     request_user = schemas.FamUser(**TEST_NEW_USER)
     new_user = crud_user.create_user(fam_user=request_user, db=db_pg_connection)
@@ -151,7 +136,7 @@ def test_find_or_create(db_pg_connection: Session):
     assert len(after_add_users) == len(initial_users) + 1
 
     # give the existing user
-    new_user = crud_user.find_or_create(
+    crud_user.find_or_create(
         db_pg_connection,
         TEST_NEW_USER["user_type_code"],
         TEST_NEW_USER["user_name"],

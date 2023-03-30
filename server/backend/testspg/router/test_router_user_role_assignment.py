@@ -23,7 +23,7 @@ FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 
-# todo: this might need to be a real idir username
+# note: this might need to be a real idir username
 # and a real forest client id
 # once we enable the verifiy idir feature
 # and the verify of forest client id feature

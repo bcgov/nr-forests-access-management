@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 import logging
 import pytest
+import copy
 from sqlalchemy.exc import IntegrityError
 from api.app.crud import crud_role, crud_user_role, crud_forest_client
 import api.app.schemas as schemas
@@ -19,6 +20,14 @@ TEST_NEW_ROLE = "TEST_READ"
 TEST_NEW_ROLE_TWO = "TEST_WRITE"
 TEST_FOREST_CLIENT_NUMBER = "00000002"
 TEST_FOREST_CLIENT_NUMBER_TWO = "00000003"
+TEST_ROLE_PURPOSE = "test role"
+TEST_ROLE_CREATE = {
+    "application_id": TEST_FOM_DEV_APPLICATION_ID,
+    "role_name": TEST_NEW_ROLE,
+    "role_purpose": TEST_ROLE_PURPOSE,
+    "create_user": TEST_CREATOR,
+    "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
+}
 
 
 def test_get_roles(db_pg_connection: Session):
@@ -46,15 +55,7 @@ def test_get_role(db_pg_connection: Session):
 
 def test_create_role(db_pg_connection: Session):
     new_role = crud_role.create_role(
-        schemas.FamRoleCreate(
-            **{
-                "application_id": TEST_FOM_DEV_APPLICATION_ID,
-                "role_name": TEST_NEW_ROLE,
-                "role_purpose": "test role",
-                "create_user": TEST_CREATOR,
-                "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
-            }
-        ),
+        schemas.FamRoleCreate(**TEST_ROLE_CREATE),
         db_pg_connection,
     )
     assert new_role.role_name == TEST_NEW_ROLE
@@ -75,7 +76,7 @@ def test_create_role_duplicate(db_pg_connection: Session):
                 **{
                     "application_id": TEST_FOM_DEV_APPLICATION_ID,
                     "role_name": TEST_NEW_ROLE,
-                    "role_purpose": "test role",
+                    "role_purpose": TEST_ROLE_PURPOSE,
                     "create_user": "ANOTHER_CREATOR",
                     "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
                 }
@@ -147,16 +148,10 @@ def test_create_role_child_role_with_invalid_parent(db_pg_connection: Session):
 
 
 def test_create_role_same_role_for_different_application(db_pg_connection: Session):
+    copy_test_role_create = copy.deepcopy(TEST_ROLE_CREATE)
+    copy_test_role_create["role_name"] = TEST_NEW_ROLE_TWO
     first_new_role = crud_role.create_role(
-        schemas.FamRoleCreate(
-            **{
-                "application_id": TEST_FOM_DEV_APPLICATION_ID,
-                "role_name": TEST_NEW_ROLE_TWO,
-                "role_purpose": "test role",
-                "create_user": TEST_CREATOR,
-                "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
-            }
-        ),
+        schemas.FamRoleCreate(**copy_test_role_create),
         db_pg_connection,
     )
     assert first_new_role.role_name == TEST_NEW_ROLE_TWO
@@ -169,25 +164,17 @@ def test_create_role_same_role_for_different_application(db_pg_connection: Sessi
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     second_new_role = crud_role.create_role(
-        schemas.FamRoleCreate(
-            **{
-                "application_id": TEST_FOM_TEST_APPLICATION_ID,
-                "role_name": TEST_NEW_ROLE_TWO,
-                "role_purpose": "test role",
-                "create_user": TEST_CREATOR,
-                "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
-            }
-        ),
+        schemas.FamRoleCreate(**copy_test_role_create),
         db_pg_connection,
     )
     assert second_new_role.role_name == TEST_NEW_ROLE_TWO
 
     # verify second role created
-    found_role = crud_role.get_role(db_pg_connection, first_new_role.role_id)
-    assert second_new_role.role_id == second_new_role.role_id
-    assert second_new_role.role_name == TEST_NEW_ROLE_TWO
-    assert second_new_role.application_id == TEST_FOM_TEST_APPLICATION_ID
-    assert second_new_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
+    found_role = crud_role.get_role(db_pg_connection, second_new_role.role_id)
+    assert found_role.role_id == second_new_role.role_id
+    assert found_role.role_name == TEST_NEW_ROLE_TWO
+    assert found_role.application_id == TEST_FOM_TEST_APPLICATION_ID
+    assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     # verify two roles are for different application
     assert second_new_role.role_id != first_new_role.role_id
