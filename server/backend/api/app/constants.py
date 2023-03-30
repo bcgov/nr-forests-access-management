@@ -26,6 +26,9 @@ class FamForestClientStatusType(str, Enum):
     INACTIVE = "I"
 
 
+DESCRIPTION_ACTIVE = "Active"
+DESCRIPTION_INACTIVE = "Inactive"
+
 # Constans for FAM to coneniently refer to Forest Client API return json object
 # keys/values.
 FOREST_CLIENT_STATUS = {

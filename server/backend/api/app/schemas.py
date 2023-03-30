@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Optional, Union
 
 from pydantic import BaseModel, Field, constr
@@ -183,17 +183,15 @@ class FamForestClientStatus(BaseModel):
     def to_fam_status(forest_client_status_code: str):
         # Map Forest Client API's 'clientStatusCode' to FAM
         accepted_api_active_codes = [famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"]]
-        DESCRIPTION_ACTIVE = "Active"
-        DESCRIPTION_INACTIVE = "Inactive"
         status_code = (
             famConstants.FamForestClientStatusType.ACTIVE
             if forest_client_status_code in accepted_api_active_codes
             else famConstants.FamForestClientStatusType.INACTIVE
         )
         description = (
-            DESCRIPTION_ACTIVE
+            famConstants.DESCRIPTION_ACTIVE
             if status_code == famConstants.FamForestClientStatusType.ACTIVE
-            else DESCRIPTION_INACTIVE
+            else famConstants.DESCRIPTION_INACTIVE
         )
         status = FamForestClientStatus(
             status_code=status_code,
