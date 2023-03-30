@@ -163,6 +163,7 @@ def test_create_role_same_role_for_different_application(db_pg_connection: Sessi
     assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
+    copy_test_role_create["application_id"] = TEST_FOM_TEST_APPLICATION_ID
     second_new_role = crud_role.create_role(
         schemas.FamRoleCreate(**copy_test_role_create),
         db_pg_connection,
