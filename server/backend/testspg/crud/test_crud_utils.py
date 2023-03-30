@@ -59,7 +59,7 @@ def test_get_primary_key():
     assert pk_col_name == "user_id"
 
 
-def test_get_next(dbPgSession: Session):
+def test_get_next(db_pg_connection: Session):
     """fixture delivers a db session with one record in it, testing that
     the get_next method returns the primary key of the current record + 1
 
@@ -73,35 +73,35 @@ def test_get_next(dbPgSession: Session):
     """
     fam_user_model = model.FamUser
     LOGGER.debug(f"fam_user_model type: {type(fam_user_model)}")
-    next_value_before = crud_utils.get_next(db=dbPgSession, model=fam_user_model)
+    next_value_before = crud_utils.get_next(db=db_pg_connection, model=fam_user_model)
     assert next_value_before > 0
 
     # now add record and test again that the number is greater
     request_user = schemas.FamUser(
         **TEST_NEW_USER
     )
-    new_user = crud_user.create_user(fam_user=request_user, db=dbPgSession)
+    new_user = crud_user.create_user(fam_user=request_user, db=db_pg_connection)
 
-    next_value_after = crud_utils.get_next(db=dbPgSession, model=fam_user_model)
+    next_value_after = crud_utils.get_next(db=db_pg_connection, model=fam_user_model)
     assert next_value_after > next_value_before
 
     # clean up
-    crud_user.delete_user(dbPgSession, new_user.user_id)
+    crud_user.delete_user(db_pg_connection, new_user.user_id)
 
 
 def test_get_application_id_from_name(
-    dbPgSession: Session
+    db_pg_connection: Session
 ):
     # get non exists application
     application_id = crud_utils.get_application_id_from_name(
-        dbPgSession,
+        db_pg_connection,
         "TEST"
     )
     assert application_id is None
 
     # get FAM application id
     application_id = crud_utils.get_application_id_from_name(
-        dbPgSession,
+        db_pg_connection,
         "FAM"
     )
     assert application_id == 1

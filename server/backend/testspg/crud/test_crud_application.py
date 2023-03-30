@@ -30,8 +30,8 @@ NEW_APPLICATION = {
 }
 
 
-def test_get_applications(dbPgSession: Session):
-    apps = crud_application.get_applications(db=dbPgSession)
+def test_get_applications(db_pg_connection: Session):
+    apps = crud_application.get_applications(db=db_pg_connection)
     assert len(apps) == 7
     for app in apps:
         assert hasattr(app, "application_id")
@@ -48,53 +48,53 @@ def test_get_applications(dbPgSession: Session):
     assert apps[1].app_environment == "DEV"
 
 
-def test_get_application(dbPgSession: Session):
-    apps = crud_application.get_applications(db=dbPgSession)
+def test_get_application(db_pg_connection: Session):
+    apps = crud_application.get_applications(db=db_pg_connection)
     assert len(apps) > 1
 
     for app in apps:
         app_by_id = crud_application.get_application(
-            db=dbPgSession, application_id=app.application_id
+            db=db_pg_connection, application_id=app.application_id
         )
         assert app_by_id.application_id == app.application_id
 
     app_by_id = crud_application.get_application(
-        db=dbPgSession, application_id=TEST_APPLICATION_ID_FAM
+        db=db_pg_connection, application_id=TEST_APPLICATION_ID_FAM
     )
     assert app_by_id.application_id == TEST_APPLICATION_ID_FAM
     assert app_by_id.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_name = crud_application.get_application(
-        db=dbPgSession, application_id=TEST_NOT_EXIST_APPLICATION_ID
+        db=db_pg_connection, application_id=TEST_NOT_EXIST_APPLICATION_ID
     )
     assert app_by_name is None
 
 
-def test_get_application_by_name(dbPgSession: Session):
-    apps = crud_application.get_applications(db=dbPgSession)
+def test_get_application_by_name(db_pg_connection: Session):
+    apps = crud_application.get_applications(db=db_pg_connection)
     assert len(apps) > 1
 
     for app in apps:
         app_by_name = crud_application.get_application_by_name(
-            db=dbPgSession, application_name=app.application_name
+            db=db_pg_connection, application_name=app.application_name
         )
         assert app_by_name.application_name == app.application_name
 
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=TEST_APPLICATION_NAME_FAM
+        db=db_pg_connection, application_name=TEST_APPLICATION_NAME_FAM
     )
     assert app_by_name.application_id == TEST_APPLICATION_ID_FAM
     assert app_by_name.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=TEST_APPLICATION_NAME_NOT_FOUND
+        db=db_pg_connection, application_name=TEST_APPLICATION_NAME_NOT_FOUND
     )
     assert app_by_name is None
 
 
-def test_get_application_roles(dbPgSession: Session):
+def test_get_application_roles(db_pg_connection: Session):
     app_roles = crud_application.get_application_roles(
-        db=dbPgSession, application_id=TEST_APPLICATION_ID_FOM_DEV
+        db=db_pg_connection, application_id=TEST_APPLICATION_ID_FOM_DEV
     )
 
     for app_role in app_roles:
@@ -110,33 +110,33 @@ def test_get_application_roles(dbPgSession: Session):
     assert app_roles[1].role_type_code == "C"
 
 
-def test_get_application_id_by_role_id(dbPgSession: Session):
+def test_get_application_id_by_role_id(db_pg_connection: Session):
     app_id = crud_application.get_application_id_by_role_id(
-        db=dbPgSession,
+        db=db_pg_connection,
         role_id=TEST_APPLICATION_ROLE_ID_FOM_DEV
     )
     assert app_id == TEST_APPLICATION_ID_FOM_DEV
 
 
-def test_get_application_id_by_user_role_xref_id(dbPgSession: Session):
+def test_get_application_id_by_user_role_xref_id(db_pg_connection: Session):
     app_id = crud_application.get_application_id_by_user_role_xref_id(
-        db=dbPgSession,
+        db=db_pg_connection,
         user_role_xref_id=1  # the first user in our db has role FAM admin
     )
     assert app_id == TEST_APPLICATION_ROLE_ID_FAM
 
 
-def test_create_application(dbPgSession: Session):
+def test_create_application(db_pg_connection: Session):
     # get non existing application
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=NEW_APPLICATION["application_name"]
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
     )
     assert app_by_name is None
 
     # add the data to the database
     app_data_as_pydantic = schemas.FamApplicationCreate(**NEW_APPLICATION)
     app_data = crud_application.create_application(
-        fam_application=app_data_as_pydantic, db=dbPgSession
+        fam_application=app_data_as_pydantic, db=db_pg_connection
     )
 
     # the object returned by create_application should contain the
@@ -145,23 +145,23 @@ def test_create_application(dbPgSession: Session):
 
     # verify that the data is in the database
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=NEW_APPLICATION["application_name"]
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
     )
     assert app_by_name.application_name == NEW_APPLICATION["application_name"]
 
 
-def test_delete_application(dbPgSession: Session):
+def test_delete_application(db_pg_connection: Session):
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=NEW_APPLICATION["application_name"]
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
     )
     assert app_by_name.application_name == NEW_APPLICATION["application_name"]
 
     crud_application.delete_application(
-        db=dbPgSession,
+        db=db_pg_connection,
         application_id=app_by_name.application_id
     )
 
     app_by_name = crud_application.get_application_by_name(
-        db=dbPgSession, application_name=NEW_APPLICATION["application_name"]
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
     )
     assert app_by_name is None

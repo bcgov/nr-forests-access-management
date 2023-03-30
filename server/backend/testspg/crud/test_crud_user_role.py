@@ -19,24 +19,24 @@ TEST_USER_ID = 1
 TEST_FOREST_CLIENT_NUMBER = "00000001"
 
 
-def test_create_user_role_with_role_not_exists(dbPgSession: Session):
+def test_create_user_role_with_role_not_exists(db_pg_connection: Session):
     user_role = \
         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
     user_role["role_id"] = TEST_NOT_EXIST_ROLE_ID
 
     with pytest.raises(HTTPException) as e:
         assert crud_user_role.create_user_role(
-            dbPgSession, schemas.FamUserRoleAssignmentCreate(**user_role), TEST_CREATOR
+            db_pg_connection, schemas.FamUserRoleAssignmentCreate(**user_role), TEST_CREATOR
         )
     assert str(e._excinfo).find("Role id ") != -1
     assert str(e._excinfo).find("does not exist") != -1
     # Note, this will make sure intermediate object created by the crud call is
     #       rollback after exception is raised.
-    dbPgSession.rollback()
+    db_pg_connection.rollback()
 
 
 def test_create_user_role_with_user_types_not_exists(
-    dbPgSession: Session
+    db_pg_connection: Session
 ):
     # Create a user_type_code with not supported type.
     user_role = \
@@ -53,12 +53,12 @@ def test_create_user_role_with_user_types_not_exists(
         != -1
     )
     LOGGER.debug(f"Expected exception raised: {e.value}")
-    dbPgSession.rollback()
+    db_pg_connection.rollback()
 
 
-def test_create(dbPgSession: Session):
+def test_create(db_pg_connection: Session):
     user_role_xref = crud_user_role.create(
-        dbPgSession,
+        db_pg_connection,
         TEST_USER_ID,
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
         TEST_CREATOR
@@ -67,7 +67,7 @@ def test_create(dbPgSession: Session):
 
     # verify user role created
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
-        dbPgSession,
+        db_pg_connection,
         TEST_USER_ID,
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
     )
@@ -75,15 +75,15 @@ def test_create(dbPgSession: Session):
 
     # cleanup
     crud_user_role.delete_fam_user_role_assignment(
-        dbPgSession,
+        db_pg_connection,
         xref_dict["user_role_xref_id"]
     )
 
 
-def test_get_use_role_by_user_id_and_role_id(dbPgSession: Session):
+def test_get_use_role_by_user_id_and_role_id(db_pg_connection: Session):
     # get not exists user role assignment
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
-        dbPgSession,
+        db_pg_connection,
         TEST_USER_ID,
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
     )
@@ -91,7 +91,7 @@ def test_get_use_role_by_user_id_and_role_id(dbPgSession: Session):
 
     # create a user role assignment
     user_role_xref = crud_user_role.create(
-        dbPgSession,
+        db_pg_connection,
         TEST_USER_ID,
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
         TEST_CREATOR
@@ -100,7 +100,7 @@ def test_get_use_role_by_user_id_and_role_id(dbPgSession: Session):
 
     # find it
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
-        dbPgSession,
+        db_pg_connection,
         TEST_USER_ID,
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
     )
@@ -108,7 +108,7 @@ def test_get_use_role_by_user_id_and_role_id(dbPgSession: Session):
 
     # cleanup
     crud_user_role.delete_fam_user_role_assignment(
-        dbPgSession,
+        db_pg_connection,
         xref_dict["user_role_xref_id"]
     )
 
@@ -129,29 +129,29 @@ def test_construct_forest_client_role_purpose():
     assert result == "PARENT_ROLE purpose for " + TEST_FOREST_CLIENT_NUMBER + ")"
 
 
-def test_find_or_create_forest_client_child_role(dbPgSession: Session):
+def test_find_or_create_forest_client_child_role(db_pg_connection: Session):
     # create child role for abstract parent role
-    test_role = crud_role.get_role(dbPgSession, TEST_FOM_DEV_SUBMITTER_ROLE_ID)
+    test_role = crud_role.get_role(db_pg_connection, TEST_FOM_DEV_SUBMITTER_ROLE_ID)
     result = crud_user_role.find_or_create_forest_client_child_role(
-        dbPgSession,
+        db_pg_connection,
         TEST_FOREST_CLIENT_NUMBER,
         test_role,
         TEST_CREATOR
     )
     # verify child role created
-    child_role = crud_role.get_role(dbPgSession, result.role_id)
+    child_role = crud_role.get_role(db_pg_connection, result.role_id)
     assert child_role.role_id == result.role_id
     assert child_role.role_name == "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER
 
     # create child role for concrete parent role
-    test_concrete_role = crud_role.get_role(dbPgSession, TEST_FOM_DEV_REVIEWER_ROLE_ID)
+    test_concrete_role = crud_role.get_role(db_pg_connection, TEST_FOM_DEV_REVIEWER_ROLE_ID)
     result = crud_user_role.find_or_create_forest_client_child_role(
-        dbPgSession,
+        db_pg_connection,
         TEST_FOREST_CLIENT_NUMBER,
         test_concrete_role,
         TEST_CREATOR
     )
     # verify child role created
-    child_role = crud_role.get_role(dbPgSession, result.role_id)
+    child_role = crud_role.get_role(db_pg_connection, result.role_id)
     assert child_role.role_id == result.role_id
     assert child_role.role_name == "FOM_REVIEWER_" + TEST_FOREST_CLIENT_NUMBER

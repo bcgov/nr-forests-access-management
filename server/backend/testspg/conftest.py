@@ -23,7 +23,7 @@ COMPOSE_PATH = os.path.join(os.path.dirname(__file__), '../../../')
 
 
 @pytest.fixture(scope="session")
-def dbPgContainer():
+def db_pg_container():
     compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
     compose.start()
     time.sleep(5)  # wait db migration script to run
@@ -32,22 +32,22 @@ def dbPgContainer():
 
 
 @pytest.fixture(scope="session")
-def dbPgEngine() -> Engine:
+def db_pg_engine() -> Engine:
     engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/fam")
     return engine
 
 
 @pytest.fixture(scope="module")
-def dbPgConnection(dbPgContainer, dbPgEngine: Engine):
-    _session_local = sessionmaker(bind=dbPgEngine)
+def db_pg_connection(db_pg_container, db_pg_engine: Engine):
+    _session_local = sessionmaker(bind=db_pg_engine)
     db = _session_local()
     yield db
     db.close()
 
 
 @pytest.fixture(scope="function")
-def dbPgSession(dbPgConnection: Session) -> Session:
-    return dbPgConnection
+def db_pg_session(db_pg_connection: Session) -> Session:
+    return db_pg_connection
 
 
 @pytest.fixture(scope="function")
