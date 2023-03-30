@@ -89,7 +89,9 @@ def test_get_next(dbPgSession: Session):
     crud_user.delete_user(dbPgSession, new_user.user_id)
 
 
-def test_get_application_id_from_name(dbPgSession: Session):
+def test_get_application_id_from_name(
+    dbPgSession: Session
+):
     # get non exists application
     application_id = crud_utils.get_application_id_from_name(
         dbPgSession,

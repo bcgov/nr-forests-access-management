@@ -23,18 +23,17 @@ FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 
-
+# todo: this might need to be a real idir username
+# and a real forest client id
+# once we enable the verifiy idir feature
+# and the verify of forest client id feature
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
-    # todo: this might need to be a real idir username
-    # once we enable the verifiy idir feature
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": "00000002"
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
-    # todo: this might need to be a real idir username
-    # once we enable the verifiy idir feature
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
@@ -174,8 +173,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
 
 def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    dbPgSession: Session
+    test_rsa_key, dbPgSession: Session
 ):
     """
     test assign an abscrate role to a user
@@ -225,8 +223,7 @@ def test_create_user_role_assignment_with_abstract_role(
 
 def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    dbPgSession: Session
+    test_rsa_key, dbPgSession: Session
 ):
     # create a user role assignment
     access_roles = [FOM_DEV_ADMIN_ROLE]

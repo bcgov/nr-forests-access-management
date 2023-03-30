@@ -34,7 +34,6 @@ def dbPgContainer():
 @pytest.fixture(scope="session")
 def dbPgEngine() -> Engine:
     engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/fam")
-    engine.echo = False
     return engine
 
 
