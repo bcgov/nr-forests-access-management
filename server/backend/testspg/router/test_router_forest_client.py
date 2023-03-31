@@ -12,6 +12,25 @@ LOGGER = logging.getLogger(__name__)
 endPoint_search = f"{apiPrefix}/forest_clients/search"
 
 
+@pytest.mark.parametrize("client_id_to_test, expcted_error_type", [
+    ("0001011", "value_error.any_str.min_length"),
+    ("000001011", "value_error.any_str.max_length")
+])
+def test_search_client_number_invalid_length_error(
+    client_id_to_test,
+    expcted_error_type,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key
+):
+    invalid_length_param = f"?client_number={client_id_to_test}"  # less than 8 digits
+    test_endPoint = endPoint_search + invalid_length_param
+    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    data = response.json()
+    assert expcted_error_type in data["detail"][0]["type"]
+
+
 def test_search_client_number_not_exists_noresult(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
