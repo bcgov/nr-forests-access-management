@@ -1,14 +1,25 @@
 
 
-import pytest
 import logging
+
+import pytest
 from api.app.integration.forest_client.forest_client import ForestClient
 
 LOGGER = logging.getLogger(__name__)
 
 
 class TestForestClientClass(object):
+    """
+    Testing ForestClient class with real remote API calls (TEST environment).
+    """
     fc_api: ForestClient = None
+    example_expected_valid_result = {
+        'clientNumber': '00000002',
+        'clientName': 'PENDING S & R BILLING',
+        'clientStatusCode': 'DAC',
+        'clientTypeCode': 'G',
+        'acronyms': []
+    }
 
     def setup_class(self):
         self.fc_api = ForestClient()
@@ -16,7 +27,7 @@ class TestForestClientClass(object):
     def test_verify_init(self):
         # Quick Verifying for init not empty
         assert self.fc_api.api_base_url is not None
-        assert self.fc_api.api_clients_url is not None
+        assert "/api/clients" in self.fc_api.api_clients_url
         assert self.fc_api.API_TOKEN is not None
         assert self.fc_api.headers["X-API-KEY"] == self.fc_api.API_TOKEN
 
@@ -29,10 +40,13 @@ class TestForestClientClass(object):
         assert self.fc_api.find_by_client_number(client_id_to_test) == expcted_result
 
     def test_find_by_client_number_exists_returns_list_one_item(self):
-        client_id_to_test = "00000002"
+        """
+        The test validating API does return single client dictionary and
+        with the expected key(s) structure.
+        """
+        client_id_to_test = self.example_expected_valid_result["clientNumber"]
         result = self.fc_api.find_by_client_number(client_id_to_test)
         assert len(result) == 1
         assert isinstance(result[0], dict)
-        assert "clientName" in result[0]
-        assert "clientNumber" in result[0]
-        assert "clientStatusCode" in result[0]
+        result_fc_dict = result[0]
+        assert result_fc_dict.keys() == self.example_expected_valid_result.keys()
