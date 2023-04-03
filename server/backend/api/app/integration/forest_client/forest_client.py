@@ -3,12 +3,11 @@ from http import HTTPStatus
 
 import requests
 from api.config import config
-from pydantic import constr
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ForestClient:
+class ForestClient():
     """
     The class is used for making requests to get information from Forest Client API.
     Api is located at BC API Service Portal: https://api.gov.bc.ca/devportal/api-directory/3179.
@@ -27,7 +26,7 @@ class ForestClient:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def find_by_client_number(self, p_client_number: constr(min_length=8, max_length=8)):
+    def find_by_client_number(self, p_client_number: str):
         """
         Find Forest Client(s) information based on p_client_number search query field.
 
