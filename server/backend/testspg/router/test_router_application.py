@@ -86,26 +86,13 @@ def test_get_fam_application_roles(
     assert len(data) == 2
 
     for app_role in data:
-        # return example: how we define what to return?
-        # the model has more columns
-        # {'role_name': 'FOM_SUBMITTER',
-        # 'role_purpose': 'Provides the privilege to submit a FOM (on behalf of a specific forest client)',
-        # 'parent_role_id': None,
-        # 'application_id': 2,
-        # 'forest_client_number': None,
-        # 'role_type_code': 'A',
-        # 'client_number': None,
-        # 'role_id': 3}
         assert "role_id" in app_role
         assert "role_name" in app_role
         assert "role_purpose" in app_role
         assert "parent_role_id" in app_role
         assert "application_id" in app_role
-        # assert "client_number_id" in app_role
-        # assert "create_user" in app_role
-        # assert "create_date" in app_role
-        # assert "update_user" in app_role
-        # assert "update_date" in app_role
+        assert "forest_client_number" in app_role
+        assert "client_number" in app_role
         assert "role_type_code" in app_role
 
     assert data[0]["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[0]

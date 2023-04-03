@@ -158,7 +158,7 @@ def construct_forest_client_role_purpose(
 ):
     LOGGER.debug(f"parent_role_purpose: {parent_role_purpose}")
     # ???? is there a reason we put a ")" in the client purpose?
-    client_purpose = f"{parent_role_purpose} for {forest_client_number})"
+    client_purpose = f"{parent_role_purpose} for {forest_client_number}"
     return client_purpose
 
 

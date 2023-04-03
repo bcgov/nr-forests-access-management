@@ -126,7 +126,7 @@ def test_construct_forest_client_role_purpose():
         "PARENT_ROLE purpose",
         TEST_FOREST_CLIENT_NUMBER
     )
-    assert result == "PARENT_ROLE purpose for " + TEST_FOREST_CLIENT_NUMBER + ")"
+    assert result == "PARENT_ROLE purpose for " + TEST_FOREST_CLIENT_NUMBER
 
 
 def test_find_or_create_forest_client_child_role(db_pg_connection: Session):

@@ -10,7 +10,7 @@ from testspg.constants import TEST_NEW_USER
 LOGGER = logging.getLogger(__name__)
 
 
-@pytest.mark.parametrize("str_list_to_test, expcted_str_list",[
+@pytest.mark.parametrize("str_list_to_test, expcted_str_list", [
     (['fam', 'fom', 'aws'], ['FAM', 'FOM', 'AWS']),
     (['FAM', 'FOM', 'AWS'], ['FAM', 'FOM', 'AWS']),
     (None, None)
