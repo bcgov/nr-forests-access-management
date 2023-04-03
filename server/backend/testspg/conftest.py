@@ -10,9 +10,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
 
@@ -33,7 +30,12 @@ def db_pg_container():
 
 @pytest.fixture(scope="session")
 def db_pg_engine() -> Engine:
-    engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/fam")
+    engine = create_engine("postgresql+psycopg2://" +
+                           f"{os.environ.get('POSTGRES_USER')}:" +
+                           f"{os.environ.get('POSTGRES_PASSWORD')}@" +
+                           f"{os.environ.get('POSTGRES_HOST')}:"
+                           f"{os.environ.get('POSTGRES_PORT')}/"
+                           f"{os.environ.get('POSTGRES_DB')}")
     return engine
 
 
