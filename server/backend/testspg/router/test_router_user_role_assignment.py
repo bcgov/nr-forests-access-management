@@ -86,21 +86,22 @@ def test_create_user_role_assignment_with_concrete_role(
     assert "application_id" in data
 
     # verify assignment did get created
-    assignment_user_role_items = crud_application.get_application_role_assignments(
+    assignment_user_role_concrete = crud_application.get_application_role_assignments(
         db_pg_connection, data["application_id"]
     )
-    assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
+    assert len(assignment_user_role_concrete) == 1
+    assert assignment_user_role_concrete[0].user_role_xref_id \
+        == data["user_role_xref_id"]
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
-        db_pg_connection, assignment_user_role_items[0].user_id
+        db_pg_connection, assignment_user_role_concrete[0].user_id
     )
     assert assignment_user is not None
 
     # verify assignment linking to correct role and parent role
     assignment_role = crud_role.get_role(
-        db_pg_connection, assignment_user_role_items[0].role_id
+        db_pg_connection, assignment_user_role_concrete[0].role_id
     )
     assert assignment_role is not None
     assert assignment_role.parent_role_id is None
@@ -195,21 +196,21 @@ def test_create_user_role_assignment_with_abstract_role(
     assert "application_id" in data
 
     # verify assignment did get created
-    assignment_user_role_items = crud_application.get_application_role_assignments(
+    assignment_user_role_abstract = crud_application.get_application_role_assignments(
         db_pg_connection, data["application_id"]
     )
-    assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
+    assert len(assignment_user_role_abstract) == 1
+    assert assignment_user_role_abstract[0].user_role_xref_id == data["user_role_xref_id"]
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
-        db_pg_connection, assignment_user_role_items[0].user_id
+        db_pg_connection, assignment_user_role_abstract[0].user_id
     )
     assert assignment_user is not None
 
     # verify assignment linking to correct role and parent role
     assignment_role = crud_role.get_role(
-        db_pg_connection, assignment_user_role_items[0].role_id
+        db_pg_connection, assignment_user_role_abstract[0].role_id
     )
     assert assignment_role is not None
     assert assignment_role.parent_role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
