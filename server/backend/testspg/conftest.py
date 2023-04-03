@@ -10,6 +10,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
 
