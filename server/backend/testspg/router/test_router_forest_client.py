@@ -23,10 +23,10 @@ def test_search_client_number_invalid_length_error(
     test_rsa_key
 ):
     invalid_length_param = f"?client_number={client_id_to_test}"  # less than 8 digits
-    test_endPoint = endPoint_search + invalid_length_param
-    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    test_end_point = endPoint_search + invalid_length_param
+    LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(f"{test_end_point}", headers=jwt_utils.headers(token))
     data = response.json()
     LOGGER.debug(f"data: {data}")
     assert expcted_error_type in data["detail"][0]["type"]
@@ -37,10 +37,10 @@ def test_search_client_number_correct_length_not_valid_format(
     test_rsa_key
 ):
     invalid_param = "?client_number=001a2b3d"
-    test_endPoint = endPoint_search + invalid_param
-    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    test_end_point = endPoint_search + invalid_param
+    LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(f"{test_end_point}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 0  # Expect empty
 
@@ -50,10 +50,10 @@ def test_search_client_number_not_exists_noresult(
     test_rsa_key
 ):
     invalid_param = "?client_number=99999999"
-    test_endPoint = endPoint_search + invalid_param
-    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    test_end_point = endPoint_search + invalid_param
+    LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(f"{test_end_point}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 0  # Expect empty
 
@@ -66,13 +66,13 @@ def test_search_client_number_exists_with_one_result(
     Client "00000001" have ACT (Active) status.
     """
     exist_forest_client_number = "00000001"
-    test_endPoint = endPoint_search + f"?client_number={exist_forest_client_number}"
-    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    test_end_point = endPoint_search + f"?client_number={exist_forest_client_number}"
+    LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(f"{test_end_point}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1  # Expect only 1
-    fc: FamForestClient = None
+    fc: FamForestClient
     try:
         fc = FamForestClient(**data[0])
     except Exception:
@@ -107,14 +107,13 @@ def test_search_client_number_with_status_mapping_correctly(
     FAM maps "ACT" to Active status internally; all other status are being
     mapped to Inactive.
     """
-    # assert fc.status.status_code == FamForestClientStatusType.ACTIVE
-    test_endPoint = endPoint_search + f"?client_number={client_id_to_test}"
-    LOGGER.debug(f"test_endPoint: {test_endPoint}")
+    test_end_point = endPoint_search + f"?client_number={client_id_to_test}"
+    LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
-    response = test_client_fixture.get(f"{test_endPoint}", headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(f"{test_end_point}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1  # Expect only 1
-    fc: FamForestClient = None
+    fc: FamForestClient
     try:
         fc = FamForestClient(**data[0])
     except Exception:

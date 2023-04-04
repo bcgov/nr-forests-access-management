@@ -12,7 +12,7 @@ class TestForestClientClass(object):
     """
     Testing ForestClient class with real remote API calls (TEST environment).
     """
-    fc_api: ForestClient = None
+    fc_api: ForestClient
     example_expected_valid_result = {
         'clientNumber': '00000002',
         'clientName': 'PENDING S & R BILLING',

@@ -28,7 +28,7 @@ def search(
     fc_api = ForestClient()
     fc_json_list = fc_api.find_by_client_number(client_number)  # json object List
     forest_clients = list(map(__map_api_results, fc_json_list))
-    LOGGER.debug(f"Returning {0 if forest_clients is None else len(forest_clients)} result.")
+    LOGGER.debug(f"Returning {len(forest_clients)} result.")
     return forest_clients
 
 
