@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("/search", response_model=List[schemas.FamForestClient])
 def search(
-    client_number: str = Query(min_length=8, max_length=8)
+    client_number: str = Query(min_length=3, max_length=8)
 ):
     """
     Forest Client(s) search (by defined query parameter(s)).
