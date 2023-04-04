@@ -10,11 +10,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
+import api.app.database as database
 
 
 LOGGER = logging.getLogger(__name__)
@@ -56,14 +58,24 @@ def db_pg_session(db_pg_connection: Session) -> Session:
 
 
 @pytest.fixture(scope="function")
+def test_client_fixture_unit() -> TestClient:
+
+    app.dependency_overrides[database.get_db] = \
+        lambda: UnifiedAlchemyMagicMock(data=[])
+
+    return TestClient(app)
+
+
+@pytest.fixture(scope="function")
 def test_client_fixture() -> TestClient:
     """returns a requests object of the current app,
     with the objects defined in the model created in it.
 
     :rtype: starlette.testclient
     """
-    client = TestClient(app)
-    return client
+    # reset to default database which points to postgres container
+    app.dependency_overrides[database.get_db] = database.get_db
+    return TestClient(app)
 
 
 @pytest.fixture(scope="function")
@@ -79,6 +91,19 @@ def test_rsa_key():
     return new_key.exportKey("PEM")
 
 
+@pytest.fixture(scope="function")
+def test_rsa_key_missing():
+
+    new_key = RSA.generate(2048)
+    global public_rsa_key
+    public_rsa_key = new_key.publickey().exportKey("PEM")
+
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = \
+        override_get_rsa_key_method_none
+
+    return new_key.exportKey("PEM")
+
+
 def override_get_rsa_key_method():
     return override_get_rsa_key
 
@@ -86,3 +111,11 @@ def override_get_rsa_key_method():
 def override_get_rsa_key(kid):
     global public_rsa_key
     return public_rsa_key
+
+
+def override_get_rsa_key_method_none():
+    return override_get_rsa_key_none
+
+
+def override_get_rsa_key_none(kid):
+    return None

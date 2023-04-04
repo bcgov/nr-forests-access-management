@@ -10,10 +10,12 @@ COGNITO_CLIENT_ID = os.environ.get('COGNITO_CLIENT_ID')
 COGNITO_USER_POOL_DOMAIN = os.environ.get('COGNITO_USER_POOL_DOMAIN')
 
 
-def create_jwt_claims(roles):
+def create_jwt_claims():
     return {
         "sub": "51b661cf-4109-4616-b7a5-178daf51fc12",
-        "cognito:groups": roles,
+        "cognito:groups": [
+            "FAM_ACCESS_ADMIN"
+        ],
         "iss": f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}",
         "version": 2,
         "client_id": COGNITO_CLIENT_ID,
@@ -31,10 +33,12 @@ def create_jwt_claims(roles):
 def create_jwt_token(
     test_rsa_key,
     roles=["FAM_ACCESS_ADMIN"],
+    claims=create_jwt_claims(),
     test_algorithm='RS256',
     test_headers={"kid": "12345"},
 ):
-    claims = create_jwt_claims(roles)
+    if len(roles) > 0:
+        claims["cognito:groups"] = roles
     return jws.sign(claims, test_rsa_key, algorithm=test_algorithm,
                     headers=test_headers)
 
