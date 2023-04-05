@@ -7,6 +7,12 @@ import tests.tests.jwt_utils as jwt_utils
 from api.app.constants import FamForestClientStatusType
 from api.app.main import apiPrefix
 from api.app.schemas import FamForestClient
+from fastapi.testclient import TestClient
+from testspg.constants import (CLIENT_NUMBER_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
+                               CLIENT_NUMBER_EXISTS_DECEASED,
+                               CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
+                               CLIENT_NUMBER_EXISTS_SUSPENDED)
 
 LOGGER = logging.getLogger(__name__)
 endPoint_search = f"{apiPrefix}/forest_clients/search"
@@ -46,7 +52,7 @@ def test_search_client_number_correct_length_not_valid_format(
 
 
 def test_search_client_number_not_exists_noresult(
-    test_client_fixture: starlette.testclient.TestClient,
+    test_client_fixture: TestClient,
     test_rsa_key
 ):
     invalid_param = "?client_number=99999999"
@@ -59,13 +65,13 @@ def test_search_client_number_not_exists_noresult(
 
 
 def test_search_client_number_exists_with_one_result(
-    test_client_fixture: starlette.testclient.TestClient,
+    test_client_fixture: TestClient,
     test_rsa_key
 ):
     """
     Client "00000001" have ACT (Active) status.
     """
-    exist_forest_client_number = "00000001"
+    exist_forest_client_number = CLIENT_NUMBER_EXISTS_ACTIVE
     test_end_point = endPoint_search + f"?client_number={exist_forest_client_number}"
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -85,16 +91,21 @@ def test_search_client_number_exists_with_one_result(
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_status", [
-    ("00000001", {"code": FamForestClientStatusType.ACTIVE, "description": constants.DESCRIPTION_ACTIVE}),
-    ("00000002", {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    ("00152880", {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    ("00169575", {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    ("00003643", {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE,
+        {"code": FamForestClientStatusType.ACTIVE, "description": constants.DESCRIPTION_ACTIVE}),
+    (CLIENT_NUMBER_EXISTS_DEACTIVATED,
+        {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
+    (CLIENT_NUMBER_EXISTS_DECEASED,
+        {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
+    (CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
+        {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
+    (CLIENT_NUMBER_EXISTS_SUSPENDED,
+        {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
 ])
 def test_search_client_number_with_status_mapping_correctly(
     client_id_to_test,
     expcted_status,
-    test_client_fixture: starlette.testclient.TestClient,
+    test_client_fixture: TestClient,
     test_rsa_key
 ):
     """
