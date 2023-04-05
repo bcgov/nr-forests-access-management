@@ -7,32 +7,23 @@ from api.app.crud.crud_user_role import UserRoleValidator
 from api.app.schemas import FamUserRoleAssignmentCreate
 from mock import patch
 from pydantic import ValidationError
+from testspg.constants import (CLIENT_NUMBER_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
+                               CLIENT_NUMBER_EXISTS_DECEASED,
+                               CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
+                               CLIENT_NUMBER_EXISTS_SUSPENDED,
+                               CLIENT_NUMBER_LEN_TOO_LONG,
+                               CLIENT_NUMBER_LEN_TOO_SHORT,
+                               CLIENT_NUMBER_NOT_EXISTS)
 
 LOGGER = logging.getLogger(__name__)
-
-client_number_len_too_short = "0001011"
-client_number_len_too_long = "000001011"
-client_number_not_exists = "99999999"
-"""
-Forest Client API has following status codes.
-    ACT (Active) - client "00000001"
-    DAC (Deactivated) - client "00000002"
-    DEC (Deceased) - client "00152880"
-    REC (Receivership) - client "00169575"
-    SPN (Suspended) - client "00003643"
-"""
-client_number_exists_active = "00000001"
-client_number_exists_Deactivated = "00000002"
-client_number_exists_Deceased = "00152880"
-client_number_exists_Receivership = "00169575"
-client_number_exists_Suspended = "00003643"
 
 # Override this.
 sample_request_dict = {
     "user_name": "test_user",
     "user_type_code": constants.UserType.IDIR,
     "role_id": 99,
-    "forest_client_number": client_number_not_exists
+    "forest_client_number": CLIENT_NUMBER_NOT_EXISTS
 }
 
 # Override this.
@@ -53,20 +44,20 @@ def mock_forest_client():
 
 def test_init_with_request_param_client_number_too_long_error(
 ):
-    request_dict = {**sample_request_dict, "forest_client_number": client_number_len_too_long}
+    request_dict = {**sample_request_dict, "forest_client_number": CLIENT_NUMBER_LEN_TOO_LONG}
     with pytest.raises(ValidationError, match="ensure this value has at most 8 characters"):
         request = FamUserRoleAssignmentCreate(**request_dict)
         UserRoleValidator(request)
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
-    (client_number_len_too_short, {"api_client_status_code": None, "exists": False}),
-    (client_number_not_exists, {"api_client_status_code": None, "exists": False}),
-    (client_number_exists_active, {"api_client_status_code": "ACT", "exists": True}),
-    (client_number_exists_Deactivated, {"api_client_status_code": "DAC", "exists": True}),
-    (client_number_exists_Deceased, {"api_client_status_code": "DEC", "exists": True}),
-    (client_number_exists_Receivership, {"api_client_status_code": "REC", "exists": True}),
-    (client_number_exists_Suspended, {"api_client_status_code": "SPN", "exists": True}),
+    (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None, "exists": False}),
+    (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None, "exists": False}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT", "exists": True}),
+    (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC", "exists": True}),
+    (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC", "exists": True}),
+    (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC", "exists": True}),
+    (CLIENT_NUMBER_EXISTS_SUSPENDED, {"api_client_status_code": "SPN", "exists": True}),
 ])
 def test_forest_client_number_exists(
     client_id_to_test,
@@ -88,13 +79,13 @@ def test_forest_client_number_exists(
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
-    (client_number_len_too_short, {"api_client_status_code": None}),
-    (client_number_not_exists, {"api_client_status_code": None}),
-    (client_number_exists_active, {"api_client_status_code": "ACT"}),
-    (client_number_exists_Deactivated, {"api_client_status_code": "DAC"}),
-    (client_number_exists_Deceased, {"api_client_status_code": "DEC"}),
-    (client_number_exists_Receivership, {"api_client_status_code": "REC"}),
-    (client_number_exists_Suspended, {"api_client_status_code": "SPN"}),
+    (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None}),
+    (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT"}),
+    (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC"}),
+    (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC"}),
+    (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC"}),
+    (CLIENT_NUMBER_EXISTS_SUSPENDED, {"api_client_status_code": "SPN"}),
 ])
 def test_get_forst_client(
     client_id_to_test,
@@ -118,13 +109,13 @@ def test_get_forst_client(
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
-    (client_number_len_too_short, {"api_client_status_code": None, "is_active": False}),
-    (client_number_not_exists, {"api_client_status_code": None, "is_active": False}),
-    (client_number_exists_active, {"api_client_status_code": "ACT", "is_active": True}),
-    (client_number_exists_Deactivated, {"api_client_status_code": "DAC", "is_active": False}),
-    (client_number_exists_Deceased, {"api_client_status_code": "DEC", "is_active": False}),
-    (client_number_exists_Receivership, {"api_client_status_code": "REC", "is_active": False}),
-    (client_number_exists_Suspended, {"api_client_status_code": "SPN", "is_active": False}),
+    (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None, "is_active": False}),
+    (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None, "is_active": False}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT", "is_active": True}),
+    (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC", "is_active": False}),
+    (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC", "is_active": False}),
+    (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC", "is_active": False}),
+    (CLIENT_NUMBER_EXISTS_SUSPENDED, {"api_client_status_code": "SPN", "is_active": False}),
 ])
 def test_forest_client_active(
     client_id_to_test,
