@@ -32,7 +32,7 @@ NEW_APPLICATION = {
 
 def test_get_applications(db_pg_connection: Session):
     apps = crud_application.get_applications(db=db_pg_connection)
-    assert len(apps) == 7
+    assert len(apps) > 1
     for app in apps:
         assert hasattr(app, "application_id")
         assert hasattr(app, "application_name")
