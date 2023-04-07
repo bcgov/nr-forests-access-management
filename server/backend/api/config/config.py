@@ -1,7 +1,8 @@
-import os
-import logging
-import boto3
 import json
+import logging
+import os
+
+import boto3
 
 LOGGER = logging.getLogger(__name__)
 
@@ -154,6 +155,5 @@ def get_forest_client_api_token():
 def get_forest_client_api_baseurl():
     forest_client_api_baseurl = get_env_var("FC_API_BASE_URL") if is_on_aws() \
         else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
-    forest_client_api_baseurl = os.getenv("FC_API_BASE_URL", "https://nr-forest-client-api-test.api.gov.bc.ca")
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
