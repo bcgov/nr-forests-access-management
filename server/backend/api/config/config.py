@@ -146,13 +146,14 @@ def get_allow_origins():
 
 
 def get_forest_client_api_token():
-    # TODO Where to store the api token?
-    api_token = os.getenv("FC_API_TOKEN", "4r0dn5wC0JTs6N1tdw6NDzpjBRQwEJ6u")  # Test env token.
+    api_token = get_env_var("FC_API_TOKEN") if is_on_aws() \
+        else "4r0dn5wC0JTs6N1tdw6NDzpjBRQwEJ6u"  # Test env.
     return api_token
 
 
 def get_forest_client_api_baseurl():
-    # TODO Add this to env...
+    forest_client_api_baseurl = get_env_var("FC_API_BASE_URL") if is_on_aws() \
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
     forest_client_api_baseurl = os.getenv("FC_API_BASE_URL", "https://nr-forest-client-api-test.api.gov.bc.ca")
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
