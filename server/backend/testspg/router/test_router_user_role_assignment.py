@@ -43,7 +43,8 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
 
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_rsa_key,
+    db_pg_container
 ):
     """
     test user has no authentication to the app
@@ -115,7 +116,8 @@ def test_create_user_role_assignment_with_concrete_role(
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_rsa_key,
+    db_pg_container
 ):
     """
     test assign same role for the same user
@@ -151,6 +153,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
+    db_pg_container
 ):
     """
     test assign an abscrate role to a user without forest client number
@@ -174,7 +177,8 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
 
 def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key, db_pg_connection: Session
+    test_rsa_key, db_pg_connection: Session,
+    db_pg_container
 ):
     """
     test assign an abscrate role to a user
@@ -224,7 +228,8 @@ def test_create_user_role_assignment_with_abstract_role(
 
 def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key, db_pg_connection: Session
+    test_rsa_key,
+    db_pg_connection: Session
 ):
     # create a user role assignment
     access_roles = [FOM_DEV_ADMIN_ROLE]

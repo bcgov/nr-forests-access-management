@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 import logging
 import datetime
+import pytest
+from sqlalchemy.exc import NoResultFound
 from api.app.crud import crud_application
 import api.app.schemas as schemas
-from api.app.models import model as models
 import api.app.constants as constants
 from testspg.constants import TEST_NOT_EXIST_APPLICATION_ID, \
-    TEST_FOM_DEV_APPLICATION_ID, TEST_FOM_DEV_SUBMITTER_ROLE_ID
+    TEST_FOM_DEV_APPLICATION_ID, \
+    TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
+    TEST_NOT_EXIST_ROLE_ID
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,9 +36,6 @@ NEW_APPLICATION = {
 def test_get_applications(db_pg_connection: Session):
     apps = crud_application.get_applications(db=db_pg_connection)
     assert len(apps) > 1
-    for app in apps:
-        assert models.FamApplication(**app)
-
     assert apps[0].application_name == TEST_APPLICATION_NAME_FAM
     assert apps[1].application_name == TEST_APPLICATION_NAME_FOM_DEV
     assert apps[1].app_environment == "DEV"
@@ -126,15 +126,15 @@ def test_create_application(db_pg_connection: Session):
     )
     assert app_by_name is None
 
-    # add the data to the database
+    # add a new application to the database
     app_data_as_pydantic = schemas.FamApplicationCreate(**NEW_APPLICATION)
-    app_data = crud_application.create_application(
+    new_app = crud_application.create_application(
         fam_application=app_data_as_pydantic, db=db_pg_connection
     )
 
     # the object returned by create_application should contain the
     # application object that it was passed
-    assert app_data.application_name == NEW_APPLICATION["application_name"]
+    assert new_app.application_name == NEW_APPLICATION["application_name"]
 
     # verify that the data is in the database
     app_by_name = crud_application.get_application_by_name(
@@ -142,18 +142,43 @@ def test_create_application(db_pg_connection: Session):
     )
     assert app_by_name.application_name == NEW_APPLICATION["application_name"]
 
-
-def test_delete_application(db_pg_connection: Session):
-    app_by_name = crud_application.get_application_by_name(
-        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
-    )
-    assert app_by_name.application_name == NEW_APPLICATION["application_name"]
-
+    # cleanup
     crud_application.delete_application(
         db=db_pg_connection,
         application_id=app_by_name.application_id
     )
 
+
+def test_delete_application(db_pg_connection: Session):
+    # delete non exists application
+    app_by_name = crud_application.get_application_by_name(
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
+    )
+    assert app_by_name is None
+
+    with pytest.raises(NoResultFound) as e:
+        crud_application.delete_application(
+            db_pg_connection,
+            TEST_NOT_EXIST_ROLE_ID
+        )
+    assert str(e.value) == "No row was found when one was required"
+
+    # create a new app
+    app_data_as_pydantic = schemas.FamApplicationCreate(**NEW_APPLICATION)
+    crud_application.create_application(
+        fam_application=app_data_as_pydantic, db=db_pg_connection
+    )
+    # verify the new application is in the database
+    app_by_name = crud_application.get_application_by_name(
+        db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
+    )
+    assert app_by_name.application_name == NEW_APPLICATION["application_name"]
+    # delete the application
+    crud_application.delete_application(
+        db=db_pg_connection,
+        application_id=app_by_name.application_id
+    )
+    # verify application got deleted
     app_by_name = crud_application.get_application_by_name(
         db=db_pg_connection, application_name=NEW_APPLICATION["application_name"]
     )

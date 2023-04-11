@@ -67,18 +67,29 @@ def test_create_role(db_pg_connection: Session):
     assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
+    # cleanup
+    db_pg_connection.delete(found_role)
+    db_pg_connection.flush()
+
 
 def test_create_role_duplicate(db_pg_connection: Session):
+    # create a role ininitally
+    new_role = crud_role.create_role(
+        schemas.FamRoleCreate(**TEST_ROLE_CREATE),
+        db_pg_connection,
+    )
+    assert new_role.role_name == TEST_NEW_ROLE
+
     # can not create the role with same role name, even with a different creator
     with pytest.raises(IntegrityError) as e:
         crud_role.create_role(
             schemas.FamRoleCreate(
                 **{
-                    "application_id": TEST_FOM_DEV_APPLICATION_ID,
-                    "role_name": TEST_NEW_ROLE,
-                    "role_purpose": TEST_ROLE_PURPOSE,
+                    "application_id": TEST_ROLE_CREATE["application_id"],
+                    "role_name": TEST_ROLE_CREATE["role_name"],
+                    "role_purpose": TEST_ROLE_CREATE["role_purpose"],
                     "create_user": "ANOTHER_CREATOR",
-                    "role_type_code": constants.RoleType.ROLE_TYPE_CONCRETE,
+                    "role_type_code": TEST_ROLE_CREATE["role_type_code"],
                 }
             ),
             db_pg_connection,
@@ -122,6 +133,11 @@ def test_create_role_child_role_with_forest_client(db_pg_connection: Session):
         forest_client_from_db.forest_client_number ==
         TEST_FOREST_CLIENT_NUMBER
     )
+
+    # cleanup
+    db_pg_connection.delete(found_role)
+    db_pg_connection.delete(forest_client_from_db)
+    db_pg_connection.flush()
 
 
 def test_create_role_child_role_with_invalid_parent(db_pg_connection: Session):
@@ -182,6 +198,11 @@ def test_create_role_same_role_for_different_application(db_pg_connection: Sessi
     assert second_new_role.application_id != first_new_role.application_id
     assert second_new_role.role_name == first_new_role.role_name
 
+    # cleanup
+    db_pg_connection.delete(first_new_role)
+    db_pg_connection.delete(second_new_role)
+    db_pg_connection.flush()
+
 
 def test_get_role_by_role_name_and_app_id(db_pg_connection: Session):
     # get with non existing role name
@@ -215,4 +236,3 @@ def test_get_role_by_role_name_and_app_id(db_pg_connection: Session):
         TEST_FOM_DEV_APPLICATION_ID
     )
     assert found_role.role_name == "FOM_REVIEWER"
-

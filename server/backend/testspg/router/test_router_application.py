@@ -17,7 +17,8 @@ TEST_APPLICATION_ID_NOT_FOUND = 0
 
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_rsa_key,
+    db_pg_container
 ):
     # Test Accss Roles: FAM_ACCESS_ADMIN only
     access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
@@ -64,7 +65,8 @@ def test_get_applications(
 
 def test_get_fam_application_roles(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_rsa_key,
+    db_pg_container
 ):
     # create a concrete role with an abstract role as parent
     # this role won't be returned
@@ -112,7 +114,8 @@ def test_get_fam_application_roles(
 
 def test_get_fam_application_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_rsa_key,
+    db_pg_container
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
 

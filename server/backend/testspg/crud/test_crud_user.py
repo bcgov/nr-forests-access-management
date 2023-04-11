@@ -146,3 +146,5 @@ def test_find_or_create(db_pg_connection: Session):
     # verify no user created
     assert len(users) == len(after_add_users)
 
+    # cleanup
+    crud_user.delete_user(db_pg_connection, new_user.user_id)

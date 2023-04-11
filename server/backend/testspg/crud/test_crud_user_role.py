@@ -141,12 +141,15 @@ def test_find_or_create_forest_client_child_role(db_pg_connection: Session):
         TEST_CREATOR
     )
     # verify child role created
-    child_role = crud_role.get_role(db_pg_connection, result.role_id)
-    assert child_role.role_id == result.role_id
-    assert child_role.role_name == "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER
+    child_role_one = crud_role.get_role(db_pg_connection, result.role_id)
+    assert child_role_one.role_id == result.role_id
+    assert child_role_one.role_name == "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER
 
     # create child role for concrete parent role
-    test_concrete_role = crud_role.get_role(db_pg_connection, TEST_FOM_DEV_REVIEWER_ROLE_ID)
+    test_concrete_role = crud_role.get_role(
+        db_pg_connection,
+        TEST_FOM_DEV_REVIEWER_ROLE_ID
+    )
     result = crud_user_role.find_or_create_forest_client_child_role(
         db_pg_connection,
         TEST_FOREST_CLIENT_NUMBER,
@@ -154,6 +157,11 @@ def test_find_or_create_forest_client_child_role(db_pg_connection: Session):
         TEST_CREATOR
     )
     # verify child role created
-    child_role = crud_role.get_role(db_pg_connection, result.role_id)
-    assert child_role.role_id == result.role_id
-    assert child_role.role_name == "FOM_REVIEWER_" + TEST_FOREST_CLIENT_NUMBER
+    child_role_two = crud_role.get_role(db_pg_connection, result.role_id)
+    assert child_role_two.role_id == result.role_id
+    assert child_role_two.role_name == "FOM_REVIEWER_" + TEST_FOREST_CLIENT_NUMBER
+
+    # cleanup
+    db_pg_connection.delete(child_role_one)
+    db_pg_connection.delete(child_role_two)
+    db_pg_connection.flush()
