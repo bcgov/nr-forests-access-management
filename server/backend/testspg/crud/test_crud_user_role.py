@@ -26,7 +26,9 @@ def test_create_user_role_with_role_not_exists(db_pg_connection: Session):
 
     with pytest.raises(HTTPException) as e:
         assert crud_user_role.create_user_role(
-            db_pg_connection, schemas.FamUserRoleAssignmentCreate(**user_role), TEST_CREATOR
+            db_pg_connection,
+            schemas.FamUserRoleAssignmentCreate(**user_role),
+            TEST_CREATOR
         )
     assert str(e._excinfo).find("Role id ") != -1
     assert str(e._excinfo).find("does not exist") != -1

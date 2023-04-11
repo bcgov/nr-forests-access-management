@@ -3,8 +3,10 @@ import logging
 import datetime
 from api.app.crud import crud_application
 import api.app.schemas as schemas
+from api.app.models import model as models
 import api.app.constants as constants
-from testspg.constants import TEST_NOT_EXIST_APPLICATION_ID
+from testspg.constants import TEST_NOT_EXIST_APPLICATION_ID, \
+    TEST_FOM_DEV_APPLICATION_ID, TEST_FOM_DEV_SUBMITTER_ROLE_ID
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,9 +17,7 @@ TEST_APPLICATION_ID_FAM = 1
 TEST_APPLICATION_ROLE_ID_FAM = 1
 
 TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
-TEST_APPLICATION_ID_FOM_DEV = 2
 TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
-TEST_APPLICATION_ROLE_ID_FOM_DEV = 3
 
 NEW_APPLICATION = {
     "application_name": "TEST_APP_DEV",
@@ -34,14 +34,7 @@ def test_get_applications(db_pg_connection: Session):
     apps = crud_application.get_applications(db=db_pg_connection)
     assert len(apps) > 1
     for app in apps:
-        assert hasattr(app, "application_id")
-        assert hasattr(app, "application_name")
-        assert hasattr(app, "application_description")
-        assert hasattr(app, "create_user")
-        assert hasattr(app, "create_date")
-        assert hasattr(app, "update_user")
-        assert hasattr(app, "update_date")
-        assert hasattr(app, "app_environment")
+        assert models.FamApplication(**app)
 
     assert apps[0].application_name == TEST_APPLICATION_NAME_FAM
     assert apps[1].application_name == TEST_APPLICATION_NAME_FOM_DEV
@@ -64,10 +57,10 @@ def test_get_application(db_pg_connection: Session):
     assert app_by_id.application_id == TEST_APPLICATION_ID_FAM
     assert app_by_id.application_name == TEST_APPLICATION_NAME_FAM
 
-    app_by_name = crud_application.get_application(
+    app_by_id = crud_application.get_application(
         db=db_pg_connection, application_id=TEST_NOT_EXIST_APPLICATION_ID
     )
-    assert app_by_name is None
+    assert app_by_id is None
 
 
 def test_get_application_by_name(db_pg_connection: Session):
@@ -94,7 +87,7 @@ def test_get_application_by_name(db_pg_connection: Session):
 
 def test_get_application_roles(db_pg_connection: Session):
     app_roles = crud_application.get_application_roles(
-        db=db_pg_connection, application_id=TEST_APPLICATION_ID_FOM_DEV
+        db=db_pg_connection, application_id=TEST_FOM_DEV_APPLICATION_ID
     )
 
     for app_role in app_roles:
@@ -103,19 +96,19 @@ def test_get_application_roles(db_pg_connection: Session):
 
     assert len(app_roles) == 2
     assert app_roles[0].role_name == TEST_APPLICATION_ROLES_FOM_DEV[0]
-    assert app_roles[0].application_id == TEST_APPLICATION_ID_FOM_DEV
+    assert app_roles[0].application_id == TEST_FOM_DEV_APPLICATION_ID
     assert app_roles[0].role_type_code == "A"
     assert app_roles[1].role_name == TEST_APPLICATION_ROLES_FOM_DEV[1]
-    assert app_roles[1].application_id == TEST_APPLICATION_ID_FOM_DEV
+    assert app_roles[1].application_id == TEST_FOM_DEV_APPLICATION_ID
     assert app_roles[1].role_type_code == "C"
 
 
 def test_get_application_id_by_role_id(db_pg_connection: Session):
     app_id = crud_application.get_application_id_by_role_id(
         db=db_pg_connection,
-        role_id=TEST_APPLICATION_ROLE_ID_FOM_DEV
+        role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
     )
-    assert app_id == TEST_APPLICATION_ID_FOM_DEV
+    assert app_id == TEST_FOM_DEV_APPLICATION_ID
 
 
 def test_get_application_id_by_user_role_xref_id(db_pg_connection: Session):

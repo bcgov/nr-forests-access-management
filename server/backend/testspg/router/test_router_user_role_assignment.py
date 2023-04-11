@@ -1,5 +1,6 @@
 import logging
 import copy
+from http import HTTPStatus
 import starlette.testclient
 from sqlalchemy.orm import Session
 from api.app.main import apiPrefix
@@ -21,8 +22,6 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
-SUCCESS_RESPONSE = 200
-SUCCESS_RESPONSE_DELETE = 204
 
 # note: this might need to be a real idir username
 # and a real forest client id
@@ -77,7 +76,7 @@ def test_create_user_role_assignment_with_concrete_role(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
     assert "user_role_xref_id" in data
@@ -111,7 +110,7 @@ def test_create_user_role_assignment_with_concrete_role(
         f"{endPoint}/{data['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
@@ -129,7 +128,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     data = response.json()
 
     # create user role assignment the second time
@@ -146,7 +145,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         f"{endPoint}/{data['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
@@ -187,7 +186,7 @@ def test_create_user_role_assignment_with_abstract_role(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
     assert "user_role_xref_id" in data
@@ -220,7 +219,7 @@ def test_create_user_role_assignment_with_abstract_role(
         f"{endPoint}/{data['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_same_username(
@@ -235,7 +234,7 @@ def test_create_user_role_assignment_with_same_username(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     assignment_one = response.json()
 
     # allow create a user role assignment with the same username, different role
@@ -246,7 +245,7 @@ def test_create_user_role_assignment_with_same_username(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     assignment_two = response.json()
 
     # allow create a user role assignment with the same username, different role
@@ -257,7 +256,7 @@ def test_create_user_role_assignment_with_same_username(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     assignment_three = response.json()
 
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -270,19 +269,19 @@ def test_create_user_role_assignment_with_same_username(
         f"{endPoint}/{assignment_one['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_two['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_three['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_delete_user_role_assignment(
@@ -298,7 +297,7 @@ def test_delete_user_role_assignment(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     data = response.json()
     assert "user_role_xref_id" in data
 
@@ -314,7 +313,7 @@ def test_delete_user_role_assignment(
         f"{endPoint}/{data['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -336,7 +335,7 @@ def test_assign_same_application_roles_for_different_environments(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     fom_dev_user_role_assignment = response.json()
     assert "user_role_xref_id" in fom_dev_user_role_assignment
 
@@ -348,7 +347,7 @@ def test_assign_same_application_roles_for_different_environments(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE
+    assert response.status_code == HTTPStatus.OK
     fom_test_user_role_assignment = response.json()
     assert "user_role_xref_id" in fom_test_user_role_assignment
 
@@ -390,7 +389,7 @@ def test_assign_same_application_roles_for_different_environments(
         f"{endPoint}/{fom_dev_user_role_assignment['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     # verify no user role assignment for fom_dev, but still have one for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -409,7 +408,7 @@ def test_assign_same_application_roles_for_different_environments(
         f"{endPoint}/{fom_test_user_role_assignment['user_role_xref_id']}",
         headers=jwt_utils.headers(token)
     )
-    assert response.status_code == SUCCESS_RESPONSE_DELETE
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     # verify no user role assignment for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
