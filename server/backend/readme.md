@@ -109,7 +109,15 @@ pip install -r requirements-dev.txt
 
 ```
 cd server/backend
-pytest
+
+# setup environment variables
+set -o allexport; source local-dev.env; set +o allexport
+
+# run postgres tests
+pytest --ignore tests
+
+# run sqlite tests
+pytest --ignore testspg
 ```
 
 Potential gotchas:
