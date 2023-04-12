@@ -171,7 +171,7 @@ def construct_forest_client_role_purpose(
     parent_role_purpose: str, forest_client_number: str
 ):
     LOGGER.debug(f"parent_role_purpose: {parent_role_purpose}")
-    client_purpose = f"{parent_role_purpose} for {forest_client_number})"
+    client_purpose = f"{parent_role_purpose} for {forest_client_number}"
     return client_purpose
 
 
