@@ -41,10 +41,12 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   callback_urls                                 = [
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
     "https://fom-test.nrs.gov.bc.ca/admin/search",
+    "https://fom-demo.apps.silver.devops.gov.bc.ca/admin/search",
     "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.test}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.test}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true",
+    "${var.cognito_app_client_logout_chain_url.test}https://fom-demo.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
