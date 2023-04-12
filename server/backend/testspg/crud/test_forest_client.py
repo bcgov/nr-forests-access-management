@@ -11,14 +11,16 @@ LOGGER = logging.getLogger(__name__)
 class TestForestClientClass(object):
     """
     Testing ForestClient class with real remote API calls (TEST environment).
+    Initially Forest Client API returns also "acronyms" field but it disappears
+    some day. Since this field is not important at the moment, so test does not
+    includ3e it.
     """
     fc_api: ForestClient
     example_expected_valid_result = {
         'clientNumber': '00000002',
         'clientName': 'PENDING S & R BILLING',
         'clientStatusCode': 'DAC',
-        'clientTypeCode': 'G',
-        'acronyms': []
+        'clientTypeCode': 'G'
     }
 
     def setup_class(self):
@@ -49,4 +51,4 @@ class TestForestClientClass(object):
         assert len(result) == 1
         assert isinstance(result[0], dict)
         result_fc_dict = result[0]
-        assert result_fc_dict.keys() == self.example_expected_valid_result.keys()
+        assert all(key in self.example_expected_valid_result.keys() for key in result_fc_dict.keys())

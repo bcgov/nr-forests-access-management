@@ -1,20 +1,24 @@
-import logging
 import copy
+import logging
 from http import HTTPStatus
+
 import starlette.testclient
-from sqlalchemy.orm import Session
-from api.app.main import apiPrefix
-from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.crud import crud_application
-from api.app.crud import crud_user
-from api.app.crud import crud_role
 import testspg.jwt_utils as jwt_utils
-from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT, \
-    TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE, \
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
-    TEST_FOM_DEV_APPLICATION_ID, \
-    TEST_FOM_TEST_APPLICATION_ID
+from api.app.crud import crud_application, crud_role, crud_user
+from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+from api.app.main import apiPrefix
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
+                               CLIENT_NUMBER_NOT_EXISTS,
+                               TEST_FOM_DEV_APPLICATION_ID,
+                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                               TEST_FOM_TEST_APPLICATION_ID,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -31,13 +35,13 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00000002"
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00000003"
+    "forest_client_number": CLIENT_NUMBER_2_EXISTS_ACTIVE
 }
 
 
@@ -420,3 +424,55 @@ def test_assign_same_application_roles_for_different_environments(
         db_pg_connection, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 0
+
+
+def test_user_role_forest_client_number_not_exist_bad_request(
+    test_client_fixture: TestClient,
+    test_rsa_key,
+    db_pg_container: Session
+):
+    """
+    Test assign user role with none-existing forest client number should be
+    rejected.
+    """
+    client_number_not_exists = CLIENT_NUMBER_NOT_EXISTS
+    invalid_request = {
+        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        "forest_client_number": client_number_not_exists
+    }
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=invalid_request,
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert (f"Forest Client Number {client_number_not_exists} does not exist."
+            in response.json()["detail"]
+            )
+
+def test_user_role_forest_client_number_inactive_bad_request(
+    test_client_fixture: TestClient,
+    test_rsa_key,
+    db_pg_container: Session
+):
+    """
+    Test assign user role with inactive forest client number should be
+    rejected.
+    """
+    invalid_request = {
+        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        "forest_client_number": CLIENT_NUMBER_EXISTS_DEACTIVATED
+    }
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=invalid_request,
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert ("Forest Client is not in Active status")
