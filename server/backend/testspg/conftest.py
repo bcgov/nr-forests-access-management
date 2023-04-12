@@ -28,7 +28,7 @@ COMPOSE_PATH = os.path.join(os.path.dirname(__file__), '../../../')
 def db_pg_container():
     compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
     compose.start()
-    time.sleep(5)  # wait db migration script to run
+    time.sleep(6)  # wait db migration script to run
     yield compose
     compose.stop()
 
