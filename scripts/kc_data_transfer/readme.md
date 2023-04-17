@@ -40,6 +40,7 @@ exists in the ./scripts/kc_data_transfer directory it will automatically
 get loaded by the code. Just copy the envExample file to .env and change the
 values. **Do not check in the .env file with sercets.**
 
+All variables start with "KC" are for transfering user from keycloak. For transfering user from csv file, use the last four variables.
 -   KC_HOST - url to keycloak instance (e.g. https://oidc.gov.bc.ca)
 -   KC_CLIENTID - The client id that has been configured as a service account
 -   KC_SECRET - The secret for the above client
@@ -47,7 +48,8 @@ values. **Do not check in the .env file with sercets.**
 -   KC_FOM_CLIENTID=the name of the client used for fom
 -   FAM_JWT - Your JWT token (steal from the docs page after authenticating or from your browser, see the section below)
 -   FAM_URL - Base FAM API url (e.g. https://7j9h7vm7ag.execute-api.ca-central-1.amazonaws.com/v1)
--   FOM_APP_NAME_IN_FAM - The name of the FOM app in the FAM database (e.g. "FOM_DEV")
+-   APP_NAME_IN_FAM - The name of the app in the FAM database (e.g. "FOM_DEV")
+-   APP_USER_FILE_PATH - The csv file that stores all user information for the app
 
 ## Get the FAM_JWT token
 
