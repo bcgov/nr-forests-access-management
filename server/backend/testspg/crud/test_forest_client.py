@@ -3,19 +3,19 @@
 import logging
 
 import pytest
-from api.app.integration.forest_client.forest_client import ForestClient
+from api.app.integration.forest_client.forest_client import ForestClientService
 
 LOGGER = logging.getLogger(__name__)
 
 
-class TestForestClientClass(object):
+class TestForestClientServiceClass(object):
     """
     Testing ForestClient class with real remote API calls (TEST environment).
     Initially Forest Client API returns also "acronyms" field but it disappears
     some day. Since this field is not important at the moment, so test does not
     includ3e it.
     """
-    fc_api: ForestClient
+    fc_api: ForestClientService
     example_expected_valid_result = {
         'clientNumber': '00000002',
         'clientName': 'PENDING S & R BILLING',
@@ -24,7 +24,7 @@ class TestForestClientClass(object):
     }
 
     def setup_class(self):
-        self.fc_api = ForestClient()
+        self.fc_api = ForestClientService()
 
     def test_verify_init(self):
         # Quick Verifying for init not empty

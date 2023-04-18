@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from api.app import constants as famConstants
 from api.app.models import model as models
-from api.app.integration.forest_client.forest_client import ForestClient
+from api.app.integration.forest_client.forest_client import ForestClientService
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
@@ -247,7 +247,7 @@ class UserRoleValidator:
         # Note - this value should already be validated from schema input validation.
         forest_client_number = request.forest_client_number
         if forest_client_number is not None:
-            fc_api = ForestClient()
+            fc_api = ForestClientService()
 
             # Locally stored (if any) for later use to prevent api calls again.
             # Exact client number search - should only contain 1 result.
