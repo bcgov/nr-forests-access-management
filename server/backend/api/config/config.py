@@ -147,8 +147,7 @@ def get_allow_origins():
 
 
 def get_forest_client_api_token():
-    api_token = get_env_var("FC_API_TOKEN") if is_on_aws() \
-        else "4r0dn5wC0JTs6N1tdw6NDzpjBRQwEJ6u"  # Test env.
+    api_token = get_env_var("FC_API_TOKEN")
     return api_token
 
 
