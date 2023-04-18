@@ -33,7 +33,11 @@ class ForestClientService():
         :param p_client_number: Forest Client Number string (8 digits).
                                 Note! Current Forest Client API can only do exact match.
                                 '/api/clients/findByClientNumber/{clientNumber}'
-        :return: Search result (JSON) for a Forest Client information object.
+        :return: Search result as List for a Forest Client information object.
+                 Current Forest Client API returns exact one result or http status
+                 other than 200 with message content. The intent for FAM search is for
+                 wild card search and Forest Client API could be capable of doing that
+                 in next version.
         """
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
@@ -45,4 +49,7 @@ class ForestClientService():
 
         # !! Don't map and return schema.FamForestClient or object from "scheam.py" as that
         # will create circular dependency issue. let crud to map the result.
-        return [r.json()] if r.status_code == HTTPStatus.OK else []
+        api_result = []
+        if (r.status_code == HTTPStatus.OK):
+            api_result = [r.json()]
+        return api_result
