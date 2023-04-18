@@ -17,6 +17,7 @@ env:
   POSTGRES_DB: fam
   POSTGRES_PORT: 5432
   USE_POSTGRES: false
+  FC_API_TOKEN: "${{ secrets.FOREST_CLIENT_API_API_KEY }}"
 
 jobs:
   api-unit-tests:
