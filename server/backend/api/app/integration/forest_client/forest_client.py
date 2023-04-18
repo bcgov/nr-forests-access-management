@@ -36,7 +36,7 @@ class ForestClientService():
         :return: Search result (JSON) for a Forest Client information object.
         """
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
-        LOGGER.debug(f"ForestClient find_by_client_number() - url: {url}")
+        LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
         r = self.session.get(url)
         status_code = r.status_code
         api_result = r.json() if r.status_code == HTTPStatus.OK else r.content

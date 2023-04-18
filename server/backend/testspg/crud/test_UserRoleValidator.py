@@ -38,7 +38,7 @@ sample_forest_client_return = [{
 @pytest.fixture(scope="function", autouse=True)
 def mock_forest_client():
     # Mocked dependency class object
-    with patch("api.app.crud.crud_user_role.ForestClient", autospec=True) as m:
+    with patch("api.app.crud.crud_user_role.ForestClientService", autospec=True) as m:
         yield m.return_value  # Very important to get instance of mocked class.
 
 

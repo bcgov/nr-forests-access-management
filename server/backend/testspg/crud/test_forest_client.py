@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 class TestForestClientServiceClass(object):
     """
-    Testing ForestClient class with real remote API calls (TEST environment).
+    Testing ForestClientService class with real remote API calls (TEST environment).
     Initially Forest Client API returns also "acronyms" field but it disappears
     some day. Since this field is not important at the moment, so test does not
     includ3e it.
