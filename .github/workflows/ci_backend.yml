@@ -18,3 +18,5 @@ jobs:
 
   api_tests:
     uses: ./.github/workflows/reuseable_api_unittests.yml
+    secrets:
+      forest_client_api_api_key: "${{ secrets.FOREST_CLIENT_API_API_KEY }}"
