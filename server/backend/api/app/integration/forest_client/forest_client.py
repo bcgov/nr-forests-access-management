@@ -56,7 +56,7 @@ class ForestClientService():
             return [api_result]
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
-        except requests.exceptions.HTTPError as err:
+        except requests.exceptions.HTTPError:
             status_code = r.status_code
             LOGGER.debug(f"API status code: {status_code}")
             LOGGER.debug(f"API result: {r.content or r.reason}")

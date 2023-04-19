@@ -9,6 +9,7 @@ env:
   POSTGRES_PASSWORD: postgres
   API_DB_USERNAME: fam_proxy_api
   API_DB_PASSWORD: fam_password
+  FC_API_TOKEN: "${{ secrets.FOREST_CLIENT_API_API_KEY }}"
 
 jobs:
   auth-function-ci:
