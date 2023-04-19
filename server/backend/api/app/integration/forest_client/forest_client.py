@@ -16,6 +16,10 @@ class ForestClientService():
         test: https://nr-forest-client-api-test.api.gov.bc.ca/
         prod: https://nr-forest-client-api-prod.api.gov.bc.ca/
     """
+    # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
+    # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
+    TIMEOUT = (4, 10) # Timeout (connect, read) in seconds.
+
     def __init__(self):
         self.api_base_url = config.get_forest_client_api_baseurl()
         self.api_clients_url = f"{self.api_base_url}/api/clients"
@@ -41,15 +45,35 @@ class ForestClientService():
         """
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
-        r = self.session.get(url)
-        status_code = r.status_code
-        api_result = r.json() if r.status_code == HTTPStatus.OK else r.content
-        LOGGER.debug(f"API status code: {status_code}")
-        LOGGER.debug(f"API result: {api_result}")
 
-        # !! Don't map and return schema.FamForestClient or object from "scheam.py" as that
-        # will create circular dependency issue. let crud to map the result.
-        api_result = []
-        if (r.status_code == HTTPStatus.OK):
-            api_result = [r.json()]
-        return api_result
+        try:
+            r = self.session.get(url, timeout=self.TIMEOUT)
+            r.raise_for_status()
+            # !! Don't map and return schema.FamForestClient or object from "scheam.py" as that
+            # will create circular dependency issue. let crud to map the result.
+            api_result = r.json()
+            LOGGER.debug(f"API result: {api_result}")
+            return [api_result]
+
+        # Below except catches only HTTPError not general errors like network connection/timeout.
+        except requests.exceptions.HTTPError as err:
+            status_code = r.status_code
+            LOGGER.debug(f"API status code: {status_code}")
+            LOGGER.debug(f"API result: {r.content or r.reason}")
+
+            # For some reason Forest Client API uses (a bit confusing):
+            #    - '404' as general "client 'Not Found'", not as conventional http Not Found.
+            #
+            # Forest Client API returns '400' as "Invalid Client Number"; e.g. /findByClientNumber/abcde0001
+            # Howerver FAM 'search' (as string type param) is intended for either 'number' or 'name' search),
+            # so if 400, will return empty.
+            if ((status_code == HTTPStatus.NOT_FOUND) or (status_code == HTTPStatus.BAD_REQUEST)):
+                return [] # return empty for FAM forest client search
+
+            # Else raise error, including 500
+            raise
+
+            """
+            Dev Note - If in the future this class gets more endpoints to integrate, better improve
+            error handling, request init and logging, in one place (e.g. in parent class).
+            """
