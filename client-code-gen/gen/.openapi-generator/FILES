@@ -1,9 +1,9 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 api/famapplications-api.ts
+api/famforest-clients-api.ts
 api/famroles-api.ts
 api/famuser-role-assignment-api.ts
 api/famusers-api.ts
@@ -17,6 +17,8 @@ model/fam-application-role.ts
 model/fam-application-user-role-assignment-get.ts
 model/fam-application.ts
 model/fam-forest-client-create.ts
+model/fam-forest-client-status-type.ts
+model/fam-forest-client-status.ts
 model/fam-forest-client.ts
 model/fam-role-create.ts
 model/fam-role-get.ts

@@ -15,7 +15,7 @@ from api.app.constants import COGNITO_USERNAME_KEY
 # import config
 # then
 # config.get_aws_region()
-from .config import (get_aws_region,
+from api.config.config import (get_aws_region,
                      get_user_pool_domain_name,
                      get_user_pool_id,
                      get_oidc_client_id)

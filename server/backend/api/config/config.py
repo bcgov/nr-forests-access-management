@@ -1,7 +1,8 @@
-import os
-import logging
-import boto3
 import json
+import logging
+import os
+
+import boto3
 
 LOGGER = logging.getLogger(__name__)
 
@@ -143,3 +144,15 @@ def get_allow_origins():
     allow_origins = [get_env_var("ALLOW_ORIGIN")] if is_on_aws() else ["*"]
     LOGGER.info(f"allow_origins -- {allow_origins}")
     return allow_origins
+
+
+def get_forest_client_api_token():
+    api_token = get_env_var("FC_API_TOKEN")
+    return api_token
+
+
+def get_forest_client_api_baseurl():
+    forest_client_api_baseurl = get_env_var("FC_API_BASE_URL") if is_on_aws() \
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
+    LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
+    return forest_client_api_baseurl

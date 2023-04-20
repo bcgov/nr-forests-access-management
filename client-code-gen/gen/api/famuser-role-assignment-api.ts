@@ -54,9 +54,9 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication 75g60i0g3rt0npuvvho1ucvjm8 required
+            // authentication 7oi2u0st9ov66aahdk02at9f7g required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "75g60i0g3rt0npuvvho1ucvjm8", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "7oi2u0st9ov66aahdk02at9f7g", [], configuration)
 
 
     
@@ -95,9 +95,9 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication 75g60i0g3rt0npuvvho1ucvjm8 required
+            // authentication 7oi2u0st9ov66aahdk02at9f7g required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "75g60i0g3rt0npuvvho1ucvjm8", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "7oi2u0st9ov66aahdk02at9f7g", [], configuration)
 
 
     

@@ -21,6 +21,7 @@ env:
 jobs:
   api-unit-tests:
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
       - name: checkout the repo and building the Backend
@@ -46,6 +47,8 @@ jobs:
           verbose: true
           job-summary: true
           custom-arguments: 'server/backend --ignore server/backend/testspg'
+        env:
+          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
 
       - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
@@ -54,3 +57,5 @@ jobs:
           verbose: true
           job-summary: true
           custom-arguments: 'server/backend --ignore server/backend/tests'
+        env:
+          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}

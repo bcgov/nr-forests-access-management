@@ -13,33 +13,19 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FamForestClientStatus } from './fam-forest-client-status';
 
 /**
- * 
+ * An enumeration.
  * @export
- * @interface FamForestClient
+ * @enum {string}
  */
-export interface FamForestClient {
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClient
-     */
-    'client_name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClient
-     */
-    'forest_client_number': string;
-    /**
-     * 
-     * @type {FamForestClientStatus}
-     * @memberof FamForestClient
-     */
-    'status'?: FamForestClientStatus;
-}
+
+export const FamForestClientStatusType = {
+    A: 'A',
+    I: 'I'
+} as const;
+
+export type FamForestClientStatusType = typeof FamForestClientStatusType[keyof typeof FamForestClientStatusType];
+
+
 

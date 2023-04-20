@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 from api.app import constants as famConstants
 from api.app.models import model as models
+from api.app.integration.forest_client.forest_client import ForestClientService
 from sqlalchemy.orm import Session, load_only
 
 from .. import schemas
@@ -70,6 +71,19 @@ def create_user_role(
                 f"{request.user_name} to abstract role {fam_role.role_name}")
             crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
+        validator = UserRoleValidator(request)
+        if (not validator.forest_client_number_exists()):
+            error_msg = (
+                "Invalid role assignment request. " +
+                f"Forest Client Number {request.forest_client_number} does not exist.")
+            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+        if (not validator.forest_client_active()):
+            error_msg = (
+                "Invalid role assignment request. Forest Client is not in Active status: " +
+                f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
+            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
         child_role = find_or_create_forest_client_child_role(
@@ -87,8 +101,8 @@ def create_user_role(
 
     if fam_user_role_xref:
         LOGGER.debug(
-             "FamUserRoleXref already exists with id: " +
-             f"{fam_user_role_xref.user_role_xref_id}."
+            "FamUserRoleXref already exists with id: " +
+            f"{fam_user_role_xref.user_role_xref_id}."
         )
 
         error_msg = "Role already assigned to user."
@@ -215,3 +229,42 @@ def find_or_create_forest_client_child_role(
             f"{parent_role.role_name}({child_role.parent_role_id})."
         )
     return child_role
+
+
+class UserRoleValidator:
+    """
+    Purpose: More validations on inputs (other than basic validations) and
+             business rules validations (if any).
+    Cautious: Do not instantiate the class for more than one time per request.
+              It calls Forest Client API remotely if needs to.
+    """
+    LOGGER = logging.getLogger(__name__)
+
+    def __init__(self, request: schemas.FamUserRoleAssignmentCreate):
+        LOGGER.debug(f"Validator '{self.__class__.__name__}' with input '{request}'.")
+
+        self.user_role_request = request
+        # Note - this value should already be validated from schema input validation.
+        forest_client_number = request.forest_client_number
+        if forest_client_number is not None:
+            fc_api = ForestClientService()
+
+            # Locally stored (if any) for later use to prevent api calls again.
+            # Exact client number search - should only contain 1 result.
+            self.fc = fc_api.find_by_client_number(forest_client_number)
+            LOGGER.debug(f"Forest Client(s) retrieved: {self.fc}")
+
+    def forest_client_number_exists(self) -> bool:
+        # Exact client number search - should only contain 1 result.
+        return len(self.fc) == 1
+
+    def forest_client_active(self) -> bool:
+        return (
+            (self.get_forest_client()[famConstants.FOREST_CLIENT_STATUS["KEY"]]
+                == famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"])
+            if self.forest_client_number_exists()
+            else False
+        )
+
+    def get_forest_client(self):
+        return self.fc[0] if self.forest_client_number_exists() else None
