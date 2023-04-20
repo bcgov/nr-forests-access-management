@@ -2,9 +2,6 @@ name: Run CI API Function
 
 on:
   workflow_call:
-    secrets:
-      forest_client_api_api_key:
-        required: true
 
 # debugging
 # on:
