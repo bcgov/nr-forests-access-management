@@ -142,7 +142,7 @@ class AuthorizationQuery(object):
             create_user, create_date, update_user, update_date)
             VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name},
             CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
-            ON CONFLICT ON CONSTRAINT fam_usr_uk DO
+            ON CONFLICT (user_type_code, lower(user_name)) DO
             UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id};"""
 
         sql_query = psycopg2.sql.SQL(raw_query).format(
