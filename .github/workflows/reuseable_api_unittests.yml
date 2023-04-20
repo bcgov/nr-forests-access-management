@@ -21,6 +21,7 @@ env:
   POSTGRES_PORT: 5432
   USE_POSTGRES: false
   FC_API_TOKEN: ${{ secrets.forest_client_api_api_key }}
+  FC_API_GH_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
 
 jobs:
   api-unit-tests:
@@ -50,6 +51,9 @@ jobs:
           verbose: true
           job-summary: true
           custom-arguments: 'server/backend --ignore server/backend/testspg'
+        env:
+          FC_API_TOKEN: ${{ secrets.forest_client_api_api_key }}
+          FC_API_GH_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
 
       - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
@@ -58,3 +62,5 @@ jobs:
           verbose: true
           job-summary: true
           custom-arguments: 'server/backend --ignore server/backend/tests'
+        env:
+          FC_API_TOKEN: ${{ secrets.forest_client_api_api_key }}
