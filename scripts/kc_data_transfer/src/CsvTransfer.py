@@ -8,11 +8,13 @@ LOGGER = logging.getLogger(__name__)
 
 class AppToFam:
     def __init__(self):
-        # todo: create an env variable for path
         self.path = constants.APP_USER_FILE_PATH
         self.fam = FamWrapper()
 
     def get_forest_client(self, organization: str):
+        # get the forest client number from the "For Organization" column
+        # if has one, it should be in the format of
+        # "[forest_client_number] - [organization_name]"
         forest_client_num = organization.split('-')[0].replace(" ", "")
         if forest_client_num.isdigit():
             return forest_client_num
@@ -31,7 +33,6 @@ class AppToFam:
         return None, None
 
     def transfer_user_to_fam(self):
-        # create an env variable for app name
         app_id = self.fam.get_fom_app_id()
         users = self.read_file_data(self.path)
 
