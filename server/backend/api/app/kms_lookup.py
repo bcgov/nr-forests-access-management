@@ -1,7 +1,7 @@
 import logging
 import boto3
 
-from .config import get_aws_region, get_bcsc_key_id
+from api.config.config import get_aws_region, get_bcsc_key_id
 
 _bcsc_public_key = None
 

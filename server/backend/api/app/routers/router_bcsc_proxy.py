@@ -7,7 +7,7 @@ from jose import jwt
 from fastapi import HTTPException
 import json
 from .. import kms_lookup
-from .. import config
+from api.config import config
 
 
 LOGGER = logging.getLogger(__name__)

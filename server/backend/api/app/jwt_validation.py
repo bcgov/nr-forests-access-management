@@ -54,10 +54,7 @@ _jwks = None
 
 def init_jwks():
     global _jwks
-    # why not use the global versions of these variables, lines 34, 35
-    aws_region = get_aws_region()
-    user_pool_id = get_user_pool_id()
-    # Add try/except due to urlopen() may have problem reaching AWS/Cognito.
+
     LOGGER.debug(f"Requesting aws jwks with region {aws_region} and user pood id {user_pool_id}...")
     try:
         with urlopen(f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json") as response:
