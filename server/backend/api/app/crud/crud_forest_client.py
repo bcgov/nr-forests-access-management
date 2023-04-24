@@ -1,6 +1,5 @@
 import logging
 
-from api.app import constants as famConstants
 from api.app.models import model as models
 from sqlalchemy.orm import Session
 

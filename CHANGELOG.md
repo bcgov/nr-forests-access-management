@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.1.1...v1.1.2) (2023-04-20)
+
+
+### Bug Fixes
+
+* [#522](https://github.com/bcgov/nr-forests-access-management/issues/522) Fix user role duplicate records, fix target default branch in hotfix release please ([#557](https://github.com/bcgov/nr-forests-access-management/issues/557)) ([e98ec72](https://github.com/bcgov/nr-forests-access-management/commit/e98ec72cc67dadc8332b909b7ba64ff6166a662a))
+
 ## [1.1.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.1.0...v1.1.1) (2023-03-25)
 
 

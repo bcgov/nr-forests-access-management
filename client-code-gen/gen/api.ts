@@ -15,6 +15,7 @@
 
 
 export * from './api/famapplications-api';
+export * from './api/famforest-clients-api';
 export * from './api/famroles-api';
 export * from './api/famuser-role-assignment-api';
 export * from './api/famusers-api';

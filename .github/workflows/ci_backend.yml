@@ -18,3 +18,4 @@ jobs:
 
   api_tests:
     uses: ./.github/workflows/reuseable_api_unittests.yml
+    secrets: inherit

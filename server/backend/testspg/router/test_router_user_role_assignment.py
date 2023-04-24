@@ -1,20 +1,25 @@
-import logging
 import copy
+import logging
 from http import HTTPStatus
+
+import pytest
 import starlette.testclient
-from sqlalchemy.orm import Session
-from api.app.main import apiPrefix
-from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.crud import crud_application
-from api.app.crud import crud_user
-from api.app.crud import crud_role
 import testspg.jwt_utils as jwt_utils
-from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT, \
-    TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE, \
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
-    TEST_FOM_DEV_APPLICATION_ID, \
-    TEST_FOM_TEST_APPLICATION_ID
+from api.app.crud import crud_application, crud_role, crud_user
+from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+from api.app.main import apiPrefix
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_ACTIVE,
+                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
+                               CLIENT_NUMBER_NOT_EXISTS,
+                               TEST_FOM_DEV_APPLICATION_ID,
+                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                               TEST_FOM_TEST_APPLICATION_ID,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -22,6 +27,16 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
+
+@pytest.fixture(scope="function")
+def fom_dev_access_admin_token(test_rsa_key):
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+
+@pytest.fixture(scope="function")
+def fom_test_access_admin_token(test_rsa_key):
+    access_roles = [FOM_TEST_ADMIN_ROLE]
+    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 
 # note: this might need to be a real idir username
 # and a real forest client id
@@ -31,20 +46,20 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00000002"
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00000003"
+    "forest_client_number": CLIENT_NUMBER_2_EXISTS_ACTIVE
 }
 
 
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    db_pg_container
+    db_pg_connection
 ):
     """
     test user has no authentication to the app
@@ -64,18 +79,16 @@ def test_create_user_role_assignment_not_authorized(
 
 def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
+    fom_dev_access_admin_token,
     db_pg_connection: Session
 ):
     """
     test assign a concrete role to a user
     """
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
@@ -109,26 +122,24 @@ def test_create_user_role_assignment_with_concrete_role(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_container
+    fom_dev_access_admin_token,
+    db_pg_connection
 ):
     """
     test assign same role for the same user
     """
     # create user role assignment the first time
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json()
@@ -137,7 +148,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == 409
     assert response.json()["detail"] == ERROR_DUPLICATE_USER_ROLE
@@ -145,28 +156,26 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_container
+    fom_dev_access_admin_token,
+    db_pg_connection
 ):
     """
     test assign an abscrate role to a user without forest client number
     """
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = \
         copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT)
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_number")
     response = test_client_fixture.post(
         f"{endPoint}",
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid role assignment request. " + \
@@ -177,18 +186,16 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
 
 def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key, db_pg_connection: Session,
-    db_pg_container
+    fom_dev_access_admin_token,
+    db_pg_connection: Session,
 ):
     """
     test assign an abscrate role to a user
     """
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
@@ -221,45 +228,39 @@ def test_create_user_role_assignment_with_abstract_role(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
+    fom_dev_access_admin_token,
     db_pg_connection: Session
 ):
     # create a user role assignment
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     assignment_one = response.json()
 
     # allow create a user role assignment with the same username, different role
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     assignment_two = response.json()
 
     # allow create a user role assignment with the same username, different role
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     assignment_three = response.json()
@@ -272,35 +273,33 @@ def test_create_user_role_assignment_with_same_username(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_one['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_two['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_three['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
+    fom_dev_access_admin_token,
     db_pg_connection: Session
 ):
     # create a user role assignment
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json()
@@ -316,7 +315,7 @@ def test_delete_user_role_assignment(
     # execute Delete
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -329,28 +328,25 @@ def test_delete_user_role_assignment(
 
 def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
+    fom_dev_access_admin_token,
+    fom_test_access_admin_token,
     db_pg_connection: Session
 ):
     # create a user role assignment
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     fom_dev_user_role_assignment = response.json()
     assert "user_role_xref_id" in fom_dev_user_role_assignment
 
     # create a user role assignment with same username and type, but for FOM_TEST role
-    access_roles = [FOM_TEST_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_test_access_admin_token)
     )
     assert response.status_code == HTTPStatus.OK
     fom_test_user_role_assignment = response.json()
@@ -388,11 +384,9 @@ def test_assign_same_application_roles_for_different_environments(
         fom_test_user_role_assignment["user_role_xref_id"]
 
     # cleanup
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.delete(
         f"{endPoint}/{fom_dev_user_role_assignment['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -407,11 +401,9 @@ def test_assign_same_application_roles_for_different_environments(
     assert len(assignment_user_role_items) == 1
 
     # cleanup
-    access_roles = [FOM_TEST_ADMIN_ROLE]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles)
     response = test_client_fixture.delete(
         f"{endPoint}/{fom_test_user_role_assignment['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(fom_test_access_admin_token)
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -420,3 +412,51 @@ def test_assign_same_application_roles_for_different_environments(
         db_pg_connection, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 0
+
+
+def test_user_role_forest_client_number_not_exist_bad_request(
+    test_client_fixture: TestClient,
+    fom_dev_access_admin_token,
+    db_pg_connection: Session
+):
+    """
+    Test assign user role with none-existing forest client number should be
+    rejected.
+    """
+    client_number_not_exists = CLIENT_NUMBER_NOT_EXISTS
+    invalid_request = {
+        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        "forest_client_number": client_number_not_exists
+    }
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=invalid_request,
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert (f"Forest Client Number {client_number_not_exists} does not exist."
+            in response.json()["detail"]
+            )
+
+def test_user_role_forest_client_number_inactive_bad_request(
+    test_client_fixture: TestClient,
+    fom_dev_access_admin_token,
+    db_pg_connection: Session
+):
+    """
+    Test assign user role with inactive forest client number should be
+    rejected.
+    """
+    invalid_request = {
+        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        "forest_client_number": CLIENT_NUMBER_EXISTS_DEACTIVATED
+    }
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=invalid_request,
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert ("Forest Client is not in Active status")

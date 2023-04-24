@@ -37,5 +37,6 @@ generate "test_tfvars" {
     "${local.common_vars.inputs.idp_logout_chain_test_url}http://localhost:5173"
   ]
   fam_console_idp_name = "TEST-IDIR"
+  forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
 EOF
 }

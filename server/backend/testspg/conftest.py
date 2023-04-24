@@ -1,23 +1,23 @@
-import pytest
-import time
 import logging
 import os
 import sys
+import time
+
+import jwt_utils as jwt_utils
+import pytest
 import testcontainers.compose
-from sqlalchemy.engine.base import Engine
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import Session
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
+from sqlalchemy import create_engine
+from sqlalchemy.engine.base import Engine
+from sqlalchemy.orm import Session, sessionmaker
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
-import api.app.database as database
-
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -28,7 +28,7 @@ COMPOSE_PATH = os.path.join(os.path.dirname(__file__), '../../../')
 def db_pg_container():
     compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
     compose.start()
-    time.sleep(5)  # wait db migration script to run
+    time.sleep(6)  # wait db migration script to run
     yield compose
     compose.stop()
 

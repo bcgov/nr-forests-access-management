@@ -39,5 +39,6 @@ generate "prod_tfvars" {
     "${local.common_vars.inputs.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",
   ]
   fam_console_idp_name = "PROD-IDIR"
+  forest_client_api_base_url = "https://nr-forest-client-api-prod.api.gov.bc.ca/"
 EOF
 }
