@@ -33,7 +33,7 @@ class AppToFam:
         return None, None
 
     def transfer_user_to_fam(self):
-        app_id = self.fam.get_fom_app_id()
+        app_id = self.fam.get_app_id()
         users = self.read_file_data(self.path)
 
         for index, user in enumerate(users):
@@ -45,6 +45,7 @@ class AppToFam:
                 if role_id:
                     print(index, username, user_type_code, role_id,
                           self.get_forest_client(user["For Organization"]))
+
                     self.fam.create_user_role_assignment(
                         user_type_code=user_type_code,
                         user_name=username,

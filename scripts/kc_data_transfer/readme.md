@@ -41,6 +41,7 @@ get loaded by the code. Just copy the envExample file to .env and change the
 values. **Do not check in the .env file with sercets.**
 
 All variables start with "KC" are for transfering user from keycloak. For transfering user from csv file, use the last four variables.
+
 -   KC_HOST - url to keycloak instance (e.g. https://oidc.gov.bc.ca)
 -   KC_CLIENTID - The client id that has been configured as a service account
 -   KC_SECRET - The secret for the above client
@@ -53,7 +54,7 @@ All variables start with "KC" are for transfering user from keycloak. For transf
 
 ## Get the FAM_JWT token
 
--   Make sure you have the admin access to the application you specified for the "FOM_APP_NAME_IN_FAM" variable in the .env file
+-   **Make sure you have the admin access to the application you specified for the "APP_NAME_IN_FAM" variable in the .env file**
 -   Go to our api website, the url can be found through AWS API Gateway -> Stages -> v1 -> Invoke URL, the url is the invoke url + "/v1/docs"
 -   In our api website, click on the "Authorized" button, and then paste the client id (client id is the big bold string on the screen), then click "Authorize"
 -   Click on the GET fam_applications api, and try to execute it. In the response section, it shows the curl command with the Bearer token, that's the token we want to use for the "FAM_JWT" variable in the .env file. If you grant yourself any new access, make sure to re-generate the token so it can include the new roles
@@ -61,7 +62,18 @@ All variables start with "KC" are for transfering user from keycloak. For transf
 ## Run the script
 
 ```
+// transfer data from keycloak
 python3 src/KeyCloakTransfer.py
+
+// transfer data from csv file
+python3 src/CsvTransfer.py
 ```
 
-If the execusion time for the script is longer than 5 mins, need to go Cognito "fam_console" application, and change the access token expiration to a longer time (by default it's 5 mins)
+**Note**:
+
+-   If the execusion time for the script is longer than 5 mins, need to go Cognito "fam_console" application, and change the access token expiration to a longer time (by default it's 5 mins)
+-   We only support csv file currently. When we export the received excel sheet into csv format, it should using the delimiter "," and encoding in "utf-8-sig". The csv file should include the following column names:
+    -   User: in the format of "USERSTYPE\USERNAME", for example "IDIR\DGreen"
+    -   Profile: this is the column for the role
+    -   For Organization: in the format of "[forest_client_number] - [organization_name]", for example "12345678 - MINISTRY OF FORESTS"
+-   The script is tested on python version 3.10.9

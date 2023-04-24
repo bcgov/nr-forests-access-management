@@ -123,7 +123,7 @@ class KeyCloakToFAM:
 
     def copy_users(self):
 
-        app_id = self.fam.get_fom_app_id()
+        app_id = self.fam.get_app_id()
 
         # Initialize the correct IDs for FOM_SUBMITTER and FOM_REVIEWER
         roles = self.fam.get_roles(app_id)
@@ -356,7 +356,7 @@ class FamWrapper:
         data = resp.json()
         return data
 
-    def get_fom_app_id(self) -> Union[int, None]:
+    def get_app_id(self) -> Union[int, None]:
 
         app_id = None
         # app id isn't going to change so should only get it once, then cache
