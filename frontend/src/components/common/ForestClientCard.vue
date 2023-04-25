@@ -4,7 +4,7 @@
             <b-card-text>
                 <Tag
                     :text="props.status.description"
-                    :active="props.status.status_code === 'A' ? true : false"
+                    :active="props.status.status_code === 'A'"
                 />
                 <span class="organization-name">{{ props.text }}</span
                 ><br />
