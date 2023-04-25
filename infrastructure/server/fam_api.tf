@@ -152,7 +152,7 @@ resource "aws_lambda_function" "fam-api-function" {
 
       FC_API_TOKEN = "${var.forest_client_api_api_key}"
       FC_API_BASE_URL = "${var.forest_client_api_base_url}"
-      ENABLE_BCSC_JWKS_ENDPOINT = "False"
+      ENABLE_BCSC_JWKS_ENDPOINT = "True"
     }
 
   }
