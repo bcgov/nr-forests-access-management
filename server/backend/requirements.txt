@@ -9,3 +9,4 @@ mangum==0.15.0
 boto3
 botocore
 python-jose==3.3.0
+cryptography==40.0.2
