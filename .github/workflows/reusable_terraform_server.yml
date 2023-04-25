@@ -83,7 +83,7 @@ jobs:
           cd server/backend
           mkdir packaging
           cd packaging
-          pip install -t . -r ../requirements.txt
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
           zip -r9 ../../fam-ui-api.zip .
           cd ..
           rm -rf packaging
