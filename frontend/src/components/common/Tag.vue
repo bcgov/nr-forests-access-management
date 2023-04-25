@@ -29,7 +29,6 @@ const props = defineProps({
     font-size: 12px;
     letter-spacing: 0.32px;
     display: flex;
-    align-items: flex-start;
     width: fit-content;
     padding-left: 10px;
     padding-right: 10px;

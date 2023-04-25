@@ -290,7 +290,7 @@ function validateForestClientNumber(): boolean {
                         type="submit"
                         id="grantAccessSubmit"
                         class="btn btn-primary mb-3"
-                        :disabled="!meta.valid && !validateForestClientNumber()"
+                        :disabled="!meta.valid || !validateForestClientNumber()"
                     >
                         Grant Access
                     </button>
