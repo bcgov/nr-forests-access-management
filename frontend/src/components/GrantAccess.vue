@@ -18,6 +18,7 @@ const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend w
 let applicationRoleOptions = ref<FamApplicationRole[]>([]);
 let forestClient = ref();
 let loading = ref<boolean>(false);
+let invalidForestClient = ref<boolean>(false);
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: null,
@@ -29,7 +30,7 @@ const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone defa
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
-const forestClientNumberApi = apiServiceFactory.getForestClientApi();
+const forestClientApi = apiServiceFactory.getForestClientApi();
 
 const schema = object().shape({
     userId: string()
@@ -99,28 +100,31 @@ function toRequestPayload(formData: any) {
 }
 
 function statusSelected(evt: any) {
+    forestClient.value = null;
+    formData.value.forestClientNumber = null;
     formData.value.role = JSON.parse(evt.target.value);
 }
 
-async function getForestClientNumber(evt: string) {
+async function getForestClientNumber(forestClientNumber: string) {
     loading.value = true;
     try {
-        forestClient.value = (await forestClientNumberApi.search(evt))
+        forestClient.value = (await forestClientApi.search(forestClientNumber))
             .data as FamForestClient[];
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
+        if (forestClient.value?.[0]?.status?.description !== 'Active') {
+            invalidForestClient.value = true;
+        } else {
+            invalidForestClient.value = false;
+        }
     }
 }
 
 function forestClientNumberChange() {
+    invalidForestClient.value = true;
     forestClient.value = null;
-}
-
-function validateForestClientNumber(): boolean {
-    if (forestClient.value?.[0]?.status?.description === 'Active') return true;
-    else return false;
 }
 </script>
 
@@ -142,7 +146,7 @@ function validateForestClientNumber(): boolean {
             <div class="row">
                 <div class="form-group col-md-3">
                     <label for="domainInput" class="control-label"
-                        >Select user's credential*</label
+                        >Select user's credential</label
                     >
                     <div>
                         <div class="form-check form-check-inline">
@@ -185,8 +189,9 @@ function validateForestClientNumber(): boolean {
                 <div class="form-group col-md-3">
                     <label for="userIdInput" class="control-label"
                         >Type user's
-                        {{ formData.domain === 'I' ? 'IDIR' : 'BCeID' }}</label
-                    ><span class="text-danger"> *</span>
+                        {{ formData.domain === 'I' ? 'IDIR' : 'BCeID'
+                        }}<span class="text-danger"> *</span></label
+                    >
                     <Field
                         type="text"
                         id="userIdInput"
@@ -204,8 +209,9 @@ function validateForestClientNumber(): boolean {
 
             <div class="row">
                 <div class="form-group col-md-3">
-                    <label for="roleSelect" class="control-label">Role</label
-                    ><span class="text-danger"> *</span>
+                    <label for="roleSelect" class="control-label"
+                        >Role<span class="text-danger"> *</span></label
+                    >
                     <Field
                         id="roleSelect"
                         as="select"
@@ -227,49 +233,58 @@ function validateForestClientNumber(): boolean {
                     <ErrorMessage class="invalid-feedback" name="roleUI" />
                 </div>
             </div>
-            <div class="row" v-if="formData.role?.role_type_code == 'A'">
-                <div class="col-md-3">
+            <div v-if="formData.role?.role_type_code == 'A'">
+                <div class="row mb-0">
                     <label for="forestClientInput" class="col-sm control-label"
-                        >Forest Client</label
-                    ><span class="text-danger"> *</span>
-                    <Field
-                        type="text"
-                        name="forestClientNumber"
-                        id="forestClientInput"
-                        class="form-control"
-                        :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
-                        placeholder="Forest Client Id - 8 digits"
-                        v-model="formData.forestClientNumber"
-                        v-on:keypress="onlyDigit($event)"
-                        v-bind:disabled="loading"
-                        @input="forestClientNumberChange()"
-                        :validateOnChange="true"
-                        :class="{
-                            'is-invalid': errors.forestClientNumber,
-                        }"
-                    />
-                    <ErrorMessage
-                        class="invalid-feedback"
-                        name="forestClientNumber"
-                    />
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button
-                        class="btn btn-outline-primary mt-3"
-                        type="button"
-                        @click="
-                            getForestClientNumber(formData.forestClientNumber)
-                        "
-                        v-bind:disabled="
-                            formData.forestClientNumber?.length < 8 || loading
-                        "
+                        >Forest Client
+                        <span class="text-danger"> *</span></label
                     >
-                        <div v-if="loading">
-                            <b-spinner small></b-spinner>
-                            Loading...
-                        </div>
-                        <div v-else>Verify ID</div>
-                    </button>
+                </div>
+
+                <div class="row mt-0">
+                    <div class="col-md-3">
+                        <Field
+                            type="text"
+                            name="forestClientNumber"
+                            id="forestClientInput"
+                            class="form-control"
+                            :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
+                            placeholder="Forest Client Id - 8 digits"
+                            v-model="formData.forestClientNumber"
+                            v-on:keypress="onlyDigit($event)"
+                            v-bind:disabled="loading"
+                            @input="forestClientNumberChange()"
+                            :validateOnChange="true"
+                            :class="{
+                                'is-invalid': errors.forestClientNumber,
+                            }"
+                        />
+                        <ErrorMessage
+                            class="invalid-feedback"
+                            name="forestClientNumber"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <button
+                            class="btn btn-outline-primary"
+                            type="button"
+                            @click="
+                                getForestClientNumber(
+                                    formData.forestClientNumber
+                                )
+                            "
+                            v-bind:disabled="
+                                formData.forestClientNumber?.length < 8 ||
+                                loading
+                            "
+                        >
+                            <div v-if="loading">
+                                <b-spinner small></b-spinner>
+                                Loading...
+                            </div>
+                            <div v-else>Verify ID</div>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="row" v-if="forestClient">
@@ -290,7 +305,7 @@ function validateForestClientNumber(): boolean {
                         type="submit"
                         id="grantAccessSubmit"
                         class="btn btn-primary mb-3"
-                        :disabled="!meta.valid || !validateForestClientNumber()"
+                        :disabled="!meta.valid || invalidForestClient"
                     >
                         Grant Access
                     </button>
@@ -301,4 +316,7 @@ function validateForestClientNumber(): boolean {
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+.text-danger {
+    font-weight: normal;
+}
 </style>
