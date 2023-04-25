@@ -8,6 +8,8 @@ from fastapi import HTTPException
 import json
 from .. import kms_lookup
 from api.config import config
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 
 
 LOGGER = logging.getLogger(__name__)
@@ -69,11 +71,17 @@ def bcsc_jwks(request: Request):
 
     key = kms_lookup._bcsc_public_key
 
+    key_value_bytes = key["PublicKey"]
+    LOGGER.debug(f"key_value_bytes: [{key_value_bytes}]")
+
+    cert = x509.load_pem_x509_certificate(key_value_bytes, default_backend())
+    LOGGER.debug(cert)
+
     algorithm = "RS256"
     e = "AQAB"
     kid = "bcscencryption"
     kty = "RSA"
-    n = key["PublicKey"].decode("utf-8")
+    n = "12345"
     use = "enc"
 
     jwks_dict = {
