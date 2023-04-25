@@ -73,7 +73,7 @@ def bcsc_jwks(request: Request):
     e = "AQAB"
     kid = "bcscencryption"
     kty = "RSA"
-    n = key["PublicKey"]
+    n = key["PublicKey"].decode("utf-8")
     use = "enc"
 
     jwks_dict = {

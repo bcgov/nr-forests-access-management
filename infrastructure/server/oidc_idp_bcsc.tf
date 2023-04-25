@@ -1,5 +1,4 @@
-# IDIR IDP that goes to Keycloak and SiteMinder CLP
-
+# BCSC IDP that connects directly to IDIM Consulting OIDC server
 locals{
   dev_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/dev/userinfo"
   test_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/test/userinfo"
