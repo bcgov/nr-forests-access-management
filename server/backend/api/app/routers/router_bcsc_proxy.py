@@ -30,6 +30,11 @@ def bcsc_userinfo_prod(request: Request):
     return bcsc_userinfo(request, "https://id.gov.bc.ca/oauth2/userinfo")
 
 
+@router.post("/encryption_test", status_code=200)
+def encryption_test(request: Request):
+    return request.body
+
+
 def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 
     """
