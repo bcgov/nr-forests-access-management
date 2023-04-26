@@ -2,7 +2,11 @@
 import PageTitle from '@/components/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { selectedApplication } from '@/services/ApplicationState';
-import type { FamApplicationRole, FamUserRoleAssignmentCreate } from 'fam-api';
+import type {
+    FamApplicationRole,
+    FamForestClient,
+    FamUserRoleAssignmentCreate,
+} from 'fam-api';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
@@ -12,8 +16,11 @@ import { object, string } from 'yup';
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 let applicationRoleOptions = ref<FamApplicationRole[]>([]);
+let forestClient = ref();
+let loading = ref<boolean>(false);
+let invalidForestClient = ref<boolean>(false);
 const defaultFormData = {
-    domain: domainOptions.BCEID,
+    domain: domainOptions.IDIR,
     userId: null,
     forestClientNumber: null,
     role: null as unknown as FamApplicationRole,
@@ -23,6 +30,7 @@ const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone defa
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
+const forestClientApi = apiServiceFactory.getForestClientApi();
 
 const schema = object().shape({
     userId: string()
@@ -92,7 +100,31 @@ function toRequestPayload(formData: any) {
 }
 
 function statusSelected(evt: any) {
+    forestClient.value = null;
+    formData.value.forestClientNumber = null;
     formData.value.role = JSON.parse(evt.target.value);
+}
+
+async function getForestClientNumber(forestClientNumber: string) {
+    loading.value = true;
+    try {
+        forestClient.value = (await forestClientApi.search(forestClientNumber))
+            .data as FamForestClient[];
+    } catch (err: any) {
+        return Promise.reject(err);
+    } finally {
+        loading.value = false;
+        if (forestClient.value?.[0]?.status?.description !== 'Active') {
+            invalidForestClient.value = true;
+        } else {
+            invalidForestClient.value = false;
+        }
+    }
+}
+
+function forestClientNumberChange() {
+    invalidForestClient.value = true;
+    forestClient.value = null;
 }
 </script>
 
@@ -104,6 +136,8 @@ function statusSelected(evt: any) {
         :validation-schema="schema"
         as="div"
     >
+        <div class="row"><h4>Login credentials</h4></div>
+
         <form
             id="grantAccessForm"
             class="form-container"
@@ -112,25 +146,9 @@ function statusSelected(evt: any) {
             <div class="row">
                 <div class="form-group col-md-3">
                     <label for="domainInput" class="control-label"
-                        >Domain</label
+                        >Select user's credential</label
                     >
                     <div>
-                        <div class="form-check form-check-inline">
-                            <Field
-                                type="radio"
-                                id="becidSelect"
-                                name="domainRadioOptions"
-                                class="form-check-input"
-                                :value="domainOptions.BCEID"
-                                v-model="formData.domain"
-                                :checked="
-                                    formData.domain === domainOptions.BCEID
-                                "
-                            />
-                            <label class="form-check-label" for="becidSelect"
-                                >BCeID</label
-                            >
-                        </div>
                         <div class="form-check form-check-inline">
                             <Field
                                 type="radio"
@@ -147,6 +165,22 @@ function statusSelected(evt: any) {
                                 >IDIR</label
                             >
                         </div>
+                        <div class="form-check form-check-inline">
+                            <Field
+                                type="radio"
+                                id="becidSelect"
+                                name="domainRadioOptions"
+                                class="form-check-input"
+                                :value="domainOptions.BCEID"
+                                v-model="formData.domain"
+                                :checked="
+                                    formData.domain === domainOptions.BCEID
+                                "
+                            />
+                            <label class="form-check-label" for="becidSelect"
+                                >BCeID</label
+                            >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,15 +188,17 @@ function statusSelected(evt: any) {
             <div class="row">
                 <div class="form-group col-md-3">
                     <label for="userIdInput" class="control-label"
-                        >User Id</label
-                    ><span class="text-danger"> *</span>
+                        >Type user's
+                        {{ formData.domain === 'I' ? 'IDIR' : 'BCeID'
+                        }}<span class="text-danger"> *</span></label
+                    >
                     <Field
                         type="text"
                         id="userIdInput"
                         class="form-control"
                         name="userId"
                         maxlength="20"
-                        placeholder="User's Id"
+                        placeholder="User's credential"
                         v-model="formData.userId"
                         :validateOnChange="true"
                         :class="{ 'is-invalid': errors.userId }"
@@ -172,9 +208,10 @@ function statusSelected(evt: any) {
             </div>
 
             <div class="row">
-                <div class="form-group col-md-5">
-                    <label for="roleSelect" class="control-label">Role</label
-                    ><span class="text-danger"> *</span>
+                <div class="form-group col-md-3">
+                    <label for="roleSelect" class="control-label"
+                        >Role<span class="text-danger"> *</span></label
+                    >
                     <Field
                         id="roleSelect"
                         as="select"
@@ -196,36 +233,79 @@ function statusSelected(evt: any) {
                     <ErrorMessage class="invalid-feedback" name="roleUI" />
                 </div>
             </div>
-            <div class="row" v-if="formData.role?.role_type_code == 'A'">
-                <div class="form-group col-md-3">
-                    <label for="forestClientInput" class="control-label"
-                        >Forest Client</label
-                    ><span class="text-danger"> *</span>
-                    <Field
-                        type="text"
-                        name="forestClientNumber"
-                        id="forestClientInput"
-                        class="form-control"
-                        :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
-                        placeholder="Forest Client Id - 8 digits"
-                        v-model="formData.forestClientNumber"
-                        v-on:keypress="onlyDigit($event)"
-                        :validateOnChange="true"
-                        :class="{ 'is-invalid': errors.forestClientNumber }"
-                    />
-                    <ErrorMessage
-                        class="invalid-feedback"
-                        name="forestClientNumber"
-                    />
+            <div v-if="formData.role?.role_type_code == 'A'">
+                <div class="row mb-0">
+                    <label for="forestClientInput" class="col-sm control-label"
+                        >Forest Client
+                        <span class="text-danger"> *</span></label
+                    >
+                </div>
+
+                <div class="row mt-0">
+                    <div class="col-md-3">
+                        <Field
+                            type="text"
+                            name="forestClientNumber"
+                            id="forestClientInput"
+                            class="form-control"
+                            :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
+                            placeholder="Forest Client Id - 8 digits"
+                            v-model="formData.forestClientNumber"
+                            v-on:keypress="onlyDigit($event)"
+                            v-bind:disabled="loading"
+                            @input="forestClientNumberChange()"
+                            :validateOnChange="true"
+                            :class="{
+                                'is-invalid': errors.forestClientNumber,
+                            }"
+                        />
+                        <ErrorMessage
+                            class="invalid-feedback"
+                            name="forestClientNumber"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <button
+                            class="btn btn-outline-primary"
+                            type="button"
+                            @click="
+                                getForestClientNumber(
+                                    formData.forestClientNumber
+                                )
+                            "
+                            v-bind:disabled="
+                                formData.forestClientNumber?.length < 8 ||
+                                loading
+                            "
+                        >
+                            <div v-if="loading">
+                                <b-spinner small></b-spinner>
+                                Loading...
+                            </div>
+                            <div v-else>Verify ID</div>
+                        </button>
+                    </div>
                 </div>
             </div>
+            <div class="row" v-if="forestClient">
+                <div class="form-group col-md-3">
+                    <label class="col-sm control-label"
+                        >Organization details:</label
+                    >
+                    <ForestClientCard
+                        :text="forestClient?.[0]?.client_name"
+                        :status="forestClient?.[0]?.status"
+                    ></ForestClientCard>
+                </div>
+            </div>
+
             <div class="row gy-3">
                 <div class="col-auto">
                     <button
                         type="submit"
                         id="grantAccessSubmit"
                         class="btn btn-primary mb-3"
-                        :disabled="!meta.valid"
+                        :disabled="!meta.valid || invalidForestClient"
                     >
                         Grant Access
                     </button>
@@ -236,4 +316,7 @@ function statusSelected(evt: any) {
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+.text-danger {
+    font-weight: normal;
+}
 </style>
