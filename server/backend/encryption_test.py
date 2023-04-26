@@ -18,10 +18,10 @@ except Exception as e:
     LOGGER.error("Backend API will not work properly.")
     raise e
 
-rsa_key = {}
+jwk = {}
 for key in jwks["keys"]:
     if key["kid"] == "bcscencryption":
-        rsa_key = {
+        jwk = {
             "kty": key["kty"],
             "kid": key["kid"],
             "use": key["use"],
@@ -30,7 +30,9 @@ for key in jwks["keys"]:
         }
     break
 
-LOGGER.warning(rsa_key)
+LOGGER.warning(jwk)
 
-RSA.import_key()
+rsa = RSA.importKey(jwk["n"])
+
+encrypted_data =
 
