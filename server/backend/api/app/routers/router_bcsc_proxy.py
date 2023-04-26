@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
@@ -32,7 +32,8 @@ def bcsc_userinfo_prod(request: Request):
 
 @router.post("/encryption_test", status_code=200)
 def encryption_test(request: Request):
-    return request.body
+
+    return Response(content=request.body, media_type="application/text")
 
 
 def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
