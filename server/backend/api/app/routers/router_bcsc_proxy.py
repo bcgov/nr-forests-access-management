@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 import requests
 from jose import jwt
 from fastapi import HTTPException
-import json
 from .. import kms_lookup
 from api.config import config
 import base64
@@ -84,4 +83,4 @@ def bcsc_jwks(request: Request):
         "keys": [{"alg": algorithm, "e": e, "kid": kid, "kty": kty, "n": n, "use": use}]
     }
 
-    return JSONResponse(content=json.dumps(jwks_dict))
+    return JSONResponse(content=jwks_dict)
