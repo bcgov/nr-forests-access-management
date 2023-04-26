@@ -1,6 +1,8 @@
 import json
 from urllib.request import urlopen
 import logging
+import Crypto
+from Crypto.PublicKey import RSA
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,4 +31,6 @@ for key in jwks["keys"]:
     break
 
 LOGGER.warning(rsa_key)
+
+RSA.import_key()
 

@@ -33,7 +33,7 @@ def bcsc_userinfo_prod(request: Request):
 @router.post("/encryption_test", status_code=200)
 def encryption_test(request: Request):
 
-    return Response(content=request.body, media_type="application/text")
+    return Response(content="hello world", media_type="text/plain")
 
 
 def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
