@@ -1,8 +1,9 @@
 import json
 from urllib.request import urlopen
 import logging
-import Crypto
 from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+from base64 import b64decode, b64encode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +33,15 @@ for key in jwks["keys"]:
 
 LOGGER.warning(jwk)
 
-rsa = RSA.importKey(jwk["n"])
+pubkey = jwk["n"]
 
-encrypted_data =
+msg = "1000 Monkeys"
+keyDER = b64decode(pubkey)
+keyPub = RSA.importKey(keyDER)
+cipher = PKCS1_OAEP.new(keyPub)
+cipher_text = cipher.encrypt(msg.encode())
+emsg = b64encode(cipher_text)
+
+LOGGER.warning(emsg)
+
 

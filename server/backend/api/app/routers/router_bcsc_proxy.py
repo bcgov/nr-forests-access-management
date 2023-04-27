@@ -34,7 +34,7 @@ def bcsc_userinfo_prod(request: Request):
 def encryption_test(request: Request):
     LOGGER.info(f"Request body is: [{request.body}")
 
-    response_data = request.body
+    response_data = request.body()
 
     return Response(content=response_data, media_type="text/plain")
 
