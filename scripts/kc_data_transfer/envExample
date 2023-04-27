@@ -5,4 +5,5 @@ KC_REALM=ichqx89w
 KC_FOM_CLIENTID=fom
 FAM_JWT=
 FAM_URL=https://7j9h7vm7ag.execute-api.ca-central-1.amazonaws.com/v1
-FOM_APP_NAME_IN_FAM=FOM_DEV
+APP_NAME_IN_FAM=FOM_DEV
+APP_USER_FILE_PATH="spar_user_test.csv"

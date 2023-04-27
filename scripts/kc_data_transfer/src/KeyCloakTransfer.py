@@ -6,6 +6,8 @@ import KeyCloak
 import requests
 import constants
 
+LOGGER = logging.getLogger(__name__)
+
 # types
 
 KCRole = TypedDict(
@@ -117,13 +119,11 @@ class KeyCloakToFAM:
         #   FOM_SUBMITTER_TESTING_00001011, FOM_SUBMITTER_TESTING_00001012... etc
         self.fom_submitter_parent_role_name = "FOM_SUBMITTER"
         self.fom_reviewer_role_name = "FOM_REVIEWER"
-        self.fam = FamWrapper(
-            fom_forest_client_role_parent=self.fom_submitter_parent_role_name
-        )
+        self.fam = FamWrapper()
 
     def copy_users(self):
 
-        app_id = self.fam.get_fom_app_id()
+        app_id = self.fam.get_app_id()
 
         # Initialize the correct IDs for FOM_SUBMITTER and FOM_REVIEWER
         roles = self.fam.get_roles(app_id)
@@ -271,7 +271,7 @@ class KeyCloakToFAM:
 class FamWrapper:
     """The wrapper class for interactions with the FAM API"""
 
-    def __init__(self, fom_forest_client_role_parent: str):
+    def __init__(self):
         """_summary_
 
         :param fom_forest_client_role_parent: abstract role that all subsequent
@@ -285,8 +285,6 @@ class FamWrapper:
             "Content-Type": "application/json",
             "Authorization": "Bearer " + constants.FAM_JWT
         }
-        self.fom_forest_client_roles_parent = fom_forest_client_role_parent
-        self.fom_forest_client_role_prefix = f"{fom_forest_client_role_parent}_"
         self.fom_app_id: Union[int, None] = None
         self.create_user_name = "KC_MIGRATION"
 
@@ -328,7 +326,7 @@ class FamWrapper:
         data = resp.json()
         return data
 
-    def get_role(
+    def get_role_id(
         self, role_name: str, app_id: int
     ) -> Union[FamRole, None]:
         """retrieves all the fam role for an application, then iterates over the returned roles
@@ -340,15 +338,15 @@ class FamWrapper:
             be a part of
         :return: a role object that matches criteria above
         """
-        return_role = None
+        return_role_id = None
         roles = self.get_roles(app_id)
         LOGGER.debug(f"role name to get: {role_name}")
         LOGGER.debug(f"role names: {[role['role_name'] for role in roles]}")
         for role in roles:
             if role["role_name"] == role_name:
-                return_role = role
+                return_role_id = role["role_id"]
                 break
-        return return_role
+        return return_role_id
 
     def get_apps(self) -> List[FamApplication]:
         url = f"{self.url}/fam_applications"
@@ -358,7 +356,7 @@ class FamWrapper:
         data = resp.json()
         return data
 
-    def get_fom_app_id(self) -> Union[int, None]:
+    def get_app_id(self) -> Union[int, None]:
 
         app_id = None
         # app id isn't going to change so should only get it once, then cache
@@ -367,7 +365,7 @@ class FamWrapper:
             apps = self.get_apps()
             app_id = None
             for app in apps:
-                if app["application_name"] == constants.FOM_APP_NAME_IN_FAM:
+                if app["application_name"] == constants.APP_NAME_IN_FAM:
                     app_id = app["application_id"]
                     self.fom_app_id = app_id
                     break
