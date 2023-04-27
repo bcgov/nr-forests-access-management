@@ -7,7 +7,7 @@ from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
 from api.config import config
-import base64
+from base64 import b64decode, b64encode
 
 
 LOGGER = logging.getLogger(__name__)
@@ -28,15 +28,6 @@ def bcsc_userinfo_test(request: Request):
 @router.get("/prod/userinfo", status_code=200)
 def bcsc_userinfo_prod(request: Request):
     return bcsc_userinfo(request, "https://id.gov.bc.ca/oauth2/userinfo")
-
-
-@router.post("/encryption_test", status_code=200)
-def encryption_test(request: Request):
-    LOGGER.info(f"Request body is: [{request.body}")
-
-    response_data = request.body()
-
-    return Response(content=response_data, media_type="text/plain")
 
 
 def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
@@ -79,7 +70,7 @@ def bcsc_jwks(request: Request):
     key = kms_lookup._bcsc_public_key
 
     key_value_bytes = key["PublicKey"]
-    pub_key_dec = base64.b64encode(key_value_bytes).decode()
+    pub_key_dec = b64encode(key_value_bytes).decode()
 
     algorithm = "RS256"
     e = "AQAB"
@@ -93,3 +84,19 @@ def bcsc_jwks(request: Request):
     }
 
     return JSONResponse(content=jwks_dict)
+
+
+@router.post("/encryption_test", status_code=200)
+def encryption_test(request: Request):
+    LOGGER.info(f"Request body is: [{request.body}")
+
+    response_data = request.body()
+    decoded_data = b64decode(response_data)
+
+    LOGGER.info(f"Decoded data is: [{decoded_data}")
+
+    kms_lookup.decrypt(decoded_data)
+
+    return Response(content=response_data, media_type="text/plain")
+
+

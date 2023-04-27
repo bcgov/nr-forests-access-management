@@ -44,4 +44,13 @@ emsg = b64encode(cipher_text)
 
 LOGGER.warning(emsg)
 
+test_url = (
+    "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+)
 
+raw_response = None
+
+with urlopen(test_url, data=emsg) as response:
+    raw_response = response.read().decode("utf-8")
+
+LOGGER.warning(raw_response)
