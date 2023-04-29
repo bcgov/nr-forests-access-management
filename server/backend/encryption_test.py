@@ -2,55 +2,74 @@ import json
 from urllib.request import urlopen
 import logging
 from Crypto.PublicKey import RSA
+from Crypto import Random
 from Crypto.Cipher import PKCS1_OAEP
 from base64 import b64decode, b64encode
 
 LOGGER = logging.getLogger(__name__)
 
-try:
-    jwks = None
+key = RSA.generate(2048)
+private_key = key.export_key('PEM')
+public_key = key.publickey().exportKey('PEM')
+message = input('plain text for RSA encryption and decryption:')
+message = str.encode(message)
 
-    url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/jwks.json"
-    with urlopen(url) as response:
-        jwks = json.loads(response.read().decode("utf-8"))
+rsa_public_key = RSA.importKey(public_key)
+rsa_public_key = PKCS1_OAEP.new(rsa_public_key)
+encrypted_text = rsa_public_key.encrypt(message)
 
-except Exception as e:
-    LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
-    LOGGER.error("Backend API will not work properly.")
-    raise e
+print('your encrypted_text is : {}'.format(encrypted_text))
 
-jwk = {}
-for key in jwks["keys"]:
-    if key["kid"] == "bcscencryption":
-        jwk = {
-            "kty": key["kty"],
-            "kid": key["kid"],
-            "use": key["use"],
-            "n": key["n"],
-            "e": key["e"],
-        }
-    break
+rsa_private_key = RSA.importKey(private_key)
+rsa_private_key = PKCS1_OAEP.new(rsa_private_key)
+decrypted_text = rsa_private_key.decrypt(encrypted_text)
 
-LOGGER.warning(jwk)
+print('your decrypted_text is : {}'.format(decrypted_text))
 
-pubkey = jwk["n"]
+# try:
+#     jwks = None
 
-msg = "1000 Monkeys"
-keyDER = b64decode(pubkey)
-keyPub = RSA.importKey(keyDER)
-cipher = PKCS1_OAEP.new(keyPub)
-cipher_text = cipher.encrypt(msg.encode())
-emsg = b64encode(cipher_text)
+#     url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/jwks.json"
+#     with urlopen(url) as response:
+#         jwks = json.loads(response.read().decode("utf-8"))
 
-LOGGER.warning(emsg)
+# except Exception as e:
+#     LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
+#     LOGGER.error("Backend API will not work properly.")
+#     raise e
 
-test_url = (
-    "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
-)
+# jwk = {}
+# for key in jwks["keys"]:
+#     if key["kid"] == "bcscencryption":
+#         jwk = {
+#             "kty": key["kty"],
+#             "kid": key["kid"],
+#             "use": key["use"],
+#             "n": key["n"],
+#             "e": key["e"],
+#         }
+#     break
 
-raw_response = None
+# LOGGER.warning(jwk)
 
-with urlopen(test_url, data=emsg) as response:
-    raw_response = response.read().decode("utf-8")
+# pubkey = jwk["n"]
 
-LOGGER.warning(raw_response)
+# msg = "1000 Monkeys"
+# keyDER = b64decode(pubkey)
+# keyPub = RSA.importKey(keyDER)
+# cipher = PKCS1_OAEP.new(keyPub)
+# cipher_text = cipher.encrypt(msg.encode())
+# emsg = b64encode(cipher_text)
+
+# LOGGER.warning(emsg)
+
+# test_url = (
+#     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+# )
+
+# raw_response = None
+
+# with urlopen(test_url, data=emsg) as response:
+#     raw_response = response.read().decode("utf-8")
+
+# LOGGER.warning(raw_response)
