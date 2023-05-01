@@ -9,8 +9,8 @@ from .. import kms_lookup
 from api.config import config
 from base64 import b64decode, b64encode
 
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
+# from Crypto.PublicKey import RSA
+# from Crypto.Cipher import PKCS1_OAEP
 
 LOGGER = logging.getLogger(__name__)
 
