@@ -66,20 +66,7 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
       {
         "Effect": "Allow",
         "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:TagResource",
-                "kms:UntagResource",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:*"
             ],
         "Resource": "${aws_kms_key.bcsc_key.arn}"
       }
