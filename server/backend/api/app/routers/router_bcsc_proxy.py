@@ -16,18 +16,48 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
+@router.get("/token/dev", status_code=200)
+def bcsc_token_dev(request: Request):
+    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token")
 
-@router.get("/dev/userinfo", status_code=200)
+
+@router.get("/token/test", status_code=200)
+def bcsc_token_test(request: Request):
+    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token")
+
+
+@router.get("/token/prod", status_code=200)
+def bcsc_token_prod(request: Request):
+    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token")
+
+
+def bcsc_token(request: Request, bcsc_token_uri):
+
+    """
+    Proxy the BCSC token endpoint and decode the result
+    """
+
+    raw_response = requests.get(url=bcsc_token_uri, headers=request.headers).text
+
+    decrypted_data = raw_response
+
+    if config.is_bcsc_key_enabled():
+        decrypted_data = kms_lookup.decrypt(raw_response)
+
+    return Response(content=decrypted_data, media_type="text/plain")
+
+
+@router.get("/userinfo/dev", status_code=200)
 def bcsc_userinfo_dev(request: Request):
     return bcsc_userinfo(request, "https://idtest.gov.bc.ca/oauth2/userinfo")
 
 
-@router.get("/test/userinfo", status_code=200)
+@router.get("/userinfo/test", status_code=200)
 def bcsc_userinfo_test(request: Request):
     return bcsc_userinfo(request, "https://idtest.gov.bc.ca/oauth2/userinfo")
 
 
-@router.get("/prod/userinfo", status_code=200)
+@router.get("/userinfo/prod", status_code=200)
 def bcsc_userinfo_prod(request: Request):
     return bcsc_userinfo(request, "https://id.gov.bc.ca/oauth2/userinfo")
 
