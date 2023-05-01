@@ -130,13 +130,13 @@ def encryption_test_test(body: bytes = Depends(get_body)):
 
     emsg = b64encode(encrypted_text)
 
-    test_url = (
-        "http://localhost:8000/bcsc/encryption_test"
-    )
-
     # test_url = (
-    #     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+    #     "http://localhost:8000/bcsc/encryption_test"
     # )
+
+    test_url = (
+        "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+    )
 
     raw_response = requests.post(url=test_url, data=emsg).text
 
