@@ -134,10 +134,16 @@ def encryption_test_test(body: bytes = Depends(get_body)):
     #     "http://localhost:8000/bcsc/encryption_test"
     # )
 
-    test_url = (
-        "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
-    )
+    # test_url = (
+    #     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+    # )
 
-    raw_response = requests.post(url=test_url, data=emsg).text
+    # raw_response = requests.post(url=test_url, data=emsg).text
 
-    return Response(content=raw_response, media_type="text/plain")
+    decoded_data = b64decode(emsg)
+    decrypted_data = kms_lookup.decrypt(decoded_data)
+    # decrypted_data = rsa_private_key.decrypt(decoded_data)
+
+    return Response(content=decrypted_data, media_type="text/plain")
+
+    # return Response(content=raw_response, media_type="text/plain")
