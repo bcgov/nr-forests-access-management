@@ -45,21 +45,29 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
 
     LOGGER.debug(f"Request params: [{request.query_params}]")
 
-    raw_response = requests.post(url=bcsc_token_uri, headers=request.headers, data=body).text
+    response = requests.post(url=bcsc_token_uri, headers=request.headers, data=body)
+
+    raw_response = response.text
 
     LOGGER.debug(f"Raw response is: [{raw_response}]")
 
     json_response = json.loads(raw_response)
 
-    LOGGER.debug(f"Encrypted ID is: [{json_response['id_token']}]")
+    LOGGER.debug(f"Encrypted ID token is: [{json_response['id_token']}]")
 
-    decrypted_id_token = kms_lookup.decrypt(json_response["id_token"])
+    encoded_id_token = json_response["id_token"]
 
-    LOGGER.debug(f"Encrypted ID is: [{json_response['id_token']}]")
+    decoded_token_payload = jws.verify(
+        encoded_id_token, None, verify=False
+    )
 
-    json_response["id_token"] = decrypted_id_token
+    decrypted_id_token_payload = kms_lookup.decrypt(decoded_token_payload)
 
-    return Response(content=json.dumps(json_response), media_type="application/json")
+    LOGGER.debug(f"Dencrypted ID is: [{decrypted_id_token_payload}]")
+
+    return response
+
+    # return Response(content=json.dumps(json_response), media_type="application/json")
 
 
 
