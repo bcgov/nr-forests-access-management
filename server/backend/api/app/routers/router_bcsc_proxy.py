@@ -3,11 +3,12 @@ from fastapi import APIRouter, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
-from jose import jwt
+from jose import jwt, jws
 from fastapi import HTTPException
 from .. import kms_lookup
 from api.config import config
 from base64 import b64decode, b64encode
+import json
 
 # from Crypto.PublicKey import RSA
 # from Crypto.Cipher import PKCS1_OAEP
@@ -40,16 +41,22 @@ def bcsc_token(request: Request, bcsc_token_uri):
 
     LOGGER.info(f"Request params: [{request.query_params}]")
 
-    raw_response = requests.get(url=bcsc_token_uri, headers=request.headers, params=request).text
+    raw_response = requests.get(url=bcsc_token_uri, headers=request.headers, params=request.query_params).text
 
-    decrypted_data = raw_response
+    LOGGER.info(f"Raw response is: [{raw_response}]")
 
-    if config.is_bcsc_key_enabled():
-        decrypted_data = kms_lookup.decrypt(raw_response)
+    json_response = json.loads(raw_response.decode("utf-8"))
 
-    LOGGER.info(f"Decrypted data: [{decrypted_data}]")
+    LOGGER.info(f"Encrypted ID is: [{json_response['id_token']}]")
 
-    return Response(content=decrypted_data, media_type="text/plain")
+    decrypted_id_token = kms_lookup.decrypt(json_response["id_token"])
+
+    LOGGER.info(f"Encrypted ID is: [{json_response['id_token']}]")
+
+    json_response["id_token"] = decrypted_id_token
+
+    return Response(content=json.dumps(json_response), media_type="application/json")
+
 
 
 @router.get("/userinfo/dev", status_code=200)
@@ -75,14 +82,15 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 
     raw_response = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
 
-    decrypted_token = raw_response
+    # Can't use jwt.decode for this response because it does not follow jwt
+    # standard. They are returning a
 
-    if config.is_bcsc_key_enabled():
-        decrypted_token = kms_lookup.decrypt(raw_response)
-
-    decoded_payload = jwt.decode(
-        decrypted_token, None, options={"verify_signature": False, "verify_aud": False}
+    raw_payload = jws.verify(
+        raw_response, None, verify=False
     )
+
+    decrypted_payload = kms_lookup.decrypt(raw_payload)
+    decoded_payload = json.loads(decrypted_payload.decode("utf-8"))
 
     aud = decoded_payload["aud"]
     valid_auds = [
