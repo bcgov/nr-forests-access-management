@@ -43,19 +43,19 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
     Proxy the BCSC token endpoint and decode the result
     """
 
-    LOGGER.info(f"Request params: [{request.query_params}]")
+    LOGGER.debug(f"Request params: [{request.query_params}]")
 
     raw_response = requests.post(url=bcsc_token_uri, headers=request.headers, data=body).text
 
-    LOGGER.info(f"Raw response is: [{raw_response}]")
+    LOGGER.debug(f"Raw response is: [{raw_response}]")
 
-    json_response = json.loads(raw_response.decode("utf-8"))
+    json_response = json.loads(raw_response)
 
-    LOGGER.info(f"Encrypted ID is: [{json_response['id_token']}]")
+    LOGGER.debug(f"Encrypted ID is: [{json_response['id_token']}]")
 
     decrypted_id_token = kms_lookup.decrypt(json_response["id_token"])
 
-    LOGGER.info(f"Encrypted ID is: [{json_response['id_token']}]")
+    LOGGER.debug(f"Encrypted ID is: [{json_response['id_token']}]")
 
     json_response["id_token"] = decrypted_id_token
 
@@ -151,11 +151,11 @@ def encryption_test(body: bytes = Depends(get_body)):
 
     # Receive an encrypted message, unencrypt it, and send it back
 
-    LOGGER.info(f"Request body is: [{body}]")
+    LOGGER.debug(f"Request body is: [{body}]")
 
     decoded_data = b64decode(body)
 
-    LOGGER.info(f"Decoded data is: [{decoded_data}")
+    LOGGER.debug(f"Decoded data is: [{decoded_data}")
 
     decrypted_data = kms_lookup.decrypt(decoded_data)
     # decrypted_data = rsa_private_key.decrypt(decoded_data)
