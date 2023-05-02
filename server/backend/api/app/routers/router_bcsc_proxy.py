@@ -18,22 +18,26 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/token/dev", status_code=200)
-def bcsc_token_dev(request: Request):
-    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token")
+async def get_body(request: Request):
+    return await request.body()
 
 
-@router.get("/token/test", status_code=200)
-def bcsc_token_test(request: Request):
-    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token")
+@router.post("/token/dev", status_code=200)
+def bcsc_token_dev(request: Request, body: bytes = Depends(get_body)):
+    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token", body)
 
 
-@router.get("/token/prod", status_code=200)
-def bcsc_token_prod(request: Request):
-    return bcsc_token(request, "https://id.gov.bc.ca/oauth2/token")
+@router.post("/token/test", status_code=200)
+def bcsc_token_test(request: Request, body: bytes = Depends(get_body)):
+    return bcsc_token(request, "https://idtest.gov.bc.ca/oauth2/token", body)
 
 
-def bcsc_token(request: Request, bcsc_token_uri):
+@router.post("/token/prod", status_code=200)
+def bcsc_token_prod(request: Request, body: bytes = Depends(get_body)):
+    return bcsc_token(request, "https://id.gov.bc.ca/oauth2/token", body)
+
+
+def bcsc_token(request: Request, bcsc_token_uri, body):
 
     """
     Proxy the BCSC token endpoint and decode the result
@@ -41,7 +45,7 @@ def bcsc_token(request: Request, bcsc_token_uri):
 
     LOGGER.info(f"Request params: [{request.query_params}]")
 
-    raw_response = requests.get(url=bcsc_token_uri, headers=request.headers, params=request.query_params).text
+    raw_response = requests.post(url=bcsc_token_uri, headers=request.headers, data=body).text
 
     LOGGER.info(f"Raw response is: [{raw_response}]")
 
@@ -131,9 +135,6 @@ def bcsc_jwks(request: Request):
 
     return JSONResponse(content=jwks_dict)
 
-
-async def get_body(request: Request):
-    return await request.body()
 
 
 # key = RSA.generate(2048)
