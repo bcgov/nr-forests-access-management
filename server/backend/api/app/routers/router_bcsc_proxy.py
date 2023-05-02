@@ -62,12 +62,11 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
         encoded_id_token, None, verify=False
     )
 
-    id_token_encrypted_payload_bytes = b64decode(id_token_encrypted_payload)
-
-    decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload_bytes)
+    decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload)
+    LOGGER.debug(f"Dencrypted ID payload is: [{decrypted_id_token_payload}]")
 
     val = b64encode(decrypted_id_token_payload).encode()
-    LOGGER.debug(f"Dencrypted ID is: [{val}]")
+    LOGGER.debug(f"Readable encrypted ID payload is: [{val}]")
 
     return response
 
