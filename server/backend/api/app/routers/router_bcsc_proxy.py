@@ -9,6 +9,7 @@ from .. import kms_lookup
 from api.config import config
 from base64 import b64decode, b64encode
 import json
+from base64 import b64decode, b64encode
 
 # from Crypto.PublicKey import RSA
 # from Crypto.Cipher import PKCS1_OAEP
@@ -57,13 +58,16 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
 
     encoded_id_token = json_response["id_token"]
 
-    decoded_token_payload = jws.verify(
+    id_token_encrypted_payload = jws.verify(
         encoded_id_token, None, verify=False
     )
 
-    decrypted_id_token_payload = kms_lookup.decrypt(decoded_token_payload)
+    id_token_encrypted_payload_bytes = b64decode(id_token_encrypted_payload)
 
-    LOGGER.debug(f"Dencrypted ID is: [{decrypted_id_token_payload}]")
+    decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload_bytes)
+
+    val = b64encode(decrypted_id_token_payload).encode()
+    LOGGER.debug(f"Dencrypted ID is: [{val}]")
 
     return response
 
