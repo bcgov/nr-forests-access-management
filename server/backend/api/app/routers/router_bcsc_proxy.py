@@ -59,7 +59,10 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
     encoded_id_token = json_response["id_token"]
 
     id_token_encrypted_payload = jws.verify(
-        encoded_id_token, None, verify=False
+        token=encoded_id_token,
+        key=None,
+        algorithms="RS256",
+        verify=False
     )
 
     decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload)
