@@ -201,17 +201,9 @@ def decryption_test(body: bytes = Depends(get_body)):
 
     # Receive an encrypted message, unencrypt it, and send it back
 
-    LOGGER.debug(f"Request body is: [{body}]")
-
     decoded_data = b64decode(body)
-
-    LOGGER.debug(f"Decoded data is: [{decoded_data}")
-
     decrypted_data = kms_lookup.decrypt(decoded_data)
-
-    encoded_data = b64encode(decrypted_data)
-
-    return Response(content=encoded_data, media_type="text/plain")
+    return Response(content=decrypted_data, media_type="text/plain")
 
 
 #     # Read the body, encrypt and encode it, send it back
