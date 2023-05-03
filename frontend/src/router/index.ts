@@ -7,7 +7,6 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManageAccessView from '@/views/ManageAccessView.vue';
 import SelectApplicationView from '@/views/SelectApplicationView.vue';
-import DashboardVue from '@/components/Dashboard.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
