@@ -9,7 +9,12 @@ from .. import kms_lookup
 from api.config import config
 from base64 import b64decode, b64encode
 import json
-from base64 import b64decode, b64encode
+
+from jose.utils import base64url_decode, base64url_encode
+from jose.exceptions import JWSError, JWSSignatureError
+import binascii
+from collections.abc import Iterable, Mapping
+
 
 # from Crypto.PublicKey import RSA
 # from Crypto.Cipher import PKCS1_OAEP
@@ -38,6 +43,25 @@ def bcsc_token_prod(request: Request, body: bytes = Depends(get_body)):
     return bcsc_token(request, "https://id.gov.bc.ca/oauth2/token", body)
 
 
+def get_payload_from_id_token(encoded_id_token):
+    # payload = jws.verify(
+    #     token=encoded_id_token,
+    #     key=None,
+    #     algorithms="RS256",
+    #     verify=False
+    # )
+
+    token = encoded_id_token.encode("utf-8")
+    signing_input, crypto_segment = token.rsplit(b".", 1)
+    header_segment, claims_segment = signing_input.split(b".", 1)
+
+    decrypted_claims_segment = kms_lookup.decrypt(claims_segment)
+
+    payload = base64url_decode(decrypted_claims_segment)
+
+    return payload
+
+
 def bcsc_token(request: Request, bcsc_token_uri, body):
 
     """
@@ -57,6 +81,8 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
     LOGGER.debug(f"Encrypted ID token is: [{json_response['id_token']}]")
 
     encoded_id_token = json_response["id_token"]
+
+    id_token_encrypted_payload = get_payload_from_id_token(encoded_id_token)
 
     id_token_encrypted_payload = jws.verify(
         token=encoded_id_token,
@@ -101,7 +127,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     raw_response = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
 
     # Can't use jwt.decode for this response because it does not follow jwt
-    # standard. They are returning a
+    # standard. They are returning an encrypted payload
 
     raw_payload = jws.verify(
         raw_response, None, verify=False
@@ -161,7 +187,15 @@ def bcsc_jwks(request: Request):
 
 
 @router.post("/encryption_test", status_code=200)
-def encryption_test(body: bytes = Depends(get_body)):
+def decryption_test_test(body: bytes = Depends(get_body)):
+
+    encrypted_data = kms_lookup.encrypt(body)
+    encoded_data = b64encode(encrypted_data)
+    return Response(content=encoded_data, media_type="text/plain")
+
+
+@router.post("/decryption_test", status_code=200)
+def decryption_test(body: bytes = Depends(get_body)):
 
     # Receive an encrypted message, unencrypt it, and send it back
 
@@ -172,36 +206,36 @@ def encryption_test(body: bytes = Depends(get_body)):
     LOGGER.debug(f"Decoded data is: [{decoded_data}")
 
     decrypted_data = kms_lookup.decrypt(decoded_data)
-    # decrypted_data = rsa_private_key.decrypt(decoded_data)
 
-    return Response(content=decrypted_data, media_type="text/plain")
+    encoded_data = b64encode(decrypted_data).encode()
+
+    return Response(content=encoded_data, media_type="text/plain")
 
 
-@router.post("/encryption_test_test", status_code=200)
-def encryption_test_test(body: bytes = Depends(get_body)):
+#     # Read the body, encrypt and encode it, send it back
 
-    # Read the body, encode it, and send it to encryption test
+#     # encrypted_text = rsa_public_key.encrypt(body)
 
-    # encrypted_text = rsa_public_key.encrypt(body)
 
-    encrypted_text = kms_lookup.encrypt(body)
 
-    emsg = b64encode(encrypted_text)
+#     # encrypted_text = kms_lookup.encrypt(body)
 
-    # test_url = (
-    #     "http://localhost:8000/bcsc/encryption_test"
-    # )
+#     # emsg = b64encode(encrypted_text)
 
-    # test_url = (
-    #     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
-    # )
+#     # test_url = (
+#     #     "http://localhost:8000/bcsc/encryption_test"
+#     # )
 
-    # raw_response = requests.post(url=test_url, data=emsg).text
+#     # test_url = (
+#     #     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
+#     # )
 
-    decoded_data = b64decode(emsg)
-    decrypted_data = kms_lookup.decrypt(decoded_data)
-    # decrypted_data = rsa_private_key.decrypt(decoded_data)
+#     # raw_response = requests.post(url=test_url, data=emsg).text
 
-    return Response(content=decrypted_data, media_type="text/plain")
+#     decoded_data = b64decode(emsg)
+#     decrypted_data = kms_lookup.decrypt(decoded_data)
+#     # decrypted_data = rsa_private_key.decrypt(decoded_data)
 
-    # return Response(content=raw_response, media_type="text/plain")
+#     return Response(content=decrypted_data, media_type="text/plain")
+
+#     # return Response(content=raw_response, media_type="text/plain")

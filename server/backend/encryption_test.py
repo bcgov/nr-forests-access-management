@@ -5,26 +5,74 @@ from Crypto.PublicKey import RSA
 from Crypto import Random
 from Crypto.Cipher import PKCS1_OAEP
 from base64 import b64decode, b64encode
+from jose import jws, jwt
+from jose.utils import base64url_decode, base64url_encode
+from jose.exceptions import JWSError, JWSSignatureError
+import binascii
+from collections.abc import Iterable, Mapping
 
 LOGGER = logging.getLogger(__name__)
 
-key = RSA.generate(2048)
-private_key = key.export_key('PEM')
-public_key = key.publickey().exportKey('PEM')
-message = input('plain text for RSA encryption and decryption:')
-message = str.encode(message)
+encoded_id_token = "eyJraWQiOiJiY3NjZW5jcnlwdGlvbiIsImN0eSI6IkpXVCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJhbGciOiJSU0EtT0FFUC0yNTYifQ.BhkhA3czNFY3DmmASMWNTwHQDbhaUMGT4I1SFh_a5qp5tCPMvWIGzRg6-8VMVjDTk0FZ_v5pakGDZ88Gv1GRLdsh7dLZ7e-lysoVPu-zgs4llXFQmeCfK9CtkOK-zrl6khXXVb-ZK6fg6NvScO6ZaGuYD3mYQ03hVF8cBXnv8Joc8G04R7PGHVoySZQyzwbkKA-7XOICLJFclaV6wwvHQiEfq7VOHvanNKjdlvm1Noahh9eUBrGN7jPlby_78yQDDclgD-42KyOpZePbhP0WL71Zshqg2X2rei5JBPKrmHClCyZ0FSf_GQZ6sCSCG9Yq7YaVjwOSEgDsxU42ohTIILhan9qOMFQqKIlNNAGEet7mU2UcOX3x0UL7ueqNGISw7gP-AXOF.sY5DqBWKfFpiweTvBVlRvQ.s-35BQgGQzE7T1yDd4yVojqRS5YKP2TYvz7jPEVZ6rPGvra1EKBSxjciQjYQ941iYrjIT4Mazbfeqt-gF2MbXNr_x_tteMHKA8LFXivG4usCT9c4uDAF8__iwOXOVdpmmqBfKXKKAf3_0uJj7na9lvyU6f4QS762IBtzvhx72C753Oh83wuNVagVDCXNWrfTaDSLmtNvpljbZNIUd6r4uomY7YuUInuofhDywTA7z6SYbKtgDMSegPCmzKTwalsXdhH-mI8P5DrhH3bi4swgHacL0jmCjhTL8mETQMjegxAWpIeslpsKVVB0hvorvmSN3HlA9UjVAdkT07jQtARh9cBZeuje01Ols6s-HWsAj01pknn55d7HSoqxa3TrRbyIxrP8GfGN_DFHCMbA8hM1FvB6VCImgbmzC6vBxuVrPqw7I1v5fWrnmJ0dd7ezw-P7jyrXBGLI1g6DR1p5gfvnH4nnxJ02sJS0BgCHLxSYCFOl5j9Iq019ij7x5N7Y1Fbv_pLqYiV979EMOSgYuGpxqH6Nj5kjA1PF3cvsm1SoW9ivtLASnypBKGBgaV5OSNfXTWxtWHAnJML5GoNDgbarztiGk3O4xM-fBdBYDTwUDyLalbp0cGWu5A5dcfQMqMxprXapw7a2yZ6i_H6F6Y3-FM6wcU6_qhiAbEpqRLkUGbG4dL_UzeOLfWcHaLPHBhuu0K9HtkH5TPQuFXxfiJXDWp7ij5mAa9ocPRK22BRtbBCtqC87oTBwjts60_EM08rS8Mx703mh24bfPZnuYPbAB0w1IasyKQJyE4NBLYXEP8pNC3Ss4dfHkK6MQLE0Qac1wi9uU6D9SV5FYtWQY0Sfu7KQxTNIZWLiIV6TYMwqTc2YaB9I1sGqGrkuViuiH0Gsf8LoXVDyPV4LK3DEfHfOvGgGm2vUgauNz_gvwio98t58VyMwOP8XOuPr9TIAtMDg15ELyCDURThvknPMT9_qMCXWKTAVRnN-LKNKDUJoY_g.UyUhInFcCIDwYYtQqUVjJsVmjcwINcnuXg0GU8YGgDg"
 
-rsa_public_key = RSA.importKey(public_key)
-rsa_public_key = PKCS1_OAEP.new(rsa_public_key)
-encrypted_text = rsa_public_key.encrypt(message)
+# RSA-OAEP-256
 
-print('your encrypted_text is : {}'.format(encrypted_text))
+if isinstance(encoded_id_token, str):
+    token = encoded_id_token.encode("utf-8")
+try:
+    signing_input, crypto_segment = token.rsplit(b".", 1)
+    header_segment, claims_segment = signing_input.split(b".", 1)
+    header_data = base64url_decode(header_segment)
+except ValueError:
+    raise JWSError("Not enough segments")
+except (TypeError, binascii.Error):
+    raise JWSError("Invalid header padding")
 
-rsa_private_key = RSA.importKey(private_key)
-rsa_private_key = PKCS1_OAEP.new(rsa_private_key)
-decrypted_text = rsa_private_key.decrypt(encrypted_text)
+try:
+    header = json.loads(header_data.decode("utf-8"))
+except ValueError as e:
+    raise JWSError("Invalid header string: %s" % e)
 
-print('your decrypted_text is : {}'.format(decrypted_text))
+if not isinstance(header, Mapping):
+    raise JWSError("Invalid header string: must be a json object")
+
+try:
+    payload = base64url_decode(claims_segment)
+except (TypeError, binascii.Error):
+    raise JWSError("Invalid payload padding")
+
+try:
+    signature = base64url_decode(crypto_segment)
+except (TypeError, binascii.Error):
+    raise JWSError("Invalid crypto padding")
+
+
+
+# id_token_encrypted_payload = jws.verify(
+#     token=encoded_id_token,
+#     key=None,
+#     algorithms="RS256",
+#     verify=False
+# )
+
+
+# key = RSA.generate(2048)
+# private_key = key.export_key('PEM')
+# public_key = key.publickey().exportKey('PEM')
+# message = input('plain text for RSA encryption and decryption:')
+# message = str.encode(message)
+
+# rsa_public_key = RSA.importKey(public_key)
+# rsa_public_key = PKCS1_OAEP.new(rsa_public_key)
+# encrypted_text = rsa_public_key.encrypt(message)
+
+# print('your encrypted_text is : {}'.format(encrypted_text))
+
+# rsa_private_key = RSA.importKey(private_key)
+# rsa_private_key = PKCS1_OAEP.new(rsa_private_key)
+# decrypted_text = rsa_private_key.decrypt(encrypted_text)
+
+# print('your decrypted_text is : {}'.format(decrypted_text))
 
 # try:
 #     jwks = None
