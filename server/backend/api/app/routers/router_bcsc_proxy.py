@@ -207,7 +207,7 @@ def decryption_test(body: bytes = Depends(get_body)):
 
     decrypted_data = kms_lookup.decrypt(decoded_data)
 
-    encoded_data = b64encode(decrypted_data).encode()
+    encoded_data = b64encode(decrypted_data)
 
     return Response(content=encoded_data, media_type="text/plain")
 
