@@ -5,6 +5,7 @@ import {
     applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
+    setSelectedApplication,
 } from '@/services/ApplicationState';
 import { onMounted, ref, computed } from 'vue';
 import router from '../router';
@@ -23,7 +24,9 @@ onMounted(async () => {
         ).data;
         // If user can only manage one application redirect to manage access screen
         if (applicationsUserAdministers.value.length == 1) {
-            selectedApplication.value = applicationsUserAdministers.value[0];
+            setSelectedApplication(
+                JSON.stringify(applicationsUserAdministers.value[0])
+            );
             router.push('/manage');
         }
     } catch (error: any) {
@@ -33,7 +36,7 @@ onMounted(async () => {
 
 function filterEnv(selectedEnv: string) {
     environmentFilter.value = selectedEnv;
-    selectedApplication.value = null;
+    setSelectedApplication(null);
 }
 
 const filteredOptions = computed(() => {
@@ -68,10 +71,14 @@ const filteredOptions = computed(() => {
                     <select
                         id="applicationSelect"
                         class="form-select"
-                        v-model="selectedApplication"
+                        :value="JSON.stringify(selectedApplication)"
+                        @change="(e: Event) => setSelectedApplication(e.target ? (e.target as HTMLTextAreaElement).value : null)"
                         :size="applicationsUserAdministers.length + 1"
                     >
-                        <option v-for="app in filteredOptions" :value="app">
+                        <option
+                            v-for="app in filteredOptions"
+                            :value="JSON.stringify(app)"
+                        >
                             {{ app.application_description }}
                         </option>
                     </select>

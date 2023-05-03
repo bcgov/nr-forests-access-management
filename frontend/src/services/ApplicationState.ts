@@ -5,7 +5,20 @@ import { computed, ref } from 'vue';
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
 
 // The application selected by the user to admin
-export const selectedApplication = ref<FamApplication | null>();
+export const selectedApplication = ref<FamApplication | null>(
+    localStorage.getItem('CURRENT_SELECTED_APPLICATION')
+        ? JSON.parse(
+              localStorage.getItem('CURRENT_SELECTED_APPLICATION') as string
+          )
+        : null
+);
+
+export const setSelectedApplication = (newValue: string | null) => {
+    selectedApplication.value = JSON.parse(newValue as string);
+    if (newValue)
+        localStorage.setItem('CURRENT_SELECTED_APPLICATION', newValue);
+    else localStorage.removeItem('CURRENT_SELECTED_APPLICATION');
+};
 
 export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
