@@ -78,28 +78,30 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
 
     json_response = json.loads(raw_response)
 
-    LOGGER.debug(f"Encrypted ID token is: [{json_response['id_token']}]")
+    del json_response['id_token']
 
-    encoded_id_token = json_response["id_token"]
+    # LOGGER.debug(f"Encrypted ID token is: [{json_response['id_token']}]")
 
-    id_token_encrypted_payload = get_payload_from_id_token(encoded_id_token)
+    # encoded_id_token = json_response["id_token"]
 
-    id_token_encrypted_payload = jws.verify(
-        token=encoded_id_token,
-        key=None,
-        algorithms="RS256",
-        verify=False
-    )
+    # id_token_encrypted_payload = get_payload_from_id_token(encoded_id_token)
 
-    decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload)
-    LOGGER.debug(f"Dencrypted ID payload is: [{decrypted_id_token_payload}]")
+    # id_token_encrypted_payload = jws.verify(
+    #     token=encoded_id_token,
+    #     key=None,
+    #     algorithms="RS256",
+    #     verify=False
+    # )
 
-    val = b64encode(decrypted_id_token_payload).encode()
-    LOGGER.debug(f"Readable encrypted ID payload is: [{val}]")
+    # decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload)
+    # LOGGER.debug(f"Dencrypted ID payload is: [{decrypted_id_token_payload}]")
 
-    return response
+    # val = b64encode(decrypted_id_token_payload).encode()
+    # LOGGER.debug(f"Readable encrypted ID payload is: [{val}]")
 
-    # return Response(content=json.dumps(json_response), media_type="application/json")
+    # return response
+
+    return Response(content=json.dumps(json_response), media_type="application/json")
 
 
 
