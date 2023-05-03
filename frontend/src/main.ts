@@ -28,6 +28,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import ErrorService from './services/ErrorService';
 
+import PrimeVue from 'primevue/config';
+
+// use bootstrap4 as default style
+import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+
+// import the component override style sheet for primevue
+import '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
+
 // add specific icons to library for use throughout application
 library.add(faTrashCan);
 
@@ -84,3 +94,5 @@ app.config.errorHandler = (err, instance, info) => {
 };
 
 app.use(router).component('font-awesome-icon', FontAwesomeIcon).mount('#app');
+
+app.use(PrimeVue);

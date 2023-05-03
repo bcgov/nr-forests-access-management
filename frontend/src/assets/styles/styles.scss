@@ -5,3 +5,7 @@
 
 // Components
 @import './components/form-elements.scss';
+
+@import '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss';
+@import '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
+@import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';

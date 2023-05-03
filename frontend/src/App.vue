@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import Breadcrumb from '@/components/Breadcrumb.vue';
-import Footer from '@/components/footer/Footer.vue';
-import Header from '@/components/header/Header.vue';
 import { RouterView } from 'vue-router';
+import { defineAsyncComponent, shallowRef, watch, type Component } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const layout_component = shallowRef<Component>();
+watch(
+    () => route.meta.layout ?? 'SimpleLayout',
+    (layout) => {
+        layout_component.value = defineAsyncComponent(
+            () => import(`@/layouts/${layout}.vue`)
+        );
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
-    <Header></Header>
-    <main class="container pt-0 mt-2">
-        <Breadcrumb />
-        <RouterView />
-        <modals-container></modals-container>
-    </main>
-
-    <Footer></Footer>
+    <component :is="layout_component">
+        <router-view />
+    </component>
 </template>
 
 <style lang="scss" scoped>

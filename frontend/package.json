@@ -13,6 +13,7 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
+        "@bcgov-nr/nr-fsa-theme": "^0.0.1",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",
         "@fortawesome/free-regular-svg-icons": "^6.2.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.1",
@@ -23,6 +24,8 @@
         "bootstrap": "^5.2.3",
         "bootstrap-vue-next": "^0.7.3",
         "fam-api": "file:../client-code-gen/gen",
+        "primeicons": "^6.0.1",
+        "primevue": "^3.27.0",
         "vee-validate": "^4.7.3",
         "vue": "^3.2.38",
         "vue-final-modal": "^3.4.11",
