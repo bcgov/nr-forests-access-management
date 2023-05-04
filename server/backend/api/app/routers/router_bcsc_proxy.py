@@ -166,7 +166,7 @@ def bcsc_jwks(request: Request):
     key = kms_lookup._bcsc_public_key
 
     key_value_bytes = key["PublicKey"]
-    pub_key_dec = b64encode(key_value_bytes).decode()
+    pub_key_dec = base64url_encode(key_value_bytes).decode()
 
     algorithm = "RS256"
     e = "AQAB"
