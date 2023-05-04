@@ -2,7 +2,7 @@
 import authService from '@/services/AuthService';
 import Seeding from '../assets/images/seeding.png';
 import logo from '../assets/images/bc-gov-logo.png';
-import Button from 'primevue/button/Button.vue';
+import Button from 'primevue/button';
 </script>
 
 <template>
@@ -38,7 +38,7 @@ import Button from 'primevue/button/Button.vue';
                     disabled
                 />
             </div>
-            <div class="col-sm-6 col-md-5 col-lg-5 seeding-img-column">
+            <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img
                     :src="Seeding"
                     alt="Small green seedling on the dirt and watered"
