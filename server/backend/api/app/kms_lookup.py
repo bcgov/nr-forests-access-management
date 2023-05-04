@@ -34,7 +34,7 @@ def decrypt(encrypted_token):
     response = _kms_client.decrypt(
         CiphertextBlob=encrypted_token,
         KeyId=get_bcsc_key_id(),
-        EncryptionAlgorithm="RSAES_OAEP",
+        EncryptionAlgorithm="RSAES_OAEP_SHA_1",
     )
 
     return response["Plaintext"]
@@ -43,7 +43,7 @@ def decrypt(encrypted_token):
 def encrypt(msg):
 
     response = _kms_client.encrypt(
-        KeyId=get_bcsc_key_id(), Plaintext=msg, EncryptionAlgorithm="RSAES_OAEP"
+        KeyId=get_bcsc_key_id(), Plaintext=msg, EncryptionAlgorithm="RSAES_OAEP_SHA_1"
     )
 
     return response["CiphertextBlob"]

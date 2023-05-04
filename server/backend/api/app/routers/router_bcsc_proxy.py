@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
-from jose import jwt, jws
+from jose import jwt, jws, jwe
 from fastapi import HTTPException
 from .. import kms_lookup
 from api.config import config
@@ -130,6 +130,8 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 
     # Can't use jwt.decode for this response because it does not follow jwt
     # standard. They are returning an encrypted payload
+
+    jwe.get_unverified_header
 
     raw_payload = jws.verify(
         raw_response, None, verify=False
