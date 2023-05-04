@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import logging
 from Crypto.PublicKey import RSA
 from Crypto import Random
-from Crypto.Cipher import PKCS1_OAEP,
+from Crypto.Cipher import PKCS1_OAEP
 from base64 import b64decode, b64encode
 from jose import jws, jwt
 from jose.utils import base64url_decode, base64url_encode
@@ -31,11 +31,13 @@ cQIDAQAB
 -----END PUBLIC KEY-----'''
 
 rsa_public_key = RSA.importKey(public_key_text)
-rsa_public_key = PKCS1_OAEP.new(rsa_public_key)
+rsa_public_key = PKCS1_OAEP.new(rsa_public_key, "RSAES_OAEP_SHA_256")
 encrypted_text = rsa_public_key.encrypt(b'Yo yo bum rush the show')
 b64_encoded_text = b64encode(encrypted_text)
 print(b64_encoded_text)
 
+
+# print(b64encode(b'BhkhA3czNFY3DmmASMWNTwHQDbhaUMGT4I1SFh_a5qp5tCPMvWIGzRg6-8VMVjDTk0FZ_v5pakGDZ88Gv1GRLdsh7dLZ7e-lysoVPu-zgs4llXFQmeCfK9CtkOK-zrl6khXXVb-ZK6fg6NvScO6ZaGuYD3mYQ03hVF8cBXnv8Joc8G04R7PGHVoySZQyzwbkKA-7XOICLJFclaV6wwvHQiEfq7VOHvanNKjdlvm1Noahh9eUBrGN7jPlby_78yQDDclgD-42KyOpZePbhP0WL71Zshqg2X2rei5JBPKrmHClCyZ0FSf_GQZ6sCSCG9Yq7YaVjwOSEgDsxU42ohTIILhan9qOMFQqKIlNNAGEet7mU2UcOX3x0UL7ueqNGISw7gP-AXOF'))
 
 
 # if isinstance(encoded_id_token, str):
