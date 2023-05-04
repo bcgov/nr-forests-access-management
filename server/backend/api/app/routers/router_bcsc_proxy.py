@@ -137,7 +137,9 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
         raw_response, None, verify=False
     )
 
-    decrypted_payload = kms_lookup.decrypt(raw_payload)
+    # decrypted_payload = kms_lookup.decrypt(raw_payload)
+    decrypted_payload = raw_payload
+
     decoded_payload = json.loads(decrypted_payload.decode("utf-8"))
 
     aud = decoded_payload["aud"]
