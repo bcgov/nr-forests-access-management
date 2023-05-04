@@ -196,7 +196,7 @@ def bcsc_jwks(request: Request):
 def decryption_test_test(body: bytes = Depends(get_body)):
 
     encrypted_data = kms_lookup.encrypt(body)
-    encoded_data = b64encode(encrypted_data)
+    encoded_data = base64url_encode(encrypted_data)
     return Response(content=encoded_data, media_type="text/plain")
 
 
@@ -205,7 +205,7 @@ def decryption_test(body: bytes = Depends(get_body)):
 
     # Receive an encrypted message, unencrypt it, and send it back
 
-    decoded_data = b64decode(body)
+    decoded_data = base64url_decode(body)
     decrypted_data = kms_lookup.decrypt(decoded_data)
     return Response(content=decrypted_data, media_type="text/plain")
 
