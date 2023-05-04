@@ -33,7 +33,7 @@ describe('Breadcrumb Component', () => {
     });
 
     it('should be blank when home page', async () => {
-        router.push('/');
+        router.push('/home');
         await flushPromises();
         expect(wrapper.html()).toEqual('<span></span>');
     });
