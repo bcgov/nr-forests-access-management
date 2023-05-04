@@ -4,10 +4,10 @@ import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
 import AuthService from '@/services/AuthService';
 import GrantAccessView from '@/views/GrantAccessView.vue';
-import LandingView from '@/views/LandingView.vue';
+import HomeView from '@/views/HomeView.vue';
 import ManageAccessView from '@/views/ManageAccessView.vue';
 import SelectApplicationView from '@/views/SelectApplicationView.vue';
-import HomeViewVue from '@/views/HomeView.vue';
+import LandingView from '@/views/LandingView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -39,7 +39,7 @@ const routes = [
             title: 'Welcome to FAM',
             layout: 'ProtectedLayout'
         },
-        component: HomeViewVue,
+        component: HomeView,
     },
     {
         path: '/application',
