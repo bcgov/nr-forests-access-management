@@ -3,17 +3,13 @@ from fastapi import APIRouter, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
-from jose import jwt, jws, jwe
+from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
-from api.config import config
-from base64 import b64decode, b64encode
+# from api.config import config
+# from base64 import b64decode, b64encode
 import json
-
 from jose.utils import base64url_decode, base64url_encode
-from jose.exceptions import JWSError, JWSSignatureError
-import binascii
-from collections.abc import Iterable, Mapping
 
 
 # from Crypto.PublicKey import RSA
@@ -128,19 +124,9 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 
     raw_response = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
 
-    # Can't use jwt.decode for this response because it does not follow jwt
-    # standard. They are returning an encrypted payload
-
-    jwe.get_unverified_header
-
-    raw_payload = jws.verify(
-        raw_response, None, verify=False
+    decoded_payload = jwt.decode(
+        raw_response, None, options={"verify_signature": False, "verify_aud": False}
     )
-
-    # decrypted_payload = kms_lookup.decrypt(raw_payload)
-    decrypted_payload = raw_payload
-
-    decoded_payload = json.loads(decrypted_payload.decode("utf-8"))
 
     aud = decoded_payload["aud"]
     valid_auds = [

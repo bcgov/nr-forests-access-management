@@ -11,8 +11,23 @@ from jose.utils import base64url_decode, base64url_encode
 from jose.exceptions import JWSError, JWSSignatureError
 import binascii
 from collections.abc import Iterable, Mapping
+import requests
 
 LOGGER = logging.getLogger(__name__)
+
+jwks = requests.get('https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/jwks.json').text
+json_response = json.loads(jwks)
+keytext = json_response["keys"][0]["n"]
+key_unencoded = base64url_decode(keytext)
+
+
+# Load the key from the jwks endpoint
+
+# Create the RSA Key
+
+# Encrypt and encode
+
+# Send to the endpoint to decrypt
 
 # token = "eyJraWQiOiJiY3NjZW5jcnlwdGlvbiIsImN0eSI6IkpXVCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJhbGciOiJSU0EtT0FFUC0yNTYifQ.BhkhA3czNFY3DmmASMWNTwHQDbhaUMGT4I1SFh_a5qp5tCPMvWIGzRg6-8VMVjDTk0FZ_v5pakGDZ88Gv1GRLdsh7dLZ7e-lysoVPu-zgs4llXFQmeCfK9CtkOK-zrl6khXXVb-ZK6fg6NvScO6ZaGuYD3mYQ03hVF8cBXnv8Joc8G04R7PGHVoySZQyzwbkKA-7XOICLJFclaV6wwvHQiEfq7VOHvanNKjdlvm1Noahh9eUBrGN7jPlby_78yQDDclgD-42KyOpZePbhP0WL71Zshqg2X2rei5JBPKrmHClCyZ0FSf_GQZ6sCSCG9Yq7YaVjwOSEgDsxU42ohTIILhan9qOMFQqKIlNNAGEet7mU2UcOX3x0UL7ueqNGISw7gP-AXOF.sY5DqBWKfFpiweTvBVlRvQ.s-35BQgGQzE7T1yDd4yVojqRS5YKP2TYvz7jPEVZ6rPGvra1EKBSxjciQjYQ941iYrjIT4Mazbfeqt-gF2MbXNr_x_tteMHKA8LFXivG4usCT9c4uDAF8__iwOXOVdpmmqBfKXKKAf3_0uJj7na9lvyU6f4QS762IBtzvhx72C753Oh83wuNVagVDCXNWrfTaDSLmtNvpljbZNIUd6r4uomY7YuUInuofhDywTA7z6SYbKtgDMSegPCmzKTwalsXdhH-mI8P5DrhH3bi4swgHacL0jmCjhTL8mETQMjegxAWpIeslpsKVVB0hvorvmSN3HlA9UjVAdkT07jQtARh9cBZeuje01Ols6s-HWsAj01pknn55d7HSoqxa3TrRbyIxrP8GfGN_DFHCMbA8hM1FvB6VCImgbmzC6vBxuVrPqw7I1v5fWrnmJ0dd7ezw-P7jyrXBGLI1g6DR1p5gfvnH4nnxJ02sJS0BgCHLxSYCFOl5j9Iq019ij7x5N7Y1Fbv_pLqYiV979EMOSgYuGpxqH6Nj5kjA1PF3cvsm1SoW9ivtLASnypBKGBgaV5OSNfXTWxtWHAnJML5GoNDgbarztiGk3O4xM-fBdBYDTwUDyLalbp0cGWu5A5dcfQMqMxprXapw7a2yZ6i_H6F6Y3-FM6wcU6_qhiAbEpqRLkUGbG4dL_UzeOLfWcHaLPHBhuu0K9HtkH5TPQuFXxfiJXDWp7ij5mAa9ocPRK22BRtbBCtqC87oTBwjts60_EM08rS8Mx703mh24bfPZnuYPbAB0w1IasyKQJyE4NBLYXEP8pNC3Ss4dfHkK6MQLE0Qac1wi9uU6D9SV5FYtWQY0Sfu7KQxTNIZWLiIV6TYMwqTc2YaB9I1sGqGrkuViuiH0Gsf8LoXVDyPV4LK3DEfHfOvGgGm2vUgauNz_gvwio98t58VyMwOP8XOuPr9TIAtMDg15ELyCDURThvknPMT9_qMCXWKTAVRnN-LKNKDUJoY_g.UyUhInFcCIDwYYtQqUVjJsVmjcwINcnuXg0GU8YGgDg"
 
@@ -28,15 +43,24 @@ LOGGER = logging.getLogger(__name__)
 # cQIDAQAB
 # -----END PUBLIC KEY-----'''
 
+# public_key_text = '''-----BEGIN PUBLIC KEY-----
+# MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2YIo5DqGD1ehHEOtLok8
+# 1j1aP6wtxZkOjXr6fYHHTtaniDFODQwp-hlFMJw3hkjrnTm1xLp67pRX4wIwXhu3
+# sdZhMr90NEW-vC7XKkf4Yz-2v37omzUCmk23BLhR8yzwJr87Q7oLumIEUvx729Z6
+# yDg-KxjCNlObUbXy-1xazTmBiJly0HbXxXP-nFIOwZXaHGLCJfqZ535lL6UCX80W
+# tNu0IpPcOQXlSRrlWaMs09O5Gj5bTdvSqkp9cuMBPK3_ZfXYgOBY7DsGuK4Hw98Q
+# jNQyJK2f-ENkHcM3RIHnDUzXbB_9d5IESS6o8rkR8mhylhLtaJAget5vH1huFiym
+# cQIDAQAB
+# -----END PUBLIC KEY-----'''
+
 # rsa_public_key = RSA.importKey(public_key_text)
 # rsa_public_key = PKCS1_OAEP.new(key=rsa_public_key, hashAlgo=SHA256)
 # encrypted_text = rsa_public_key.encrypt(b'Yo yo bum rush the show')
-# b64_encoded_text = b64encode(encrypted_text)
+# b64_encoded_text = base64url_encode(encrypted_text)
 # print(b64_encoded_text)
 
-base64url_encode
-decoded = base64url_decode(b'HKuMkq3xKg6q6trlJv2dEhioZKwhB4EVPUU1IpZvXQ-O0MoEW9vpVVXZ7sqqz3Oal1dlWOj2Pwp55a9VVBndwyHv3DyvyEZvFLxoaqUlEZzKJ4eApgGvS7SEq2nqhYQFQL-ceJeUQjHKaiyvq6zZKjbXjT1Qalvq5ZrqLuYhumTGyDEgqJtz6r35-puZVOrEAAvdOWlSNIdXeXvM9cOUPJrx-2DB01hque8Ek9YI-v-sB9pFqP2RCqRszmoiEzsxhb4Mz6ZvQEWb3SuJqWvt1u5-I_iF0jtRwA92mRT4wrWLtmewgcKVznpVV6PRkS7B7mUzeaUuBFsZ2GyC3vcMQ8qlc2vQur996IgtnrkFVnkQPP5n58x-_SoqwBy0k_JRdxk6LQmL')
-print(b64encode(decoded))
+# decoded = base64url_decode(b'HKuMkq3xKg6q6trlJv2dEhioZKwhB4EVPUU1IpZvXQ-O0MoEW9vpVVXZ7sqqz3Oal1dlWOj2Pwp55a9VVBndwyHv3DyvyEZvFLxoaqUlEZzKJ4eApgGvS7SEq2nqhYQFQL-ceJeUQjHKaiyvq6zZKjbXjT1Qalvq5ZrqLuYhumTGyDEgqJtz6r35-puZVOrEAAvdOWlSNIdXeXvM9cOUPJrx-2DB01hque8Ek9YI-v-sB9pFqP2RCqRszmoiEzsxhb4Mz6ZvQEWb3SuJqWvt1u5-I_iF0jtRwA92mRT4wrWLtmewgcKVznpVV6PRkS7B7mUzeaUuBFsZ2GyC3vcMQ8qlc2vQur996IgtnrkFVnkQPP5n58x-_SoqwBy0k_JRdxk6LQmL')
+# print(b64encode(decoded))
 
 
 # if isinstance(encoded_id_token, str):
