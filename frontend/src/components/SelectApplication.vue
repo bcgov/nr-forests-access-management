@@ -16,6 +16,7 @@ const environmentFilter = ref<string>(environments[0]); // Array item 0 is for t
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
+
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     try {
@@ -34,10 +35,10 @@ onMounted(async () => {
     }
 });
 
-function filterEnv(selectedEnv: string) {
+const filterEnv = (selectedEnv: string) => {
     environmentFilter.value = selectedEnv;
     setSelectedApplication(null);
-}
+};
 
 const filteredOptions = computed(() => {
     return environmentFilter.value === environments[0] // If the option is All, show everything. Otherwise, filter it
@@ -48,6 +49,12 @@ const filteredOptions = computed(() => {
               );
           });
 });
+
+const selectApplication = (e: Event) => {
+    setSelectedApplication(
+        e.target ? (e.target as HTMLTextAreaElement).value : null
+    );
+};
 </script>
 
 <template>
@@ -72,7 +79,7 @@ const filteredOptions = computed(() => {
                         id="applicationSelect"
                         class="form-select"
                         :value="JSON.stringify(selectedApplication)"
-                        @change="(e: Event) => setSelectedApplication(e.target ? (e.target as HTMLTextAreaElement).value : null)"
+                        @change="selectApplication"
                         :size="applicationsUserAdministers.length + 1"
                     >
                         <option
