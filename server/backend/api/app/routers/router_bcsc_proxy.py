@@ -76,29 +76,7 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
 
     del json_response['id_token']
 
-    # LOGGER.debug(f"Encrypted ID token is: [{json_response['id_token']}]")
-
-    # encoded_id_token = json_response["id_token"]
-
-    # id_token_encrypted_payload = get_payload_from_id_token(encoded_id_token)
-
-    # id_token_encrypted_payload = jws.verify(
-    #     token=encoded_id_token,
-    #     key=None,
-    #     algorithms="RS256",
-    #     verify=False
-    # )
-
-    # decrypted_id_token_payload = kms_lookup.decrypt(id_token_encrypted_payload)
-    # LOGGER.debug(f"Dencrypted ID payload is: [{decrypted_id_token_payload}]")
-
-    # val = b64encode(decrypted_id_token_payload).encode()
-    # LOGGER.debug(f"Readable encrypted ID payload is: [{val}]")
-
-    # return response
-
     return Response(content=json.dumps(json_response), media_type="application/json")
-
 
 
 @router.get("/userinfo/dev", status_code=200)
@@ -149,16 +127,20 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 @router.get("/jwks.json", status_code=200)
 def bcsc_jwks(request: Request):
 
-    key = kms_lookup._bcsc_public_key
+    # key = kms_lookup._bcsc_public_key
 
-    key_value_bytes = key["PublicKey"]
-    pub_key_dec = base64url_encode(key_value_bytes).decode()
+    # key_value_bytes = key["PublicKey"]
+    # pub_key_dec = base64url_encode(key_value_bytes).decode()
+
+    # Used this website: https://tribestream.io/tools/pem2jwk/
+    # To convert the public key value to JWKS value
+    key_from_website = "2YIo5DqGD1ehHEOtLok81j1aP6wtxZkOjXr6fYHHTtaniDFODQwp-hlFMJw3hkjrnTm1xLp67pRX4wIwXhu3sdZhMr90NEW-vC7XKkf4Yz-2v37omzUCmk23BLhR8yzwJr87Q7oLumIEUvx729Z6yDg-KxjCNlObUbXy-1xazTmBiJly0HbXxXP-nFIOwZXaHGLCJfqZ535lL6UCX80WtNu0IpPcOQXlSRrlWaMs09O5Gj5bTdvSqkp9cuMBPK3_ZfXYgOBY7DsGuK4Hw98QjNQyJK2f-ENkHcM3RIHnDUzXbB_9d5IESS6o8rkR8mhylhLtaJAget5vH1huFiymcQ"
 
     algorithm = "RS256"
     e = "AQAB"
     kid = "bcscencryption"
     kty = "RSA"
-    n = pub_key_dec
+    n = key_from_website
     use = "enc"
 
     jwks_dict = {
