@@ -50,5 +50,5 @@ import Button from 'primevue/button';
 </template>
 
 <style lang="scss">
-@import '@/assets/styles/styles.scss';
+@import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
 </style>

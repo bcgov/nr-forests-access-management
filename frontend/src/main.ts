@@ -14,7 +14,6 @@ import App from '@/App.vue';
 import router from '@/router';
 
 import 'bootstrap';
-import './assets/styles/styles.scss';
 
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 
@@ -33,10 +32,8 @@ import PrimeVue from 'primevue/config';
 // use bootstrap4 as default style
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css';
 
-// import the component override style sheet for primevue
-import '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
+import './assets/styles/styles.scss';
 
 // add specific icons to library for use throughout application
 library.add(faTrashCan);
