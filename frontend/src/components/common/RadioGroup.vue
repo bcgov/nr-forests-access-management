@@ -24,7 +24,6 @@ const emit = defineEmits(['change']);
 const selectedValue = ref<string>('');
 onBeforeMount(() => {
     selectedValue.value = props.initialValue;
-    valueChanged();
 });
 function valueChanged() {
     emit('change', selectedValue.value);
