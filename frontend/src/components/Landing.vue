@@ -10,14 +10,12 @@ import Button from 'primevue/button';
         <div class="row landing-grid">
             <div class="col-sm-6 col-md-7 col-lg-7">
                 <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
-                <h1 data-testid="landing-title" class="landing-title">
-                    Welcome to FAM
-                </h1>
-                <h2 data-testid="landing-subtitle" class="landing-subtitle">
+                <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
+                <h2 id="landing-subtitle" class="landing-subtitle">
                     Forestry Access Management
                 </h2>
 
-                <p data-testid="landing-desc" class="landing-desc">
+                <p id="landing-desc" class="landing-desc">
                     Grant access to your users
                 </p>
 
