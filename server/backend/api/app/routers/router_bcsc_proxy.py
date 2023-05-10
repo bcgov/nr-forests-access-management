@@ -6,14 +6,8 @@ import requests
 from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
-# from api.config import config
-# from base64 import b64decode, b64encode
 import json
 from jose.utils import base64url_decode, base64url_encode
-
-
-# from Crypto.PublicKey import RSA
-# from Crypto.Cipher import PKCS1_OAEP
 
 LOGGER = logging.getLogger(__name__)
 

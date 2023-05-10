@@ -49,9 +49,9 @@ class AuthorizationQuery(object):
         self.user_type_code_dict = {
             "idir": "I",
             "bceidbusiness": "B",
-            "[ca.bc.gov.flnr.fam.dev]": "CD",
-            "[ca.bc.gov.flnr.fam.test]": "CT",
-            "[ca.bc.gov.flnr.fam]": "CP"
+            "ca.bc.gov.flnr.fam.dev": "CD",
+            "ca.bc.gov.flnr.fam.test": "CT",
+            "ca.bc.gov.flnr.fam": "CP"
         }
 
         self.event = event
