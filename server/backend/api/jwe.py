@@ -1,18 +1,14 @@
 import binascii
 import json
-import zlib
 from collections.abc import Mapping
 from struct import pack
 from jose import jwk
 from jose.constants import ALGORITHMS
-from jose.exceptions import JWEError, JWEParseError, JWKError
-
-# from . import jwk
-# from .backends import get_random_bytes
+from jose.exceptions import JWEError, JWEParseError
 from jose.utils import base64url_decode, ensure_binary
 
 
-def decrypt(jwe_str, unencrypted_key):
+def decrypt(jwe_str, decrypted_key):
     """Decrypts a JWE compact serialized string and returns the plaintext.
 
     Args:
@@ -70,7 +66,7 @@ def decrypt(jwe_str, unencrypted_key):
     # rejecting the input without emitting any decrypted output if the
     # JWE Authentication Tag is incorrect.
     try:
-        plain_text = _decrypt_and_auth(unencrypted_key, enc, cipher_text, iv, aad, auth_tag)
+        plain_text = _decrypt_and_auth(decrypted_key, enc, cipher_text, iv, aad, auth_tag)
     except NotImplementedError:
         raise JWEError(f"enc {enc} is not implemented")
     except Exception as e:

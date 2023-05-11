@@ -3,11 +3,12 @@ from fastapi import APIRouter, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
-from jose import jwt
+# from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
 import json
 from jose.utils import base64url_decode, base64url_encode
+from api import jwe
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,25 +34,6 @@ def bcsc_token_prod(request: Request, body: bytes = Depends(get_body)):
     return bcsc_token(request, "https://id.gov.bc.ca/oauth2/token", body)
 
 
-def get_payload_from_id_token(encoded_id_token):
-    # payload = jws.verify(
-    #     token=encoded_id_token,
-    #     key=None,
-    #     algorithms="RS256",
-    #     verify=False
-    # )
-
-    token = encoded_id_token.encode("utf-8")
-    signing_input, crypto_segment = token.rsplit(b".", 1)
-    header_segment, claims_segment = signing_input.split(b".", 1)
-
-    decrypted_claims_segment = kms_lookup.decrypt(claims_segment)
-
-    payload = base64url_decode(decrypted_claims_segment)
-
-    return payload
-
-
 def bcsc_token(request: Request, bcsc_token_uri, body):
 
     """
@@ -68,6 +50,8 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
 
     json_response = json.loads(raw_response)
 
+    # Remove the id token from the token response
+    # Cognito doesn't use it anyway and when it is a JWE it causes a Cognito error
     del json_response['id_token']
 
     return Response(content=json.dumps(json_response), media_type="application/json")
@@ -94,13 +78,35 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     Proxy the BCSC userinfo endpoint and decode the result
     """
 
-    raw_response = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
+    jwe_token = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
 
-    decoded_payload = jwt.decode(
-        raw_response, None, options={"verify_signature": False, "verify_aud": False}
-    )
+    # When the result is a plain old JWT, the userinfo json is just the payload
+    # decoded_payload = jwt.decode(
+    #     raw_response, None, options={"verify_signature": False, "verify_aud": False}
+    # )
 
-    aud = decoded_payload["aud"]
+    # When the result is a JWE, you have to get the encrypted key from the JWE
+    # and then unencrypt it to be able to use it to unencrypt the payload
+
+    # Ensure binary input
+    if isinstance(jwe_token, str):
+        jwe_token = jwe_token.encode("utf-8", "strict")
+    elif not isinstance(jwe_token, bytes):
+        raise TypeError(f"not expecting type '{type(jwe_token)}'")
+
+    # Get the second segment of the token to get the cek
+    encrypted_key_segment = jwe_token.split(b".", 4)[1]
+
+    # Decode and decrypt the cek
+    decoded_key = base64url_decode(encrypted_key_segment)
+    decrypted_key = kms_lookup.decrypt(decoded_key)
+
+    # Use the symmetric public key to decrypt the payload
+    decrypted_payload = jwe.decrypt(jwe_token, decrypted_key)
+
+    json_payload = json.loads(decrypted_payload)
+
+    aud = json_payload["aud"]
     valid_auds = [
         "ca.bc.gov.flnr.fam.dev",
         "ca.bc.gov.flnr.fam.test",
@@ -115,7 +121,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
             },
         )
 
-    return JSONResponse(content=jsonable_encoder(decoded_payload))
+    return JSONResponse(content=jsonable_encoder(decrypted_payload))
 
 
 @router.get("/jwks.json", status_code=200)
