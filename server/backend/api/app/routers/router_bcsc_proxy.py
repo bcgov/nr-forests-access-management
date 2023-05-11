@@ -169,7 +169,7 @@ def decryption_test(body: bytes = Depends(get_body)):
 
     decoded_data = base64url_decode(body)
     decrypted_data = kms_lookup.decrypt(decoded_data)
-    return Response(content=decrypted_data, media_type="text/plain")
+    return Response(content=base64url_encode(decrypted_data), media_type="text/plain")
 
 
 #     # Read the body, encrypt and encode it, send it back
