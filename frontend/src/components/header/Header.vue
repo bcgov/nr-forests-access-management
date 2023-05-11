@@ -70,7 +70,7 @@ const environmentLabel = environmentSettings
         </nav>
 
         <div class="nav bc-nav">
-            <RouterLink class="nav-link" to="/">Home</RouterLink>
+            <RouterLink class="nav-link" to="/home">Home</RouterLink>
             <RouterLink
                 class="nav-link"
                 to="/application"
