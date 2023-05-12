@@ -95,15 +95,16 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     encrypted_key_segment = jwe_token.split(b".", 4)[1]
 
     # In local mode, call AWS to do the decryption
-    # decrypt_url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/decryption_test"
-    # encoded_decrypted_key = requests.post(url=decrypt_url, data=encrypted_key_segment).text
-    # as_bytes = bytes(encoded_decrypted_key, 'utf-8')
-    # decrypted_key = base64url_decode(as_bytes)
+    decrypt_url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/decryption_test"
+    encoded_decrypted_key = requests.post(url=decrypt_url, data=encrypted_key_segment).text
+    as_bytes = bytes(encoded_decrypted_key, 'utf-8')
+    decrypted_key = base64url_decode(as_bytes)
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
-    as_bytes = base64url_decode(encrypted_key_segment)
-    decrypted_key = kms_lookup.decrypt(as_bytes)
+    # as_bytes = base64url_decode(encrypted_key_segment)
+    # decrypted_key = kms_lookup.decrypt(as_bytes)
 
+    LOGGER.debug(f"jwe_token: [{jwe_token}]")
     LOGGER.debug(f"encrypted_key_segment: [{encrypted_key_segment}]")
     LOGGER.debug(f"as_bytes: [{as_bytes}]")
     LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
