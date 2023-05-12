@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from .. import kms_lookup
 import json
 from jose.utils import base64url_decode, base64url_encode
-from api import jwe
+from api.app import jwe
 
 LOGGER = logging.getLogger(__name__)
 
@@ -101,13 +101,17 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # decrypted_key = base64url_decode(as_bytes)
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
-    # as_bytes = bytes(encrypted_key_segment, 'utf-8')
-    decoded_key = base64url_decode(encrypted_key_segment)
-    decrypted_key = kms_lookup.decrypt(decoded_key)
+    as_bytes = base64url_decode(encrypted_key_segment)
+    decrypted_key = kms_lookup.decrypt(as_bytes)
+
+    LOGGER.debug(f"encrypted_key_segment: [{encrypted_key_segment}]")
+    LOGGER.debug(f"as_bytes: [{as_bytes}]")
+    LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
 
     # Use the symmetric public key to decrypt the payload
-    LOGGER.error(b"decrypted_id_token: [{decrypted_id_token}]")
     decrypted_id_token = jwe.decrypt(jwe_token, decrypted_key)
+
+    ################### Begin Decryption Stuff ##########################
 
     decoded_id_token = jwt.decode(
         decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
