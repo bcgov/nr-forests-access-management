@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import requests
-# from jose import jwt
+from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
 import json
@@ -80,10 +80,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
 
     jwe_token = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
 
-    # When the result is a plain old JWT, the userinfo json is just the payload
-    # decoded_payload = jwt.decode(
-    #     raw_response, None, options={"verify_signature": False, "verify_aud": False}
-    # )
+    ################### Begin Decryption Stuff ##########################
 
     # When the result is a JWE, you have to get the encrypted key from the JWE
     # and then unencrypt it to be able to use it to unencrypt the payload
@@ -97,16 +94,24 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # Get the second segment of the token to get the cek
     encrypted_key_segment = jwe_token.split(b".", 4)[1]
 
-    # Decode and decrypt the cek
+    # In local mode, call AWS to do the decryption
+    # decrypt_url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/decryption_test"
+    # encoded_decrypted_key = requests.post(url=decrypt_url, data=encrypted_key_segment).text
+    # as_bytes = bytes(encoded_decrypted_key, 'utf-8')
+    # decrypted_key = base64url_decode(as_bytes)
+
+    # In AWS Decode and decrypt the cek (only works in AWS because kms code)
     decoded_key = base64url_decode(encrypted_key_segment)
     decrypted_key = kms_lookup.decrypt(decoded_key)
 
     # Use the symmetric public key to decrypt the payload
-    decrypted_payload = jwe.decrypt(jwe_token, decrypted_key)
+    decrypted_id_token = jwe.decrypt(jwe_token, decrypted_key)
 
-    json_payload = json.loads(decrypted_payload)
+    decoded_id_token = jwt.decode(
+        decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
+    )
 
-    aud = json_payload["aud"]
+    aud = decoded_id_token["aud"]
     valid_auds = [
         "ca.bc.gov.flnr.fam.dev",
         "ca.bc.gov.flnr.fam.test",
@@ -121,7 +126,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
             },
         )
 
-    return JSONResponse(content=jsonable_encoder(decrypted_payload))
+    return JSONResponse(content=jsonable_encoder(decoded_id_token))
 
 
 @router.get("/jwks.json", status_code=200)
