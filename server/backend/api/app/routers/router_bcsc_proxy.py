@@ -101,11 +101,12 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # decrypted_key = base64url_decode(as_bytes)
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
-    as_bytes = bytes(encrypted_key_segment, 'utf-8')
-    decoded_key = base64url_decode(as_bytes)
+    # as_bytes = bytes(encrypted_key_segment, 'utf-8')
+    decoded_key = base64url_decode(encrypted_key_segment)
     decrypted_key = kms_lookup.decrypt(decoded_key)
 
     # Use the symmetric public key to decrypt the payload
+    LOGGER.error(b"decrypted_id_token: [{decrypted_id_token}]")
     decrypted_id_token = jwe.decrypt(jwe_token, decrypted_key)
 
     decoded_id_token = jwt.decode(
