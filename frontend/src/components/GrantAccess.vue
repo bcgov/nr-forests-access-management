@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue';
+import PageTitle from '@/components/common/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import { selectedApplication } from '@/services/ApplicationState';
+import { selectedApplication } from '@/store/ApplicationState';
 import type {
     FamApplicationRole,
     FamForestClient,

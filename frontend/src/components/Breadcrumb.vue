@@ -2,7 +2,7 @@
 import {
     applicationsUserAdministers,
     selectedApplicationShortDisplayText,
-} from '@/services/ApplicationState';
+} from '@/store/ApplicationState';
 </script>
 
 <template>
