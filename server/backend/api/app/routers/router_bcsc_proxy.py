@@ -187,7 +187,14 @@ def decryption_test(body: bytes = Depends(get_body)):
 
     decoded_data = base64url_decode(body)
     decrypted_data = kms_lookup.decrypt(decoded_data)
-    return Response(content=base64url_encode(decrypted_data), media_type="text/plain")
+    reencoded_data = base64url_encode(decrypted_data)
+
+    LOGGER.debug(f"decryption_test -- body: [{body}]")
+    LOGGER.debug(f"decryption_test -- decoded_data: [{decoded_data}]")
+    LOGGER.debug(f"decryption_test -- decrypted_data: [{decrypted_data}]")
+    LOGGER.debug(f"decryption_test -- reencoded_data: [{reencoded_data}]")
+
+    return Response(content=reencoded_data, media_type="text/plain")
 
 
 #     # Read the body, encrypt and encode it, send it back
