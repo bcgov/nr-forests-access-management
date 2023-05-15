@@ -11,7 +11,7 @@ import { createRouter, createWebHistory, type Router } from 'vue-router';
 import {
     applicationsUserAdministers,
     selectedApplication,
-} from '@/services/ApplicationState';
+} from '@/store/ApplicationState';
 import type { FamApplication } from 'fam-api';
 import type { Plugin } from 'vue';
 

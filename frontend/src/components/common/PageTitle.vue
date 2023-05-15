@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { selectedApplicationDisplayText } from '@/services/ApplicationState';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
 const props = defineProps<{
     displaySelectedApplication?: boolean;

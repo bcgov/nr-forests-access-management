@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue';
+import PageTitle from '@/components/common/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
     setSelectedApplication,
-} from '@/services/ApplicationState';
+} from '@/store/ApplicationState';
 import { onMounted, ref, computed } from 'vue';
 import router from '../router';
 

@@ -3,11 +3,11 @@ import { onMounted, ref } from 'vue';
 import router from '@/router';
 import { useToast } from 'vue-toastification';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import PageTitle from '@/components/PageTitle.vue';
-import { selectedApplication } from '@/services/ApplicationState';
+import PageTitle from '@/components/common/PageTitle.vue';
+import { selectedApplication } from '@/store/ApplicationState';
 
 // import { $vfm } from 'vue-final-modal';
-import Dialog from '@/components/Dialog/Dialog.vue';
+import Dialog from '@/components/dialog/Dialog.vue';
 
 import { $vfm } from 'vue-final-modal';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api';
