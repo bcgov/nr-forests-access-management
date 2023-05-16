@@ -10,3 +10,4 @@ boto3
 botocore
 python-jose==3.3.0
 cryptography==40.0.2
+authlib==1.2.0
