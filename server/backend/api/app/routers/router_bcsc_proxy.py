@@ -143,7 +143,7 @@ def bcsc_jwks(request: Request):
     key = kms_lookup._bcsc_public_key
 
     key_value_bytes = key["PublicKey"]
-    # pub_key_dec = base64url_encode(key_value_bytes).decode()
+    pub_key_dec = base64url_encode(key_value_bytes).decode()
 
     # Used this website: https://tribestream.io/tools/pem2jwk/
     # To convert the public key value to JWKS value
@@ -161,7 +161,7 @@ def bcsc_jwks(request: Request):
     # }
 
     params = {"alg": algorithm, "e": e, "kid": kid, "kty": kty, "use": use}
-    jwks_key = JsonWebKey.import_key(key_value_bytes, params)
+    jwks_key = JsonWebKey.import_key(pub_key_dec, params)
 
     # return JSONResponse(content=jwks_dict)
     return Response(content=json.dumps(jwks_key), media_type="application/json")
