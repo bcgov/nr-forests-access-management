@@ -10,6 +10,7 @@ import json
 from jose.utils import base64url_decode, base64url_encode
 from .. import bcsc_decryption
 from authlib.jose import JsonWebKey
+from base64 import b64decode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -143,7 +144,9 @@ def bcsc_jwks(request: Request):
     key = kms_lookup._bcsc_public_key
 
     key_value_bytes = key["PublicKey"]
-    pub_key_dec = base64url_encode(key_value_bytes).decode()
+    pub_key_dec = b64decode(key_value_bytes)
+
+    # pub_key_dec = base64url_encode(key_value_bytes).decode()
 
     # Used this website: https://tribestream.io/tools/pem2jwk/
     # To convert the public key value to JWKS value
