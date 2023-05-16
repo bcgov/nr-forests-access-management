@@ -1,23 +1,13 @@
-import json
 from urllib.request import urlopen
 import logging
-from Crypto.PublicKey import RSA
-from Crypto import Random
-from Crypto.Cipher import PKCS1_OAEP
-from Crypto.Hash import SHA256
-from base64 import b64decode, b64encode
-from jose import jws, jwt
-from jose.utils import base64url_decode, base64url_encode
-from jose.exceptions import JWSError, JWSSignatureError
-import binascii
-from collections.abc import Iterable, Mapping
+from jose.utils import base64url_decode
 import requests
-from api.app import jwe
+from api.app import bcsc_decryption
 
 LOGGER = logging.getLogger(__name__)
 
 
-jwe_token = 'eyJraWQiOiJiY3NjZW5jcnlwdGlvbiIsImN0eSI6IkpXVCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJhbGciOiJSU0EtT0FFUC0yNTYifQ.n9QZMOIOd4pngJEd1ego6LOTQNMRklDAuMzF4Eufk-MKCTOl40vfRtIwdhAXU9gAU50mNp0O2skcUY2zhj7LwWEjRxrgW4NTrhQE_3yQ0thzDzAEFEN5mHHS5vVgwocHm6mZgh9APdlu2Mh2t5CZRqguRXM5Mn3oA1PsCZCKDdwAptZU2aGVKP9V4gcIoqGpRT9MCIxm4QkRKea7xsPhC31vrcaB1fwM4p-FvyvScnuoYVv8NmXQNO1xI9a85gtDLSGzev7RVM5hYyy-4Ua1Gi-A7tMe2558Lrcnu1H4VKmOWIZf5buL96y95-n-lbepbNjnimFyRETJUtL-2QRLCA.tYZ2cNECC5FTMM-6vetxMQ.f6HMfIG4nTw4oTUN16GggF8BbvJMp6BWWmJvNjnI8wevRPgQcArBxQeDnxp6x35-2oVzFHUViAeDCpAPpcb6AWlxX66VMvRR_WjXEexp0e_mZDhBXi39mqO-Q8Axp0RqiF0oEuAUTsqAumBy0EwP17cL-V_YsMDbfFsFgdRT2kscsk3VPPCQZhd6Hy2bPHyTPoMeBxyuWHFC2BW3EmMMuQtl61nhhdnV6lyWcFS4XEB70fxpfgEF4sEkOXjDSdN3nzBRCGZeaHUNLcbc_IPlHfs_oQ6ezN-CG_2p7hUX5jXhY0cRVtp7P-Wah1QEnAKWc6S13UkrKeaqGssPVLHrv9VjKo6Yg-e69MdACq9qca5nfdncKaazY7oZyUMPjtJG54yZnIUTyNqVDnaW56qX0YLzCg6IbzxvgIhtsqtUT_UNJJnUwpRr1BbIJAvFVfRyBxpRoL1QSGgER3aQkYu0N-1YseLGcKJAlJkZQKt5HF2AvstB8v-7R4apmHjn0iseqWFAzCrgsCsZyIsp1z7aUq-nve01RBTgrMvSAzppWNSLlx3vOJMX8zrlcDrQuPk5xHqX0QmVvgZhg_4_qUMPf9bFOAspZAGjRjd26q8bywe9fLapxJrgByGHWpysrUJckvKkU-f8g4LOgS35Jjo0lC7hCCt_-bd-Rh05YyTQfnV40yMs7WBMoeXRx2GhAGu-PpLZQwz3m9r31ajF251bMCQ8XwkUtT2KBSDOhzgDAb3uuCAXeX8k3eyBCVLAI77VZMpZ_ABDs2SVwPVIe9zwpb-JwtZstbARCRVRvMZd2GM0jpdUusOjO2qc2Qr1E79qICcDxSRkUwLwujD_5iUUS0QdBUHXr1raZUd1PHkWp5WabLsJV5T-WZaUz7QS33vF6ln0fwRjjq8SbbffTK_D_A1fKOb3N3YKiVAeRCbQ2HjYO1rcayh_FxOA0E3BwfJ8qZV_7IpGc28I2eCWr0prsTeme05dBRIYk0E-2Mg-5NAIGmok4feG97nS2faKygPPX-7NMUasobrEdU0zuLqyreIXelyqL6G1XnqrsQcaL-kii_3iKmHprXdf-eM59ldwAcr2SSXQxcJdDJUrp65QgNQymGHrDC49yRy7uDT4gQ1tBCRxYQPVm727_ZxcsAjuxt6KljFnlYe29S9N8knNeDbalaE7sbX05Ix7gILR1vE_Vn7w5J9WjvmmeturggpUEL4eGhgBPw3BCn9XZ-OFXdzkptc7YIYLItj2dKfJfMqR-dfD16WZfPKnIkiRwGndgD6vPwsiijF9-0MNlee7grCTE1sKX0p2PfYZUuHGPPk.kr5kSkbVj_dvQJQuvf-yY8TLCewFd5VBXorkLU0uZa4'
+jwe_token = 'eyJraWQiOiJiY3NjZW5jcnlwdGlvbiIsImN0eSI6IkpXVCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJhbGciOiJSU0EtT0FFUC0yNTYifQ.Gw5sKcyGpUM2gLZreci3Q2GZLzq5ZVnTEj-S6iKAUtlubAuKIgTsntJ0vG6wSN5nQabFGsZanLZDj5Y7_dRILIl2dku2sg18Xg6_Wu_3ijjm4C9oPerNOjfPSwEjEtcvfi2KnIX6kB1nAxPrhK3XLNQXLImtct5OVXGzKZXUUw02MtsgH0WUW1r6wNFVC7loImxJudAGGDxq6k3cvfe6QJkPD0nLWfpfOhZiwj9nYgrG6mfoTJ4FoKYtLR9ZEHiVRZmLT_qt8tePAs4AbsMGCpYsc9pDEF3WpWK4JnTEhQ4TL6U2BXygRvQSWh-mGx5iaUU20iN5YVxTotShiNFqVQ.hX3n-2SdFn7BQSzLkMiH-Q.0WXOn6htm0DQN4gjpzxhIFwjLsIdhUavC7NFBnsub8bAV8dOqI4fZn8jpq8Sx1glZfKAOddlwGYBl9Alnxd-5-VZ5Xj-UX-mDTnrJOV4JDyYsW4vni1qSYvD0aAmqY-nZ9FEubggI6ZStW2JjysmhgwpXut5qk5-zvAwnNXE4IcmpWmHfkUMnS2RgRzzYGKWV-AYgLEUBQAqRcCRuX-EWwHFEMX44ixq6RdVFXYQQpiK1fj6UaGlBqAWJZNP-llSi_qm6CSahkbpac5k4ewAJzqg2fUX5qaZVQ383QyEJ2qzFOgp08MJ_wVscoBid6SHTYqC2TSKzNbpKzeZ-mAnAJ5xcr3H3DETRuVJ_5OR9FJcImMTIzads42RgVI3vRDc1ynDq1l8u3whta0kPewPMDYL6YIc2rqi4KCpqALgILvhIpHVQ-vywEbS9ApbbIkeF-uGXai5QJKeGil-mcSGh_KyHiw0qsE6XChvS95zc_tv8vz-iEJ3JMJ_cRBnDomEsKEJpK1e9tqaoKB_H14mhLsVxi_G-DEk-CXQoqpLkLwTWrRL9wErxBxV7IAU6_HtVKs72RLtAO0VyVf7Kqr4WET59AwWe9ySeyZ_VsASzxG-QZu8qST8UODp8ZOrSkG1dp8L-fpzLccLv6qZrxXP5ldlUYRdkdr8PkxyyEG2jI6_JZK46QNZXaxmNJqDqf4x3EVQR5ViXnBaeEv9WvSF0EpC6LP5in7J2d1F1jSAcYw1AAToGXCTevaUvgkFN2ht1Vt56d6Vrgu-BQVzB-FIO36AT8ogzFnjPPCumY8dkwItcFKZZxAkiXr7N2Sa9bv53qpkdo4q4TV0Y_A2y7eFihD2YkG5_ZO6laIdIe1xnilBEuWZr41GKhmDfgAxDQmpDxkkacY4lgESN8oYci0ejLA8Bn_nLHYo3B-WD8GvTtYg5BAs92XXUqoO3y9-_cHPOHvi-cP6GosaJL5AeLFEpqCS8-knaxM4pi0fpaULK6h4Y1UjWY93a1l0abM2dr6JAWBL6cBnyMHYGp4eOkShBaeneBbjn7UheqUlrmeJB0IIuCIgF3WSpGMHopuhb0OT-wRJxgPgrL62Pi54XWoGEWn74IOP0Ncm2Hky_H-G9EbWqdsU6pWxj7_eJ2P86BoBMQFIgWmwwYIaB9SUjlscr7i-Uc3YUcKeXPg7csMz6JLUCXIiz1wzP-iSggk9fM4DbDjq73vkm4_IO8-x4jeCbm1maH0pVDFZj3KmXJk6a6Wu5KsGUElaA0DgH73FNifOz0GOYE2U9LinFqYBkzetIkruAtzeL4KPXhjrMDJJdQ8.0-KqjLpYBi7zr70fnqTCcY9KMa4LG7ArcJbE1Ha6sH4'
 
 encrypted_key_segment = jwe_token.split(".", 4)[1]
 
@@ -26,149 +16,12 @@ encoded_decrypted_key = requests.post(url=decrypt_url, data=encrypted_key_segmen
 as_bytes = bytes(encoded_decrypted_key, 'utf-8')
 decrypted_key = base64url_decode(as_bytes)
 
-decrypted_token = jwe.decrypt(jwe_token, decrypted_key)
-
 print(f"jwe_token: [{jwe_token}]")
 print(f"encrypted_key_segment: [{encrypted_key_segment}]")
 print(f"encoded_decrypted_key: [{encoded_decrypted_key}]")
 print(f"as_bytes: [{as_bytes}]")
 print(f"decrypted_key: [{decrypted_key}]")
 
+decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
 
-
-# rsa_public_key = RSA.importKey(public_key_text)
-# rsa_public_key = PKCS1_OAEP.new(key=rsa_public_key, hashAlgo=SHA256)
-# encrypted_text = rsa_public_key.encrypt(b'Yo yo bum rush the show')
-# b64_encoded_text = base64url_encode(encrypted_text)
-# print(b64_encoded_text)
-
-# decoded = base64url_decode(b'HKuMkq3xKg6q6trlJv2dEhioZKwhB4EVPUU1IpZvXQ-O0MoEW9vpVVXZ7sqqz3Oal1dlWOj2Pwp55a9VVBndwyHv3DyvyEZvFLxoaqUlEZzKJ4eApgGvS7SEq2nqhYQFQL-ceJeUQjHKaiyvq6zZKjbXjT1Qalvq5ZrqLuYhumTGyDEgqJtz6r35-puZVOrEAAvdOWlSNIdXeXvM9cOUPJrx-2DB01hque8Ek9YI-v-sB9pFqP2RCqRszmoiEzsxhb4Mz6ZvQEWb3SuJqWvt1u5-I_iF0jtRwA92mRT4wrWLtmewgcKVznpVV6PRkS7B7mUzeaUuBFsZ2GyC3vcMQ8qlc2vQur996IgtnrkFVnkQPP5n58x-_SoqwBy0k_JRdxk6LQmL')
-# print(b64encode(decoded))
-
-
-# if isinstance(encoded_id_token, str):
-#     token = encoded_id_token.encode("utf-8")
-# try:
-#     signing_input, crypto_segment = token.rsplit(b".", 1)
-#     header_segment, claims_segment = signing_input.split(b".", 1)
-#     header_data = base64url_decode(header_segment)
-# except ValueError:
-#     raise JWSError("Not enough segments")
-# except (TypeError, binascii.Error):
-#     raise JWSError("Invalid header padding")
-
-# try:
-#     header = json.loads(header_data.decode("utf-8"))
-# except ValueError as e:
-#     raise JWSError("Invalid header string: %s" % e)
-
-# if not isinstance(header, Mapping):
-#     raise JWSError("Invalid header string: must be a json object")
-
-# try:
-#     payload = base64url_decode(claims_segment)
-# except (TypeError, binascii.Error):
-#     raise JWSError("Invalid payload padding")
-
-# try:
-#     signature = base64url_decode(crypto_segment)
-# except (TypeError, binascii.Error):
-#     raise JWSError("Invalid crypto padding")
-
-
-
-# id_token_encrypted_payload = jws.verify(
-#     token=encoded_id_token,
-#     key=None,
-#     algorithms="RS256",
-#     verify=False
-# )
-
-
-# key = RSA.generate(2048)
-# private_key = key.export_key('PEM')
-# public_key = key.publickey().exportKey('PEM')
-# message = input('plain text for RSA encryption and decryption:')
-# message = str.encode(message)
-
-# rsa_public_key = RSA.importKey(public_key)
-# rsa_public_key = PKCS1_OAEP.new(rsa_public_key)
-# encrypted_text = rsa_public_key.encrypt(message)
-
-# print('your encrypted_text is : {}'.format(encrypted_text))
-
-# rsa_private_key = RSA.importKey(private_key)
-# rsa_private_key = PKCS1_OAEP.new(rsa_private_key)
-# decrypted_text = rsa_private_key.decrypt(encrypted_text)
-
-# print('your decrypted_text is : {}'.format(decrypted_text))
-
-# try:
-#     jwks = None
-
-#     url = "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/jwks.json"
-#     with urlopen(url) as response:
-#         jwks = json.loads(response.read().decode("utf-8"))
-
-# except Exception as e:
-#     LOGGER.error(f"init_jwks function failed to reach AWS: {e}.")
-#     LOGGER.error("Backend API will not work properly.")
-#     raise e
-
-# jwk = {}
-# for key in jwks["keys"]:
-#     if key["kid"] == "bcscencryption":
-#         jwk = {
-#             "kty": key["kty"],
-#             "kid": key["kid"],
-#             "use": key["use"],
-#             "n": key["n"],
-#             "e": key["e"],
-#         }
-#     break
-
-# LOGGER.warning(jwk)
-
-# pubkey = jwk["n"]
-
-# msg = "1000 Monkeys"
-# keyDER = b64decode(pubkey)
-# keyPub = RSA.importKey(keyDER)
-# cipher = PKCS1_OAEP.new(keyPub)
-# cipher_text = cipher.encrypt(msg.encode())
-# emsg = b64encode(cipher_text)
-
-# LOGGER.warning(emsg)
-
-# test_url = (
-#     "https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/encryption_test"
-# )
-
-# raw_response = None
-
-# with urlopen(test_url, data=emsg) as response:
-#     raw_response = response.read().decode("utf-8")
-
-# LOGGER.warning(raw_response)
-
-
-
-
-
-
-
-# jwks = requests.get('https://qz39ajtria.execute-api.ca-central-1.amazonaws.com/v1/bcsc/jwks.json').text
-# json_response = json.loads(jwks)
-# keytext = json_response["keys"][0]["n"]
-# key_unencoded = base64url_decode(keytext)
-
-
-# public_key_text = '''-----BEGIN PUBLIC KEY-----
-# MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2YIo5DqGD1ehHEOtLok8
-# 1j1aP6wtxZkOjXr6fYHHTtaniDFODQwp+hlFMJw3hkjrnTm1xLp67pRX4wIwXhu3
-# sdZhMr90NEW+vC7XKkf4Yz+2v37omzUCmk23BLhR8yzwJr87Q7oLumIEUvx729Z6
-# yDg+KxjCNlObUbXy+1xazTmBiJly0HbXxXP+nFIOwZXaHGLCJfqZ535lL6UCX80W
-# tNu0IpPcOQXlSRrlWaMs09O5Gj5bTdvSqkp9cuMBPK3/ZfXYgOBY7DsGuK4Hw98Q
-# jNQyJK2f+ENkHcM3RIHnDUzXbB/9d5IESS6o8rkR8mhylhLtaJAget5vH1huFiym
-# cQIDAQAB
-# -----END PUBLIC KEY-----'''
+print(f"decrypted_id_token: [{decrypted_key}]")

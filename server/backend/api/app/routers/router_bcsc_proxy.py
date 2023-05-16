@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from .. import kms_lookup
 import json
 from jose.utils import base64url_decode, base64url_encode
-from api.app import jwe
+from .. import bcsc_decryption
 
 LOGGER = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
 
     # Use the symmetric public key to decrypt the payload
-    decrypted_id_token = jwe.decrypt(jwe_token, decrypted_key)
+    decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
 
     ################### Begin Decryption Stuff ##########################
 
