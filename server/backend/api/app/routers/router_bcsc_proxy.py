@@ -150,18 +150,12 @@ def bcsc_jwks(request: Request):
     e = "AQAB"
     kid = "bcscencryption"
     kty = "RSA"
-    # n = key_from_website
     use = "enc"
-
-    # jwks_dict = {
-    #     "keys": [{"alg": algorithm, "e": e, "kid": kid, "kty": kty, "n": n, "use": use}]
-    # }
 
     params = {"alg": algorithm, "e": e, "kid": kid, "kty": kty, "use": use}
     jwks_key = JsonWebKey.import_key(public_key, params)
 
-    # return JSONResponse(content=jwks_dict)
-    return Response(content=json.dumps(jwks_key), media_type="application/json")
+    return Response(content=jwks_key.as_json(), media_type="application/json")
 
 
 # @router.post("/encryption_test", status_code=200)
