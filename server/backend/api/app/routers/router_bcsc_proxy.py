@@ -146,6 +146,9 @@ def bcsc_jwks(request: Request):
     key_value_bytes = key["PublicKey"]
     pub_key_dec = b64decode(key_value_bytes)
 
+    LOGGER.info(f"key_value_bytes = [{key_value_bytes}]")
+    LOGGER.info(f"pub_key_dec = [{pub_key_dec}]")
+
     # pub_key_dec = base64url_encode(key_value_bytes).decode()
 
     # Used this website: https://tribestream.io/tools/pem2jwk/
