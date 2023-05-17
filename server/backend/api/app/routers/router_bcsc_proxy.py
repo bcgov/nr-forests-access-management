@@ -7,10 +7,10 @@ from jose import jwt
 from fastapi import HTTPException
 from .. import kms_lookup
 import json
-from jose.utils import base64url_decode, base64url_encode
+from jose.utils import base64url_decode
 from .. import bcsc_decryption
 from authlib.jose import JsonWebKey
-from base64 import b64decode
+from cryptography.hazmat.primitives import serialization as crypto_serialization
 
 LOGGER = logging.getLogger(__name__)
 
@@ -144,16 +144,7 @@ def bcsc_jwks(request: Request):
     key = kms_lookup._bcsc_public_key
 
     key_value_bytes = key["PublicKey"]
-    pub_key_dec = b64decode(key_value_bytes)
-
-    LOGGER.info(f"key_value_bytes = [{key_value_bytes}]")
-    LOGGER.info(f"pub_key_dec = [{pub_key_dec}]")
-
-    # pub_key_dec = base64url_encode(key_value_bytes).decode()
-
-    # Used this website: https://tribestream.io/tools/pem2jwk/
-    # To convert the public key value to JWKS value
-    # key_from_website = "2YIo5DqGD1ehHEOtLok81j1aP6wtxZkOjXr6fYHHTtaniDFODQwp-hlFMJw3hkjrnTm1xLp67pRX4wIwXhu3sdZhMr90NEW-vC7XKkf4Yz-2v37omzUCmk23BLhR8yzwJr87Q7oLumIEUvx729Z6yDg-KxjCNlObUbXy-1xazTmBiJly0HbXxXP-nFIOwZXaHGLCJfqZ535lL6UCX80WtNu0IpPcOQXlSRrlWaMs09O5Gj5bTdvSqkp9cuMBPK3_ZfXYgOBY7DsGuK4Hw98QjNQyJK2f-ENkHcM3RIHnDUzXbB_9d5IESS6o8rkR8mhylhLtaJAget5vH1huFiymcQ"
+    public_key = crypto_serialization.load_der_public_key(key_value_bytes)
 
     algorithm = "RS256"
     e = "AQAB"
@@ -167,7 +158,7 @@ def bcsc_jwks(request: Request):
     # }
 
     params = {"alg": algorithm, "e": e, "kid": kid, "kty": kty, "use": use}
-    jwks_key = JsonWebKey.import_key(pub_key_dec, params)
+    jwks_key = JsonWebKey.import_key(public_key, params)
 
     # return JSONResponse(content=jwks_dict)
     return Response(content=json.dumps(jwks_key), media_type="application/json")
