@@ -31,6 +31,11 @@ on:
       prod_oidc_bceid_business_idp_client_secret:
         required: true
       forest_client_api_api_key:
+      dev_oidc_bcsc_idp_client_secret:
+        required: true
+      test_oidc_bcsc_idp_client_secret:
+        required: true
+      prod_oidc_bcsc_idp_client_secret:
         required: true
       dev_oidc_bcsc_idp_client_secret:
         required: true
@@ -84,7 +89,7 @@ jobs:
           cd server/backend
           mkdir packaging
           cd packaging
-          pip install -t . -r ../requirements.txt
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
           zip -r9 ../../fam-ui-api.zip .
           cd ..
           rm -rf packaging

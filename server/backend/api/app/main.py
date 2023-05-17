@@ -2,26 +2,19 @@ import logging.config
 import os.path
 
 from api.app import jwt_validation
-from api.config.config import get_allow_origins, get_root_path
+from api.config.config import get_allow_origins, get_root_path, is_bcsc_key_enabled
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
-from .routers import \
-    router_application, \
-    router_user_role_assignment, \
-    router_role, \
-    router_user, \
-    router_forest_client, \
-    router_bcsc_proxy
-
 from mangum import Mangum
-from starlette.responses import RedirectResponse
 
 from .jwt_validation import init_jwks
+from .routers import (router_application, router_forest_client, router_role,
+                      router_user, router_user_role_assignment,
+                      router_bcsc_proxy)
 from .kms_lookup import init_bcsc_public_key
 
-from config.config import get_allow_origins, get_root_path, is_bcsc_key_enabled
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),

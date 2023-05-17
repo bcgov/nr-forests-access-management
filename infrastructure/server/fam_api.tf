@@ -66,20 +66,7 @@ resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
       {
         "Effect": "Allow",
         "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:TagResource",
-                "kms:UntagResource",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:*"
             ],
         "Resource": "${aws_kms_key.bcsc_key.arn}"
       }
@@ -152,7 +139,7 @@ resource "aws_lambda_function" "fam-api-function" {
 
       FC_API_TOKEN = "${var.forest_client_api_api_key}"
       FC_API_BASE_URL = "${var.forest_client_api_base_url}"
-      ENABLE_BCSC_JWKS_ENDPOINT = "False"
+      ENABLE_BCSC_JWKS_ENDPOINT = "True"
     }
 
   }
