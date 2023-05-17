@@ -39,11 +39,3 @@ def decrypt(encrypted_token):
 
     return response["Plaintext"]
 
-
-def encrypt(msg):
-
-    response = _kms_client.encrypt(
-        KeyId=get_bcsc_key_id(), Plaintext=msg, EncryptionAlgorithm="RSAES_OAEP_SHA_256"
-    )
-
-    return response["CiphertextBlob"]

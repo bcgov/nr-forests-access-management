@@ -12,6 +12,26 @@ from typing import Any
 # ... see end of file
 LOGGER = logging.getLogger()
 
+IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
+IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
+IDP_NAME_BCSC_PROD = "ca.bc.gov.flnr.fam"
+IDP_NAME_IDIR = "idir"
+IDP_NAME_BCEID_BUSINESS = "bceidbusiness"
+
+USER_TYPE_IDIR = "I"
+USER_TYPE_BCEID_BUSINESS = "B"
+USER_TYPE_BCSC_DEV = "CD"
+USER_TYPE_BCSC_TEST = "CT"
+USER_TYPE_BCSC_PROD = "CP"
+
+USER_TYPE_CODE_DICT = {
+    IDP_NAME_IDIR: USER_TYPE_IDIR,
+    IDP_NAME_BCEID_BUSINESS: USER_TYPE_BCEID_BUSINESS,
+    IDP_NAME_BCSC_DEV: USER_TYPE_BCSC_DEV,
+    IDP_NAME_BCSC_TEST: USER_TYPE_BCSC_TEST,
+    IDP_NAME_BCSC_PROD: USER_TYPE_BCSC_PROD
+}
+
 
 def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """recieves a cognito event object, checks to see if the user associated
@@ -46,14 +66,6 @@ class AuthorizationQuery(object):
 
     # testing: bool = False
     def __init__(self, event: event_type.Event) -> None:
-        self.user_type_code_dict = {
-            "idir": "I",
-            "bceidbusiness": "B",
-            "ca.bc.gov.flnr.fam.dev": "CD",
-            "ca.bc.gov.flnr.fam.test": "CT",
-            "ca.bc.gov.flnr.fam": "CP"
-        }
-
         self.event = event
         self.obtain_db_connection()
 
@@ -103,7 +115,7 @@ class AuthorizationQuery(object):
             AND client.cognito_client_id = {cognito_client_id};
         """
         user_guid = self.event["request"]["userAttributes"]["custom:idp_user_id"]
-        user_type_code = self.user_type_code_dict[
+        user_type_code = USER_TYPE_CODE_DICT[
             self.event["request"]["userAttributes"]["custom:idp_name"]
         ]
         cognito_client_id = self.event["callerContext"]["clientId"]
@@ -115,13 +127,13 @@ class AuthorizationQuery(object):
         )
 
         cursor.execute(sql_query)
-        roleList = []
+        role_list = []
         for record in cursor:
-            roleList.append(record[0])
+            role_list.append(record[0])
 
         self.event["response"]["claimsOverrideDetails"] = {
             "groupOverrideDetails": {
-                "groupsToOverride": roleList,
+                "groupsToOverride": role_list,
                 "iamRolesToOverride": [],
                 "preferredRole": "",
             }
@@ -141,7 +153,7 @@ class AuthorizationQuery(object):
 
         user_type_code = self.user_type_code_dict[user_type]
 
-        if user_type_code in ["CD", "CT", "CP"]:
+        if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
             user_name = user_guid
         else:
             user_name = self.event["request"]["userAttributes"]["custom:idp_username"]
