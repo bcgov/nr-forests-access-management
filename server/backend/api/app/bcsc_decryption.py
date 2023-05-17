@@ -178,7 +178,7 @@ def _jwe_compact_deserialize(jwe_bytes):
         header_data = base64url_decode(header_segment)
     except ValueError:
         raise JWEParseError("Not enough segments")
-    except (TypeError, binascii.Error):
+    except (TypeError):
         raise JWEParseError("Invalid header")
 
     # Verify that the octet sequence resulting from decoding the
