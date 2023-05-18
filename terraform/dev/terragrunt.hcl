@@ -43,5 +43,6 @@ generate "dev_tfvars" {
   ]
   fam_console_idp_name = "DEV-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
+  use_override_proxy_endpoints = false
 EOF
 }

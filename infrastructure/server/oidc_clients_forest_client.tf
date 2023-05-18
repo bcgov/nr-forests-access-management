@@ -22,7 +22,8 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
   refresh_token_validity = "24"
   supported_identity_providers = [
     "${aws_cognito_identity_provider.dev_bcsc_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -58,7 +59,8 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   refresh_token_validity                        = "24"
   supported_identity_providers = [
     "${aws_cognito_identity_provider.test_bcsc_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -93,7 +95,8 @@ resource "aws_cognito_user_pool_client" "prod_forest_client_oidc_client" {
   refresh_token_validity                        = "24"
   supported_identity_providers = [
     "${aws_cognito_identity_provider.prod_bcsc_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {

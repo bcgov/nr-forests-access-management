@@ -37,12 +37,6 @@ on:
         required: true
       prod_oidc_bcsc_idp_client_secret:
         required: true
-      dev_oidc_bcsc_idp_client_secret:
-        required: true
-      test_oidc_bcsc_idp_client_secret:
-        required: true
-      prod_oidc_bcsc_idp_client_secret:
-        required: true
 
 env:
   TF_VERSION: 1.2.2

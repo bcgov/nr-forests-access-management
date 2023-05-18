@@ -17,8 +17,7 @@ resource "aws_cognito_identity_provider" "dev_bcsc_oidc_provider" {
     oidc_issuer               = var.dev_bcsc_oidc_idp_issuer
     attributes_request_method = "GET"
     authorize_url = "https://idtest.gov.bc.ca/login/oidc/authorize"
-    token_url = "https://idtest.gov.bc.ca/oauth2/token"
-
+    token_url = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/dev"
     attributes_url = "${var.use_override_proxy_endpoints ?  var.dev_override_bcsc_userinfo_proxy_endpoint : local.dev_local_bcsc_userinfo_proxy_endpoint}"
 
     jwks_uri = "https://idtest.gov.bc.ca/oauth2/jwk.json"
@@ -52,7 +51,7 @@ resource "aws_cognito_identity_provider" "test_bcsc_oidc_provider" {
     oidc_issuer               = var.test_bcsc_oidc_idp_issuer
     attributes_request_method = "GET"
     authorize_url = "https://idtest.gov.bc.ca/login/oidc/authorize"
-    token_url = "https://idtest.gov.bc.ca/oauth2/token"
+    token_url = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/test"
 
     attributes_url = "${var.use_override_proxy_endpoints ?  var.test_override_bcsc_userinfo_proxy_endpoint : local.test_local_bcsc_userinfo_proxy_endpoint}"
 
@@ -88,7 +87,7 @@ resource "aws_cognito_identity_provider" "prod_bcsc_oidc_provider" {
     oidc_issuer               = var.prod_bcsc_oidc_idp_issuer
     attributes_request_method = "GET"
     authorize_url = "https://idtest.gov.bc.ca/login/oidc/authorize"
-    token_url = "https://idtest.gov.bc.ca/oauth2/token"
+    token_url = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/prod"
 
     attributes_url = "${var.use_override_proxy_endpoints ?  var.prod_override_bcsc_userinfo_proxy_endpoint : local.prod_local_bcsc_userinfo_proxy_endpoint}"
 
