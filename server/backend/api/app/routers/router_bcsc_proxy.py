@@ -85,6 +85,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     """
 
     jwe_token = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
+    LOGGER.debug(f"jwe_token: [{jwe_token}]")
 
     # When the result is a JWE, you have to get the encrypted key from the JWE
     # and then unencrypt it to be able to use it to unencrypt the payload
@@ -95,19 +96,27 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     elif not isinstance(jwe_token, bytes):
         raise TypeError(f"not expecting type '{type(jwe_token)}'")
 
+    LOGGER.debug(f"jwe_token: [{jwe_token}]")
+
     # Get the second segment of the token to get the cek
     encrypted_key_segment = jwe_token.split(b".", 4)[1]
+    LOGGER.debug(f"encrypted_key_segment: [{encrypted_key_segment}]")
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
     as_bytes = base64url_decode(encrypted_key_segment)
+    LOGGER.debug(f"as_bytes: [{as_bytes}]")
+
     decrypted_key = kms_lookup.decrypt(as_bytes)
+    LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
 
     # Use the symmetric public key to decrypt the payload
     decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
+    LOGGER.debug(f"decrypted_id_token: [{decrypted_id_token}]")
 
     decoded_id_token = jwt.decode(
         decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
     )
+    LOGGER.debug(f"decoded_id_token: [{decoded_id_token}]")
 
     aud = decoded_id_token["aud"]
     valid_auds = [
