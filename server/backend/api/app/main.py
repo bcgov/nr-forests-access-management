@@ -10,7 +10,7 @@ from starlette.responses import RedirectResponse
 
 from .jwt_validation import init_jwks
 from .routers import (router_application, router_forest_client, router_role,
-                      router_user, router_user_role_assignment)
+                      router_user, router_user_role_assignment, router_smoke_test)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -99,6 +99,10 @@ app.include_router(router_user.router,
 app.include_router(router_role.router,
                    prefix=apiPrefix + '/fam_roles',
                    tags=["FAM Roles"])
+
+app.include_router(router_smoke_test.router,
+                   prefix=apiPrefix + '/smoke_test',
+                   tags=["Smoke Test"])
 
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()
