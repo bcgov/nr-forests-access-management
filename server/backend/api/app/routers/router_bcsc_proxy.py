@@ -153,6 +153,12 @@ def bcsc_jwks(request: Request):
 
     params = {"alg": algorithm, "e": e, "kid": kid, "kty": kty, "use": use}
     jwks_key = JsonWebKey.import_key(public_key, params)
+    jwks_json = jwks_key.as_json()
+    jwks_key_dict = json.loads(jwks_json)
 
-    return Response(content=jwks_key.as_json(), media_type="application/json")
+    jwks_dict = {
+        "keys": [jwks_key_dict]
+    }
+
+    return JSONResponse(content=jwks_dict)
 
