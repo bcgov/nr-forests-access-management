@@ -151,7 +151,7 @@ class AuthorizationQuery(object):
         user_guid = self.event["request"]["userAttributes"]["custom:idp_user_id"]
         cognito_user_id = self.event["userName"]
 
-        user_type_code = self.user_type_code_dict[user_type]
+        user_type_code = USER_TYPE_CODE_DICT[user_type]
 
         if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
             user_name = user_guid
