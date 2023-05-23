@@ -5,6 +5,7 @@ import os
 import lambda_function
 import pytest
 
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -45,7 +46,7 @@ def test_user_properties(auth_object):
     cognito_event = auth_object.event
     userAtribs = cognito_event["request"]["userAttributes"]
     test_user_properties = {}
-    test_user_properties["idp_type_code"] = auth_object.user_type_code_dict[
+    test_user_properties["idp_type_code"] = lambda_function.USER_TYPE_CODE_DICT[
         userAtribs["custom:idp_name"]
     ]
     test_user_properties["idp_user_id"] = userAtribs["custom:idp_user_id"]
@@ -74,7 +75,7 @@ def initial_user_without_guid_or_cognito_id(auth_object, test_user_properties):
 
     idpName = event["request"]["userAttributes"]["custom:idp_name"]
     replaced_query = raw_query.format(
-        auth_object.user_type_code_dict[idpName],
+        lambda_function.USER_TYPE_CODE_DICT[idpName],
         event["request"]["userAttributes"]["custom:idp_username"],
     )
     cursor.execute(replaced_query)
@@ -103,7 +104,7 @@ def initial_user(auth_object, test_user_properties):
 
     idpName = event["request"]["userAttributes"]["custom:idp_name"]
     replaced_query = raw_query.format(
-        auth_object.user_type_code_dict[idpName],
+        lambda_function.USER_TYPE_CODE_DICT[idpName],
         event["request"]["userAttributes"]["custom:idp_username"],
         event["request"]["userAttributes"]["custom:idp_user_id"],
     )
