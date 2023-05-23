@@ -15,7 +15,6 @@ from .routers import (router_application, router_forest_client, router_role,
                       router_bcsc_proxy, router_smoke_test)
 from .kms_lookup import init_bcsc_public_key
 
-
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
     '..',
