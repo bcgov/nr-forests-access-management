@@ -11,7 +11,7 @@ generate "prod_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "prod-fam-user-pool"
+  fam_user_pool_name = "prod-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
   famdb_cluster_name = "prod-fam-cluster"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
@@ -40,5 +40,6 @@ generate "prod_tfvars" {
   ]
   fam_console_idp_name = "PROD-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-prod.api.gov.bc.ca/"
+  use_override_proxy_endpoints = false
 EOF
 }
