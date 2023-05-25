@@ -91,7 +91,7 @@ def get_rsa_key(kid):
                 "n": key["n"],
                 "e": key["e"],
             }
-        break
+            break
     return rsa_key
 
 
