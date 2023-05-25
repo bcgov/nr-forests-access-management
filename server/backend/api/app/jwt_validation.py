@@ -80,6 +80,9 @@ def get_rsa_key(kid):
     if not _jwks:
         init_jwks()
 
+    LOGGER.debug(f"kid: [{kid}]")
+    LOGGER.debug(f"_jwks: [{_jwks}]")
+
     """Return the matching RSA key for kid, from the jwks array."""
     rsa_key = {}
     for key in _jwks["keys"]:
