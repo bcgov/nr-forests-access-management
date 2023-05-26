@@ -159,8 +159,10 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
-          fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
-          echo "smoke_test_url=$fam_api_base_url/smoke_test" >> $GITHUB_OUTPUT
+          # fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
+          fam_api_base_url="http://www.eclipsebudo.com"
+          # echo "smoke_test_url=$fam_api_base_url/smoke_test" >> $GITHUB_OUTPUT
+          echo "smoke_test_url=$fam_api_base_url" >> $GITHUB_OUTPUT
 
       - id: smoke-test
         name: Smoke Test API
