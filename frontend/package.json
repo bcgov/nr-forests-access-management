@@ -23,6 +23,7 @@
         "axios": "0.26.1",
         "bootstrap": "^5.2.3",
         "bootstrap-vue-next": "^0.7.3",
+        "cypress": "^12.12.0",
         "fam-api": "file:../client-code-gen/gen",
         "primeicons": "^6.0.1",
         "primevue": "^3.27.0",

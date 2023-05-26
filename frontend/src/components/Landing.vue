@@ -9,7 +9,13 @@ import Button from 'primevue/button';
     <div class="full-width">
         <div class="row landing-grid">
             <div class="col-sm-6 col-md-7 col-lg-7">
-                <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
+                <img
+                    :src="logo"
+                    id="landing-logo-img"
+                    alt="BCGov Logo"
+                    width="160"
+                    class="logo"
+                />
                 <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
                 <h2 id="landing-subtitle" class="landing-subtitle">
                     Forestry Access Management
@@ -24,6 +30,7 @@ import Button from 'primevue/button';
                     label="Login with IDIR"
                     icon="pi pi-sign-in"
                     iconPos="right"
+                    id="landing-idir-button"
                     terc
                     @click="authService.methods.login"
                 />
@@ -32,6 +39,7 @@ import Button from 'primevue/button';
                     label="Login with Business BCeID"
                     icon="pi pi-sign-in"
                     iconPos="right"
+                    id="landing-bceid-button"
                     outlined
                     disabled
                 />
