@@ -1,10 +1,9 @@
 name: SMOKETEST Development Environment
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - "main"
+  push:
+    branches:
+      - ci/194-smoke-test
 
 jobs:
 
