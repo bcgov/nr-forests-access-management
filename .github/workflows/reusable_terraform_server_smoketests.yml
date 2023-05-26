@@ -101,7 +101,7 @@ jobs:
         run: |
           # fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
           fam_api_base_url="https://urg1dfcof2.execute-api.ca-central-1.amazonaws.com/v1"
-          smoke_test_url="$fam_api_base_url/bcsc/smoketest"
+          smoke_test_url="$fam_api_base_url/smoketest"
           echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
       - id: write_smoke_test_url
