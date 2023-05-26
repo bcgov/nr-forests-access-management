@@ -160,7 +160,7 @@ jobs:
       - id: write_smoke_test_url
         name: Terragrunt Write FAM Smoke Test URL
         run: |
-          echo ${{ steps.read_smoke_test_url.outputs.fam_api_base_url }
+          echo ${{ steps.read_smoke_test_url.outputs.fam_api_base_url }}
 
       - id: smoke-test
         name: Smoke Test API
