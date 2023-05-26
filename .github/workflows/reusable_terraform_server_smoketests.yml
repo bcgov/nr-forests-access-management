@@ -158,10 +158,10 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          fam_api_base_url = terragrunt run-all output fam_api_base_url
-          smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
-          echo "${fam_api_base_url}/bcsc/jwks.json"
-          echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
+          # fam_api_base_url = terragrunt run-all output fam_api_base_url
+          # smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
+          # echo "${fam_api_base_url}/bcsc/jwks.json"
+          # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
       # - id: smoke-test
       #   name: Smoke Test API
