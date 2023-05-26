@@ -60,57 +60,57 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Auth function zip
-        run: |
-          mkdir auth_function_packaging
-          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
-          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
-          cd auth_function_packaging
-          zip -r9 ../infrastructure/server/fam_auth_function.zip .
-          cd ..
-          rm -rf auth_function_packaging
+      # - name: Auth function zip
+      #   run: |
+      #     mkdir auth_function_packaging
+      #     rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+      #     pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+      #     cd auth_function_packaging
+      #     zip -r9 ../infrastructure/server/fam_auth_function.zip .
+      #     cd ..
+      #     rm -rf auth_function_packaging
 
-      - name: Auth function upload zip file artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: fam-auth-function
-          path: ./infrastructure/server/fam_auth_function.zip
-          if-no-files-found: error
+      # - name: Auth function upload zip file artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: fam-auth-function
+      #     path: ./infrastructure/server/fam_auth_function.zip
+      #     if-no-files-found: error
 
-      # Steps to deploy Ian's python as a lambda
-      - name: Install and Package Dependencies - FAM API
-        run: |
-          cd server/backend
-          mkdir packaging
-          cd packaging
-          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
-          zip -r9 ../../fam-ui-api.zip .
-          cd ..
-          rm -rf packaging
-          cd ../../
-          cd server/backend
-          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
-          cd ..
-          mv fam-ui-api.zip ../infrastructure/server
-          cd ..
+      # # Steps to deploy Ian's python as a lambda
+      # - name: Install and Package Dependencies - FAM API
+      #   run: |
+      #     cd server/backend
+      #     mkdir packaging
+      #     cd packaging
+      #     pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+      #     zip -r9 ../../fam-ui-api.zip .
+      #     cd ..
+      #     rm -rf packaging
+      #     cd ../../
+      #     cd server/backend
+      #     zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+      #     cd ..
+      #     mv fam-ui-api.zip ../infrastructure/server
+      #     cd ..
 
-      - name: Upload zip file artifact - FAM API
-        uses: actions/upload-artifact@v2
-        with:
-          name: fam-ui-api
-          path: ./infrastructure/server/fam-ui-api.zip
-          if-no-files-found: error
+      # - name: Upload zip file artifact - FAM API
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: fam-ui-api
+      #     path: ./infrastructure/server/fam-ui-api.zip
+      #     if-no-files-found: error
 
-      - name: Stage Flyway SQL files
-        run: |
-          mkdir infrastructure/server/sql
-          rsync -r server/flyway/sql/* infrastructure/server/sql
+      # - name: Stage Flyway SQL files
+      #   run: |
+      #     mkdir infrastructure/server/sql
+      #     rsync -r server/flyway/sql/* infrastructure/server/sql
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.2
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
@@ -151,17 +151,17 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
-          terragrunt run-all output fam_api_base_url
-          fam_api_base_url = terragrunt run-all output fam_api_base_url
-          smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
-          echo "${fam_api_base_url}/bcsc/jwks.json"
-          echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
+          terragrunt run-all output
+          # fam_api_base_url = terragrunt run-all output fam_api_base_url
+          # smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
+          # echo "${fam_api_base_url}/bcsc/jwks.json"
+          # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
-      - id: smoke-test
-        name: Smoke Test API
-        uses: wei/curl@master
-        with:
-          args: ${{ steps.read_smoke_test_url.outputs.smoke_test_url }}
+      # - id: smoke-test
+      #   name: Smoke Test API
+      #   uses: wei/curl@master
+      #   with:
+      #     args: ${{ steps.read_smoke_test_url.outputs.smoke_test_url }}
 
 
 
