@@ -25,6 +25,6 @@ def get_applications(
     LOGGER.debug(f"running router ... {db}")
     fam_apps = db.query(models.FamApplication).all()
     if len(fam_apps) == 0:
-        response.status_code = 204
+        response.status_code = 417
     return response
 
