@@ -147,7 +147,7 @@ jobs:
 
       - id: read_smoke_test_url
         name: Terragrunt Read FAM Smoke Test URL
-        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
