@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.2.0...v1.2.1) (2023-05-25)
+
+
+### Bug Fixes
+
+* [#450](https://github.com/bcgov/nr-forests-access-management/issues/450) BCSC post-merge bugfix and local dev repair ([#604](https://github.com/bcgov/nr-forests-access-management/issues/604)) ([fa3f700](https://github.com/bcgov/nr-forests-access-management/commit/fa3f700a14512ad2433025a262b930965c4891d5))
+
 ## [1.2.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.1.1...v1.2.0) (2023-05-25)
 
 
