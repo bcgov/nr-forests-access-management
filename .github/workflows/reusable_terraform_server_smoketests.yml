@@ -152,9 +152,8 @@ jobs:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
-          # fam_api_base_url = terragrunt run-all output fam_api_base_url
-          # smoke_test_url="${fam_api_base_url}/bcsc/jwks.json"
-          echo "${fam_api_base_url}/bcsc/jwks.json"
+          smoke_test_url="${fam_api_base_url}/bcsc/jwks.json"
+          echo "${smoke_test_url}"
           echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
       - id: smoke-test
