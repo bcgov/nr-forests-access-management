@@ -60,46 +60,46 @@ jobs:
         with:
           python-version: '3.8'
 
-      # - name: Auth function zip
-      #   run: |
-      #     mkdir auth_function_packaging
-      #     rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
-      #     pip install -t auth_function_packaging -r server/auth_function/requirements.txt
-      #     cd auth_function_packaging
-      #     zip -r9 ../infrastructure/server/fam_auth_function.zip .
-      #     cd ..
-      #     rm -rf auth_function_packaging
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../infrastructure/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
 
-      # - name: Auth function upload zip file artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: fam-auth-function
-      #     path: ./infrastructure/server/fam_auth_function.zip
-      #     if-no-files-found: error
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./infrastructure/server/fam_auth_function.zip
+          if-no-files-found: error
 
-      # # Steps to deploy Ian's python as a lambda
-      # - name: Install and Package Dependencies - FAM API
-      #   run: |
-      #     cd server/backend
-      #     mkdir packaging
-      #     cd packaging
-      #     pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
-      #     zip -r9 ../../fam-ui-api.zip .
-      #     cd ..
-      #     rm -rf packaging
-      #     cd ../../
-      #     cd server/backend
-      #     zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
-      #     cd ..
-      #     mv fam-ui-api.zip ../infrastructure/server
-      #     cd ..
+      # Steps to deploy Ian's python as a lambda
+      - name: Install and Package Dependencies - FAM API
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-api.zip ../infrastructure/server
+          cd ..
 
-      # - name: Upload zip file artifact - FAM API
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: fam-ui-api
-      #     path: ./infrastructure/server/fam-ui-api.zip
-      #     if-no-files-found: error
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./infrastructure/server/fam-ui-api.zip
+          if-no-files-found: error
 
       - name: Stage Flyway SQL files
         run: |
@@ -117,51 +117,51 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      # - name: Create Terraform vars
-      #   # working-directory: infrastructure/server
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   run: |
-      #     # calculate the db_cluster_snapshot_identifier, attempting to ensure it
-      #     # is less than 63 characters and has no non alphanumeric characters
-      #     refname=${{ github.ref_name }}
-      #     commit=${{ github.sha }}
-      #     db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
-      #     db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
-      #     echo $db_cluster_snapshot_identifier
-
-      #     # Pass variables from github actions to terraform
-      #     cat > github.auto.tfvars <<EOF
-      #     db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
-      #     execute_flyway = ${{ inputs.execute_flyway }}
-      #     dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
-      #     test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
-      #     prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
-      #     dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
-      #     test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
-      #     prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
-      #     forest_client_api_api_key = "${{ secrets.forest_client_api_api_key }}"
-      #     dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
-      #     test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
-      #     prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
-      #     EOF
-
-      - id: read_smoke_test_url
-        name: Terragrunt Read FAM API base url
-        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
-        env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+      - name: Create Terraform vars
+        # working-directory: infrastructure/server
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         run: |
-          # Run terraform
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters and has no non alphanumeric characters
+          refname=${{ github.ref_name }}
+          commit=${{ github.sha }}
+          db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+          echo $db_cluster_snapshot_identifier
+
+          # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
-          oidc_idir_idp_client_secret = "NA"
-          oidc_bceid_business_idp_client_secret = "NA"
-          db_cluster_snapshot_identifier = "NA"
-          execute_flyway = false
+          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
+          execute_flyway = ${{ inputs.execute_flyway }}
+          dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
+          test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
+          prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
+          dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
+          test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
+          prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
+          forest_client_api_api_key = "${{ secrets.forest_client_api_api_key }}"
+          dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
+          test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
+          prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
-          # fam_api_base_url = terragrunt run-all output fam_api_base_url
-          # smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
-          # echo "${fam_api_base_url}/bcsc/jwks.json"
-          # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
+
+      # - id: read_smoke_test_url
+      #   name: Terragrunt Read FAM API base url
+      #   working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+      #   env:
+      #     tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+      #   run: |
+      #     # Run terraform
+      #     cat > github.auto.tfvars <<EOF
+      #     oidc_idir_idp_client_secret = "NA"
+      #     oidc_bceid_business_idp_client_secret = "NA"
+      #     db_cluster_snapshot_identifier = "NA"
+      #     execute_flyway = false
+      #     EOF
+      #     # fam_api_base_url = terragrunt run-all output fam_api_base_url
+      #     # smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
+      #     # echo "${fam_api_base_url}/bcsc/jwks.json"
+      #     # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
       # - id: smoke-test
       #   name: Smoke Test API
