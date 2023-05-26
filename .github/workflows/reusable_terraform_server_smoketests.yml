@@ -145,29 +145,23 @@ jobs:
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
 
-      # - id: read_smoke_test_url
-      #   name: Terragrunt Read FAM API base url
-      #   working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-      #   run: |
-      #     # Run terraform
-      #     cat > github.auto.tfvars <<EOF
-      #     oidc_idir_idp_client_secret = "NA"
-      #     oidc_bceid_business_idp_client_secret = "NA"
-      #     db_cluster_snapshot_identifier = "NA"
-      #     execute_flyway = false
-      #     EOF
-      #     # fam_api_base_url = terragrunt run-all output fam_api_base_url
-      #     # smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
-      #     # echo "${fam_api_base_url}/bcsc/jwks.json"
-      #     # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
+      - id: read_smoke_test_url
+        name: Terragrunt Read FAM API base url
+        working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          terragrunt run-all output fam_api_base_url --terragrunt-non-interactive
+          fam_api_base_url = terragrunt run-all output fam_api_base_url
+          smoke_test_url = "${fam_api_base_url}/bcsc/jwks.json"
+          echo "${fam_api_base_url}/bcsc/jwks.json"
+          echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
-      # - id: smoke-test
-      #   name: Smoke Test API
-      #   uses: wei/curl@master
-      #   with:
-      #     args: ${{ steps.read_smoke_test_url.outputs.smoke_test_url }}
+      - id: smoke-test
+        name: Smoke Test API
+        uses: wei/curl@master
+        with:
+          args: ${{ steps.read_smoke_test_url.outputs.smoke_test_url }}
 
 
 
