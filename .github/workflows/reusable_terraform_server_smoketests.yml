@@ -106,11 +106,11 @@ jobs:
       #     mkdir infrastructure/server/sql
       #     rsync -r server/flyway/sql/* infrastructure/server/sql
 
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v2.0.2
-      #   with:
-      #     terraform_version: ${{ env.TF_VERSION }}
-      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
