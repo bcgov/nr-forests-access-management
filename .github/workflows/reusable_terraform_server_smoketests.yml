@@ -52,13 +52,13 @@ jobs:
     environment: ${{ inputs.environment_name }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2.5.0
+      # - name: Checkout
+      #   uses: actions/checkout@v2.5.0
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
+      # - name: Set up Python 3.8
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.8'
 
       # - name: Auth function zip
       #   run: |
@@ -106,44 +106,44 @@ jobs:
       #     mkdir infrastructure/server/sql
       #     rsync -r server/flyway/sql/* infrastructure/server/sql
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.2
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
-      - name: Setup Terragrunt
-        uses: peter-murray/terragrunt-github-action@v1.0.0
-        with:
-          terragrunt_version: ${{ env.TG_VERSION }}
+      # - name: Setup Terragrunt
+      #   uses: peter-murray/terragrunt-github-action@v1.0.0
+      #   with:
+      #     terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Create Terraform vars
-        # working-directory: infrastructure/server
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-        run: |
-          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
-          # is less than 63 characters and has no non alphanumeric characters
-          refname=${{ github.ref_name }}
-          commit=${{ github.sha }}
-          db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
-          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
-          echo $db_cluster_snapshot_identifier
+      # - name: Create Terraform vars
+      #   # working-directory: infrastructure/server
+      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+      #   run: |
+      #     # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+      #     # is less than 63 characters and has no non alphanumeric characters
+      #     refname=${{ github.ref_name }}
+      #     commit=${{ github.sha }}
+      #     db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
+      #     db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+      #     echo $db_cluster_snapshot_identifier
 
-          # Pass variables from github actions to terraform
-          cat > github.auto.tfvars <<EOF
-          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
-          execute_flyway = ${{ inputs.execute_flyway }}
-          dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
-          test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
-          prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
-          dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
-          test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
-          prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
-          forest_client_api_api_key = "${{ secrets.forest_client_api_api_key }}"
-          dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
-          test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
-          prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
-          EOF
+      #     # Pass variables from github actions to terraform
+      #     cat > github.auto.tfvars <<EOF
+      #     db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
+      #     execute_flyway = ${{ inputs.execute_flyway }}
+      #     dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
+      #     test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
+      #     prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
+      #     dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
+      #     test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
+      #     prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
+      #     forest_client_api_api_key = "${{ secrets.forest_client_api_api_key }}"
+      #     dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
+      #     test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
+      #     prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
+      #     EOF
 
       - id: read_smoke_test_url
         name: Terragrunt Read FAM Smoke Test URL
@@ -151,11 +151,10 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
-          fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
-          echo "fam_api_base_url=$fam_api_base_url" >> $GITHUB_OUTPUT
-          # smoke_test_url="$fam_api_base_url"
-          # echo $smoke_test_url
-          # echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
+          # fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
+          fam_api_base_url="https://urg1dfcof2.execute-api.ca-central-1.amazonaws.com/v1"
+          smoke_test_url="$fam_api_base_url/bcsc/smoketest"
+          echo "smoke_test_url=$smoke_test_url" >> $GITHUB_OUTPUT
 
       - id: write_smoke_test_url
         name: Terragrunt Write FAM Smoke Test URL
