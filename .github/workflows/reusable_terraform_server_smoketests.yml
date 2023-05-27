@@ -108,7 +108,9 @@ jobs:
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
             fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
-            sh -c "curl --silent --show-error --fail $fam_api_base_url/smoke_test"
+            smoke_test_url="$fam_api_base_url/smoke_test"
+            echo $smoke_test_url
+            sh -c "curl --silent --show-error --fail $smoke_test_url"
           else
             echo "Not executing terraform apply - smoke test skipped"
           fi
