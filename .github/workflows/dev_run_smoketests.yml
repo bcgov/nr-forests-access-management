@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server_smoketests.yml
     with:
       environment_name: dev
-      tf_subcommand: plan
+      tf_subcommand: apply
       execute_flyway: true
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
