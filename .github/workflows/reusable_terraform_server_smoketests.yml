@@ -105,8 +105,12 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
-          fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
-          sh -c "curl --silent --show-error --fail $fam_api_base_url/smoke_test"
+          if "apply" == ${{ inputs.tf_subcommand }}
+          then
+            fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
+            sh -c "curl --silent --show-error --fail $fam_api_base_url/smoke_test"
+          fi
+
 
       # - id: write_smoke_test_url
       #   name: Terragrunt Write FAM Smoke Test URL
