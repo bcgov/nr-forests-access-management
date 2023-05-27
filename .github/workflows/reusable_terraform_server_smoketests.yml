@@ -99,8 +99,8 @@ jobs:
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
 
-      - id: read_smoke_test_url
-        name: Terragrunt Read FAM Smoke Test URL
+      - id: smoke_test
+        name: Smoke Test
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
@@ -109,6 +109,8 @@ jobs:
           then
             fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
             sh -c "curl --silent --show-error --fail $fam_api_base_url/smoke_test"
+          else
+            echo "Not executing terraform apply - smoke test skipped"
           fi
 
 
