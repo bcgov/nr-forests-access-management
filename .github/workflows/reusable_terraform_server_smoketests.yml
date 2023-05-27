@@ -107,7 +107,8 @@ jobs:
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
-            fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
+            terragrunt run-all output
+            # fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
             fam_api_base_url="http://www.eclipsebudo.com"
             smoke_test_url="$fam_api_base_url/smoke_test"
             echo "smoke_test_url is: $smoke_test_url \n"
