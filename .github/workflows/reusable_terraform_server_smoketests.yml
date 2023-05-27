@@ -100,7 +100,7 @@ jobs:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
-          fam_api_base_url="http://www.eclipsebudo123.com"
+          fam_api_base_url="http://www.eclipsebudo.com/notthere"
           # echo "smoke_test_url=$fam_api_base_url/smoke_test" >> $GITHUB_OUTPUT
           sh -c "curl --silent --show-error --fail $fam_api_base_url"
 
