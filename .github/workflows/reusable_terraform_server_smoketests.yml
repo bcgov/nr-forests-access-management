@@ -108,7 +108,7 @@ jobs:
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
             sudo apt install -y gawk
-            terragrunt run-all output -json
+            terragrunt run-all output -json | jq --raw-output '.fam_api_base_url.value'
             # fam_api_base_url=$(terragrunt run-all output | gawk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
             # smoke_test_url="$fam_api_base_url/smoke_test"
             # echo "smoke_test_url is: $smoke_test_url \n"
