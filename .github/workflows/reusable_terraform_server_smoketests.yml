@@ -105,7 +105,7 @@ jobs:
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
-          if "apply" == "${{ inputs.tf_subcommand }}"
+          if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
             fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
             sh -c "curl --silent --show-error --fail $fam_api_base_url/smoke_test"
