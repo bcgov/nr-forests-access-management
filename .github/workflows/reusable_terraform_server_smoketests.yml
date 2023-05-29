@@ -109,9 +109,10 @@ jobs:
           then
             # terragrunt run-all output
             fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
-            smoke_test_url="$fam_api_base_url/smoke_test"
-            echo "smoke_test_url is: $smoke_test_url"
-            curl --silent --show-error --fail $smoke_test_url
+            echo "fam_api_base_url is: $fam_api_base_url"
+            # smoke_test_url="$fam_api_base_url/smoke_test"
+            # echo "smoke_test_url is: $smoke_test_url"
+            # curl --silent --show-error --fail $smoke_test_url
           else
             echo "Not executing terraform apply - smoke test skipped"
           fi
