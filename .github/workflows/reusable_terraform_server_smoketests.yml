@@ -107,12 +107,11 @@ jobs:
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
-            sudo apt install -y gawk
-            terragrunt run-all output -json | jq --raw-output '.fam_api_base_url.value'
-            # fam_api_base_url=$(terragrunt run-all output | gawk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
-            # smoke_test_url="$fam_api_base_url/smoke_test"
-            # echo "smoke_test_url is: $smoke_test_url \n"
-            # sh -c "curl --silent --show-error --fail $smoke_test_url"
+            terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }'
+            fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
+            smoke_test_url="$fam_api_base_url/smoke_test"
+            echo "smoke_test_url is: $smoke_test_url \n"
+            sh -c "curl --silent --show-error --fail $smoke_test_url"
           else
             echo "Not executing terraform apply - smoke test skipped"
           fi
