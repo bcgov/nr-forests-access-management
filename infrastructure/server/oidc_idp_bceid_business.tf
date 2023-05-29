@@ -68,6 +68,7 @@ resource "aws_cognito_identity_provider" "prod_bceid_business_oidc_provider" {
 
   attribute_mapping = {
     email                      = "email",
+    email_verified             = "email_verified",
     "custom:idp_name"          = "identity_provider",
     "custom:idp_user_id"       = "bceid_user_guid",
     "custom:idp_username"      = "bceid_username",
@@ -78,14 +79,3 @@ resource "aws_cognito_identity_provider" "prod_bceid_business_oidc_provider" {
   }
 }
 
-variable "all_read_list_bceid_business" {
-  description = "The list of all read attributes for BCEIDBUSINESS clients"
-  type        = list(string)
-  default     = ["email", "email_verified", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id", "custom:keycloak_username"]
-}
-
-variable "all_write_list_bceid_business" {
-  description = "The list of all write attributes for BCEIDBUSINESS clients"
-  type        = list(string)
-  default     = ["email", "preferred_username", "profile", "custom:idp_display_name", "custom:idp_name", "custom:idp_user_id", "custom:idp_username", "custom:idp_business_name", "custom:idp_business_id", "custom:keycloak_username"]
-}

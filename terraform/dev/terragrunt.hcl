@@ -11,7 +11,7 @@ generate "dev_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "dev-fam-user-pool"
+  fam_user_pool_name = "dev-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "dev-fam-user-pool-domain"
   famdb_cluster_name = "dev-fam-cluster"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
@@ -43,5 +43,9 @@ generate "dev_tfvars" {
   ]
   fam_console_idp_name = "DEV-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
+  use_override_proxy_endpoints = true
+  dev_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
+  test_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/test"
+  prod_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/prod"
 EOF
 }
