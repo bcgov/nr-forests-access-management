@@ -108,10 +108,10 @@ jobs:
           awk --version
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
-            terragrunt=$(terragrunt run-all output)
-            echo "output: [$terragrunt]"
-            echo "output line: [$($terragrunt | awk -F= '/fam_api_base_url/')]"
-            fam_api_base_url=$($terragrunt | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
+            terragrunt run-all output
+            line=$(terragrunt run-all output | awk -F= '/fam_api_base_url/')
+            echo $line
+            fam_api_base_url=$($terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
             echo "fam_api_base_url is: [$fam_api_base_url]"
             smoke_test_url="$fam_api_base_url/docs"
             echo "smoke_test_url is: $smoke_test_url"
