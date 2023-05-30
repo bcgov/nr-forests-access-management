@@ -109,9 +109,9 @@ jobs:
           then
             terragrunt run-all output > output.txt
             cat output.txt
-            line="$(terragrunt run-all output | awk -F= '/fam_api_base_url/')"
+            line="$(cat output.txt | awk -F= '/fam_api_base_url/')"
             echo "line = [$line]"
-            fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
+            fam_api_base_url=$(cat output.txt | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }')
             echo "fam_api_base_url is: [$fam_api_base_url]"
             smoke_test_url="[$fam_api_base_url/docs]"
             echo "smoke_test_url is: $smoke_test_url"
