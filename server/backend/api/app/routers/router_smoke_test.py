@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("", status_code=200)
-def get_applications(
+def smoke_test(
     response: Response,
     db: Session = Depends(database.get_db),
 ):
