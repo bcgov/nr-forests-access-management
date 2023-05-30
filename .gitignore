@@ -79,4 +79,3 @@ infrastructure/server/fam_auth_function.zip
 terraform/test/github.auto.tfvars
 infrastructure/fam-ui-api.zip
 infrastructure/server/fam-ui-api.zip
-terraform/dev/output.txt
