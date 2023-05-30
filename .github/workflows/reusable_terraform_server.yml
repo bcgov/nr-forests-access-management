@@ -152,3 +152,24 @@ jobs:
         run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+
+      - id: smoke_test
+        name: Smoke Test
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
+          then
+            shopt -s lastpipe
+            fam_api_base_url=$(terragrunt run-all output | awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' | sed 's/^"//' | sed 's/"$//')
+            smoke_test_url="$fam_api_base_url/smoke_test"
+            curl --silent --show-error --fail $smoke_test_url
+          else
+            echo "Not executing terraform apply - smoke test skipped"
+          fi
+
+
+
+
+

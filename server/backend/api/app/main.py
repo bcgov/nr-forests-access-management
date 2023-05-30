@@ -12,9 +12,8 @@ from mangum import Mangum
 from .jwt_validation import init_jwks
 from .routers import (router_application, router_forest_client, router_role,
                       router_user, router_user_role_assignment,
-                      router_bcsc_proxy)
+                      router_bcsc_proxy, router_smoke_test)
 from .kms_lookup import init_bcsc_public_key
-
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -109,6 +108,10 @@ app.include_router(router_role.router,
 app.include_router(router_bcsc_proxy.router,
                    prefix=apiPrefix + '/bcsc',
                    tags=["BCSC Proxy"])
+
+app.include_router(router_smoke_test.router,
+                   prefix=apiPrefix + '/smoke_test',
+                   tags=["Smoke Test"])
 
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()
