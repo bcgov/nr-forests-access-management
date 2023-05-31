@@ -3,7 +3,7 @@ import logging
 import api.app.constants as constants
 import pytest
 import starlette
-import tests.tests.jwt_utils as jwt_utils
+import testspg.jwt_utils as jwt_utils
 from api.app.constants import FamForestClientStatusType
 from api.app.main import apiPrefix
 from api.app.schemas import FamForestClient
