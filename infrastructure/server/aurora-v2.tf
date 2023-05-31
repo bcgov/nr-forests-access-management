@@ -47,7 +47,7 @@ data "aws_rds_engine_version" "postgresql" {
 
 module "aurora_postgresql_v2" {
   source = "terraform-aws-modules/rds-aurora/aws"
-  version = "8.2.0"
+  version = "7.7.1"
 
   name              = var.famdb_cluster_name
   engine            = data.aws_rds_engine_version.postgresql.engine
@@ -63,9 +63,11 @@ module "aurora_postgresql_v2" {
   master_username = var.famdb_master_username
   master_password = random_password.famdb_master_password.result
 
+  create_cluster         = true
   create_security_group  = false
   create_db_subnet_group = false
   create_monitoring_role = false
+  create_random_password = false
 
   apply_immediately   = true
   skip_final_snapshot = true
