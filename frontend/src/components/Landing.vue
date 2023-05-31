@@ -12,16 +12,31 @@ import Button from 'primevue/button';
                 <img
                     :src="logo"
                     id="landing-logo-img"
+                    data-cy="landing-logo-img"
                     alt="BCGov Logo"
                     width="160"
                     class="logo"
                 />
-                <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
-                <h2 id="landing-subtitle" class="landing-subtitle">
+                <h1
+                    id="landing-title"
+                    data-cy="landing-title"
+                    class="landing-title"
+                >
+                    Welcome to FAM
+                </h1>
+                <h2
+                    id="landing-subtitle"
+                    data-cy="landing-subtitle"
+                    class="landing-subtitle"
+                >
                     Forestry Access Management
                 </h2>
 
-                <p id="landing-desc" class="landing-desc">
+                <p
+                    id="landing-desc"
+                    data-cy="landing-desc"
+                    class="landing-desc"
+                >
                     Grant access to your users
                 </p>
 
@@ -31,6 +46,7 @@ import Button from 'primevue/button';
                     icon="pi pi-sign-in"
                     iconPos="right"
                     id="landing-idir-button"
+                    data-cy="landing-idir-button"
                     terc
                     @click="authService.methods.login"
                 />
@@ -40,6 +56,7 @@ import Button from 'primevue/button';
                     icon="pi pi-sign-in"
                     iconPos="right"
                     id="landing-bceid-button"
+                    data-cy="landing-bceid-button"
                     outlined
                     disabled
                 />
