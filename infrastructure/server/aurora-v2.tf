@@ -47,7 +47,7 @@ data "aws_rds_engine_version" "postgresql" {
 
 module "aurora_postgresql_v2" {
   source = "terraform-aws-modules/rds-aurora/aws"
-  version = "7.7.1"
+  version = "8.2.0"
 
   name              = var.famdb_cluster_name
   engine            = data.aws_rds_engine_version.postgresql.engine
