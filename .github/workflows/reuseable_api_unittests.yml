@@ -17,11 +17,16 @@ env:
   POSTGRES_DB: fam
   POSTGRES_PORT: 5432
   USE_POSTGRES: false
+  working-directory: ./server/backend
 
 jobs:
   api-unit-tests:
     runs-on: ubuntu-latest
     environment: dev
+
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
 
     steps:
       - name: checkout the repo and building the Backend
@@ -41,8 +46,6 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: API function run pytest on postgres
-        working-directory: ./server/backend
-        run: pwd
         uses: pavelzw/pytest-action@v2
         with:
           emoji: true
