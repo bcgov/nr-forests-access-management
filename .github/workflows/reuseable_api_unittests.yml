@@ -26,6 +26,7 @@ jobs:
 
     defaults:
       run:
+        # sets default working-directory for all steps.
         working-directory: ${{ env.working-directory }}
 
     steps:
@@ -50,6 +51,8 @@ jobs:
           emoji: true
           verbose: true
           job-summary: true
+          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
+          # so still pass in 'server/backend'
           custom-arguments: 'server/backend'
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
