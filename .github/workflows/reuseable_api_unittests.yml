@@ -40,16 +40,6 @@ jobs:
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: API function run pytest on sqllite
-        uses: pavelzw/pytest-action@v2
-        with:
-          emoji: true
-          verbose: true
-          job-summary: true
-          custom-arguments: 'server/backend --ignore server/backend/testspg'
-        env:
-          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
-
       - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
         with:
