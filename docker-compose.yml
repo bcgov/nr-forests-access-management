@@ -2,58 +2,17 @@
 version: "3.8"
 services:
   fam-database:
-    image: postgres:14.1-alpine
-    container_name: fam-postgres
-    mem_limit: 128m
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=fam
-      - POSTGRES_HOST_AUTH_METHOD=password
-      - POSTGRES_PORT=5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 6
-    ports:
-      - "5432:5432"
-    networks:
-      - fam
+    extends:
+      file: docker-base-services.yml
+      service: fam-database
 
   fam-flyway:
-    image: flyway/flyway:latest
-    container_name: fam-api-migrations
-    command:
-      - info
-      - migrate
-      - info
-    volumes:
-      - "./server/flyway/sql:/flyway/sql"
-    environment:
-      - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
-      - FLYWAY_USER=postgres
-      - FLYWAY_PASSWORD=postgres
-      - FLYWAY_BASELINE_ON_MIGRATE=true
-      - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
-      - FLYWAY_PLACEHOLDERS_api_db_password=test
-      - FLYWAY_PLACEHOLDERS_client_id_fom_public="nolongerinuse1"
-      - FLYWAY_PLACEHOLDERS_client_id_fom_ministry="nolongerinuse2"
-      - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78
-      - FLYWAY_PLACEHOLDERS_client_id_dev_fom_oidc_client=1a8pkq0psq0daj5e6ir3ppcjkj
-      - FLYWAY_PLACEHOLDERS_client_id_test_fom_oidc_client=7b6eki43nahus9ca0lhjs6m568
-      - FLYWAY_PLACEHOLDERS_client_id_prod_fom_oidc_client=1rhdfiek5ntmk2kg39d6e31p46
-      - FLYWAY_PLACEHOLDERS_client_id_dev_spar_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOt
-      - FLYWAY_PLACEHOLDERS_client_id_test_spar_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna2
-      - FLYWAY_PLACEHOLDERS_client_id_prod_spar_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSf
-      - FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOg
-      - FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAnah
-      - FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSe
+    extends:
+      file: docker-base-services.yml
+      service: fam-flyway
     depends_on:
       fam-database:
         condition: service_healthy
-    networks:
-      - fam
 
   fam-api:
     container_name: fam-api
