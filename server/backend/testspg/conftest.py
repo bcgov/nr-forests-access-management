@@ -22,11 +22,14 @@ from api.app.main import app
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
 COMPOSE_PATH = os.path.join(os.path.dirname(__file__), '../../../')
-
+COMPOSE_FILE_NAME = "docker-compose-testcontainer.yml"
 
 @pytest.fixture(scope="session")
 def db_pg_container():
-    compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
+    compose = testcontainers.compose.DockerCompose(
+        COMPOSE_PATH,
+        compose_file_name=COMPOSE_FILE_NAME
+    )
     compose.start()
     time.sleep(6)  # wait db migration script to run
     yield compose
