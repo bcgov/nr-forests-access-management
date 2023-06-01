@@ -50,6 +50,6 @@ jobs:
           emoji: true
           verbose: true
           job-summary: true
-          # custom-arguments: 'server/backend'
+          custom-arguments: 'server/backend'
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
