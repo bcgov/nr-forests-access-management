@@ -42,7 +42,6 @@ jobs:
       - name: Install dependencies
         run: |
           python --version
-          cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: API function run pytest on postgres
