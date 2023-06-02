@@ -5,7 +5,7 @@ sqlmodel==0.0.4
 email-validator==2.0.0.post2
 requests==2.31.0
 psycopg2-binary==2.9.3
-mangum==0.15.0
+mangum==0.17.0
 boto3
 botocore
 python-jose==3.3.0
