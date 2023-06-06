@@ -55,5 +55,8 @@ services:
       - FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOg
       - FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAnah
       - FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSe
+      - FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZO5
+      - FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna5
+      - FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client=KdnD2eGS3Zcx494p04yMFhDwS5
     networks:
       - fam

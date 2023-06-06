@@ -57,6 +57,9 @@ jobs:
           FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client: xxqiHFmwG8j1cVAz7Ngtknattt
           FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAyyy
           FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client: KdnD2eGS3Zcx494p04yMFhDuuu
+          FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZO5
+          FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAna5
+          FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client: KdnD2eGS3Zcx494p04yMFhDwS5
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
