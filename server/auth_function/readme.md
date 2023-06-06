@@ -34,8 +34,6 @@ docker exec -it famdb flyway-migrate.sh
 ``` bash
 cd server/backend
 docker-compose up db
-cd api
-alembic upgrade head
 ```
 
 ### Python Setup
