@@ -6,9 +6,9 @@ INSERT INTO app_fam.fam_application (
     create_user,
     create_date
 )
-VALUES ('SILVA_DEV', ' (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
-       ('SILVA_TEST', 'Seed Planning and Registry Application (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
-       ('SILVA_PROD', 'Seed Planning and Registry Application (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
+VALUES ('SILVA_DEV', 'SILVA (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
+       ('SILVA_TEST', 'SILVA (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
+       ('SILVA_PROD', 'SILVA (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
 ;
 
 
