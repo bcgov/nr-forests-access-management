@@ -5,10 +5,23 @@ import Breadcrumb from '@/components/Breadcrumb.vue';
 </script>
 <template>
     <Header></Header>
-    <main class="container">
-        <Breadcrumb />
-        <RouterView />
-        <modals-container></modals-container>
-    </main>
-    <Footer></Footer>
+
+    <Sidebar />
+
+    <div class="main">
+        <main class="container">
+            <!-- <Breadcrumb /> -->
+            <RouterView />
+            <modals-container></modals-container>
+        </main>
+    </div>
+    <!-- <Footer></Footer> -->
 </template>
+<style>
+.main {
+    position: absolute;
+    display: block;
+    top: 48px;
+    left: 256px;
+}
+</style>

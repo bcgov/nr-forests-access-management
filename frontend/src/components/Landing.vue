@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
-import Seeding from '../assets/images/seeding.png';
+import TreeLogs from '../assets/images/tree-logs.jpg';
 import logo from '../assets/images/bc-gov-logo.png';
 import Button from 'primevue/button';
 </script>
@@ -22,7 +22,7 @@ import Button from 'primevue/button';
                 <Button
                     class="landing-button"
                     label="Login with IDIR"
-                    icon="pi pi-sign-in"
+                    icon="pi carbon-login-icon"
                     iconPos="right"
                     terc
                     @click="authService.methods.login"
@@ -30,7 +30,7 @@ import Button from 'primevue/button';
                 <Button
                     class="landing-button"
                     label="Login with Business BCeID"
-                    icon="pi pi-sign-in"
+                    icon="pi carbon-login-icon"
                     iconPos="right"
                     outlined
                     disabled
@@ -38,7 +38,7 @@ import Button from 'primevue/button';
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img
-                    :src="Seeding"
+                    :src="TreeLogs"
                     alt="Small green seedling on the dirt and watered"
                     class="landing-img"
                 />
@@ -49,4 +49,16 @@ import Button from 'primevue/button';
 
 <style lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
+
+.carbon-login-icon {
+    height: 16px;
+    width: 16px;
+
+    -webkit-mask-image: url('./../assets/svg/login.svg');
+    mask-image: url('./../assets/svg/login.svg');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+
+    background: currentColor;
+}
 </style>
