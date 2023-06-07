@@ -1,9 +1,9 @@
 <template>
-    <b-form-radio-group
+    <!-- <b-form-radio-group
         v-model="selectedValue"
         :options="props.options"
         @change="valueChanged"
-    ></b-form-radio-group>
+    ></b-form-radio-group> -->
 </template>
 
 <script setup lang="ts">

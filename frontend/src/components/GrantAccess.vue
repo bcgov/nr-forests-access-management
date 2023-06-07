@@ -21,9 +21,9 @@ let loading = ref<boolean>(false);
 let invalidForestClient = ref<boolean>(false);
 const defaultFormData = {
     domain: domainOptions.IDIR,
-    userId: "",
-    forestClientNumber: "",
-    role_id: null
+    userId: '',
+    forestClientNumber: '',
+    role_id: null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const apiServiceFactory = new ApiServiceFactory();
@@ -37,12 +37,18 @@ const schema = object({
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
     role_id: number().required('Please select a value'),
-    forestClientNumber: string().when('role_id', {
-        is: (_role_id: number) => isAbstractRoleSelected(),
-        then: () => string()
+    forestClientNumber: string()
+        .when('role_id', {
+            is: (_role_id: number) => isAbstractRoleSelected(),
+            then: () =>
+                string()
                     .required('Forest Client number is required')
-                    .min(8, 'Forest Client number must be at least 8 characters')
-    }).nullable(),
+                    .min(
+                        8,
+                        'Forest Client number must be at least 8 characters'
+                    ),
+        })
+        .nullable(),
 });
 
 onMounted(async () => {
@@ -71,7 +77,9 @@ async function grantAccess() {
             newUserRoleAssignmentPayload
         );
         useToast().success(
-            `User "${newUserRoleAssignmentPayload.user_name}" is granted with "${getSelectedRole()?.role_name}" access.`
+            `User "${
+                newUserRoleAssignmentPayload.user_name
+            }" is granted with "${getSelectedRole()?.role_name}" access.`
         );
         formData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
         router.push('/manage');
@@ -99,7 +107,7 @@ function toRequestPayload(formData: any) {
 
 function onRoleSelected(evt: any) {
     forestClient = null;
-    formData.value.forestClientNumber = "";
+    formData.value.forestClientNumber = '';
     invalidForestClient.value = isAbstractRoleSelected();
 }
 
@@ -125,14 +133,14 @@ function forestClientNumberChange() {
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value
-        .find((item) => item.role_id === formData.value.role_id);
+    return applicationRoleOptions.value.find(
+        (item) => item.role_id === formData.value.role_id
+    );
 };
 
 const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
-}
-
+};
 </script>
 
 <template>
@@ -286,7 +294,7 @@ const isAbstractRoleSelected = () => {
                             "
                         >
                             <div v-if="loading">
-                                <b-spinner small></b-spinner>
+                                <!-- <b-spinner small></b-spinner> -->
                                 Loading...
                             </div>
                             <div v-else>Verify ID</div>

@@ -3,5 +3,5 @@ import Footer from '@/components/footer/Footer.vue';
 </script>
 <template>
     <RouterView />
-    <Footer></Footer>
+    <!-- <Footer></Footer> -->
 </template>

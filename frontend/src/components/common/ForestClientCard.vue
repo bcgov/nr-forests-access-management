@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-card class="mb-2">
+        <!-- <b-card class="mb-2">
             <b-card-text>
                 <Tag
                     :text="props.status.description"
@@ -12,7 +12,7 @@
                     >Please enter an active Forest Client ID</span
                 >
             </b-card-text>
-        </b-card>
+        </b-card> -->
     </div>
 </template>
 
