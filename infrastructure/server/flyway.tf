@@ -232,7 +232,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_spar_oidc_client" : "${aws_cognito_user_pool_client.prod_spar_oidc_client.id}",
           "client_id_dev_forest_client_oidc_client" : "${aws_cognito_user_pool_client.dev_forest_client_oidc_client.id}",
           "client_id_test_forest_client_oidc_client" : "${aws_cognito_user_pool_client.test_forest_client_oidc_client.id}",
-          "client_id_prod_forest_client_oidc_client" : "${aws_cognito_user_pool_client.prod_forest_client_oidc_client.id}"
+          "client_id_prod_forest_client_oidc_client" : "${aws_cognito_user_pool_client.prod_forest_client_oidc_client.id}",
+          "client_id_dev_silva_oidc_client" : "${aws_cognito_user_pool_client.dev_silva_oidc_client.id}",
+          "client_id_test_silva_oidc_client" : "${aws_cognito_user_pool_client.test_silva_oidc_client.id}",
+          "client_id_prod_silva_oidc_client" : "${aws_cognito_user_pool_client.prod_silva_oidc_client.id}"
         },
         "target": "latest"
     },
