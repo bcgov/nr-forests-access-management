@@ -114,6 +114,9 @@ const props = defineProps({
     // gap: 24px;
 
     height: 48px;
+    i {
+        vertical-align: middle;
+    }
 }
 
 .sidenav li.child:hover {
