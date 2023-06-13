@@ -55,7 +55,7 @@ def get_local_db_string():
 
 # Create one database session for all the tests to use
 @pytest.fixture(scope="session")
-def db_pg_connection():
+def db_pg_connection(db_pg_container):
 
     db_connection_string = get_local_db_string()
     db_connection = psycopg2.connect(
