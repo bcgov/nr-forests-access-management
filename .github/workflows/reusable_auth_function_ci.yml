@@ -4,31 +4,15 @@ on:
   workflow_call:
 
 env:
+  POSTGRES_USER: fam_proxy_api
+  POSTGRES_PASSWORD: test
+  POSTGRES_HOST: localhost
   POSTGRES_DB: fam
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  API_DB_USERNAME: fam_proxy_api
-  API_DB_PASSWORD: fam_password
+  POSTGRES_PORT: 5432
 
 jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
 
     steps:
       - name: checkout the repo and building the Backend
