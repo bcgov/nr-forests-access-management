@@ -7,7 +7,7 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": true,
     "python.testing.pytestArgs": [
-        "server/backend"
+        "server/auth_function"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
