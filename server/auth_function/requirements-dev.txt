@@ -3,3 +3,5 @@ black==22.10.0
 flake8==5.0.4
 pytest-emoji==0.2.0
 pytest-md==0.2.0
+testcontainers==3.7.1
+testcontainers-core==0.0.1rc1
