@@ -109,6 +109,7 @@ def test_user_properties(cognito_event):
     test_user_properties["cognito_user_id"] = cognito_event["userName"]
     return test_user_properties
 
+
 @pytest.fixture(scope="function")
 def initial_user(db_pg_transaction, cognito_event, test_user_properties):
 
