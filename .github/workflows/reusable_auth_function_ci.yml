@@ -28,18 +28,15 @@ jobs:
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Auth function run pytest
+      - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
         with:
           emoji: true
           verbose: true
           job-summary: true
+          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
+          # so still pass in 'server/backend'
           custom-arguments: 'server/auth_function'
-        env:
-          POSTGRES_HOST: 0.0.0.0
-          POSTGRES_PORT: 5432
-          api_db_username: ${{ env.API_DB_USERNAME }}
-          api_db_password: ${{ env.API_DB_PASSWORD }}
 
       - name: Auth function zip
         run: |
