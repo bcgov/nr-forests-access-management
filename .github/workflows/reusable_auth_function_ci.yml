@@ -4,62 +4,19 @@ on:
   workflow_call:
 
 env:
+  POSTGRES_USER: fam_proxy_api
+  POSTGRES_PASSWORD: test
+  POSTGRES_HOST: localhost
   POSTGRES_DB: fam
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  API_DB_USERNAME: fam_proxy_api
-  API_DB_PASSWORD: fam_password
+  POSTGRES_PORT: 5432
 
 jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
-
-      - name: run flyway on test database
-        uses: joshuaavalon/flyway-action@v3.0.0
-        with:
-          url: jdbc:postgresql://postgres:5432/${{ env.POSTGRES_DB }}
-          user: ${{ env.POSTGRES_USER }}
-          password: ${{ env.POSTGRES_PASSWORD }}
-          locations: server/flyway/sql
-        env:
-          # Need every replacement value for the flyway scripts. Don't need to be real values.
-          FLYWAY_PLACEHOLDERS_API_DB_USERNAME: ${{ env.API_DB_USERNAME }}
-          FLYWAY_PLACEHOLDERS_API_DB_PASSWORD: ${{ env.API_DB_PASSWORD }}
-          FLYWAY_PLACEHOLDERS_client_id_fom_public : "nolongerinuse1"
-          FLYWAY_PLACEHOLDERS_client_id_fom_ministry : "nolongerinuse2"
-          FLYWAY_PLACEHOLDERS_client_id_fam_console: 26tltjjfe7ktm4bte7av998d78
-          FLYWAY_PLACEHOLDERS_client_id_dev_fom_oidc_client: 1a8pkq0psq0daj5e6ir3ppcjkj
-          FLYWAY_PLACEHOLDERS_client_id_test_fom_oidc_client: 7b6eki43nahus9ca0lhjs6m568
-          FLYWAY_PLACEHOLDERS_client_id_prod_fom_oidc_client: 1rhdfiek5ntmk2kg39d6e31p46
-          FLYWAY_PLACEHOLDERS_client_id_dev_spar_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZOt
-          FLYWAY_PLACEHOLDERS_client_id_test_spar_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAna2
-          FLYWAY_PLACEHOLDERS_client_id_prod_spar_oidc_client: KdnD2eGS3Zcx494p04yMFhDwSf
-          FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client: xxqiHFmwG8j1cVAz7Ngtknattt
-          FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAyyy
-          FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client: KdnD2eGS3Zcx494p04yMFhDuuu
-          FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZO5
-          FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAna5
-          FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client: KdnD2eGS3Zcx494p04yMFhDwS5
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
@@ -71,18 +28,15 @@ jobs:
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Auth function run pytest
+      - name: Auth function run pytest on postgres
         uses: pavelzw/pytest-action@v2
         with:
           emoji: true
           verbose: true
           job-summary: true
+          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
+          # so still pass in 'server/auth_function'
           custom-arguments: 'server/auth_function'
-        env:
-          POSTGRES_HOST: 0.0.0.0
-          POSTGRES_PORT: 5432
-          api_db_username: ${{ env.API_DB_USERNAME }}
-          api_db_password: ${{ env.API_DB_PASSWORD }}
 
       - name: Auth function zip
         run: |
