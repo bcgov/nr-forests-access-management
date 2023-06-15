@@ -4,7 +4,6 @@ import os
 import json
 import pytest
 from testcontainers.compose import DockerCompose
-import time
 import psycopg2
 import dotenv
 from lamda_function_test import TEST_ROLE_NAME
@@ -26,7 +25,8 @@ def db_pg_container():
         COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
     )
     compose.start()
-    time.sleep(30)  # wait db migration script to run
+    # NGINX is set to start only when flyway is complete
+    compose.wait_for("http://localhost:8181")
     yield compose
     compose.stop()
 
@@ -39,8 +39,8 @@ def get_local_db_string():
 
     # if the env vars are populated they will take precidence, otherwise
     # the values identified here will be used
-    username = os.getenv("api_db_username", "fam_proxy_api")  # postgres
-    password = os.getenv("api_db_password", "test")
+    username = os.getenv("POSTGRES_USER", "fam_proxy_api")  # postgres
+    password = os.getenv("POSTGRES_PASSWORD", "test")
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")

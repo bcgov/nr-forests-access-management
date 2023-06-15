@@ -24,26 +24,8 @@ def get_db_string():
     * deployed app using amazon rds
 
     """
-    db_conn_string = get_aws_db_string() if is_on_aws() \
-        else get_local_db_string()
+    db_conn_string = get_aws_db_string()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
-    return db_conn_string
-
-
-def get_local_db_string():
-    username = os.environ.get("POSTGRES_USER")
-    password = os.environ.get("POSTGRES_PASSWORD")
-    host = os.environ.get("POSTGRES_HOST")
-    dbname = os.environ.get("POSTGRES_DB")
-    port = os.environ.get("POSTGRES_PORT")
-    LOGGER.debug(f"api db user: {username}")
-
-    db_conn_string = (
-        f"postgresql+psycopg2://{username}"
-        + f":{password}@{host}:{port}/"
-        + f"{dbname}"
-    )
-
     return db_conn_string
 
 

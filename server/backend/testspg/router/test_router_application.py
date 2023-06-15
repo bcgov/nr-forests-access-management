@@ -18,7 +18,7 @@ TEST_APPLICATION_ID_NOT_FOUND = 0
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    db_pg_container
+    db_pg_session
 ):
     # Test Accss Roles: FAM_ACCESS_ADMIN only
     access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
