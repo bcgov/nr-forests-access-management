@@ -6,10 +6,12 @@ from sqlalchemy.exc import NoResultFound
 from api.app.crud import crud_application
 import api.app.schemas as schemas
 import api.app.constants as constants
-from testspg.constants import TEST_NOT_EXIST_APPLICATION_ID, \
-    TEST_FOM_DEV_APPLICATION_ID, \
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID, \
-    TEST_NOT_EXIST_ROLE_ID
+from testspg.constants import (
+    TEST_NOT_EXIST_APPLICATION_ID,
+    TEST_FOM_DEV_APPLICATION_ID,
+    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    TEST_NOT_EXIST_ROLE_ID,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -95,18 +97,31 @@ def test_get_application_roles(db_pg_connection: Session):
         schemas.FamApplicationRole.from_orm(app_role)
 
     assert len(app_roles) == 2
-    assert app_roles[0].role_name == TEST_APPLICATION_ROLES_FOM_DEV[0]
-    assert app_roles[0].application_id == TEST_FOM_DEV_APPLICATION_ID
-    assert app_roles[0].role_type_code == "A"
-    assert app_roles[1].role_name == TEST_APPLICATION_ROLES_FOM_DEV[1]
-    assert app_roles[1].application_id == TEST_FOM_DEV_APPLICATION_ID
-    assert app_roles[1].role_type_code == "C"
+
+    fom_reviewer_role_found = False
+    fom_submitter_role_found = False
+
+    for app_role in app_roles:
+        if (
+            app_role.role_name == TEST_APPLICATION_ROLES_FOM_DEV[0]
+            and app_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+            and app_role.role_type_code == "A"
+        ):
+            fom_submitter_role_found = True
+        elif (
+            app_role.role_name == TEST_APPLICATION_ROLES_FOM_DEV[1]
+            and app_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+            and app_role.role_type_code == "C"
+        ):
+            fom_reviewer_role_found = True
+
+    assert fom_submitter_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[0]} in results"
+    assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
 
 
 def test_get_application_id_by_role_id(db_pg_connection: Session):
     app_id = crud_application.get_application_id_by_role_id(
-        db=db_pg_connection,
-        role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
+        db=db_pg_connection, role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
     )
     assert app_id == TEST_FOM_DEV_APPLICATION_ID
 
@@ -114,7 +129,7 @@ def test_get_application_id_by_role_id(db_pg_connection: Session):
 def test_get_application_id_by_user_role_xref_id(db_pg_connection: Session):
     app_id = crud_application.get_application_id_by_user_role_xref_id(
         db=db_pg_connection,
-        user_role_xref_id=1  # the first user in our db has role FAM admin
+        user_role_xref_id=1,  # the first user in our db has role FAM admin
     )
     assert app_id == TEST_APPLICATION_ROLE_ID_FAM
 
@@ -144,8 +159,7 @@ def test_create_application(db_pg_connection: Session):
 
     # cleanup
     crud_application.delete_application(
-        db=db_pg_connection,
-        application_id=app_by_name.application_id
+        db=db_pg_connection, application_id=app_by_name.application_id
     )
 
 
@@ -157,10 +171,7 @@ def test_delete_application(db_pg_connection: Session):
     assert app_by_name is None
 
     with pytest.raises(NoResultFound) as e:
-        crud_application.delete_application(
-            db_pg_connection,
-            TEST_NOT_EXIST_ROLE_ID
-        )
+        crud_application.delete_application(db_pg_connection, TEST_NOT_EXIST_ROLE_ID)
     assert str(e.value) == "No row was found when one was required"
 
     # create a new app
@@ -175,8 +186,7 @@ def test_delete_application(db_pg_connection: Session):
     assert app_by_name.application_name == NEW_APPLICATION["application_name"]
     # delete the application
     crud_application.delete_application(
-        db=db_pg_connection,
-        application_id=app_by_name.application_id
+        db=db_pg_connection, application_id=app_by_name.application_id
     )
     # verify application got deleted
     app_by_name = crud_application.get_application_by_name(

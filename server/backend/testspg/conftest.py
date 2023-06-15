@@ -1,16 +1,12 @@
 import logging
 import os
 import sys
-
-# import jwt_utils as jwt_utils
 import pytest
-
-# import testcontainers.compose
+import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
-# from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -27,15 +23,15 @@ COMPOSE_FILE_NAME = "docker-compose-testcontainer.yml"
 
 @pytest.fixture(scope="session")
 def db_pg_container():
-    LOGGER.debug("db_pg_container() commented out for local testing")
-    # compose = testcontainers.compose.DockerCompose(
-    #     COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
-    # )
-    # compose.start()
-    # # NGINX is set to start only when flyway is complete
-    # compose.wait_for("http://localhost:8181")
-    # yield compose
-    # compose.stop()
+    # LOGGER.debug("db_pg_container() commented out for local testing")
+    compose = testcontainers.compose.DockerCompose(
+        COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
+    )
+    compose.start()
+    # NGINX is set to start only when flyway is complete
+    compose.wait_for("http://localhost:8181")
+    yield compose
+    compose.stop()
 
 
 @pytest.fixture(scope="session")
