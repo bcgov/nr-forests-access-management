@@ -40,8 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           python --version
-          pip install -t . -r requirements.txt -r requirements-dev.txt --platform manylinux2014_x86_64 --only-binary=:all:
-
+          pip install -r requirements.txt -r requirements-dev.txt
       - name: API function run pytest on postgres
         uses: pavelzw/pytest-action@v2
         with:
