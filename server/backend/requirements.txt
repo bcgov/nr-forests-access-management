@@ -1,12 +1,12 @@
 boto3==1.26.54
 botocore==1.29.154
-fastapi==0.97.0
+fastapi==0.78.0
 uvicorn[standard]==0.22.0
-sqlmodel==0.0.8
+sqlmodel==0.0.4
 email-validator==2.0.0.post2
 requests==2.31.0
-psycopg2-binary==2.9.6
+psycopg2-binary==2.9.3
 mangum==0.17.0
 python-jose==3.3.0
-cryptography==41.0.1
+cryptography==41.0.0
 authlib==1.2.0
