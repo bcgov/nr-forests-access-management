@@ -24,6 +24,10 @@ def get_db_string():
     * deployed app using amazon rds
 
     """
+    db_string_override = os.environ.get("DB_STRING_OVERRIDE")
+    if db_string_override is not None:
+        return db_string_override
+
     db_conn_string = get_aws_db_string()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
