@@ -15,6 +15,7 @@ on:
 jobs:
   auth_function_ci:
     uses: ./.github/workflows/reusable_auth_function_ci.yml
+    secrets: inherit
 
   api_tests:
     uses: ./.github/workflows/reuseable_api_unittests.yml
