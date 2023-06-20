@@ -38,7 +38,7 @@ jobs:
           job-summary: true
           # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
           # so still pass in 'server/auth_function'
-          custom-arguments: 'server/auth_function --cov="""."" --cov-report=xml'
+          custom-arguments: 'server/auth_function --cov=""."" --cov-report=xml'
 
       - name: debug
         run: |
