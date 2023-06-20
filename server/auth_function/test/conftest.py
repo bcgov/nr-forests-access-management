@@ -21,14 +21,15 @@ COMPOSE_FILE_NAME = "docker-compose-testcontainer.yml"
 # Start a docker compose session to have an in-container DB with flyway applied
 @pytest.fixture(scope="session")
 def db_pg_container():
-    compose = DockerCompose(
-        COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
-    )
-    compose.start()
-    # NGINX is set to start only when flyway is complete
-    compose.wait_for("http://localhost:8181")
-    yield compose
-    compose.stop()
+    LOGGER.debug("db_pg_container() commented out for local testing")
+    # compose = DockerCompose(
+    #     COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
+    # )
+    # compose.start()
+    # # NGINX is set to start only when flyway is complete
+    # compose.wait_for("http://localhost:8181")
+    # yield compose
+    # compose.stop()
 
 
 def get_local_db_string():
