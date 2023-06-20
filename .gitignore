@@ -78,3 +78,4 @@ infrastructure/server/fam_auth_function.zip
 terraform/test/github.auto.tfvars
 infrastructure/fam-ui-api.zip
 infrastructure/server/fam-ui-api.zip
+server/auth_function/coverage.xml
