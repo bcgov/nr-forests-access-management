@@ -12,20 +12,23 @@ LOGGER = logging.getLogger(__name__)
 # Log SQL queries from SQLalcheny
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-SQLALCHEMY_DATABASE_URL = config.get_db_string()
-
 Base = declarative_base()
 
+_db_url = None
 _session_local = None
 
 
 def get_db():
     try:
         # Initialize session local on first call
+        global _db_url
         global _session_local
         if not _session_local:
             LOGGER.debug("starting a new db session")
-            engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=False)
+
+            if not _db_url:
+                _db_url = config.get_db_string()
+            engine = create_engine(_db_url, echo=False)
             LOGGER.debug("database engine created!")
             _session_local = sessionmaker(autocommit=False,
                                           autoflush=False,
