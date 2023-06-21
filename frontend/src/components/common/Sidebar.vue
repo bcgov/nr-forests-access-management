@@ -1,5 +1,5 @@
 <template>
-    <div class="sidenav">
+    <nav class="sidenav">
         <a
             class="navbar-brand"
             title="Forest Access Management"
@@ -12,51 +12,80 @@
                 alt="B.C. Government Logo"
             />
         </a>
-        <ul>
-            <li class="header">Main activities</li>
-            <ul>
-                <li class="child" @click="router.push('/dashboard')">
-                    <i class="pi carbon-dashboard-icon"></i>Dashboard
-                </li>
-                <li class="child" @click="router.push('/application')">
-                    <i class="pi carbon-virtual-column--key-icon"></i>Grant
-                    Access
-                </li>
+        <div class="content">
+            <ul style="position: relative">
+                <div v-for="item in listItems">
+                    <li class="header">{{ item.name }}</li>
+                    <ul>
+                        <li
+                            v-for="child in item.items"
+                            class="child"
+                            :class="{
+                                selected:
+                                    $router.currentRoute.value.path ==
+                                    child.link,
+                                disabled: child.disabled,
+                            }"
+                            @click="router.push(child.link)"
+                        >
+                            <Icon
+                                class="color-icon padding-icon"
+                                small
+                                :icon="child.icon.toString()"
+                            ></Icon>
+                            {{ child.name }}
+                        </li>
+                    </ul>
+                </div>
             </ul>
-            <li class="header">Management</li>
-            <ul>
-                <li class="child">
-                    <i class="pi carbon-settings-icon"></i>Settings
-                </li>
-            </ul>
-        </ul>
+        </div>
 
-        <div class="support-section">
+        <div class="support-section disabled">
             <ul>
                 <li class="header">Support</li>
                 <ul>
-                    <li class="child">
-                        <i class="pi carbon-help-icon"></i>Need help?
+                    <li
+                        class="child"
+                        click="mailto:SIBIFSAF@Victoria1.gov.bc.ca"
+                    >
+                        <Icon icon="Help" small class="padding-icon" />
+                        Need help?
                     </li>
                 </ul>
             </ul>
         </div>
-    </div>
+    </nav>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import router from '@/router';
+import { onMounted, ref, type PropType, defineAsyncComponent } from 'vue';
+import type { RouteLocationRaw } from 'vue-router';
 
-const selected = ref('');
+interface ISideBarData {
+    name: String;
+    items: [ISideBarItem];
+}
+
+interface ISideBarItem {
+    name: String;
+    icon: String;
+    link: RouteLocationRaw;
+    disabled: boolean;
+}
+
 const props = defineProps({
-    visibleRight: {
-        type: Boolean,
+    data: {
+        type: Object as PropType<ISideBarData[]>,
         required: true,
-        default: {
-            visibleRight: false,
-        },
+        default: '',
     },
+});
+
+const listItems = ref<ISideBarData[]>([]);
+
+onMounted(() => {
+    listItems.value = props.data;
 });
 </script>
 
@@ -72,19 +101,28 @@ const props = defineProps({
 
     /* Auto layout */
     position: fixed;
-    z-index: 1;
     padding: 16px 0px;
-    // gap: 8px;
+    overflow-y: auto;
 
     width: 256px;
     height: calc(100vh - 50px);
     left: 0px;
-    top: 48px;
+    top: $header-height;
     overflow-x: hidden;
-    // padding-top: 20px;
+    overflow-y: auto;
 
     background: #ffffff;
     box-shadow: inset -1px 0px 0px #dfdfe1;
+
+    .content {
+        min-height: auto;
+    }
+
+    .support-section {
+        position: absolute;
+        bottom: 0px;
+        color: rgba(19, 19, 21, 0.25);
+    }
 }
 
 .sidenav ul {
@@ -109,13 +147,15 @@ const props = defineProps({
     color: #606062;
 
     align-items: center;
-    // padding: 15px 16px;
     padding-left: 16px;
-    // gap: 24px;
 
     height: 48px;
     i {
         vertical-align: middle;
+    }
+
+    a {
+        text-decoration: none;
     }
 }
 
@@ -127,11 +167,17 @@ const props = defineProps({
     cursor: pointer;
 }
 
-.support-section {
-    margin-top: auto;
-    position: absolute;
-    bottom: 0px;
-    color: rgba(19, 19, 21, 0.25);
+.disabled {
+    pointer-events: none; //This makes it not clickable
+    opacity: 0.6; //This grays it out to look disabled
+}
+
+.selected {
+    background: rgba(147, 147, 149, 0.2);
+    /* Light Theme/$border-interactive - Inner/Border left */
+    box-shadow: inset 3px 0px 0px #0073e6;
+    color: inherit;
+    cursor: pointer;
 }
 
 .sidenav li a:hover,
@@ -185,17 +231,11 @@ ul#nav li.active a {
     margin-right: 25px;
 }
 
-.carbon-help-icon {
-    height: 16px;
-    width: 16px;
-
-    -webkit-mask-image: url('@/assets/svg/help.svg');
-    mask-image: url('@/assets/svg/help.svg');
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-
-    background: currentColor;
-
+.padding-icon {
     margin-right: 25px;
+}
+
+.color-icon {
+    color: #0073e6;
 }
 </style>

@@ -1,11 +1,80 @@
+body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
 // Container
 .container {
-    margin: 0 auto;
-    padding-top: 2rem;
-    padding-right: 2rem;
-    padding-bottom: 2.25rem;
-    padding-left: 2rem;
-    max-width: 1100px;
+    position: absolute;
+    display: block;
+    top: $header-height;
+    left: 250px;
+    right: 0px;
+    bottom: 0px;
+    overflow: auto;
+    padding-top: 42px;
+    padding-left: 40px;
+    padding-right: 30px;
+}
+
+.title {
+    /* Fixed heading styles/heading-05 */
+    font-family: 'BC Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 40px;
+    /* identical to box height, or 125% */
+
+    /* Light Theme/Text/$text-primary */
+    color: #131315;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.subtitle {
+    /* Body styles/body-compact-01 */
+    font-family: 'BC Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    /* identical to box height, or 129% */
+    letter-spacing: 0.16px;
+
+    /* Light Theme/Text/$text-secondary */
+    color: #606062;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.label {
+    /* Label */
+
+    /* Utility styles/label-01 */
+    font-family: 'BC Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    /* identical to box height, or 133% */
+    letter-spacing: 0.32px;
+
+    /* Light Theme/Text/$text-secondary */
+    color: #606062;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
 }
 
 // Flex panel

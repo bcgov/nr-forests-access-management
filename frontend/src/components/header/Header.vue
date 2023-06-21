@@ -14,8 +14,8 @@ const environmentLabel = environmentSettings
         <nav
             class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
         >
-            <h2 class="title">
-                Forest Access Management {{ environmentLabel }}
+            <h2 class="header-title">
+                FAM <span>Forest Access Management {{ environmentLabel }}</span>
             </h2>
 
             <button
@@ -49,7 +49,7 @@ const environmentLabel = environmentSettings
                             v-if="authService.getters.isLoggedIn()"
                             @click="authService.methods.logout"
                         >
-                            <i class="pi carbon-avatar-icon"></i>
+                            <Icon medium icon="Avatar"></Icon>
                         </a>
                     </li>
                 </ul>
@@ -60,16 +60,4 @@ const environmentLabel = environmentSettings
 
 <style lang="scss" scoped>
 @import './header.scss';
-
-.carbon-avatar-icon {
-    height: 20px;
-    width: 20px;
-
-    -webkit-mask-image: url('@/assets/svg/user--avatar.svg');
-    mask-image: url('@/assets/svg/user--avatar.svg');
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-
-    background: currentColor;
-}
 </style>

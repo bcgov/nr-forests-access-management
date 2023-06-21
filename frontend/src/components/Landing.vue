@@ -2,7 +2,7 @@
 import authService from '@/services/AuthService';
 import TreeLogs from '../assets/images/tree-logs.jpg';
 import logo from '../assets/images/bc-gov-logo.png';
-import Button from 'primevue/button';
+import Button from '@/components/common/Button.vue';
 </script>
 
 <template>
@@ -18,23 +18,20 @@ import Button from 'primevue/button';
                 <p id="landing-desc" class="landing-desc">
                     Grant access to your users
                 </p>
-
                 <Button
                     class="landing-button"
                     label="Login with IDIR"
-                    icon="pi carbon-login-icon"
-                    iconPos="right"
-                    terc
                     @click="authService.methods.login"
-                />
+                    ><Icon icon="Login" small
+                /></Button>
                 <Button
                     class="landing-button"
-                    label="Login with Business BCeID"
-                    icon="pi carbon-login-icon"
-                    iconPos="right"
+                    label="Login with BCeID"
                     outlined
                     disabled
-                />
+                    @click="authService.methods.login"
+                    ><Icon icon="Login" small
+                /></Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img
@@ -47,18 +44,6 @@ import Button from 'primevue/button';
     </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
-
-.carbon-login-icon {
-    height: 16px;
-    width: 16px;
-
-    -webkit-mask-image: url('./../assets/svg/login.svg');
-    mask-image: url('./../assets/svg/login.svg');
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-
-    background: currentColor;
-}
 </style>
