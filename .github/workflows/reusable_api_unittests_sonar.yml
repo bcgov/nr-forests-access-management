@@ -60,7 +60,7 @@ jobs:
             -Dsonar.tests=test
             -Dsonar.verbose=false
             -Dsonar.python.version=3.8
-            -Dsonar.sources=/home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/
+            -Dsonar.sources=.
 
 
         env:
