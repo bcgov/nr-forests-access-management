@@ -58,7 +58,7 @@ jobs:
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.tests=test
-            -Dsonar.verbose=false
+            -Dsonar.verbose=true
             -Dsonar.python.version=3.8
 
         env:
