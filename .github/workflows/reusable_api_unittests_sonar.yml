@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
@@ -49,7 +51,16 @@ jobs:
         if: always()
         with:
           projectBaseDir: server/auth_function
+          args: >
+            -Dsonar.organization=my-organization
+            -Dsonar.projectKey=bcgov-sonarcloud
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.tests=test/
+            -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+
+
+          # -Dsonar.python.coverage.reportPath
 
