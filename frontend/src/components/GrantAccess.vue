@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import PageTitle from '@/components/common/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import { selectedApplication } from '@/store/ApplicationState';
+import {
+    selectedApplication,
+    selectedApplicationDisplayText,
+} from '@/store/ApplicationState';
 import type {
     FamApplicationRole,
     FamForestClient,
@@ -59,7 +62,7 @@ onMounted(async () => {
             )
         ).data as FamApplicationRole[];
     } catch (error: unknown) {
-        router.push('/application');
+        router.push('/dashboard');
         return Promise.reject(error);
     }
 });
@@ -82,7 +85,7 @@ async function grantAccess() {
             }" is granted with "${getSelectedRole()?.role_name}" access.`
         );
         formData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
-        router.push('/manage');
+        router.push('/dashboard');
     } catch (err: any) {
         return Promise.reject(err);
     }
@@ -144,14 +147,19 @@ const isAbstractRoleSelected = () => {
 </script>
 
 <template>
-    <PageTitle :displaySelectedApplication="true"></PageTitle>
+    <!-- <PageTitle :displaySelectedApplication="true"></PageTitle> -->
     <VeeForm
         ref="form"
         v-slot="{ handleSubmit, errors, meta }"
         :validation-schema="schema"
         as="div"
     >
-        <div class="row"><h4>Login credentials</h4></div>
+        <div class="row">
+            <h5 class="title">Grant access to a user</h5>
+            <h6 class="subtitle">
+                You are editing in {{ selectedApplicationDisplayText }}
+            </h6>
+        </div>
 
         <form
             id="grantAccessForm"
@@ -160,8 +168,8 @@ const isAbstractRoleSelected = () => {
         >
             <div class="row">
                 <div class="form-group col-md-3">
-                    <label for="domainInput" class="control-label"
-                        >Select user's credential</label
+                    <label for="domainInput" class="label control-label"
+                        >Select user's domain</label
                     >
                     <div>
                         <div class="form-check form-check-inline">
@@ -202,18 +210,31 @@ const isAbstractRoleSelected = () => {
 
             <div class="row">
                 <div class="form-group col-md-3">
-                    <label for="userIdInput" class="control-label"
-                        >Type user's
-                        {{ formData.domain === 'I' ? 'IDIR' : 'BCeID'
-                        }}<span class="text-danger"> *</span></label
+                    <label for="userIdInput" class="label control-label"
+                        >Type user's domain name
+                        <span class="text-danger"> *</span></label
                     >
+
                     <Field
+                        v-if="formData.domain === 'I'"
                         type="text"
                         id="userIdInput"
                         class="form-control"
                         name="userId"
                         maxlength="20"
-                        placeholder="User's credential"
+                        placeholder="Type user's IDIR"
+                        v-model="formData.userId"
+                        :validateOnChange="true"
+                        :class="{ 'is-invalid': errors.userId }"
+                    />
+                    <Field
+                        v-else
+                        type="text"
+                        id="userIdInput"
+                        class="form-control"
+                        name="userId"
+                        maxlength="20"
+                        placeholder="Type user's BCeID"
                         v-model="formData.userId"
                         :validateOnChange="true"
                         :class="{ 'is-invalid': errors.userId }"
@@ -224,7 +245,7 @@ const isAbstractRoleSelected = () => {
 
             <div class="row">
                 <div class="form-group col-md-3">
-                    <label for="roleSelect" class="control-label"
+                    <label for="roleSelect" class="label control-label"
                         >Role<span class="text-danger"> *</span></label
                     >
                     <Field

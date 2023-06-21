@@ -1,7 +1,7 @@
 <template>
     <div>
-        <!-- <b-card class="mb-2">
-            <b-card-text>
+        <Card class="mb-2 p-0">
+            <template #content>
                 <Tag
                     :text="props.status.description"
                     :active="props.status.status_code === 'A'"
@@ -11,14 +11,15 @@
                 <span class="invalid" v-if="props.status.status_code !== 'A'"
                     >Please enter an active Forest Client ID</span
                 >
-            </b-card-text>
-        </b-card> -->
+            </template>
+        </Card>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
 import { ref, type PropType } from 'vue';
+import Card from 'primevue/card';
 
 const selected = ref('');
 const props = defineProps({

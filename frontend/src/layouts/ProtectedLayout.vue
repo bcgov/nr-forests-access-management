@@ -1,27 +1,18 @@
 <script setup lang="ts">
 import Header from '@/components/header/Header.vue';
-import Footer from '@/components/footer/Footer.vue';
-import Breadcrumb from '@/components/Breadcrumb.vue';
+import sidebarData from '@/static/sidebar.json';
 </script>
 <template>
-    <Header></Header>
-
-    <Sidebar />
-
-    <div class="main">
-        <main class="container">
+    <Header />
+    <Sidebar :data="sidebarData" />
+    <div class="container">
+        <main>
             <!-- <Breadcrumb /> -->
-            <RouterView />
+            <RouterView></RouterView>
             <modals-container></modals-container>
         </main>
     </div>
-    <!-- <Footer></Footer> -->
 </template>
-<style>
-.main {
-    position: absolute;
-    display: block;
-    top: 48px;
-    left: 256px;
-}
+<style lang="scss">
+@import '@/assets/styles/default-theme.scss';
 </style>

@@ -3,26 +3,32 @@
 .app-header {
     // @include clearfix;
 
-    .title {
+    .header-title {
         font-size: 14px;
-        // margin: 0;
-        // padding: 0;
+        margin: 0;
+        span {
+            font-weight: 700;
+        }
+    }
+
+    i {
+        vertical-align: middle;
+    }
+
+    .navbar {
+        margin: 0;
+        padding: 0;
+        height: $header-height;
+        vertical-align: middle;
     }
 
     /* UI shell - Header */
 
     box-sizing: border-box;
     position: fixed;
-    // z-index: 1;
 
-    /* Auto layout */
-    display: block;
-    // flex-direction: row;
-    // align-items: flex-start;
-    // padding: 0px;
-
-    width: 100vw;
-    height: 48px;
+    width: $header-width;
+    height: $header-height;
 
     /* Light Theme/Background/$background-brand */
     background: #0073e6;
