@@ -33,8 +33,7 @@ jobs:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
-          pytest --cov=. --cov-report=xml -v --md=report.md --emoji
-          cat coverage.xml
+          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
 
       - name: Publish FAM API Tests
         working-directory: server/auth_function
@@ -57,9 +56,9 @@ jobs:
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.tests=test/
-            -Dsonar.verbose=true
+            -Dsonar.verbose=false
             -Dsonar.python.version=3.8
-            -Dsonar.sources=./
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
