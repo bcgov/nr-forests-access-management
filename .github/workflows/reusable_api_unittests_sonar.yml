@@ -35,7 +35,7 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
-          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\//\/github\/workspace\//g' cover/coverage.xml
+          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\//\/github\/workspace\//g' coverage.xml
           cat coverage.xml
 
       - name: Publish FAM API Tests
