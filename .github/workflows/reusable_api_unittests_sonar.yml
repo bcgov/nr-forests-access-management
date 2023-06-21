@@ -48,7 +48,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         if: always()
         with:
-          projectBaseDir: server/backend
+          projectBaseDir: server/auth_function
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
