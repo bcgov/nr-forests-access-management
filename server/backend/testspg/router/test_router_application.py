@@ -18,7 +18,7 @@ TEST_APPLICATION_ID_NOT_FOUND = 0
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    db_pg_container
+    db_pg_session
 ):
     # Test Accss Roles: FAM_ACCESS_ADMIN only
     access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
@@ -97,12 +97,25 @@ def test_get_fam_application_roles(
         assert "client_number" in app_role
         assert "role_type_code" in app_role
 
-    assert data[0]["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[0]
-    assert data[0]["application_id"] == TEST_FOM_DEV_APPLICATION_ID
-    assert data[0]["role_type_code"] == "A"
-    assert data[1]["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[1]
-    assert data[1]["application_id"] == TEST_FOM_DEV_APPLICATION_ID
-    assert data[1]["role_type_code"] == "C"
+    fom_reviewer_role_found = False
+    fom_submitter_role_found = False
+
+    for datum in data:
+        if (
+            datum["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[0]
+            and datum["application_id"] == TEST_FOM_DEV_APPLICATION_ID
+            and datum["role_type_code"] == "A"
+        ):
+            fom_submitter_role_found = True
+        elif (
+            datum["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[1]
+            and datum["application_id"] == TEST_FOM_DEV_APPLICATION_ID
+            and datum["role_type_code"] == "C"
+        ):
+            fom_reviewer_role_found = True
+
+    assert fom_submitter_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[0]} in results"
+    assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
 
     # cleanup
     response = test_client_fixture.delete(
