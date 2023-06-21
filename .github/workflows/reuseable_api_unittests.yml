@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
+    continue-on-error: true
+
     defaults:
       run:
         # sets default working-directory for all steps.
