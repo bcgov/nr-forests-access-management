@@ -34,6 +34,7 @@ jobs:
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=api --cov-report=xml -v --md=report.md --emoji
+          ls -al coverage.xml
 
       - name: Publish FAM API Tests
         working-directory: server/auth_function
@@ -57,6 +58,7 @@ jobs:
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.tests=test/
             -Dsonar.verbose=true
+            -Dsonar.python.version=3.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
