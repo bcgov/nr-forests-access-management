@@ -35,6 +35,8 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
+          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\/server\/auth_function\//\/github\/workspace\/server\/auth_function\//g' coverage.xml
+          cat coverage.xml
 
       - name: Publish FAM API Tests
         working-directory: server/auth_function
@@ -45,7 +47,6 @@ jobs:
           sed -i '2i <details><summary>Click to expand!</summary>' report.md
           sed -i '$a</details>' report.md
           cat report.md >> $GITHUB_STEP_SUMMARY
-
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
