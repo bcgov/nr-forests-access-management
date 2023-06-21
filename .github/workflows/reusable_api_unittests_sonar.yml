@@ -59,9 +59,11 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.tests=test/
+            -Dsonar.tests=/home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/test/
             -Dsonar.verbose=false
             -Dsonar.python.version=3.8
+            -Dsonar.sources=/home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/
+
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
