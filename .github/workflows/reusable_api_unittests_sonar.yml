@@ -53,7 +53,7 @@ jobs:
           projectBaseDir: server/auth_function
           args: >
             -Dsonar.organization=my-organization
-            -Dsonar.projectKey=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.tests=test/
             -Dsonar.verbose=true
