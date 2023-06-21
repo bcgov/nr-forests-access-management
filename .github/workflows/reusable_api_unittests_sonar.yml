@@ -33,7 +33,7 @@ jobs:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
-          pytest --cov=api --cov-report=xml -v --md=report.md --emoji
+          pytest --cov=. --cov-report=xml -v --md=report.md --emoji
           ls -al coverage.xml
 
       - name: Publish FAM API Tests
@@ -53,7 +53,7 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
-            -Dsonar.organization=my-organization
+            -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.tests=test/
