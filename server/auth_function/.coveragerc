@@ -2,6 +2,6 @@
 omit = test/*
 
 [coverage:run]
-relative_files = False
-source = /home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/
+relative_files = True
+source = .
 branch = True
