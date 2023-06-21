@@ -5,6 +5,8 @@ testcontainers==3.7.1
 testcontainers-core==0.0.1rc1
 
 # used to create the md report used by gha when tests run
+pytest==7.2.0
+pytest-cov==4.1.0
 pytest-md==0.2.0
 pytest-emoji==0.2.0
 
