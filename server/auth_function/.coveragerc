@@ -1,5 +1,3 @@
 [run]
 omit = test/*
-
-[coverage:run]
 branch = True

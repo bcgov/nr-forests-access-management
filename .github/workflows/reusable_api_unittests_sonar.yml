@@ -57,7 +57,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.tests=/home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/test/
+            -Dsonar.tests=test
             -Dsonar.verbose=false
             -Dsonar.python.version=3.8
             -Dsonar.sources=/home/runner/work/nr-forests-access-management/nr-forests-access-management/server/auth_function/
