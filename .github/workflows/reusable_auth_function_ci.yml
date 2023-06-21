@@ -23,20 +23,23 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Auth function install python test dependencies
+      - name: Run Auth Function Tests
         working-directory: server/auth_function
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
+          pytest --cov=. --cov-report=xml -v --md=report.md --emoji
+          sed -i 's/# Test Report/# FAM Auth Function Tests/' report.md
+          sed -i '2i <details><summary>Click to expand!</summary>' report.md
+          sed -i '$a</details>' report.md
+          cat report.md >> $GITHUB_STEP_SUMMARY
 
-      - name: Auth function run pytest on postgres
-        uses: pavelzw/pytest-action@v2
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         with:
-          emoji: true
-          verbose: true
-          job-summary: true
-          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
-          # so still pass in 'server/auth_function'
-          custom-arguments: 'server/auth_function'
+          projectBaseDir: server/auth_function
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
 
       - name: Auth function zip
         run: |
