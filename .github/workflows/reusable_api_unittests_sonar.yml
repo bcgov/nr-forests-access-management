@@ -35,7 +35,7 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
-          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\/server\/auth_function\//\/github\/workspace\/server\/auth_function\//g' coverage.xml
+          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\//\/github\/workspace\//g' cover/coverage.xml
           cat coverage.xml
 
       - name: Publish FAM API Tests
@@ -60,8 +60,6 @@ jobs:
             -Dsonar.tests=test
             -Dsonar.verbose=false
             -Dsonar.python.version=3.8
-            -Dsonar.sources=.
-
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
