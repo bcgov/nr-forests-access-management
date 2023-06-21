@@ -1,4 +1,4 @@
-name: Run CI Auth Function
+name: Run CI SONAR tests
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
           python-version: 3.8
 
       - name: Run FAM API Tests
-        working-directory: server/backend
+        working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
@@ -34,10 +34,11 @@ jobs:
           pytest --cov=api --cov-report=xml -v --md=report.md --emoji
 
       - name: Publish FAM API Tests
-        working-directory: server/backend
+        working-directory: server/auth_function
         if: always()
         run: |
-          sed -i 's/# Test Report/# FAM API Tests/' report.md
+          ls
+          sed -i 's/# Test Report/# FAM Auth Function Tests/' report.md
           sed -i '2i <details><summary>Click to expand!</summary>' report.md
           sed -i '$a</details>' report.md
           cat report.md >> $GITHUB_STEP_SUMMARY
