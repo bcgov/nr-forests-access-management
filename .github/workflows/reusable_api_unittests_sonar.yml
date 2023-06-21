@@ -16,8 +16,6 @@ jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
 
-    continue-on-error: true
-
     steps:
       - name: checkout the repo and building the Backend
         uses: actions/checkout@v2
@@ -27,13 +25,18 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Run Auth Function Tests
+      - name: Run FAM API Tests
         working-directory: server/backend
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=api --cov-report=xml -v --md=report.md --emoji
+
+      - name: Publish FAM API Tests
+        working-directory: server/backend
+        if: always()
+        run: |
           sed -i 's/# Test Report/# FAM API Tests/' report.md
           sed -i '2i <details><summary>Click to expand!</summary>' report.md
           sed -i '$a</details>' report.md
@@ -42,6 +45,7 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
+        if: always()
         with:
           projectBaseDir: server/backend
         env:
