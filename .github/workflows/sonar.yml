@@ -2,6 +2,9 @@ name: Run CI SONAR coverage for Auth Function
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   auth-function-ci:
