@@ -31,6 +31,7 @@ jobs:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
           pip install -r requirements.txt -r requirements-dev.txt
+          pip install pytest-cov
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
 
