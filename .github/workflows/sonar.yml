@@ -35,10 +35,6 @@ jobs:
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
 
-      - run: |
-          whoami
-          pwd
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -47,10 +43,11 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
+            -Dsonar.exclusions=**/test/**/*
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
-            -Dsonar.python.coverage.reportPaths=/server/auth_function/*coverage*.xml
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
             -Dsonar.sources=.
             -Dsonar.tests=test
