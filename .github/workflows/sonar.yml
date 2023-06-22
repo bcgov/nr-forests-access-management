@@ -46,4 +46,3 @@ jobs:
             -Dsonar.python.version=3.8
             -Dsonar.sources=.
             -Dsonar.tests=test
-            -Dsonar.verbose=true
