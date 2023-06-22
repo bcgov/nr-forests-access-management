@@ -1,0 +1,7 @@
+organization=bcgov-sonarcloud
+projectKey=nr-forests-access-management_auth
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.42876
+dashboardUrl=https://sonarcloud.io/dashboard?id=nr-forests-access-management_auth
+ceTaskId=AYjkltbsDVKCYupQORYS
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AYjkltbsDVKCYupQORYS
