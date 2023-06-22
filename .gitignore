@@ -39,6 +39,7 @@ out.json
 venv
 venvdc
 __pycache__
+**/coverage*.xml
 .coverage
 .coveragerc
 .pytest_cache
