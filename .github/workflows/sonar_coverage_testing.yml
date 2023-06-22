@@ -1,4 +1,4 @@
-name: Run CI SONAR tests for Auth Function
+name: Run CI SONAR coverage for Auth Function
 
 on:
   push:
