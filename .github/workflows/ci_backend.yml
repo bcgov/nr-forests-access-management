@@ -1,16 +1,8 @@
 name: Continuous Integration Backend
 on:
-  push:
-    branches:
-      - "main"
-    paths:
-      - "server/**"
   pull_request:
     branches:
       - "main"
-    paths:
-      - "server/**"
-
 
 jobs:
   auth_function_ci:
