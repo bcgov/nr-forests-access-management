@@ -1,3 +1,3 @@
-[run]
+[report]
 omit = test/*
 relative_files = True
