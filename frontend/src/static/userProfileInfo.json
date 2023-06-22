@@ -1,0 +1,11 @@
+[
+    { 
+        "idir" : "oliber",
+        "userInfo" :  
+            {
+                "name" : "Olga Liber",
+                "avatar" : "../assets/images/tyrannosaurus-rex1.png",
+                "email" : "olga.liberchuk@bc.gov.ca"
+            }
+    }
+]

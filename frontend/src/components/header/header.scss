@@ -4,6 +4,9 @@
     // @include clearfix;
 
     .header-title {
+    a i {
+        cursor: pointer;
+    }
         font-size: 14px;
         margin: 0;
         span {

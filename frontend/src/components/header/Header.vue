@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { PrimeIcons } from 'primevue/api';
+import ProfileSidebar from '../common/ProfileSidebar.vue'
+import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore'
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
     .getEnvironmentDisplayName('[', ']')
     .toUpperCase();
+
+
+
+
 </script>
 
 <template>
@@ -33,21 +38,11 @@ const environmentLabel = environmentSettings
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a
-                            class="nav-link nav-link-fade-up"
-                            title="Log In"
-                            v-if="!authService.getters.isLoggedIn()"
-                            @click="authService.methods.login"
-                        >
-                            <span>Log In</span>
-                        </a>
-                    </li>
                     <li>
                         <a
-                            title="Log Out"
-                            v-if="authService.getters.isLoggedIn()"
-                            @click="authService.methods.logout"
+                        title="Log Out"
+                        v-if="authService.getters.isLoggedIn()"
+                        @click="useProfileSidebarVisible.toggleVisible()"
                         >
                             <Icon medium icon="Avatar"></Icon>
                         </a>
@@ -55,6 +50,9 @@ const environmentLabel = environmentSettings
                 </ul>
             </div>
         </nav>
+            <teleport to='.modals' >
+                <ProfileSidebar />
+            </teleport>
     </header>
 </template>
 
