@@ -2,6 +2,8 @@ name: Run CI SONAR coverage for Auth Function
 
 on:
   pull_request:
+    branches:
+      - "main"
 
 env:
   POSTGRES_USER: fam_proxy_api
@@ -33,41 +35,61 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
           cat coverage.xml
-          sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\//\/github\/workspace\//g' coverage.xml
-          cat coverage.xml
-
-      - name: Publish FAM API Tests
-        working-directory: server/auth_function
-        if: always()
-        run: |
-          ls
-          sed -i 's/# Test Report/# FAM Auth Function Tests/' report.md
-          sed -i '2i <details><summary>Click to expand!</summary>' report.md
-          sed -i '$a</details>' report.md
-          cat report.md >> $GITHUB_STEP_SUMMARY
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-        if: always()
         with:
           projectBaseDir: server/auth_function
           args: >
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.version=3.8
+            -Dsonar.sources=.
             -Dsonar.tests=test
             -Dsonar.verbose=true
-            -Dsonar.python.version=3.8
 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+      - run: |
+          whoami
+          pwd
 
-      - name: Publish FAM API Tests
-        working-directory: server/auth_function
-        if: always()
-        run: |
-          cat /github/workspace/server/auth_function/.scannerwork/report-task.txt
+
+      #     sed -i 's/\/home\/runner\/work\/nr-forests-access-management\/nr-forests-access-management\//\/github\/workspace\//g' coverage.xml
+      #     cat coverage.xml
+
+      # - name: Publish FAM API Tests
+      #   working-directory: server/auth_function
+      #   if: always()
+      #   run: |
+      #     ls
+      #     sed -i 's/# Test Report/# FAM Auth Function Tests/' report.md
+      #     sed -i '2i <details><summary>Click to expand!</summary>' report.md
+      #     sed -i '$a</details>' report.md
+      #     cat report.md >> $GITHUB_STEP_SUMMARY
+
+      # - name: SonarCloud Scan
+      #   uses: SonarSource/sonarcloud-github-action@master
+      #   if: always()
+      #   with:
+      #     projectBaseDir: server/auth_function
+      #     args: >
+      #       -Dsonar.organization=bcgov-sonarcloud
+      #       -Dsonar.projectKey=nr-forests-access-management_auth
+      #       -Dsonar.python.coverage.reportPaths=coverage.xml
+      #       -Dsonar.tests=test
+      #       -Dsonar.verbose=true
+      #       -Dsonar.python.version=3.8
+
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+
+      # - name: Publish FAM API Tests
+      #   working-directory: server/auth_function
+      #   if: always()
+      #   run: |
+      #     cat /github/workspace/server/auth_function/.scannerwork/report-task.txt
 
 
 
