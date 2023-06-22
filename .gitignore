@@ -41,7 +41,6 @@ venvdc
 __pycache__
 **/coverage*.xml
 .coverage
-.coveragerc
 .pytest_cache
 **/report.md
 
