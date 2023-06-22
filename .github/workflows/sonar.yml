@@ -11,17 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout the repo and building the Backend
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
+          # Deep fetch is required for SonarCloud
           fetch-depth: 0
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
-      - name: Run FAM API Tests
+      - name: Tests and coverage
         working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
