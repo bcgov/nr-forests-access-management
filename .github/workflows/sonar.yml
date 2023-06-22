@@ -2,8 +2,6 @@ name: Run CI SONAR coverage for Auth Function
 
 on:
   pull_request:
-    branches:
-      - "main"
 
 env:
   POSTGRES_USER: fam_proxy_api
