@@ -38,7 +38,6 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
-            -Dsonar.exclusions=**/test/**/*
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
