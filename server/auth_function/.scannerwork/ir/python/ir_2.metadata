@@ -1,7 +1,0 @@
-lambda_function.lambda_handler
-lambda_function.populate_user_if_necessary
-lambda_function.obtain_db_connection
-lambda_function.handle_event
-lambda_function.release_db_connection
-==
-debug
