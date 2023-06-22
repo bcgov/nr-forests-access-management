@@ -65,6 +65,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
 
+      - name: Publish FAM API Tests
+        working-directory: server/auth_function
+        if: always()
+        run: |
+          cat /github/workspace/server/auth_function/.scannerwork/report-task.txt
 
-          # -Dsonar.python.coverage.reportPath
+
 
