@@ -1,0 +1,49 @@
+name: Run CI SONAR coverage for Auth Function
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  auth-function-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout the repo and building the Backend
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Run FAM API Tests
+        working-directory: server/auth_function
+        env:
+          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+        run: |
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install pytest-cov
+          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
+          cat coverage.xml
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+        with:
+          projectBaseDir: server/auth_function
+          args: >
+            -Dsonar.exclusions=**/test/**/*
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forests-access-management_auth
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
+            -Dsonar.python.version=3.8
+            -Dsonar.sources=.
+            -Dsonar.tests=test
+            -Dsonar.verbose=true
