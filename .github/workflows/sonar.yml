@@ -1,4 +1,4 @@
-name: Run CI SONAR coverage for Auth Function
+name: Sonar coverage for Auth Function
 
 on:
   pull_request:
@@ -11,17 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout the repo and building the Backend
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
-      - name: Run FAM API Tests
+      - name: Run tests and generate coverage
         working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
@@ -30,7 +28,7 @@ jobs:
           pip install pytest-cov
           pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
 
-      - name: SonarCloud Scan
+      - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
