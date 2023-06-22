@@ -35,6 +35,7 @@ out.json
 
 *.db
 .env
+**/.venv/**/*
 venv
 venvdc
 __pycache__
