@@ -35,11 +35,14 @@ out.json
 
 *.db
 .env
+**/.venv/**/*
 venv
 venvdc
 __pycache__
+**/coverage*.xml
 .coverage
 .pytest_cache
+**/report.md
 
 junk*
 fam_api/request.json
@@ -78,3 +81,6 @@ infrastructure/server/fam_auth_function.zip
 terraform/test/github.auto.tfvars
 infrastructure/fam-ui-api.zip
 infrastructure/server/fam-ui-api.zip
+
+# Sonar cloud
+**/.scannerwork/**/*
