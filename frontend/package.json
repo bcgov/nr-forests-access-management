@@ -20,7 +20,7 @@
         "@fortawesome/vue-fontawesome": "^3.0.2",
         "@popperjs/core": "^2.11.6",
         "aws-amplify": "^5.0.0",
-        "axios": "0.26.1",
+        "axios": "1.4.0",
         "bootstrap": "^5.2.3",
         "bootstrap-vue-next": "^0.7.3",
         "fam-api": "file:../client-code-gen/gen",
