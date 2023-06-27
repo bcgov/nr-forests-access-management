@@ -1,4 +1,4 @@
-name: SonarCloud analysis for Auth Function
+name: SonarCloud analysis
 
 on:
   pull_request:
@@ -9,7 +9,6 @@ on:
 jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -45,3 +44,21 @@ jobs:
             -Dsonar.python.version=3.8
             -Dsonar.sources=.
             -Dsonar.tests=test
+
+  ci-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+        with:
+          commands: |
+            npm run install-frontend
+            npm run test-coverage
+          dir: frontend
+          node_version: "18"
+          sonar_args: >
+            -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.project.monorepo.enabled=true
+            -Dsonar.projectKey=nr-forests-access-management_frontend
+            -Dsonar.sources=src
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
