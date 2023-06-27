@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  auth-function-ci:
+  ci-auth:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,6 +40,44 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
+            -Dsonar.python.version=3.8
+            -Dsonar.sources=.
+            -Dsonar.tests=test
+
+  ci-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Deep fetch is required for SonarCloud
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Tests and coverage
+        working-directory: server/auth_function
+        env:
+          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+        run: |
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install pytest-cov
+          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+        with:
+          projectBaseDir: server/auth_function
+          args: >
+            -Dsonar.exclusions=**/test/**/*
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forests-access-management_backend
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
             -Dsonar.sources=.
