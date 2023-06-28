@@ -93,3 +93,5 @@ app.config.errorHandler = (err, instance, info) => {
 app.use(router).component('font-awesome-icon', FontAwesomeIcon).mount('#app');
 
 app.use(PrimeVue);
+
+// trigger/junk commit
