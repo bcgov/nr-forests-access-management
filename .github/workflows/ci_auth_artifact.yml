@@ -1,4 +1,4 @@
-name: Continuous Integration Backend
+name: Auth function artifact
 on:
   push:
     branches:
@@ -11,39 +11,11 @@ on:
     paths:
       - "server/**"
 
-env:
-  POSTGRES_USER: fam_proxy_api
-  POSTGRES_PASSWORD: test
-  POSTGRES_HOST: localhost
-  POSTGRES_DB: fam
-  POSTGRES_PORT: 5432
-
 jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout the repo and building the Backend
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
-
-      - name: Auth function install python test dependencies
-        working-directory: server/auth_function
-        run: |
-          pip install -r requirements.txt -r requirements-dev.txt
-
-      - name: Auth function run pytest on postgres
-        uses: pavelzw/pytest-action@v2
-        with:
-          emoji: true
-          verbose: true
-          job-summary: true
-          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
-          # so still pass in 'server/auth_function'
-          custom-arguments: 'server/auth_function'
+      - uses: actions/checkout@v2
 
       - name: Auth function zip
         run: |
