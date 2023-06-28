@@ -17,5 +17,3 @@ fixtures that return database sessions
 
 * dbsession_<description of whats in the db>
 * dbsession_fam_roles_concrete
-
-<!-- trigger/junk commit -->

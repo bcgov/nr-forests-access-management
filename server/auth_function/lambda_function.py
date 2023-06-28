@@ -164,5 +164,3 @@ def handle_event(db_connection, event) -> event_type.Event:
         }
     }
     return event
-
-# trigger/junk commit
