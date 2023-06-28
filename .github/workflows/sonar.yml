@@ -47,6 +47,20 @@ jobs:
 
   ci-backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # sets default working-directory for all steps.
+        working-directory: ./server/backend
+    environment: dev
+    env:
+      environment: dev
+      organization: bcgov
+      POSTGRES_USER: fam_proxy_api
+      POSTGRES_PASSWORD: test
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: fam
+      POSTGRES_PORT: 5432
+      USE_POSTGRES: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -57,14 +71,26 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Tests and coverage
-        working-directory: server/auth_function
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: API function run pytest on postgres
+        uses: pavelzw/pytest-action@v2
+        with:
+          emoji: true
+          verbose: true
+          job-summary: true
+          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
+          # so still pass in 'server/backend'
+          custom-arguments: 'server/backend'
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+
+      - name: Scrub directory
         run: |
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
+          ls -la
+          pwd
+          whoami
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
