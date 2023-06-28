@@ -71,26 +71,14 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt -r requirements-dev.txt
-
-      - name: API function run pytest on postgres
-        uses: pavelzw/pytest-action@v2
-        with:
-          emoji: true
-          verbose: true
-          job-summary: true
-          # Although 'working-directory' is set, but 'pytest-action' still works from root directory.
-          # so still pass in 'server/backend'
-          custom-arguments: 'server/backend'
+      - name: Tests and coverage
+        working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
-
-      - name: Scrub directory
         run: |
-          ls -la
-          pwd
-          whoami
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install pytest-cov
+          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -98,16 +86,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         with:
-          projectBaseDir: server/auth_function
+          projectBaseDir: server/backend
           args: >
-            -Dsonar.exclusions=**/test/**/*
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_backend
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
+            -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.python.version=3.8
-            -Dsonar.sources=.
-            -Dsonar.tests=test
+            -Dsonar.sources=api
+            -Dsonar.tests=testspg
 
   ci-frontend:
     runs-on: ubuntu-latest
