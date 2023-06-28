@@ -8,7 +8,6 @@ on:
 
 jobs:
   ci-auth:
-    environment: dev
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,7 +46,6 @@ jobs:
 
   ci-backend:
     runs-on: ubuntu-latest
-    environment: dev
     env:
       environment: dev
       organization: bcgov
