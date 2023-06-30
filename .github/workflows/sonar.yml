@@ -37,12 +37,12 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
-            -Dsonar.exclusions=config.py
+            -Dsonar.exclusions=**/test/**/*,config.py
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
-            -Dsonar.source=.
+            -Dsonar.sources=.
             -Dsonar.tests=test
 
   ci-backend:
