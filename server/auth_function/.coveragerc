@@ -4,4 +4,3 @@ relative_files = True
 
 [report]
 omit = test/*
-relative_files = True

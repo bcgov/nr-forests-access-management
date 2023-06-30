@@ -37,12 +37,12 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
-            -Dsonar.exclusions=config.py
-            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.exclusions=**/test/**/*,config.py
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
+            -Dsonar.sources=.
             -Dsonar.tests=test
 
   ci-backend:
@@ -108,4 +108,6 @@ jobs:
             -Dsonar.project.monorepo.enabled=true
             -Dsonar.projectKey=nr-forests-access-management_frontend
             -Dsonar.sources=src
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+
