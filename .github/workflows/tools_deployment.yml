@@ -34,4 +34,3 @@ jobs:
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
-
