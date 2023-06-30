@@ -20,13 +20,14 @@ jobs:
           python-version: 3.8
 
       - name: Tests and coverage
-        working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
+          cd server/auth_function
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml -v --md=report.md --emoji
+          pytest --cov=. --cov-branch --cov-report=xml \
+            -v --md=report.md --emoji
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -36,22 +37,16 @@ jobs:
         with:
           projectBaseDir: server/auth_function
           args: >
-            -Dsonar.exclusions=**/test/**/*
+            -Dsonar.exclusions=config.py
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
-            -Dsonar.sources=.
             -Dsonar.tests=test
 
   ci-backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # sets default working-directory for all steps.
-        working-directory: ./server/backend
-    environment: dev
     env:
       environment: dev
       organization: bcgov
@@ -72,14 +67,14 @@ jobs:
           python-version: 3.8
 
       - name: Tests and coverage
-        working-directory: server/auth_function
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
         run: |
+          cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
           pytest --cov=. --cov-branch --cov-report=xml \
-            --cov-config=.coveragerc -v --md=report.md --emoji
+            -v --md=report.md --emoji
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -92,7 +87,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_backend
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
             -Dsonar.python.version=3.8
             -Dsonar.sources=api
             -Dsonar.tests=testspg
