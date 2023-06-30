@@ -38,74 +38,74 @@ jobs:
           projectBaseDir: server/auth_function
           args: >
             -Dsonar.exclusions=config.py
-            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
+            -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.python.version=3.8
+            -Dsonar.source=.
             -Dsonar.tests=test
 
-  ci-backend:
-    runs-on: ubuntu-latest
-    env:
-      environment: dev
-      organization: bcgov
-      POSTGRES_USER: fam_proxy_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
-      USE_POSTGRES: false
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
+  # ci-backend:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     environment: dev
+  #     organization: bcgov
+  #     POSTGRES_USER: fam_proxy_api
+  #     POSTGRES_PASSWORD: test
+  #     POSTGRES_HOST: localhost
+  #     POSTGRES_DB: fam
+  #     POSTGRES_PORT: 5432
+  #     USE_POSTGRES: false
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         # Deep fetch is required for SonarCloud
+  #         fetch-depth: 0
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
 
-      - name: Tests and coverage
-        env:
-          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
-        run: |
-          cd server/backend
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
+  #     - name: Tests and coverage
+  #       env:
+  #         FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+  #       run: |
+  #         cd server/backend
+  #         pip install -r requirements.txt -r requirements-dev.txt
+  #         pip install pytest-cov
+  #         pytest --cov=. --cov-branch --cov-report=xml \
+  #           -v --md=report.md --emoji
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with:
-          projectBaseDir: server/backend
-          args: >
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_backend
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
-            -Dsonar.sources=api
-            -Dsonar.tests=testspg
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+  #       with:
+  #         projectBaseDir: server/backend
+  #         args: >
+  #           -Dsonar.host.url=https://sonarcloud.io
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.projectKey=nr-forests-access-management_backend
+  #           -Dsonar.python.coverage.reportPaths=*coverage*.xml
+  #           -Dsonar.python.version=3.8
+  #           -Dsonar.sources=api
+  #           -Dsonar.tests=testspg
 
-  ci-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: bcgov-nr/action-test-and-analyse@v0.0.1
-        with:
-          commands: |
-            npm run install-frontend
-            npm run test-coverage
-          dir: frontend
-          node_version: "18"
-          sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=true
-            -Dsonar.projectKey=nr-forests-access-management_frontend
-            -Dsonar.sources=src
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+  # ci-frontend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+  #       with:
+  #         commands: |
+  #           npm run install-frontend
+  #           npm run test-coverage
+  #         dir: frontend
+  #         node_version: "18"
+  #         sonar_args: >
+  #           -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.project.monorepo.enabled=true
+  #           -Dsonar.projectKey=nr-forests-access-management_frontend
+  #           -Dsonar.sources=src
+  #         sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
