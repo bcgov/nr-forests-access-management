@@ -111,9 +111,3 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
 
-      - id: debug
-        name: debug
-        run: |
-          cd frontend
-          ls
-          ls coverage
