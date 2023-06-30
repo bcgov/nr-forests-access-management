@@ -21,6 +21,9 @@ export default defineConfig(async ({ command, mode }) => {
         test: {
             globals: true,
             environment: 'jsdom',
+            coverage: {
+                reporter: ['text', 'lcov']
+            }
         },
         build: {
             chunkSizeWarningLimit: 1600,

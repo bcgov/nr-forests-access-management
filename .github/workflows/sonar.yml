@@ -108,4 +108,6 @@ jobs:
             -Dsonar.project.monorepo.enabled=true
             -Dsonar.projectKey=nr-forests-access-management_frontend
             -Dsonar.sources=src
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+
