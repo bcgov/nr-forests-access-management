@@ -15,8 +15,6 @@ const props = defineProps({
 <style lang="scss">
 .nr-button {
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 .nr-button .icon {
     margin-right: auto;

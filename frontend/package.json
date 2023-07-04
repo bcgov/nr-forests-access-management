@@ -13,7 +13,7 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
-        "@bcgov-nr/nr-fsa-theme": "^1.0.6",
+        "@bcgov-nr/nr-fsa-theme": "^1.0.10",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",
         "@fortawesome/free-regular-svg-icons": "^6.2.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.1",

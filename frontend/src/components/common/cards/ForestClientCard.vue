@@ -2,12 +2,25 @@
     <div>
         <Card class="mb-2 p-0">
             <template #content>
-                <Tag
-                    :text="props.status.description"
-                    :active="props.status.status_code === 'A'"
-                />
-                <span class="organization-name">{{ props.text }}</span
-                ><br />
+                <div class="row">
+                    <p style="display: inline-flex">
+                        <label>Organization status: </label>&nbsp;<Tag
+                            :text="props.status.description"
+                            :active="props.status.status_code === 'A'"
+                        />
+                    </p>
+                </div>
+                <div
+                    v-if="props.status.description != 'Doesn\'t exist'"
+                    class="row"
+                >
+                    <p>
+                        <label>Organization name: </label>&nbsp;<span
+                            class="organization-name"
+                            >{{ props.text }}</span
+                        >
+                    </p>
+                </div>
                 <span class="invalid" v-if="props.status.status_code !== 'A'"
                     >Please enter an active Forest Client ID</span
                 >
@@ -40,7 +53,14 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+p {
+    margin: 0;
+    padding: 0 !important;
+}
 
+p > label {
+    margin-top: 4px;
+}
 .invalid {
     margin-top: 0.25rem;
     font-size: 0.875em;
@@ -49,7 +69,7 @@ const props = defineProps({
 .organization-name {
     font-style: normal;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 28px;
 }
 </style>

@@ -20,7 +20,6 @@ import { useToast } from 'vue-toastification';
 import { $vfm } from 'vue-final-modal';
 
 import Dialog from '@/components/dialog/Dialog.vue';
-import Add from '../components/icons/Add.vue';
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -132,7 +131,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 </script>
 
 <template>
-    <div class="vh-100">
+    <div>
         <div class="row">
             <div class="col-6">
                 <h5 class="title">Dashboard</h5>
@@ -149,9 +148,12 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                 /></Button>
             </div>
         </div>
-        <div class="row vh-20">
+        <div class="row vh-20 page-body">
             <div class="col-sm-12 col-md-12 col-lg-12">
-                <form id="selectApplicationForm" class="form-container">
+                <form
+                    id="selectApplicationForm"
+                    class="form-container dashboard-form"
+                >
                     <div class="form-group col-md-5">
                         <label class="label"
                             >Select an application you would like to grant
@@ -169,6 +171,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                 </form>
             </div>
         </div>
+
         <div class="row h-auto" v-if="isApplicationSelected">
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="access-table">
@@ -184,7 +187,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                     <span class="p-input-icon-right">
                         <i class="pi pi-search" />
                         <InputText
-                            class="w-auto"
+                            class="dash-search"
                             v-model="filters['global'].value"
                         />
                     </span>
@@ -193,8 +196,8 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                         v-model:filters="filters"
                         :value="userRoleAssignments"
                         paginator
-                        :rows="10"
-                        tableStyle="max-height: 60vh"
+                        :rows="5"
+                        :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
                         dataKey="id"
                         filterDisplay="menu"
                         :loading="loading"
@@ -204,15 +207,13 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                             'role.role_name',
                             'role.client_number.forest_client_number',
                         ]"
-                        paginatorTemplate="JumpToPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                        currentPageReportTemplate="{first} - {last} of {totalRecords} items {currentPage} of {totalPages} pages"
+                        paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+                        currentPageReportTemplate="{currentPage} of {totalPages} pages"
                     >
-                        <template #paginatorstart>
-                            <Button type="button" icon="pi pi-refresh" text />
-                        </template>
-                        <!-- <template #paginatorend>
-                            <Button type="button" icon="pi pi-download" text />
+                        <!-- <template #paginatorstart="{slotProps: props}">
+                            {{ slotProps?.RowsPerPageDropdown }}
                         </template> -->
+
                         <template #empty> No application selected. </template>
                         <template #loading>
                             Loading customers data. Please wait.
@@ -224,7 +225,9 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                         >
                             <template #body="{ data }">
                                 <Icon icon="AvatarFilled" medium />
-                                {{ data.user.user_name }}
+                                <span style="margin-left: 15px">
+                                    {{ data.user.user_name }}
+                                </span>
                             </template>
                         </Column>
                         <Column
@@ -246,15 +249,18 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                             header="Forest Client ID"
                             sortable
                         ></Column>
-                        <Column header="Actions" sortable>
+                        <Column>
                             <template #body="{ data }">
                                 <button
                                     class="btn btn-icon"
                                     @click="tryDelete(data)"
                                 >
-                                    <font-awesome-icon
-                                        icon="fa-regular fa-trash-can"
-                                    />
+                                    <span style="color: #b32001"> Remove </span>
+                                    <!-- <Icon
+                                        icon="TrashCan"
+                                        medium
+                                        style="color: #b32001"
+                                    /> -->
                                 </button>
                             </template>
                         </Column>
@@ -270,58 +276,25 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
     width: 304px;
 }
 
-:deep(.p-inputtext) {
-    border-bottom: none;
+.p-input-icon-right {
+    width: 100%;
+
+    &:deep(.p-inputtext) {
+        border-bottom: none;
+        width: 100%;
+        height: 32px;
+        border: none;
+    }
 }
 
-:deep(.p-datatable-thead .p-sortable-column) {
-    /* Light Theme/Layer accent/$layer-accent-hover-01 */
-    background: #d2d2d4;
-    height: 32px;
-    padding: 0 1rem;
-    font-family: BC Sans;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.1599999964237213px;
-    text-align: left;
-    border: none;
+:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
+    display: none;
 }
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    text-align: left;
-    border: 1px solid #dee2e6;
-    border-width: 1px 0 0 0;
-    padding: 0 1rem;
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    letter-spacing: 0.16px;
-}
-
 .dashboard-button {
     padding: 16px;
 
     width: 235px;
     height: 48px;
-    border-radius: 4px;
-
-    /* Inside auto layout */
-
-    /* Body styles/body-compact-01 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    /* identical to box height, or 129% */
-    letter-spacing: 0.16px;
-
-    text-align: left !important;
-    /* Light Theme/Text/$text-on-color */
-    color: #ffffff;
-
-    vertical-align: middle;
 }
 .p-datatable-header {
     padding: 0px !important;
