@@ -34,7 +34,6 @@ const props = defineProps({
     padding-right: 10px;
     height: 24px;
     align-items: center;
-    margin-bottom: 21px;
     border-radius: 1000px;
 }
 

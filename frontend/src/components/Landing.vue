@@ -19,15 +19,14 @@ import Button from '@/components/common/Button.vue';
                     Grant access to your users
                 </p>
                 <Button
-                    class="landing-button"
+                    class="landing-button p-button-primary"
                     label="Login with IDIR"
                     @click="authService.methods.login"
                     ><Icon icon="Login" small
                 /></Button>
                 <Button
-                    class="landing-button"
+                    class="landing-button p-button-outlined"
                     label="Login with BCeID"
-                    outlined
                     disabled
                     @click="authService.methods.login"
                     ><Icon icon="Login" small
@@ -46,4 +45,7 @@ import Button from '@/components/common/Button.vue';
 
 <style scoped lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
+.landing-button {
+    padding: 12px 13px;
+}
 </style>

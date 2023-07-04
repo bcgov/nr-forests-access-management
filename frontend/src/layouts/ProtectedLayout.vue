@@ -5,7 +5,7 @@ import sidebarData from '@/static/sidebar.json';
 <template>
     <Header />
     <Sidebar :data="sidebarData" />
-    <div class="container">
+    <div class="main">
         <main>
             <!-- <Breadcrumb /> -->
             <RouterView></RouterView>
@@ -14,5 +14,5 @@ import sidebarData from '@/static/sidebar.json';
     </div>
 </template>
 <style lang="scss">
-@import '@/assets/styles/default-theme.scss';
+@import '@/assets/styles/base.scss';
 </style>
