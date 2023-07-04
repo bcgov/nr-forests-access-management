@@ -26,13 +26,11 @@ def smoke_test(
         fam_apps = db.query(models.FamApplication).all()
         if len(fam_apps) == 0:
             response.status_code = 417
-
-        LOGGER.debug(f"Response status code: {response.status_code}")
-        LOGGER.debug(f"Returning response: {response}")
+        else:
+            response.status_code = 200
         return response
 
     except Exception as e:
-        LOGGER.debug(f"Got an exception: {e}")
         LOGGER.exception(e)
         raise e
 
