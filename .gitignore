@@ -84,3 +84,6 @@ infrastructure/server/fam-ui-api.zip
 
 # Sonar cloud
 **/.scannerwork/**/*
+terraform/tools/github.auto.tfvars
+terraform/tools/.terraform.lock.hcl
+terraform/tools/output.txt
