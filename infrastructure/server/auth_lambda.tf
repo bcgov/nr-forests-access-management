@@ -15,7 +15,10 @@ data "aws_db_proxy" "auth_lambda_db_proxy" {
   name = aws_db_proxy.famdb_proxy_api.name
 }
 
-# Random names to allow multiple instances per workspace
+locals {
+  auth_lambda_name = "fam-auth-lambda"
+}
+
 
 resource "random_pet" "auth_lambda_name" {
   prefix = "fam-auth-lambda"
@@ -24,7 +27,7 @@ resource "random_pet" "auth_lambda_name" {
 
 
 resource "aws_iam_role_policy" "fam_auth_lambda_access_policy" {
-  name   = "${random_pet.auth_lambda_name.id}-access-policy"
+  name   = "${locals.auth_lambda_name}-access-policy"
   role   = aws_iam_role.fam_auth_lambda_exec.id
   policy = <<-EOF
   {
@@ -69,13 +72,13 @@ data "aws_iam_policy_document" "fam_auth_lambda_exec_policydoc" {
 }
 
 resource "aws_iam_role" "fam_auth_lambda_exec" {
-  name               = "${random_pet.auth_lambda_name.id}-role"
+  name               = "${locals.auth_lambda_name}-role"
   assume_role_policy = data.aws_iam_policy_document.fam_auth_lambda_exec_policydoc.json
 }
 
 resource "aws_lambda_function" "fam-auth-function" {
   filename      = "fam_auth_function.zip"
-  function_name = random_pet.auth_lambda_name.id
+  function_name = locals.auth_lambda_name
   role          = aws_iam_role.fam_api_lambda_exec.arn
   handler       = "lambda_function.lambda_handler"
 
@@ -112,7 +115,7 @@ resource "aws_lambda_function" "fam-auth-function" {
 }
 
 resource "aws_lambda_permission" "allow_cognito_invoke_trigger" {
-  statement_id  = "${random_pet.auth_lambda_name.id}-allowCognito"
+  statement_id  = "${locals.auth_lambda_name}-allowCognito"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.fam-auth-function.function_name
   principal     = "cognito-idp.amazonaws.com"
