@@ -187,7 +187,7 @@ jobs:
             # echo "fam_api_base_url: [$fam_api_base_url]"
             fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
 
-            fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive > fam_api_base_url.txt
+            fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive > fam_api_base_url.txt`
             cat fam_api_base_url.txt
             fam_api_base_url=`cat fam_api_base_url.txt | sed 's/^"//' | sed 's/"$//'`
             smoke_test_url="$fam_api_base_url/smoke_test"
