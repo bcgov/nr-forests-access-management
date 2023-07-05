@@ -26,6 +26,9 @@ import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import ErrorService from './services/ErrorService';
 
 import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
+
 
 // use bootstrap4 as default style
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
@@ -39,6 +42,8 @@ library.add(faTrashCan);
 Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App);
+app.use(ToastService);
+app.use(ConfirmationService);
 
 const toastOptions: PluginOptions = {
     // // Defaults for all toast messages
@@ -75,7 +80,6 @@ const toastOptions: PluginOptions = {
     },
 };
 app.use(Toast, toastOptions);
-
 app.use(
     vfmPlugin({
         key: '$vfm',
