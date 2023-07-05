@@ -163,7 +163,7 @@ jobs:
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
-            # terragrunt run-all output > output.txt
+            terragrunt run-all output --terragrunt-non-interactive > output.txt
             # set +m
             # shopt -s lastpipe
             fam_api_base_url=$(awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt | sed 's/^"//' | sed 's/"$//')
