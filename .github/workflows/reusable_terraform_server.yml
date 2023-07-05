@@ -161,7 +161,7 @@ jobs:
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
-            chmod +x ./smoke_test.sh"
+            chmod +x ./smoke_test.sh
             smoke_test.sh
           else
             echo "Not executing terraform apply - smoke test skipped"
