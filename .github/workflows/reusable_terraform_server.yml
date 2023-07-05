@@ -111,6 +111,7 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+          terraform_wrapper: false
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
