@@ -1,3 +1,4 @@
+shopt -s lastpipe
 terragrunt run-all output > output.txt
 fam_api_base_url=$(awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt)
 fam_api_base_url=$(sed 's/^"//' <<< $fam_api_base_url)
