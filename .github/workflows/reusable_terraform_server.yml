@@ -60,51 +60,51 @@ jobs:
         with:
           python-version: '3.8'
 
-      # - name: Auth function zip
-      #   run: |
-      #     mkdir auth_function_packaging
-      #     rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
-      #     pip install -t auth_function_packaging -r server/auth_function/requirements.txt
-      #     cd auth_function_packaging
-      #     zip -r9 ../infrastructure/server/fam_auth_function.zip .
-      #     cd ..
-      #     rm -rf auth_function_packaging
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../infrastructure/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
 
-      # - name: Auth function upload zip file artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: fam-auth-function
-      #     path: ./infrastructure/server/fam_auth_function.zip
-      #     if-no-files-found: error
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-auth-function
+          path: ./infrastructure/server/fam_auth_function.zip
+          if-no-files-found: error
 
       # Steps to deploy Ian's python as a lambda
-      # - name: Install and Package Dependencies - FAM API
-      #   run: |
-      #     cd server/backend
-      #     mkdir packaging
-      #     cd packaging
-      #     pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
-      #     zip -r9 ../../fam-ui-api.zip .
-      #     cd ..
-      #     rm -rf packaging
-      #     cd ../../
-      #     cd server/backend
-      #     zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
-      #     cd ..
-      #     mv fam-ui-api.zip ../infrastructure/server
-      #     cd ..
+      - name: Install and Package Dependencies - FAM API
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-api.zip ../infrastructure/server
+          cd ..
 
-      # - name: Upload zip file artifact - FAM API
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: fam-ui-api
-      #     path: ./infrastructure/server/fam-ui-api.zip
-      #     if-no-files-found: error
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v2
+        with:
+          name: fam-ui-api
+          path: ./infrastructure/server/fam-ui-api.zip
+          if-no-files-found: error
 
-      # - name: Stage Flyway SQL files
-      #   run: |
-      #     mkdir infrastructure/server/sql
-      #     rsync -r server/flyway/sql/* infrastructure/server/sql
+      - name: Stage Flyway SQL files
+        run: |
+          mkdir infrastructure/server/sql
+          rsync -r server/flyway/sql/* infrastructure/server/sql
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
@@ -146,27 +146,14 @@ jobs:
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
 
-      # - name: Terragrunt ${{ inputs.tf_subcommand }}
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-      #   run: |
-      #     # Run terraform
-      #     terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          # Run terraform
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
-
-      # - id: collect_terraform_outputs
-      #   name: Collect Terraform Outputs
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-      #   run: |
-      #     if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
-      #     then
-      #       terragrunt run-all output > output.txt
-      #     else
-      #       echo "Not executing terraform apply - terraform output collection skipped"
-      #     fi
 
       - id: smoke_test
         name: Smoke Test
