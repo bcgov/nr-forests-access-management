@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import ConfirmDialog from 'primevue/confirmdialog';
 import Button from '../components/common/Button.vue';
 import InputText from 'primevue/inputtext';
+import { useConfirm } from "primevue/useconfirm";
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { computed, onMounted, ref } from 'vue';
 import {
@@ -16,11 +18,19 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
-import { useToast } from 'vue-toastification';
-import { $vfm } from 'vue-final-modal';
 
+<<<<<<< Updated upstream
 import Dialog from '@/components/dialog/Dialog.vue';
+=======
+>>>>>>> Stashed changes
 
+
+
+
+const deleteSuccessMsg = ref<string>('')
+const successMsgVisible = ref(false)
+
+const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -47,8 +57,8 @@ onMounted(async () => {
     try {
         applicationsUserAdministers.value = (
             await applicationsApi.getApplications()
-        ).data;
-    } catch (error: any) {
+            ).data;
+        } catch (error: any) {
         return Promise.reject(error);
     }
 
@@ -90,48 +100,50 @@ async function getAccessList() {
     }
 }
 
-async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
-    let msg = `Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`;
-    if (assignment.role.client_number) {
-        msg += ` for client ${assignment.role.client_number.forest_client_number}`;
-    }
-    msg += '?';
-
-    $vfm.show({
-        component: Dialog,
-        bind: {
-            title: 'Are you sure?',
-            message: msg,
-            confirmText: 'Yes, delete',
-        },
-        on: {
-            confirm() {
-                // Deletion confirmed.
-                try {
-                    userRoleAssignmentApi.deleteUserRoleAssignment(
-                        assignment.user_role_xref_id
+async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applicationName: string ) {
+    let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>`;
+    successMsgVisible.value = false
+    confirm.require({
+        group: 'templating',
+        message: msg,
+        icon: 'none',
+        header: 'Remove Access',
+        rejectLabel: 'Remove',
+        acceptLabel: 'Cancel',
+        reject: () => {
+            try {
+                userRoleAssignmentApi.deleteUserRoleAssignment(
+                    assignment.user_role_xref_id
                     );
                     userRoleAssignments.value =
-                        userRoleAssignments.value!.filter((a) => {
-                            return !(
-                                a.user_role_xref_id ==
-                                assignment.user_role_xref_id
-                            );
-                        });
-                    useToast().success(
-                        `Access deleted for user ${assignment.user.user_name}.`
-                    );
-                } finally {
-                    $vfm.hideAll();
-                }
-            },
-        },
+                    userRoleAssignments.value!.filter((a) => {
+                                return !(
+                                    a.user_role_xref_id ==
+                                    assignment.user_role_xref_id
+                                    );
+                    });
+                deleteSuccessMsg.value = ''
+            } finally {
+                    deleteSuccessMsg.value = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+                    successMsgVisible.value = true
+            }
+        },        
     });
-}
+};
 </script>
 
 <template>
+<<<<<<< Updated upstream
     <div>
+=======
+
+        <ConfirmDialog group="templating">
+            <template #message="slotProps">
+                    <p v-html="slotProps.message.message"></p>
+            </template>
+        </ConfirmDialog>
+
+>>>>>>> Stashed changes
         <div class="row">
             <div class="col-6">
                 <h5 class="title">Dashboard</h5>
@@ -174,6 +186,14 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 
         <div class="row h-auto" v-if="isApplicationSelected">
             <div class="col-sm-12 col-md-12 col-lg-12">
+
+                <NotificationMessage
+                    v-if="successMsgVisible"
+                    severity="success"
+                    :msgText="deleteSuccessMsg" 
+                    icon="CheckIcon"
+                />
+
                 <div class="access-table">
                     <div class="table-header">
                         <h3>{{ selectedApplicationDisplayText }} users</h3>
@@ -183,7 +203,6 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                             permissions levels
                         </span>
                     </div>
-
                     <span class="p-input-icon-right">
                         <i class="pi pi-search" />
                         <InputText
@@ -253,7 +272,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                             <template #body="{ data }">
                                 <button
                                     class="btn btn-icon"
-                                    @click="tryDelete(data)"
+                                    @click="tryDelete(data, selectedApplicationDisplayText)"
                                 >
                                     <span style="color: #b32001"> Remove </span>
                                     <!-- <Icon
@@ -301,7 +320,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 
 .access-table {
-    margin-top: 79px;
+    margin-top: 100px;
     background: #ffffff;
     border-radius: 4px 4px 0px 0px;
     border: 2px solid #dfdfe1;
