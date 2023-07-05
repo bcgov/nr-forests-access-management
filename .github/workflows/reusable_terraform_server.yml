@@ -184,7 +184,10 @@ jobs:
             # fam_api_base_url1=$(terragrunt run-all output fam_api_base_url --terragrunt-non-interactive)
             # fam_api_base_url2=$(sed 's/^"//' <<< $fam_api_base_url1)
             # fam_api_base_url3=$(sed 's/"$//' <<< $fam_api_base_url2)
-            smoke_test_url="$(awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt | sed 's/^"//' | sed 's/"$//')/smoke_test"
+            # smoke_test_url="$(awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt | sed 's/^"//' | sed 's/"$//')/smoke_test"
+            echo "fam_api_base_url: [$fam_api_base_url]"
+            fam_api_base_url=`awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt | sed 's/^"//' | sed 's/"$//'`
+            smoke_test_url="$fam_api_base_url/smoke_test"
             # echo "fam_api_base_url1: [$fam_api_base_url1]"
             # echo "fam_api_base_url2: [$fam_api_base_url2]"
             # echo "fam_api_base_url3: [$fam_api_base_url3]"
