@@ -154,18 +154,18 @@ jobs:
       #     terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
 
-      - id: collect_terraform_outputs
-        name: Collect Terraform Outputs
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-        env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-        run: |
-          if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
-          then
-            terragrunt run-all output > output.txt
-          else
-            echo "Not executing terraform apply - terraform output collection skipped"
-          fi
+      # - id: collect_terraform_outputs
+      #   name: Collect Terraform Outputs
+      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+      #   env:
+      #     tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+      #   run: |
+      #     if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
+      #     then
+      #       terragrunt run-all output > output.txt
+      #     else
+      #       echo "Not executing terraform apply - terraform output collection skipped"
+      #     fi
 
       - id: smoke_test
         name: Smoke Test
