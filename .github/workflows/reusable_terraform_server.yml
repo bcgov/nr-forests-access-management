@@ -172,7 +172,6 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-        # shell: bash
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
@@ -187,7 +186,12 @@ jobs:
             # smoke_test_url="$(awk -F= '/fam_api_base_url/ { gsub(" ","",$2);print $2 }' output.txt | sed 's/^"//' | sed 's/"$//')/smoke_test"
             # echo "fam_api_base_url: [$fam_api_base_url]"
             fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
+
+            fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive > fam_api_base_url.txt
+            cat fam_api_base_url.txt
+            fam_api_base_url=`cat fam_api_base_url.txt | sed 's/^"//' | sed 's/"$//'`
             smoke_test_url="$fam_api_base_url/smoke_test"
+
             # echo "fam_api_base_url1: [$fam_api_base_url1]"
             # echo "fam_api_base_url2: [$fam_api_base_url2]"
             # echo "fam_api_base_url3: [$fam_api_base_url3]"
