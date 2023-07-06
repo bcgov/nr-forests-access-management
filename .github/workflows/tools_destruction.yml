@@ -5,7 +5,7 @@ on:
 
 jobs:
 
-  aws-test-destruction-server:
+  aws-tools-destruction-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
@@ -27,11 +27,11 @@ jobs:
   # Commenting out the destroy because we want cloudfront domain to be persistent
   # for DNS configuration reasons
 
-  # aws-test-destruction-frontend:
-  #   needs: aws-test-destruction-server
+  # aws-tools-destruction-frontend:
+  #   needs: aws-tools-destruction-server
   #   uses: ./.github/workflows/reusable_terraform_frontend.yml
   #   with:
-  #     environment_name: test
+  #     environment_name: tools
   #     tf_subcommand: apply
   #   secrets:
   #     licenceplate: ${{ secrets.LICENCEPLATE}}
