@@ -1,10 +1,7 @@
 name: DEPLOY Tools Environment
 
 on:
-  # workflow_dispatch:
-  push:
-    branches:
-      - "ci/475-eliminate-pet-names"
+  workflow_dispatch:
 
 jobs:
 
@@ -28,12 +25,12 @@ jobs:
       test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
 
-  # aws-dev-deployment-frontend:
-  #   needs: aws-dev-deployment-server
-  #   uses: ./.github/workflows/reusable_terraform_frontend.yml
-  #   with:
-  #     environment_name: dev
-  #     tf_subcommand: apply
-  #   secrets:
-  #     licenceplate: ${{ secrets.LICENCEPLATE}}
-  #     tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
+  aws-dev-deployment-frontend:
+    needs: aws-dev-deployment-server
+    uses: ./.github/workflows/reusable_terraform_frontend.yml
+    with:
+      environment_name: dev
+      tf_subcommand: apply
+    secrets:
+      licenceplate: ${{ secrets.LICENCEPLATE}}
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
