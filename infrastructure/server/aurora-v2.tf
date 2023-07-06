@@ -1,8 +1,3 @@
-resource "random_pet" "famdb_subnet_group_name" {
-  prefix = "famdb-subnet-group"
-  length = 2
-}
-
 data "aws_kms_alias" "rds_key" {
   name = "alias/aws/rds"
 }

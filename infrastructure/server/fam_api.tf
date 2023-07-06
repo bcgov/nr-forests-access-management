@@ -19,15 +19,12 @@ data "aws_db_proxy" "api_lambda_db_proxy" {
   name = aws_db_proxy.famdb_proxy_api.name
 }
 
-# Random names to allow multiple instances per workspace
-
-resource "random_pet" "api_lambda_name" {
-  prefix = "fam-api-lambda"
-  length = 2
+locals {
+  api_lambda_name = "fam-api-lambda-${var.target_env}"
 }
 
 resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
-  name   = "${random_pet.api_lambda_name.id}-access-policy"
+  name   = "${local.api_lambda_name}-access-policy"
   role   = aws_iam_role.fam_api_lambda_exec.id
   policy = <<-EOF
   {
@@ -87,7 +84,7 @@ data "aws_iam_policy_document" "fam_api_lambda_exec_policydoc" {
 }
 
 resource "aws_iam_role" "fam_api_lambda_exec" {
-  name               = "${random_pet.api_lambda_name.id}-role"
+  name               = "${local.api_lambda_name}-role"
   assume_role_policy = data.aws_iam_policy_document.fam_api_lambda_exec_policydoc.json
 }
 
@@ -98,7 +95,7 @@ resource "aws_iam_role" "fam_api_lambda_exec" {
 
 resource "aws_lambda_function" "fam-api-function" {
   filename      = "fam-ui-api.zip"
-  function_name = random_pet.api_lambda_name.id
+  function_name = local.api_lambda_name
   role          = aws_iam_role.fam_api_lambda_exec.arn
   handler       = "api.app.main.handler"
 

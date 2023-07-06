@@ -16,15 +16,8 @@ data "aws_db_proxy" "auth_lambda_db_proxy" {
 }
 
 locals {
-  auth_lambda_name = "fam-auth-lambda"
+  auth_lambda_name = "fam-auth-lambda-${var.target_env}"
 }
-
-
-resource "random_pet" "auth_lambda_name" {
-  prefix = "fam-auth-lambda"
-  length = 2
-}
-
 
 resource "aws_iam_role_policy" "fam_auth_lambda_access_policy" {
   name   = "${local.auth_lambda_name}-access-policy"
