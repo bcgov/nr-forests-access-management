@@ -1,0 +1,40 @@
+name: DESTROY Test Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  aws-test-destruction-server:
+    uses: ./.github/workflows/reusable_terraform_server.yml
+    with:
+      environment_name: tools
+      tf_subcommand: destroy
+    secrets:
+      licenceplate: ${{ secrets.LICENCEPLATE}}
+      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
+      dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      forest_client_api_api_key: "${{ secrets.FOREST_CLIENT_API_API_KEY }}"
+      dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+
+  # Commenting out the destroy because we want cloudfront domain to be persistent
+  # for DNS configuration reasons
+
+  # aws-test-destruction-frontend:
+  #   needs: aws-test-destruction-server
+  #   uses: ./.github/workflows/reusable_terraform_frontend.yml
+  #   with:
+  #     environment_name: test
+  #     tf_subcommand: apply
+  #   secrets:
+  #     licenceplate: ${{ secrets.LICENCEPLATE}}
+  #     tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+
