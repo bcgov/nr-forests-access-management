@@ -1,11 +1,11 @@
-name: DEPLOY Test Environment
+name: DEPLOY Tools Environment
 
 on:
   workflow_dispatch:
 
 jobs:
 
-  aws-test-deployment-server:
+  aws-tools-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
@@ -25,7 +25,7 @@ jobs:
       test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
 
-  aws-test-deployment-frontend:
+  aws-tools-deployment-frontend:
     needs: aws-test-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:

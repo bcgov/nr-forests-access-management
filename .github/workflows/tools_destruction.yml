@@ -1,4 +1,4 @@
-name: DESTROY Test Backend
+name: DESTROY Tools Backend
 
 on:
   workflow_dispatch:
