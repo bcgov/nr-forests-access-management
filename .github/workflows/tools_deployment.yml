@@ -26,7 +26,7 @@ jobs:
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
 
   aws-tools-deployment-frontend:
-    needs: aws-test-deployment-server
+    needs: aws-tools-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
       environment_name: tools
