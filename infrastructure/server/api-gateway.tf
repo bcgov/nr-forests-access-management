@@ -73,7 +73,7 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
 resource "aws_lambda_permission" "fam_api_gateway_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.target_lambda.function_name
+  function_name = data.aws_lambda_function.target_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource
