@@ -8,7 +8,7 @@ data "aws_lambda_function" "target_lambda" {
 # the text '-gateway' appended to it.
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
-  name = "${aws_lambda_function.fam-api-function.function_name}-gateway-test"
+  name = "${aws_lambda_function.fam-api-function.function_name}-gateway"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -78,7 +78,7 @@ resource "aws_lambda_permission" "fam_api_gateway_permission" {
 
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.fam_api_gateway_rest_api.execution_arn}/*/{proxy+}"
+  source_arn = "${aws_api_gateway_rest_api.fam_api_gateway_rest_api.execution_arn}/*/*"
 }
 
 

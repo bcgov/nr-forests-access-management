@@ -20,7 +20,7 @@ data "aws_db_proxy" "api_lambda_db_proxy" {
 }
 
 locals {
-  api_lambda_name = "fam-api-lambda-${var.target_env}"
+  api_lambda_name = "fam-api-lambda-${var.target_env}-test"
 }
 
 resource "aws_iam_role_policy" "fam_api_lambda_access_policy" {
