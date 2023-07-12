@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import Header from '@/components/header/Header.vue';
 import sidebarData from '@/static/sidebar.json';
+import ToastMessage from '@/components/common/ToastMessage.vue';
 </script>
 <template>
     <Header />
+    <ToastMessage />
     <Sidebar :data="sidebarData" />
     <div class="main">
         <main>

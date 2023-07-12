@@ -13,7 +13,7 @@ defineProps<{
             icon="none"
             :class="severity"
             :severity="severity"
-            :sticky=false
+            :sticky=true
             :style="{
                 color: '#131315'
             }"
