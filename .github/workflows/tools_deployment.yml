@@ -2,9 +2,6 @@ name: DEPLOY Tools Environment
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "ci/475-eliminate-pet-names"
 
 jobs:
 
