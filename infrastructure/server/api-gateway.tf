@@ -8,7 +8,7 @@ data "aws_lambda_function" "target_lambda" {
 # the text '-gateway' appended to it.
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
-  name = "${data.aws_lambda_function.target_lambda.function_name}-gateway_test3"
+  name = "${data.aws_lambda_function.target_lambda.function_name}-gateway"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
