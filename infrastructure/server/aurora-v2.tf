@@ -240,7 +240,7 @@ resource "aws_db_proxy" "famdb_proxy_api" {
     auth_scheme = "SECRETS"
     description = "example"
     iam_auth    = "DISABLED"
-    secret_arn  = aws_secretsmanager_secret.famdb_apicreds_secret.arn
+    secret_arn  = "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}, ${aws_secretsmanager_secret.famdb_mastercreds_secret.arn}"
   }
 
   tags = {
