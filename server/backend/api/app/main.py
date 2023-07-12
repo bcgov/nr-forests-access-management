@@ -9,9 +9,11 @@ from starlette.responses import RedirectResponse
 
 from mangum import Mangum
 
+from api.app.exception_handlers import unhandled_exception_handler
+
 from .jwt_validation import init_jwks
 from .routers import (router_application, router_forest_client, router_role,
-                      router_user, router_user_role_assignment,
+                      router_user, router_user_role_assignment, router_idim_proxy,
                       router_bcsc_proxy, router_smoke_test)
 from .kms_lookup import init_bcsc_public_key
 
@@ -75,7 +77,7 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
-
+app.add_exception_handler(Exception, unhandled_exception_handler)
 
 @app.get("/", include_in_schema=False, tags=["docs"])
 def main():
@@ -93,6 +95,10 @@ app.include_router(router_forest_client.router,
                    prefix=apiPrefix + '/forest_clients',
                    dependencies=[Depends(jwt_validation.authorize)],
                    tags=["FAM Forest Clients"])
+app.include_router(router_idim_proxy.router,
+                   prefix=apiPrefix + '/identity_search',
+                   dependencies=[Depends(jwt_validation.authorize)],
+                   tags=["IDIR/BCeID Proxy"])
 
 # These two routers are disabled for MVP
 
