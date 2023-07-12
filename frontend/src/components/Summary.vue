@@ -2,13 +2,15 @@
 import {
     selectedApplicationDisplayText,
     grantAccessFormData,
+useNotificationMessage,
 } from '@/store/ApplicationState';
 import { ref } from 'vue';
 import router from '@/router';
-import { useToast } from 'vue-toastification';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
 import type { FamApplicationRole } from 'fam-api';
+import {useErrorDialog } from '@/store/ApplicationState'
+import Dialog from './dialog/Dialog.vue';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -19,6 +21,7 @@ const defaultFormData = {
     forestClientNumber: '',
     role_id: null,
 };
+
 let applicationRoleOptions = ref<FamApplicationRole[]>([]);
 
 async function handleSubmit() {
@@ -26,12 +29,9 @@ async function handleSubmit() {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
-        useToast().success(
-            `User "${grantAccessFormData?.value?.user_name}" is granted with "${
-                getSelectedRole()?.role_name
-            }" access.`
-        );
         grantAccessFormData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
+        useErrorDialog.isErrorVisible = false;
+        useNotificationMessage.isNotificationVisible = true;        
         router.push('/dashboard');
     } catch (err: any) {
         return Promise.reject(err);
@@ -46,6 +46,12 @@ const getSelectedRole = (): FamApplicationRole | undefined => {
 </script>
 
 <template>
+    <Dialog 
+        v-model:visible="useErrorDialog.isErrorVisible"
+        header="Error" 
+        text-first="This role cannot be assigned to this user." 
+        text-second="Contact your administrator for more information."
+    ></Dialog>
     <PageTitle
         title="Access request summary"
         :subtitle="'You are editing in ' + selectedApplicationDisplayText"

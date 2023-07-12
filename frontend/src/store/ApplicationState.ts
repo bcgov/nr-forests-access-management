@@ -1,5 +1,5 @@
 import type { FamApplication, FamUserRoleAssignmentCreate } from 'fam-api';
-import { computed, ref } from 'vue';
+import { computed, ref, reactive } from 'vue';
 
 // The applications the user has access to administer
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
@@ -39,3 +39,12 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
+
+export const useNotificationMessage = reactive({
+    notificationMsg: '',
+    isNotificationVisible: false,
+})
+
+export const useErrorDialog = reactive({
+    isErrorVisible: false,
+})

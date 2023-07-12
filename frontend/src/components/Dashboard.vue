@@ -18,9 +18,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { useNotificationMessage } from '@/store/ApplicationState'; 
 
 const deleteSuccessMsg = ref<string>('')
-const successMsgVisible = ref(false)
 
 const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
@@ -60,6 +60,7 @@ onMounted(async () => {
     if (isApplicationSelected) {
         getAccessList();
     }
+    
 });
 const filteredOptions = computed(() => {
     return applicationsUserAdministers.value;
@@ -100,7 +101,8 @@ async function getAccessList() {
 
 async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applicationName: string ) {
     let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>`;
-    successMsgVisible.value = false
+    useNotificationMessage.isNotificationVisible = false
+    useNotificationMessage.notificationMsg = ''
     confirm.require({
         group: 'templating',
         message: msg,
@@ -120,10 +122,10 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
                                     assignment.user_role_xref_id
                                     );
                     });
-                deleteSuccessMsg.value = ''
+                useNotificationMessage.notificationMsg = ''
             } finally {
-                    deleteSuccessMsg.value = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
-                    successMsgVisible.value = true
+                    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+                    useNotificationMessage.isNotificationVisible = true
             }
         },        
     });
