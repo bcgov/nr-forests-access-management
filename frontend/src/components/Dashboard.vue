@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import ConfirmDialog from 'primevue/confirmdialog';
 import Button from '../components/common/Button.vue';
 import InputText from 'primevue/inputtext';
+import { useConfirm } from "primevue/useconfirm";
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { computed, onMounted, ref } from 'vue';
 import {
@@ -16,11 +18,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
-import { useToast } from 'vue-toastification';
-import { $vfm } from 'vue-final-modal';
+import { useNotificationMessage } from '@/store/ApplicationState'; 
 
-import Dialog from '@/components/dialog/Dialog.vue';
-
+const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -48,8 +48,8 @@ onMounted(async () => {
         loading.value = true;
         applicationsUserAdministers.value = (
             await applicationsApi.getApplications()
-        ).data;
-    } catch (error: any) {
+            ).data;
+        } catch (error: any) {
         return Promise.reject(error);
     } finally {
         loading.value = false;
@@ -58,6 +58,7 @@ onMounted(async () => {
     if (isApplicationSelected) {
         getAccessList();
     }
+    
 });
 const filteredOptions = computed(() => {
     return applicationsUserAdministers.value;
@@ -96,47 +97,46 @@ async function getAccessList() {
     }
 }
 
-async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
-    let msg = `Delete access for user ${assignment.user.user_name} from role ${assignment.role.role_name}`;
-    if (assignment.role.client_number) {
-        msg += ` for client ${assignment.role.client_number.forest_client_number}`;
-    }
-    msg += '?';
-
-    $vfm.show({
-        component: Dialog,
-        bind: {
-            title: 'Are you sure?',
-            message: msg,
-            confirmText: 'Yes, delete',
-        },
-        on: {
-            confirm() {
-                // Deletion confirmed.
-                try {
-                    userRoleAssignmentApi.deleteUserRoleAssignment(
-                        assignment.user_role_xref_id
+async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applicationName: string ) {
+    let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>`;
+    useNotificationMessage.isNotificationVisible = false
+    useNotificationMessage.notificationMsg = ''
+    confirm.require({
+        group: 'templating',
+        message: msg,
+        icon: 'none',
+        header: 'Remove Access',
+        rejectLabel: 'Remove',
+        acceptLabel: 'Cancel',
+        reject: () => {
+            try {
+                userRoleAssignmentApi.deleteUserRoleAssignment(
+                    assignment.user_role_xref_id
                     );
                     userRoleAssignments.value =
-                        userRoleAssignments.value!.filter((a) => {
-                            return !(
-                                a.user_role_xref_id ==
-                                assignment.user_role_xref_id
-                            );
-                        });
-                    useToast().success(
-                        `Access deleted for user ${assignment.user.user_name}.`
-                    );
-                } finally {
-                    $vfm.hideAll();
-                }
-            },
-        },
+                    userRoleAssignments.value!.filter((a) => {
+                                return !(
+                                    a.user_role_xref_id ==
+                                    assignment.user_role_xref_id
+                                    );
+                    });
+                useNotificationMessage.notificationMsg = ''
+            } finally {
+                    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+                    useNotificationMessage.isNotificationVisible = true
+            }
+        },        
     });
-}
+};
 </script>
 
 <template>
+    <ConfirmDialog group="templating">
+        <template #message="slotProps">
+            <p v-html="slotProps.message.message"></p>
+        </template>
+    </ConfirmDialog>
+
     <div class="row">
         <div class="col-6">
             <PageTitle title="Dashboard" subtitle="Manage permissions" />
@@ -179,6 +179,12 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
         </div>
     </div>
 
+    <NotificationMessage
+        v-if="useNotificationMessage.isNotificationVisible"
+        severity="success"
+        :msgText="useNotificationMessage.notificationMsg" 
+        icon="CheckIcon"
+    />
     <div class="row h-auto" v-if="isApplicationSelected">
         <div class="col-12">
             <div class="p-access-table">
@@ -257,7 +263,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
                         <template #body="{ data }">
                             <button
                                 class="btn btn-icon"
-                                @click="tryDelete(data)"
+                                @click="tryDelete(data, selectedApplicationDisplayText)"
                             >
                                 <span class="remove-action">Remove</span>
                             </button>
