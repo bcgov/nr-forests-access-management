@@ -308,17 +308,6 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
 .span-icon {
     margin-left: 15px;
 }
-// =======
-// .access-table {
-//     margin-top: 100px;
-//     background: #ffffff;
-//     border-radius: 4px 4px 0px 0px;
-//     border: 2px solid #dfdfe1;
-// }
-// .table-header {
-//     padding: 16px 16px 24px;
-// >>>>>>> 5dd49b0 (fix/653-update-notifications-and-modals: Added dialog and success message to dashboard)
-// }
 
 .remove-action {
     color: $text-error;
