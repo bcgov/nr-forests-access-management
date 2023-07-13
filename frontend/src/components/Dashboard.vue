@@ -180,9 +180,9 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
     </div>
 
     <NotificationMessage
-        v-if="successMsgVisible"
+        v-if="useNotificationMessage.isNotificationVisible"
         severity="success"
-        :msgText="deleteSuccessMsg" 
+        :msgText="useNotificationMessage.notificationMsg" 
         icon="CheckIcon"
     />
     <div class="row h-auto" v-if="isApplicationSelected">
