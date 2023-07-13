@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type PropType, onMounted } from 'vue';
+import { ref, type PropType } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
@@ -8,13 +8,9 @@ import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 const selected = ref('');
 const props = defineProps({
     data: {
-        type: Object as PropType<FamUserRoleAssignmentCreate> | null,
+        type: Object as PropType<FamUserRoleAssignmentCreate>,
         required: true,
     },
-});
-
-onMounted(() => {
-    console.log('I am here', props.data);
 });
 </script>
 <template>
@@ -31,8 +27,8 @@ onMounted(() => {
                         </p>
 
                         <p>
-                            <label>Organization name:&nbsp;</label
-                            ><span>Ministry Orchard</span>
+                            <label>Role:&nbsp;</label
+                            ><span>{{ props.data.role_id }}</span>
                         </p>
                         <p v-if="props.data.forest_client_number">
                             <label>Forest Client ID:&nbsp;</label

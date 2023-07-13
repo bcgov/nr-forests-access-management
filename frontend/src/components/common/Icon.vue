@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent, onMounted } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 const props = defineProps({
     icon: {
         type: String,
@@ -34,9 +34,6 @@ const props = defineProps({
 });
 const iconName = computed(() => {
     return defineAsyncComponent(() => import(`../icons/${props.icon}.vue`));
-});
-onMounted(() => {
-    console.log(props.large);
 });
 </script>
 

@@ -1,3 +1,6 @@
+@use 'sass:map';
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-theme.scss' as lightTheme;
+
 // Main Colors
 $primary: #036;
 $gold: #fcba19;
@@ -115,3 +118,7 @@ $table-sort-icon-size: 0.25rem;
 // Buttons
 $button-primary: $primary4;
 $button-info: #96c0e6;
+
+$text-error: map.get(lightTheme.$light-theme, 'text-error');
+$text-primary: map.get(lightTheme.$light-theme, 'text-primary');
+$text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
