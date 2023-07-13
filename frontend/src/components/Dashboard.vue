@@ -45,11 +45,14 @@ const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     try {
+        loading.value = true;
         applicationsUserAdministers.value = (
             await applicationsApi.getApplications()
         ).data;
     } catch (error: any) {
         return Promise.reject(error);
+    } finally {
+        loading.value = false;
     }
 
     if (isApplicationSelected) {
@@ -69,6 +72,7 @@ const selectApplication = (e: DropdownChangeEvent) => {
 
 async function getAccessList() {
     try {
+        loading.value = true;
         const list = (
             await applicationsApi.getFamApplicationUserRoleAssignment(
                 selectedApplication.value!.application_id
@@ -87,6 +91,8 @@ async function getAccessList() {
     } catch (error: unknown) {
         router.push('/dashboard');
         return Promise.reject(error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -131,149 +137,144 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 </script>
 
 <template>
-    <div>
-        <div class="row">
-            <div class="col-6">
-                <h5 class="title">Dashboard</h5>
-                <span class="subtitle">Manage permissions</span>
-            </div>
-            <div class="col-6">
-                <Button
-                    v-if="isApplicationSelected"
-                    style="float: right"
-                    class="dashboard-button"
-                    label="Grant new access"
-                    @click="router.push('/grant')"
-                    ><Icon icon="Add" medium class="icon-size-1"
-                /></Button>
-            </div>
+    <div class="row">
+        <div class="col-6">
+            <PageTitle title="Dashboard" subtitle="Manage permissions" />
         </div>
-        <div class="row vh-20 page-body">
-            <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="col-6">
+            <Button
+                v-if="isApplicationSelected"
+                class="dashboard-button"
+                label="Grant new access"
+                @click="router.push('/grant')"
+                ><Icon icon="AddIcon" medium class="icon-size-1"
+            /></Button>
+        </div>
+    </div>
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
                 <form
                     id="selectApplicationForm"
                     class="form-container dashboard-form"
                 >
-                    <div class="form-group col-md-5">
-                        <label class="label"
-                            >Select an application you would like to grant
-                            access</label
-                        >
-                        <Dropdown
-                            v-model="selectedApplication"
-                            @change="selectApplication"
-                            :options="filteredOptions"
-                            optionLabel="application_description"
-                            placeholder="Choose an option"
-                            class="application-dropdown"
-                        />
+                    <div class="form-group">
+                        <div class="row">
+                            <label
+                                >Select an application you would like to grant
+                                access</label
+                            >
+                            <Dropdown
+                                v-model="selectedApplication"
+                                @change="selectApplication"
+                                :options="filteredOptions"
+                                optionLabel="application_description"
+                                placeholder="Choose an option"
+                                class="application-dropdown"
+                            />
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
 
-        <div class="row h-auto" v-if="isApplicationSelected">
-            <div class="col-sm-12 col-md-12 col-lg-12">
-                <div class="access-table">
-                    <div class="table-header">
-                        <h3>{{ selectedApplicationDisplayText }} users</h3>
-                        <span>
-                            This table shows all the users in
-                            {{ selectedApplicationDisplayText }} and their
-                            permissions levels
-                        </span>
-                    </div>
-
-                    <span class="p-input-icon-right">
-                        <i class="pi pi-search" />
-                        <InputText
-                            class="dash-search"
-                            v-model="filters['global'].value"
-                        />
+    <div class="row h-auto" v-if="isApplicationSelected">
+        <div class="col-12">
+            <div class="p-access-table">
+                <div class="p-table-header">
+                    <h3>{{ selectedApplicationDisplayText }} users</h3>
+                    <span>
+                        This table shows all the users in
+                        {{ selectedApplicationDisplayText }} and their
+                        permissions levels
                     </span>
+                </div>
 
-                    <DataTable
-                        v-model:filters="filters"
-                        :value="userRoleAssignments"
-                        paginator
-                        :rows="5"
-                        :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
-                        dataKey="id"
-                        filterDisplay="menu"
-                        :loading="loading"
-                        :globalFilterFields="[
-                            'user.user_name',
-                            'role.parent_role.role_name',
-                            'role.role_name',
-                            'role.client_number.forest_client_number',
-                        ]"
-                        paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                        currentPageReportTemplate="{currentPage} of {totalPages} pages"
-                    >
-                        <!-- <template #paginatorstart="{slotProps: props}">
+                <span class="p-input-icon-right">
+                    <i class="pi pi-search" />
+                    <InputText
+                        class="dash-search"
+                        v-model="filters['global'].value"
+                    />
+                </span>
+
+                <DataTable
+                    v-model:filters="filters"
+                    :value="userRoleAssignments"
+                    paginator
+                    :rows="5"
+                    :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+                    dataKey="id"
+                    filterDisplay="menu"
+                    :loading="loading"
+                    :globalFilterFields="[
+                        'user.user_name',
+                        'role.parent_role.role_name',
+                        'role.role_name',
+                        'role.client_number.forest_client_number',
+                    ]"
+                    paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+                    currentPageReportTemplate="{currentPage} of {totalPages} pages"
+                >
+                    <!-- This is where we set the pagination
+                            <template #paginatorstart="{slotProps: props}">
                             {{ slotProps?.RowsPerPageDropdown }}
                         </template> -->
 
-                        <template #empty> No application selected. </template>
-                        <template #loading>
-                            Loading customers data. Please wait.
+                    <template #empty> No application selected. </template>
+                    <template #loading>
+                        Loading customers data. Please wait.
+                    </template>
+                    <Column header="User name" sortable field="user.user_name">
+                        <template #body="{ data }">
+                            <Icon icon="AvatarFilledIcon" medium />
+                            <span class="span-icon">
+                                {{ data.user.user_name }}
+                            </span>
                         </template>
-                        <Column
-                            header="User name"
-                            sortable
-                            field="user.user_name"
-                        >
-                            <template #body="{ data }">
-                                <Icon icon="AvatarFilled" medium />
-                                <span style="margin-left: 15px">
-                                    {{ data.user.user_name }}
-                                </span>
-                            </template>
-                        </Column>
-                        <Column
-                            field="user.user_type.description"
-                            header="Domain"
-                            sortable
-                        ></Column>
-                        <Column field="role.role_name" header="Role" sortable>
-                            <template #body="{ data }">
-                                {{
-                                    data.role.parent_role
-                                        ? data.role.parent_role.role_name
-                                        : data.role.role_name
-                                }}
-                            </template></Column
-                        >
-                        <Column
-                            field="role.client_number.forest_client_number"
-                            header="Forest Client ID"
-                            sortable
-                        ></Column>
-                        <Column>
-                            <template #body="{ data }">
-                                <button
-                                    class="btn btn-icon"
-                                    @click="tryDelete(data)"
-                                >
-                                    <span style="color: #b32001"> Remove </span>
-                                    <!-- <Icon
-                                        icon="TrashCan"
-                                        medium
-                                        style="color: #b32001"
-                                    /> -->
-                                </button>
-                            </template>
-                        </Column>
-                    </DataTable>
-                </div>
+                    </Column>
+                    <Column
+                        field="user.user_type.description"
+                        header="Domain"
+                        sortable
+                    ></Column>
+                    <Column field="role.role_name" header="Role" sortable>
+                        <template #body="{ data }">
+                            {{
+                                data.role.parent_role
+                                    ? data.role.parent_role.role_name
+                                    : data.role.role_name
+                            }}
+                        </template></Column
+                    >
+                    <Column
+                        field="role.client_number.forest_client_number"
+                        header="Forest Client ID"
+                        sortable
+                    ></Column>
+                    <Column>
+                        <template #body="{ data }">
+                            <button
+                                class="btn btn-icon"
+                                @click="tryDelete(data)"
+                            >
+                                <span class="remove-action">Remove</span>
+                            </button>
+                        </template>
+                    </Column>
+                </DataTable>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped type="scss">
+<style scoped lang="scss">
+@import '@/assets/styles/base.scss';
+
 .application-dropdown {
     width: 304px;
+    padding: 0px;
 }
 
 .p-input-icon-right {
@@ -291,61 +292,18 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
     display: none;
 }
 .dashboard-button {
-    padding: 16px;
-
     width: 235px;
-    height: 48px;
+    float: right;
 }
 .p-datatable-header {
     padding: 0px !important;
 }
 
-.access-table {
-    margin-top: 79px;
-    background: #ffffff;
-    border-radius: 4px 4px 0px 0px;
-    border: 2px solid #dfdfe1;
-}
-.table-header {
-    padding: 16px 16px 24px;
+.span-icon {
+    margin-left: 15px;
 }
 
-.table-header h3 {
-    /* Fixed heading styles/heading-03 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 28px;
-    /* identical to box height, or 140% */
-
-    /* Light Theme/Text/$text-primary */
-    color: #131315;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    align-self: stretch;
-    flex-grow: 0;
-}
-
-.table-header span {
-    /* Body styles/body-compact-01 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    /* identical to box height, or 129% */
-    letter-spacing: 0.16px;
-
-    /* Light Theme/Text/$text-secondary */
-    color: #606062;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 1;
-    align-self: stretch;
-    flex-grow: 0;
+.remove-action {
+    color: $text-error;
 }
 </style>

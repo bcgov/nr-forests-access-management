@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import ProfileSidebar from '../common/ProfileSidebar.vue'
-import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore'
+import ProfileSidebar from '../common/ProfileSidebar.vue';
+import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
     .getEnvironmentDisplayName('[', ']')
     .toUpperCase();
-
-
-
-
 </script>
 
 <template>
@@ -40,19 +36,19 @@ const environmentLabel = environmentSettings
                 <ul class="navbar-nav">
                     <li>
                         <a
-                        title="Log Out"
-                        v-if="authService.getters.isLoggedIn()"
-                        @click="useProfileSidebarVisible.toggleVisible()"
+                            title="Log Out"
+                            v-if="authService.getters.isLoggedIn()"
+                            @click="useProfileSidebarVisible.toggleVisible()"
                         >
-                            <Icon medium icon="Avatar"></Icon>
+                            <Icon medium icon="AvatarIcon"></Icon>
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
-            <teleport to='.modals' >
-                <ProfileSidebar />
-            </teleport>
+        <teleport to=".modals">
+            <ProfileSidebar />
+        </teleport>
     </header>
 </template>
 

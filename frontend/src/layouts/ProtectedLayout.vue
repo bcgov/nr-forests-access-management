@@ -7,7 +7,6 @@ import sidebarData from '@/static/sidebar.json';
     <Sidebar :data="sidebarData" />
     <div class="main">
         <main>
-            <!-- <Breadcrumb /> -->
             <RouterView></RouterView>
             <modals-container></modals-container>
         </main>

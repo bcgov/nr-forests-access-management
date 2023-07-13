@@ -22,14 +22,14 @@ import Button from '@/components/common/Button.vue';
                     class="landing-button p-button-primary"
                     label="Login with IDIR"
                     @click="authService.methods.login"
-                    ><Icon icon="Login" small
+                    ><Icon icon="LoginIcon" small
                 /></Button>
                 <Button
                     class="landing-button p-button-outlined"
                     label="Login with BCeID"
                     disabled
                     @click="authService.methods.login"
-                    ><Icon icon="Login" small
+                    ><Icon icon="LoginIcon" small
                 /></Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
@@ -45,7 +45,4 @@ import Button from '@/components/common/Button.vue';
 
 <style scoped lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
-.landing-button {
-    padding: 12px 13px;
-}
 </style>

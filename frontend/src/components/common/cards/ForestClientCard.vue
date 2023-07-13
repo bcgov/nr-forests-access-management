@@ -1,9 +1,30 @@
+<script setup lang="ts">
+import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
+import { ref, type PropType } from 'vue';
+import Card from 'primevue/card';
+
+const selected = ref('');
+const props = defineProps({
+    status: {
+        type: Object as PropType<FamForestClientStatus>,
+        required: true,
+        default: {
+            description: "Doesn't exist",
+        },
+    },
+    text: {
+        type: String,
+        required: true,
+        default: '',
+    },
+});
+</script>
 <template>
     <div>
         <Card class="mb-2 p-0">
             <template #content>
                 <div class="row">
-                    <p style="display: inline-flex">
+                    <p>
                         <label>Organization status: </label>&nbsp;<Tag
                             :text="props.status.description"
                             :active="props.status.status_code === 'A'"
@@ -29,33 +50,12 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
-import { ref, type PropType } from 'vue';
-import Card from 'primevue/card';
-
-const selected = ref('');
-const props = defineProps({
-    status: {
-        type: Object as PropType<FamForestClientStatus>,
-        required: true,
-        default: {
-            description: "Doesn't exist",
-        },
-    },
-    text: {
-        type: String,
-        required: true,
-        default: '',
-    },
-});
-</script>
-
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 p {
     margin: 0;
     padding: 0 !important;
+    display: inline-flex;
 }
 
 p > label {
@@ -67,8 +67,6 @@ p > label {
     color: #dc3545;
 }
 .organization-name {
-    font-style: normal;
-    font-weight: 400;
     font-size: 18px;
     line-height: 28px;
 }

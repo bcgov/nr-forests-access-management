@@ -3,7 +3,7 @@ import {
     selectedApplicationDisplayText,
     grantAccessFormData,
 } from '@/store/ApplicationState';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import router from '@/router';
 import { useToast } from 'vue-toastification';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
@@ -20,13 +20,14 @@ const defaultFormData = {
     role_id: null,
 };
 let applicationRoleOptions = ref<FamApplicationRole[]>([]);
+
 async function handleSubmit() {
     try {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
         useToast().success(
-            `User "${grantAccessFormData.value.user_name}" is granted with "${
+            `User "${grantAccessFormData?.value?.user_name}" is granted with "${
                 getSelectedRole()?.role_name
             }" access.`
         );
@@ -39,22 +40,23 @@ async function handleSubmit() {
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
     return applicationRoleOptions.value.find(
-        (item) => item.role_id === grantAccessFormData.value.role_id
+        (item) => item.role_id === grantAccessFormData?.value?.role_id
     );
 };
 </script>
 
 <template>
-    <div class="row">
-        <h5 class="title">Access request summary</h5>
-        <h6 class="subtitle">
-            You are editing in {{ selectedApplicationDisplayText }}
-        </h6>
-    </div>
-    <div class="row page-body">
-        <SummaryCard
-            :data="grantAccessFormData ? grantAccessFormData : null"
-            @submit="handleSubmit()"
-        />
+    <PageTitle
+        title="Access request summary"
+        :subtitle="'You are editing in ' + selectedApplicationDisplayText"
+    />
+
+    <div class="page-body">
+        <div class="row">
+            <SummaryCard
+                :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
+                @submit="handleSubmit()"
+            />
+        </div>
     </div>
 </template>

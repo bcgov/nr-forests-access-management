@@ -18,70 +18,9 @@ body {
     padding-right: 30px;
 }
 
-.title {
-    /* Fixed heading styles/heading-05 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 32px;
-    line-height: 40px;
-    /* identical to box height, or 125% */
-
-    /* Light Theme/Text/$text-primary */
-    color: #131315;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-    margin: 0;
-}
-
-.subtitle {
-    /* Body styles/body-compact-01 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    /* identical to box height, or 129% */
-    letter-spacing: 0.16px;
-
-    /* Light Theme/Text/$text-secondary */
-    color: #606062;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 1;
-    flex-grow: 0;
-}
-
 .page-body {
     margin-top: 48px;
 }
-
-.label {
-    /* Label */
-
-    /* Utility styles/label-01 */
-    font-family: 'BC Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    /* identical to box height, or 133% */
-    letter-spacing: 0.32px;
-
-    /* Light Theme/Text/$text-secondary */
-    color: #606062;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    align-self: stretch;
-    flex-grow: 0;
-}
-
 // Flex panel
 .flex-panel {
     @include flex-box();
@@ -90,60 +29,10 @@ body {
     background: $gray0;
 }
 
-.flex-panel__header {
-    @include flex-box();
-    @include flex-direction(row);
-    @include flex(0 0 auto);
-
-    // padding: 0.75rem 1.5rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-left: 1.5rem;
-    padding-right: 2.6rem;
-    height: 4rem;
-    align-items: center;
-    border-bottom: 1px solid $gray2;
-    background: #fff;
-
-    .title {
-        @include flex(1 1 auto);
-
-        margin: 0;
-        letter-spacing: -0.01rem;
-        font-size: 1rem;
-        font-weight: 400;
-    }
-}
-
-.flex-panel__scroll {
-    @include flex(1 1 auto);
-
-    padding: 1.5rem;
-    overflow-y: auto;
-}
-
-.flex-panel__footer {
-    @include flex(0 0 auto);
-}
-
-@media (min-width: 1200px) {
-    .flex-panel__scroll {
-        overflow-y: auto;
-    }
-}
-
 .bold {
     font-weight: bold;
 }
 
 .no-padding {
     padding: 0;
-}
-
-.bg-secondary-nav {
-    --bs-bg-opacity: 1;
-    background-color: rgba(
-        var(--bs-secondary-nav-rgb),
-        var(--bs-bg-opacity)
-    ) !important;
 }
