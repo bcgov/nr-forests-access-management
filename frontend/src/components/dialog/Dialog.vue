@@ -1,7 +1,5 @@
 <script setup inherit-attrs="false" lang="ts">
-import type { useErrorDialog } from '@/store/ApplicationState';
 import Dialog from 'primevue/dialog';
-import { ref } from "vue";
 
 defineProps<{
     header: string,
