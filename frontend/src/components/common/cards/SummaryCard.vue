@@ -25,11 +25,6 @@ const props = defineProps({
                             <label>User name:&nbsp;</label
                             ><span>{{ props.data.user_name }}</span>
                         </p>
-
-                        <p>
-                            <label>Role:&nbsp;</label
-                            ><span>{{ props.data.role_id }}</span>
-                        </p>
                         <p v-if="props.data.forest_client_number">
                             <label>Forest Client ID:&nbsp;</label
                             ><span>
