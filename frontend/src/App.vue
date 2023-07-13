@@ -17,7 +17,7 @@ watch(
 </script>
 
 <template>
-    <component :is="layout_component">     
+    <component :is="layout_component">
         <router-view />
     </component>
 </template>
