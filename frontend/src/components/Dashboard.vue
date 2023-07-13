@@ -20,8 +20,6 @@ import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 import { useNotificationMessage } from '@/store/ApplicationState'; 
 
-const deleteSuccessMsg = ref<string>('')
-
 const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
