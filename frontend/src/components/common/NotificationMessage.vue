@@ -41,19 +41,6 @@ border: solid 1px transparent;
 margin-top: 40px;
 }
 
-:deep(.p-message.p-message-success .p-message-close) {
-    color: #131315;
-}
-
-:deep(.p-message.p-message-success .p-message-close):focus {
-    box-shadow: 0 0 0 0.1rem $support-success !important;
-}
-
-:deep(.p-message.p-message-success.success) {
-    border: solid 1px $support-success !important;
-    border-left: solid 5px rgba(0, 123, 0, 0.7) !important;
-}
-
 .p-message {
     margin-right: 80px;
     position: absolute;
