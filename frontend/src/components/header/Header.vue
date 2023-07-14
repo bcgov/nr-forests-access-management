@@ -8,16 +8,28 @@ const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
     .getEnvironmentDisplayName('[', ']')
     .toUpperCase();
+
+const props = defineProps({
+    title: {
+        type: String,
+        required: true,
+    },
+    subtitle: {
+        type: String,
+        required: true,
+    },
+});
 </script>
 
 <template>
-    <header class="app-header" id="header">
+    <header class="p-header" id="header">
         <nav
             class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
         >
-            <h2 class="header-title">
-                FAM <span>Forest Access Management {{ environmentLabel }}</span>
-            </h2>
+            <span class="header-title">
+                {{ props.title }}
+                <strong>{{ props.subtitle }} {{ environmentLabel }}</strong>
+            </span>
 
             <button
                 class="navbar-toggler"
@@ -51,7 +63,3 @@ const environmentLabel = environmentSettings
         </teleport>
     </header>
 </template>
-
-<style lang="scss" scoped>
-@import './header.scss';
-</style>

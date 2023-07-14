@@ -4,13 +4,12 @@ import sidebarData from '@/static/sidebar.json';
 import ToastMessage from '@/components/common/ToastMessage.vue';
 </script>
 <template>
-    <Header />
+    <Header title="FAM" subtitle="Forest Access Management" />
     <ToastMessage />
     <Sidebar :data="sidebarData" />
     <div class="main">
         <main>
             <RouterView></RouterView>
-            <modals-container></modals-container>
         </main>
     </div>
 </template>
