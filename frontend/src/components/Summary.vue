@@ -2,14 +2,14 @@
 import {
     selectedApplicationDisplayText,
     grantAccessFormData,
-useNotificationMessage,
+    useNotificationMessage,
 } from '@/store/ApplicationState';
 import { ref } from 'vue';
 import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
 import type { FamApplicationRole } from 'fam-api';
-import {useErrorDialog } from '@/store/ApplicationState'
+import { useErrorDialog } from '@/store/ApplicationState';
 import Dialog from './dialog/Dialog.vue';
 
 const apiServiceFactory = new ApiServiceFactory();
@@ -22,8 +22,6 @@ const defaultFormData = {
     role_id: null,
 };
 
-let applicationRoleOptions = ref<FamApplicationRole[]>([]);
-
 async function handleSubmit() {
     try {
         await userRoleAssignmentApi.createUserRoleAssignment(
@@ -31,25 +29,21 @@ async function handleSubmit() {
         );
         grantAccessFormData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
         useErrorDialog.isErrorVisible = false;
-        useNotificationMessage.isNotificationVisible = true;        
+        useNotificationMessage.isNotificationVisible = true;
         router.push('/dashboard');
     } catch (err: any) {
         return Promise.reject(err);
+    } finally {
     }
 }
-
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value.find(
-        (item) => item.role_id === grantAccessFormData?.value?.role_id
-    );
-};
 </script>
 
 <template>
-    <Dialog 
+    <Dialog
         v-model:visible="useErrorDialog.isErrorVisible"
-        header="Error" 
-        text-first="This role cannot be assigned to this user." 
+        :error="true"
+        header="Error"
+        text-first="This role cannot be assigned to this user."
         text-second="Contact your administrator for more information."
     ></Dialog>
     <PageTitle

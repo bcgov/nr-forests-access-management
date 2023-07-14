@@ -3,7 +3,7 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import ConfirmDialog from 'primevue/confirmdialog';
 import Button from '../components/common/Button.vue';
 import InputText from 'primevue/inputtext';
-import { useConfirm } from "primevue/useconfirm";
+import { useConfirm } from 'primevue/useconfirm';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { computed, onMounted, ref } from 'vue';
 import {
@@ -18,7 +18,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
-import { useNotificationMessage } from '@/store/ApplicationState'; 
+import { useNotificationMessage } from '@/store/ApplicationState';
 
 const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
@@ -48,8 +48,8 @@ onMounted(async () => {
         loading.value = true;
         applicationsUserAdministers.value = (
             await applicationsApi.getApplications()
-            ).data;
-        } catch (error: any) {
+        ).data;
+    } catch (error: any) {
         return Promise.reject(error);
     } finally {
         loading.value = false;
@@ -58,7 +58,6 @@ onMounted(async () => {
     if (isApplicationSelected) {
         getAccessList();
     }
-    
 });
 const filteredOptions = computed(() => {
     return applicationsUserAdministers.value;
@@ -97,10 +96,13 @@ async function getAccessList() {
     }
 }
 
-async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applicationName: string ) {
-    let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>`;
-    useNotificationMessage.isNotificationVisible = false
-    useNotificationMessage.notificationMsg = ''
+async function tryDelete(
+    assignment: FamApplicationUserRoleAssignmentGet,
+    applicationName: string
+) {
+    let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>?`;
+    useNotificationMessage.isNotificationVisible = false;
+    useNotificationMessage.notificationMsg = '';
     confirm.require({
         group: 'templating',
         message: msg,
@@ -112,22 +114,22 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
             try {
                 userRoleAssignmentApi.deleteUserRoleAssignment(
                     assignment.user_role_xref_id
-                    );
-                    userRoleAssignments.value =
-                    userRoleAssignments.value!.filter((a) => {
-                                return !(
-                                    a.user_role_xref_id ==
-                                    assignment.user_role_xref_id
-                                    );
-                    });
-                useNotificationMessage.notificationMsg = ''
+                );
+                userRoleAssignments.value = userRoleAssignments.value!.filter(
+                    (a) => {
+                        return !(
+                            a.user_role_xref_id == assignment.user_role_xref_id
+                        );
+                    }
+                );
+                useNotificationMessage.notificationMsg = '';
             } finally {
-                    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
-                    useNotificationMessage.isNotificationVisible = true
+                useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+                useNotificationMessage.isNotificationVisible = true;
             }
-        },        
+        },
     });
-};
+}
 </script>
 
 <template>
@@ -176,15 +178,16 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
                     </div>
                 </form>
             </div>
+            <div class="col-12">
+                <NotificationMessage
+                    v-if="useNotificationMessage.isNotificationVisible"
+                    severity="success"
+                    :msgText="useNotificationMessage.notificationMsg"
+                    icon="CheckIcon"
+                />
+            </div>
         </div>
     </div>
-
-    <NotificationMessage
-        v-if="useNotificationMessage.isNotificationVisible"
-        severity="success"
-        :msgText="useNotificationMessage.notificationMsg" 
-        icon="CheckIcon"
-    />
     <div class="row h-auto" v-if="isApplicationSelected">
         <div class="col-12">
             <div class="p-access-table">
@@ -263,7 +266,12 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet, applic
                         <template #body="{ data }">
                             <button
                                 class="btn btn-icon"
-                                @click="tryDelete(data, selectedApplicationDisplayText)"
+                                @click="
+                                    tryDelete(
+                                        data,
+                                        selectedApplicationDisplayText
+                                    )
+                                "
                             >
                                 <span class="remove-action">Remove</span>
                             </button>

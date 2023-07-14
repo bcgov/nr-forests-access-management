@@ -407,7 +407,7 @@ const isAbstractRoleSelected = () => {
                                 class="m-3 button"
                                 outlined
                                 label="Cancel"
-                                @click="$router.go(-1)"
+                                @click="$router.push('/dashboard')"
                             ></Button>
                         </div>
                     </div>

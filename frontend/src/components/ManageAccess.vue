@@ -152,7 +152,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 
 <template>
     <div>
-        <PageTitle :displaySelectedApplication="true"></PageTitle>
+        <PageTitle title="Manage" subtitle="Manage application"></PageTitle>
 
         <span>
             <button class="btn btn-info" @click="router.push('/grant')">

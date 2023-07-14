@@ -1,25 +1,34 @@
 <script setup lang="ts">
 import Message from 'primevue/message';
-defineProps<{
-    msgText: string,
-    severity: string
-    icon: string
-}>();
+
+const props = defineProps({
+    msgText: {
+        type: String,
+        required: true,
+    },
+    severity: {
+        type: String,
+        required: true,
+    },
+    icon: {
+        type: String,
+        required: true,
+    },
+});
 </script>
 
 <template>
     <div class="message-container">
-        <Message 
+        <Message
             icon="none"
-            :class="severity"
-            :severity="severity"
-            :sticky=true
-            :style="{
-                color: '#131315'
-            }"
+            :class="props.severity"
+            :severity="props.severity"
+            :sticky="true"
         >
-            <Icon :icon="icon" medium />
-            <strong>{{ severity }}</strong> {{ msgText }}
+            <Icon :icon="props.icon" medium />
+            <span class="message-text">
+                <strong>{{ props.severity }}</strong> {{ props.msgText }}
+            </span>
         </Message>
     </div>
 </template>
@@ -29,23 +38,25 @@ defineProps<{
 
 svg {
     margin-right: 15px;
-    margin-bottom: 5px;
+    vertical-align: middle;
 }
 
 strong {
     text-transform: capitalize;
 }
 
+.message-text {
+    color: $text-primary;
+}
+
 .message-container {
-border: solid 1px transparent;
-margin-top: 40px;
+    position: relative;
+    align-items: center;
 }
 
 .p-message {
-    margin-right: 80px;
     position: absolute;
-    margin-right: 40px;
-    // width: 100%;
+    left: 0;
+    right: 0;
 }
-
 </style>
