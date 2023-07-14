@@ -5,7 +5,7 @@ import Button from '../components/common/Button.vue';
 import InputText from 'primevue/inputtext';
 import { useConfirm } from 'primevue/useconfirm';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, reactive } from 'vue';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -42,6 +42,12 @@ const filters = ref({
     },
 });
 const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
+
+const confirmRemoveMessage = reactive({
+    userName: '',
+    role: ''
+})
+
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     try {
@@ -97,15 +103,14 @@ async function getAccessList() {
 }
 
 async function tryDelete(
-    assignment: FamApplicationUserRoleAssignmentGet,
-    applicationName: string
-) {
-    let msg = `Are you sure you want to remove <strong>${assignment.role.role_name}</strong> access to <strong>${assignment.user.user_name}</strong> in <strong>${applicationName}</strong>?`;
+    assignment: FamApplicationUserRoleAssignmentGet
+    ) {
+    confirmRemoveMessage.role = assignment.role.role_name;
+    confirmRemoveMessage.userName = assignment.user.user_name;
     useNotificationMessage.isNotificationVisible = false;
     useNotificationMessage.notificationMsg = '';
     confirm.require({
         group: 'templating',
-        message: msg,
         icon: 'none',
         header: 'Remove Access',
         rejectLabel: 'Remove',
@@ -134,8 +139,8 @@ async function tryDelete(
 
 <template>
     <ConfirmDialog group="templating">
-        <template #message="slotProps">
-            <p v-html="slotProps.message.message"></p>
+        <template #message>
+            <p >Are you sure you want to remove <strong>{{ confirmRemoveMessage.role }}</strong> access to <strong>{{ confirmRemoveMessage.userName }}</strong> in <strong>{{ selectedApplicationDisplayText }}</strong></p>
         </template>
     </ConfirmDialog>
 
@@ -268,8 +273,7 @@ async function tryDelete(
                                 class="btn btn-icon"
                                 @click="
                                     tryDelete(
-                                        data,
-                                        selectedApplicationDisplayText
+                                        data
                                     )
                                 "
                             >
