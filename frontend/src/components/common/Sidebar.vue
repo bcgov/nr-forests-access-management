@@ -65,13 +65,13 @@ import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
 interface ISideBarData {
-    name: String;
+    name: string;
     items: [ISideBarItem];
 }
 
 interface ISideBarItem {
-    name: String;
-    icon: String;
+    name: string;
+    icon: string;
     link: RouteLocationRaw;
     disabled: boolean;
 }

@@ -3,8 +3,10 @@ import { ref, type PropType, onMounted } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
-import { useNotificationMessage } from '@/store/ApplicationState'
+import {
+    selectedApplicationDisplayText,
+    useNotificationMessage,
+} from '@/store/ApplicationState';
 
 const selected = ref('');
 const props = defineProps({
@@ -16,7 +18,7 @@ const props = defineProps({
 
 onMounted(() => {
     console.log('I am here', props.data);
-    useNotificationMessage.notificationMsg = `New access granted to ${props.data.user_name}`
+    useNotificationMessage.notificationMsg = `New access granted to ${props.data.user_name}`;
 });
 </script>
 <template>

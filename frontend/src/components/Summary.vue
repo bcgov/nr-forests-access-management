@@ -3,13 +3,11 @@ import {
     selectedApplicationDisplayText,
     grantAccessFormData,
     useNotificationMessage,
+    useErrorDialog,
 } from '@/store/ApplicationState';
-import { ref } from 'vue';
 import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
-import type { FamApplicationRole } from 'fam-api';
-import { useErrorDialog } from '@/store/ApplicationState';
 import Dialog from './dialog/Dialog.vue';
 
 const apiServiceFactory = new ApiServiceFactory();
@@ -33,7 +31,6 @@ async function handleSubmit() {
         router.push('/dashboard');
     } catch (err: any) {
         return Promise.reject(err);
-    } finally {
     }
 }
 </script>

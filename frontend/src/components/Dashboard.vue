@@ -12,13 +12,13 @@ import {
     selectedApplication,
     setSelectedApplication,
     selectedApplicationDisplayText,
+    useNotificationMessage,
 } from '@/store/ApplicationState';
 import router from '@/router';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FilterMatchMode } from 'primevue/api';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
-import { useNotificationMessage } from '@/store/ApplicationState';
 
 const confirm = useConfirm();
 const apiServiceFactory = new ApiServiceFactory();
@@ -84,7 +84,7 @@ async function getAccessList() {
                 selectedApplication.value!.application_id
             )
         ).data;
-        userRoleAssignments.value = list.sort((first, second) => {
+        userRoleAssignments.value = list.toSorted((first, second) => {
             const nameCompare = first.user.user_name.localeCompare(
                 second.user.user_name
             );
@@ -231,11 +231,6 @@ async function tryDelete(
                     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
                     currentPageReportTemplate="{currentPage} of {totalPages} pages"
                 >
-                    <!-- This is where we set the pagination
-                            <template #paginatorstart="{slotProps: props}">
-                            {{ slotProps?.RowsPerPageDropdown }}
-                        </template> -->
-
                     <template #empty> No application selected. </template>
                     <template #loading>
                         Loading customers data. Please wait.
