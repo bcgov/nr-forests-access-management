@@ -45,8 +45,8 @@ const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
 
 const confirmRemoveMessage = reactive({
     userName: '',
-    role: ''
-})
+    role: '',
+});
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
@@ -102,9 +102,7 @@ async function getAccessList() {
     }
 }
 
-async function tryDelete(
-    assignment: FamApplicationUserRoleAssignmentGet
-    ) {
+async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmRemoveMessage.role = assignment.role.role_name;
     confirmRemoveMessage.userName = assignment.user.user_name;
     useNotificationMessage.isNotificationVisible = false;
@@ -122,8 +120,8 @@ async function tryDelete(
                 );
                 userRoleAssignments.value = userRoleAssignments.value!.filter(
                     (a) => {
-                        return !(
-                            a.user_role_xref_id == assignment.user_role_xref_id
+                        return (
+                            a.user_role_xref_id != assignment.user_role_xref_id
                         );
                     }
                 );
@@ -140,7 +138,12 @@ async function tryDelete(
 <template>
     <ConfirmDialog group="templating">
         <template #message>
-            <p >Are you sure you want to remove <strong>{{ confirmRemoveMessage.role }}</strong> access to <strong>{{ confirmRemoveMessage.userName }}</strong> in <strong>{{ selectedApplicationDisplayText }}</strong></p>
+            <p>
+                Are you sure you want to remove
+                <strong>{{ confirmRemoveMessage.role }}</strong> access to
+                <strong>{{ confirmRemoveMessage.userName }}</strong> in
+                <strong>{{ selectedApplicationDisplayText }}</strong>
+            </p>
         </template>
     </ConfirmDialog>
 
@@ -266,11 +269,7 @@ async function tryDelete(
                         <template #body="{ data }">
                             <button
                                 class="btn btn-icon"
-                                @click="
-                                    tryDelete(
-                                        data
-                                    )
-                                "
+                                @click="tryDelete(data)"
                             >
                                 <span class="remove-action">Remove</span>
                             </button>

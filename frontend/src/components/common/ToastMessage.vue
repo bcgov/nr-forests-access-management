@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import Toast, { type ToastMessageOptions } from 'primevue/toast';
+import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { app } from '@/main';
-import axios, { type AxiosError } from 'axios';
+import axios from 'axios';
 import {
     useNotificationMessage,
     useErrorDialog,
 } from '@/store/ApplicationState';
 import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
-import type { ToastOptions } from 'vue-toastification/dist/types/types';
 
 const toast = useToast();
 
