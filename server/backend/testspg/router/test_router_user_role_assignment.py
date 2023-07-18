@@ -1,12 +1,15 @@
 import copy
 import logging
 from http import HTTPStatus
+import datetime
 
-import pytest
 import starlette.testclient
+import pytest
 import testspg.jwt_utils as jwt_utils
-from api.app.crud import crud_application, crud_role, crud_user
+import testspg.db_test_utils as db_test_utils
+from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+from api.app.routers.router_user_role_assignment import ERROR_SELF_GRANT_PROHIBITED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -19,7 +22,10 @@ from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
                                TEST_FOM_TEST_APPLICATION_ID,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE)
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
+                               TEST_FOM_DEV_REVIEWER_ROLE_ID)
+from api.app.models import model as models
+from api.app.constants import UserType
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -33,10 +39,33 @@ def fom_dev_access_admin_token(test_rsa_key):
     access_roles = [FOM_DEV_ADMIN_ROLE]
     return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 
+
+# Need to have a user in the DB corresponding to the holder of the access token
+@pytest.fixture(scope="function")
+def fom_dev_access_admin_token_with_matching_db_user(
+        fom_dev_access_admin_token,
+        db_pg_session: Session
+):
+    fam_user_dict = {
+        "user_type_code": UserType.IDIR,
+        "cognito_user_id": jwt_utils.COGNITO_USERNAME,
+        "user_name": jwt_utils.IDIR_USERNAME,
+        "user_guid": jwt_utils.IDP_USER_GUID,
+        "create_user": "ANY_USER",
+        "create_date": datetime.datetime.now()
+    }
+    user_record = models.FamUser(**fam_user_dict)
+    db_pg_session.add(user_record)
+    db_pg_session.flush()
+
+    return fom_dev_access_admin_token
+
+
 @pytest.fixture(scope="function")
 def fom_test_access_admin_token(test_rsa_key):
     access_roles = [FOM_TEST_ADMIN_ROLE]
     return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+
 
 # note: this might need to be a real idir username
 # and a real forest client id
@@ -439,6 +468,7 @@ def test_user_role_forest_client_number_not_exist_bad_request(
             in response.json()["detail"]
             )
 
+
 def test_user_role_forest_client_number_inactive_bad_request(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
@@ -460,3 +490,69 @@ def test_user_role_forest_client_number_inactive_bad_request(
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
     assert ("Forest Client is not in Active status")
+
+
+def test_self_grant_fail(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token_with_matching_db_user,
+    db_pg_session: Session
+):
+    # Setup challenge: The user in the json sent to the service must match the user
+    # in the JWT security token.
+    user_role_assignment_request_data = {
+        "user_name": jwt_utils.IDIR_USERNAME,
+        "user_type_code": UserType.IDIR,
+        "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID
+    }
+
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=user_role_assignment_request_data,
+        headers=jwt_utils.headers(fom_dev_access_admin_token_with_matching_db_user)
+    )
+
+    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+        db_pg_session,
+        jwt_utils.COGNITO_USERNAME,
+        TEST_FOM_DEV_REVIEWER_ROLE_ID
+    )
+    assert row is None, "Expected user role assignment not to be created"
+
+    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+
+
+def test_self_remove_grant_fail(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token_with_matching_db_user,
+    db_pg_session: Session
+):
+
+    # Setup: the user_role_assignment record already exists
+    # It should NOT get deleted
+    user = crud_user.get_user_by_cognito_user_id(
+        db=db_pg_session,
+        cognito_user_id=jwt_utils.COGNITO_USERNAME
+    )
+    user_role = crud_user_role.create(
+        db=db_pg_session,
+        user_id=user.user_id,
+        role_id=TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        requester=jwt_utils.COGNITO_USERNAME
+    )
+
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role.user_role_xref_id}",
+        headers=jwt_utils.headers(fom_dev_access_admin_token_with_matching_db_user)
+    )
+
+    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+        db_pg_session,
+        jwt_utils.COGNITO_USERNAME,
+        TEST_FOM_DEV_REVIEWER_ROLE_ID
+    )
+    assert row is not None, "Expected user role assignment not to be deleted"
+
+    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+
+
+

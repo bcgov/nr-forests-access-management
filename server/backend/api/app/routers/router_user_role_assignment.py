@@ -1,13 +1,15 @@
 from http import HTTPStatus
 import logging
 
-from api.app.crud import crud_user_role, crud_application
-from fastapi import APIRouter, Depends, Response
+from api.app.crud import crud_user_role, crud_application, crud_user
+from fastapi import APIRouter, Depends, Response, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import database, schemas, jwt_validation
 
 LOGGER = logging.getLogger(__name__)
+
+ERROR_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
 
 router = APIRouter()
 
@@ -17,7 +19,7 @@ def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    requester: str = Depends(jwt_validation.get_request_username)
+    requester: str = Depends(jwt_validation.get_request_username),
 ):
     """
     Create FAM user_role_xref association.
@@ -26,8 +28,14 @@ def create_user_role_assignment(
 
     # Enforce application-level security
     application_id = crud_application.get_application_id_by_role_id(
-        db, role_assignment_request.role_id)
+        db, role_assignment_request.role_id
+    )
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
+
+    # Enforce self-grant guard
+    request_user_name = role_assignment_request.user_name
+    request_user_type_code = role_assignment_request.user_type_code
+    enforce_self_grant_guard(db, requester, request_user_name, request_user_type_code)
 
     create_data = crud_user_role.create_user_role(
         db, role_assignment_request, requester
@@ -43,12 +51,13 @@ def create_user_role_assignment(
     "/{user_role_xref_id}",
     status_code=HTTPStatus.NO_CONTENT,
     response_class=Response,
-    dependencies=[Depends(jwt_validation.get_request_username)]
+    dependencies=[Depends(jwt_validation.get_request_username)],
 )
 def delete_user_role_assignment(
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize)
+    token_claims: dict = Depends(jwt_validation.authorize),
+    requester: str = Depends(jwt_validation.get_request_username),
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -62,8 +71,30 @@ def delete_user_role_assignment(
 
     # Enforce application-level security
     application_id = crud_application.get_application_id_by_user_role_xref_id(
-        db, user_role_xref_id)
+        db, user_role_xref_id
+    )
     jwt_validation.authorize_by_app_id(application_id, db, token_claims)
+
+    # Enforce self-grant guard
+    target_user = crud_user.get_user_by_user_role_xref_id(db, user_role_xref_id)
+    enforce_self_grant_guard(db, requester, target_user.user_name, target_user.user_type_code)
 
     crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
     LOGGER.debug(f"User/Role assignment deleted successfully, id: {user_role_xref_id}")
+
+
+def enforce_self_grant_guard(db, requester, target_user_name, target_user_type_code):
+    requesting_user = crud_user.get_user_by_cognito_user_id(db, requester)
+    if requesting_user is not None:
+        is_same_user_name = requesting_user.user_name == target_user_name
+        is_same_user_type_code = requesting_user.user_type_code == target_user_type_code
+
+        if is_same_user_name and is_same_user_type_code:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": ERROR_SELF_GRANT_PROHIBITED,
+                    "description": "Granting roles to self is not allowed",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
