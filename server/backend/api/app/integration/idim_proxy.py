@@ -11,10 +11,8 @@ LOGGER = logging.getLogger(__name__)
 
 class IdimProxyService():
     """
-    The class is used for making requests to get information from IDIM Proxy API.
-    Spec of API:
-        test: ?
-        prod: ?
+    The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
+    See environment setup (local-dev.env) for idim-proxy TEST api-docs.
     """
     TIMEOUT = (4, 20) # Timeout (connect, read) in seconds.
     RETRY = 3
@@ -41,8 +39,12 @@ class IdimProxyService():
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
     def search_idir(self):
+        """
+        Search on IDIR user.
+        Note, current idim-proxy only does exact match.
+        """
         query_params = self.original_request.query_params
-        url = f"{self.api_idim_proxy_url}/idir"
+        url = f"{self.api_idim_proxy_url}/idim-webservice/idir"
         LOGGER.info(f"IdimProxyService search_idir() - url: {url} and param: {query_params}")
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
