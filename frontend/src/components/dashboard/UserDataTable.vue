@@ -65,7 +65,7 @@
                 <template #body="{ data }">
                     <button
                         class="btn btn-icon"
-                        @click="$emit('tryDelete', data)"
+                        @click="$emit('deleteUserRoleAssignment', data)"
                     >
                         <span class="remove-action">Remove</span>
                     </button>

@@ -3,7 +3,6 @@ import { computed, onMounted, ref, reactive } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from 'primevue/useconfirm';
-import { FilterMatchMode } from 'primevue/api';
 
 import DashboardTitle from './DashboardTitle.vue';
 import UserDataTable from './UserDataTable.vue';
@@ -34,23 +33,6 @@ const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'role.parent_role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.client_number.forest_client_number': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-});
-
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     try {
@@ -65,11 +47,11 @@ onMounted(async () => {
     }
 
     if (isApplicationSelected) {
-        getAccessList();
+        getAppUserRoleAssignment();
     }
 });
 
-async function getAccessList() {
+async function getAppUserRoleAssignment() {
     try {
         loading.value = true;
         const list = (
@@ -98,7 +80,7 @@ async function getAccessList() {
 const selectApplication = (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     if (isApplicationSelected) {
-        getAccessList();
+        getAppUserRoleAssignment();
     }
 };
 
@@ -106,7 +88,9 @@ const filteredOptions = computed(() => {
     return applicationsUserAdministers.value;
 });
 
-async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
+async function deleteUserRoleAssignment(
+    assignment: FamApplicationUserRoleAssignmentGet
+) {
     confirmRemoveMessage.role = assignment.role.role_name;
     confirmRemoveMessage.userName = assignment.user.user_name;
     useNotificationMessage.isNotificationVisible = false;
@@ -153,25 +137,18 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
 
     <DashboardTitle :isApplicationSelected="isApplicationSelected" />
 
-    <div class="page-body">
-        <form id="selectApplicationForm" class="form-container dashboard-form">
-            <div class="form-group">
-                <div class="row">
-                    <label
-                        >Select an application you would like to grant
-                        access</label
-                    >
-                    <Dropdown
-                        v-model="selectedApplication"
-                        @change="selectApplication"
-                        :options="filteredOptions"
-                        optionLabel="application_description"
-                        placeholder="Choose an option"
-                        class="application-dropdown"
-                    />
-                </div>
-            </div>
-        </form>
+    <div class="page-body form-container">
+        <div class="row">
+            <label>Select an application you would like to grant access</label>
+            <Dropdown
+                v-model="selectedApplication"
+                @change="selectApplication"
+                :options="filteredOptions"
+                optionLabel="application_description"
+                placeholder="Choose an option"
+                class="application-dropdown"
+            />
+        </div>
 
         <NotificationMessage
             v-if="useNotificationMessage.isNotificationVisible"
@@ -179,15 +156,15 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
             :msgText="useNotificationMessage.notificationMsg"
             icon="CheckIcon"
         />
-    </div>
 
-    <UserDataTable
-        v-if="isApplicationSelected"
-        :loading="loading"
-        :userRoleAssignments="userRoleAssignments || []"
-        :selectedApplicationDisplayText="selectedApplicationDisplayText"
-        @tryDelete="tryDelete"
-    />
+        <UserDataTable
+            v-if="isApplicationSelected"
+            :loading="loading"
+            :userRoleAssignments="userRoleAssignments || []"
+            :selectedApplicationDisplayText="selectedApplicationDisplayText"
+            @deleteUserRoleAssignment="deleteUserRoleAssignment"
+        />
+    </div>
 </template>
 
 <style scoped lang="scss">
