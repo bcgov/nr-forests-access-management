@@ -2,11 +2,11 @@
 import { ref, type PropType, onMounted } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import type { FamUserRoleAssignmentCreate } from 'fam-api';
 import {
     selectedApplicationDisplayText,
     useNotificationMessage,
 } from '@/store/ApplicationState';
+import type { FamUserRoleAssignmentCreate } from 'fam-api';
 
 const selected = ref('');
 const props = defineProps({

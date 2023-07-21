@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import axios from 'axios';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
+import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
 import { app } from '@/main';
-import axios from 'axios';
 import {
     useNotificationMessage,
     useErrorDialog,
 } from '@/store/ApplicationState';
-import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
 
 const toast = useToast();
 
