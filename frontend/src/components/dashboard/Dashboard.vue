@@ -54,21 +54,23 @@ onMounted(async () => {
 async function getAppUserRoleAssignment() {
     try {
         loading.value = true;
-        const list = (
+        const userRoleAssignmentList = (
             await applicationsApi.getFamApplicationUserRoleAssignment(
                 selectedApplication.value!.application_id
             )
         ).data;
-        userRoleAssignments.value = list.toSorted((first, second) => {
-            const nameCompare = first.user.user_name.localeCompare(
-                second.user.user_name
-            );
-            if (nameCompare != 0) return nameCompare;
-            const roleCompare = first.role.role_name.localeCompare(
-                second.role.role_name
-            );
-            return roleCompare;
-        });
+        userRoleAssignments.value = userRoleAssignmentList.toSorted(
+            (first, second) => {
+                const nameCompare = first.user.user_name.localeCompare(
+                    second.user.user_name
+                );
+                if (nameCompare != 0) return nameCompare;
+                const roleCompare = first.role.role_name.localeCompare(
+                    second.role.role_name
+                );
+                return roleCompare;
+            }
+        );
     } catch (error: unknown) {
         router.push('/dashboard');
         return Promise.reject(error);
@@ -84,7 +86,7 @@ const selectApplication = (e: DropdownChangeEvent) => {
     }
 };
 
-const filteredOptions = computed(() => {
+const selectApplicationOptions = computed(() => {
     return applicationsUserAdministers.value;
 });
 
@@ -143,7 +145,7 @@ async function deleteUserRoleAssignment(
             <Dropdown
                 v-model="selectedApplication"
                 @change="selectApplication"
-                :options="filteredOptions"
+                :options="selectApplicationOptions"
                 optionLabel="application_description"
                 placeholder="Choose an option"
                 class="application-dropdown"

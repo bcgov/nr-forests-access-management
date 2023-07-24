@@ -7,7 +7,7 @@ import PageTitle from '@/components/common/PageTitle.vue';
 import { selectedApplication } from '@/store/ApplicationState';
 
 // import { $vfm } from 'vue-final-modal';
-import Dialog from '@/components/dialog/Dialog.vue';
+import Dialog from '@/components/common/Dialog.vue';
 
 import { $vfm } from 'vue-final-modal';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api';

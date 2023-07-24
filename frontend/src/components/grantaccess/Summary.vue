@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import Dialog from '../common/Dialog.vue';
+import SummaryCard from './SummaryCard.vue';
+import router from '@/router';
 import {
     selectedApplicationDisplayText,
     grantAccessFormData,
     useNotificationMessage,
     useErrorDialog,
 } from '@/store/ApplicationState';
-import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
-import Dialog from './dialog/Dialog.vue';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();

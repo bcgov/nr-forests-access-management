@@ -1,30 +1,34 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
+import { number, object, string } from 'yup';
+
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import RadioButton from 'primevue/radiobutton';
+import ForestClientCard from './ForestClientCard.vue';
+
+import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
     grantAccessFormData,
 } from '@/store/ApplicationState';
+
 import type {
     FamApplicationRole,
     FamForestClient,
     FamUserRoleAssignmentCreate,
 } from 'fam-api';
-import { onMounted, ref } from 'vue';
-import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
-import router from '@/router';
-import { number, object, string } from 'yup';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import RadioButton from 'primevue/radiobutton';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
+const loading = ref<boolean>(false);
+const userLoaded = ref<boolean>(false);
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
-let applicationRoleOptions = ref<FamApplicationRole[]>([]);
-let forestClient: FamForestClient[] | null = null;
-let loading = ref<boolean>(false);
-let userLoaded = ref<boolean>(false);
+const applicationRoleOptions = ref<FamApplicationRole[]>([]);
+const forestClientData = ref<FamForestClient[] | null>(null);
 let invalidForestClient = ref<boolean>(false);
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -33,11 +37,12 @@ const defaultFormData = {
     role_id: null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 
-const schema = object({
+const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
@@ -61,6 +66,7 @@ onMounted(async () => {
                 selectedApplication?.value?.application_id as number
             )
         ).data as FamApplicationRole[];
+
         if (grantAccessFormData.value) {
             let formTemp = {
                 domain: grantAccessFormData.value.user_type_code,
@@ -81,9 +87,62 @@ onMounted(async () => {
     }
 });
 
-function onlyDigit(evt: KeyboardEvent) {
+function userIdChange() {
+    userLoaded.value = false;
+    resetForestClientNumberData();
+}
+
+function verifyUserId(userId: string) {
+    //TODO: Remove this timeout and replace with the call to the API that validates the user ID
+    loading.value = true;
+    setTimeout(() => {
+        loading.value = false;
+        userLoaded.value = true;
+    }, 1500);
+}
+
+const getSelectedRole = (): FamApplicationRole | undefined => {
+    return applicationRoleOptions.value.find(
+        (item) => item.role_id === formData.value.role_id
+    );
+};
+
+const isAbstractRoleSelected = () => {
+    return getSelectedRole()?.role_type_code == 'A';
+};
+
+function onRoleSelected(evt: DropdownChangeEvent) {
+    forestClientData.value = null;
+    formData.value.forestClientNumber = '';
+    invalidForestClient.value = isAbstractRoleSelected();
+}
+
+function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
     if (isNaN(parseInt(evt.key))) {
         evt.preventDefault();
+    }
+}
+
+function resetForestClientNumberData() {
+    invalidForestClient.value = true;
+    forestClientData.value = null;
+}
+
+async function verifyForestClientNumber(forestClientNumber: string) {
+    loading.value = true;
+    try {
+        forestClientData.value = (
+            await forestClientApi.search(forestClientNumber)
+        ).data;
+    } catch (err: any) {
+        return Promise.reject(err);
+    } finally {
+        loading.value = false;
+        if (forestClientData.value?.[0]?.status?.description !== 'Active') {
+            invalidForestClient.value = true;
+        } else {
+            invalidForestClient.value = false;
+        }
     }
 }
 
@@ -108,64 +167,13 @@ function toRequestPayload(formData: any) {
     } as FamUserRoleAssignmentCreate;
     return request;
 }
-
-function onRoleSelected(evt: DropdownChangeEvent) {
-    forestClient = null;
-    formData.value.forestClientNumber = '';
-    invalidForestClient.value = isAbstractRoleSelected();
-}
-
-async function getForestClientNumber(forestClientNumber: string) {
-    loading.value = true;
-    try {
-        forestClient = (await forestClientApi.search(forestClientNumber)).data;
-    } catch (err: any) {
-        return Promise.reject(err);
-    } finally {
-        loading.value = false;
-        if (forestClient?.[0]?.status?.description !== 'Active') {
-            invalidForestClient.value = true;
-        } else {
-            invalidForestClient.value = false;
-        }
-    }
-}
-
-function getUserId(userId: string) {
-    //TODO: Remove this timeout and replace with the call to the API that validates the user ID
-    loading.value = true;
-    setTimeout(() => {
-        loading.value = false;
-        userLoaded.value = true;
-    }, 1500);
-}
-
-function forestClientNumberChange() {
-    invalidForestClient.value = true;
-    forestClient = null;
-}
-
-function userIdChange() {
-    userLoaded.value = false;
-    forestClientNumberChange();
-}
-
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value.find(
-        (item) => item.role_id === formData.value.role_id
-    );
-};
-
-const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.role_type_code == 'A';
-};
 </script>
 
 <template>
     <VeeForm
         ref="form"
         v-slot="{ handleSubmit, errors, meta }"
-        :validation-schema="schema"
+        :validation-schema="formValidationSchema"
         as="div"
     >
         <PageTitle
@@ -266,7 +274,7 @@ const isAbstractRoleSelected = () => {
                             <div class="col-md-3" v-if="!userLoaded">
                                 <Button
                                     class="button p-button-tertiary p-button-outlined"
-                                    @click="getUserId('4')"
+                                    @click="verifyUserId('4')"
                                     v-bind:disabled="
                                         formData.userId?.length < 2 || loading
                                     "
@@ -349,8 +357,10 @@ const isAbstractRoleSelected = () => {
                                         :validateOnChange="true"
                                         v-bind="field"
                                         class="w-100"
-                                        v-on:keypress="onlyDigit($event)"
-                                        @input="forestClientNumberChange()"
+                                        v-on:keypress="
+                                            forestClientCheckOnlyDigit($event)
+                                        "
+                                        @input="resetForestClientNumberData()"
                                         :class="{
                                             'is-invalid':
                                                 errors.forestClientNumber,
@@ -366,7 +376,7 @@ const isAbstractRoleSelected = () => {
                                 <Button
                                     class="button p-button-tertiary p-button-outlined"
                                     @click="
-                                        getForestClientNumber(
+                                        verifyForestClientNumber(
                                             formData.forestClientNumber
                                         )
                                     "
@@ -385,11 +395,11 @@ const isAbstractRoleSelected = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="row" v-if="forestClient">
+                    <div class="row" v-if="forestClientData">
                         <div class="form-group col-md-5 px-0">
                             <ForestClientCard
-                                :text="forestClient?.[0]?.client_name"
-                                :status="forestClient?.[0]?.status"
+                                :text="forestClientData?.[0]?.client_name"
+                                :status="forestClientData?.[0]?.status"
                             ></ForestClientCard>
                         </div>
                     </div>
