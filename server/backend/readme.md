@@ -78,6 +78,14 @@ python3 serverstart.py
 3. Click "Run and Debug" button
 4. Select "Debug the currently active Python file"
 
+## Alternatively, run the API from VS Code launch configuration
+
+1. Click on "Run and Debug" on the side menu bar
+2. On the top of the window is a dropdown. "Debug FAM API" should be an option. Select it.
+3. Click the little green arrow.
+
+The debug configuration is in /.vscode/launch.json. The environment variable get loaded at runtime from the local-dev.env file.
+
 # Using Virtual Environment
 
 If you have multiple python projects locally and you want to isolate your FAM developments, you can use a virtual environment. VS Code does not debug into the virtual environment (that we can determine).

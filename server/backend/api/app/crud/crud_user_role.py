@@ -145,6 +145,7 @@ def create(db: Session, user_id: int, role_id: int, requester: str):
     )
     db.add(new_fam_user_role)
     db.flush()
+    db.refresh(new_fam_user_role)
     LOGGER.debug(f"New FamUserRoleXref added for {new_fam_user_role.__dict__}")
     return new_fam_user_role
 

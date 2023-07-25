@@ -122,3 +122,32 @@ def find_or_create(
 
     LOGGER.debug(f"User {fam_user.user_id} found.")
     return fam_user
+
+
+def get_user_by_cognito_user_id(
+    db: Session, cognito_user_id: str
+) -> models.FamUser:
+    user = (
+        db.query(models.FamUser)
+        .filter(
+            models.FamUser.cognito_user_id == cognito_user_id
+        )
+        .one_or_none()
+    )
+    return user
+
+
+def get_user_by_user_role_xref_id(
+    db: Session, user_role_xref_id: int
+) -> models.FamUser:
+    user = (
+        db.query(models.FamUser)
+        .join(models.FamUserRoleXref)
+        .filter(
+            models.FamUserRoleXref.user_role_xref_id == user_role_xref_id,
+        )
+        .one_or_none()
+    )
+    return user
+
+

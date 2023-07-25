@@ -6,23 +6,23 @@ locals {
   common_vars = read_terragrunt_config(find_in_parent_folders("common_vars.hcl"))
 }
 
-generate "dev_tfvars" {
-  path              = "dev.auto.tfvars"
+generate "tools_tfvars" {
+  path              = "tools.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "dev-fam-user-pool-bcsc"
-  fam_user_pool_domain_name = "dev-fam-user-pool-domain"
-  famdb_cluster_name = "dev-fam-cluster"
+  fam_user_pool_name = "tools-fam-user-pool-bcsc"
+  fam_user_pool_domain_name = "tools-fam-user-pool-domain"
+  famdb_cluster_name = "tools-fam-cluster"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
   oidc_idir_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
   oidc_bceid_business_idp_client_id = "fsa-cognito-b-ce-id-business-dev-4090"
   aws_security_group_data = "Data_sg"
-  subnet_data_a = "Data_Dev_aza_net"
-  subnet_data_b = "Data_Dev_azb_net"
+  subnet_data_a = "Data_Tools_aza_net"
+  subnet_data_b = "Data_Tools_azb_net"
   aws_security_group_app = "App_sg"
-  subnet_app_a = "App_Dev_aza_net"
-  subnet_app_b = "App_Dev_azb_net"
+  subnet_app_a = "App_Tools_aza_net"
+  subnet_app_b = "App_Tools_azb_net"
   cognito_app_client_logout_chain_url = {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"

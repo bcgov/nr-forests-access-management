@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.2.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.2.1...v1.2.2) (2023-07-13)
+
+
+### Bug Fixes
+
+* [#592](https://github.com/bcgov/nr-forests-access-management/issues/592) renovate dashboard backend ([#612](https://github.com/bcgov/nr-forests-access-management/issues/612)) ([838babf](https://github.com/bcgov/nr-forests-access-management/commit/838babfc66db9de8436f27ee0723a392ddc01fd9))
+* **config:** [#578](https://github.com/bcgov/nr-forests-access-management/issues/578) Onboard Silva to FAM ([#641](https://github.com/bcgov/nr-forests-access-management/issues/641)) ([92b0b94](https://github.com/bcgov/nr-forests-access-management/commit/92b0b94f351409d80f36be0cc19ae05ec6caf7f4))
+* **deps:** update dependency aws-amplify to v5 ([#600](https://github.com/bcgov/nr-forests-access-management/issues/600)) ([10f487e](https://github.com/bcgov/nr-forests-access-management/commit/10f487e9c43966e916ac916b1591b5b119e9a7ed))
+* **deps:** update dependency boto3 to v1.26.147 ([#629](https://github.com/bcgov/nr-forests-access-management/issues/629)) ([e55ab75](https://github.com/bcgov/nr-forests-access-management/commit/e55ab7580ed9731d342813798b53bf71bea9d1f9))
+* **deps:** update dependency cryptography to v41 [security] ([#625](https://github.com/bcgov/nr-forests-access-management/issues/625)) ([f3e65cc](https://github.com/bcgov/nr-forests-access-management/commit/f3e65cc4e24de02f56714af4fd5097526c0364f3))
+* **deps:** update dependency mangum to v0.17.0 ([#630](https://github.com/bcgov/nr-forests-access-management/issues/630)) ([cefa173](https://github.com/bcgov/nr-forests-access-management/commit/cefa17328695c3fa8a6c1272a28814dcbe1c524b))
+* **deps:** update dependency uvicorn to v0.22.0 ([#634](https://github.com/bcgov/nr-forests-access-management/issues/634)) ([3ee9e82](https://github.com/bcgov/nr-forests-access-management/commit/3ee9e829521b224d50e833a8f74f855cfb6d1e2e))
+
+
+### Miscellaneous
+
+* [#194](https://github.com/bcgov/nr-forests-access-management/issues/194) add deployment smoke test ([#609](https://github.com/bcgov/nr-forests-access-management/issues/609)) ([b040435](https://github.com/bcgov/nr-forests-access-management/commit/b0404355cdce2c1433b3c8bd1d3055b0942bac07))
+* [#475](https://github.com/bcgov/nr-forests-access-management/issues/475) enable tools environment ([#680](https://github.com/bcgov/nr-forests-access-management/issues/680)) ([e338e38](https://github.com/bcgov/nr-forests-access-management/commit/e338e3897b93cb598aca26a5a7579cf27128670d))
+* [#475](https://github.com/bcgov/nr-forests-access-management/issues/475) repair tools ci ([#682](https://github.com/bcgov/nr-forests-access-management/issues/682)) ([3853660](https://github.com/bcgov/nr-forests-access-management/commit/38536607cc6651c6a7da539b6877d469771bf8f9))
+* [#475](https://github.com/bcgov/nr-forests-access-management/issues/475) tune tools deployment scripts ([#681](https://github.com/bcgov/nr-forests-access-management/issues/681)) ([cfd5ffe](https://github.com/bcgov/nr-forests-access-management/commit/cfd5ffea425cc7357923386e0450f411af48d950))
+* [#594](https://github.com/bcgov/nr-forests-access-management/issues/594) backend cleanup alembic remnants ([#614](https://github.com/bcgov/nr-forests-access-management/issues/614)) ([333c566](https://github.com/bcgov/nr-forests-access-management/commit/333c5663505d1fbc4e138bcb382b9f80547567cf))
+* [#87](https://github.com/bcgov/nr-forests-access-management/issues/87) backend and auth sonar adjustments and fixes ([#669](https://github.com/bcgov/nr-forests-access-management/issues/669)) ([22bce51](https://github.com/bcgov/nr-forests-access-management/commit/22bce512b98a5e46070009a9cd893cc0c98c5bf7))
+* [#87](https://github.com/bcgov/nr-forests-access-management/issues/87) code coverage debugging ([#674](https://github.com/bcgov/nr-forests-access-management/issues/674)) ([ce9752d](https://github.com/bcgov/nr-forests-access-management/commit/ce9752dcbcbc6b759d7cf4fce85952938c287c31))
+* [#87](https://github.com/bcgov/nr-forests-access-management/issues/87) coverage for PRs ([#666](https://github.com/bcgov/nr-forests-access-management/issues/666)) ([5f68a9e](https://github.com/bcgov/nr-forests-access-management/commit/5f68a9ebbd258bef995983d56efe1cd19e06ebcf))
+* [#87](https://github.com/bcgov/nr-forests-access-management/issues/87) sonar cloud with coverage ([#668](https://github.com/bcgov/nr-forests-access-management/issues/668)) ([f3ff8b1](https://github.com/bcgov/nr-forests-access-management/commit/f3ff8b11a66d54b799f56c086de68413367abd26))
+* 475 eliminate pet names ([#683](https://github.com/bcgov/nr-forests-access-management/issues/683)) ([f12537d](https://github.com/bcgov/nr-forests-access-management/commit/f12537d2e4c5d4d83797b44ac8517e55eb10e996))
+* **api-tests:** [#649](https://github.com/bcgov/nr-forests-access-management/issues/649) refactor tests api ([#652](https://github.com/bcgov/nr-forests-access-management/issues/652)) ([4c34a91](https://github.com/bcgov/nr-forests-access-management/commit/4c34a913ea4279e7a3c19ac6f04eb45ff8053152))
+* **auth_function:** [#649](https://github.com/bcgov/nr-forests-access-management/issues/649) refactor tests ([#650](https://github.com/bcgov/nr-forests-access-management/issues/650)) ([8742f4b](https://github.com/bcgov/nr-forests-access-management/commit/8742f4b7358e06184efe9b74fc756ed16d940ff3))
+* coverage for main merge ([#664](https://github.com/bcgov/nr-forests-access-management/issues/664)) ([0fa6c46](https://github.com/bcgov/nr-forests-access-management/commit/0fa6c46d2e5ef0681aa2e0afc61db48ac9e2f128))
+* **deps:** [#87](https://github.com/bcgov/nr-forests-access-management/issues/87) update dependency fastapi to v0.98.0 ([#671](https://github.com/bcgov/nr-forests-access-management/issues/671)) ([c8eacbf](https://github.com/bcgov/nr-forests-access-management/commit/c8eacbfbf13a4a6f803e0c8bd8d2c97986082ca4))
+* **deps:** update dependency @types/node to v18 ([#585](https://github.com/bcgov/nr-forests-access-management/issues/585)) ([3475d32](https://github.com/bcgov/nr-forests-access-management/commit/3475d32c0b4ac44b297a3fae890d6a1c27ce2787))
+* **deps:** update dependency boto3 to v1.26.162 ([#647](https://github.com/bcgov/nr-forests-access-management/issues/647)) ([43e5312](https://github.com/bcgov/nr-forests-access-management/commit/43e5312aea588607cfb9c469a117215a072d8a8e))
+* **deps:** update dependency botocore to v1.29.160 ([#667](https://github.com/bcgov/nr-forests-access-management/issues/667)) ([7b11409](https://github.com/bcgov/nr-forests-access-management/commit/7b11409b626229389167f601eb21d79052e6e752))
+* **deps:** update dependency fastapi to v0.98.0 ([#633](https://github.com/bcgov/nr-forests-access-management/issues/633)) ([fc54a7a](https://github.com/bcgov/nr-forests-access-management/commit/fc54a7a3d931d37d3662b7050871aa1c455eab3c))
+* **deps:** update dependency jsdom to v22 ([#589](https://github.com/bcgov/nr-forests-access-management/issues/589)) ([ecd6903](https://github.com/bcgov/nr-forests-access-management/commit/ecd690370dffa5029133c0a5a3257e8f48acf084))
+* **deps:** update dependency vue-tsc to v1 ([#597](https://github.com/bcgov/nr-forests-access-management/issues/597)) ([a182bab](https://github.com/bcgov/nr-forests-access-management/commit/a182bab1caae0750a6b9562157453536b2587eea))
+* **deps:** update dependency yup to v1 ([#598](https://github.com/bcgov/nr-forests-access-management/issues/598)) ([069f250](https://github.com/bcgov/nr-forests-access-management/commit/069f250c5b4880d540ffd9727bdd371187b25cf8))
+* **deps:** update vite to v4 (major) ([#590](https://github.com/bcgov/nr-forests-access-management/issues/590)) ([786f76b](https://github.com/bcgov/nr-forests-access-management/commit/786f76b476f802cad4b5362af56aceebddd21ec1))
+* **deps:** update vitest monorepo to ^0.32.0 ([#643](https://github.com/bcgov/nr-forests-access-management/issues/643)) ([48f8140](https://github.com/bcgov/nr-forests-access-management/commit/48f81408a69329a145bda67350e8e571430879bd))
+* Remove unnecessary "@types/node": "^18.0.0" from frontend. ([#611](https://github.com/bcgov/nr-forests-access-management/issues/611)) ([758088d](https://github.com/bcgov/nr-forests-access-management/commit/758088d62097bd3e213474ffba2800b9ccc5dff6))
+* renovate prConcurrentLimit=3 ([#677](https://github.com/bcgov/nr-forests-access-management/issues/677)) ([474fb49](https://github.com/bcgov/nr-forests-access-management/commit/474fb49af7f94b7a456fe0f1508367154a71619b))
+
 ## [1.2.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.2.0...v1.2.1) (2023-05-25)
 
 

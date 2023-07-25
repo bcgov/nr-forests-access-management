@@ -1,7 +1,5 @@
 import logging
 
-from typing import List
-from api.app.crud import crud_application
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from .. import database
@@ -23,8 +21,18 @@ def smoke_test(
     List of different applications that are administered by FAM
     """
     LOGGER.debug(f"running router ... {db}")
-    fam_apps = db.query(models.FamApplication).all()
-    if len(fam_apps) == 0:
-        response.status_code = 417
-    return response
+
+    try:
+        fam_apps = db.query(models.FamApplication).all()
+        if len(fam_apps) == 0:
+            response.status_code = 417
+        else:
+            response.status_code = 200
+        return response
+
+    except Exception as e:
+        LOGGER.exception(e)
+        raise e
+
+
 

@@ -1,16 +1,16 @@
-
-resource "random_pet" "lambda_bucket_name" {
-  prefix = "ssp-testing-bucket"
-  length = 4
+locals {
+  flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.target_env}"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
-  bucket = random_pet.lambda_bucket_name.id
+  bucket = local.flyway_scripts_bucket_name
   #acl    = "public-read"
 
 }
+
 resource "aws_cloudfront_origin_access_identity" "web_distribution" {
 }
+
 data "aws_iam_policy_document" "web_distribution" {
   statement {
     actions = ["s3:GetObject"]
