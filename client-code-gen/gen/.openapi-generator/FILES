@@ -1,12 +1,16 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 README.md
 api.ts
+api/bcscproxy-api.ts
 api/famapplications-api.ts
 api/famforest-clients-api.ts
 api/famroles-api.ts
 api/famuser-role-assignment-api.ts
 api/famusers-api.ts
+api/idirbce-idproxy-api.ts
+api/smoke-test-api.ts
 base.ts
 common.ts
 configuration.ts

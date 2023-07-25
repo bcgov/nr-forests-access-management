@@ -28,10 +28,11 @@ class IdimProxyService():
     def __init__(self, original_request):
         self.original_request = original_request # The request should contains necessary header and user/auth token.
         self.api_idim_proxy_url = f"{config.get_idim_proxy_api_baseurl()}/api"
-        # TODO: pass encryption piece (maybe use salt as user token and request timestamp), would it be the same?
+        self.API_KEY = config.get_idim_proxy_api_key()
+        self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}
 
         self.session = requests.Session()
-        self.session.headers.update(self.original_request.headers)
+        self.session.headers.update(self.headers)
 
         ## backoff_factor, See ref: https://majornetwork.net/2022/04/handling-retries-in-python-requests/
         retries = urllib3.Retry(total=3, backoff_factor=1, status_forcelist=self.retry_codes)
