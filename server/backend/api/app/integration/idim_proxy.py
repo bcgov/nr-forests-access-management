@@ -1,13 +1,15 @@
-from http import HTTPStatus
 import logging
-from fastapi import HTTPException, Request
+from http import HTTPStatus
 
 import requests
 import urllib3
+from api.app.requester import Requester
 from api.config import config
 from requests.adapters import HTTPAdapter
 
 LOGGER = logging.getLogger(__name__)
+
+REQUESTER_ACCOUNT_TYPE_INTERNAL = "Internal"
 
 class IdimProxyService():
     """
@@ -23,10 +25,9 @@ class IdimProxyService():
         HTTPStatus.SERVICE_UNAVAILABLE, # 503
         HTTPStatus.GATEWAY_TIMEOUT, # 504
     ]
-    original_request: Request
 
-    def __init__(self, original_request):
-        self.original_request = original_request # The request should contains necessary header and user/auth token.
+    def __init__(self, requester: Requester):
+        self.requester = requester
         self.api_idim_proxy_url = f"{config.get_idim_proxy_api_baseurl()}/api"
         self.API_KEY = config.get_idim_proxy_api_key()
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}
@@ -39,12 +40,15 @@ class IdimProxyService():
         self.session.mount('https://', HTTPAdapter(max_retries=retries))
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
-    def search_idir(self):
+    async def search_idir(self, query_params: dict):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
         """
-        query_params = self.original_request.query_params
+        query_params.update({"requesterUserId": self.requester.user_name})
+        # The proxy allows only "Internal" for this search.
+        query_params.update({"requesterAccountTypeCode": REQUESTER_ACCOUNT_TYPE_INTERNAL})
+
         url = f"{self.api_idim_proxy_url}/idim-webservice/idir"
         LOGGER.info(f"IdimProxyService search_idir() - url: {url} and param: {query_params}")
 
