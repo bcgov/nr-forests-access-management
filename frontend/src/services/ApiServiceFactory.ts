@@ -4,7 +4,8 @@ import {
     FAMRolesApi,
     FAMUserRoleAssignmentApi,
     FAMUsersApi,
-    FAMForestClientsApi
+    FAMForestClientsApi,
+    IDIRBCeIDProxyApi
 } from 'fam-api';
 
 export class ApiServiceFactory {
@@ -13,6 +14,7 @@ export class ApiServiceFactory {
     private userRoleAssignmentApi: FAMUserRoleAssignmentApi;
     private usersApi: FAMUsersApi;
     private forestClientApi: FAMForestClientsApi;
+    private idirBceidProxyApi: IDIRBCeIDProxyApi;
 
     constructor() {
         // Instanciation for generated 'fam-api' client.
@@ -29,6 +31,7 @@ export class ApiServiceFactory {
         );
         this.usersApi = new FAMUsersApi(undefined, '', httpInstance);
         this.forestClientApi = new FAMForestClientsApi(undefined, '', httpInstance);
+        this.idirBceidProxyApi = new IDIRBCeIDProxyApi(undefined, '', httpInstance)
     }
 
     getApplicationApi(): FAMApplicationsApi {
@@ -49,5 +52,9 @@ export class ApiServiceFactory {
 
     getForestClientApi(): FAMForestClientsApi {
         return this.forestClientApi;
+    }
+
+    getIdirBceidProxyApi(): IDIRBCeIDProxyApi {
+        return this.idirBceidProxyApi;
     }
 }
