@@ -286,3 +286,7 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
             "user_id": {"exclude": True},
             "role_id": {"exclude": True},
         }
+
+
+class IdimProxySearchParamIdir(BaseModel):
+    userId: str

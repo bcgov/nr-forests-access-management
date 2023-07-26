@@ -4,6 +4,7 @@ from http import HTTPStatus
 import requests
 import urllib3
 from api.app.requester import Requester
+from api.app.schemas import IdimProxySearchParamIdir
 from api.config import config
 from requests.adapters import HTTPAdapter
 
@@ -40,11 +41,13 @@ class IdimProxyService():
         self.session.mount('https://', HTTPAdapter(max_retries=retries))
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
-    async def search_idir(self, query_params: dict):
+    def search_idir(self, search_params: IdimProxySearchParamIdir):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
         """
+        # query_params to request to idim-proxy
+        query_params = vars(search_params)
         query_params.update({"requesterUserId": self.requester.user_name})
         # The proxy allows only "Internal" for this search.
         query_params.update({"requesterAccountTypeCode": REQUESTER_ACCOUNT_TYPE_INTERNAL})
