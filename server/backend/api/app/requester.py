@@ -5,6 +5,8 @@ from typing import List, Union
 from api.app import database, jwt_validation
 from api.app.crud import crud_user
 from api.app.models.model import FamUser, FamUserType
+from api.app.utils.utils import read_json_file
+from api.config import config
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -47,17 +49,23 @@ async def get_current_requester(
     access_roles = Depends(jwt_validation.get_access_roles),
     db: Session = Depends(database.get_db)
 ):
-    # TODO: verify if it is good idea to get user from db or exchange ID Token with Cognito is better.
-    famUser: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
-    if famUser is None:
-        raise no_requester_exception
+    LOGGER.info(f"config.is_on_aws(): {config.is_on_aws()}")
+    # Deployment environments.
+    if config.is_on_aws():
+        famUser: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
+        if famUser is None:
+            raise no_requester_exception
 
-    return Requester(**{
-        "cognito_user_id": request_cognito_username,
-        "user_name": famUser.user_name,
-        "user_type": famUser.user_type_code,
-        "access_roles": access_roles
-    })
+        return Requester(**{
+            "cognito_user_id": request_cognito_username,
+            "user_name": famUser.user_name,
+            "user_type": famUser.user_type_code,
+            "access_roles": access_roles
+        })
+
+    # Below returns sanned data for local development ONLY. Contains only for IDIR user for now (No BCeID user).
+    # This is temporary solution discussed before we have other way to get requester info locally.
+    return Requester(**read_json_file("local-data.json")["requester"])
 
 
 async def internal_only_action(
