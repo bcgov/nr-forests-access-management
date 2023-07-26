@@ -1,12 +1,11 @@
 
 import logging
-from http.client import HTTPException
 from typing import List, Union
 
 from api.app import database, jwt_validation
 from api.app.crud import crud_user
 from api.app.models.model import FamUser, FamUserType
-from fastapi.params import Depends
+from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -62,7 +61,7 @@ async def get_current_requester(
 
 
 async def internal_only_action(
-    requester: Depends(get_current_requester)
+    requester=Depends(get_current_requester)
 ):
     if requester.user_type is not FamUserType.USER_TYPE_IDIR:
         raise external_user_prohibited_exception
