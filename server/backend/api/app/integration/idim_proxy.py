@@ -17,7 +17,7 @@ class IdimProxyService():
     The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
     See environment setup (local-dev.env) for idim-proxy TEST api-docs.
     """
-    TIMEOUT = (4, 20) # Timeout (connect, read) in seconds.
+    TIMEOUT = (5, 20) # Timeout (connect, read) in seconds.
     RETRY = 3
     retry_codes = [
         HTTPStatus.TOO_MANY_REQUESTS, # 429

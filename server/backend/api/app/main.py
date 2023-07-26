@@ -2,20 +2,22 @@ import logging.config
 import os.path
 
 from api.app import jwt_validation
-from api.config.config import get_allow_origins, get_root_path, is_bcsc_key_enabled
+from api.app.exception_handlers import (requests_http_error_handler,
+                                        unhandled_exception_handler)
+from api.config.config import (get_allow_origins, get_root_path,
+                               is_bcsc_key_enabled)
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+from requests import HTTPError
 from starlette.responses import RedirectResponse
 
-from mangum import Mangum
-
-from api.app.exception_handlers import unhandled_exception_handler
-
 from .jwt_validation import init_jwks
-from .routers import (router_application, router_forest_client, router_role,
-                      router_user, router_user_role_assignment, router_idim_proxy,
-                      router_bcsc_proxy, router_smoke_test)
 from .kms_lookup import init_bcsc_public_key
+from .routers import (router_application, router_bcsc_proxy,
+                      router_forest_client, router_idim_proxy, router_role,
+                      router_smoke_test, router_user,
+                      router_user_role_assignment)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -77,7 +79,9 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+app.add_exception_handler(HTTPError, requests_http_error_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
+
 
 @app.get("/", include_in_schema=False, tags=["docs"])
 def main():
