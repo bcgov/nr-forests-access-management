@@ -289,4 +289,4 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 
 class IdimProxySearchParamIdir(BaseModel):
-    userId: str
+    userId: str # param for Idim-Proxy search of this form (not snake case)

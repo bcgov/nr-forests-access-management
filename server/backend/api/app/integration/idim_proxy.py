@@ -29,7 +29,7 @@ class IdimProxyService():
 
     def __init__(self, requester: Requester):
         self.requester = requester
-        self.api_idim_proxy_url = f"{config.get_idim_proxy_api_baseurl()}/api"
+        self.api_idim_proxy_url = f"{config.get_idim_proxy_api_baseurl()}/api/idim-webservice"
         self.API_KEY = config.get_idim_proxy_api_key()
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}
 
@@ -52,7 +52,7 @@ class IdimProxyService():
         # The proxy allows only "Internal" for this search.
         query_params.update({"requesterAccountTypeCode": REQUESTER_ACCOUNT_TYPE_INTERNAL})
 
-        url = f"{self.api_idim_proxy_url}/idim-webservice/idir"
+        url = f"{self.api_idim_proxy_url}/idir"
         LOGGER.info(f"IdimProxyService search_idir() - url: {url} and param: {query_params}")
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
