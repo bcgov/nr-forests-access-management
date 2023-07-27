@@ -15,7 +15,6 @@ class TestIdimProxyServiceClass(object):
     """
     Testing IdimProxyService class with real remote API calls (TEST environment).
     """
-    # Test requester account exists, but user id not found (happy negatie path)
     search_params = IdimProxySearchParamIdir(**{"userId": "ianliu"}) # Valid test IDIR user.
 
     def setup_class(self):
