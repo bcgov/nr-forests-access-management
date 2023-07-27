@@ -56,7 +56,7 @@ class IdimProxyService():
         LOGGER.info(f"IdimProxyService search_idir() - url: {url} and param: {query_params}")
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
-        r.raise_for_status()
+        r.raise_for_status() # There is a general error handler, see: requests_http_error_handler
         api_result = r.json()
         LOGGER.debug(f"API result: {api_result}")
         return api_result

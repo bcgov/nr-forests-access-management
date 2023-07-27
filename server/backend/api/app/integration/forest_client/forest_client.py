@@ -56,7 +56,7 @@ class ForestClientService():
             return [api_result]
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError as he:
             status_code = r.status_code
             LOGGER.debug(f"API status code: {status_code}")
             LOGGER.debug(f"API result: {r.content or r.reason}")
@@ -71,7 +71,8 @@ class ForestClientService():
                 return [] # return empty for FAM forest client search
 
             # Else raise error, including 500
-            raise
+            # There is a general error handler, see: requests_http_error_handler
+            raise he
 
             """
             Dev Note - If in the future this class gets more endpoints to integrate, better improve
