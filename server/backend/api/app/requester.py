@@ -1,5 +1,6 @@
 
 import logging
+from http import HTTPStatus
 from typing import List, Union
 
 from api.app import database, jwt_validation
@@ -17,7 +18,7 @@ ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 
 no_requester_exception = HTTPException(
-    status_code=403,
+    status_code=HTTPStatus.FORBIDDEN, # 403
     detail={
         "code": ERROR_REQUESTER_NOT_EXISTS,
         "description": "Requester does not exist, action is not allowed",
@@ -25,7 +26,7 @@ no_requester_exception = HTTPException(
 )
 
 external_user_prohibited_exception = HTTPException(
-    status_code=403,
+    status_code=HTTPStatus.FORBIDDEN, # 403
     detail={
         "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
         "description": "Action is not allowed for external user.",
@@ -49,23 +50,24 @@ async def get_current_requester(
     access_roles = Depends(jwt_validation.get_access_roles),
     db: Session = Depends(database.get_db)
 ):
-    LOGGER.info(f"config.is_on_aws(): {config.is_on_aws()}")
     # Deployment environments.
     if config.is_on_aws():
         famUser: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
         if famUser is None:
             raise no_requester_exception
 
-        return Requester(**{
+        requester = {
             "cognito_user_id": request_cognito_username,
             "user_name": famUser.user_name,
             "user_type": famUser.user_type_code,
             "access_roles": access_roles
-        })
+        }
+    else:
+        # Below returns canned data for local development ONLY. Contains only for IDIR user for now (No BCeID user).
+        # This is temporary solution discussed before we have other way to get requester info locally.
+        requester = read_json_file("local-data.json")["requester"]
 
-    # Below returns sanned data for local development ONLY. Contains only for IDIR user for now (No BCeID user).
-    # This is temporary solution discussed before we have other way to get requester info locally.
-    return Requester(**read_json_file("local-data.json")["requester"])
+    return Requester(**requester)
 
 
 async def internal_only_action(
