@@ -18,7 +18,7 @@ class ForestClientService():
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
-    TIMEOUT = (4, 10) # Timeout (connect, read) in seconds.
+    TIMEOUT = (5, 15) # Timeout (connect, read) in seconds.
 
     def __init__(self):
         self.api_base_url = config.get_forest_client_api_baseurl()
