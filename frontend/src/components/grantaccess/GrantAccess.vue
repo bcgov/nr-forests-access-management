@@ -104,12 +104,6 @@ const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
 };
 
-function onRoleSelected(evt: DropdownChangeEvent) {
-    forestClientData.value = null;
-    formData.value.forestClientNumber = '';
-    invalidForestClient.value = isAbstractRoleSelected();
-}
-
 function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
     if (isNaN(parseInt(evt.key))) {
         evt.preventDefault();
@@ -272,7 +266,6 @@ async function submitForm() {
                             aria-label="Role Select"
                             v-slot="{ field, handleChange }"
                             v-model="formData.role_id"
-                            @change="onRoleSelected"
                         >
                             <Dropdown
                                 :options="applicationRoleOptions"
