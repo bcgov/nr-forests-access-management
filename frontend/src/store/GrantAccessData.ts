@@ -25,11 +25,11 @@ export const setGrantAccessFormData = (formData: any) => {
 
 export const getGrantAccessFormData = () => {
     const data = {
-        domain: grantAccessFormData.value?.user_type_code as String,
-        userId: grantAccessFormData.value?.user_name as String,
+        domain: grantAccessFormData.value?.user_type_code as string,
+        userId: grantAccessFormData.value?.user_name as string,
         forestClientNumber:
-            grantAccessFormData.value?.forest_client_number as String,
-        role_id: grantAccessFormData.value?.role_id as Number | null,
+            grantAccessFormData.value?.forest_client_number as string,
+        role_id: grantAccessFormData.value?.role_id as number | null,
     };
     return data;
 }

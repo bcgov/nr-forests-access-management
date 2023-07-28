@@ -57,7 +57,7 @@ async function getAppUserRoleAssignment() {
         if (!selectedApplication.value) return;
         const userRoleAssignmentList = (
             await applicationsApi.getFamApplicationUserRoleAssignment(
-                selectedApplication.value!.application_id
+                selectedApplication.value.application_id
             )
         ).data;
         userRoleAssignments.value = userRoleAssignmentList.sort(

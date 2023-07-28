@@ -26,10 +26,10 @@ import {
 import type { FamApplicationRole, FamForestClient } from 'fam-api';
 
 interface IFormData {
-    domain: String;
-    userId: String;
-    forestClientNumber: String;
-    role_id: Number | null;
+    domain: string;
+    userId: string;
+    forestClientNumber: string;
+    role_id: number | null;
 }
 
 const defaultFormData: IFormData = {
@@ -72,7 +72,7 @@ onMounted(async () => {
     try {
         applicationRoleOptions.value = (
             await applicationsApi.getFamApplicationRoles(
-                selectedApplication?.value?.application_id as number
+                selectedApplication.value?.application_id as number
             )
         ).data as FamApplicationRole[];
 
