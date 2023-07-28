@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore';
-import userProfileInfo from '../../static/userProfileInfo.json';
 
 // svg icon
 import CloseIcon from '../icons/CloseIcon.vue';
@@ -30,7 +29,7 @@ import LogoutIcon from '../icons/LogoutIcon.vue';
                     <CloseIcon />
                 </button>
             </div>
-            <div class="sidebar-body">
+            <!-- <div class="sidebar-body">
                 <div class="img-wrapper">
                     <img
                         src="../../assets/images/tyrannosaurus-rex1.png"
@@ -39,16 +38,16 @@ import LogoutIcon from '../icons/LogoutIcon.vue';
                 </div>
                 <div class="profile-info">
                     <p class="profile-name">
-                        {{ userProfileInfo[0].userInfo.name }}
+                        {{ authService.state.value.famLoginUser?.username }}
                     </p>
                     <p class="profile-idir">
-                        IDIR: {{ userProfileInfo[0].idir }}
+                        IDIR:
                     </p>
                     <p class="profile-email">
-                        {{ userProfileInfo[0].userInfo.email }}
+                        email
                     </p>
                 </div>
-            </div>
+            </div> -->
             <hr class="profile-divider" />
             <p class="options">Options</p>
             <button
