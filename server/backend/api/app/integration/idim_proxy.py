@@ -39,7 +39,6 @@ class IdimProxyService():
         ## backoff_factor, See ref: https://majornetwork.net/2022/04/handling-retries-in-python-requests/
         retries = urllib3.Retry(total=3, backoff_factor=1, status_forcelist=self.retry_codes)
         self.session.mount('https://', HTTPAdapter(max_retries=retries))
-        self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
     def search_idir(self, search_params: IdimProxySearchParamIdir):
         """
