@@ -6,7 +6,7 @@ import { number, object, string } from 'yup';
 
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 
