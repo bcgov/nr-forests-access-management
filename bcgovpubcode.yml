@@ -1,6 +1,7 @@
 ---
 data_management_roles:
-  data_custodian: Pete Tollestrup
+  data_custodian: To be determined
+  data_stewart: Pete Tollestrup
   product_owner: Pete Tollestrup
 product_external_dependencies:
   identity_authorization:
@@ -26,7 +27,7 @@ product_information:
   product_status: active
   product_urls:
     - https://fam.nrs.gov.bc.ca/
-  program_area: TODO
+  program_area: To be determined
 product_technology_information:
   backend_frameworks: []
   backend_languages_version:
