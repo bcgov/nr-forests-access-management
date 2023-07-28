@@ -1,14 +1,3 @@
-<template>
-    <component
-        :class="{
-            'icon-small': small,
-            'icon-medium': medium,
-            'icon-large': large,
-        }"
-        :is="iconName"
-    ></component>
-</template>
-
 <script setup>
 import { computed, defineAsyncComponent } from 'vue';
 const props = defineProps({
@@ -36,6 +25,17 @@ const iconName = computed(() => {
     return defineAsyncComponent(() => import(`../icons/${props.icon}.vue`));
 });
 </script>
+
+<template>
+    <component
+        :class="{
+            'icon-small': small,
+            'icon-medium': medium,
+            'icon-large': large,
+        }"
+        :is="iconName"
+    ></component>
+</template>
 
 <style lang="scss">
 .icon-large {

@@ -1,82 +1,82 @@
 <script setup lang="ts">
+import { app } from '@/main';
 import axios from 'axios';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
-import { app } from '@/main';
 import {
-useNotificationMessage,
-useErrorDialog,
-} from '@/store/ApplicationState';
+    useNotificationMessage,
+    useErrorDialog,
+} from '@/store/NotificationState';
 
 const toast = useToast();
 
 const showToastTopRight = (sev: any, title: string, text: string) => {
-toast.add({ severity: sev, summary: title, detail: text, group: 'tl' });
+    toast.add({ severity: sev, summary: title, detail: text, group: 'tl' });
 };
 
 const onError = (error: any, info: string) => {
-console.error(`Error occurred: ${error.toString()}`);
-const genericErrorMsg = {
-    title: 'Error',
-    text: 'An application error has occurred. Please try again. If the error persists contact support.',
-};
-
-// Axios Http instance error that we like to pop out additional toast message.
-if (axios.isAxiosError(error)) {
-    const err = error;
-    const axiosResponse = err.response;
-    const status = axiosResponse?.status;
-
-    const e401_authenticationErrorMsg = {
+    console.error(`Error occurred: ${error.toString()}`);
+    const genericErrorMsg = {
         title: 'Error',
-        text: 'You are not logged in. Please log in.',
+        text: 'An application error has occurred. Please try again. If the error persists contact support.',
     };
 
-    const e403_authorizationErrorMsg = {
-        title: 'Error',
-        text: 'You do not have the necessary authorization for the requested action.',
-    };
+    // Axios Http instance error that we like to pop out additional toast message.
+    if (axios.isAxiosError(error)) {
+        const err = error;
+        const axiosResponse = err.response;
+        const status = axiosResponse?.status;
 
-    if (!status) {
-        showToastTopRight(
-            'error',
-            genericErrorMsg.title,
-            genericErrorMsg.text
-        );
-    } else if (status == 401) {
-        showToastTopRight(
-            'error',
-            e401_authenticationErrorMsg.title,
-            e401_authenticationErrorMsg.text
-        );
-    } else if (status == 403) {
-        showToastTopRight(
-            'error',
-            e403_authorizationErrorMsg.title,
-            e403_authorizationErrorMsg.text
-        );
-    } else if (status == 409) {
-        useNotificationMessage.isNotificationVisible = false;
-        useErrorDialog.isErrorVisible = true;
+        const e401_authenticationErrorMsg = {
+            title: 'Error',
+            text: 'You are not logged in. Please log in.',
+        };
+
+        const e403_authorizationErrorMsg = {
+            title: 'Error',
+            text: 'You do not have the necessary authorization for the requested action.',
+        };
+
+        if (!status) {
+            showToastTopRight(
+                'error',
+                genericErrorMsg.title,
+                genericErrorMsg.text
+            );
+        } else if (status == 401) {
+            showToastTopRight(
+                'error',
+                e401_authenticationErrorMsg.title,
+                e401_authenticationErrorMsg.text
+            );
+        } else if (status == 403) {
+            showToastTopRight(
+                'error',
+                e403_authorizationErrorMsg.title,
+                e403_authorizationErrorMsg.text
+            );
+        } else if (status == 409) {
+            useNotificationMessage.isNotificationVisible = false;
+            useErrorDialog.isErrorVisible = true;
+        }
+        return;
     }
-    return;
-}
 
-showToastTopRight('error', genericErrorMsg.title, genericErrorMsg.text);
+    showToastTopRight('error', genericErrorMsg.title, genericErrorMsg.text);
 };
 
 app.config.errorHandler = (err, instance, info) => {
-onError(err, info);
+    onError(err, info);
 };
 </script>
 
 <template>
-<div>
-    <div class="card flex justify-content-center">
-        <Toast group="tl" position="top-right" #icon>
-            <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
-        </Toast>
+    <div>
+        <div class="card flex justify-content-center">
+            <Toast group="tl" position="top-right" #icon>
+                <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
+            </Toast>
+        </div>
     </div>
-</div>
 </template>

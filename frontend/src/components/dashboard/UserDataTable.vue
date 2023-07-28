@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { PropType } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
+import type { PropType } from 'vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
 const props = defineProps({
@@ -77,7 +77,7 @@ const filters = ref({
             paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
             currentPageReportTemplate="{currentPage} of {totalPages} pages"
         >
-            <template #empty> No users found. </template>
+            <template #empty> No user found. </template>
             <template #loading> Loading users data. Please wait. </template>
             <Column header="User name" sortable field="user.user_name">
                 <template #body="{ data }">

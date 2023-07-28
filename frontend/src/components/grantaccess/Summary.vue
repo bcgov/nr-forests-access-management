@@ -1,25 +1,25 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import router from '@/router';
 import Dialog from '../common/Dialog.vue';
 import SummaryCard from './SummaryCard.vue';
-import router from '@/router';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+
 import {
-    selectedApplicationDisplayText,
     useNotificationMessage,
     useErrorDialog,
-} from '@/store/ApplicationState';
+} from '@/store/NotificationState';
+
 import {
     grantAccessFormData,
     resetGrantAccessFormData,
-} from '@/store/GrantAccessData';
+} from '@/store/GrantAccessDataState';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
-import { onMounted, ref } from 'vue';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 const loading = ref<boolean>(false);
-
-const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
 onMounted(() => {
     if (!grantAccessFormData.value) {
@@ -68,4 +68,3 @@ async function handleSubmit() {
         </div>
     </div>
 </template>
-@/store/GrantAccessData

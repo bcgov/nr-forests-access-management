@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
 import Card from 'primevue/card';
 import type { PropType } from 'vue';
+import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
 
 const props = defineProps({
     status: {

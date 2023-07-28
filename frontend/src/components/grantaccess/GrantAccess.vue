@@ -21,7 +21,7 @@ import {
     FOREST_CLIENT_INPUT_MAX_LENGTH,
     setGrantAccessFormData,
     getGrantAccessFormData,
-} from '@/store/GrantAccessData';
+} from '@/store/GrantAccessDataState';
 
 import type { FamApplicationRole, FamForestClient } from 'fam-api';
 
@@ -38,19 +38,7 @@ const defaultFormData: IFormData = {
     forestClientNumber: '',
     role_id: null,
 };
-
-const loading = ref<boolean>(false);
-const userLoaded = ref<boolean>(false);
-const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-const forestClientData = ref<FamForestClient[] | null>(null);
-let invalidForestClient = ref<boolean>(false);
-
 const formData = ref(defaultFormData); // clone default input
-
-const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
-const forestClientApi = apiServiceFactory.getForestClientApi();
-
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
@@ -67,6 +55,16 @@ const formValidationSchema = object({
         })
         .nullable(),
 });
+
+const loading = ref<boolean>(false);
+const userLoaded = ref<boolean>(false);
+const applicationRoleOptions = ref<FamApplicationRole[]>([]);
+const forestClientData = ref<FamForestClient[] | null>(null);
+const invalidForestClient = ref<boolean>(false);
+
+const apiServiceFactory = new ApiServiceFactory();
+const applicationsApi = apiServiceFactory.getApplicationApi();
+const forestClientApi = apiServiceFactory.getForestClientApi();
 
 onMounted(async () => {
     try {
@@ -125,6 +123,11 @@ function resetForestClientNumberData() {
 
 function resetForm() {
     formData.value = defaultFormData;
+}
+
+function cancelForm() {
+    resetForm();
+    router.push('/dashboard');
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
@@ -385,7 +388,7 @@ async function submitForm() {
                                 class="m-3 button"
                                 outlined
                                 label="Cancel"
-                                @click="$router.push('/dashboard')"
+                                @click="cancelForm()"
                             ></Button>
                         </div>
                     </div>

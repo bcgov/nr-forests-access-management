@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, reactive } from 'vue';
+import router from '@/router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from 'primevue/useconfirm';
 
 import DashboardTitle from './DashboardTitle.vue';
 import UserDataTable from './UserDataTable.vue';
+import NotificationMessage from '@/components/common/NotificationMessage.vue';
 
-import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -15,8 +16,9 @@ import {
     selectedApplication,
     setSelectedApplication,
     selectedApplicationDisplayText,
-    useNotificationMessage,
 } from '@/store/ApplicationState';
+
+import { useNotificationMessage } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 

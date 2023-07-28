@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
-import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore';
+import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
 // svg icon
-import CloseIcon from '../icons/CloseIcon.vue';
-import LogoutIcon from '../icons/LogoutIcon.vue';
+import CloseIcon from '@/components/icons/CheckIcon.vue';
+import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 </script>
 
 <template>
@@ -29,6 +29,7 @@ import LogoutIcon from '../icons/LogoutIcon.vue';
                     <CloseIcon />
                 </button>
             </div>
+            <!-- TODO - This code below is for displaying user information when it is available -->
             <!-- <div class="sidebar-body">
                 <div class="img-wrapper">
                     <img

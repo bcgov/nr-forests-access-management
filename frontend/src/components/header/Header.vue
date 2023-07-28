@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import authService from '@/services/AuthService';
+import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
+import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import ProfileSidebar from '../common/ProfileSidebar.vue';
-import { useProfileSidebarVisible } from '../../store/useProfileVisibleStore';
+import authService from '@/services/AuthService';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
