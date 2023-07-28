@@ -73,8 +73,3 @@ class ForestClientService():
             # Else raise error, including 500
             # There is a general error handler, see: requests_http_error_handler
             raise he
-
-            """
-            Dev Note - If in the future this class gets more endpoints to integrate, better improve
-            error handling, request init and logging, in one place (e.g. in parent class).
-            """
