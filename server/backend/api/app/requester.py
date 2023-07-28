@@ -52,14 +52,14 @@ async def get_current_requester(
 ):
     # Deployment environments.
     if config.is_on_aws():
-        famUser: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
-        if famUser is None:
+        fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
+        if fam_user is None:
             raise no_requester_exception
 
         requester = {
             "cognito_user_id": request_cognito_username,
-            "user_name": famUser.user_name,
-            "user_type": famUser.user_type_code,
+            "user_name": fam_user.user_name,
+            "user_type": fam_user.user_type_code,
             "access_roles": access_roles
         }
     else:
