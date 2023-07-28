@@ -8,7 +8,7 @@ data "aws_lambda_function" "target_lambda" {
 # the text '-gateway' appended to it.
 
 resource "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
-  name = "${aws_lambda_function.fam-api-function.function_name}-gateway"
+  name = "${data.aws_lambda_function.target_lambda.function_name}-gateway"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -73,7 +73,7 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
 resource "aws_lambda_permission" "fam_api_gateway_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.fam-api-function.function_name
+  function_name = data.aws_lambda_function.target_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource

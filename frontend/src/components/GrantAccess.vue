@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue';
+import PageTitle from '@/components/common/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import { selectedApplication } from '@/services/ApplicationState';
+import { selectedApplication } from '@/store/ApplicationState';
 import type {
     FamApplicationRole,
     FamForestClient,
@@ -11,20 +11,19 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
 import router from '@/router';
-import { object, string } from 'yup';
+import { number, object, string } from 'yup';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 let applicationRoleOptions = ref<FamApplicationRole[]>([]);
-let forestClient = ref();
+let forestClient: FamForestClient[] | null = null;
 let loading = ref<boolean>(false);
 let invalidForestClient = ref<boolean>(false);
 const defaultFormData = {
     domain: domainOptions.IDIR,
-    userId: null,
-    forestClientNumber: null,
-    role: null as unknown as FamApplicationRole,
-    roleUI: null as unknown as FamApplicationRole,
+    userId: "",
+    forestClientNumber: "",
+    role_id: null
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const apiServiceFactory = new ApiServiceFactory();
@@ -32,19 +31,18 @@ const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 
-const schema = object().shape({
+const schema = object({
     userId: string()
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
-    roleUI: object().required('Please select a value').nullable(),
-    forestClientNumber: string().when('roleUI', {
-        is: (role: any) => role?.role_type_code == 'A',
-        then: string()
-            .required('Forest Client number is required')
-            .min(8, 'Forest Client number must be at least 8 characters')
-            .nullable(),
-    }),
+    role_id: number().required('Please select a value'),
+    forestClientNumber: string().when('role_id', {
+        is: (_role_id: number) => isAbstractRoleSelected(),
+        then: () => string()
+                    .required('Forest Client number is required')
+                    .min(8, 'Forest Client number must be at least 8 characters')
+    }).nullable(),
 });
 
 onMounted(async () => {
@@ -73,7 +71,7 @@ async function grantAccess() {
             newUserRoleAssignmentPayload
         );
         useToast().success(
-            `User "${newUserRoleAssignmentPayload.user_name}" is granted with "${formData.value.role.role_name}" access.`
+            `User "${newUserRoleAssignmentPayload.user_name}" is granted with "${getSelectedRole()?.role_name}" access.`
         );
         formData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
         router.push('/manage');
@@ -86,7 +84,7 @@ function toRequestPayload(formData: any) {
     const request = {
         user_name: formData.userId,
         user_type_code: formData.domain,
-        role_id: formData.role.role_id,
+        role_id: formData.role_id,
         ...(formData.forestClientNumber
             ? {
                   forest_client_number: formData.forestClientNumber.padStart(
@@ -99,22 +97,21 @@ function toRequestPayload(formData: any) {
     return request;
 }
 
-function statusSelected(evt: any) {
-    forestClient.value = null;
-    formData.value.forestClientNumber = null;
-    formData.value.role = JSON.parse(evt.target.value);
+function onRoleSelected(evt: any) {
+    forestClient = null;
+    formData.value.forestClientNumber = "";
+    invalidForestClient.value = isAbstractRoleSelected();
 }
 
 async function getForestClientNumber(forestClientNumber: string) {
     loading.value = true;
     try {
-        forestClient.value = (await forestClientApi.search(forestClientNumber))
-            .data as FamForestClient[];
+        forestClient = (await forestClientApi.search(forestClientNumber)).data;
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
-        if (forestClient.value?.[0]?.status?.description !== 'Active') {
+        if (forestClient?.[0]?.status?.description !== 'Active') {
             invalidForestClient.value = true;
         } else {
             invalidForestClient.value = false;
@@ -124,8 +121,18 @@ async function getForestClientNumber(forestClientNumber: string) {
 
 function forestClientNumberChange() {
     invalidForestClient.value = true;
-    forestClient.value = null;
+    forestClient = null;
 }
+
+const getSelectedRole = (): FamApplicationRole | undefined => {
+    return applicationRoleOptions.value
+        .find((item) => item.role_id === formData.value.role_id);
+};
+
+const isAbstractRoleSelected = () => {
+    return getSelectedRole()?.role_type_code == 'A';
+}
+
 </script>
 
 <template>
@@ -215,25 +222,25 @@ function forestClientNumberChange() {
                     <Field
                         id="roleSelect"
                         as="select"
-                        name="roleUI"
                         class="form-select"
+                        name="role_id"
                         aria-label="Role Select"
-                        v-model="formData.roleUI"
-                        :class="{ 'is-invalid': errors.roleUI }"
-                        @change="statusSelected"
+                        v-model="formData.role_id"
+                        :class="{ 'is-invalid': errors.role_id }"
+                        @change="onRoleSelected"
                     >
                         <option
                             v-for="role in applicationRoleOptions"
                             :key="role.role_id"
-                            :value="JSON.stringify(role)"
+                            :value="role.role_id"
                         >
                             {{ role.role_name }}
                         </option>
                     </Field>
-                    <ErrorMessage class="invalid-feedback" name="roleUI" />
+                    <ErrorMessage class="invalid-feedback" name="role_id" />
                 </div>
             </div>
-            <div v-if="formData.role?.role_type_code == 'A'">
+            <div v-if="isAbstractRoleSelected()">
                 <div class="row mb-0">
                     <label for="forestClientInput" class="col-sm control-label"
                         >Forest Client

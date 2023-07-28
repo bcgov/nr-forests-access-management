@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue';
+import PageTitle from '@/components/common/PageTitle.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
-} from '@/services/ApplicationState';
+    setSelectedApplication,
+} from '@/store/ApplicationState';
 import { onMounted, ref, computed } from 'vue';
 import router from '../router';
 
@@ -15,6 +16,7 @@ const environmentFilter = ref<string>(environments[0]); // Array item 0 is for t
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
+
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     try {
@@ -23,7 +25,9 @@ onMounted(async () => {
         ).data;
         // If user can only manage one application redirect to manage access screen
         if (applicationsUserAdministers.value.length == 1) {
-            selectedApplication.value = applicationsUserAdministers.value[0];
+            setSelectedApplication(
+                JSON.stringify(applicationsUserAdministers.value[0])
+            );
             router.push('/manage');
         }
     } catch (error: any) {
@@ -31,10 +35,10 @@ onMounted(async () => {
     }
 });
 
-function filterEnv(selectedEnv: string) {
+const filterEnv = (selectedEnv: string) => {
     environmentFilter.value = selectedEnv;
-    selectedApplication.value = null;
-}
+    setSelectedApplication(null);
+};
 
 const filteredOptions = computed(() => {
     return environmentFilter.value === environments[0] // If the option is All, show everything. Otherwise, filter it
@@ -45,6 +49,12 @@ const filteredOptions = computed(() => {
               );
           });
 });
+
+const selectApplication = (e: Event) => {
+    setSelectedApplication(
+        e.target ? (e.target as HTMLTextAreaElement).value : null
+    );
+};
 </script>
 
 <template>
@@ -68,10 +78,14 @@ const filteredOptions = computed(() => {
                     <select
                         id="applicationSelect"
                         class="form-select"
-                        v-model="selectedApplication"
+                        :value="JSON.stringify(selectedApplication)"
+                        @change="selectApplication"
                         :size="applicationsUserAdministers.length + 1"
                     >
-                        <option v-for="app in filteredOptions" :value="app">
+                        <option
+                            v-for="app in filteredOptions"
+                            :value="JSON.stringify(app)"
+                        >
                             {{ app.application_description }}
                         </option>
                     </select>

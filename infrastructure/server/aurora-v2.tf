@@ -1,8 +1,3 @@
-resource "random_pet" "famdb_subnet_group_name" {
-  prefix = "famdb-subnet-group"
-  length = 2
-}
-
 data "aws_kms_alias" "rds_key" {
   name = "alias/aws/rds"
 }
@@ -42,7 +37,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "13.9"
+  version = "13.10"
 }
 
 module "aurora_postgresql_v2" {

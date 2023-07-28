@@ -2,15 +2,18 @@ import logging.config
 import os.path
 
 from api.app import jwt_validation
-from api.config.config import get_allow_origins, get_root_path
+from api.config.config import get_allow_origins, get_root_path, is_bcsc_key_enabled
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
 from starlette.responses import RedirectResponse
+
+from mangum import Mangum
 
 from .jwt_validation import init_jwks
 from .routers import (router_application, router_forest_client, router_role,
-                      router_user, router_user_role_assignment)
+                      router_user, router_user_role_assignment,
+                      router_bcsc_proxy, router_smoke_test)
+from .kms_lookup import init_bcsc_public_key
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -100,7 +103,25 @@ app.include_router(router_role.router,
                    prefix=apiPrefix + '/fam_roles',
                    tags=["FAM Roles"])
 
+# This router is used to proxy the BCSC userinfo endpoint
+
+app.include_router(router_bcsc_proxy.router,
+                   prefix=apiPrefix + '/bcsc',
+                   tags=["BCSC Proxy"])
+
+app.include_router(router_smoke_test.router,
+                   prefix=apiPrefix + '/smoke_test',
+                   tags=["Smoke Test"])
+
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()
+
+# If we initialize the key lookup then it doesn't call KMS on every api call
+
+if is_bcsc_key_enabled():
+    LOGGER.info("BCSC Key endpoint enabled")
+    init_bcsc_public_key()
+else:
+    LOGGER.info("BCSC Key endpoint disabled")
 
 handler = Mangum(app)

@@ -30,6 +30,23 @@ variable "prod_oidc_idp_issuer" {
   default = "https://loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
+# OIDC issuers at BCSC
+
+variable "dev_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
+
+variable "test_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
+
+variable "prod_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://id.gov.bc.ca/oauth2"
+}
+
 # Variables for Pathfinder SSO client ID (same in dev, test, prod)
 
 variable "oidc_idir_idp_client_id" {
@@ -42,7 +59,7 @@ variable "oidc_bceid_business_idp_client_id" {
   default = "fsa-cognito-b-ce-id-business-dev-4090"
 }
 
-# Client secrets for IDIR and BCeID in each environment
+# Client secrets for IDIR in each environment
 
 variable "dev_oidc_idir_idp_client_secret" {
   type = string
@@ -59,6 +76,8 @@ variable "prod_oidc_idir_idp_client_secret" {
   sensitive = true
 }
 
+# Client secrets for BCeID in each environment
+
 variable "dev_oidc_bceid_business_idp_client_secret" {
   type = string
   sensitive = true
@@ -73,6 +92,41 @@ variable "prod_oidc_bceid_business_idp_client_secret" {
   type = string
   sensitive = true
 }
+
+# Client secrets for BCSC in each environment
+
+variable "dev_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+variable "test_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+variable "prod_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
+
+# Client IDs for BCSC in each environment
+
+variable "dev_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.dev"
+}
+
+variable "test_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.test"
+}
+
+variable "prod_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "not.yet.implemented"
+}
+
 
 # Networking Variables
 
@@ -175,3 +229,99 @@ variable "fam_console_idp_name" {
   type = string
 }
 
+variable "minimum_oidc_attribute_list" {
+  description = "Required fields for FAM clients to be able to read and write"
+  type        = list(string)
+  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+}
+
+variable "maximum_oidc_attribute_read_list" {
+  description = "All fields for FAM clients to possibly read"
+  type        = list(string)
+  default = [
+    "address",
+    "birthdate",
+    "custom:given_names",
+    "custom:idp_business_id",
+    "custom:idp_business_name",
+    "custom:idp_display_name",
+    "custom:idp_name",
+    "custom:idp_user_id",
+    "custom:idp_username",
+    "custom:keycloak_username",
+    "email", "email_verified",
+    "family_name",
+    "gender",
+    "given_name",
+    "locale",
+    "middle_name",
+    "name",
+    "nickname",
+    "phone_number",
+    "phone_number_verified",
+    "picture",
+    "preferred_username",
+    "profile",
+    "updated_at",
+    "website",
+    "zoneinfo"
+  ]
+
+}
+
+variable "maximum_oidc_attribute_write_list" {
+  description = "All fields for FAM clients to possibly write"
+  type        = list(string)
+  default = [
+    "address",
+    "birthdate",
+    "custom:given_names",
+    "custom:idp_business_id",
+    "custom:idp_business_name",
+    "custom:idp_display_name",
+    "custom:idp_name",
+    "custom:idp_user_id",
+    "custom:idp_username",
+    "custom:keycloak_username",
+    "email",
+    "family_name",
+    "gender",
+    "given_name",
+    "locale",
+    "middle_name",
+    "name",
+    "nickname",
+    "phone_number",
+    "picture",
+    "preferred_username",
+    "profile",
+    "updated_at",
+    "website",
+    "zoneinfo"]
+}
+
+# Variables for connecting Cognito to BCSC OIDC
+
+variable "use_override_proxy_endpoints" {
+  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  type = bool
+  default = false
+}
+
+variable "dev_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "test_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "prod_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}

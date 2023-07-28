@@ -31,6 +31,11 @@ on:
       prod_oidc_bceid_business_idp_client_secret:
         required: true
       forest_client_api_api_key:
+      dev_oidc_bcsc_idp_client_secret:
+        required: true
+      test_oidc_bcsc_idp_client_secret:
+        required: true
+      prod_oidc_bcsc_idp_client_secret:
         required: true
 
 env:
@@ -78,7 +83,7 @@ jobs:
           cd server/backend
           mkdir packaging
           cd packaging
-          pip install -t . -r ../requirements.txt
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
           zip -r9 ../../fam-ui-api.zip .
           cd ..
           rm -rf packaging
@@ -106,6 +111,8 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+          # This gets rid of the extra output that kills automated output readability
+          terraform_wrapper: false
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
@@ -135,6 +142,9 @@ jobs:
           test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
           prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
           forest_client_api_api_key = "${{ secrets.forest_client_api_api_key }}"
+          dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
+          test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
+          prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
 
       - name: Terragrunt ${{ inputs.tf_subcommand }}
@@ -144,3 +154,25 @@ jobs:
         run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+
+
+      - id: smoke_test
+        name: Smoke Test
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
+          then
+            fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
+            smoke_test_url="$fam_api_base_url/smoke_test"
+            echo "Smoke test URL: [$smoke_test_url]"
+            curl --silent --show-error --fail $smoke_test_url
+          else
+            echo "Not executing terraform apply - smoke test skipped"
+          fi
+
+
+
+
+

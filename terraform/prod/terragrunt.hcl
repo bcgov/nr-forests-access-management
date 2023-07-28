@@ -11,13 +11,12 @@ generate "prod_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "prod-fam-user-pool"
+  fam_user_pool_name = "prod-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
   famdb_cluster_name = "prod-fam-cluster"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
   oidc_idir_idp_issuer = "https://loginproxy.gov.bc.ca/auth/realms/standard"
   oidc_bceid_business_idp_client_id = "fsa-cognito-b-ce-id-business-dev-4090"
-  oidc_bceid_business_idp_issuer = "https://loginproxy.gov.bc.ca/auth/realms/standard"
   aws_security_group_data = "Data_sg"
   subnet_data_a = "Data_Prod_aza_net"
   subnet_data_b = "Data_Prod_azb_net"
@@ -25,7 +24,6 @@ generate "prod_tfvars" {
   subnet_app_a = "App_Prod_aza_net"
   subnet_app_b = "App_Prod_azb_net"
   front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
-  local_frontend_redirect_path = "http://localhost:5173"
   cognito_app_client_logout_chain_url = {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
@@ -40,5 +38,6 @@ generate "prod_tfvars" {
   ]
   fam_console_idp_name = "PROD-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-prod.api.gov.bc.ca/"
+  use_override_proxy_endpoints = false
 EOF
 }

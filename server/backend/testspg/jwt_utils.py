@@ -3,11 +3,14 @@ from jose import jws
 import time
 import json
 
-
 COGNITO_REGION = os.environ.get('COGNITO_REGION')
 COGNITO_USER_POOL_ID = os.environ.get('COGNITO_USER_POOL_ID')
 COGNITO_CLIENT_ID = os.environ.get('COGNITO_CLIENT_ID')
 COGNITO_USER_POOL_DOMAIN = os.environ.get('COGNITO_USER_POOL_DOMAIN')
+
+IDP_USER_GUID = "b5ecdb094dfb4149a6a8445a01a96bf0"
+COGNITO_USERNAME = F"idir_{IDP_USER_GUID}@idir"
+IDIR_USERNAME = "CONGUSTA"
 
 
 def create_jwt_claims():
@@ -26,7 +29,7 @@ def create_jwt_claims():
         "exp": time.time() + 60000,
         "iat": time.time(),
         "jti": "6ab8647c-0679-4d25-a71a-2400966fea9a",
-        "username": "idir_b5ecdb094dfb4149a6a8445a01a96bf0@idir"
+        "username": COGNITO_USERNAME
     }
 
 
@@ -51,3 +54,4 @@ def assert_error_response(response, http_error_code, error_code_string):
 
 def headers(token):
     return {"Authorization": f"Bearer {token}"}
+
