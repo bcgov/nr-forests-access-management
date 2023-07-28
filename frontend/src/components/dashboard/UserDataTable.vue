@@ -1,80 +1,3 @@
-<template>
-    <div class="p-access-table">
-        <div class="p-table-header">
-            <h3>{{ selectedApplicationDisplayText }} users</h3>
-            <span>
-                This table shows all the users in
-                {{ selectedApplicationDisplayText }} and their permissions
-                levels
-            </span>
-        </div>
-
-        <span class="p-input-icon-right">
-            <i class="pi pi-search" />
-            <InputText class="dash-search" v-model="filters['global'].value" />
-        </span>
-
-        <DataTable
-            v-model:filters="filters"
-            :value="props.userRoleAssignments"
-            paginator
-            :rows="5"
-            :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
-            dataKey="id"
-            filterDisplay="menu"
-            :loading="props.loading"
-            :globalFilterFields="[
-                'user.user_name',
-                'role.parent_role.role_name',
-                'role.role_name',
-                'role.client_number.forest_client_number',
-            ]"
-            paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-            currentPageReportTemplate="{currentPage} of {totalPages} pages"
-        >
-            <template #empty> No application selected. </template>
-            <template #loading> Loading customers data. Please wait. </template>
-            <Column header="User name" sortable field="user.user_name">
-                <template #body="{ data }">
-                    <Icon icon="AvatarFilledIcon" medium />
-                    <span class="span-icon">
-                        {{ data.user.user_name }}
-                    </span>
-                </template>
-            </Column>
-            <Column
-                field="user.user_type.description"
-                header="Domain"
-                sortable
-            ></Column>
-            <Column field="role.role_name" header="Role" sortable>
-                <template #body="{ data }">
-                    {{
-                        data.role.parent_role
-                            ? data.role.parent_role.role_name
-                            : data.role.role_name
-                    }}
-                </template></Column
-            >
-            <Column
-                field="role.client_number.forest_client_number"
-                header="Forest Client ID"
-                sortable
-            ></Column>
-            <Column>
-                <template #body="{ data }">
-                    <button
-                        class="btn btn-icon"
-                        @click="$emit('deleteUserRoleAssignment', data)"
-                    >
-                        <span class="remove-action">Remove</span>
-                    </button>
-                </template>
-            </Column>
-        </DataTable>
-    </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { PropType } from 'vue';
@@ -119,6 +42,84 @@ const filters = ref({
 });
 </script>
 
+<template>
+    <div class="p-access-table">
+        <div class="p-table-header">
+            <h3>{{ selectedApplicationDisplayText }} users</h3>
+            <span>
+                This table shows all the users in
+                {{ selectedApplicationDisplayText }} and their permissions
+                levels
+            </span>
+        </div>
+
+        <span class="p-input-icon-right">
+            <i class="pi pi-search" />
+            <InputText class="dash-search" v-model="filters['global'].value" />
+        </span>
+
+        <DataTable
+            v-model:filters="filters"
+            :value="props.userRoleAssignments"
+            paginator
+            :rows="5"
+            :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+            dataKey="id"
+            filterDisplay="menu"
+            :loading="props.loading"
+            :globalFilterFields="[
+                'user.user_name',
+                'role.parent_role.role_name',
+                'user.user_type.description',
+                'role.role_name',
+                'role.client_number.forest_client_number',
+            ]"
+            paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+            currentPageReportTemplate="{currentPage} of {totalPages} pages"
+        >
+            <template #empty> No users found. </template>
+            <template #loading> Loading users data. Please wait. </template>
+            <Column header="User name" sortable field="user.user_name">
+                <template #body="{ data }">
+                    <Icon icon="AvatarFilledIcon" medium />
+                    <span class="span-icon">
+                        {{ data.user.user_name }}
+                    </span>
+                </template>
+            </Column>
+            <Column
+                field="user.user_type.description"
+                header="Domain"
+                sortable
+            ></Column>
+            <Column field="role.role_name" header="Role" sortable>
+                <template #body="{ data }">
+                    {{
+                        data.role.parent_role
+                            ? data.role.parent_role.role_name
+                            : data.role.role_name
+                    }}
+                </template></Column
+            >
+            <Column
+                field="role.client_number.forest_client_number"
+                header="Forest Client ID"
+                sortable
+            ></Column>
+            <Column>
+                <template #body="{ data }">
+                    <button
+                        class="btn btn-icon"
+                        @click="$emit('deleteUserRoleAssignment', data)"
+                    >
+                        <span class="remove-action">Remove</span>
+                    </button>
+                </template>
+            </Column>
+        </DataTable>
+    </div>
+</template>
+
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 
@@ -138,7 +139,17 @@ const filters = ref({
     display: none;
 }
 
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+    box-shadow: 0px -1px 0px 0px #dfdfe1 inset;
+}
+
 .p-datatable-header {
     padding: 0px !important;
+}
+.span-icon {
+    margin-left: 15px;
+}
+.remove-action {
+    color: $text-error;
 }
 </style>

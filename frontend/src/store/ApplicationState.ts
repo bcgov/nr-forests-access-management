@@ -1,11 +1,9 @@
-import type { FamApplication, FamUserRoleAssignmentCreate } from 'fam-api';
+import type { FamApplication } from 'fam-api';
 import { computed, ref, reactive } from 'vue';
 
 // The applications the user has access to administer
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
 export const currentSelectedApplication = 'CURRENT_SELECTED_APPLICATION';
-
-export const grantAccessFormData = ref<FamUserRoleAssignmentCreate>();
 
 // The application selected by the user to admin
 export const selectedApplication = ref<FamApplication | null>(

@@ -12,10 +12,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="row">
-        <h1 class="title">{{ props.title }}</h1>
-        <h2 class="subtitle">{{ props.subtitle }}</h2>
-    </div>
+    <h1 class="title">{{ props.title }}</h1>
+    <h2 class="subtitle">{{ props.subtitle }}</h2>
 </template>
 
 <style lang="scss" scoped>

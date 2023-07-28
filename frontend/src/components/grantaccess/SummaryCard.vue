@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type PropType, onMounted } from 'vue';
+import { type PropType, onMounted } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import {
@@ -8,21 +8,26 @@ import {
 } from '@/store/ApplicationState';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
 
-const selected = ref('');
 const props = defineProps({
     data: {
         type: Object as PropType<FamUserRoleAssignmentCreate>,
         required: true,
     },
+    loading: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 onMounted(() => {
-    console.log('I am here', props.data);
-    useNotificationMessage.notificationMsg = `New access granted to ${props.data.user_name}`;
+    useNotificationMessage.notificationMsg =
+        props.data != undefined
+            ? `New access granted to ${props.data.user_name}`
+            : '';
 });
 </script>
 <template>
-    <div class="row">
+    <div class="row" v-if="props.data">
         <div class="col-6">
             <Card class="mb-2 p-0 p-card">
                 <template #title>Summary</template>
@@ -30,8 +35,8 @@ onMounted(() => {
                 <template #content>
                     <div class="card-content">
                         <p>
-                            <label>User name:&nbsp;</label
-                            ><span>{{ props.data.user_name }}</span>
+                            <label>User name:&nbsp;</label>
+                            <span>{{ props.data.user_name }}</span>
                         </p>
                         <p v-if="props.data.forest_client_number">
                             <label>Forest Client ID:&nbsp;</label
@@ -51,15 +56,22 @@ onMounted(() => {
                             type="submit"
                             id="grantAccessSubmit"
                             class="mb-3"
-                            label="Submit"
                             v-on:click="$emit('submit')"
-                        ></Button>
+                            :disabled="props.loading"
+                        >
+                            <div v-if="loading">
+                                <span> Loading... </span>
+                            </div>
+                            <div v-else>Submit</div>
+                        </Button>
                         <Button
                             class="m-3"
                             outlined
                             @click="$router.push('/grant')"
                             label="Edit Form"
-                        ></Button>
+                            :disabled="props.loading"
+                        >
+                        </Button>
                     </div>
                 </template>
             </Card>

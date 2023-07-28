@@ -4,34 +4,43 @@ import SummaryCard from './SummaryCard.vue';
 import router from '@/router';
 import {
     selectedApplicationDisplayText,
-    grantAccessFormData,
     useNotificationMessage,
     useErrorDialog,
 } from '@/store/ApplicationState';
+import {
+    grantAccessFormData,
+    resetGrantAccessFormData,
+} from '@/store/GrantAccessData';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
+import { onMounted, ref } from 'vue';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
-const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
-const defaultFormData = {
-    domain: domainOptions.IDIR,
-    userId: '',
-    forestClientNumber: '',
-    role_id: null,
-};
+const loading = ref<boolean>(false);
+
+const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
+
+onMounted(() => {
+    if (!grantAccessFormData.value) {
+        router.push('/dashboard');
+    }
+});
 
 async function handleSubmit() {
     try {
+        loading.value = true;
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
-        grantAccessFormData.value = JSON.parse(JSON.stringify(defaultFormData)); // clone default input data.
+        resetGrantAccessFormData();
         useErrorDialog.isErrorVisible = false;
         useNotificationMessage.isNotificationVisible = true;
         router.push('/dashboard');
     } catch (err: any) {
         return Promise.reject(err);
+    } finally {
+        loading.value = false;
     }
 }
 </script>
@@ -53,8 +62,10 @@ async function handleSubmit() {
         <div class="row">
             <SummaryCard
                 :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
+                :loading="loading"
                 @submit="handleSubmit()"
             />
         </div>
     </div>
 </template>
+@/store/GrantAccessData

@@ -1,12 +1,3 @@
-<template>
-    <div
-        class="tag"
-        :class="{ 'tag--success': props.active, 'tag--error': !props.active }"
-    >
-        {{ props.text }}
-    </div>
-</template>
-
 <script setup lang="ts">
 const props = defineProps({
     text: {
@@ -21,7 +12,14 @@ const props = defineProps({
     },
 });
 </script>
-
+<template>
+    <div
+        class="tag"
+        :class="{ 'tag--success': props.active, 'tag--error': !props.active }"
+    >
+        {{ props.text }}
+    </div>
+</template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 

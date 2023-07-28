@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import router from '@/router';
 import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
 import { number, object, string } from 'yup';
 
@@ -9,34 +10,42 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 
-import router from '@/router';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
-    grantAccessFormData,
 } from '@/store/ApplicationState';
+import {
+    grantAccessFormData,
+    domainOptions,
+    FOREST_CLIENT_INPUT_MAX_LENGTH,
+    setGrantAccessFormData,
+    getGrantAccessFormData,
+} from '@/store/GrantAccessData';
 
-import type {
-    FamApplicationRole,
-    FamForestClient,
-    FamUserRoleAssignmentCreate,
-} from 'fam-api';
+import type { FamApplicationRole, FamForestClient } from 'fam-api';
 
-const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
-const loading = ref<boolean>(false);
-const userLoaded = ref<boolean>(false);
-const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
-const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-const forestClientData = ref<FamForestClient[] | null>(null);
-let invalidForestClient = ref<boolean>(false);
-const defaultFormData = {
+interface IFormData {
+    domain: String;
+    userId: String;
+    forestClientNumber: String;
+    role_id: Number | null;
+}
+
+const defaultFormData: IFormData = {
     domain: domainOptions.IDIR,
     userId: '',
     forestClientNumber: '',
     role_id: null,
 };
-const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
+const loading = ref<boolean>(false);
+const userLoaded = ref<boolean>(false);
+const applicationRoleOptions = ref<FamApplicationRole[]>([]);
+const forestClientData = ref<FamForestClient[] | null>(null);
+let invalidForestClient = ref<boolean>(false);
+
+const formData = ref(defaultFormData); // clone default input
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -68,18 +77,13 @@ onMounted(async () => {
         ).data as FamApplicationRole[];
 
         if (grantAccessFormData.value) {
-            let formTemp = {
-                domain: grantAccessFormData.value.user_type_code,
-                userId: grantAccessFormData.value.user_name,
-                forestClientNumber:
-                    grantAccessFormData.value.forest_client_number,
-                role_id: grantAccessFormData.value.role_id,
-            };
+            formData.value = getGrantAccessFormData();
 
             if (grantAccessFormData.value.user_name) userLoaded.value = true;
 
-            formData.value = JSON.parse(JSON.stringify(formTemp));
             invalidForestClient.value = isAbstractRoleSelected();
+        } else {
+            resetForm();
         }
     } catch (error: unknown) {
         router.push('/dashboard');
@@ -90,15 +94,6 @@ onMounted(async () => {
 function userIdChange() {
     userLoaded.value = false;
     resetForestClientNumberData();
-}
-
-function verifyUserId(userId: string) {
-    //TODO: Remove this timeout and replace with the call to the API that validates the user ID
-    loading.value = true;
-    setTimeout(() => {
-        loading.value = false;
-        userLoaded.value = true;
-    }, 1500);
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
@@ -128,6 +123,10 @@ function resetForestClientNumberData() {
     forestClientData.value = null;
 }
 
+function resetForm() {
+    formData.value = defaultFormData;
+}
+
 async function verifyForestClientNumber(forestClientNumber: string) {
     loading.value = true;
     try {
@@ -147,25 +146,8 @@ async function verifyForestClientNumber(forestClientNumber: string) {
 }
 
 async function submitForm() {
-    grantAccessFormData.value = toRequestPayload(formData.value);
+    setGrantAccessFormData(formData.value);
     router.push('/summary');
-}
-
-function toRequestPayload(formData: any) {
-    const request = {
-        user_name: formData.userId,
-        user_type_code: formData.domain,
-        role_id: formData.role_id,
-        ...(formData.forestClientNumber
-            ? {
-                  forest_client_number: formData.forestClientNumber.padStart(
-                      FOREST_CLIENT_INPUT_MAX_LENGTH,
-                      '0'
-                  ),
-              }
-            : {}),
-    } as FamUserRoleAssignmentCreate;
-    return request;
 }
 </script>
 
@@ -271,62 +253,39 @@ function toRequestPayload(formData: any) {
                                     name="userId"
                                 />
                             </div>
-                            <div class="col-md-3" v-if="!userLoaded">
-                                <Button
-                                    class="button p-button-tertiary p-button-outlined"
-                                    @click="verifyUserId('4')"
-                                    v-bind:disabled="
-                                        formData.userId?.length < 2 || loading
-                                    "
-                                >
-                                    <div class="w-100">
-                                        <div v-if="loading">
-                                            <span> Loading... </span>
-                                        </div>
-                                        <div v-else>Verify</div>
-                                    </div></Button
-                                >
-                            </div>
                         </div>
                     </div>
 
-                    <div class="row" v-if="userLoaded">
-                        <div class="form-group col-md-3 px-0">
-                            <label for="roleSelect" class="control-label px-0"
-                                >Assign a role
-                                {{
-                                    formData.userId
-                                        ? 'to ' + formData.userId
-                                        : ''
-                                }}<span class="text-danger"> *</span></label
+                    <div class="form-group col-md-3 px-0">
+                        <label for="roleSelect" class="control-label px-0"
+                            >Assign a role
+                            {{ formData.userId ? 'to ' + formData.userId : ''
+                            }}<span class="text-danger"> *</span></label
+                        >
+                        <Field
+                            id="roleSelect"
+                            class="form-select"
+                            name="role_id"
+                            aria-label="Role Select"
+                            v-slot="{ field, handleChange }"
+                            v-model="formData.role_id"
+                            @change="onRoleSelected"
+                        >
+                            <Dropdown
+                                :options="applicationRoleOptions"
+                                optionLabel="role_name"
+                                optionValue="role_id"
+                                :modelValue="field.value"
+                                placeholder="Choose an option"
+                                class="application-dropdown w-100"
+                                v-bind="field.value"
+                                @update:modelValue="handleChange"
+                                @change="resetForestClientNumberData()"
+                                :class="{ 'is-invalid': errors.role_id }"
                             >
-                            <Field
-                                id="roleSelect"
-                                class="form-select"
-                                name="role_id"
-                                aria-label="Role Select"
-                                v-slot="{ field, handleChange }"
-                                v-model="formData.role_id"
-                                @change="onRoleSelected"
-                            >
-                                <Dropdown
-                                    :options="applicationRoleOptions"
-                                    optionLabel="role_name"
-                                    optionValue="role_id"
-                                    :modelValue="field.value"
-                                    placeholder="Choose an option"
-                                    class="application-dropdown w-100"
-                                    v-bind="field.value"
-                                    @update:modelValue="handleChange"
-                                    :class="{ 'is-invalid': errors.role_id }"
-                                >
-                                </Dropdown>
-                            </Field>
-                            <ErrorMessage
-                                class="invalid-feedback"
-                                name="role_id"
-                            />
-                        </div>
+                            </Dropdown>
+                        </Field>
+                        <ErrorMessage class="invalid-feedback" name="role_id" />
                     </div>
                     <div v-if="isAbstractRoleSelected()">
                         <div class="row mb-0">
@@ -377,7 +336,7 @@ function toRequestPayload(formData: any) {
                                     class="button p-button-tertiary p-button-outlined"
                                     @click="
                                         verifyForestClientNumber(
-                                            formData.forestClientNumber
+                                            formData.forestClientNumber as string
                                         )
                                     "
                                     v-bind:disabled="
@@ -404,7 +363,16 @@ function toRequestPayload(formData: any) {
                         </div>
                     </div>
 
-                    <div class="row gy-3 my-0" v-if="meta.valid">
+                    <div
+                        class="row gy-3 my-0"
+                        v-if="
+                            isAbstractRoleSelected()
+                                ? invalidForestClient
+                                    ? false
+                                    : true
+                                : meta.valid
+                        "
+                    >
                         <div class="col-auto px-0">
                             <Button
                                 type="button"

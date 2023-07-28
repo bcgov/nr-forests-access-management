@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import type { PropType } from 'vue';
+import router from '@/router';
+import type { RouteLocationRaw } from 'vue-router';
+
+interface ISideNavData {
+    name: string;
+    items: [ISideNavItem];
+}
+
+interface ISideNavItem {
+    name: string;
+    icon: string;
+    link: RouteLocationRaw;
+    disabled: boolean;
+}
+
+const props = defineProps({
+    data: {
+        type: Object as PropType<ISideNavData[]>,
+        required: true,
+        default: '',
+    },
+});
+</script>
 <template>
     <nav class="p-sidenav">
         <a
@@ -58,33 +83,6 @@
         </div>
     </nav>
 </template>
-
-<script setup lang="ts">
-import router from '@/router';
-import type { PropType } from 'vue';
-import type { RouteLocationRaw } from 'vue-router';
-
-interface ISideBarData {
-    name: string;
-    items: [ISideBarItem];
-}
-
-interface ISideBarItem {
-    name: string;
-    icon: string;
-    link: RouteLocationRaw;
-    disabled: boolean;
-}
-
-const props = defineProps({
-    data: {
-        type: Object as PropType<ISideBarData[]>,
-        required: true,
-        default: '',
-    },
-});
-</script>
-
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 </style>

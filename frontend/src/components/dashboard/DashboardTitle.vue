@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import router from '@/router';
+
+const props = defineProps({
+    isApplicationSelected: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+});
+</script>
+
 <template>
     <div class="row">
         <div class="col-6">
@@ -14,18 +26,6 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import router from '@/router';
-
-const props = defineProps({
-    isApplicationSelected: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-});
-</script>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';

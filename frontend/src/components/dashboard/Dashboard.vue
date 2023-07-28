@@ -54,12 +54,13 @@ onMounted(async () => {
 async function getAppUserRoleAssignment() {
     try {
         loading.value = true;
+        if (!selectedApplication.value) return;
         const userRoleAssignmentList = (
             await applicationsApi.getFamApplicationUserRoleAssignment(
                 selectedApplication.value!.application_id
             )
         ).data;
-        userRoleAssignments.value = userRoleAssignmentList.toSorted(
+        userRoleAssignments.value = userRoleAssignmentList.sort(
             (first, second) => {
                 const nameCompare = first.user.user_name.localeCompare(
                     second.user.user_name
@@ -115,9 +116,8 @@ async function deleteUserRoleAssignment(
                         );
                     }
                 );
-                useNotificationMessage.notificationMsg = '';
-            } finally {
                 useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+            } finally {
                 useNotificationMessage.isNotificationVisible = true;
             }
         },
@@ -175,13 +175,5 @@ async function deleteUserRoleAssignment(
 .application-dropdown {
     width: 304px;
     padding: 0px;
-}
-
-.span-icon {
-    margin-left: 15px;
-}
-
-.remove-action {
-    color: $text-error;
 }
 </style>
