@@ -34,7 +34,7 @@ async def requests_http_error_handler(request: Request, exc: HTTPError):
     )
     # For 401/403 specifically - return 500 Internal Server Error.
     # (so FAM frontend does not misinterprete 401/403 as authentication/authorization problem from user request)
-    if (status_code == HTTPStatus.UNAUTHORIZED or status_code == HTTPStatus.UNAUTHORIZED):
+    if (status_code == HTTPStatus.UNAUTHORIZED or status_code == HTTPStatus.FORBIDDEN):
         return JSONResponse(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             content=error_content
