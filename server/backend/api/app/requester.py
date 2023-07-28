@@ -67,6 +67,7 @@ async def get_current_requester(
         # This is temporary solution discussed before we have other way to get requester info locally.
         requester = read_json_file("local-data.json")["requester"]
 
+    LOGGER.debug(f"Current request user (requester): {requester}")
     return Requester(**requester)
 
 
