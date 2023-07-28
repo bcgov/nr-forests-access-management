@@ -64,7 +64,6 @@ const filters = ref({
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
-            dataKey="id"
             filterDisplay="menu"
             :loading="props.loading"
             :globalFilterFields="[
