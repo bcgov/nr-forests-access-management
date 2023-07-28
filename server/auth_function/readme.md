@@ -10,35 +10,7 @@ test/login_event.json for example payload), it then queries the database to
 retrieve the roles for the given user, it populates the authZ information
 and returns it to be signed, encoded, and returned as a JWT.
 
-## Local Development Setup
-
-### Database Setup
-
-You can use either the backend database docker-compose or the flyway
-docker-compose to create a database that will back the development
-
-**A) Flyway Database Setup**
-
-``` bash
-# from project root directory
-# spin up a postgres database
-docker-compose up
-
-# run the flyway migrations
-cd server/flyway
-docker exec -it famdb flyway-migrate.sh
-```
-
-**B) Api Database Setup**
-
-``` bash
-cd server/backend
-docker-compose up db
-cd api
-alembic upgrade head
-```
-
-### Python Setup
+## Python Setup
 
 We will use virtual env to isolate the python dependencies.  For local
 development we will re-use / extend the virtualenv that would be setup for
@@ -46,20 +18,45 @@ backend development.  The .vscode/setting.json should already be configured
 to find this config.
 
 ``` bash
-cd server/backend
+cd server/auth_function
 python3 -m venv venv
-source ./venv/bin/activate
+. ./venv/bin/activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
-cd ../auth_function
-pip install -r requirements.txt
 ```
 
-### Running the tests
+## Running the tests
+
+The tests use the testcontainer library to bring up a PostgreSQL database
+during the test run. You need to have dockerd started on your computer.
 
 ```
+sudo dockerd
 cd server/auth_function
 pytest
 ```
+
+## Running the tests FASTER
+
+Comment out lines 28-31 of /server/auth_function/conftest.py (the code that starts
+and stops the DB container on each test run). Then you can start the fam db
+container with docker-compose and leave it running.
+
+The tests expect a clean (flyway bootstrapped) database on each test run, so if
+you put in your own test data or if tests fail in a weird way, you may have to
+blow away the container and image and run docker-compose again.
+
+```
+## Bring up the docker container permanently
+docker-compose up fam-flyway
+```
+
+
+
+
+
+
+
+
 
 

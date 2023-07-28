@@ -1,0 +1,28 @@
+---
+version: "3.8"
+services:
+  fam-database:
+    extends:
+      file: docker-base-services.yml
+      service: fam-database
+
+  fam-flyway:
+    extends:
+      file: docker-base-services.yml
+      service: fam-flyway
+    depends_on:
+      fam-database:
+        condition: service_healthy
+
+  fam-test-nginx:
+    image: nginx:latest
+    container_name: fam-test-nginx
+    ports:
+      - "8181:80"
+    depends_on:
+      fam-flyway:
+        condition: service_completed_successfully
+
+networks:
+  fam:
+    driver: bridge

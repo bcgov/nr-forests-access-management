@@ -24,17 +24,15 @@ data "aws_rds_cluster" "flyway_database" {
   ]
 }
 
-# Random names to allow multiple instances per workspace
-
-resource "random_pet" "flyway_lambda_name" {
-  prefix = "flyway-lambda"
-  length = 2
+locals {
+  flyway_lambda_name = "fam-flyway-lambda-${var.target_env}"
+  flyway_scripts_bucket_name = "fam-flyway-bucket-${var.target_env}"
 }
 
 # IAM role to allow lambda to run, access secret, and access sql from s3
 
 resource "aws_iam_role_policy" "flyway_access_policy" {
-  name   = "${random_pet.flyway_lambda_name.id}-access-policy"
+  name   = "${local.flyway_lambda_name}-access-policy"
   role   = aws_iam_role.flyway_exec.id
   policy = <<-EOF
   {
@@ -91,13 +89,13 @@ data "aws_iam_policy_document" "flyway_exec_policydoc" {
 }
 
 resource "aws_iam_role" "flyway_exec" {
-  name               = "${random_pet.flyway_lambda_name.id}-role"
+  name               = "${local.flyway_lambda_name}-role"
   assume_role_policy = data.aws_iam_policy_document.flyway_exec_policydoc.json
 }
 
 resource "aws_lambda_function" "flyway-migrations" {
   filename      = "${path.module}/flyway-all.jar"
-  function_name = random_pet.flyway_lambda_name.id
+  function_name = local.flyway_lambda_name
   role          = aws_iam_role.flyway_exec.arn
   # has to have the form filename.functionname where filename is the file containing the export
   handler = "com.geekoosh.flyway.FlywayHandler::handleRequest"
@@ -132,13 +130,8 @@ resource "aws_lambda_function" "flyway-migrations" {
 
 # This section writes the flyway scripts to an S3 bucket
 
-resource "random_pet" "flyway_scripts_bucket_name" {
-  prefix = "flyway-scripts"
-  length = 2
-}
-
 resource "aws_s3_bucket" "flyway_scripts" {
-  bucket = random_pet.flyway_scripts_bucket_name.id
+  bucket = local.flyway_scripts_bucket_name
 }
 
 resource "aws_s3_bucket_policy" "flyway_scripts_policy" {
@@ -229,7 +222,13 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_fom_oidc_client" : "${aws_cognito_user_pool_client.prod_fom_oidc_client.id}",
           "client_id_dev_spar_oidc_client" : "${aws_cognito_user_pool_client.dev_spar_oidc_client.id}",
           "client_id_test_spar_oidc_client" : "${aws_cognito_user_pool_client.test_spar_oidc_client.id}",
-          "client_id_prod_spar_oidc_client" : "${aws_cognito_user_pool_client.prod_spar_oidc_client.id}"
+          "client_id_prod_spar_oidc_client" : "${aws_cognito_user_pool_client.prod_spar_oidc_client.id}",
+          "client_id_dev_forest_client_oidc_client" : "${aws_cognito_user_pool_client.dev_forest_client_oidc_client.id}",
+          "client_id_test_forest_client_oidc_client" : "${aws_cognito_user_pool_client.test_forest_client_oidc_client.id}",
+          "client_id_prod_forest_client_oidc_client" : "${aws_cognito_user_pool_client.prod_forest_client_oidc_client.id}",
+          "client_id_dev_silva_oidc_client" : "${aws_cognito_user_pool_client.dev_silva_oidc_client.id}",
+          "client_id_test_silva_oidc_client" : "${aws_cognito_user_pool_client.test_silva_oidc_client.id}",
+          "client_id_prod_silva_oidc_client" : "${aws_cognito_user_pool_client.prod_silva_oidc_client.id}"
         },
         "target": "latest"
     },
@@ -251,6 +250,9 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     aws_cognito_user_pool_client.dev_spar_oidc_client,
     aws_cognito_user_pool_client.test_spar_oidc_client,
     aws_cognito_user_pool_client.prod_spar_oidc_client,
+    aws_cognito_user_pool_client.dev_forest_client_oidc_client,
+    aws_cognito_user_pool_client.test_forest_client_oidc_client,
+    aws_cognito_user_pool_client.prod_forest_client_oidc_client,
     aws_s3_object.sql_files,
   ]
 

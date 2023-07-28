@@ -11,7 +11,7 @@ generate "test_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  fam_user_pool_name = "test-fam-user-pool"
+  fam_user_pool_name = "test-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "test-fam-user-pool-domain"
   famdb_cluster_name = "test-fam-cluster"
   aws_security_group_data = "Data_sg"
@@ -38,5 +38,6 @@ generate "test_tfvars" {
   ]
   fam_console_idp_name = "TEST-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
+  use_override_proxy_endpoints = false
 EOF
 }

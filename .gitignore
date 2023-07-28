@@ -35,11 +35,14 @@ out.json
 
 *.db
 .env
+**/.venv/**/*
 venv
 venvdc
 __pycache__
+**/coverage*.xml
 .coverage
 .pytest_cache
+**/report.md
 
 junk*
 fam_api/request.json
@@ -51,7 +54,6 @@ aurora/.terraform.lock.hcl
 aurora/aurora.hcl
 
 server/backend/database/flyway*
-server/backend/api/alembic/versions-modified/*
 server/backend/api/app/models/model-back.py
 server/packagelambda.bash
 server/my-deployment-package.zip
@@ -75,3 +77,16 @@ server/backend/openapi.json
 terraform/dev/github.auto.tfvars
 terraform/prod/github.auto.tfvars
 terraform/dev/.terraform.lock.hcl
+infrastructure/server/fam_auth_function.zip
+terraform/test/github.auto.tfvars
+infrastructure/fam-ui-api.zip
+infrastructure/server/fam-ui-api.zip
+
+terraform/tools/github.auto.tfvars
+terraform/tools/.terraform.lock.hcl
+terraform/tools/output.txt
+
+# Sonar cloud
+**/.scannerwork/**/*
+
+

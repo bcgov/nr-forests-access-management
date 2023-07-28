@@ -14,7 +14,6 @@ import App from '@/App.vue';
 import router from '@/router';
 
 import 'bootstrap';
-import './assets/styles/styles.scss';
 
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 
@@ -27,6 +26,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // import specific icons
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import ErrorService from './services/ErrorService';
+
+import PrimeVue from 'primevue/config';
+
+// use bootstrap4 as default style
+import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
+import 'primevue/resources/primevue.min.css';
+
+import './assets/styles/styles.scss';
 
 // add specific icons to library for use throughout application
 library.add(faTrashCan);
@@ -84,3 +91,5 @@ app.config.errorHandler = (err, instance, info) => {
 };
 
 app.use(router).component('font-awesome-icon', FontAwesomeIcon).mount('#app');
+
+app.use(PrimeVue);

@@ -78,6 +78,14 @@ python3 serverstart.py
 3. Click "Run and Debug" button
 4. Select "Debug the currently active Python file"
 
+## Alternatively, run the API from VS Code launch configuration
+
+1. Click on "Run and Debug" on the side menu bar
+2. On the top of the window is a dropdown. "Debug FAM API" should be an option. Select it.
+3. Click the little green arrow.
+
+The debug configuration is in /.vscode/launch.json. The environment variable get loaded at runtime from the local-dev.env file.
+
 # Using Virtual Environment
 
 If you have multiple python projects locally and you want to isolate your FAM developments, you can use a virtual environment. VS Code does not debug into the virtual environment (that we can determine).
@@ -93,8 +101,7 @@ python serverstart.py
 # Running the tests
 
 Tests are running using pytest. They can be run from the command line or using VS Code tools.
-
-The API tests do not connect to the PostgreSQL database at this time. There are true unit tests (no integration to a running database) and also integration tests that run SQLite in-memory. You can run the API tests without having docker-compose database running.
+Test sets are located under "server/backend/testspg", it contains unit tests and integration tests that uses "testcontainers" to spin up a temporary "Postgres" database container. Pytest config will connect to the temporary database container for testing.
 
 ## Install test dependencies
 
@@ -110,22 +117,15 @@ pip install -r requirements-dev.txt
 ```
 cd server/backend
 
-# setup environment variables
-set -o allexport; source local-dev.env; set +o allexport
+# bring up VENV environment
+. ./venv/bin/activate
 
 # run postgres tests
-pytest --ignore tests
-
-# run sqlite tests
-pytest --ignore testspg
-```
+pytest
 
 Potential gotchas:
 
-* `server/backend/pytest.ini` includes some default env values. These are not actually used (confirm), but need to be provided with some value for the code to run in test mode.
-
-* Currently existing tests are under transition to use postgres than sqllite. So locally, when runn tests for only 'testpg', use command:
-`pytest --ignore tests` or `pytest --ignore testspg`
+* `server/backend/pytest.ini` includes some default env values but it utilizes "pytest-dotenv" to load necessary environment from local-dev.env file (see env_files: line). Some are not actually used (confirm), but need to be provided with some value for the code to run in test mode. If new tests need new environment value to be read, add it to local-dev.env should be fine (in general, keep it under one file) then if necessary, override the value in pytest.ini or config file.
 
 ## Run tests from VS Code
 

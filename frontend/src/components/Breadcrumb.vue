@@ -2,18 +2,18 @@
 import {
     applicationsUserAdministers,
     selectedApplicationShortDisplayText,
-} from '@/services/ApplicationState';
+} from '@/store/ApplicationState';
 </script>
 
 <template>
     <span>
-        <template v-if="$router.currentRoute.value.path == '/'"> </template>
+        <template v-if="$router.currentRoute.value.path == '/home'"> </template>
         <template
             v-else-if="$router.currentRoute.value.path == '/authCallback'"
         >
         </template>
         <template v-else>
-            <RouterLink to="/">Home</RouterLink>
+            <RouterLink to="/home">Home</RouterLink>
             <template v-if="$router.currentRoute.value.path == '/application'">
                 &rarr; Select Application
             </template>

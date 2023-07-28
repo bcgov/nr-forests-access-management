@@ -7,6 +7,7 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import HomeView from '@/views/HomeView.vue';
 import ManageAccessView from '@/views/ManageAccessView.vue';
 import SelectApplicationView from '@/views/SelectApplicationView.vue';
+import LandingView from '@/views/LandingView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -24,9 +25,19 @@ import SelectApplicationView from '@/views/SelectApplicationView.vue';
 const routes = [
     {
         path: '/',
+        name: 'landing',
+        meta: {
+            title: 'Welcome to FAM',
+            layout: 'SimpleLayout'
+        },
+        component: LandingView,
+    },
+    {
+        path: '/home',
         name: 'home',
         meta: {
             title: 'Welcome to FAM',
+            layout: 'ProtectedLayout'
         },
         component: HomeView,
     },
@@ -35,6 +46,7 @@ const routes = [
         name: 'application',
         meta: {
             title: 'Select Application',
+            layout: 'ProtectedLayout'
         },
         component: SelectApplicationView,
     },
@@ -43,6 +55,7 @@ const routes = [
         name: 'manage',
         meta: {
             title: 'Manage Access',
+            layout: 'ProtectedLayout'
         },
         component: ManageAccessView,
     },
@@ -51,6 +64,7 @@ const routes = [
         name: 'grant',
         meta: {
             title: 'Grant Access',
+            layout: 'ProtectedLayout'
         },
         component: GrantAccessView,
     },

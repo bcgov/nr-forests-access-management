@@ -24,26 +24,12 @@ def get_db_string():
     * deployed app using amazon rds
 
     """
-    db_conn_string = get_aws_db_string() if is_on_aws() \
-        else get_local_db_string()
+    db_string_override = os.environ.get("DB_STRING_OVERRIDE")
+    if db_string_override is not None:
+        return db_string_override
+
+    db_conn_string = get_aws_db_string()
     LOGGER.debug(f"Database connection url: {db_conn_string}")
-    return db_conn_string
-
-
-def get_local_db_string():
-    username = os.environ.get("POSTGRES_USER")
-    password = os.environ.get("POSTGRES_PASSWORD")
-    host = os.environ.get("POSTGRES_HOST")
-    dbname = os.environ.get("POSTGRES_DB")
-    port = os.environ.get("POSTGRES_PORT")
-    LOGGER.debug(f"api db user: {username}")
-
-    db_conn_string = (
-        f"postgresql+psycopg2://{username}"
-        + f":{password}@{host}:{port}/"
-        + f"{dbname}"
-    )
-
     return db_conn_string
 
 
@@ -67,6 +53,11 @@ def get_aws_db_string():
 
 def get_aws_region():
     env_var = "COGNITO_REGION"
+    return get_env_var(env_var)
+
+
+def get_bcsc_key_id():
+    env_var = "BCSC_KEY_ID"
     return get_env_var(env_var)
 
 
@@ -156,3 +147,8 @@ def get_forest_client_api_baseurl():
         else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
+
+
+# For local development, you can override this function since it doesn't work outside AWS
+def is_bcsc_key_enabled():
+    return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == 'True'
