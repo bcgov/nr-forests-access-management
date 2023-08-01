@@ -1,12 +1,9 @@
 import logging
-from http import HTTPStatus
 
 import requests
-import urllib3
 from api.app.requester import Requester
 from api.app.schemas import IdimProxySearchParamIdir
 from api.config import config
-from requests.adapters import HTTPAdapter
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,15 +14,7 @@ class IdimProxyService():
     The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
     See environment setup (local-dev.env) for idim-proxy TEST api-docs.
     """
-    TIMEOUT = (5, 20) # Timeout (connect, read) in seconds.
-    RETRY = 3
-    retry_codes = [
-        HTTPStatus.TOO_MANY_REQUESTS, # 429
-        HTTPStatus.INTERNAL_SERVER_ERROR, # 500
-        HTTPStatus.BAD_GATEWAY, # 502
-        HTTPStatus.SERVICE_UNAVAILABLE, # 503
-        HTTPStatus.GATEWAY_TIMEOUT, # 504
-    ]
+    TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
 
     def __init__(self, requester: Requester):
         self.requester = requester
@@ -35,10 +24,6 @@ class IdimProxyService():
 
         self.session = requests.Session()
         self.session.headers.update(self.headers)
-
-        ## backoff_factor, See ref: https://majornetwork.net/2022/04/handling-retries-in-python-requests/
-        retries = urllib3.Retry(total=3, backoff_factor=1, status_forcelist=self.retry_codes)
-        self.session.mount('https://', HTTPAdapter(max_retries=retries))
 
     def search_idir(self, search_params: IdimProxySearchParamIdir):
         """
