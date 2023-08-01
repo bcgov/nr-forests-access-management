@@ -9,4 +9,4 @@ psycopg2-binary==2.9.6
 mangum==0.17.0
 python-jose==3.3.0
 cryptography==41.0.2
-authlib==1.2.0
+authlib==1.2.1
