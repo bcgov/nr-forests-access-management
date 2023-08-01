@@ -10,7 +10,7 @@ from typing import Any
 # config, and instead setting up manually if the function is called directly
 # as is done when lambda calls this script.
 # ... see end of file
-LOGGER = logging.getLogger()
+LOGGER = logging.getLogger(__name__)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
@@ -29,7 +29,7 @@ USER_TYPE_CODE_DICT = {
     IDP_NAME_BCEID_BUSINESS: USER_TYPE_BCEID_BUSINESS,
     IDP_NAME_BCSC_DEV: USER_TYPE_BCSC_DEV,
     IDP_NAME_BCSC_TEST: USER_TYPE_BCSC_TEST,
-    IDP_NAME_BCSC_PROD: USER_TYPE_BCSC_PROD
+    IDP_NAME_BCSC_PROD: USER_TYPE_BCSC_PROD,
 }
 
 
@@ -66,9 +66,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
 
 def obtain_db_connection() -> Any:
     db_connection_string = config.get_db_connection_string()
-    db_connection = psycopg2.connect(
-        db_connection_string, sslmode="disable"
-    )
+    db_connection = psycopg2.connect(db_connection_string, sslmode="disable")
     db_connection.autocommit = False
     return db_connection
 
@@ -79,7 +77,7 @@ def release_db_connection(db_connection):
 
 
 def populate_user_if_necessary(db_connection, event) -> None:
-    """ Checks to see if a user described in the input cognito event exists
+    """Checks to see if a user described in the input cognito event exists
     in the authZ database.  If the user does not exist then the user is
     added to the database"""
 
@@ -145,6 +143,10 @@ def handle_event(db_connection, event) -> event_type.Event:
     ]
     cognito_client_id = event["callerContext"]["clientId"]
 
+    LOGGER.debug(f"login user type: {user_type_code}")
+    LOGGER.debug(f"login user guid: {user_guid}")
+    LOGGER.debug(f"login user name: {cognito_client_id}")
+
     sql_query = psycopg2.sql.SQL(query).format(
         user_guid=psycopg2.sql.Literal(user_guid),
         user_type_code=psycopg2.sql.Literal(user_type_code),
@@ -155,6 +157,8 @@ def handle_event(db_connection, event) -> event_type.Event:
     role_list = []
     for record in cursor:
         role_list.append(record[0])
+
+    LOGGER.debug(f"login user role: {role_list}")
 
     event["response"]["claimsOverrideDetails"] = {
         "groupOverrideDetails": {
