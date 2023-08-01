@@ -238,7 +238,7 @@ def get_access_roles(claims: dict = Depends(authorize)):
     return groups
 
 
-def get_request_cognito_username(claims: dict = Depends(authorize)):
+def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     # This is NOT user's name, display name or user ID.
     # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
     # It is the "cognito_user_id" column for fam_user table.

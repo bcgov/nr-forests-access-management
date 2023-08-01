@@ -46,18 +46,18 @@ class Requester(BaseModel):
 
 
 async def get_current_requester(
-    request_cognito_username: str = Depends(jwt_validation.get_request_cognito_username),
+    request_cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
     access_roles = Depends(jwt_validation.get_access_roles),
     db: Session = Depends(database.get_db)
 ):
     # Deployment environments.
     if config.is_on_aws():
-        fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_username)
+        fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
         if fam_user is None:
             raise no_requester_exception
 
         requester = {
-            "cognito_user_id": request_cognito_username,
+            "cognito_user_id": request_cognito_user_id,
             "user_name": fam_user.user_name,
             "user_type": fam_user.user_type_code,
             "access_roles": access_roles

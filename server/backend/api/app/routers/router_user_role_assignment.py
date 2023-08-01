@@ -19,7 +19,7 @@ def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_username: str = Depends(jwt_validation.get_request_cognito_username),
+    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
 ):
     """
     Create FAM user_role_xref association.
@@ -35,10 +35,10 @@ def create_user_role_assignment(
     # Enforce self-grant guard
     request_user_name = role_assignment_request.user_name
     request_user_type_code = role_assignment_request.user_type_code
-    enforce_self_grant_guard(db, cognito_username, request_user_name, request_user_type_code)
+    enforce_self_grant_guard(db, cognito_user_id, request_user_name, request_user_type_code)
 
     create_data = crud_user_role.create_user_role(
-        db, role_assignment_request, cognito_username
+        db, role_assignment_request, cognito_user_id
     )
     LOGGER.debug(
         "User/Role assignment executed successfully, "
@@ -51,13 +51,13 @@ def create_user_role_assignment(
     "/{user_role_xref_id}",
     status_code=HTTPStatus.NO_CONTENT,
     response_class=Response,
-    dependencies=[Depends(jwt_validation.get_request_cognito_username)],
+    dependencies=[Depends(jwt_validation.get_request_cognito_user_id)],
 )
 def delete_user_role_assignment(
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_username: str = Depends(jwt_validation.get_request_cognito_username),
+    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -77,7 +77,7 @@ def delete_user_role_assignment(
 
     # Enforce self-grant guard
     target_user = crud_user.get_user_by_user_role_xref_id(db, user_role_xref_id)
-    enforce_self_grant_guard(db, cognito_username, target_user.user_name, target_user.user_type_code)
+    enforce_self_grant_guard(db, cognito_user_id, target_user.user_name, target_user.user_type_code)
 
     crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
     LOGGER.debug(f"User/Role assignment deleted successfully, id: {user_role_xref_id}")
