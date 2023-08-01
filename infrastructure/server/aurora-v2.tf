@@ -184,7 +184,7 @@ resource "random_password" "famdb_auth_lambda_password" {
 }
 
 resource "aws_secretsmanager_secret" "famdb_auth_lambda_creds_secret" {
-  name = "famdb_auth_lambda_creds_secret
+  name = "famdb_auth_lambda_creds_secret"
 
   tags = {
     managed-by = "terraform"
