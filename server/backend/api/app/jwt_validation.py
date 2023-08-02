@@ -238,7 +238,7 @@ def get_access_roles(claims: dict = Depends(authorize)):
     return groups
 
 
-def get_request_username(claims: dict = Depends(authorize)):
+def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     requester = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester for API: {requester}")
     return requester
