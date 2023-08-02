@@ -31,7 +31,7 @@ const defaultFormData = {
     forestClientNumber: '',
     role_id: null as number | null,
 };
-const formData = ref(defaultFormData); // clone default input
+const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
@@ -50,7 +50,6 @@ const formValidationSchema = object({
 });
 
 const loading = ref<boolean>(false);
-const userLoaded = ref<boolean>(false);
 const applicationRoleOptions = ref<FamApplicationRole[]>([]);
 const forestClientData = ref<FamForestClient[] | null>(null);
 const invalidForestClient = ref<boolean>(false);
@@ -70,8 +69,6 @@ onMounted(async () => {
         if (grantAccessFormData.value) {
             formData.value = getGrantAccessFormData();
 
-            if (grantAccessFormData.value.user_name) userLoaded.value = true;
-
             invalidForestClient.value = isAbstractRoleSelected();
         } else {
             resetForm();
@@ -83,7 +80,6 @@ onMounted(async () => {
 });
 
 function userIdChange() {
-    userLoaded.value = false;
     resetForestClientNumberData();
 }
 
