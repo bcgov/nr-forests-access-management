@@ -245,7 +245,8 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}"
+          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}",
+          "${aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn}"
         ]
       }
     ]

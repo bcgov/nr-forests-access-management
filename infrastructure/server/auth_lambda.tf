@@ -1,7 +1,7 @@
 # Looking up a few things so they can be changed for this file in one place only
 
 data "aws_secretsmanager_secret" "db_auth_creds_secret" {
-  name = aws_secretsmanager_secret.famdb_apicreds_secret.name
+  name = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.name
 }
 
 data "aws_rds_cluster" "auth_database" {
