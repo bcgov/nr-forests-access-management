@@ -21,7 +21,6 @@ def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    # cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
     requester: Requester = Depends(get_current_requester)
 ):
     """
