@@ -127,3 +127,13 @@ $light-button-tertiary: map.get(
     lightButtons.$light-button-token-overrides,
     'button-tertiary'
 );
+
+$light-button-danger-primary: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-danger-primary'
+);
+
+$light-button-danger-hover: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-danger-hover'
+);

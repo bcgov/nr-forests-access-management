@@ -21,6 +21,7 @@ import {
     FOREST_CLIENT_INPUT_MAX_LENGTH,
     setGrantAccessFormData,
     getGrantAccessFormData,
+    resetGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
 
 import type { FamApplicationRole, FamForestClient } from 'fam-api';
@@ -105,6 +106,7 @@ function resetForestClientNumberData() {
 }
 
 function resetForm() {
+    resetGrantAccessFormData();
     formData.value = defaultFormData;
 }
 
