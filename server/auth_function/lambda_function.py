@@ -10,7 +10,8 @@ from typing import Any
 # config, and instead setting up manually if the function is called directly
 # as is done when lambda calls this script.
 # ... see end of file
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger()
+LOGGER.setLevel(logging.DEBUG)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
