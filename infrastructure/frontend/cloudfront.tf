@@ -35,12 +35,6 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  viewer_certificate {
-    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
-    ssl_support_method = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
-  }
-
   origin {
     domain_name = aws_s3_bucket.web_distribution.bucket_regional_domain_name
     origin_id   = "web_distribution_origin"
