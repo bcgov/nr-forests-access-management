@@ -1,3 +1,4 @@
+import datetime
 import logging
 import psycopg2
 import psycopg2.sql
@@ -11,7 +12,7 @@ from typing import Any
 # as is done when lambda calls this script.
 # ... see end of file
 LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.DEBUG)
+LOGGER.setLevel(logging.INFO)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
@@ -54,6 +55,18 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     :rtype: event_type.Event
     """
     LOGGER.debug(f"context: {context}")
+
+    now = datetime.datetime.now()
+    user_type_code = USER_TYPE_CODE_DICT[
+        event["request"]["userAttributes"]["custom:idp_name"]
+    ]
+    cognito_client_id = event["callerContext"]["clientId"]
+    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
+
+    LOGGER.info(
+        f"User login at: {now}, "
+        f"IDP username: {idp_username}, User type code: {user_type_code}, Cognito userid: {cognito_client_id}"
+    )
 
     db_connection = obtain_db_connection()
     populate_user_if_necessary(db_connection, event)
@@ -144,10 +157,6 @@ def handle_event(db_connection, event) -> event_type.Event:
     ]
     cognito_client_id = event["callerContext"]["clientId"]
 
-    LOGGER.debug(f"login user type: {user_type_code}")
-    LOGGER.debug(f"login user guid: {user_guid}")
-    LOGGER.debug(f"login user name: {cognito_client_id}")
-
     sql_query = psycopg2.sql.SQL(query).format(
         user_guid=psycopg2.sql.Literal(user_guid),
         user_type_code=psycopg2.sql.Literal(user_type_code),
@@ -159,7 +168,7 @@ def handle_event(db_connection, event) -> event_type.Event:
     for record in cursor:
         role_list.append(record[0])
 
-    LOGGER.debug(f"login user role: {role_list}")
+    LOGGER.info(f"User login with role: {role_list}")
 
     event["response"]["claimsOverrideDetails"] = {
         "groupOverrideDetails": {
