@@ -11,7 +11,7 @@ from typing import Any
 # as is done when lambda calls this script.
 # ... see end of file
 LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.INFO)
+LOGGER.setLevel(logging.DEBUG)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
