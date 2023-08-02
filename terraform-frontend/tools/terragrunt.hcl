@@ -7,7 +7,7 @@ generate "tools_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-  cloudfront_vanity_domain = ""
+  cloudfront_vanity_domain = "fam-tools.nrs.gov.bc.ca"
   cloudfront_certificate_arn = ""
 EOF
 }
