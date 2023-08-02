@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use '@bcgov-nr/nr-fsa-theme/design-tokens/light-theme.scss' as lightTheme;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-buttons.scss' as lightButtons;
 
 // Main Colors
 $primary: #036;
@@ -121,3 +122,8 @@ $button-info: #96c0e6;
 $text-error: map.get(lightTheme.$light-theme, 'text-error');
 $text-primary: map.get(lightTheme.$light-theme, 'text-primary');
 $text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
+
+$light-button-tertiary: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-tertiary'
+);

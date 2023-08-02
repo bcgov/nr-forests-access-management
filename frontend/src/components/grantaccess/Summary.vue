@@ -33,10 +33,10 @@ async function handleSubmit() {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
-        resetGrantAccessFormData();
         useErrorDialog.isErrorVisible = false;
         useNotificationMessage.isNotificationVisible = true;
         router.push('/dashboard');
+        resetGrantAccessFormData();
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
@@ -49,8 +49,8 @@ async function handleSubmit() {
     <Dialog
         v-model:visible="useErrorDialog.isErrorVisible"
         :error="true"
-        header="Error"
-        text-first="This role cannot be assigned to this user."
+        :header="useErrorDialog.dialogTitle"
+        :text-first="useErrorDialog.dialogMsg"
         text-second="Contact your administrator for more information."
     ></Dialog>
     <PageTitle
@@ -59,12 +59,11 @@ async function handleSubmit() {
     />
 
     <div class="page-body">
-        <div class="row">
-            <SummaryCard
-                :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
-                :loading="loading"
-                @submit="handleSubmit()"
-            />
-        </div>
+        <SummaryCard
+            v-if="grantAccessFormData"
+            :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
+            :loading="loading"
+            @submit="handleSubmit()"
+        />
     </div>
 </template>

@@ -32,7 +32,7 @@ async function authenticationErrorResponsesItcpt(error: any) {
 // 403 Interceptor
 async function forbiddenErrorResponseItcpt(error: any) {
     if (error.response?.status == 403) {
-        router.replace('/'); // Unauthorized operation, direct back to home.
+        router.replace('/dashboard'); // Unauthorized operation, direct back to dashboard.
     }
     return Promise.reject(error);
 }

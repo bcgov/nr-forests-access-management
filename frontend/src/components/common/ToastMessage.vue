@@ -58,6 +58,8 @@ const onError = (error: any, info: string) => {
             );
         } else if (status == 409) {
             useNotificationMessage.isNotificationVisible = false;
+            useErrorDialog.dialogTitle = axiosResponse.statusText;
+            useErrorDialog.dialogMsg = axiosResponse.data.detail;
             useErrorDialog.isErrorVisible = true;
         }
         return;
@@ -72,11 +74,7 @@ app.config.errorHandler = (err, instance, info) => {
 </script>
 
 <template>
-    <div>
-        <div class="card flex justify-content-center">
-            <Toast group="tl" position="top-right" #icon>
-                <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
-            </Toast>
-        </div>
-    </div>
+    <Toast group="tl" position="top-right" #icon>
+        <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
+    </Toast>
 </template>

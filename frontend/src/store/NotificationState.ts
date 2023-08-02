@@ -6,5 +6,7 @@ export const useNotificationMessage = reactive({
 })
 
 export const useErrorDialog = reactive({
+    dialogTitle: '',
+    dialogMsg: '',
     isErrorVisible: false,
 })

@@ -25,18 +25,11 @@ import {
 
 import type { FamApplicationRole, FamForestClient } from 'fam-api';
 
-interface IFormData {
-    domain: string;
-    userId: string;
-    forestClientNumber: string;
-    role_id: number | null;
-}
-
-const defaultFormData: IFormData = {
+const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
     forestClientNumber: '',
-    role_id: null,
+    role_id: null as number | null,
 };
 const formData = ref(defaultFormData); // clone default input
 const formValidationSchema = object({
@@ -142,7 +135,7 @@ async function verifyForestClientNumber(forestClientNumber: string) {
     }
 }
 
-async function submitForm() {
+async function sendFormToSummaryPage() {
     setGrantAccessFormData(formData.value);
     router.push('/summary');
 }
@@ -164,7 +157,9 @@ async function submitForm() {
                 <form
                     id="grantAccessForm"
                     class="form-container"
-                    @submit.prevent="handleSubmit($event, submitForm)"
+                    @submit.prevent="
+                        handleSubmit($event, sendFormToSummaryPage)
+                    "
                 >
                     <div class="row">
                         <div class="form-group col-md-3 px-0">
@@ -374,8 +369,8 @@ async function submitForm() {
                                 type="button"
                                 id="grantAccessSubmit"
                                 class="mb-3 button p-button"
-                                label="Submit"
-                                @click="submitForm()"
+                                label="Next"
+                                @click="sendFormToSummaryPage()"
                             ></Button>
                             <Button
                                 class="m-3 button"

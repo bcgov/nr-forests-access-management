@@ -42,14 +42,13 @@ onMounted(async () => {
         applicationsUserAdministers.value = (
             await applicationsApi.getApplications()
         ).data;
+        if (isApplicationSelected) {
+            getAppUserRoleAssignment();
+        }
     } catch (error: any) {
         return Promise.reject(error);
     } finally {
         loading.value = false;
-    }
-
-    if (isApplicationSelected) {
-        getAppUserRoleAssignment();
     }
 });
 
@@ -104,9 +103,10 @@ async function deleteUserRoleAssignment(
         group: 'templating',
         icon: 'none',
         header: 'Remove Access',
-        rejectLabel: 'Remove',
-        acceptLabel: 'Cancel',
-        reject: () => {
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Remove',
+        acceptClass: 'p-button-danger',
+        accept: () => {
             try {
                 userRoleAssignmentApi.deleteUserRoleAssignment(
                     assignment.user_role_xref_id
