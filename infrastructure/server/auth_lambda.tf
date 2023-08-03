@@ -2,7 +2,6 @@
 
 data "aws_secretsmanager_secret" "db_auth_creds_secret" {
   name = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.name
-  arn = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn
 }
 
 data "aws_rds_cluster" "auth_database" {
@@ -47,7 +46,7 @@ resource "aws_iam_role_policy" "fam_auth_lambda_access_policy" {
           "secretsmanager:DescribeSecret",
           "secretsmanager:GetSecretValue"
         ],
-        "Resource": "${data.aws_secretsmanager_secret.db_auth_creds_secret.arn}"
+        "Resource": "${aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn}"
       }
     ]
   }
