@@ -15,7 +15,7 @@ LOGGING_TYPE_AUDIT = "Audit" # 'Audit' type of logging.
 # EVENT related audit constants.
 class AuditEvent(str, Enum):
     CREATE_USER_ROLE_ACCESS = "Grant User Role(S) Access" # Create
-    REMOVE_USER_ROLE_ACCESS = "Remove User Role(S) Access" # Delete
+    REMOVE_USER_ROLE_ACCESS = "Remove User Role(S) Access" # Delete  # TODO, haven't done audit DELETE yet.
 
 # EVENT OUTCOME related audit constants.
 class AuditEventOutcome(str, Enum):
@@ -39,7 +39,7 @@ def audit_log(
         outcome: AuditEventOutcome,
         target: AuditTarget = None
 ):
-    LOGGER.info(
+    LOGGER.info( # TODO: we want json format?
         f"type={LOGGING_TYPE_AUDIT}, "
         f"event={event.value}, "
         f"requestor=({requestor} IP={request.client}), "

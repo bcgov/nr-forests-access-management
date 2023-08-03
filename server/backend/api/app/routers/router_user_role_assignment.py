@@ -1,8 +1,6 @@
 from http import HTTPStatus
 import logging
 
-from pydantic import BaseModel
-
 from api.app.crud import crud_user_role, crud_application, crud_user
 from fastapi import APIRouter, Depends, Request, Response, HTTPException
 from sqlalchemy.orm import Session
@@ -128,4 +126,5 @@ def enforce_self_grant_guard(db, requester, target_user_name, target_user_type_c
             )
 
 def to_audit_target(target_param):
+    # TODO
     pass
