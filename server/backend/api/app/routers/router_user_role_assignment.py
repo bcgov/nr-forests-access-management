@@ -1,11 +1,14 @@
 from http import HTTPStatus
 import logging
 
+from pydantic import BaseModel
+
 from api.app.crud import crud_user_role, crud_application, crud_user
-from fastapi import APIRouter, Depends, Response, HTTPException
+from fastapi import APIRouter, Depends, Request, Response, HTTPException
 from sqlalchemy.orm import Session
 
 from api.requester import Requester, get_current_requester
+from api.app.utils.audit_util import AuditEvent, AuditEventOutcome, AuditEventOutcome, audit_log
 
 from .. import database, schemas, jwt_validation
 
@@ -19,14 +22,16 @@ router = APIRouter()
 @router.post("", response_model=schemas.FamUserRoleAssignmentGet)
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
+    request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    requester: Requester = Depends(get_current_requester)
+    requestor: Requester = Depends(get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
     """
-    LOGGER.debug(f"running router ... {db}")
+    LOGGER.debug(f"Executing 'create_user_role_assignment' "\
+                 f"with request: {role_assignment_request}, requestor: {requestor}")
     # Enforce application-level security
     application_id = crud_application.get_application_id_by_role_id(
         db, role_assignment_request.role_id
@@ -36,16 +41,38 @@ def create_user_role_assignment(
     # Enforce self-grant guard
     request_user_name = role_assignment_request.user_name
     request_user_type_code = role_assignment_request.user_type_code
-    enforce_self_grant_guard(db, requester.cognito_user_id, request_user_name, request_user_type_code)
+    enforce_self_grant_guard(db, requestor.cognito_user_id, request_user_name, request_user_type_code)
 
-    create_data = crud_user_role.create_user_role(
-        db, role_assignment_request, requester.cognito_user_id
-    )
-    LOGGER.debug(
-        "User/Role assignment executed successfully, "
-        f"id: {create_data.user_role_xref_id}"
-    )
-    return create_data
+    try:
+        create_data = crud_user_role.create_user_role(
+            db, role_assignment_request, requestor.cognito_user_id
+        )
+        LOGGER.debug(
+            "User/Role assignment executed successfully, "
+            f"id: {create_data.user_role_xref_id}"
+        )
+
+        # audit log for success
+        audit_log(
+            request=request,
+            event=AuditEvent.CREATE_USER_ROLE_ACCESS,
+            requestor=requestor,
+            target=to_audit_target(role_assignment_request)
+            outcome=AuditEventOutcome.SUCCESS
+        )
+        return create_data
+
+    except Exception as e:
+
+        # audit log for fail
+        audit_log(
+            request=request,
+            event=AuditEvent.CREATE_USER_ROLE_ACCESS,
+            requestor=requestor,
+            outcome=AuditEventOutcome.FAIL
+        )
+        raise e
+
 
 
 @router.delete(
@@ -99,3 +126,6 @@ def enforce_self_grant_guard(db, requester, target_user_name, target_user_type_c
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+def to_audit_target(target_param):
+    pass
