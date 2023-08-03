@@ -1,5 +1,5 @@
-import datetime
 import logging
+import json
 import psycopg2
 import psycopg2.sql
 import config
@@ -56,24 +56,32 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """
     LOGGER.debug(f"context: {context}")
 
-    now = datetime.datetime.now()
-    user_type_code = USER_TYPE_CODE_DICT[
-        event["request"]["userAttributes"]["custom:idp_name"]
-    ]
-    cognito_client_id = event["callerContext"]["clientId"]
-    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
-
-    LOGGER.info(
-        f"User login at: {now}, "
-        f"IDP username: {idp_username}, User type code: {user_type_code}, Cognito userid: {cognito_client_id}"
-    )
-
     db_connection = obtain_db_connection()
     populate_user_if_necessary(db_connection, event)
 
     event_with_authz = handle_event(db_connection, event)
 
     release_db_connection(db_connection)
+
+    user_type_code = USER_TYPE_CODE_DICT[
+        event["request"]["userAttributes"]["custom:idp_name"]
+    ]
+    cognito_client_id = event["callerContext"]["clientId"]
+    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
+
+    audit_log = json.dumps(
+        {
+            "type": "Audit",
+            "event": "User Login",
+            "user_name": idp_username,
+            "user_type": user_type_code,
+            "cognito_client_id": cognito_client_id,
+            "access_roles": event_with_authz["response"]["claimsOverrideDetails"][
+                "groupOverrideDetails"
+            ]["groupsToOverride"],
+        }
+    )
+    LOGGER.info(f"{audit_log}")
 
     return event_with_authz
 
@@ -167,8 +175,6 @@ def handle_event(db_connection, event) -> event_type.Event:
     role_list = []
     for record in cursor:
         role_list.append(record[0])
-
-    LOGGER.info(f"User login with role: {role_list}")
 
     event["response"]["claimsOverrideDetails"] = {
         "groupOverrideDetails": {
