@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import Header from '@/components/header/Header.vue';
-import Footer from '@/components/footer/Footer.vue';
-import Breadcrumb from '@/components/Breadcrumb.vue';
+import sideNavData from '@/static/sideNav.json';
+import SideNav from '@/components/common/SideNav.vue';
 </script>
 <template>
-    <Header></Header>
-    <main class="container">
-        <Breadcrumb />
-        <RouterView />
-        <modals-container></modals-container>
-    </main>
-    <Footer></Footer>
+    <Header title="FAM" subtitle="Forest Access Management" />
+
+    <SideNav :data="(sideNavData as any)" />
+    <div class="main">
+        <main>
+            <RouterView></RouterView>
+        </main>
+    </div>
 </template>
+<style lang="scss">
+@import '@/assets/styles/base.scss';
+</style>

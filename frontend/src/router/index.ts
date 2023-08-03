@@ -8,6 +8,8 @@ import HomeView from '@/views/HomeView.vue';
 import ManageAccessView from '@/views/ManageAccessView.vue';
 import SelectApplicationView from '@/views/SelectApplicationView.vue';
 import LandingView from '@/views/LandingView.vue';
+import DashboardView from '@/views/DashboardView.vue';
+import SummaryView from '@/views/SummaryView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -42,6 +44,15 @@ const routes = [
         component: HomeView,
     },
     {
+        path: '/dashboard',
+        name: 'dashboard',
+        meta: {
+            title: 'Dashboard',
+            layout: 'ProtectedLayout'
+        },
+        component: DashboardView,
+    },
+    {
         path: '/application',
         name: 'application',
         meta: {
@@ -67,6 +78,15 @@ const routes = [
             layout: 'ProtectedLayout'
         },
         component: GrantAccessView,
+    },
+    {
+        path: '/summary',
+        name: 'summary',
+        meta: {
+            title: 'Access request summary',
+            layout: 'ProtectedLayout'
+        },
+        component: SummaryView,
     },
     {
         path: '/authCallback',

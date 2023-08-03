@@ -7,7 +7,7 @@ import authService from '@/services/AuthService';
  */
 
 authService.methods.handlePostLogin().then((data) => {
-    router.push('/application');
+    router.push('/dashboard');
 });
 </script>
 
