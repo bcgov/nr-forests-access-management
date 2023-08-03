@@ -28,7 +28,6 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
-  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
@@ -37,6 +36,8 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
+    ssl_support_method = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   origin {

@@ -2,7 +2,7 @@ name: DEPLOY Tools Environment
 
 on:
   workflow_dispatch:
-  # Temporary for testing. Adjust comment to trigger deploy.
+  # Temporary for testing.
   push:
     branches:
       - "feat/718-auth-lambda-db-user"
