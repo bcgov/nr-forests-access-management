@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
 import { defineAsyncComponent, shallowRef, watch, type Component } from 'vue';
+import { RouterView } from 'vue-router';
 import { useRoute } from 'vue-router';
+import ToastMessage from '@/components/common/ToastMessage.vue';
 
 const route = useRoute();
 const layout_component = shallowRef<Component>();
@@ -17,11 +18,12 @@ watch(
 </script>
 
 <template>
+    <ToastMessage />
     <component :is="layout_component">
         <router-view />
     </component>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '~bootstrap/scss/bootstrap';
 </style>

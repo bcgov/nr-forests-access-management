@@ -1,68 +1,33 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
-
-const props = defineProps<{
-    displaySelectedApplication?: boolean;
-}>();
+const props = defineProps({
+    title: {
+        type: String,
+        required: true,
+    },
+    subtitle: {
+        type: String,
+        required: true,
+    },
+});
 </script>
 
 <template>
-    <div class="title" v-if="props.displaySelectedApplication">
-        {{ selectedApplicationDisplayText }}
-    </div>
-
-    <hr class="hr-text" :data-content="useRoute().meta.title" />
+    <h1 class="title">{{ props.title }}</h1>
+    <h2 class="subtitle">{{ props.subtitle }}</h2>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
+@import '@/assets/styles/base.scss';
 .title {
-    margin-top: 0.2rem;
-    font-weight: 600;
-    line-height: 1.1;
-    font-size: calc(1.3324rem + 0.9888vw);
-    @include media-breakpoint-down(sm) {
-        font-size: 1.35rem;
-    }
+    font-size: 32px;
+    line-height: 40px;
+    color: $text-primary;
 }
 
-.hr-text {
-    line-height: 1em;
-    position: relative;
-    outline: 0;
-    border: 0;
-    color: black;
-    text-align: center;
-    height: 1.8em;
-    opacity: 0.7;
-    &:before {
-        content: '';
-        // use the linear-gradient for the fading effect
-        // use a solid background color for a solid bar
-        background: linear-gradient(
-            to right,
-            transparent,
-            #818078,
-            transparent
-        );
-        position: absolute;
-        left: 0;
-        top: 50%;
-        width: 100%;
-        height: 1px;
-    }
-    &:after {
-        content: attr(data-content);
-        position: relative;
-        display: inline-block;
-        color: black;
-        padding: 0 0.5em;
-        line-height: 1em;
-        // this is really the only tricky part, you need to specify the background color of the container element...
-        background-color: #fcfcfa;
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
+.subtitle {
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.16px;
+    color: $text-secondary;
 }
 </style>
