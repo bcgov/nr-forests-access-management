@@ -41,6 +41,8 @@ def create_user_role_assignment(
     request_user_type_code = role_assignment_request.user_type_code
     enforce_self_grant_guard(db, requestor.cognito_user_id, request_user_name, request_user_type_code)
 
+    # TODO: don't really like using try-except here just for 'audit', but fee we can live with it for now.
+    #  @Decorator would be prefered but a bit out of scope.
     try:
         create_data = crud_user_role.create_user_role(
             db, role_assignment_request, requestor.cognito_user_id
