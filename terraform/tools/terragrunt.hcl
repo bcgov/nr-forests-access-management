@@ -27,6 +27,7 @@ generate "tools_tfvars" {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
     prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
+    tools = "${local.common_vars.inputs.idp_logout_chain_tools_url}"
   }
   front_end_redirect_path = "https://d3d7kmp8kmi5ix.cloudfront.net"
   fam_callback_urls = [
