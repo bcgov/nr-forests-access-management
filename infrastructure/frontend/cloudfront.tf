@@ -35,6 +35,10 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
   origin {
     domain_name = aws_s3_bucket.web_distribution.bucket_regional_domain_name
     origin_id   = "web_distribution_origin"
