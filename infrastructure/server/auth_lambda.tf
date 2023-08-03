@@ -72,7 +72,7 @@ resource "aws_iam_role" "fam_auth_lambda_exec" {
 resource "aws_lambda_function" "fam-auth-function" {
   filename      = "fam_auth_function.zip"
   function_name = local.auth_lambda_name
-  role          = aws_iam_role.fam_api_lambda_exec.arn
+  role          = aws_iam_role.fam_auth_lambda_exec.arn
   handler       = "lambda_function.lambda_handler"
 
   source_code_hash = filebase64sha256("fam_auth_function.zip")
