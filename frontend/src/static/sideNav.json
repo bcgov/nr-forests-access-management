@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Main activities",
+        "items": [
+            {
+                "name": "Dashboard",
+                "icon": "DashboardIcon",
+                "link": "/dashboard",
+                "disabled": false
+            },
+            {
+                "name": "Grant Access",
+                "icon": "VirtualColumnKeyIcon",
+                "link": "/grant",
+                "disabled": false
+            }
+        ]
+    },
+    {
+        "name": "Management",
+        "items": [
+            {
+                "name": "Settings",
+                "icon": "SettingsIcon",
+                "link": "#",
+                "disabled": true
+            }
+        ]
+    }
+]
