@@ -5,7 +5,7 @@ CREATE USER ${auth_lambda_db_user} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASS
 GRANT USAGE ON SCHEMA app_fam TO ${auth_lambda_db_user};
 
 -- Update and insert on app_fam needed for creating/updating the user record
-GRANT UPDATE, INSERT ON app_fam.fam_users TO ${auth_lambda_db_user};
+GRANT UPDATE, INSERT ON app_fam.fam_user TO ${auth_lambda_db_user};
 
 -- Select on these tables needed to determine for the given application (cognito client) which roles the user can access
 GRANT SELECT ON app_fam.fam_user TO ${auth_lambda_db_user};
