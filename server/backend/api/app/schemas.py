@@ -290,3 +290,18 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 class IdimProxySearchParamIdir(BaseModel):
     userId: str # param for Idim-Proxy search of this form (not snake case)
+
+class IdimProxyIdirInfo(BaseModel):
+    # property returned from Idim-Proxy search of this form (not snake case)
+    found: bool
+    userId: Optional[str]
+    displayName: Optional[str]
+
+    @staticmethod
+    def from_api_json(json_dict):
+        info = IdimProxyIdirInfo(
+            found=json_dict['found'],
+            userId=json_dict['userId'],
+            displayName=json_dict["displayName"]
+        )
+        return info

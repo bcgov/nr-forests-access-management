@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
+// @ts-ignore
+import { IdimProxyIdirInfo } from '../model';
 /**
  * IDIRBCeIDProxyApi - axios parameter creator
  * @export
@@ -86,7 +88,7 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async idirSearch(userId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<object>>> {
+        async idirSearch(userId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirInfo>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.idirSearch(userId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -107,7 +109,7 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        idirSearch(userId: string, options?: any): AxiosPromise<Array<object>> {
+        idirSearch(userId: string, options?: any): AxiosPromise<IdimProxyIdirInfo> {
             return localVarFp.idirSearch(userId, options).then((request) => request(axios, basePath));
         },
     };
@@ -127,7 +129,7 @@ export interface IDIRBCeIDProxyApiInterface {
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    idirSearch(userId: string, options?: AxiosRequestConfig): AxiosPromise<Array<object>>;
+    idirSearch(userId: string, options?: AxiosRequestConfig): AxiosPromise<IdimProxyIdirInfo>;
 
 }
 
