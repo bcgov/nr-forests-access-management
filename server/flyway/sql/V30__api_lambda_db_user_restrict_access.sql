@@ -1,5 +1,9 @@
 
--- Revoke broad permissions
+-- Revoke default privileges previously assigned
+ALTER DEFAULT privileges IN SCHEMA app_fam
+REVOKE SELECT, INSERT, UPDATE, DELETE ON tables FROM ${api_db_username};;
+
+-- Revoke broad permissions previously assigned
 REVOKE SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA app_fam FROM ${api_db_username};
 
 -- Grant specific permissions by function
@@ -21,7 +25,7 @@ GRANT SELECT ON app_fam.fam_forest_client TO ${api_db_username};
 
 -- Grant/revoke user access
 GRANT INSERT, DELETE ON app_fam.fam_user_role_xref TO ${api_db_username};
-GRANT INSERT ON app_fam.fam_user TO ${api_db_username}; 
+GRANT INSERT ON app_fam.fam_user TO ${api_db_username};
 GRANT INSERT ON app_fam.fam_role TO ${api_db_username};
 GRANT INSERT ON app_fam.fam_forest_client TO ${api_db_username};
 
