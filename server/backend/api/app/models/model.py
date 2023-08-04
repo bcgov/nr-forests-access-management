@@ -146,7 +146,7 @@ class FamForestClient(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_group = relationship("FamGroup", back_populates="client_number")
+#    fam_group = relationship("FamGroup", back_populates="client_number")
     fam_role = relationship("FamRole", back_populates="client_number")
 
 
@@ -536,7 +536,7 @@ class FamRole(Base):
     parent_role_reverse = relationship(
         "FamRole", remote_side=[parent_role_id], back_populates="parent_role"
     )
-    fam_group_role_xref = relationship("FamGroupRoleXref", back_populates="role")
+    #fam_group_role_xref = relationship("FamGroupRoleXref", back_populates="role")
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="role")
     role_type_relation = relationship("FamRoleType", backref="role_relation")
     __table_args__ = (

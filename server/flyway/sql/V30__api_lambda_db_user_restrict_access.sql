@@ -29,5 +29,11 @@ GRANT INSERT ON app_fam.fam_user TO ${api_db_username};
 GRANT INSERT ON app_fam.fam_role TO ${api_db_username};
 GRANT INSERT ON app_fam.fam_forest_client TO ${api_db_username};
 
--- To facilitate unit testing (not needed by application)
+-- To facilitate API unit testing (not needed directly by API lambda)
 GRANT DELETE on app_fam.fam_user TO ${api_db_username};
+--GRANT SELECT on app_fam.fam_application_client TO ${api_db_username};
+
+-- To facilitate Auth lambda unit testing (not needed directly by Auth lambda)
+GRANT INSERT ON app_fam.fam_role TO ${auth_lambda_db_user};
+GRANT INSERT ON app_fam.fam_application_client TO ${auth_lambda_db_user};
+
