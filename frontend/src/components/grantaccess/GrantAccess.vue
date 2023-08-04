@@ -86,11 +86,6 @@ onMounted(async () => {
     }
 });
 
-function userIdChange() {
-    verifiedUserIdentity.value = null;
-    resetForestClientNumberData();
-}
-
 const getSelectedRole = (): FamApplicationRole | undefined => {
     return applicationRoleOptions.value.find(
         (item) => item.role_id === formData.value.role_id
@@ -101,10 +96,24 @@ const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
 };
 
+function userDomainChange() {
+    resetVerifiedUserIdentity();
+    formData.value.userId = '';
+}
+
+function userIdChange() {
+    resetVerifiedUserIdentity();
+    resetForestClientNumberData();
+}
+
 function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
     if (isNaN(parseInt(evt.key))) {
         evt.preventDefault();
     }
+}
+
+function resetVerifiedUserIdentity() {
+    verifiedUserIdentity.value = null;
 }
 
 function resetForestClientNumberData() {
@@ -197,6 +206,7 @@ async function sendFormToSummaryPage() {
                                         inputId="idirSelect"
                                         name="domainRadioOptions"
                                         :value="domainOptions.IDIR"
+                                        @change="userDomainChange()"
                                         class="p-radiobutton"
                                     />
                                     <label
@@ -215,6 +225,7 @@ async function sendFormToSummaryPage() {
                                         inputId="becidSelect"
                                         name="domainRadioOptions"
                                         :value="domainOptions.BCEID"
+                                        @change="userDomainChange()"
                                         class="p-radiobutton"
                                     />
                                     <label
