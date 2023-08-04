@@ -67,9 +67,9 @@ class FamApplication(Base):
         "FamApplicationClient", back_populates="application"
     )
     fam_role = relationship("FamRole", back_populates="application")
-    fam_application_group_xref = relationship(
-        "FamApplicationGroupXref", back_populates="application"
-    )
+    # fam_application_group_xref = relationship(
+    #     "FamApplicationGroupXref", back_populates="application"
+    # )
     __table_args__ = (
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
         UniqueConstraint("application_name", name="fam_app_name_uk"),
@@ -240,9 +240,9 @@ class FamUser(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_user_group_xref = relationship(
-        "FamUserGroupXref", back_populates="user", cascade="all, delete-orphan"
-    )
+    # fam_user_group_xref = relationship(
+    #     "FamUserGroupXref", back_populates="user", cascade="all, delete-orphan"
+    # )
     # , cascade="all, delete-orphan"
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
     user_type_relation = relationship("FamUserType", backref="user_relation", lazy="joined")
@@ -335,86 +335,86 @@ class FamApplicationClient(Base):
     )
 
 
-class FamGroup(Base):
-    __tablename__ = "fam_group"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["client_number_id"],
-            ["app_fam.fam_forest_client.client_number_id"],
-            name="reffam_forest_client25",
-        ),
-        ForeignKeyConstraint(
-            ["parent_group_id"], ["app_fam.fam_group.group_id"], name="reffam_group16"
-        ),
-        PrimaryKeyConstraint("group_id", name="fam_grp_pk"),
-        UniqueConstraint("group_name", name="fam_grp_name_uk"),
-        {
-            "comment": "A group is a collection of roles. When a group is "
-            "assigned to a user, the user indirectly assumes the privileges of "
-            "all the roles encompassed by the group. Groups are used to define"
-            "profiles in order to make it easier to manage common sets of roles "
-            "for users. A group can contain roles from multiple applications "
-            "in order to handle the case where users typically have a certain "
-            "set of privileges across multiple applications.",
-            "schema": "app_fam",
-        },
-    )
+# class FamGroup(Base):
+#     __tablename__ = "fam_group"
+#     __table_args__ = (
+#         ForeignKeyConstraint(
+#             ["client_number_id"],
+#             ["app_fam.fam_forest_client.client_number_id"],
+#             name="reffam_forest_client25",
+#         ),
+#         ForeignKeyConstraint(
+#             ["parent_group_id"], ["app_fam.fam_group.group_id"], name="reffam_group16"
+#         ),
+#         PrimaryKeyConstraint("group_id", name="fam_grp_pk"),
+#         UniqueConstraint("group_name", name="fam_grp_name_uk"),
+#         {
+#             "comment": "A group is a collection of roles. When a group is "
+#             "assigned to a user, the user indirectly assumes the privileges of "
+#             "all the roles encompassed by the group. Groups are used to define"
+#             "profiles in order to make it easier to manage common sets of roles "
+#             "for users. A group can contain roles from multiple applications "
+#             "in order to handle the case where users typically have a certain "
+#             "set of privileges across multiple applications.",
+#             "schema": "app_fam",
+#         },
+#     )
 
-    group_id = Column(
-        BigInteger().with_variant(Integer, "sqlite"),
-        Identity(
-            always=True,
-            start=1,
-            increment=1,
-            minvalue=1,
-            maxvalue=9223372036854775807,
-            cycle=False,
-            cache=1,
-        ),
-        autoincrement=True,
-        primary_key=True,
-    )
-    group_name = Column(String(100), nullable=False)
-    purpose = Column(String(200), nullable=False)
-    create_user = Column(
-        String(30),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        comment="The date and time the record was created.",
-    )
-    parent_group_id = Column(BigInteger, index=True)
-    client_number_id = Column(
-        BigInteger,
-        index=True,
-        comment="Sequentially assigned number to identify a ministry client.",
-    )
-    update_user = Column(
-        String(30),
-        comment="The user or proxy account that created or last updated the record. ",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.utcnow,
-        comment="The date and time the record was created or last updated.",
-    )
+#     group_id = Column(
+#         BigInteger().with_variant(Integer, "sqlite"),
+#         Identity(
+#             always=True,
+#             start=1,
+#             increment=1,
+#             minvalue=1,
+#             maxvalue=9223372036854775807,
+#             cycle=False,
+#             cache=1,
+#         ),
+#         autoincrement=True,
+#         primary_key=True,
+#     )
+#     group_name = Column(String(100), nullable=False)
+#     purpose = Column(String(200), nullable=False)
+#     create_user = Column(
+#         String(30),
+#         nullable=False,
+#         comment="The user or proxy account that created the record.",
+#     )
+#     create_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         nullable=False,
+#         default=datetime.datetime.utcnow,
+#         comment="The date and time the record was created.",
+#     )
+#     parent_group_id = Column(BigInteger, index=True)
+#     client_number_id = Column(
+#         BigInteger,
+#         index=True,
+#         comment="Sequentially assigned number to identify a ministry client.",
+#     )
+#     update_user = Column(
+#         String(30),
+#         comment="The user or proxy account that created or last updated the record. ",
+#     )
+#     update_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         onupdate=datetime.datetime.utcnow,
+#         comment="The date and time the record was created or last updated.",
+#     )
 
-    client_number = relationship("FamForestClient", back_populates="fam_group")
-    parent_group = relationship(
-        "FamGroup", remote_side=[group_id], back_populates="parent_group_reverse"
-    )
-    parent_group_reverse = relationship(
-        "FamGroup", remote_side=[parent_group_id], back_populates="parent_group"
-    )
-    fam_application_group_xref = relationship(
-        "FamApplicationGroupXref", back_populates="group"
-    )
-    fam_group_role_xref = relationship("FamGroupRoleXref", back_populates="group")
-    fam_user_group_xref = relationship("FamUserGroupXref", back_populates="group")
+#     client_number = relationship("FamForestClient", back_populates="fam_group")
+#     parent_group = relationship(
+#         "FamGroup", remote_side=[group_id], back_populates="parent_group_reverse"
+#     )
+#     parent_group_reverse = relationship(
+#         "FamGroup", remote_side=[parent_group_id], back_populates="parent_group"
+#     )
+#     fam_application_group_xref = relationship(
+#         "FamApplicationGroupXref", back_populates="group"
+#     )
+#     fam_group_role_xref = relationship("FamGroupRoleXref", back_populates="group")
+#     fam_user_group_xref = relationship("FamUserGroupXref", back_populates="group")
 
 
 class FamRoleType(Base):
@@ -569,146 +569,146 @@ class FamRole(Base):
     )
 
 
-class FamApplicationGroupXref(Base):
-    __tablename__ = "fam_application_group_xref"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["application_id"],
-            ["app_fam.fam_application.application_id"],
-            name="reffam_application20",
-        ),
-        ForeignKeyConstraint(
-            ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group19"
-        ),
-        PrimaryKeyConstraint("application_id", "group_id", name="fam_app_grp_xref"),
-        {"schema": "app_fam"},
-    )
+# class FamApplicationGroupXref(Base):
+#     __tablename__ = "fam_application_group_xref"
+#     __table_args__ = (
+#         ForeignKeyConstraint(
+#             ["application_id"],
+#             ["app_fam.fam_application.application_id"],
+#             name="reffam_application20",
+#         ),
+#         ForeignKeyConstraint(
+#             ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group19"
+#         ),
+#         PrimaryKeyConstraint("application_id", "group_id", name="fam_app_grp_xref"),
+#         {"schema": "app_fam"},
+#     )
 
-    application_id = Column(BigInteger, nullable=False, index=True)
-    group_id = Column(BigInteger, nullable=False, index=True)
-    create_user = Column(
-        String(30),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(30),
-        comment="The user or proxy account that created or last updated the record. ",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created or last updated.",
-    )
+#     application_id = Column(BigInteger, nullable=False, index=True)
+#     group_id = Column(BigInteger, nullable=False, index=True)
+#     create_user = Column(
+#         String(30),
+#         nullable=False,
+#         comment="The user or proxy account that created the record.",
+#     )
+#     create_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         nullable=False,
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created.",
+#     )
+#     update_user = Column(
+#         String(30),
+#         comment="The user or proxy account that created or last updated the record. ",
+#     )
+#     update_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created or last updated.",
+#     )
 
-    application = relationship(
-        "FamApplication", back_populates="fam_application_group_xref"
-    )
-    group = relationship("FamGroup", back_populates="fam_application_group_xref")
-
-
-class FamGroupRoleXref(Base):
-    __tablename__ = "fam_group_role_xref"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group18"
-        ),
-        ForeignKeyConstraint(
-            ["role_id"], ["app_fam.fam_role.role_id"], name="reffam_role17"
-        ),
-        PrimaryKeyConstraint("group_id", "role_id", name="fam_grp_rle_pk"),
-        {"schema": "app_fam"},
-    )
-
-    group_id = Column(BigInteger, nullable=False, index=True)
-    role_id = Column(
-        BigInteger,
-        nullable=False,
-        index=True,
-        comment="Automatically generated key used to identify the uniqueness "
-        "of a Role within the FAM Application",
-    )
-    create_user = Column(
-        String(30),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(30),
-        comment="The user or proxy account that created or last updated the record. ",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created or last updated.",
-    )
-
-    group = relationship("FamGroup", back_populates="fam_group_role_xref")
-    role = relationship("FamRole", back_populates="fam_group_role_xref")
+#     application = relationship(
+#         "FamApplication", back_populates="fam_application_group_xref"
+#     )
+#     # group = relationship("FamGroup", back_populates="fam_application_group_xref")
 
 
-class FamUserGroupXref(Base):
-    __tablename__ = "fam_user_group_xref"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group30"
-        ),
-        ForeignKeyConstraint(
-            ["user_id"], ["app_fam.fam_user.user_id"], name="reffam_user29"
-        ),
-        PrimaryKeyConstraint("user_id", "group_id", name="fam_usr_rle_pk_1"),
-        {
-            "comment": "User Group Xref is a cross-reference object that "
-            "allows for the identification of Groups assigned to a user, as "
-            "well as the users that belong to a given Group",
-            "schema": "app_fam",
-        },
-    )
+# class FamGroupRoleXref(Base):
+#     __tablename__ = "fam_group_role_xref"
+#     __table_args__ = (
+#         ForeignKeyConstraint(
+#             ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group18"
+#         ),
+#         ForeignKeyConstraint(
+#             ["role_id"], ["app_fam.fam_role.role_id"], name="reffam_role17"
+#         ),
+#         PrimaryKeyConstraint("group_id", "role_id", name="fam_grp_rle_pk"),
+#         {"schema": "app_fam"},
+#     )
 
-    user_id = Column(
-        BigInteger,
-        nullable=False,
-        index=True,
-        comment="Automatically generated key used to identify the uniqueness "
-        "of a User within the FAM Application",
-    )
-    group_id = Column(BigInteger, nullable=False, index=True)
-    create_user = Column(
-        String(30),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(30),
-        comment="The user or proxy account that created or last updated the "
-        "record. ",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        server_default=text("LOCALTIMESTAMP"),
-        comment="The date and time the record was created or last updated.",
-    )
+#     group_id = Column(BigInteger, nullable=False, index=True)
+#     role_id = Column(
+#         BigInteger,
+#         nullable=False,
+#         index=True,
+#         comment="Automatically generated key used to identify the uniqueness "
+#         "of a Role within the FAM Application",
+#     )
+#     create_user = Column(
+#         String(30),
+#         nullable=False,
+#         comment="The user or proxy account that created the record.",
+#     )
+#     create_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         nullable=False,
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created.",
+#     )
+#     update_user = Column(
+#         String(30),
+#         comment="The user or proxy account that created or last updated the record. ",
+#     )
+#     update_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created or last updated.",
+#     )
 
-    group = relationship("FamGroup", back_populates="fam_user_group_xref")
-    user = relationship("FamUser", back_populates="fam_user_group_xref")
+#     group = relationship("FamGroup", back_populates="fam_group_role_xref")
+#     role = relationship("FamRole", back_populates="fam_group_role_xref")
+
+
+# class FamUserGroupXref(Base):
+#     __tablename__ = "fam_user_group_xref"
+#     __table_args__ = (
+#         ForeignKeyConstraint(
+#             ["group_id"], ["app_fam.fam_group.group_id"], name="reffam_group30"
+#         ),
+#         ForeignKeyConstraint(
+#             ["user_id"], ["app_fam.fam_user.user_id"], name="reffam_user29"
+#         ),
+#         PrimaryKeyConstraint("user_id", "group_id", name="fam_usr_rle_pk_1"),
+#         {
+#             "comment": "User Group Xref is a cross-reference object that "
+#             "allows for the identification of Groups assigned to a user, as "
+#             "well as the users that belong to a given Group",
+#             "schema": "app_fam",
+#         },
+#     )
+
+#     user_id = Column(
+#         BigInteger,
+#         nullable=False,
+#         index=True,
+#         comment="Automatically generated key used to identify the uniqueness "
+#         "of a User within the FAM Application",
+#     )
+#     group_id = Column(BigInteger, nullable=False, index=True)
+#     create_user = Column(
+#         String(30),
+#         nullable=False,
+#         comment="The user or proxy account that created the record.",
+#     )
+#     create_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         nullable=False,
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created.",
+#     )
+#     update_user = Column(
+#         String(30),
+#         comment="The user or proxy account that created or last updated the "
+#         "record. ",
+#     )
+#     update_date = Column(
+#         TIMESTAMP(timezone=True, precision=6),
+#         server_default=text("LOCALTIMESTAMP"),
+#         comment="The date and time the record was created or last updated.",
+#     )
+
+#     group = relationship("FamGroup", back_populates="fam_user_group_xref")
+#     user = relationship("FamUser", back_populates="fam_user_group_xref")
 
 
 class FamUserRoleXref(Base):
