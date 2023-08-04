@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: test
+      POSTGRES_PASSWORD: postgres
     steps:
       - uses: actions/checkout@v2
         with:
