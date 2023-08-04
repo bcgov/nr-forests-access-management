@@ -62,7 +62,7 @@ def test_search_idir_with_invalid_user_return_not_found(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json()['found'] == False
-    assert response.json()['userId'] == None
+    assert response.json()['userId'] == invalid_user_id_param
 
 def test_none_idir_user_cannot_search_idir_user(
     test_client_fixture: TestClient,
