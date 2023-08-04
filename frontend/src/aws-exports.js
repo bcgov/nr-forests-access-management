@@ -23,5 +23,4 @@ const config = {
     },
     federationTarget: 'COGNITO_USER_POOLS',
 };
-console.log(config);
 export default config;
