@@ -10,7 +10,7 @@ jobs:
   ci-auth:
     runs-on: ubuntu-latest
     env:
-      POSTGRES_USER: fam_auth_lambda
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: test
     steps:
       - uses: actions/checkout@v2
