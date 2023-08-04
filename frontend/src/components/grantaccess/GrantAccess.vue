@@ -87,6 +87,7 @@ onMounted(async () => {
 });
 
 function userIdChange() {
+    verifiedUserIdentity.value = null;
     resetForestClientNumberData();
 }
 
