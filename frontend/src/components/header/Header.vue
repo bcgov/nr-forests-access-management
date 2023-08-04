@@ -1,34 +1,35 @@
 <script setup lang="ts">
-import authService from '@/services/AuthService';
+import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
+import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import authService from '@/services/AuthService';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
     .getEnvironmentDisplayName('[', ']')
     .toUpperCase();
+
+const props = defineProps({
+    title: {
+        type: String,
+        required: true,
+    },
+    subtitle: {
+        type: String,
+        required: true,
+    },
+});
 </script>
 
 <template>
-    <header class="app-header" id="header">
+    <header class="p-header" id="header">
         <nav
             class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
         >
-            <a
-                class="navbar-brand"
-                title="Forest Access Management"
-                href="https://www2.gov.bc.ca"
-                style="margin-right: 3px"
-            >
-                <img
-                    class="nav-logo"
-                    src="@/assets/images/17_gov3_bc_logo.svg"
-                    alt="B.C. Government Logo"
-                />
-            </a>
-
-            <h2 class="title">
-                Forest Access Management {{ environmentLabel }}
-            </h2>
+            <span class="header-title">
+                {{ props.title }}
+                <strong>{{ props.subtitle }} {{ environmentLabel }}</strong>
+            </span>
 
             <button
                 class="navbar-toggler"
@@ -45,51 +46,20 @@ const environmentLabel = environmentSettings
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <li>
                         <a
-                            class="nav-link nav-link-fade-up"
-                            title="Log In"
-                            v-if="!authService.getters.isLoggedIn()"
-                            @click="authService.methods.login"
-                        >
-                            <span>Log In</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link nav-link-fade-up"
                             title="Log Out"
                             v-if="authService.getters.isLoggedIn()"
-                            @click="authService.methods.logout"
+                            @click="useProfileSidebarVisible.toggleVisible()"
                         >
-                            <span>Log Out</span>
+                            <Icon medium icon="AvatarIcon"></Icon>
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
-
-        <div class="nav bc-nav">
-            <RouterLink class="nav-link" to="/home">Home</RouterLink>
-            <RouterLink
-                class="nav-link"
-                to="/application"
-                v-if="authService.getters.isLoggedIn()"
-            >
-                Select Application
-            </RouterLink>
-            <div style="flex-grow: 2"></div>
-            <div class="user-label" v-if="authService.getters.isLoggedIn()">
-                Welcome
-                <span>{{
-                    authService.state.value.famLoginUser?.username
-                }}</span>
-                !
-            </div>
-        </div>
+        <teleport to=".modals">
+            <ProfileSidebar />
+        </teleport>
     </header>
 </template>
-
-<style lang="scss" scoped>
-@import './header.scss';
-</style>

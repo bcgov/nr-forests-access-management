@@ -1,3 +1,7 @@
+@use 'sass:map';
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-theme.scss' as lightTheme;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-buttons.scss' as lightButtons;
+
 // Main Colors
 $primary: #036;
 $gold: #fcba19;
@@ -45,8 +49,9 @@ $bg-default: #fff;
 $link-color: #1a5a96;
 
 // Header
-$header-font-color: #fff;
 $header-bg: $primary;
+$header-height: 3rem;
+$header-width: 100vw;
 
 // Footer
 $footer-bg: $primary;
@@ -113,3 +118,22 @@ $table-sort-icon-size: 0.25rem;
 // Buttons
 $button-primary: $primary4;
 $button-info: #96c0e6;
+
+$text-error: map.get(lightTheme.$light-theme, 'text-error');
+$text-primary: map.get(lightTheme.$light-theme, 'text-primary');
+$text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
+
+$light-button-tertiary: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-tertiary'
+);
+
+$light-button-danger-primary: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-danger-primary'
+);
+
+$light-button-danger-hover: map.get(
+    lightButtons.$light-button-token-overrides,
+    'button-danger-hover'
+);

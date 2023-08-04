@@ -58,7 +58,10 @@ const selectApplication = (e: Event) => {
 </script>
 
 <template>
-    <PageTitle :displaySelectedApplication="false"></PageTitle>
+    <PageTitle
+        title="Select Application"
+        subtitle="Please select an application"
+    ></PageTitle>
 
     <form id="selectApplicationForm" class="form-container">
         <div v-if="applicationsUserAdministers.length">

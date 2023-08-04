@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import Button from '@/components/common/Button.vue';
 import authService from '@/services/AuthService';
-import Seeding from '../assets/images/seeding.png';
 import logo from '../assets/images/bc-gov-logo.png';
-import Button from 'primevue/button';
+import TreeLogs from '../assets/images/tree-logs.jpg';
 </script>
 
 <template>
@@ -18,27 +18,23 @@ import Button from 'primevue/button';
                 <p id="landing-desc" class="landing-desc">
                     Grant access to your users
                 </p>
-
                 <Button
-                    class="landing-button"
+                    class="landing-button p-button-primary"
                     label="Login with IDIR"
-                    icon="pi pi-sign-in"
-                    iconPos="right"
-                    terc
                     @click="authService.methods.login"
-                />
+                    ><Icon icon="LoginIcon" small
+                /></Button>
                 <Button
-                    class="landing-button"
-                    label="Login with Business BCeID"
-                    icon="pi pi-sign-in"
-                    iconPos="right"
-                    outlined
+                    class="landing-button p-button-outlined"
+                    label="Login with BCeID"
                     disabled
-                />
+                    @click="authService.methods.login"
+                    ><Icon icon="LoginIcon" small
+                /></Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img
-                    :src="Seeding"
+                    :src="TreeLogs"
                     alt="Small green seedling on the dirt and watered"
                     class="landing-img"
                 />
@@ -47,6 +43,6 @@ import Button from 'primevue/button';
     </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
 </style>
