@@ -35,8 +35,8 @@ NEW_APPLICATION = {
 }
 
 
-def test_get_applications(db_pg_connection: Session):
-    apps = crud_application.get_applications(db=db_pg_connection)
+def test_get_applications(db_pg_session: Session):
+    apps = crud_application.get_applications(db=db_pg_session)
     assert len(apps) > 1
     assert apps[0].application_name == TEST_APPLICATION_NAME_FAM
     assert apps[1].application_name == TEST_APPLICATION_NAME_FOM_DEV
