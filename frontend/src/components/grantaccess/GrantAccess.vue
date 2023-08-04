@@ -9,6 +9,7 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
+import UserIdentityCard from './UserIdentityCard.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -24,7 +25,11 @@ import {
     resetGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
 
-import type { FamApplicationRole, FamForestClient } from 'fam-api';
+import type {
+    FamApplicationRole,
+    FamForestClient,
+    IdimProxyIdirInfo
+} from 'fam-api';
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -49,15 +54,16 @@ const formValidationSchema = object({
         })
         .nullable(),
 });
-
 const loading = ref<boolean>(false);
 const applicationRoleOptions = ref<FamApplicationRole[]>([]);
 const forestClientData = ref<FamForestClient[] | null>(null);
 const invalidForestClient = ref<boolean>(false);
+const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
+const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 
 onMounted(async () => {
     try {
@@ -113,6 +119,21 @@ function resetForm() {
 function cancelForm() {
     resetForm();
     router.push('/dashboard');
+}
+
+async function verifyIdentity(userId: string, domain: string) {
+    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID.
+
+    loading.value = true;
+    try {
+        verifiedUserIdentity.value = (
+            await idirBceidProxyApi.idirSearch(userId)
+        ).data;
+    } catch (err: any) {
+        return Promise.reject(err);
+    } finally {
+        loading.value = false;
+    }
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
@@ -243,6 +264,38 @@ async function sendFormToSummaryPage() {
                                     name="userId"
                                 />
                             </div>
+
+                            <div class="col-md-2"
+                                v-if="
+                                    formData.domain === domainOptions.IDIR &&
+                                    formData.userId &&
+                                    errors.userId == undefined
+                                "
+                                >
+                                <Button
+                                    class="button p-button-tertiary p-button-outlined"
+                                    @click="
+                                        verifyIdentity(formData.userId, formData.domain)
+                                    "
+                                    :disabled="loading"
+                                >
+                                    <div class="w-100">
+                                        <div v-if="loading">
+                                            <span> Loading... </span>
+                                        </div>
+                                        <div v-else>Verify</div>
+                                    </div>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" v-if="verifiedUserIdentity">
+                        <div class="form-group col-md-5 px-0">
+                            <UserIdentityCard
+                                :found="verifiedUserIdentity['found']"
+                                :user="verifiedUserIdentity"
+                            ></UserIdentityCard>
                         </div>
                     </div>
 
