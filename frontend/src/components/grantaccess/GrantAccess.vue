@@ -56,9 +56,9 @@ const formValidationSchema = object({
         .nullable(),
 });
 const loading = ref<boolean>(false);
-const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-const forestClientData = ref<FamForestClient[] | null>(null);
-const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
+let applicationRoleOptions: FamApplicationRole[]
+let forestClientData: FamForestClient[] | null
+let verifiedUserIdentity: IdimProxyIdirInfo | null
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -67,7 +67,7 @@ const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 
 onMounted(async () => {
     try {
-        applicationRoleOptions.value = (
+        applicationRoleOptions = (
             await applicationsApi.getFamApplicationRoles(
                 selectedApplication.value?.application_id as number
             )
@@ -94,7 +94,7 @@ function userDomainChange() {
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value.find(
+    return applicationRoleOptions?.find(
         (item) => item.role_id === formData.value.role_id
     );
 };
@@ -115,11 +115,12 @@ function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
 }
 
 function resetVerifiedUserIdentity() {
-    verifiedUserIdentity.value = null;
+    verifiedUserIdentity = null
 }
 
 function resetForestClientNumberData() {
-    forestClientData.value = null;
+    forestClientData = null;
+    formData.value.forestClientNumber = null;
 }
 
 function resetForm() {
@@ -137,7 +138,7 @@ async function verifyIdentity(userId: string, domain: string) {
 
     loading.value = true;
     try {
-        verifiedUserIdentity.value = (
+        verifiedUserIdentity = (
             await idirBceidProxyApi.idirSearch(userId)
         ).data;
     } catch (err: any) {
@@ -150,7 +151,7 @@ async function verifyIdentity(userId: string, domain: string) {
 async function verifyForestClientNumber(forestClientNumber: string) {
     loading.value = true;
     try {
-        forestClientData.value = (
+        forestClientData = (
             await forestClientApi.search(forestClientNumber)
         ).data;
     } catch (err: any) {
@@ -168,8 +169,7 @@ function areVerificationsPassed() {
         // userId verification.
         !isIdirDomainSelected() ||
         (
-            isIdirDomainSelected() &&
-            verifiedUserIdentity.value && verifiedUserIdentity.value.found
+            isIdirDomainSelected() && verifiedUserIdentity?.found
         )
     ) &&
     (
@@ -177,7 +177,7 @@ function areVerificationsPassed() {
         !isAbstractRoleSelected() ||
         (
             isAbstractRoleSelected() &&
-            forestClientData.value?.[0].status?.status_code == FamForestClientStatusType.A
+            forestClientData?.[0]?.status?.status_code == FamForestClientStatusType.A
         )
     )
 }
