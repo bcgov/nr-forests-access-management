@@ -1,34 +1,35 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import router from '@/router';
-import { Form as VeeForm, Field, ErrorMessage } from 'vee-validate';
+import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
+import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 import UserIdentityCard from './UserIdentityCard.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
-    selectedApplication,
-    selectedApplicationDisplayText,
+selectedApplication,
+selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
 import {
-    grantAccessFormData,
-    domainOptions,
-    FOREST_CLIENT_INPUT_MAX_LENGTH,
-    setGrantAccessFormData,
-    getGrantAccessFormData,
-    resetGrantAccessFormData,
+FOREST_CLIENT_INPUT_MAX_LENGTH,
+domainOptions,
+getGrantAccessFormData,
+grantAccessFormData,
+resetGrantAccessFormData,
+setGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
 
-import type {
-    FamApplicationRole,
-    FamForestClient,
-    IdimProxyIdirInfo
+import {
+FamForestClientStatusType,
+type FamApplicationRole,
+type FamForestClient,
+type IdimProxyIdirInfo
 } from 'fam-api';
 
 const defaultFormData = {
@@ -57,7 +58,6 @@ const formValidationSchema = object({
 const loading = ref<boolean>(false);
 const applicationRoleOptions = ref<FamApplicationRole[]>([]);
 const forestClientData = ref<FamForestClient[] | null>(null);
-const invalidForestClient = ref<boolean>(false);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
 const apiServiceFactory = new ApiServiceFactory();
@@ -75,8 +75,6 @@ onMounted(async () => {
 
         if (grantAccessFormData.value) {
             formData.value = getGrantAccessFormData();
-
-            invalidForestClient.value = isAbstractRoleSelected();
         } else {
             resetForm();
         }
@@ -85,6 +83,15 @@ onMounted(async () => {
         return Promise.reject(error);
     }
 });
+
+const isIdirDomainSelected = () => {
+    return formData.value.domain === domainOptions.IDIR
+}
+
+function userDomainChange() {
+    resetVerifiedUserIdentity();
+    formData.value.userId = '';
+}
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
     return applicationRoleOptions.value.find(
@@ -95,11 +102,6 @@ const getSelectedRole = (): FamApplicationRole | undefined => {
 const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
 };
-
-function userDomainChange() {
-    resetVerifiedUserIdentity();
-    formData.value.userId = '';
-}
 
 function userIdChange() {
     resetVerifiedUserIdentity();
@@ -117,7 +119,6 @@ function resetVerifiedUserIdentity() {
 }
 
 function resetForestClientNumberData() {
-    invalidForestClient.value = true;
     forestClientData.value = null;
 }
 
@@ -132,7 +133,7 @@ function cancelForm() {
 }
 
 async function verifyIdentity(userId: string, domain: string) {
-    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID.
+    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     loading.value = true;
     try {
@@ -156,15 +157,32 @@ async function verifyForestClientNumber(forestClientNumber: string) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
-        if (forestClientData.value?.[0]?.status?.description !== 'Active') {
-            invalidForestClient.value = true;
-        } else {
-            invalidForestClient.value = false;
-        }
     }
 }
 
-async function sendFormToSummaryPage() {
+/*
+Two verifications are cunnretly in place: userId and forestClientNumber.
+*/
+function areVerificationsPassed() {
+    return (
+        // userId verification.
+        !isIdirDomainSelected() ||
+        (
+            isIdirDomainSelected() &&
+            verifiedUserIdentity.value && verifiedUserIdentity.value.found
+        )
+    ) &&
+    (
+        // forestClientNumber verification
+        !isAbstractRoleSelected() ||
+        (
+            isAbstractRoleSelected() &&
+            forestClientData.value?.[0].status?.status_code == FamForestClientStatusType.A
+        )
+    )
+}
+
+function sendFormToSummaryPage() {
     setGrantAccessFormData(formData.value);
     router.push('/summary');
 }
@@ -199,10 +217,7 @@ async function sendFormToSummaryPage() {
                                 <div class="flex align-items-center">
                                     <RadioButton
                                         v-model="formData.domain"
-                                        :checked="
-                                            formData.domain ===
-                                            domainOptions.IDIR
-                                        "
+                                        :checked="isIdirDomainSelected()"
                                         inputId="idirSelect"
                                         name="domainRadioOptions"
                                         :value="domainOptions.IDIR"
@@ -218,10 +233,6 @@ async function sendFormToSummaryPage() {
                                 <div class="flex align-items-center">
                                     <RadioButton
                                         v-model="formData.domain"
-                                        :checked="
-                                            formData.domain ===
-                                            domainOptions.IDIR
-                                        "
                                         inputId="becidSelect"
                                         name="domainRadioOptions"
                                         :value="domainOptions.BCEID"
@@ -277,6 +288,11 @@ async function sendFormToSummaryPage() {
                                 />
                             </div>
 
+                            <!-- show Verify button only if (all applied):
+                                * domain is IDIR (for now, BCeID is not availabe for verify yet)
+                                * userId field is entered.
+                                * userId entered does not contains basic validation errors.
+                            -->
                             <div class="col-md-2"
                                 v-if="
                                     formData.domain === domainOptions.IDIR &&
@@ -305,8 +321,7 @@ async function sendFormToSummaryPage() {
                     <div class="row" v-if="verifiedUserIdentity">
                         <div class="form-group col-md-5 px-0">
                             <UserIdentityCard
-                                :found="verifiedUserIdentity['found']"
-                                :user="verifiedUserIdentity"
+                                :userIdentity="verifiedUserIdentity"
                             ></UserIdentityCard>
                         </div>
                     </div>
@@ -416,16 +431,9 @@ async function sendFormToSummaryPage() {
                             ></ForestClientCard>
                         </div>
                     </div>
-
                     <div
                         class="row gy-3 my-0"
-                        v-if="
-                            isAbstractRoleSelected()
-                                ? invalidForestClient
-                                    ? false
-                                    : true
-                                : meta.valid
-                        "
+                        v-if="meta.valid && areVerificationsPassed()"
                     >
                         <div class="col-auto px-0">
                             <Button
