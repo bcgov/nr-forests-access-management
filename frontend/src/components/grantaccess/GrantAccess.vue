@@ -182,7 +182,7 @@ function areVerificationsPassed() {
     )
 }
 
-function sendFormToSummaryPage() {
+function toSummary() {
     setGrantAccessFormData(formData.value);
     router.push('/summary');
 }
@@ -191,7 +191,7 @@ function sendFormToSummaryPage() {
 <template>
     <VeeForm
         ref="form"
-        v-slot="{ handleSubmit, errors, meta }"
+        v-slot="{ errors, meta }"
         :validation-schema="formValidationSchema"
         as="div"
     >
@@ -204,9 +204,6 @@ function sendFormToSummaryPage() {
                 <form
                     id="grantAccessForm"
                     class="form-container"
-                    @submit.prevent="
-                        handleSubmit($event, sendFormToSummaryPage)
-                    "
                 >
                     <div class="row">
                         <div class="form-group col-md-3 px-0">
@@ -441,7 +438,7 @@ function sendFormToSummaryPage() {
                                 id="grantAccessSubmit"
                                 class="mb-3 button p-button"
                                 label="Next"
-                                @click="sendFormToSummaryPage()"
+                                @click="toSummary()"
                             ></Button>
                             <Button
                                 class="m-3 button"
