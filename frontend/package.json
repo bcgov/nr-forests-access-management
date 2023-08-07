@@ -14,6 +14,7 @@
     },
     "dependencies": {
         "@bcgov-nr/nr-fsa-theme": "^1.1.0",
+        "@carbon/icons-vue": "^10.72.1",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",
         "@fortawesome/free-regular-svg-icons": "^6.2.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.1",
