@@ -285,16 +285,18 @@ function toSummary() {
                                 />
                             </div>
 
-                            <!-- show Verify button only if (all applied):
+                            <!-- show "Verify" button only if (all applied):
                                 * domain is IDIR (for now, BCeID is not availabe for verify yet)
                                 * userId field is entered.
                                 * userId entered does not contains basic validation errors.
+                                * does not have verified result yet.
                             -->
                             <div class="col-md-2"
                                 v-if="
                                     formData.domain === domainOptions.IDIR &&
                                     formData.userId &&
-                                    errors.userId == undefined
+                                    errors.userId == undefined &&
+                                    !verifiedUserIdentity
                                 "
                                 >
                                 <Button
