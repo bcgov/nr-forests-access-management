@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import Header from '@/components/header/Header.vue';
 import SideNav, { type ISideNavData } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { isApplicationSelected } from '@/store/ApplicationState';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
+
+onMounted(() => {
+    disableSideNavOption('Grant Access', !isApplicationSelected.value);
+});
 
 watch(isApplicationSelected, (value) => {
     disableSideNavOption('Grant Access', !value);
