@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
+import Close from '@carbon/icons-vue/es/close/16';
+import UserFollow from '@carbon/icons-vue/es/user--follow/16';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
-// svg icon
-import CloseIcon from '@/components/icons/CheckIcon.vue';
-import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 </script>
 
 <template>
@@ -26,7 +25,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <CloseIcon />
+                    <Close />
                 </button>
             </div>
             <!-- TODO - This code below is for displaying user information when it is available -->
@@ -37,11 +36,11 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                         alt="User avatar"
                     />
                 </div>
-                <div class="profile-info">
-                    <p class="profile-name">
-                        {{ authService.state.value.famLoginUser?.username }}
+                <div class="profile-info"> -->
+                     <p class="profile-name">
+                        {{ authService.state.value.famLoginUser!.username }}
                     </p>
-                    <p class="profile-idir">
+                    <!-- <p class="profile-idir">
                         IDIR:
                     </p>
                     <p class="profile-email">
@@ -58,7 +57,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                 aria-label="sign out"
                 @click="authService.methods.logout"
             >
-                <i><LogoutIcon /></i>
+                    <UserFollow className="my-custom-class" />
                 Sign out
             </button>
         </div>
@@ -121,6 +120,18 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 .sign-out {
     font-size: .875rem;
     font-weight: 700;
+    display: flex;
+    border: none;
+    background-color: transparent;
+    color: #000;
+    cursor: pointer;
+
+    svg {
+        margin-right: 18px;
+        align-self: center;
+        fill: $light-theme-icon;
+
+    }
 }
 
 .sign-out:hover {
