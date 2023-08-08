@@ -158,7 +158,6 @@ async function deleteUserRoleAssignment(
             v-if="useNotificationMessage.isNotificationVisible"
             severity="success"
             :msgText="useNotificationMessage.notificationMsg"
-            icon="CheckIcon"
         />
 
         <UserDataTable

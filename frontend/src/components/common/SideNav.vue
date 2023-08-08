@@ -22,6 +22,7 @@ const props = defineProps({
         default: '',
     },
 });
+
 </script>
 <template>
     <nav class="p-sidenav">
