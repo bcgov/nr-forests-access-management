@@ -30,13 +30,9 @@ GRANT INSERT ON app_fam.fam_role TO ${api_db_username};
 GRANT INSERT ON app_fam.fam_forest_client TO ${api_db_username};
 
 -- To facilitate API unit testing (not needed directly by API lambda)
+-- This is temporary tech debt to be removed in a future migration.
 GRANT DELETE on app_fam.fam_user TO ${api_db_username};
 GRANT DELETE on app_fam.fam_role TO ${api_db_username};
 GRANT DELETE on app_fam.fam_forest_client TO ${api_db_username};
 
--- To facilitate Auth lambda unit testing (not needed directly by Auth lambda)
---GRANT INSERT ON app_fam.fam_role TO ${auth_lambda_db_user};
---GRANT INSERT ON app_fam.fam_application_client TO ${auth_lambda_db_user};
--- TODO: I really don't like this being opened up so this is temporary to confirm this gets tests passing.
---GRANT INSERT ON app_fam.fam_user_role_xref TO ${auth_lambda_db_user};
 
