@@ -71,7 +71,7 @@ onMounted(async () => {
             await applicationsApi.getFamApplicationRoles(
                 selectedApplication.value?.application_id as number
             )
-        ).data as FamApplicationRole[];
+        ).data;
 
         if (grantAccessFormData.value) {
             formData.value = getGrantAccessFormData();
