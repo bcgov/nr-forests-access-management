@@ -130,6 +130,8 @@ resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" 
 EOF
 }
 
+# Create API Lambda DB User Credentials
+
 resource "random_password" "famdb_api_password" {
   length           = 16
   special          = true
@@ -142,7 +144,6 @@ variable "famdb_api_username" {
   default     = "fam_proxy_api"
   sensitive   = true
 }
-
 
 resource "random_pet" "api_creds_secret_name" {
   prefix = "famdb-api-creds"
@@ -166,6 +167,40 @@ resource "aws_secretsmanager_secret_version" "famdb_apicreds_secret_version" {
    }
 EOF
 }
+
+# Create Auth Lambda DB User Credentials
+
+variable "famdb_auth_lambda_user" {
+  description = "The username for the DB auth lambda user"
+  type        = string
+  default     = "fam_auth_lambda"
+  sensitive   = true
+}
+
+resource "random_password" "famdb_auth_lambda_password" {
+  length           = 20
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "aws_secretsmanager_secret" "famdb_auth_lambda_creds_secret" {
+  name = "famdb_auth_lambda_creds_secret"
+
+  tags = {
+    managed-by = "terraform"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "famdb_auth_lambda_creds_secret_version" {
+  secret_id     = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.id
+  secret_string = <<EOF
+   {
+    "username": "${var.famdb_auth_lambda_user}",
+    "password": "${random_password.famdb_auth_lambda_password.result}"
+   }
+EOF
+}
+
 
 # Creating an rds_proxy object that can be used by the API as a database proxy
 # Using the master user secret for now since the api db user does not exist until flyway runs
@@ -210,7 +245,8 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
           "secretsmanager:ListSecretVersionIds"
         ],
         "Resource": [
-          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}"
+          "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}",
+          "${aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn}"
         ]
       }
     ]
@@ -233,9 +269,16 @@ resource "aws_db_proxy" "famdb_proxy_api" {
 
   auth {
     auth_scheme = "SECRETS"
-    description = "example"
+    description = "API Lambda User"
     iam_auth    = "DISABLED"
     secret_arn  = aws_secretsmanager_secret.famdb_apicreds_secret.arn
+  }
+
+  auth {
+    auth_scheme = "SECRETS"
+    description = "Auth Lambda User"
+    iam_auth    = "DISABLED"
+    secret_arn  = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn
   }
 
   tags = {

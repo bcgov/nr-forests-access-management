@@ -27,16 +27,17 @@ generate "tools_tfvars" {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
     prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
+    tools = "${local.common_vars.inputs.idp_logout_chain_tools_url}"
   }
-  front_end_redirect_path = "https://fam-dev.nrs.gov.bc.ca"
+  front_end_redirect_path = "https://d3d7kmp8kmi5ix.cloudfront.net"
   fam_callback_urls = [
-    "https://fam-dev.nrs.gov.bc.ca/authCallback",
+    "https://d3d7kmp8kmi5ix.cloudfront.net/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "${local.common_vars.inputs.idp_logout_chain_dev_url}https://fam-dev.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_dev_url}https://d3d7kmp8kmi5ix.cloudfront.net",
     "${local.common_vars.inputs.idp_logout_chain_dev_url}http://localhost:5173"
   ]
   fam_console_idp_name = "DEV-IDIR"
