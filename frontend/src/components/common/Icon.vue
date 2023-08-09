@@ -5,50 +5,24 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    small: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    medium: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    large: {
-        type: Boolean,
-        required: false,
-        default: false,
+    size: {
+        type: String,
+        required: true,
+        default: '16',
     },
 });
 const iconName = computed(() => {
-    return defineAsyncComponent(() => import(`../icons/${props.icon}.vue`));
+    // dynamic imports must start with ./ or ../ and must end with a file extension
+    // https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
+    return defineAsyncComponent(() => import(`../../../node_modules/@carbon/icons-vue/es/${props.icon}/${props.size}.js`));
 });
 </script>
 
 <template>
     <component
-        :class="{
-            'icon-small': small,
-            'icon-medium': medium,
-            'icon-large': large,
-        }"
         :is="iconName"
     ></component>
 </template>
 
 <style lang="scss">
-.icon-large {
-    width: 32px !important;
-    height: 32px !important;
-}
-.icon-medium {
-    width: 20px !important;
-    height: 20px !important;
-}
-
-.icon-small {
-    width: 16px !important;
-    height: 16px !important;
-}
 </style>

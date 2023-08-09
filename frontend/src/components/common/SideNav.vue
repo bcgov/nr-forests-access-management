@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
 import router from '@/router';
+import Help from '@carbon/icons-vue/es/help/16'
+import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
 interface ISideNavData {
@@ -54,8 +55,8 @@ const props = defineProps({
                         >
                             <Icon
                                 class="p-sidenav-color-icon p-sidenav-padding-icon"
-                                small
                                 :icon="child.icon.toString()"
+                                size="16"
                             ></Icon>
                             {{ child.name }}
                         </li>
@@ -72,11 +73,12 @@ const props = defineProps({
                         class="child"
                         click="mailto:SIBIFSAF@Victoria1.gov.bc.ca"
                     >
-                        <Icon
+                        <!-- <Icon
                             icon="HelpIcon"
                             small
                             class="p-sidenav-padding-icon"
-                        />
+                        /> -->
+                        <Help class="p-sidenav-padding-icon" />
                         Need help?
                     </li>
                 </ul>
@@ -87,3 +89,4 @@ const props = defineProps({
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 </style>
+

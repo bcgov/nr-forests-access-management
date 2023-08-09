@@ -137,3 +137,6 @@ $light-button-danger-hover: map.get(
     lightButtons.$light-button-token-overrides,
     'button-danger-hover'
 );
+
+// icon
+$light-theme-icon: map.get(lightTheme.$light-theme, 'background-brand')

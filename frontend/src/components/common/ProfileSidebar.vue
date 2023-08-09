@@ -37,9 +37,9 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
                     />
                 </div>
                 <div class="profile-info"> -->
-                     <p class="profile-name">
+                     <!-- <p class="profile-name">
                         {{ authService.state.value.famLoginUser!.username }}
-                    </p>
+                    </p> -->
                     <!-- <p class="profile-idir">
                         IDIR:
                     </p>
