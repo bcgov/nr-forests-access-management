@@ -120,7 +120,6 @@ function resetVerifiedUserIdentity() {
 
 function resetForestClientNumberData() {
     forestClientData = null;
-    formData.value.forestClientNumber = '';
 }
 
 function resetForm() {
