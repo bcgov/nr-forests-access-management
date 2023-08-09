@@ -18,7 +18,7 @@ class ForestClientService():
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
-    TIMEOUT = (4, 10) # Timeout (connect, read) in seconds.
+    TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
 
     def __init__(self):
         self.api_base_url = config.get_forest_client_api_baseurl()
@@ -56,7 +56,7 @@ class ForestClientService():
             return [api_result]
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError as he:
             status_code = r.status_code
             LOGGER.debug(f"API status code: {status_code}")
             LOGGER.debug(f"API result: {r.content or r.reason}")
@@ -71,9 +71,5 @@ class ForestClientService():
                 return [] # return empty for FAM forest client search
 
             # Else raise error, including 500
-            raise
-
-            """
-            Dev Note - If in the future this class gets more endpoints to integrate, better improve
-            error handling, request init and logging, in one place (e.g. in parent class).
-            """
+            # There is a general error handler, see: requests_http_error_handler
+            raise he
