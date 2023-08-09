@@ -56,11 +56,30 @@ Potential gotchas (developer notes -- may not need!):
     Make sure you are running python 3.8
 
 ## Create or update the necessary environment variables
-
+In general, if there is a setting change in local-dev.env, run below to have correct environments setup.
 ```
 cd server/backend
 set -o allexport; source local-dev.env; set +o allexport
 ```
+
+### Configure external services to work locally
+FAM backend uses external services. These services genrally need some credentials or api tokens. The credentials or tokens should not be harcoded in "`local-dev.env`". For running backend locally or run tests locally, developers may find problem with connecting to these services. Developers can get the values (instruction below) and hardcod the value locally but should not commit these key values. If these are accidently commited, they should be rest.
+
+<b>FC_API_TOKEN</b>: \
+This is an API Token for Forest Client API external service to lookup forest client number organization information. The token value can be found on <b>Github Repo Secret</b> if you have permission.
+
+In case it needs to be reset, use [API Service Portal](https://api.gov.bc.ca/devportal/api-directory/3179?preview=false) with your IDIR credential to login and go to "Forest Client API" service to request a reset for the token.
+
+<b>IDIM_PROXY_API_KEY</b>: FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key. You can also find the key value from <b>Github Repo Secret</b> if you have permission.
+
+* Note:
+\
+This IDIM-Lookup-Proxy service also requires passing a <b>"requester"</b>'s username and IDP type as parameters. The information currently cannot be found locally by using "cognito_user_id" to lookup user in FAM `fam_user` database table locally, so developers will have problem doing this search locally or unit testing.
+\
+<b>"local-data.json"</b> is being used to overcome this problem. Developer can find the <b>"requester"</b> object in the json file and override it to their need for the search (but don't commit it as that can potentially break some tests).
+\
+The key flag to swtiching using local-data.json depends on this config: `config.py::is_on_aws()` which then depends on this env: `"DB_SECRET"`
+
 
 ## Run the API from the command line
 
@@ -116,12 +135,17 @@ pip install -r requirements-dev.txt
 
 ```
 cd server/backend
+```
 
-# bring up VENV environment
+* bring up VENV environment
+```
 . ./venv/bin/activate
+```
 
-# run postgres tests
+* run postgres tests
+```
 pytest
+```
 
 Potential gotchas:
 
@@ -144,7 +168,4 @@ If for some reason not then:
 for test Output,
 * find the `output` tab
 * select `Python Test Log` in from the pulldown, top right of the output window
-
-
-
 

@@ -31,11 +31,14 @@ on:
       prod_oidc_bceid_business_idp_client_secret:
         required: true
       forest_client_api_api_key:
+        required: true
       dev_oidc_bcsc_idp_client_secret:
         required: true
       test_oidc_bcsc_idp_client_secret:
         required: true
       prod_oidc_bcsc_idp_client_secret:
+        required: true
+      idim_proxy_api_api_key:
         required: true
 
 env:
@@ -145,6 +148,7 @@ jobs:
           dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
           test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
+          idim_proxy_api_api_key = "${{ secrets.idim_proxy_api_api_key }}"
           EOF
 
       - name: Terragrunt ${{ inputs.tf_subcommand }}

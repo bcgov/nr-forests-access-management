@@ -14,12 +14,29 @@
 
 
 
-export * from './api/bcscproxy-api';
-export * from './api/famapplications-api';
-export * from './api/famforest-clients-api';
-export * from './api/famroles-api';
-export * from './api/famuser-role-assignment-api';
-export * from './api/famusers-api';
-export * from './api/idirbce-idproxy-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface IdimProxyIdirInfo
+ */
+export interface IdimProxyIdirInfo {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof IdimProxyIdirInfo
+     */
+    'found': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyIdirInfo
+     */
+    'userId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyIdirInfo
+     */
+    'displayName'?: string;
+}
 

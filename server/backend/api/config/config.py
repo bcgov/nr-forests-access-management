@@ -149,6 +149,17 @@ def get_forest_client_api_baseurl():
     return forest_client_api_baseurl
 
 
+def get_idim_proxy_api_baseurl():
+    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL")
+    LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
+    return idim_proxy_api_baseurl
+
+
+def get_idim_proxy_api_key():
+    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+    return idim_proxy_api_key
+
+
 # For local development, you can override this function since it doesn't work outside AWS
 def is_bcsc_key_enabled():
     return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == 'True'
