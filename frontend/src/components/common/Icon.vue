@@ -23,6 +23,3 @@ const iconName = computed(() => {
         :is="iconName"
     ></component>
 </template>
-
-<style lang="scss">
-</style>
