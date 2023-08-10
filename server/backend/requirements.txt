@@ -1,6 +1,6 @@
 boto3==1.26.162
 botocore==1.29.162
-fastapi==0.78.0
+fastapi==0.101.0
 uvicorn[standard]==0.22.0
 sqlmodel==0.0.8
 email-validator==2.0.0.post2
