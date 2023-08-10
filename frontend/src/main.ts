@@ -7,28 +7,14 @@ import App from '@/App.vue';
 import router from '@/router';
 
 import 'bootstrap';
-
-// import the fontawesome core
-import { library } from '@fortawesome/fontawesome-svg-core';
-
-// import font awesome icon component
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
-// import specific icons
-import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-
-import PrimeVue from 'primevue/config';
-import ConfirmationService from 'primevue/confirmationservice';
-import ToastService from 'primevue/toastservice';
-
-
 // use bootstrap4 as default style
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
-
 import './assets/styles/styles.scss';
-// add specific icons to library for use throughout application
-library.add(faTrashCan);
+
+import ConfirmationService from 'primevue/confirmationservice';
+import PrimeVue from 'primevue/config';
+import ToastService from 'primevue/toastservice';
 
 Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
@@ -37,5 +23,6 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.use(PrimeVue);
-app.use(router).component('font-awesome-icon', FontAwesomeIcon).mount('#app');
+app.use(router)
+app.mount('#app');
 export { app }
