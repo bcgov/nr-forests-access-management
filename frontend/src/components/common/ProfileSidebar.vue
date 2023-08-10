@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
-import Close from '@carbon/icons-vue/es/close/16';
-import UserFollow from '@carbon/icons-vue/es/user--follow/16';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
 </script>
@@ -25,7 +23,10 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <Close />
+                    <Icon
+                        icon="close"
+                        size="16"
+                    ></Icon>
                 </button>
             </div>
             <!-- TODO - This code below is for displaying user information when it is available -->
@@ -57,7 +58,10 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
                 aria-label="sign out"
                 @click="authService.methods.logout"
             >
-                    <UserFollow className="my-custom-class" />
+                    <Icon
+                        icon="user--follow"
+                        size="16"
+                    />
                 Sign out
             </button>
         </div>
