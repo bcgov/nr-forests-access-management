@@ -15,7 +15,7 @@ watch(isApplicationSelected, (value) => {
     disableSideNavOption('Grant Access', !value);
 });
 
-function disableSideNavOption(optionName: string, disabled: boolean) {
+const disableSideNavOption = (optionName: string, disabled: boolean) => {
     navigationData.value.map((navItem) => {
         navItem.items.map((childNavItem) => {
             if (childNavItem.name === optionName) {
@@ -23,7 +23,7 @@ function disableSideNavOption(optionName: string, disabled: boolean) {
             }
         });
     });
-}
+};
 </script>
 <template>
     <Header title="FAM" subtitle="Forest Access Management" />
