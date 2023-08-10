@@ -81,60 +81,6 @@ def get_application_by_name(db: Session, application_name: str):
     return application
 
 
-def create_application(
-    fam_application: schemas.FamApplicationCreate, db: Session
-) -> models.FamApplication:
-    """used to add a new application record to the database
-
-    :param fam_application: _description_
-    :type fam_application: schemas.FamApplication
-    :param db: _description_
-    :type db: Session
-    :return: _description_
-    :rtype: _type_
-    """
-    LOGGER.debug(f"fam_application: {fam_application}")
-    LOGGER.debug(f"fam_application as dict: {fam_application.dict()}")
-
-    next_val = crud_utils.get_next(models.FamApplication, db)
-    LOGGER.debug(f"next val: {next_val}")
-    fam_app_dict = fam_application.dict()
-    pk_col_name = crud_utils.get_primary_key(models.FamApplication)
-    fam_app_dict[pk_col_name] = next_val
-
-    # TODO: once integrate ian's db changes are merged, the dates will be calced
-    #       in the database
-    now = datetime.datetime.now()
-    fam_app_dict["create_date"] = now
-    fam_app_dict["update_date"] = now
-    fam_app_dict["update_user"] = constants.FAM_PROXY_API_USER
-    fam_app_dict["create_user"] = constants.FAM_PROXY_API_USER
-
-    # TODO: need to figure out a better way of handling application_client_id is null
-    if "application_client_id" in fam_app_dict:
-        del fam_app_dict["application_client_id"]
-
-    db_item = models.FamApplication(**fam_app_dict)
-    LOGGER.info(f"db_item: {db_item}")
-    db.add(db_item)
-    db.flush()
-    # db.refresh(db_item)
-    return db_item
-
-
-def delete_application(db: Session, application_id: int):
-    application = (
-        db.query(models.FamApplication)
-        .options(load_only("application_id"))
-        .filter(models.FamApplication.application_id == application_id)
-        .one()
-    )
-    db.delete(application)
-
-    db.commit()
-    return application
-
-
 def get_application_roles(
     db: Session, application_id: int
 ) -> List[schemas.FamApplicationRole]:

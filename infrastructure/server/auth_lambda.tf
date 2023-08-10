@@ -1,7 +1,7 @@
 # Looking up a few things so they can be changed for this file in one place only
 
 data "aws_secretsmanager_secret" "db_auth_creds_secret" {
-  name = aws_secretsmanager_secret.famdb_apicreds_secret.name
+  name = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.name
 }
 
 data "aws_rds_cluster" "auth_database" {
@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "fam_auth_lambda_access_policy" {
           "secretsmanager:DescribeSecret",
           "secretsmanager:GetSecretValue"
         ],
-        "Resource": "${data.aws_secretsmanager_secret.db_auth_creds_secret.arn}"
+        "Resource": "${aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn}"
       }
     ]
   }
@@ -72,7 +72,7 @@ resource "aws_iam_role" "fam_auth_lambda_exec" {
 resource "aws_lambda_function" "fam-auth-function" {
   filename      = "fam_auth_function.zip"
   function_name = local.auth_lambda_name
-  role          = aws_iam_role.fam_api_lambda_exec.arn
+  role          = aws_iam_role.fam_auth_lambda_exec.arn
   handler       = "lambda_function.lambda_handler"
 
   source_code_hash = filebase64sha256("fam_auth_function.zip")
@@ -94,7 +94,7 @@ resource "aws_lambda_function" "fam-auth-function" {
   environment {
 
     variables = {
-      DB_SECRET   = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
+      DB_SECRET   = "${data.aws_secretsmanager_secret.db_auth_creds_secret.name}"
       PG_DATABASE = "${data.aws_rds_cluster.api_database.database_name}"
       PG_PORT     = "5432"
       PG_HOST     = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"

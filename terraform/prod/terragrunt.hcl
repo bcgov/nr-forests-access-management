@@ -39,5 +39,6 @@ generate "prod_tfvars" {
   fam_console_idp_name = "PROD-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-prod.api.gov.bc.ca/"
   use_override_proxy_endpoints = false
+  idim_proxy_api_base_url = "https://nr-fam-idim-lookup-proxy-prod-backend.apps.silver.devops.gov.bc.ca"
 EOF
 }

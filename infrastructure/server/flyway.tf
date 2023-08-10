@@ -17,6 +17,20 @@ data "aws_secretsmanager_secret_version" "db_flyway_api_creds_current" {
   ]
 }
 
+data "aws_secretsmanager_secret" "db_flyway_auth_creds" {
+  name = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.name
+}
+
+data "aws_secretsmanager_secret_version" "db_flyway_auth_creds_current" {
+  secret_id = data.aws_secretsmanager_secret.db_flyway_auth_creds.id
+
+  depends_on = [
+    # Fix race condition
+    aws_secretsmanager_secret_version.famdb_auth_lambda_creds_secret_version
+  ]
+}
+
+
 data "aws_rds_cluster" "flyway_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
@@ -200,6 +214,7 @@ resource "aws_db_cluster_snapshot" "fam_pre_flyway_snapshot" {
 # Need to grab the username and password from the database so they can go into the scripts
 locals {
   flyway_db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_api_creds_current.secret_string)
+  flyway_db_auth_creds = jsondecode(data.aws_secretsmanager_secret_version.db_flyway_auth_creds_current.secret_string)
 }
 
 # Run flyway to update the database
@@ -214,6 +229,8 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
         "placeholders": {
           "api_db_username" : "${local.flyway_db_creds.username}",
           "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}",
+          "auth_lambda_db_user" : "${local.flyway_db_auth_creds.username}",
+          "auth_lambda_db_password" : "md5${md5(join("", [local.flyway_db_auth_creds.password, local.flyway_db_auth_creds.username]))}",
           "client_id_fam_console" : "${aws_cognito_user_pool_client.fam_console_oidc_client.id}",
           "client_id_fom_public" : "nolongerinuse1",
           "client_id_fom_ministry" : "nolongerinuse2",

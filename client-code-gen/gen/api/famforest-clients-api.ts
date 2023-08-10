@@ -52,9 +52,9 @@ export const FAMForestClientsApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication 7oi2u0st9ov66aahdk02at9f7g required
+            // authentication 6jfveou69mgford233or30hmta required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "7oi2u0st9ov66aahdk02at9f7g", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
 
             if (clientNumber !== undefined) {
                 localVarQueryParameter['client_number'] = clientNumber;

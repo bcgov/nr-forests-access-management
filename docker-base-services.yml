@@ -41,6 +41,8 @@ services:
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=postgres
       - FLYWAY_BASELINE_ON_MIGRATE=true
+      - FLYWAY_PLACEHOLDERS_auth_lambda_db_user=fam_auth_lambda
+      - FLYWAY_PLACEHOLDERS_auth_lambda_db_password=test
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
       - FLYWAY_PLACEHOLDERS_client_id_fom_public="nolongerinuse1"

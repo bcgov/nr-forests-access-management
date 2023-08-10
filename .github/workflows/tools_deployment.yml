@@ -2,6 +2,11 @@ name: DEPLOY Tools Environment
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      # Enable a specific branch to temporarily test in the tools environment.
+      - "feat/718-auth-lambda-db-user"
+
 
 jobs:
 
@@ -24,6 +29,7 @@ jobs:
       dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
 
   aws-tools-deployment-frontend:
     needs: aws-tools-deployment-server
