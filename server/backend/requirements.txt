@@ -1,4 +1,4 @@
-boto3==1.26.162
+boto3==1.28.23
 botocore==1.29.162
 fastapi==0.78.0
 uvicorn[standard]==0.22.0
