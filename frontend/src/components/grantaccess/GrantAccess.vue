@@ -427,16 +427,17 @@ function toSummary() {
                             ></ForestClientCard>
                         </div>
                     </div>
-                    <div
-                        class="row gy-3 my-0"
-                        v-if="meta.valid && areVerificationsPassed()"
-                    >
+                    <div class="row gy-1 my-0">
                         <div class="col-auto px-0">
                             <Button
                                 type="button"
                                 id="grantAccessSubmit"
                                 class="mb-3 button p-button"
                                 label="Next"
+                                :disabled="!(
+                                    meta.valid &&
+                                    areVerificationsPassed()
+                                )"
                                 @click="toSummary()"
                             ></Button>
                             <Button
