@@ -3,7 +3,6 @@ import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import authService from '@/services/AuthService';
-import UserAvatar from '@carbon/icons-vue/es/user--avatar/20'
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -53,7 +52,10 @@ const props = defineProps({
                             v-if="authService.getters.isLoggedIn()"
                             @click="useProfileSidebarVisible.toggleVisible()"
                         >
-                            <UserAvatar />
+                            <Icon
+                                icon="user--avatar"
+                                size="20"
+                            />
                         </a>
                     </li>
                 </ul>

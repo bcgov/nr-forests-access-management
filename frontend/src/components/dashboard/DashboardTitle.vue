@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import router from '@/router';
-import Add from '@carbon/icons-vue/es/add/20'
 
 const props = defineProps({
     isApplicationSelected: {
@@ -23,7 +22,10 @@ const props = defineProps({
                 label="Grant new access"
                 @click="router.push('/grant')"
                 >
-                <Add />
+                <Icon
+                    icon="add"
+                    size="20"
+                />
             </Button>
         </div>
     </div>

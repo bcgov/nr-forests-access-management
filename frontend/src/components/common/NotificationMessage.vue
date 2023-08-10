@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Message from 'primevue/message';
-import CheckmarkFilled from '@carbon/icons-vue/es/checkmark--filled/20';
 
 const props = defineProps({
     msgText: {
@@ -22,7 +21,10 @@ const props = defineProps({
             :severity="props.severity"
             :sticky="true"
         >
-            <CheckmarkFilled />
+            <Icon
+                icon="checkmark--filled"
+                size="20"
+            />
             <span class="message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>

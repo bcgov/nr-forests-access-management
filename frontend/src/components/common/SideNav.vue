@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import router from '@/router';
-import Help from '@carbon/icons-vue/es/help/16'
 import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -57,7 +56,7 @@ const props = defineProps({
                                 class="p-sidenav-color-icon p-sidenav-padding-icon"
                                 :icon="child.icon.toString()"
                                 size="16"
-                            ></Icon>
+                            />
                             {{ child.name }}
                         </li>
                     </ul>
@@ -73,12 +72,11 @@ const props = defineProps({
                         class="child"
                         click="mailto:SIBIFSAF@Victoria1.gov.bc.ca"
                     >
-                        <!-- <Icon
-                            icon="HelpIcon"
-                            small
+                        <Icon
+                            icon="help"
+                            size="16"
                             class="p-sidenav-padding-icon"
-                        /> -->
-                        <Help class="p-sidenav-padding-icon" />
+                        />
                         Need help?
                     </li>
                 </ul>
