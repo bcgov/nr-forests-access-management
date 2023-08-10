@@ -1,5 +1,5 @@
 boto3==1.26.162
-botocore==1.29.162
+botocore==1.31.23
 fastapi==0.78.0
 uvicorn[standard]==0.22.0
 sqlmodel==0.0.8
