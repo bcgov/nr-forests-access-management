@@ -111,7 +111,7 @@ class FamUserRoleAssignmentGet(BaseModel):
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: str
-    #client_name: str
+    # client_name: str
     create_user: str
 
     class Config:
@@ -124,9 +124,7 @@ class FamRoleCreate(BaseModel):
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    application_id: int = Field(
-        title="Application this role is associated with"
-    )
+    application_id: int = Field(title="Application this role is associated with")
     forest_client_number: Union[str, None] = Field(
         default=None, title="Forest Client this role is associated with"
     )
@@ -193,10 +191,7 @@ class FamForestClientStatus(BaseModel):
             if status_code == famConstants.FamForestClientStatusType.ACTIVE
             else famConstants.DESCRIPTION_INACTIVE
         )
-        status = FamForestClientStatus(
-            status_code=status_code,
-            description=description
-        )
+        status = FamForestClientStatus(status_code=status_code, description=description)
         return status
 
 
@@ -211,14 +206,14 @@ class FamForestClient(BaseModel):
     @staticmethod
     def from_api_json(json_dict):
         LOGGER.debug(f"from_api_json - {json_dict}")
-        client_name = json_dict['clientName']
-        forest_client_number = json_dict['clientNumber']
+        client_name = json_dict["clientName"]
+        forest_client_number = json_dict["clientNumber"]
         forest_client_status_code = json_dict[famConstants.FOREST_CLIENT_STATUS["KEY"]]
         status = FamForestClientStatus.to_fam_status(forest_client_status_code)
         fc = FamForestClient(
             client_name=client_name,
             forest_client_number=forest_client_number,
-            status=status
+            status=status,
         )
         return fc
 
@@ -289,7 +284,8 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 
 class IdimProxySearchParamIdir(BaseModel):
-    userId: str # param for Idim-Proxy search of this form (not snake case)
+    userId: str  # param for Idim-Proxy search of this form (not snake case)
+
 
 class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
@@ -300,8 +296,14 @@ class IdimProxyIdirInfo(BaseModel):
     @staticmethod
     def from_api_json(json_dict):
         info = IdimProxyIdirInfo(
-            found=json_dict['found'],
-            userId=json_dict['userId'],
-            displayName=json_dict["displayName"]
+            found=json_dict["found"],
+            userId=json_dict["userId"],
+            displayName=json_dict["displayName"],
         )
         return info
+
+
+class GCNotifyEmailParam(BaseModel):
+    user_name: str
+    application_name: str
+    send_to_email: str
