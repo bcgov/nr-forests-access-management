@@ -90,3 +90,4 @@ terraform/tools/output.txt
 **/.scannerwork/**/*
 
 
+server/flyway/local_sql/V1000__update_test_user_cognito_id.sql

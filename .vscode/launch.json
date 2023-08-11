@@ -16,7 +16,7 @@
             ],
             "jinja": true,
             "justMyCode": true,
-            "envFile": "${workspaceFolder}/local-dev.env"
+            "envFile": "${workspaceFolder}/server/backend/local-dev.env"
         }
     ]
 }

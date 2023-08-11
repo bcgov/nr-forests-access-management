@@ -18,6 +18,7 @@ Potential "gotchas":
 
 * The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and`COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
 * When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
+* There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. See sample_V1000__update_test_user_cognito_id copy.sql for instructions on how to do that in Docker.
 * Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
 
 # Running the API locally
@@ -55,8 +56,13 @@ Potential gotchas (developer notes -- may not need!):
 * `sudo apt-get install python3.8` -
     Make sure you are running python 3.8
 
+* Make sure you have the correct Python interpreter selected. <Cntl><Shift><P> "Python: Select Interpreter" will give you the option if you don't want the default VENV (from settings.json). Default is VENV.
+
 ## Create or update the necessary environment variables
 In general, if there is a setting change in local-dev.env, run below to have correct environments setup.
+
+Note: This is no longer necessary if running through Docker or running tests through VS Code testrunner, as they both reference the .env file at startup.
+
 ```
 cd server/backend
 set -o allexport; source local-dev.env; set +o allexport
@@ -80,34 +86,24 @@ This IDIM-Lookup-Proxy service also requires passing a <b>"requester"</b>'s user
 \
 The key flag to swtiching using local-data.json depends on this config: `config.py::is_on_aws()` which then depends on this env: `"DB_SECRET"`
 
+## Run the API from VS Code launch configuration
+
+1. Click on "Run and Debug" on the side menu bar
+2. On the top of the window is a dropdown. "Debug FAM API" should be an option. Select it.
+3. Click the little green arrow.
 
 ## Run the API from the command line
 
-Depending on where python3 is installed, the command might be "python" or "python3"
+Depending on where python3 is installed, the command might be "python" or "python3". You WILL need the environment variables loaded in your shell session in order for this to work.
 
 ```
 cd server/backend
 python3 serverstart.py
 ```
 
-## Alternatively, run the API from VS Code in debug mode
-
-1. Open `serverstart.py` in VS Code
-2. Click "Run and Debug" on the VS Code toolbar (or use Ctrl+Shift+D)
-3. Click "Run and Debug" button
-4. Select "Debug the currently active Python file"
-
-## Alternatively, run the API from VS Code launch configuration
-
-1. Click on "Run and Debug" on the side menu bar
-2. On the top of the window is a dropdown. "Debug FAM API" should be an option. Select it.
-3. Click the little green arrow.
-
-The debug configuration is in /.vscode/launch.json. The environment variable get loaded at runtime from the local-dev.env file.
-
 # Using Virtual Environment
 
-If you have multiple python projects locally and you want to isolate your FAM developments, you can use a virtual environment. VS Code does not debug into the virtual environment (that we can determine).
+If you have multiple python projects locally and you want to isolate your FAM developments, you can use a virtual environment.
 
 ```
 cd server/backend
@@ -153,9 +149,7 @@ Potential gotchas:
 
 ## Run tests from VS Code
 
-Some developers run tests from VS Code. This author (Conrad) has never gotten the VS Code configuration correct, so YMMV. Notes from previous developer (please fix if you verify that it works for you!). If it's working, you can go to the "Testing" icon on the VS Code menu (looks like a test tube) and VS Code should discover all the tests for you.
-
-Kevin had it working by running VENV and pointing to it from `.vscode/settings.json` (which controls the VS Code behaviour).
+There is a test configuration in .vscode/launch.json. In VS Code there is a bunsen beaker icon. Clicking the icon should trigger tests discovery and from there you can use the UI.
 
 If you created your virtualenv in the folder `backend` then the `.vscode/settings.json` should be able to find the virtualenv that you are looking for, and the tests should be configured.
 
