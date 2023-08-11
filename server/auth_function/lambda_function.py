@@ -15,7 +15,7 @@ from enum import Enum
 # as is done when lambda calls this script.
 # ... see end of file
 
-logConfigFile = os.path.join(os.path.dirname(__file__), "./logging.config")
+logConfigFile = os.path.join(os.path.dirname(__file__), "./config", "logging.config")
 logging.config.fileConfig(logConfigFile, disable_existing_loggers=False)
 
 LOGGER = logging.getLogger()
