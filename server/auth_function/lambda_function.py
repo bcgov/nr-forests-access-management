@@ -1,3 +1,5 @@
+import os
+import logging.config
 import logging
 import json
 import psycopg2
@@ -5,14 +7,18 @@ import psycopg2.sql
 import config
 import event_type
 from typing import Any
+from enum import Enum
 
 
-# seeing as a simple lambda function, not using a fileconfig for the logging
-# config, and instead setting up manually if the function is called directly
+# seeing as a simple lambda function, use a simple fileconfig for the aduit logging
+# config, and setting up manually if the function is called directly
 # as is done when lambda calls this script.
 # ... see end of file
+
+logConfigFile = os.path.join(os.path.dirname(__file__), "./logging.config")
+logging.config.fileConfig(logConfigFile, disable_existing_loggers=False)
+
 LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.INFO)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
@@ -35,6 +41,11 @@ USER_TYPE_CODE_DICT = {
 }
 
 
+class AuditEventOutcome(str, Enum):
+    SUCCESS = 1
+    FAIL = 0
+
+
 def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """recieves a cognito event object, checks to see if the user associated
     with the event exists in the database.  If not it gets added.  Finally
@@ -54,36 +65,44 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     :return: returns a modified event with the roles injected into it
     :rtype: event_type.Event
     """
+
+    audit_event_log = {
+        "logging_type": "Audit",
+        "event_type": "User Login",
+        "event_outcome": AuditEventOutcome.SUCCESS,
+    }
+
     LOGGER.debug(f"context: {context}")
 
-    db_connection = obtain_db_connection()
-    populate_user_if_necessary(db_connection, event)
+    try:
+        audit_event_log["user_type"] = USER_TYPE_CODE_DICT[
+            event["request"]["userAttributes"]["custom:idp_name"]
+        ]
+        audit_event_log["cognito_client_id"] = event["callerContext"]["clientId"]
+        audit_event_log["user_name"] = event["request"]["userAttributes"][
+            "custom:idp_username"
+        ]
 
-    event_with_authz = handle_event(db_connection, event)
+        db_connection = obtain_db_connection()
+        populate_user_if_necessary(db_connection, event)
 
-    release_db_connection(db_connection)
+        event_with_authz = handle_event(db_connection, event)
 
-    user_type_code = USER_TYPE_CODE_DICT[
-        event["request"]["userAttributes"]["custom:idp_name"]
-    ]
-    cognito_client_id = event["callerContext"]["clientId"]
-    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
+        release_db_connection(db_connection)
 
-    audit_log = json.dumps(
-        {
-            "type": "Audit",
-            "event": "User Login",
-            "user_name": idp_username,
-            "user_type": user_type_code,
-            "cognito_client_id": cognito_client_id,
-            "access_roles": event_with_authz["response"]["claimsOverrideDetails"][
-                "groupOverrideDetails"
-            ]["groupsToOverride"],
-        }
-    )
-    LOGGER.info(f"{audit_log}")
+        audit_event_log["access_roles"] = event_with_authz["response"][
+            "claimsOverrideDetails"
+        ]["groupOverrideDetails"]["groupsToOverride"]
 
-    return event_with_authz
+        return event_with_authz
+
+    except Exception as e:
+        audit_event_log["event_outcome"] = AuditEventOutcome.FAIL
+        audit_event_log["exception"] = e
+        raise e
+
+    finally:
+        LOGGER.info(json.dumps(audit_event_log))
 
 
 def obtain_db_connection() -> Any:
