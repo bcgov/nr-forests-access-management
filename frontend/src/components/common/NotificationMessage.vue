@@ -33,7 +33,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/styles.scss';
+@import '@/assets/styles/styles.scss';
 
 svg {
     margin-right: .9375rem;
