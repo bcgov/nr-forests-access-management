@@ -16,7 +16,7 @@ python-dotenv==1.0.0
 
 # used to mock out sqlalchemy for testing
 mock==4.0.3
-mock-alchemy==0.2.5
+mock-alchemy==0.2.6
 
 # used to create test JWT
 pycryptodome==3.16.0
