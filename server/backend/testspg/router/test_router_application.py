@@ -2,6 +2,7 @@ import logging
 import starlette.testclient
 from api.app.main import apiPrefix
 from api.app.jwt_validation import ERROR_INVALID_APPLICATION_ID
+from api.app.crud import crud_user_role
 import testspg.jwt_utils as jwt_utils
 from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
     TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT, \
@@ -66,19 +67,19 @@ def test_get_applications(
 def test_get_fam_application_roles(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    db_pg_container
+    db_pg_session
 ):
     # create a concrete role with an abstract role as parent
     # this role won't be returned
     access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
+
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
-    xref_id = response.json()["user_role_xref_id"]
 
     role_end_point = endPoint + f"/{TEST_FOM_DEV_APPLICATION_ID}/fam_roles"
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
@@ -117,22 +118,12 @@ def test_get_fam_application_roles(
     assert fom_submitter_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[0]} in results"
     assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
 
-    # cleanup
-    response = test_client_fixture.delete(
-        f"{apiPrefix}/user_role_assignment/{xref_id}",
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == 204
 
-
-def test_get_fam_application_user_role_assignment(
+def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    db_pg_container
+    db_pg_session
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
-
-    # test get user role assignment for application not exists
     role_assignment_end_point = endPoint + \
         f"/{TEST_APPLICATION_ID_NOT_FOUND}/user_role_assignment"
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -140,6 +131,14 @@ def test_get_fam_application_user_role_assignment(
                                        headers=jwt_utils.headers(token))
     data = response.json()
     assert data["detail"]["code"] == ERROR_INVALID_APPLICATION_ID
+
+
+def test_get_fam_application_user_role_assignment_no_role_assignments(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    db_pg_session
+):
+    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
 
     # test no user role assignment for the application
     role_assignment_end_point = endPoint + \
@@ -149,6 +148,17 @@ def test_get_fam_application_user_role_assignment(
                                        headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 0  # initially no one is assigned with FOM_DEV roles
+
+
+def test_get_fam_application_user_role_assignment_concrete_role(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    db_pg_session
+):
+    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+
+    role_assignment_end_point = endPoint + \
+        f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"
 
     # test user role assignment
     # create
@@ -174,12 +184,16 @@ def test_get_fam_application_user_role_assignment(
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
 
-    # cleanup
-    response = test_client_fixture.delete(
-        f"{apiPrefix}/user_role_assignment/{concrete_role_data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == 204
+
+def test_get_fam_application_user_role_assignment_abstract_role(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    db_pg_session
+):
+    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+
+    role_assignment_end_point = endPoint + \
+        f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"
 
     # test user role assignment for abstract role
     # create
@@ -208,9 +222,3 @@ def test_get_fam_application_user_role_assignment(
     assert data[0]["role"]["parent_role"]["role_type_code"] == "A"
     assert data[0]["role"]["parent_role"]["role_name"] == "FOM_SUBMITTER"
 
-    # cleanup
-    response = test_client_fixture.delete(
-        f"{apiPrefix}/user_role_assignment/{abstract_role_data['user_role_xref_id']}",
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == 204

@@ -40,27 +40,6 @@ def fom_dev_access_admin_token(test_rsa_key):
     return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 
 
-# Need to have a user in the DB corresponding to the holder of the access token
-@pytest.fixture(scope="function")
-def fom_dev_access_admin_token_with_matching_db_user(
-        fom_dev_access_admin_token,
-        db_pg_session: Session
-):
-    fam_user_dict = {
-        "user_type_code": UserType.IDIR,
-        "cognito_user_id": jwt_utils.COGNITO_USERNAME,
-        "user_name": jwt_utils.IDIR_USERNAME,
-        "user_guid": jwt_utils.IDP_USER_GUID,
-        "create_user": "ANY_USER",
-        "create_date": datetime.datetime.now()
-    }
-    user_record = models.FamUser(**fam_user_dict)
-    db_pg_session.add(user_record)
-    db_pg_session.flush()
-
-    return fom_dev_access_admin_token
-
-
 @pytest.fixture(scope="function")
 def fom_test_access_admin_token(test_rsa_key):
     access_roles = [FOM_TEST_ADMIN_ROLE]
@@ -494,7 +473,7 @@ def test_user_role_forest_client_number_inactive_bad_request(
 
 def test_self_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token_with_matching_db_user,
+    fom_dev_access_admin_token,
     db_pg_session: Session
 ):
     # Setup challenge: The user in the json sent to the service must match the user
@@ -508,7 +487,7 @@ def test_self_grant_fail(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=user_role_assignment_request_data,
-        headers=jwt_utils.headers(fom_dev_access_admin_token_with_matching_db_user)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
@@ -523,7 +502,7 @@ def test_self_grant_fail(
 
 def test_self_remove_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token_with_matching_db_user,
+    fom_dev_access_admin_token,
     db_pg_session: Session
 ):
 
@@ -542,7 +521,7 @@ def test_self_remove_grant_fail(
 
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role.user_role_xref_id}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token_with_matching_db_user)
+        headers=jwt_utils.headers(fom_dev_access_admin_token)
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
