@@ -19,6 +19,8 @@ class GCNotifyEmailService:
 
     def __init__(self):
         self.API_KEY = config.get_gc_notify_email_api_key()
+        self.email_template_id = GC_NOTIFY_EMAIL_TEMPLATE_ID
+        self.email_base_url = GC_NOTIFY_EMAIL_BASE_URL
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": "ApiKey-v1 " + self.API_KEY,
@@ -33,13 +35,13 @@ class GCNotifyEmailService:
         """
         email_params = {
             "email_address": params.send_to_email,
-            "template_id": GC_NOTIFY_EMAIL_TEMPLATE_ID,
+            "template_id": self.email_template_id,
             "personalisation": {
                 "username": params.user_name,
                 "appname": params.application_name,
             },
         }
-        gc_notify_email_send_url = f"{GC_NOTIFY_EMAIL_BASE_URL}/v2/notifications/email"
+        gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"
 
         r = self.session.post(
             gc_notify_email_send_url, timeout=self.TIMEOUT, json=email_params

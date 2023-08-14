@@ -23,9 +23,24 @@ async def requests_http_error_handler(request: Request, exc: HTTPError):
     port = getattr(getattr(request, "client", None), "port", None)
     url = f"{request.url.path}?{request.query_params}" if request.query_params else request.url.path
     response_text = json.loads(exc.response.text)
+
+    failureCode = None
+    if "failureCode" in response_text:
+        failureCode = response_text["failureCode"]
+    elif "errors" in response_text and "error" in response_text["errors"][0]:
+        # this is the error format for gc notify
+        failureCode = response_text["errors"][0]["error"]
+
+    error_message = None
+    if "message" in response_text:
+        error_message = response_text["message"]
+    elif "errors" in response_text and "message" in response_text["errors"][0]:
+        # this is the error format for gc notify
+        error_message = response_text["errors"][0]["message"]
+
     error_content = {
-        "failureCode": response_text['failureCode'] if 'failureCode' in response_text else None,
-        "message": response_text['message'] if 'message' in response_text else None
+        "failureCode": failureCode,
+        "message": error_message,
     }
 
     LOGGER.error(
