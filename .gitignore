@@ -89,4 +89,5 @@ terraform/tools/output.txt
 # Sonar cloud
 **/.scannerwork/**/*
 
-
+# VSCode
+.vscode/
