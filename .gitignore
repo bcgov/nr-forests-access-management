@@ -88,4 +88,8 @@ terraform/tools/output.txt
 
 # Sonar cloud
 **/.scannerwork/**/*
+
 server/flyway/local_sql/V1001__add_local_user_cognito_id.sql
+
+# VSCode
+.vscode/
