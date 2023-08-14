@@ -141,18 +141,16 @@ async function deleteUserRoleAssignment(
 
     <DashboardTitle :isApplicationSelected="isApplicationSelected" />
 
-    <div class="page-body form-container">
-        <div class="row">
-            <label>Select an application you would like to grant access</label>
-            <Dropdown
-                v-model="selectedApplication"
-                @change="selectApplication"
-                :options="selectApplicationOptions"
-                optionLabel="application_description"
-                placeholder="Choose an option"
-                class="application-dropdown"
-            />
-        </div>
+    <div class="page-body">
+        <label>Select an application you would like to grant access</label>
+        <Dropdown
+            v-model="selectedApplication"
+            @change="selectApplication"
+            :options="selectApplicationOptions"
+            optionLabel="application_description"
+            placeholder="Choose an option"
+            class="application-dropdown"
+        />
 
         <NotificationMessage
             v-if="useNotificationMessage.isNotificationVisible"

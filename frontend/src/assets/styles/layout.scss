@@ -13,18 +13,22 @@ body {
     right: 0;
     bottom: 0;
     overflow: auto;
-    padding: 2.62rem 1.875rem 0;
+    padding: 2.62rem 2rem 0;
 }
 
 .page-body {
     margin-top: 3rem;
 }
+
+input,
+label {
+    display: block;
+}
+
 // Flex panel
 .flex-panel {
     @include flex-box();
     @include flex-direction(column);
-
-    background: $gray0;
 }
 
 .bold {
