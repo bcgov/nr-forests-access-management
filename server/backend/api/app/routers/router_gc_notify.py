@@ -10,8 +10,8 @@ router = APIRouter()
 
 
 @router.post("/send", response_model=str)
-def send_email(email_params: GCNotifyEmailParam):
+def send_granted_access_email(email_params: GCNotifyEmailParam):
     gc_notify_api = GCNotifyEmailService()
-    result = gc_notify_api.send_email(email_params)
+    result = gc_notify_api.send_granted_access_email(email_params)
 
     return result["id"]

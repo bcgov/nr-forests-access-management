@@ -29,9 +29,9 @@ class GCNotifyEmailService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def send_email(self, params: GCNotifyEmailParam):
+    def send_granted_access_email(self, params: GCNotifyEmailParam):
         """
-        Send email
+        Send grant access email
         """
         email_params = {
             "email_address": params.send_to_email,

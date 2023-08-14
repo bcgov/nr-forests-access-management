@@ -41,7 +41,7 @@ class TestGCNotifyEmailServiceClass(object):
         )
 
         with pytest.raises(Exception) as excinfo:
-            self.gc_notify_email_service.send_email(test_params)
+            self.gc_notify_email_service.send_granted_access_email(test_params)
 
         assert excinfo.type == HTTPError
         assert excinfo.match("400 Client Error: Bad Request")
