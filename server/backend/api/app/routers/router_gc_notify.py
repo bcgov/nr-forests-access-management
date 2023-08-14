@@ -1,7 +1,7 @@
 import logging
 
 from api.app.integration.gc_notify import GCNotifyEmailService
-from api.app.schemas import GCNotifyEmailParam
+from api.app.schemas import GCNotifyGrantAccessEmailParam
 from fastapi import APIRouter
 
 LOGGER = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/send", response_model=str)
-def send_granted_access_email(email_params: GCNotifyEmailParam):
+def send_granted_access_email(email_params: GCNotifyGrantAccessEmailParam):
     gc_notify_api = GCNotifyEmailService()
     result = gc_notify_api.send_granted_access_email(email_params)
 

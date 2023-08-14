@@ -303,7 +303,7 @@ class IdimProxyIdirInfo(BaseModel):
         return info
 
 
-class GCNotifyEmailParam(BaseModel):
+class GCNotifyGrantAccessEmailParam(BaseModel):
     user_name: str
     application_name: str
     send_to_email: str

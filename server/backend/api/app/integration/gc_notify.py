@@ -1,13 +1,13 @@
 import logging
 
 import requests
-from api.app.schemas import GCNotifyEmailParam
+from api.app.schemas import GCNotifyGrantAccessEmailParam
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
 
 GC_NOTIFY_EMAIL_BASE_URL = "https://api.notification.canada.ca"
-GC_NOTIFY_EMAIL_TEMPLATE_ID = "cd46fd74-7d79-4576-97ef-8b93297def24"
+GC_NOTIFY_GRANT_ACCESS_EMAIL_TEMPLATE_ID = "cd46fd74-7d79-4576-97ef-8b93297def24"
 
 
 class GCNotifyEmailService:
@@ -19,7 +19,7 @@ class GCNotifyEmailService:
 
     def __init__(self):
         self.API_KEY = config.get_gc_notify_email_api_key()
-        self.email_template_id = GC_NOTIFY_EMAIL_TEMPLATE_ID
+        self.grant_access_email_template_id = GC_NOTIFY_GRANT_ACCESS_EMAIL_TEMPLATE_ID
         self.email_base_url = GC_NOTIFY_EMAIL_BASE_URL
         self.headers = {
             "Content-Type": "application/json",
@@ -29,13 +29,13 @@ class GCNotifyEmailService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def send_granted_access_email(self, params: GCNotifyEmailParam):
+    def send_granted_access_email(self, params: GCNotifyGrantAccessEmailParam):
         """
         Send grant access email
         """
         email_params = {
             "email_address": params.send_to_email,
-            "template_id": self.email_template_id,
+            "template_id": self.grant_access_email_template_id,
             "personalisation": {
                 "username": params.user_name,
                 "appname": params.application_name,

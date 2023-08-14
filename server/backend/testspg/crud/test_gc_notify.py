@@ -2,7 +2,7 @@ import logging
 import pytest
 from requests import HTTPError
 from api.app.integration.gc_notify import GCNotifyEmailService
-from api.app.schemas import GCNotifyEmailParam
+from api.app.schemas import GCNotifyGrantAccessEmailParam
 
 LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class TestGCNotifyEmailServiceClass(object):
 
     def test_verify_init(self):
         # Quick Verifying for init not empty
-        assert self.gc_notify_email_service.email_template_id is not None
+        assert self.gc_notify_email_service.grant_access_email_template_id is not None
         assert self.gc_notify_email_service.email_base_url is not None
         assert self.gc_notify_email_service.API_KEY is not None
         assert (
@@ -32,7 +32,7 @@ class TestGCNotifyEmailServiceClass(object):
         """
         The test checks the error handling when provide an invalid email address
         """
-        test_params: GCNotifyEmailParam = GCNotifyEmailParam(
+        test_params: GCNotifyGrantAccessEmailParam = GCNotifyGrantAccessEmailParam(
             **{
                 "user_name": "cmeng",
                 "application_name": "fam",
