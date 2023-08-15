@@ -6,7 +6,7 @@ locals {
 
 # API-Gateway WAF ACL
 resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
-    name        = "${web_acl_name_prefix}-apigateway"
+    name        = "${local.web_acl_name_prefix}-apigateway"
     description = "API Gateway WAF Rules"
     scope       = "REGIONAL"
 
@@ -130,7 +130,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
 
 # Cognito WAF ACL
 resource "aws_wafv2_web_acl" "fam_waf_cognito" {
-    name        = "${web_acl_name_prefix}-cognito"
+    name        = "${local.web_acl_name_prefix}-cognito"
     description = "Cognito WAF Rules"
     scope       = "REGIONAL"
 
@@ -221,7 +221,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
 
 # CloudFront WAF ACL
 resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
-    name        = "${web_acl_name_prefix}-cloudfront"
+    name        = "${local.web_acl_name_prefix}-cloudfront"
     description = "CloudFront WAF Rules"
     scope       = "CLOUDFRONT"
 
