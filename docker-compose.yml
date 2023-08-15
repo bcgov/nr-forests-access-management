@@ -16,9 +16,9 @@ services:
 
   fam-api:
     container_name: fam-api
+    env_file: server/backend/local-dev.env
     environment:
       - POSTGRES_HOST=fam-postgres # overrides 'localhost' in local-dev.env
-    env_file: server/backend/local-dev.env
     build:
       context: server/backend
       dockerfile: Dockerfile

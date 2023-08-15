@@ -6,9 +6,6 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
     "editor.detectIndentation": true,
-    "python.testing.pytestArgs": [
-        "server/backend"
-    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.defaultInterpreterPath": "./server/backend/venv/bin/python",
@@ -18,7 +15,7 @@
     "python.linting.enabled": true,
     "python.linting.flake8Args": ["--append-config=${workspaceFolder}/server/backend/.flake8"],
     "workbench.list.openMode": "doubleClick",
-    "python.testing.cwd": "",
+    "python.testing.cwd": "./server/backend",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"],
     "python.languageServer": "Pylance",

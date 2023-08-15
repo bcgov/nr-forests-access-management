@@ -2,11 +2,14 @@
 .npmignore
 README.md
 api.ts
+api/bcscproxy-api.ts
 api/famapplications-api.ts
 api/famforest-clients-api.ts
 api/famroles-api.ts
 api/famuser-role-assignment-api.ts
 api/famusers-api.ts
+api/idirbce-idproxy-api.ts
+api/smoke-test-api.ts
 base.ts
 common.ts
 configuration.ts
@@ -31,6 +34,7 @@ model/fam-user-role-assignment-get.ts
 model/fam-user-type.ts
 model/fam-user.ts
 model/httpvalidation-error.ts
+model/idim-proxy-idir-info.ts
 model/index.ts
 model/location-inner.ts
 model/user-type.ts

@@ -24,11 +24,14 @@ def get_db_string():
     * deployed app using amazon rds
 
     """
-    db_string_override = os.environ.get("DB_STRING_OVERRIDE")
-    if db_string_override is not None:
-        return db_string_override
 
-    db_conn_string = get_aws_db_string()
+    db_conn_string = None
+
+    if is_on_aws():
+        db_conn_string = get_aws_db_string()
+    else:
+        db_conn_string = get_local_dev_db_string()
+
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
@@ -43,12 +46,16 @@ def get_aws_db_string():
     host = get_env_var('PG_HOST')
     port = get_env_var('PG_PORT')
     dbname = get_env_var('PG_DATABASE')
-    db_conn_string = (
-        f"postgresql+psycopg2://{username}"
-        + f":{password}@{host}:{port}/"
-        + f"{dbname}"
-    )
-    return db_conn_string
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
+
+
+def get_local_dev_db_string():
+    username = get_env_var('POSTGRES_USER')
+    password = get_env_var('POSTGRES_PASSWORD')
+    host = get_env_var('POSTGRES_HOST')
+    port = get_env_var('POSTGRES_PORT')
+    dbname = get_env_var('POSTGRES_DB')
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
 def get_aws_region():
@@ -147,6 +154,17 @@ def get_forest_client_api_baseurl():
         else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
+
+
+def get_idim_proxy_api_baseurl():
+    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL")
+    LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
+    return idim_proxy_api_baseurl
+
+
+def get_idim_proxy_api_key():
+    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+    return idim_proxy_api_key
 
 
 # For local development, you can override this function since it doesn't work outside AWS
