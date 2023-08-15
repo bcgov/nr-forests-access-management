@@ -12,6 +12,10 @@ resource "aws_s3_bucket" "web_distribution" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "web_distribution" {
+  tags = {
+    managed-by = "terraform"
+  }
+
 }
 
 data "aws_iam_policy_document" "web_distribution" {
@@ -28,11 +32,7 @@ data "aws_iam_policy_document" "web_distribution" {
 resource "aws_s3_bucket_policy" "web_distribution" {
   bucket = aws_s3_bucket.web_distribution.id
   policy = data.aws_iam_policy_document.web_distribution.json
-
-  tags = {
-    managed-by = "terraform"
-  }
-
+  # tags not supported
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
