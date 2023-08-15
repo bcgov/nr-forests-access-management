@@ -5,6 +5,9 @@ locals {
 resource "aws_s3_bucket" "web_distribution" {
   bucket = local.flyway_scripts_bucket_name
   #acl    = "public-read"
+  tags = {
+    managed-by = "terraform"
+  }
 
 }
 
@@ -25,6 +28,11 @@ data "aws_iam_policy_document" "web_distribution" {
 resource "aws_s3_bucket_policy" "web_distribution" {
   bucket = aws_s3_bucket.web_distribution.id
   policy = data.aws_iam_policy_document.web_distribution.json
+
+  tags = {
+    managed-by = "terraform"
+  }
+
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
@@ -84,6 +92,11 @@ resource "aws_cloudfront_distribution" "web_distribution" {
       locations        = ["CA", "US"]
     }
   }
+
+  tags = {
+    managed-by = "terraform"
+  }
+
 }
 
 locals {
