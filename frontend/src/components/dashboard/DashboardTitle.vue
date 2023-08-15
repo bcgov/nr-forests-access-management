@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import router from '@/router';
+import { IconSize } from '@/enums/IconsizeEnum'
 
 const props = defineProps({
     isApplicationSelected: {
@@ -24,7 +25,7 @@ const props = defineProps({
                 >
                 <Icon
                     icon="add"
-                    size="20"
+                    :size=IconSize.medium
                 />
             </Button>
         </div>

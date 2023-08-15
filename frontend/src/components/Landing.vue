@@ -3,6 +3,7 @@ import Button from '@/components/common/Button.vue';
 import authService from '@/services/AuthService';
 import logo from '../assets/images/bc-gov-logo.png';
 import TreeLogs from '../assets/images/tree-logs.jpg';
+import { IconSize } from '@/enums/IconsizeEnum'
 </script>
 
 <template>
@@ -33,7 +34,7 @@ import TreeLogs from '../assets/images/tree-logs.jpg';
                 >
                     <Icon
                         icon="login"
-                        size="20"
+                        :size=IconSize.medium
                     />
                 </Button>
             </div>

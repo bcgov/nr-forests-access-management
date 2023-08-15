@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
+import { IconSize } from '@/enums/IconsizeEnum'
 
 </script>
 
@@ -25,7 +26,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
                 >
                     <Icon
                         icon="close"
-                        size="16"
+                        :size=IconSize.small
                     ></Icon>
                 </button>
             </div>
@@ -60,7 +61,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
             >
                     <Icon
                         icon="user--follow"
-                        size="16"
+                        :size=IconSize.small
                     />
                 Sign out
             </button>

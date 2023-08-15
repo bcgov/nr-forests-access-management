@@ -3,6 +3,7 @@ import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import authService from '@/services/AuthService';
+import { IconSize } from '@/enums/IconsizeEnum'
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -54,7 +55,7 @@ const props = defineProps({
                         >
                             <Icon
                                 icon="user--avatar"
-                                size="20"
+                                :size=IconSize.medium
                             />
                         </a>
                     </li>

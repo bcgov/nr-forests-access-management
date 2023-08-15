@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import type { PropType } from 'vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { IconSize } from '@/enums/IconsizeEnum'
 
 
 const props = defineProps({
@@ -57,7 +58,7 @@ const filters = ref({
         <span class="p-input-icon-right">
             <Icon
                 icon="search"
-                size="16"
+                :size=IconSize.small
             />
             <InputText class="dash-search" v-model="filters['global'].value" />
         </span>
@@ -86,7 +87,7 @@ const filters = ref({
                 <template #body="{ data }">
                     <Icon
                         icon="user--avatar--filled"
-                        size="20"
+                        :size=IconSize.medium
                     />
                     <span class="span-icon">
                         {{ data.user.user_name }}

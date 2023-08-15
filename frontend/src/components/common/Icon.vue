@@ -1,12 +1,20 @@
-<script setup>
-import { computed, defineAsyncComponent } from 'vue';
+<script setup lang="ts">
+import { computed, defineAsyncComponent, type PropType } from 'vue';
+
+enum IconSize {
+    small = '16',
+    medium = '20',
+    large = '24',
+    xLarge = '32'
+}
+
 const props = defineProps({
     icon: {
         type: String,
         required: true,
     },
     size: {
-        type: String,
+        type: String as PropType<IconSize>,
         required: true,
         default: '16',
     },
