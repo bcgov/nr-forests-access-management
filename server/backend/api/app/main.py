@@ -15,7 +15,7 @@ from starlette.responses import RedirectResponse
 from .jwt_validation import init_jwks
 from .kms_lookup import init_bcsc_public_key
 from .routers import (router_application, router_bcsc_proxy,
-                      router_forest_client, router_idim_proxy, router_gc_notify, router_role,
+                      router_forest_client, router_idim_proxy, router_role,
                       router_smoke_test, router_user,
                       router_user_role_assignment)
 
@@ -103,10 +103,6 @@ app.include_router(router_idim_proxy.router,
                    prefix=apiPrefix + '/identity_search',
                    dependencies=[Depends(jwt_validation.authorize)],
                    tags=["IDIR/BCeID Proxy"])
-app.include_router(router_gc_notify.router,
-                   prefix=apiPrefix + '/email',
-                   dependencies=[Depends(jwt_validation.authorize)],
-                   tags=["GC Notify Email"])
 
 # These two routers are disabled for MVP
 
