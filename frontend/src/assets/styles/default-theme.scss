@@ -58,8 +58,8 @@ $footer-bg: $primary;
 $footer-color: #fff;
 
 // Main Navigation
-$mn-font-size: 0.875rem; // 14 px
-$mn-dropdown-menu-size: 0.875rem; // 14 px
+$mn-font-size: .875rem; // 14 px
+$mn-dropdown-menu-size: .875rem; // 14 px
 $mn-color: #fff;
 $mn-border-color: #5f79a2;
 $mn-hover-bg: #2b4777;
@@ -84,7 +84,7 @@ $feature-block-primary: $primary;
 $fc-height: 2.75rem;
 $fc-border-color: #ddd;
 $fc-bg: #fff;
-$fc-inner-shadow: 0.1rem 0.1rem 0.1rem $lightgray;
+$fc-inner-shadow: .1rem .1rem .1rem $lightgray;
 $fc-placeholder-color: #aaa;
 $fc-focus-border-color: #5091cd;
 $fc-invalid-color: #dc3545;
@@ -93,12 +93,12 @@ $fc-invalid-color: #dc3545;
 $pgn-btn-bg: $lightgray;
 $pgn-btn-active-bg: #5091cd;
 $pgn-btn-active-color: #fff;
-$pgn-btn-border: 1px solid #ccc;
+$pgn-btn-border: .0625rem solid #ccc;
 $pgn-btn-color: #000;
 
 // Spinner
-$spinner-lg: 50px;
-$spinner-sm: 30px;
+$spinner-lg: 3.125rem;
+$spinner-sm: 1.875rem;
 $spinner-color: #5091cd;
 $spinner-bg: #fff;
 $spinner-invert-color: #fff;
@@ -109,11 +109,11 @@ $table-header-bg: #fff;
 $table-header-hover-bg: #ddd;
 $table-header-sort-active: #5091cd;
 $table-row-bg: #f7f8fa;
-$table-row-border: 3px solid #fff;
+$table-row-border: .1875rem solid #fff;
 $table-alt-row-bg: #f4f4f4;
 $table-sort-icon-color: #ccc;
 $table-sort-icon-active-color: #000;
-$table-sort-icon-size: 0.25rem;
+$table-sort-icon-size: .25rem;
 
 // Buttons
 $button-primary: $primary4;

@@ -36,7 +36,7 @@ const props = defineProps({
 @import '../../assets/styles/styles.scss';
 
 svg {
-    margin-right: 15px;
+    margin-right: .9375rem;
     vertical-align: middle;
 }
 

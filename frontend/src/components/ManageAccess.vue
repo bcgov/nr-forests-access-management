@@ -184,7 +184,7 @@ async function tryDelete(assignment: FamApplicationUserRoleAssignmentGet) {
             &nbsp;
             <span>{{ showingMessage() }}</span>
             <table
-                style="max-width: 900px; margin-top: 10px"
+                style="max-width: 56.25rem; margin-top: .625rem"
                 class="table table-sm table-striped table-hover"
                 aria-describedby="User assignments to application roles."
             >

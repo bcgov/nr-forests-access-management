@@ -136,7 +136,7 @@ const filters = ref({
     &:deep(.p-inputtext) {
         border-bottom: none;
         width: 100%;
-        height: 32px;
+        height: 2rem;
         border: none;
     }
 }
@@ -146,14 +146,14 @@ const filters = ref({
 }
 
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
-    box-shadow: 0px -1px 0px 0px #dfdfe1 inset;
+    box-shadow: 0 -.0625rem 0 0 #dfdfe1 inset;
 }
 
 .p-datatable-header {
-    padding: 0px !important;
+    padding: 0 !important;
 }
 .span-icon {
-    margin-left: 15px;
+    margin-left: .9375rem;
 }
 .remove-action {
     color: $text-error;

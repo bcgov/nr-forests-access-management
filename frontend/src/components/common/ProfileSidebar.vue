@@ -72,12 +72,12 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 @import '@/assets/styles/styles.scss';
 .profile-container {
     background-color: #fff;
-    border-left: 1px solid #dfdfe1;
+    border-left: .0625rem solid #dfdfe1;
     color: #000;
-    height: calc(100vh - 48px);
+    height: calc(100vh - 3rem);
     inset: 0 0 0 70%;
-    margin: 48px 0 0;
-    padding: 0 16px 0;
+    margin: 3rem 0 0;
+    padding: 0 1rem 0;
     position: fixed;
     overflow: hidden;
     z-index: 9999;
@@ -87,7 +87,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 16px 0;
+    margin: 1rem 0;
 
     h2 {
         margin: 0;
@@ -102,27 +102,27 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
 .sidebar-body {
     display: flex;
-    margin: 30px 0 0;
+    margin: 1.875rem 0 0;
 
     .img-wrapper {
-        margin-right: 32px;
+        margin-right: 2rem;
     }
 
     .profile-info {
-        margin: 6px 0 0;
+        margin: .375rem 0 0;
         display: flex;
         flex-direction: column;
     }
 
     .profile-name,
     .profile-idir {
-        margin-bottom: 6px;
+        margin-bottom: .375rem;
     }
 }
 
 .profile-name,
 .sign-out {
-    font-size: 14px;
+    font-size: .875rem;
     font-weight: 700;
     display: flex;
     border: none;
@@ -131,7 +131,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
     cursor: pointer;
 
     svg {
-        margin-right: 18px;
+        margin-right: 1.125rem;
         align-self: center;
         fill: $light-theme-icon;
 
@@ -146,14 +146,14 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 .profile-idir,
 .profile-email,
 .options {
-    font-size: 12px;
+    font-size: .75rem;
     font-weight: 400;
 }
 
 .profile-divider {
     background: #ffffff;
     background-blend-mode: multiply;
-    margin: 16px 0;
+    margin: 1.375rem 0;
 }
 
 /// profile sidebar slide animation
@@ -176,7 +176,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
     transition: ease-in 350ms;
     position: fixed;
     width: 100%;
-    inset: 48px 0 0 0;
+    inset: 3rem 0 0 0;
     z-index: 999;
 }
 

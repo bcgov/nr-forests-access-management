@@ -19,15 +19,15 @@ const props = defineProps({
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 .title {
-    font-size: 32px;
-    line-height: 40px;
+    font-size: 2rem;
+    line-height: 2.5rem;
     color: $text-primary;
 }
 
 .subtitle {
-    font-size: 14px;
-    line-height: 18px;
-    letter-spacing: 0.16px;
+    font-size: .875rem;
+    line-height: 1.125rem;
+    letter-spacing: .1rem;
     color: $text-secondary;
 }
 </style>

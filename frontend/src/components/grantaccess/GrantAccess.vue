@@ -390,6 +390,6 @@ async function sendFormToSummaryPage() {
 }
 
 .button {
-    width: 126px;
+    width: 7.875rem;
 }
 </style>
