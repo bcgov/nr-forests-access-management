@@ -3,7 +3,6 @@ import Button from '@/components/common/Button.vue';
 import authService from '@/services/AuthService';
 import logo from '../assets/images/bc-gov-logo.png';
 import TreeLogs from '../assets/images/tree-logs.jpg';
-import Login from '@carbon/icons-vue/es/login/20'
 </script>
 
 <template>
@@ -32,7 +31,10 @@ import Login from '@carbon/icons-vue/es/login/20'
                     disabled
                     @click="authService.methods.login"
                 >
-                    <Login />
+                    <Icon
+                        icon="login"
+                        size="20"
+                    />
                 </Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
