@@ -5,7 +5,7 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/718-auth-lambda-db-user"
+      - "feat/478-email"
 
 
 jobs:
