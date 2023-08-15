@@ -12,10 +12,7 @@ resource "aws_s3_bucket" "web_distribution" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "web_distribution" {
-  tags = {
-    managed-by = "terraform"
-  }
-
+  # Tags not supported
 }
 
 data "aws_iam_policy_document" "web_distribution" {
@@ -82,7 +79,6 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
 
   }
 
