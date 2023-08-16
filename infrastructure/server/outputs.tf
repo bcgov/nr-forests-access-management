@@ -46,3 +46,8 @@ output "fam_console_idp_name" {
   description = "Identifies which version of IDIR to use (DEV, TEST, or PROD)"
   value = var.fam_console_idp_name
 }
+
+output "fam_waf_acl_cloudfront_arn" {
+  description = "The ARN of the WAF ACL Cloudfront"
+  value       = aws_wafv2_web_acl.fam_waf_cloudfront.arn
+}
