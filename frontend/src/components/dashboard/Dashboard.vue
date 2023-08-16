@@ -37,23 +37,19 @@ const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
-    loading.value = true;
-    await applicationsApi
-        .getApplications()
-        .then(async (response) => {
-            applicationsUserAdministers.value = response.data;
-            if (isApplicationSelected) {
-                await getAppUserRoleAssignment();
-            }
-        })
-        .catch((error) => {
-            {
-                return Promise.reject(error);
-            }
-        })
-        .finally(() => {
-            loading.value = false;
-        });
+    try {
+        loading.value = true;
+        applicationsUserAdministers.value = (
+            await applicationsApi.getApplications()
+        ).data;
+        if (isApplicationSelected) {
+            await getAppUserRoleAssignment();
+        }
+    } catch (error: any) {
+        return Promise.reject(error);
+    } finally {
+        loading.value = false;
+    }
 });
 
 async function getAppUserRoleAssignment() {
