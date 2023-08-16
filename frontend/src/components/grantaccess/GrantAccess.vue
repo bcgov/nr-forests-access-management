@@ -13,23 +13,23 @@ import UserIdentityCard from './UserIdentityCard.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
-selectedApplication,
-selectedApplicationDisplayText,
+    selectedApplication,
+    selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
 import {
-FOREST_CLIENT_INPUT_MAX_LENGTH,
-domainOptions,
-getGrantAccessFormData,
-grantAccessFormData,
-resetGrantAccessFormData,
-setGrantAccessFormData,
+    FOREST_CLIENT_INPUT_MAX_LENGTH,
+    domainOptions,
+    getGrantAccessFormData,
+    grantAccessFormData,
+    resetGrantAccessFormData,
+    setGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
 
 import {
-FamForestClientStatusType,
-type FamApplicationRole,
-type FamForestClient,
-type IdimProxyIdirInfo
+    FamForestClientStatusType,
+    type FamApplicationRole,
+    type FamForestClient,
+    type IdimProxyIdirInfo,
 } from 'fam-api';
 
 const defaultFormData = {
@@ -56,9 +56,9 @@ const formValidationSchema = object({
         .nullable(),
 });
 const loading = ref<boolean>(false);
-let applicationRoleOptions: FamApplicationRole[]
-let forestClientData: FamForestClient[] | null
-let verifiedUserIdentity: IdimProxyIdirInfo | null
+let applicationRoleOptions: FamApplicationRole[];
+let forestClientData: FamForestClient[] | null;
+let verifiedUserIdentity: IdimProxyIdirInfo | null;
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -85,8 +85,8 @@ onMounted(async () => {
 });
 
 const isIdirDomainSelected = () => {
-    return formData.value.domain === domainOptions.IDIR
-}
+    return formData.value.domain === domainOptions.IDIR;
+};
 
 function userDomainChange() {
     resetVerifiedUserIdentity();
@@ -115,11 +115,12 @@ function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
 }
 
 function resetVerifiedUserIdentity() {
-    verifiedUserIdentity = null
+    verifiedUserIdentity = null;
 }
 
 function resetForestClientNumberData() {
     forestClientData = null;
+    formData.value['forestClientNumber'] = '';
 }
 
 function resetForm() {
@@ -137,9 +138,8 @@ async function verifyIdentity(userId: string, domain: string) {
 
     loading.value = true;
     try {
-        verifiedUserIdentity = (
-            await idirBceidProxyApi.idirSearch(userId)
-        ).data;
+        verifiedUserIdentity = (await idirBceidProxyApi.idirSearch(userId))
+            .data;
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
@@ -150,9 +150,8 @@ async function verifyIdentity(userId: string, domain: string) {
 async function verifyForestClientNumber(forestClientNumber: string) {
     loading.value = true;
     try {
-        forestClientData = (
-            await forestClientApi.search(forestClientNumber)
-        ).data;
+        forestClientData = (await forestClientApi.search(forestClientNumber))
+            .data;
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
@@ -166,19 +165,14 @@ Two verifications are cunnretly in place: userId and forestClientNumber.
 function areVerificationsPassed() {
     return (
         // userId verification.
-        !isIdirDomainSelected() ||
-        (
-            isIdirDomainSelected() && verifiedUserIdentity?.found
-        )
-    ) &&
-    (
+        (!isIdirDomainSelected() ||
+            (isIdirDomainSelected() && verifiedUserIdentity?.found)) &&
         // forestClientNumber verification
-        !isAbstractRoleSelected() ||
-        (
-            isAbstractRoleSelected() &&
-            forestClientData?.[0]?.status?.status_code == FamForestClientStatusType.A
-        )
-    )
+        (!isAbstractRoleSelected() ||
+            (isAbstractRoleSelected() &&
+                forestClientData?.[0]?.status?.status_code ==
+                    FamForestClientStatusType.A))
+    );
 }
 
 function toSummary() {
@@ -200,10 +194,7 @@ function toSummary() {
         />
         <div class="page-body">
             <div class="row">
-                <form
-                    id="grantAccessForm"
-                    class="form-container"
-                >
+                <form id="grantAccessForm" class="form-container">
                     <div class="row">
                         <div class="form-group col-md-3 px-0">
                             <label for="domainInput" class="control-label"
@@ -289,17 +280,21 @@ function toSummary() {
                                 * userId field is entered.
                                 * userId entered does not contains basic validation errors.
                             -->
-                            <div class="col-md-2"
+                            <div
+                                class="col-md-2"
                                 v-if="
                                     formData.domain === domainOptions.IDIR &&
                                     formData.userId &&
                                     errors.userId == undefined
                                 "
-                                >
+                            >
                                 <Button
                                     class="button p-button-tertiary p-button-outlined"
                                     @click="
-                                        verifyIdentity(formData.userId, formData.domain)
+                                        verifyIdentity(
+                                            formData.userId,
+                                            formData.domain
+                                        )
                                     "
                                     :disabled="loading"
                                 >
@@ -434,10 +429,9 @@ function toSummary() {
                                 id="grantAccessSubmit"
                                 class="mb-3 button p-button"
                                 label="Next"
-                                :disabled="!(
-                                    meta.valid &&
-                                    areVerificationsPassed()
-                                )"
+                                :disabled="
+                                    !(meta.valid && areVerificationsPassed())
+                                "
                                 @click="toSummary()"
                             ></Button>
                             <Button
