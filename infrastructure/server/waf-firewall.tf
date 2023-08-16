@@ -5,8 +5,11 @@ locals {
 
 
 # API-Gateway WAF ACL
+locals {
+    fam_waf_api_gateway_resource_name = "${local.web_acl_name_prefix}-apigateway"
+}
 resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
-    name        = "${local.web_acl_name_prefix}-apigateway"
+    name        = "${local.fam_waf_api_gateway_resource_name}"
     description = "API Gateway WAF Rules"
     scope       = "REGIONAL"
 
@@ -31,7 +34,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}-AWSManagedRulesAmazonIpReputationList"
+            metric_name                = "${local.fam_waf_api_gateway_resource_name}-AWSManagedRulesAmazonIpReputationList"
             sampled_requests_enabled   = true
         }
     }
@@ -51,7 +54,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}-AWSManagedRulesCommonRuleSet"
+            metric_name                = "${local.fam_waf_api_gateway_resource_name}-AWSManagedRulesCommonRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -71,7 +74,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}-AWSManagedRulesKnownBadInputsRuleSet"
+            metric_name                = "${local.fam_waf_api_gateway_resource_name}-AWSManagedRulesKnownBadInputsRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -91,7 +94,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}-AWSManagedRulesLinuxRuleSet"
+            metric_name                = "${local.fam_waf_api_gateway_resource_name}-AWSManagedRulesLinuxRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -111,7 +114,7 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}-AWSManagedRulesSQLiRuleSet"
+            metric_name                = "${local.fam_waf_api_gateway_resource_name}-AWSManagedRulesSQLiRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -123,14 +126,17 @@ resource "aws_wafv2_web_acl" "fam_waf_api_gateway" {
 
     visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${aws_wafv2_web_acl.fam_waf_api_gateway.name}"
+        metric_name                = "${local.fam_waf_api_gateway_resource_name}"
         sampled_requests_enabled   = true
     }
 }
 
 # Cognito WAF ACL
+locals {
+    fam_waf_cognito_resource_name = "${local.web_acl_name_prefix}-cognito"
+}
 resource "aws_wafv2_web_acl" "fam_waf_cognito" {
-    name        = "${local.web_acl_name_prefix}-cognito"
+    name        = "${local.fam_waf_cognito_resource_name}"
     description = "Cognito WAF Rules"
     scope       = "REGIONAL"
 
@@ -162,7 +168,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cognito.name}-AWSManagedRulesAmazonIpReputationList"
+            metric_name                = "${local.fam_waf_cognito_resource_name}-AWSManagedRulesAmazonIpReputationList"
             sampled_requests_enabled   = true
         }
     }
@@ -182,7 +188,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cognito.name}-AWSManagedRulesKnownBadInputsRuleSet"
+            metric_name                = "${local.fam_waf_cognito_resource_name}-AWSManagedRulesKnownBadInputsRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -202,7 +208,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cognito.name}-AWSManagedRulesLinuxRuleSet"
+            metric_name                = "${local.fam_waf_cognito_resource_name}-AWSManagedRulesLinuxRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -214,14 +220,17 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
 
     visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${aws_wafv2_web_acl.fam_waf_cognito.name}"
+        metric_name                = "${local.fam_waf_cognito_resource_name}"
         sampled_requests_enabled   = true
     }
 }
 
 # CloudFront WAF ACL
+locals {
+    fam_waf_cloudfront_resource_name = "${local.web_acl_name_prefix}-cloudfront"
+}
 resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
-    name        = "${local.web_acl_name_prefix}-cloudfront"
+    name        = "${local.fam_waf_cloudfront_resource_name}"
     description = "CloudFront WAF Rules"
     scope       = "CLOUDFRONT"
 
@@ -246,7 +255,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}-AWSManagedRulesAmazonIpReputationList"
+            metric_name                = "${local.fam_waf_cloudfront_resource_name}-AWSManagedRulesAmazonIpReputationList"
             sampled_requests_enabled   = true
         }
     }
@@ -266,7 +275,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}-AWSManagedRulesCommonRuleSet"
+            metric_name                = "${local.fam_waf_cloudfront_resource_name}-AWSManagedRulesCommonRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -286,7 +295,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}-AWSManagedRulesKnownBadInputsRuleSet"
+            metric_name                = "${local.fam_waf_cloudfront_resource_name}-AWSManagedRulesKnownBadInputsRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -306,7 +315,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}-AWSManagedRulesLinuxRuleSet"
+            metric_name                = "${local.fam_waf_cloudfront_resource_name}-AWSManagedRulesLinuxRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -326,7 +335,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
         }
         visibility_config {
             cloudwatch_metrics_enabled = true
-            metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}-AWSManagedRulesSQLiRuleSet"
+            metric_name                = "${local.fam_waf_cloudfront_resource_name}-AWSManagedRulesSQLiRuleSet"
             sampled_requests_enabled   = true
         }
     }
@@ -338,7 +347,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
 
     visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${aws_wafv2_web_acl.fam_waf_cloudfront.name}"
+        metric_name                = "${local.fam_waf_cloudfront_resource_name}"
         sampled_requests_enabled   = true
     }
 }
