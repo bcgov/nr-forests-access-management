@@ -58,7 +58,7 @@ const onError = (error: any, info: string) => {
             );
         } else if (status == 409) {
             useNotificationMessage.isNotificationVisible = false;
-            useErrorDialog.dialogTitle = axiosResponse.statusText;
+            useErrorDialog.dialogTitle = axiosResponse.statusText || 'Error';
             useErrorDialog.dialogMsg = axiosResponse.data.detail;
             useErrorDialog.isErrorVisible = true;
         }
