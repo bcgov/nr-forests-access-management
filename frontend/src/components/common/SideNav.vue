@@ -2,9 +2,8 @@
 import router from '@/router';
 import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
-import { IconSize } from '@/enums/IconsizeEnum'
-
-export interface ISideNavData {
+import Icon from '@/components/common/Icon.vue'
+interface ISideNavData {
     name: string;
     items: [ISideNavItem];
 }
@@ -56,7 +55,7 @@ const props = defineProps({
                             <Icon
                                 class="p-sidenav-color-icon p-sidenav-padding-icon"
                                 :icon="child.icon.toString()"
-                                :size=IconSize.small
+                                :size=Icon.small
                             />
                             {{ child.name }}
                         </li>
@@ -75,7 +74,7 @@ const props = defineProps({
                     >
                         <Icon
                             icon="help"
-                            :size=IconSize.small
+                            :size=Icon.small
                             class="p-sidenav-padding-icon"
                         />
                         Need help?

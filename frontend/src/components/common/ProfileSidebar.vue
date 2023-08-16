@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-import { IconSize } from '@/enums/IconsizeEnum'
-
+import Icon from '@/components/common/Icon.vue'
 </script>
 
 <template>
@@ -26,7 +25,7 @@ import { IconSize } from '@/enums/IconsizeEnum'
                 >
                     <Icon
                         icon="close"
-                        :size=IconSize.small
+                        :size=Icon.small
                     ></Icon>
                 </button>
             </div>
@@ -61,7 +60,7 @@ import { IconSize } from '@/enums/IconsizeEnum'
             >
                     <Icon
                         icon="user--follow"
-                        :size=IconSize.small
+                        :size=Icon.small
                     />
                 Sign out
             </button>

@@ -3,7 +3,7 @@ import { app } from '@/main';
 import axios from 'axios';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import { IconSize } from '@/enums/IconsizeEnum'
+import Icon from '@/components/common/Icon.vue'
 
 import {
     useNotificationMessage,
@@ -78,7 +78,7 @@ app.config.errorHandler = (err, instance, info) => {
     <Toast group="tl" position="top-right" #icon>
         <Icon
             icon="error--filled"
-            :size=IconSize.xLarge
+            :size=Icon.xLarge
         />
     </Toast>
 </template>
