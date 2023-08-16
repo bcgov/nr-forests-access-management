@@ -16,7 +16,7 @@ const props = defineProps({
     size: {
         type: String as PropType<IconSize>,
         required: true,
-        default: '16',
+        default: IconSize.small,
     },
 });
 const iconName = computed(() => {
