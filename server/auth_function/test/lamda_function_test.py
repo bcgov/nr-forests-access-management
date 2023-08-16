@@ -3,6 +3,7 @@ import sys
 import logging
 from psycopg2 import sql
 import pprint
+import pytest
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -164,6 +165,18 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
     LOGGER.debug(f"groups: {groups}")
     assert groups == []
 
+
+def test_exception_with_wrong_cognito_event(
+    db_pg_transaction, cognito_event, cognito_context
+):
+    """
+    if runs into any problem or errors, can catch the exception and print in the log
+    """
+    temp_cognito_event = cognito_event
+    del temp_cognito_event["callerContext"]
+    with pytest.raises(Exception) as exc:
+        lambda_function.lambda_handler(temp_cognito_event, cognito_context)
+    assert exc is not None
 
 
 # FUTURE TESTS:
