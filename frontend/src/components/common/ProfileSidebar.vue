@@ -69,12 +69,12 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 @import '@/assets/styles/styles.scss';
 .profile-container {
     background-color: #fff;
-    border-left: 1px solid #dfdfe1;
+    border-left: .0625rem solid #dfdfe1;
     color: #000;
-    height: calc(100vh - 48px);
+    height: calc(100vh - 3rem);
     inset: 0 0 0 70%;
-    margin: 48px 0 0;
-    padding: 0 16px 0;
+    margin: 3rem 0 0;
+    padding: 0 1rem 0;
     position: fixed;
     overflow: hidden;
     z-index: 9999;
@@ -84,7 +84,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 16px 0;
+    margin: 1rem 0;
 
     h2 {
         margin: 0;
@@ -99,27 +99,27 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 
 .sidebar-body {
     display: flex;
-    margin: 30px 0 0;
+    margin: 1.875rem 0 0;
 
     .img-wrapper {
-        margin-right: 32px;
+        margin-right: 2rem;
     }
 
     .profile-info {
-        margin: 6px 0 0;
+        margin: .375rem 0 0;
         display: flex;
         flex-direction: column;
     }
 
     .profile-name,
     .profile-idir {
-        margin-bottom: 6px;
+        margin-bottom: .375rem;
     }
 }
 
 .profile-name,
 .sign-out {
-    font-size: 14px;
+    font-size: .875rem;
     font-weight: 700;
 }
 
@@ -131,14 +131,14 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 .profile-idir,
 .profile-email,
 .options {
-    font-size: 12px;
+    font-size: .75rem;
     font-weight: 400;
 }
 
 .profile-divider {
     background: #ffffff;
     background-blend-mode: multiply;
-    margin: 16px 0;
+    margin: 1rem 0;
 }
 
 .sign-out {
@@ -148,7 +148,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
     cursor: pointer;
 
     i {
-        margin-right: 18px;
+        margin-right: 1.125rem;
     }
 }
 
@@ -172,7 +172,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
     transition: ease-in 350ms;
     position: fixed;
     width: 100%;
-    inset: 48px 0 0 0;
+    inset: 3rem 0 0 0;
     z-index: 999;
 }
 

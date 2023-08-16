@@ -39,16 +39,16 @@ const iconName = computed(() => {
 
 <style lang="scss">
 .icon-large {
-    width: 32px !important;
-    height: 32px !important;
+    width: 2rem !important;
+    height: 2rem !important;
 }
 .icon-medium {
-    width: 20px !important;
-    height: 20px !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
 }
 
 .icon-small {
-    width: 16px !important;
-    height: 16px !important;
+    width: 1rem !important;
+    height: 1rem !important;
 }
 </style>
