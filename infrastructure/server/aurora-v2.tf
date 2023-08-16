@@ -26,13 +26,6 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
   name        = "${var.famdb_cluster_name}-subnet-group"
   subnet_ids  = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
-  tags = {
-    managed-by = "terraform"
-  }
-
-  tags_all = {
-    managed-by = "terraform"
-  }
 }
 
 data "aws_rds_engine_version" "postgresql" {
@@ -82,10 +75,6 @@ module "aurora_postgresql_v2" {
     two = {}
   }
 
-  tags = {
-    managed-by = "terraform"
-  }
-
   enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
@@ -93,18 +82,12 @@ resource "aws_db_parameter_group" "famdb_postgresql13" {
   name        = "${var.famdb_cluster_name}-parameter-group"
   family      = "aurora-postgresql13"
   description = "${var.famdb_cluster_name}-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
   name        = "${var.famdb_cluster_name}-cluster-parameter-group"
   family      = "aurora-postgresql13"
   description = "${var.famdb_cluster_name}-cluster-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "random_pet" "master_creds_secret_name" {
@@ -114,10 +97,6 @@ resource "random_pet" "master_creds_secret_name" {
 
 resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
   name = random_pet.master_creds_secret_name.id
-
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" {
@@ -152,10 +131,6 @@ resource "random_pet" "api_creds_secret_name" {
 
 resource "aws_secretsmanager_secret" "famdb_apicreds_secret" {
   name = random_pet.api_creds_secret_name.id
-
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_apicreds_secret_version" {
@@ -185,10 +160,6 @@ resource "random_password" "famdb_auth_lambda_password" {
 
 resource "aws_secretsmanager_secret" "famdb_auth_lambda_creds_secret" {
   name = "famdb_auth_lambda_creds_secret"
-
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_auth_lambda_creds_secret_version" {
@@ -281,9 +252,6 @@ resource "aws_db_proxy" "famdb_proxy_api" {
     secret_arn  = aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn
   }
 
-  tags = {
-    managed-by = "terraform"
-  }
 }
 
 resource "aws_db_proxy_default_target_group" "famdb_proxy_api_target_group" {
