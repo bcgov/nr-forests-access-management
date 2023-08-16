@@ -12,7 +12,7 @@
                 "name": "Grant Access",
                 "icon": "VirtualColumnKeyIcon",
                 "link": "/grant",
-                "disabled": false
+                "disabled": true
             }
         ]
     },
