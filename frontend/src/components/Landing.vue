@@ -3,7 +3,7 @@ import Button from '@/components/common/Button.vue';
 import authService from '@/services/AuthService';
 import logo from '../assets/images/bc-gov-logo.png';
 import TreeLogs from '../assets/images/tree-logs.jpg';
-import Icon from '@/components/common/Icon.vue'
+import { IconSize } from '@/enum/IconEnum';
 </script>
 
 <template>
@@ -24,7 +24,10 @@ import Icon from '@/components/common/Icon.vue'
                     label="Login with IDIR"
                     @click="authService.methods.login"
                 >
-                    <Login />
+                    <Icon
+                        icon="login"
+                        :size="IconSize.medium"
+                    />
                 </Button>
                 <Button
                     class="landing-button p-button-outlined"
@@ -34,7 +37,7 @@ import Icon from '@/components/common/Icon.vue'
                 >
                     <Icon
                         icon="login"
-                        :size=Icon.medium
+                        :size=IconSize.medium
                     />
                 </Button>
             </div>

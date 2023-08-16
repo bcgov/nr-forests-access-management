@@ -4,9 +4,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
+import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
-import Icon from '@/components/common/Icon.vue'
 
 
 const props = defineProps({
@@ -58,7 +58,7 @@ const filters = ref({
         <span class="p-input-icon-right">
             <Icon
                 icon="search"
-                :size=Icon.small
+                :size=IconSize.small
             />
             <InputText class="dash-search" v-model="filters['global'].value" />
         </span>
@@ -87,7 +87,7 @@ const filters = ref({
                 <template #body="{ data }">
                     <Icon
                         icon="user--avatar--filled"
-                        :size=Icon.medium
+                        :size=IconSize.medium
                     />
                     <span class="span-icon">
                         {{ data.user.user_name }}

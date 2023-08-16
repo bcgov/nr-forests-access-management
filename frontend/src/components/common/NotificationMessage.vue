@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Message from 'primevue/message';
-import Icon from '@/components/common/Icon.vue'
+import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     msgText: {
@@ -24,7 +24,7 @@ const props = defineProps({
         >
             <Icon
                 icon="checkmark--filled"
-                :size=Icon.medium
+                :size=IconSize.medium
             />
             <span class="message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
