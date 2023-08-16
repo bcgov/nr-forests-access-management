@@ -21,9 +21,7 @@ COMPOSE_FILE_NAME = "docker-compose-testcontainer.yml"
 # Start a docker compose session to have an in-container DB with flyway applied
 @pytest.fixture(scope="session")
 def db_pg_container():
-    compose = DockerCompose(
-        COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME
-    )
+    compose = DockerCompose(COMPOSE_PATH, compose_file_name=COMPOSE_FILE_NAME)
     compose.start()
     # NGINX is set to start only when flyway is complete
     compose.wait_for("http://localhost:8181")
@@ -39,8 +37,9 @@ def get_local_db_string():
 
     # if the env vars are populated they will take precidence, otherwise
     # the values identified here will be used
-    username = os.getenv("POSTGRES_USER", "fam_proxy_api")  # postgres
-    password = os.getenv("POSTGRES_PASSWORD", "test")
+    # need to use postgres user to run the tests, fam_proxy_api does not have the privilege anymore
+    username = os.getenv("POSTGRES_USER", "postgres")  # fam_proxy_api
+    password = os.getenv("POSTGRES_PASSWORD", "postgres")  # test
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
     port = os.getenv("POSTGRES_PORT", "5432")
@@ -58,9 +57,7 @@ def get_local_db_string():
 def db_pg_connection(db_pg_container):
 
     db_connection_string = get_local_db_string()
-    db_connection = psycopg2.connect(
-        db_connection_string, sslmode="disable"
-    )
+    db_connection = psycopg2.connect(db_connection_string, sslmode="disable")
     db_connection.autocommit = False
     yield db_connection
     db_connection.close()
@@ -71,7 +68,9 @@ def db_pg_connection(db_pg_container):
 def db_pg_transaction(db_pg_connection, monkeypatch):
 
     # Override the methods that the auth function uses to handle transactions
-    monkeypatch.setattr(lambda_function, "obtain_db_connection", lambda: db_pg_connection)
+    monkeypatch.setattr(
+        lambda_function, "obtain_db_connection", lambda: db_pg_connection
+    )
     monkeypatch.setattr(lambda_function, "release_db_connection", lambda db: None)
 
     yield db_pg_connection
@@ -185,6 +184,7 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
     """
     return raw_query
 
+
 @pytest.fixture(scope="function")
 def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
 
@@ -231,7 +231,6 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
     """
     replaced_query = raw_query.format(
         initial_user["idp_username"], initial_user["idp_type_code"], TEST_ROLE_NAME
-
     )
     cursor.execute(replaced_query)
 
@@ -277,8 +276,8 @@ def create_fam_child_parent_role_assignment(db_pg_transaction):
     cur.execute(insert_parent_role_sql)
 
     query = (
-        "select role_id from app_fam.fam_role " +
-        f"where role_name = '{parent_role_name}'"
+        "select role_id from app_fam.fam_role "
+        + f"where role_name = '{parent_role_name}'"
     )
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
