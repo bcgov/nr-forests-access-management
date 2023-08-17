@@ -5,7 +5,8 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/718-auth-lambda-db-user"
+      # - "feat/718-auth-lambda-db-user"
+      - "feat/725-add-waf-terraform"
 
 
 jobs:
