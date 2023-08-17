@@ -30,7 +30,7 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 # TODO: remove this if not working.
 # Try to find a way to reference from "frontend" terraform module to "server" terraform module (but different folders and different apply)
 module "server_info" {
-  source = "../server"
+  source = "../../server"
 
   fam_waf_acl_cloudfront_arn = module.fam_waf_acl_cloudfront_arn
 }
