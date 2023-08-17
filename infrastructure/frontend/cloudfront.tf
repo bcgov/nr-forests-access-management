@@ -1,5 +1,6 @@
 locals {
   flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.target_env}"
+  fam_waf_cloudfront_resource_name = "fam-${var.target_env}-waf-cloudfront"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
@@ -27,13 +28,18 @@ resource "aws_s3_bucket_policy" "web_distribution" {
   policy = data.aws_iam_policy_document.web_distribution.json
 }
 
-# TODO: remove this if not working.
-# Try to find a way to reference from "frontend" terraform module to "server" terraform module (but different folders and different apply)
-module "server_info" {
-  source = "../../server"
-
-  fam_waf_acl_cloudfront_arn = module.fam_waf_acl_cloudfront_arn
+data "aws_wafv2_web_acl" "fam_waf_cloudfront" {
+  name   = "${local.fam_waf_cloudfront_resource_name}"
+  scope  = "CLOUDFRONT"
 }
+
+# # TODO: remove this if not working.
+# # Try to find a way to reference from "frontend" terraform module to "server" terraform module (but different folders and different apply)
+# module "server_info" {
+#   source = "../../server"
+
+#   fam_waf_acl_cloudfront_arn = module.fam_waf_acl_cloudfront_arn
+# }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
   aliases             = ["${var.cloudfront_vanity_domain}"]
@@ -42,7 +48,8 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
-  web_acl_id          = "${module.server_info.fam_waf_acl_cloudfront_arn}"
+  # web_acl_id          = "${module.server_info.fam_waf_acl_cloudfront_arn}"
+  web_acl_id          = "${data.aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
 
   viewer_certificate {
     acm_certificate_arn = "${var.cloudfront_certificate_arn}"

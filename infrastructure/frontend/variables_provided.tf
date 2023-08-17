@@ -9,7 +9,7 @@ variable "cloudfront_certificate_arn" {
   type = string
 }
 
-variable "fam_waf_acl_cloudfront_arn" {
-  description = "The ARN of the WAF ACL Cloudfront"
-  type = string
-}
+# variable "fam_waf_acl_cloudfront_arn" {
+#   description = "The ARN of the WAF ACL Cloudfront"
+#   type = string
+# }
