@@ -27,6 +27,14 @@ resource "aws_s3_bucket_policy" "web_distribution" {
   policy = data.aws_iam_policy_document.web_distribution.json
 }
 
+# TODO: remove this if not working.
+# Try to find a way to reference from "frontend" terraform module to "server" terraform module (but different folders and different apply)
+module "server_info" {
+  source = "../server"
+
+  fam_waf_acl_cloudfront_arn = module.fam_waf_acl_cloudfront_arn
+}
+
 resource "aws_cloudfront_distribution" "web_distribution" {
   aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
@@ -34,7 +42,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
-  web_acl_id          = "${module.fam_waf_acl_cloudfront_arn}"
+  web_acl_id          = "${module.server_info.fam_waf_acl_cloudfront_arn}"
 
   viewer_certificate {
     acm_certificate_arn = "${var.cloudfront_certificate_arn}"
