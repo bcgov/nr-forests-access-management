@@ -232,6 +232,19 @@ def find_or_create_forest_client_child_role(
     return child_role
 
 
+def find_by_id(
+    db: Session, user_role_xref_id: int
+) -> models.FamUserRoleXref:
+    user_role = (
+        db.query(models.FamUserRoleXref)
+        .filter(
+            models.FamUserRoleXref.user_role_xref_id == user_role_xref_id
+        )
+        .one_or_none()
+    )
+    return user_role
+
+
 class UserRoleValidator:
     """
     Purpose: More validations on inputs (other than basic validations) and
@@ -269,3 +282,5 @@ class UserRoleValidator:
 
     def get_forest_client(self):
         return self.fc[0] if self.forest_client_number_exists() else None
+
+

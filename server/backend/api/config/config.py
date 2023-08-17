@@ -18,17 +18,20 @@ def is_on_aws():
 
 
 def get_db_string():
-    """ retrieves a database connection string for a variety of different
+    """retrieves a database connection string for a variety of different
     environments including:
     * local dev with postgres db
     * deployed app using amazon rds
 
     """
-    db_string_override = os.environ.get("DB_STRING_OVERRIDE")
-    if db_string_override is not None:
-        return db_string_override
 
-    db_conn_string = get_aws_db_string()
+    db_conn_string = None
+
+    if is_on_aws():
+        db_conn_string = get_aws_db_string()
+    else:
+        db_conn_string = get_local_dev_db_string()
+
     LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
@@ -43,12 +46,16 @@ def get_aws_db_string():
     host = get_env_var('PG_HOST')
     port = get_env_var('PG_PORT')
     dbname = get_env_var('PG_DATABASE')
-    db_conn_string = (
-        f"postgresql+psycopg2://{username}"
-        + f":{password}@{host}:{port}/"
-        + f"{dbname}"
-    )
-    return db_conn_string
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
+
+
+def get_local_dev_db_string():
+    username = get_env_var('POSTGRES_USER')
+    password = get_env_var('POSTGRES_PASSWORD')
+    host = get_env_var('POSTGRES_HOST')
+    port = get_env_var('POSTGRES_PORT')
+    dbname = get_env_var('POSTGRES_DB')
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
 def get_aws_region():
@@ -67,7 +74,7 @@ def get_user_pool_id():
 
 
 def get_user_pool_domain_name():
-    env_var = 'COGNITO_USER_POOL_DOMAIN'
+    env_var = "COGNITO_USER_POOL_DOMAIN"
     return get_env_var(env_var)
 
 
@@ -84,15 +91,15 @@ def get_aws_db_secret():
 class MissingEnvironmentVariable(Exception):
     def __init__(self, env_var_name):
         self.message = (
-            f'The required environment variable {env_var_name} has not ' +
-            'been populated'
+            f"The required environment variable {env_var_name} has not "
+            + "been populated"
         )
         super().__init__(self.message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     var = get_user_pool_domain_name()
-    print(f'var: {var}')
+    print(f"var: {var}")
 
 
 def get_root_path():
@@ -119,8 +126,9 @@ def get_oidc_client_id():
         client_id_secret_name = os.environ.get("COGNITO_CLIENT_ID_SECRET")
         if client_id_secret_name:
             session = boto3.session.Session()
-            client = session.client(service_name="secretsmanager",
-                                    region_name=get_aws_region())
+            client = session.client(
+                service_name="secretsmanager", region_name=get_aws_region()
+            )
             secret_value = client.get_secret_value(SecretId=client_id_secret_name)
             LOGGER.info(f"Secret retrieved -- value: [{secret_value}]")
             _client_id = secret_value["SecretString"]
@@ -143,8 +151,11 @@ def get_forest_client_api_token():
 
 
 def get_forest_client_api_baseurl():
-    forest_client_api_baseurl = get_env_var("FC_API_BASE_URL") if is_on_aws() \
-        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # Test env.
+    forest_client_api_baseurl = (
+        get_env_var("FC_API_BASE_URL")
+        if is_on_aws()
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"
+    )  # Test env.
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
 
@@ -160,6 +171,11 @@ def get_idim_proxy_api_key():
     return idim_proxy_api_key
 
 
+def get_gc_notify_email_api_key():
+    gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY")
+    return gc_notify_email_api_key
+
+
 # For local development, you can override this function since it doesn't work outside AWS
 def is_bcsc_key_enabled():
-    return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == 'True'
+    return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == "True"

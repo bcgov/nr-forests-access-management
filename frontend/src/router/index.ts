@@ -4,9 +4,6 @@ import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
 import AuthService from '@/services/AuthService';
 import GrantAccessView from '@/views/GrantAccessView.vue';
-import HomeView from '@/views/HomeView.vue';
-import ManageAccessView from '@/views/ManageAccessView.vue';
-import SelectApplicationView from '@/views/SelectApplicationView.vue';
 import LandingView from '@/views/LandingView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import SummaryView from '@/views/SummaryView.vue';
@@ -35,15 +32,6 @@ const routes = [
         component: LandingView,
     },
     {
-        path: '/home',
-        name: 'home',
-        meta: {
-            title: 'Welcome to FAM',
-            layout: 'ProtectedLayout'
-        },
-        component: HomeView,
-    },
-    {
         path: '/dashboard',
         name: 'dashboard',
         meta: {
@@ -51,24 +39,6 @@ const routes = [
             layout: 'ProtectedLayout'
         },
         component: DashboardView,
-    },
-    {
-        path: '/application',
-        name: 'application',
-        meta: {
-            title: 'Select Application',
-            layout: 'ProtectedLayout'
-        },
-        component: SelectApplicationView,
-    },
-    {
-        path: '/manage',
-        name: 'manage',
-        meta: {
-            title: 'Manage Access',
-            layout: 'ProtectedLayout'
-        },
-        component: ManageAccessView,
     },
     {
         path: '/grant',

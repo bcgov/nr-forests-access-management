@@ -242,7 +242,7 @@ def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     # This is NOT user's name, display name or user ID.
     # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
     # It is the "cognito_user_id" column for fam_user table.
-    # Example value: idir_b5ecdb094dfb4149a6a8445a01a96bf0@idir
+    # Example value: idir_b5ecdb094dfb4149a6a8445a0mangled0@idir
     cognito_username = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username
