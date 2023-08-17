@@ -225,6 +225,13 @@ resource "aws_wafv2_web_acl" "fam_waf_cognito" {
     }
 }
 
+
+# Additional provider configuration for us-east-1 region; resources can
+# reference this as `aws.east`.
+provider "aws" {
+  alias  = "east"
+  region = "us-east-1"
+}
 # CloudFront WAF ACL
 locals {
     fam_waf_cloudfront_resource_name = "${local.web_acl_name_prefix}-cloudfront"
@@ -233,7 +240,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
     name        = "${local.fam_waf_cloudfront_resource_name}"
     description = "CloudFront WAF Rules"
     scope       = "CLOUDFRONT"
-    provider    = "us-east-1" # Cloudfront ACL has to be created in this region.
+    provider    = aws.east # Cloudfront ACL has to be created in this region.
 
     default_action {
         allow {}
