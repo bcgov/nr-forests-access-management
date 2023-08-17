@@ -43,5 +43,13 @@ provider "aws" {
     role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
   }
 }
+
+# Additional provider configuration for us-east-1 region; resources can
+# reference this as `aws.east`.
+provider "aws" {
+  alias  = "east"
+  region = "us-east-1"
+}
+
 EOF
 }
