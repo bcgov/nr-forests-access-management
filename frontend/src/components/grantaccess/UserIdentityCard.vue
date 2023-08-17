@@ -3,7 +3,7 @@ import type { IdimProxyIdirInfo } from 'fam-api';
 import Card from 'primevue/card';
 
 const props = defineProps<{
-    userIdentity: IdimProxyIdirInfo
+    userIdentity: IdimProxyIdirInfo;
 }>(); // Vue3 alternative way for Type the defineProps().
 </script>
 
@@ -14,16 +14,12 @@ const props = defineProps<{
                 <label class="col-3">User ID:</label>
                 <span class="col-sm">{{ props.userIdentity.userId }}</span>
             </div>
-            <div class="row align-items-center"
-                v-if="props.userIdentity.found">
+            <div class="row align-items-center" v-if="props.userIdentity.found">
                 <label class="col-3">Display Name: </label>
                 <span class="col-sm">{{ props.userIdentity.displayName }}</span>
             </div>
-            <div class="row"
-                v-if="!props.userIdentity.found">
-                <span class="px-0 invalid">
-                    User does not exist
-                </span>
+            <div class="row" v-if="!props.userIdentity.found">
+                <span class="px-0 invalid"> User does not exist </span>
             </div>
         </template>
     </Card>
@@ -34,6 +30,6 @@ const props = defineProps<{
 
 .invalid {
     font-size: 0.875em;
-    color: $fc-invalid-color;
+    color: $text-error;
 }
 </style>
