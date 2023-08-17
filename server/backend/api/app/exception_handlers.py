@@ -1,4 +1,3 @@
-
 import json
 import logging
 import sys
@@ -21,32 +20,49 @@ async def requests_http_error_handler(request: Request, exc: HTTPError):
     status_code = exc.response.status_code
     host = getattr(getattr(request, "client", None), "host", None)
     port = getattr(getattr(request, "client", None), "port", None)
-    url = f"{request.url.path}?{request.query_params}" if request.query_params else request.url.path
+    url = (
+        f"{request.url.path}?{request.query_params}"
+        if request.query_params
+        else request.url.path
+    )
     response_text = json.loads(exc.response.text)
+
+    failure_code = None
+    if "failureCode" in response_text:
+        failure_code = response_text["failureCode"]
+    elif "errors" in response_text and "error" in response_text["errors"][0]:
+        # this is the error format for gc notify
+        failure_code = response_text["errors"][0]["error"]
+
+    error_message = None
+    if "message" in response_text:
+        error_message = response_text["message"]
+    elif "errors" in response_text and "message" in response_text["errors"][0]:
+        # this is the error format for gc notify
+        error_message = response_text["errors"][0]["message"]
+
     error_content = {
-        "failureCode": response_text['failureCode'] if 'failureCode' in response_text else None,
-        "message": response_text['message'] if 'message' in response_text else None
+        "failureCode": failure_code,
+        "message": error_message,
     }
 
     LOGGER.error(
-        f'{host}:{port} - "{request.method} {url}" {status_code} {exc.response.reason}, '\
-        f'error content - {error_content}'
+        f'{host}:{port} - "{request.method} {url}" {status_code} {exc.response.reason}, '
+        f"error content - {error_content}"
     )
     # For 401/403 specifically - return 500 Internal Server Error.
     # (so FAM frontend does not misinterprete 401/403 as authentication/authorization problem from user request)
-    if (status_code == HTTPStatus.UNAUTHORIZED or status_code == HTTPStatus.FORBIDDEN):
+    if status_code == HTTPStatus.UNAUTHORIZED or status_code == HTTPStatus.FORBIDDEN:
         return JSONResponse(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            content=error_content
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, content=error_content
         )
 
-    return JSONResponse(
-        status_code=exc.response.status_code,
-        content=error_content
-    )
+    return JSONResponse(status_code=exc.response.status_code, content=error_content)
 
 
-async def unhandled_exception_handler(request: Request, exc: Exception) -> PlainTextResponse:
+async def unhandled_exception_handler(
+    request: Request, exc: Exception
+) -> PlainTextResponse:
     """
     This middleware will log all unhandled exceptions.
     Unhandled exceptions are all exceptions that are not HTTPExceptions or RequestValidationErrors.
@@ -54,7 +70,11 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> Plain
     LOGGER.debug("Custom unhandled_exception_handler was called")
     host = getattr(getattr(request, "client", None), "host", None)
     port = getattr(getattr(request, "client", None), "port", None)
-    url = f"{request.url.path}?{request.query_params}" if request.query_params else request.url.path
+    url = (
+        f"{request.url.path}?{request.query_params}"
+        if request.query_params
+        else request.url.path
+    )
     exception_type, exception_value = sys.exc_info()
     exception_name = getattr(exception_type, "__name__", None)
     LOGGER.error(
