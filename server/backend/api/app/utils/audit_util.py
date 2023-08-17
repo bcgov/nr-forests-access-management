@@ -76,7 +76,7 @@ class AuditEventLog:
                 if self.target_user
                 else None,
                 "idpUserName": self.target_user.user_name if self.target_user else None,
-                "cognitoUsername": self.requesting_user.cognito_user_id
+                "cognitoUsername": self.target_user.cognito_user_id
                 if self.target_user
                 else None,
             },
@@ -94,7 +94,7 @@ class AuditEventLog:
                 if self.requesting_user
                 else None,
             },
-            "requestIP": self.request.client.host if self.request.client else "unknown"
+            "requestIP": self.request.client.host if self.request.client else "unknown",
         }
 
         if self.exception:

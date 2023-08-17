@@ -8,6 +8,7 @@ import config
 import event_type
 from typing import Any
 from enum import Enum
+from fastapi import HTTPException
 
 
 # seeing as a simple lambda function, use a simple fileconfig for the aduit logging
@@ -67,21 +68,26 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """
 
     audit_event_log = {
-        "logging_type": "Audit",
-        "event_type": "User Login",
-        "event_outcome": AuditEventOutcome.SUCCESS,
+        "auditEventTypeCode": "USER_LOGIN",
+        "auditEventResultCode": AuditEventOutcome.SUCCESS.name,
+        "requestingUser": {},
     }
+    exception = None
 
     LOGGER.debug(f"context: {context}")
 
     try:
-        audit_event_log["user_type"] = USER_TYPE_CODE_DICT[
+        audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
+        audit_event_log["requestingUser"]["userGuid"] = event["request"][
+            "userAttributes"
+        ]["custom:idp_user_id"]
+        audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
             event["request"]["userAttributes"]["custom:idp_name"]
         ]
-        audit_event_log["cognito_client_id"] = event["callerContext"]["clientId"]
-        audit_event_log["user_name"] = event["request"]["userAttributes"][
-            "custom:idp_username"
-        ]
+        audit_event_log["requestingUser"]["idpUserName"] = event["request"][
+            "userAttributes"
+        ]["custom:idp_username"]
+        audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
 
         db_connection = obtain_db_connection()
         populate_user_if_necessary(db_connection, event)
@@ -90,18 +96,27 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
 
         release_db_connection(db_connection)
 
-        audit_event_log["access_roles"] = event_with_authz["response"][
+        audit_event_log["requestingUser"]["accessRoles"] = event_with_authz["response"][
             "claimsOverrideDetails"
         ]["groupOverrideDetails"]["groupsToOverride"]
 
         return event_with_authz
 
     except Exception as e:
-        audit_event_log["event_outcome"] = AuditEventOutcome.FAIL
-        audit_event_log["exception"] = e
+        audit_event_log["auditEventResultCode"] = AuditEventOutcome.FAIL.name
+        exception = e
         raise e
 
     finally:
+        if exception and type(exception) == HTTPException:
+            audit_event_log["exception"] = {
+                "exceptionType": "HTTPException",
+                "statusCode": exception.status_code,
+                "details": exception.detail,
+            }
+        elif exception:
+            audit_event_log["exception"] = str(exception)
+
         LOGGER.info(json.dumps(audit_event_log))
 
 
