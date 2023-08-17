@@ -233,6 +233,7 @@ resource "aws_wafv2_web_acl" "fam_waf_cloudfront" {
     name        = "${local.fam_waf_cloudfront_resource_name}"
     description = "CloudFront WAF Rules"
     scope       = "CLOUDFRONT"
+    provider    = "us-east-1" # Cloudfront ACL has to be created in this region.
 
     default_action {
         allow {}
