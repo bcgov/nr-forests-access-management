@@ -88,7 +88,6 @@ const filters = ref({
                     <Icon
                         icon="user--avatar--filled"
                         :size=IconSize.medium
-                        class="'custom-carbon-icon-user--avatar--filled'"
                     />
                     <span class="span-icon">
                         {{ data.user.user_name }}
