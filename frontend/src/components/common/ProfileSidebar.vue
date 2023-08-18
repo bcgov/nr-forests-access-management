@@ -26,7 +26,6 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="close"
                         :size=IconSize.small
-                        :class="'custom-carbon-icon-close'"
                     ></Icon>
                 </button>
             </div>
@@ -62,7 +61,7 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="user--follow"
                         :size=IconSize.small
-                        :class="'custom-carbon-icon-user--follow'"
+                        class="custom-carbon-icon-user--follow"
                     />
                 Sign out
             </button>

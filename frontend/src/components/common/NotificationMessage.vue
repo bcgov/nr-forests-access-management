@@ -25,7 +25,6 @@ const props = defineProps({
             <Icon
                 icon="checkmark--filled"
                 :size=IconSize.medium
-                :class="'custom-carbon-icon-checkmark--filled'"
             />
             <span class="message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}

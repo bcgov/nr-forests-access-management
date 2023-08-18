@@ -59,7 +59,6 @@ const filters = ref({
             <Icon
                 icon="search"
                 :size=IconSize.small
-                :class="'custom-carbon-icon-search'"
             />
             <InputText class="dash-search" v-model="filters['global'].value" />
         </span>

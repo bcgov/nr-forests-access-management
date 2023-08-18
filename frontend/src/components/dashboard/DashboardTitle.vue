@@ -26,7 +26,6 @@ const props = defineProps({
                 <Icon
                     icon="add"
                     :size=IconSize.medium
-                    :class="'custom-carbon-icon-add'"
                 />
             </Button>
         </div>

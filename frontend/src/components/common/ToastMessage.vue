@@ -80,7 +80,7 @@ app.config.errorHandler = (err, instance, info) => {
         <Icon
             icon="error--filled"
             :size=IconSize.large
-            :class="'custom-carbon-icon-error--filled'"
+            class='custom-carbon-icon-error--filled'
         />
     </Toast>
 </template>
