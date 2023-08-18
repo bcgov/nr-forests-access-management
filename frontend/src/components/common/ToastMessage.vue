@@ -9,7 +9,6 @@ import {
     useNotificationMessage,
     useErrorDialog,
 } from '@/store/NotificationState';
-import { onMounted } from 'vue';
 
 const toast = useToast();
 
@@ -73,6 +72,7 @@ const onError = (error: any, info: string) => {
 app.config.errorHandler = (err, instance, info) => {
     onError(err, info);
 };
+
 </script>
 
 <template>
@@ -80,6 +80,8 @@ app.config.errorHandler = (err, instance, info) => {
         <Icon
             icon="error--filled"
             :size=IconSize.large
+            :class="'custom-carbon-icon-error--filled'"
         />
     </Toast>
 </template>
+

@@ -59,6 +59,7 @@ const filters = ref({
             <Icon
                 icon="search"
                 :size=IconSize.small
+                :class="'custom-carbon-icon-search'"
             />
             <InputText class="dash-search" v-model="filters['global'].value" />
         </span>
@@ -88,6 +89,7 @@ const filters = ref({
                     <Icon
                         icon="user--avatar--filled"
                         :size=IconSize.medium
+                        class="'custom-carbon-icon-user--avatar--filled'"
                     />
                     <span class="span-icon">
                         {{ data.user.user_name }}

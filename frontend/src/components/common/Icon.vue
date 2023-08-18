@@ -12,7 +12,12 @@ const props = defineProps({
         required: true,
         default: IconSize.small,
     },
+    class: {
+        type: String,
+        required: true,
+    }
 });
+
 const iconName = computed(() => {
     // dynamic imports must start with ./ or ../ and must end with a file extension
     // https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
@@ -23,5 +28,10 @@ const iconName = computed(() => {
 <template>
     <component
         :is="iconName"
+        :class="class"
     ></component>
 </template>
+
+<style lang="scss">
+@import '@/assets/styles/icon.scss';
+</style>

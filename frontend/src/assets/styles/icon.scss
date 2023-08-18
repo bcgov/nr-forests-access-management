@@ -1,0 +1,11 @@
+@import '@/assets/styles/styles.scss';
+
+.custom-carbon-icon-error--filled {
+    color: $light-theme-error-icon !important;
+}
+
+.custom-carbon-icon-user--follow {
+    margin-right: 18px;
+    align-self: center;
+    fill: $light-theme-icon;
+}

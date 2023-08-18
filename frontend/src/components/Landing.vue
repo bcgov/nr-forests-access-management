@@ -27,6 +27,7 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="login"
                         :size="IconSize.medium"
+                        :class="'custom-carbon-icon-login'"
                     />
                 </Button>
                 <Button
@@ -38,6 +39,7 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="login"
                         :size=IconSize.medium
+                        :class="'custom-carbon-icon-login'"
                     />
                 </Button>
             </div>

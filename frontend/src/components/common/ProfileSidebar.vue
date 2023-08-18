@@ -26,6 +26,7 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="close"
                         :size=IconSize.small
+                        :class="'custom-carbon-icon-close'"
                     ></Icon>
                 </button>
             </div>
@@ -61,6 +62,7 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon
                         icon="user--follow"
                         :size=IconSize.small
+                        :class="'custom-carbon-icon-user--follow'"
                     />
                 Sign out
             </button>
@@ -129,13 +131,6 @@ import { IconSize } from '@/enum/IconEnum';
     background-color: transparent;
     color: #000;
     cursor: pointer;
-
-    svg {
-        margin-right: 18px;
-        align-self: center;
-        fill: $light-theme-icon;
-
-    }
 }
 
 .sign-out:hover {

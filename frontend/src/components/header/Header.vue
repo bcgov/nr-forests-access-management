@@ -56,6 +56,7 @@ const props = defineProps({
                             <Icon
                                 icon="user--avatar"
                                 :size=IconSize.medium
+                                :class="'custom-carbon-icon-user--avatar'"
                             />
                         </a>
                     </li>

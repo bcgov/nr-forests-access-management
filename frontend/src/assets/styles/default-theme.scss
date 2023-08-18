@@ -28,4 +28,5 @@ $light-button-danger-hover: map.get(
 );
 
 // icon
-$light-theme-icon: map.get(lightTheme.$light-theme, 'background-brand')
+$light-theme-icon: map.get(lightTheme.$light-theme, 'background-brand');
+$light-theme-error-icon: map.get(lightTheme.$light-theme, 'support-error')
