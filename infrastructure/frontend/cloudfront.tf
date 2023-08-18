@@ -28,20 +28,16 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
-  # aliases             = ["${var.cloudfront_vanity_domain}"] # revert it back after testing.
+  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
-  # web_acl_id          = "${module.server_info.fam_waf_acl_cloudfront_arn}"
-  # web_acl_id          = "${data.aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
   web_acl_id          = "${aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
 
   viewer_certificate {
-    # acm_certificate_arn = "${var.cloudfront_certificate_arn}"  # TODO revert back to this one.
-    # TODO Remove this one after tool space testing is done.
-    cloudfront_default_certificate = true
+    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }

@@ -44,8 +44,8 @@ provider "aws" {
   }
 }
 
-# Additional provider configuration for us-east-1 region; resources can
-# reference this as `aws.east`.
+# Additional provider configuration for us-east-1 region; resources can reference this as `aws.east`.
+# This is essential for adding WAF ACL rules as they are only available at us-east-1.
 provider "aws" {
   alias  = "east"
   region = "us-east-1"

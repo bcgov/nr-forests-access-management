@@ -94,13 +94,13 @@ resource "aws_lambda_permission" "fam_api_gateway_permission" {
 }
 
 resource "aws_wafv2_web_acl_association" "fam_waf_api_gateway_association" {
-  # Normally the "resource_arn" value should be from her: resource_arn = aws_api_gateway_stage.fam_api_gateway_stage.arn
+  # Normally the "resource_arn" value should be from here: resource_arn = aws_api_gateway_stage.fam_api_gateway_stage.arn
   # But code it with "arn:aws:...." format for now as we currently have problem create "fam_api_gateway_stage" resouce.
   resource_arn = "arn:aws:apigateway:${data.aws_region.current.name}::/restapis/${aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}/stages/${var.api_gateway_stage_name}"
   web_acl_arn  = aws_wafv2_web_acl.fam_waf_api_gateway.arn
   depends_on = [
     aws_wafv2_web_acl.fam_waf_api_gateway
-    # aws_api_gateway_stage.fam_api_gateway_stage
+    # aws_api_gateway_stage.fam_api_gateway_stage  # enable this only if in future we could create "_stage" resource.
   ]
 }
 
