@@ -40,7 +40,8 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 
   viewer_certificate {
     # acm_certificate_arn = "${var.cloudfront_certificate_arn}"  # TODO revert back to this one.
-    cloudfront_default_certificate = true  # TODO Remove this one after tool space testing is done.
+    # TODO Remove this one after tool space testing is done.
+    cloudfront_default_certificate = true
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
