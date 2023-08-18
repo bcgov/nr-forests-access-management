@@ -8,7 +8,6 @@ import config
 import event_type
 from typing import Any
 from enum import Enum
-from fastapi import HTTPException
 
 
 # seeing as a simple lambda function, use a simple fileconfig for the aduit logging
@@ -72,7 +71,6 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
         "auditEventResultCode": AuditEventOutcome.SUCCESS.name,
         "requestingUser": {},
     }
-    exception = None
 
     LOGGER.debug(f"context: {context}")
 
@@ -104,19 +102,10 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
 
     except Exception as e:
         audit_event_log["auditEventResultCode"] = AuditEventOutcome.FAIL.name
-        exception = e
+        audit_event_log["exception"] = type(e).__name__ + ": " + str(e)
         raise e
 
     finally:
-        if exception and type(exception) == HTTPException:
-            audit_event_log["exception"] = {
-                "exceptionType": "HTTPException",
-                "statusCode": exception.status_code,
-                "details": exception.detail,
-            }
-        elif exception:
-            audit_event_log["exception"] = str(exception)
-
         LOGGER.info(json.dumps(audit_event_log))
 
 
