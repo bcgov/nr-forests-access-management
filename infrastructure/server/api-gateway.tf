@@ -99,8 +99,8 @@ resource "aws_wafv2_web_acl_association" "fam_waf_api_gateway_association" {
   resource_arn = "arn:aws:apigateway:${data.aws_region.current.name}::/restapis/${aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}/stages/${var.api_gateway_stage_name}"
   web_acl_arn  = aws_wafv2_web_acl.fam_waf_api_gateway.arn
   depends_on = [
-    aws_wafv2_web_acl.fam_waf_api_gateway,
-    aws_api_gateway_stage.fam_api_gateway_stage
+    aws_wafv2_web_acl.fam_waf_api_gateway
+    # aws_api_gateway_stage.fam_api_gateway_stage
   ]
 }
 
