@@ -31,7 +31,7 @@ const props = defineProps({
 @import '@/assets/styles/base.scss';
 
 .dashboard-button {
-    width: 235px;
+    width: 14.6875rem;
     float: right;
 }
 </style>

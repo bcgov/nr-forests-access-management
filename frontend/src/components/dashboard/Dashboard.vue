@@ -175,8 +175,8 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-dropdown {
-    width: 304px;
-    padding: 0px;
+    width: 19rem;
+    padding: 0;
 }
 
 .application-group {
