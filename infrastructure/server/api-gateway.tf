@@ -66,7 +66,6 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
   }
 
   rest_api_id = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
-  stage_name  = "${aws_api_gateway_stage.fam_api_gateway_stage.stage_name}"
 
   lifecycle {
     create_before_destroy = true
