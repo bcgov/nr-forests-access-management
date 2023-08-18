@@ -23,6 +23,7 @@ import {
     grantAccessFormData,
     resetGrantAccessFormData,
     setGrantAccessFormData,
+    roleNameData,
 } from '@/store/GrantAccessDataState';
 
 import {
@@ -178,6 +179,14 @@ function areVerificationsPassed() {
 function toSummary() {
     setGrantAccessFormData(formData.value);
     router.push('/summary');
+}
+
+function roleSelected(evt: any) {
+    let role = applicationRoleOptions.filter((role) => {
+        return role.role_id == evt.value;
+    })[0];
+    roleNameData.value = role.role_name;
+    resetForestClientNumberData();
 }
 </script>
 
@@ -340,7 +349,7 @@ function toSummary() {
                                 class="application-dropdown w-100"
                                 v-bind="field.value"
                                 @update:modelValue="handleChange"
-                                @change="resetForestClientNumberData()"
+                                @change="roleSelected($event)"
                                 :class="{ 'is-invalid': errors.role_id }"
                             >
                             </Dropdown>
