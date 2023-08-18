@@ -82,12 +82,12 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 .p-button {
-    width: 126px;
+    width: 7.875rem;
 }
 .card-content {
-    margin-top: 48px;
+    margin-top: 3rem;
 }
 .card-footer {
-    margin-top: 34px;
+    margin-top: 2rem;
 }
 </style>

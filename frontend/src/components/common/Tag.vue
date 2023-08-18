@@ -24,15 +24,15 @@ const props = defineProps({
 @import '@/assets/styles/styles.scss';
 
 .tag {
-    font-size: 12px;
-    letter-spacing: 0.32px;
+    font-size: .75rem;
+    letter-spacing: .02rem;
     display: flex;
     width: fit-content;
-    padding-left: 10px;
-    padding-right: 10px;
-    height: 24px;
+    padding-left: .625rem;
+    padding-right: .625rem;
+    height: 1.5rem;
     align-items: center;
-    border-radius: 1000px;
+    border-radius: 62.5rem;
 }
 
 .tag--error {

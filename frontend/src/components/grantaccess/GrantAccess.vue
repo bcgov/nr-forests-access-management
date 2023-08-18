@@ -460,6 +460,6 @@ function toSummary() {
 }
 
 .button {
-    width: 126px;
+    width: 7.875rem;
 }
 </style>
