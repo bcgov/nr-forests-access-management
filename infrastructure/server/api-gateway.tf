@@ -67,9 +67,9 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
 
   rest_api_id = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
 
-  lifecycle {
-    create_before_destroy = true
-  }
+  # lifecycle {
+  #   create_before_destroy = true
+  # }
 }
 
 # Terraform warns about using "stage_name" in resource "aws_api_gateway_deployment".
