@@ -3,7 +3,8 @@ import { app } from '@/main';
 import axios from 'axios';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
+import { IconSize } from '@/enum/IconEnum';
+
 import {
     useNotificationMessage,
     useErrorDialog,
@@ -71,10 +72,16 @@ const onError = (error: any, info: string) => {
 app.config.errorHandler = (err, instance, info) => {
     onError(err, info);
 };
+
 </script>
 
 <template>
     <Toast group="tl" position="top-right" #icon>
-        <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
+        <Icon
+            icon="error--filled"
+            :size=IconSize.large
+            class='custom-carbon-icon-error--filled'
+        />
     </Toast>
 </template>
+

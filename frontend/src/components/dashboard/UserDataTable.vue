@@ -4,8 +4,10 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
+import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+
 
 const props = defineProps({
     loading: {
@@ -54,7 +56,10 @@ const filters = ref({
         </div>
 
         <span class="p-input-icon-right">
-            <i class="pi pi-search" />
+            <Icon
+                icon="search"
+                :size=IconSize.small
+            />
             <InputText class="dash-search" v-model="filters['global'].value" />
         </span>
 
@@ -80,7 +85,10 @@ const filters = ref({
             <template #loading> Loading users data. Please wait. </template>
             <Column header="User name" sortable field="user.user_name">
                 <template #body="{ data }">
-                    <Icon icon="AvatarFilledIcon" medium />
+                    <Icon
+                        icon="user--avatar--filled"
+                        :size=IconSize.medium
+                    />
                     <span class="span-icon">
                         {{ data.user.user_name }}
                     </span>
