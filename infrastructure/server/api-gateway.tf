@@ -70,12 +70,6 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
                                             # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment
                                             # If possible in the future, use "aws_api_gateway_stage" resource instead. But may face issue about:
                                             # Error: creating API Gateway Stage (v1): ConflictException: Stage already exists.
-                                            # Sample code below:
-                                            # resource "aws_api_gateway_stage" "fam_api_gateway_stage" {
-                                            #   deployment_id = aws_api_gateway_deployment.fam_api_gateway_deployment.id
-                                            #   rest_api_id   = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
-                                            #   stage_name    = "${var.api_gateway_stage_name}"
-                                            # }
 
   lifecycle {
     create_before_destroy = true
