@@ -24,10 +24,7 @@ import { IconSize } from '@/enum/IconEnum';
                     label="Login with IDIR"
                     @click="authService.methods.login"
                 >
-                    <Icon
-                        icon="login"
-                        :size="IconSize.medium"
-                    />
+                    <Icon icon="login" :size="IconSize.medium" />
                 </Button>
                 <Button
                     class="landing-button p-button-outlined"
@@ -35,10 +32,7 @@ import { IconSize } from '@/enum/IconEnum';
                     disabled
                     @click="authService.methods.login"
                 >
-                    <Icon
-                        icon="login"
-                        :size=IconSize.medium
-                    />
+                    <Icon icon="login" :size="IconSize.medium" />
                 </Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">

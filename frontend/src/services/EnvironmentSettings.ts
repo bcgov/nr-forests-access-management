@@ -6,7 +6,12 @@ export class EnvironmentSettings {
             window.localStorage.getItem('env_data') as string
         );
         const environment = this.env?.target_env.value as string;
-        if (environment && (environment == 'dev' || environment == 'test' || environment == 'tools')) {
+        if (
+            environment &&
+            (environment == 'dev' ||
+                environment == 'test' ||
+                environment == 'tools')
+        ) {
             this.setEnvironmentDisplayName(environment);
         } else {
             this.setEnvironmentDisplayName(''); // environment == 'prod'

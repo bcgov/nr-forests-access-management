@@ -22,10 +22,7 @@ const props = defineProps({
             :severity="props.severity"
             :sticky="true"
         >
-            <Icon
-                icon="checkmark--filled"
-                :size=IconSize.medium
-            />
+            <Icon icon="checkmark--filled" :size="IconSize.medium" />
             <span class="message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>
@@ -37,7 +34,7 @@ const props = defineProps({
 @import '@/assets/styles/styles.scss';
 
 svg {
-    margin-right: .9375rem;
+    margin-right: 0.9375rem;
     vertical-align: middle;
 }
 
