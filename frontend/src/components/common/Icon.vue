@@ -1,54 +1,37 @@
-<script setup>
-import { computed, defineAsyncComponent } from 'vue';
+<script setup lang="ts">
+import { computed, defineAsyncComponent, type PropType } from 'vue';
+import { IconSize } from '@/enum/IconEnum';
+
 const props = defineProps({
     icon: {
         type: String,
         required: true,
     },
-    small: {
-        type: Boolean,
-        required: false,
-        default: false,
+    size: {
+        type: String as PropType<IconSize>,
+        required: true,
+        default: IconSize.small,
     },
-    medium: {
-        type: Boolean,
+    class: {
+        type: String,
         required: false,
-        default: false,
-    },
-    large: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
+    }
 });
+
 const iconName = computed(() => {
-    return defineAsyncComponent(() => import(`../icons/${props.icon}.vue`));
+    // dynamic imports must start with ./ or ../ and must end with a file extension
+    // https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
+    return defineAsyncComponent(() => import(`../../../node_modules/@carbon/icons-vue/es/${props.icon}/${props.size}.js`));
 });
 </script>
 
 <template>
     <component
-        :class="{
-            'icon-small': small,
-            'icon-medium': medium,
-            'icon-large': large,
-        }"
         :is="iconName"
+        :class="class"
     ></component>
 </template>
 
 <style lang="scss">
-.icon-large {
-    width: 2rem !important;
-    height: 2rem !important;
-}
-.icon-medium {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
-}
-
-.icon-small {
-    width: 1rem !important;
-    height: 1rem !important;
-}
+@import '@/assets/styles/icon.scss';
 </style>

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-
-// svg icon
-import CloseIcon from '@/components/icons/CheckIcon.vue';
-import LogoutIcon from '@/components/icons/LogoutIcon.vue';
+import { IconSize } from '@/enum/IconEnum';
 </script>
 
 <template>
@@ -26,7 +23,10 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <CloseIcon />
+                    <Icon
+                        icon="close"
+                        :size=IconSize.small
+                    ></Icon>
                 </button>
             </div>
             <!-- TODO - This code below is for displaying user information when it is available -->
@@ -37,11 +37,11 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                         alt="User avatar"
                     />
                 </div>
-                <div class="profile-info">
-                    <p class="profile-name">
-                        {{ authService.state.value.famLoginUser?.username }}
-                    </p>
-                    <p class="profile-idir">
+                <div class="profile-info"> -->
+                     <!-- <p class="profile-name">
+                        {{ authService.state.value.famLoginUser!.username }}
+                    </p> -->
+                    <!-- <p class="profile-idir">
                         IDIR:
                     </p>
                     <p class="profile-email">
@@ -58,7 +58,11 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                 aria-label="sign out"
                 @click="authService.methods.logout"
             >
-                <i><LogoutIcon /></i>
+                    <Icon
+                        icon="user--follow"
+                        :size=IconSize.small
+                        class="custom-carbon-icon-user--follow"
+                    />
                 Sign out
             </button>
         </div>
@@ -121,6 +125,11 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 .sign-out {
     font-size: .875rem;
     font-weight: 700;
+    display: flex;
+    border: none;
+    background-color: transparent;
+    color: #000;
+    cursor: pointer;
 }
 
 .sign-out:hover {
