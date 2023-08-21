@@ -34,16 +34,12 @@ import { IconSize } from '@/enum/IconEnum';
                         alt="User avatar"
                     />
                 </div>
-                <div class="profile-info"> -->
-            <!-- <p class="profile-name">
+                <div class="profile-info">
+                    <p class="profile-name">
                         {{ authService.state.value.famLoginUser!.username }}
-                    </p> -->
-            <!-- <p class="profile-idir">
-                        IDIR:
                     </p>
-                    <p class="profile-email">
-                        email
-                    </p>
+                    <p class="profile-idir">IDIR:</p>
+                    <p class="profile-email">email</p>
                 </div>
             </div> -->
             <hr class="profile-divider" />
