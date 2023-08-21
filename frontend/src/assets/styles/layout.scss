@@ -13,18 +13,38 @@ body {
     right: 0;
     bottom: 1rem;
     overflow: auto;
-    padding: 2.62rem 1.875rem 0;
+    padding: 2.62rem 2rem 0;
 }
 
 .page-body {
     margin-top: 3rem;
 }
+
+.form-container {
+    margin: auto 0;
+
+    .row {
+        margin: 1rem auto;
+    }
+}
+
+// Remove Arrows/Spinners for input type=number
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
 // Flex panel
 .flex-panel {
     @include flex-box();
     @include flex-direction(column);
-
-    background: $gray0;
 }
 
 .bold {

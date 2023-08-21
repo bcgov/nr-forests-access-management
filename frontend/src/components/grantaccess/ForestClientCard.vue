@@ -58,7 +58,7 @@ p {
 }
 
 p > label {
-    margin-top: 4px;
+    margin-top: .25rem;
 }
 .invalid {
     margin-top: 0.25rem;
@@ -66,7 +66,7 @@ p > label {
     color: #dc3545;
 }
 .organization-name {
-    font-size: 18px;
-    line-height: 28px;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
 }
 </style>

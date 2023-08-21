@@ -141,8 +141,8 @@ async function deleteUserRoleAssignment(
 
     <DashboardTitle :isApplicationSelected="isApplicationSelected" />
 
-    <div class="page-body form-container">
-        <div class="row">
+    <div class="page-body">
+        <div class="application-group">
             <label>Select an application you would like to grant access</label>
             <Dropdown
                 v-model="selectedApplication"
@@ -175,7 +175,11 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-dropdown {
-    width: 304px;
-    padding: 0px;
+    width: 19rem;
+    padding: 0;
+}
+
+.application-group {
+    display: grid;
 }
 </style>

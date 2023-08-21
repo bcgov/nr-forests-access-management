@@ -3,7 +3,7 @@ import type { PropType } from 'vue';
 import router from '@/router';
 import type { RouteLocationRaw } from 'vue-router';
 
-interface ISideNavData {
+export interface ISideNavData {
     name: string;
     items: [ISideNavItem];
 }

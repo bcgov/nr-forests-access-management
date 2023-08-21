@@ -197,6 +197,11 @@ variable "idim_proxy_api_api_key" {
   sensitive = true
 }
 
+variable "gc_notify_email_api_key" {
+  type = string
+  sensitive = true
+}
+
 
 # Variables for Cognito Client config
 
