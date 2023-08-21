@@ -13,6 +13,7 @@ import {
 import {
     grantAccessFormData,
     resetGrantAccessFormData,
+    grantAccessFormRoleName,
 } from '@/store/GrantAccessDataState';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
@@ -62,6 +63,7 @@ async function handleSubmit() {
         <SummaryCard
             v-if="grantAccessFormData"
             :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
+            :role_name="(grantAccessFormRoleName as string)"
             :loading="loading"
             @submit="handleSubmit()"
         />
