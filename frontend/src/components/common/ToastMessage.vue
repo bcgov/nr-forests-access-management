@@ -72,16 +72,14 @@ const onError = (error: any, info: string) => {
 app.config.errorHandler = (err, instance, info) => {
     onError(err, info);
 };
-
 </script>
 
 <template>
     <Toast group="tl" position="top-right" #icon>
         <Icon
             icon="error--filled"
-            :size=IconSize.large
-            class='custom-carbon-icon-error--filled'
+            :size="IconSize.large"
+            class="custom-carbon-icon-error--filled"
         />
     </Toast>
 </template>
-

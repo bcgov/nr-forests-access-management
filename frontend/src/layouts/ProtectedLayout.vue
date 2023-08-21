@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Header from '@/components/header/Header.vue';
-import SideNav, { type ISideNavData } from '@/components/common/SideNav.vue';
+import SideNav, {
+    type ISideNavData,
+    type ISideNavItem,
+} from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { isApplicationSelected } from '@/store/ApplicationState';
 
@@ -17,7 +20,7 @@ watch(isApplicationSelected, (value) => {
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
     navigationData.value.map((navItem) => {
-        navItem.items.map((childNavItem) => {
+        navItem.items.map((childNavItem: ISideNavItem) => {
             if (childNavItem.name === optionName) {
                 childNavItem.disabled = disabled;
             }
