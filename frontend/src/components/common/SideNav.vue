@@ -54,7 +54,7 @@ const props = defineProps({
                             @click="router.push(child.link)"
                         >
                             <Icon
-                                class="p-sidenav-color-icon p-sidenav-padding-icon"
+                                class="custom-carbon-icon--sidenav"
                                 :icon="child.icon.toString()"
                                 :size=IconSize.small
                             />
@@ -76,7 +76,7 @@ const props = defineProps({
                         <Icon
                             icon="help"
                             :size=IconSize.small
-                            class="p-sidenav-padding-icon"
+                            class="custom-carbon-icon--help"
                         />
                         Need help?
                     </li>

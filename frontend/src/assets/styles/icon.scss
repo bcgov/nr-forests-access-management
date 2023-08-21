@@ -5,7 +5,15 @@
 }
 
 .custom-carbon-icon-user--follow {
-    margin-right: 18px;
+    margin-right: 1.125rem;
     align-self: center;
     fill: $light-theme-icon;
+}
+.custom-carbon-icon--help,
+.custom-carbon-icon--sidenav  {
+    margin-right: 1.5625rem;
+}
+
+.custom-carbon-icon--sidenav {
+    color: $light-theme-sidenav-icon;
 }
