@@ -4,7 +4,7 @@ import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 import { IconSize } from '@/enum/IconEnum';
 
-interface ISideNavData {
+export interface ISideNavData {
     name: string;
     items: [ISideNavItem];
 }
