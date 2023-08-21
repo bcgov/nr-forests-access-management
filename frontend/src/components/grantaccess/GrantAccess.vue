@@ -23,7 +23,7 @@ import {
     grantAccessFormData,
     resetGrantAccessFormData,
     setGrantAccessFormData,
-    roleNameData,
+    grantAccessFormRoleName,
 } from '@/store/GrantAccessDataState';
 
 import {
@@ -185,7 +185,7 @@ function roleSelected(evt: any) {
     let role = applicationRoleOptions.filter((role) => {
         return role.role_id == evt.value;
     })[0];
-    roleNameData.value = role.role_name;
+    grantAccessFormRoleName.value = role.role_name;
     resetForestClientNumberData();
 }
 </script>
