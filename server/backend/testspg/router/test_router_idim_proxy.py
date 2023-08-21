@@ -15,12 +15,26 @@ LOGGER = logging.getLogger(__name__)
 endPoint_search = f"{apiPrefix}/identity_search/idir"
 valid_user_id_param = "CMENG"
 
+# Override this.
+# Valid sample IDIR type ("user_type": "I") requester
+sample_idir_requester_dict = {
+    "cognito_user_id": "dev-idir_e72a12c916a44a9581cf39e5dcdffae7@idir",
+    "user_name": "IANLIU",
+    "user_type": "I",
+    "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
+}
+
+async def mock_get_current_requester_with_idir_user():
+    """
+    A mock for router dependency, for requester who is IDIR user.
+    """
+    return Requester(**sample_idir_requester_dict)
 
 async def mock_get_current_requester_with_none_idir_user():
     """
     A mock for router dependency, for requester who is not IDIR user.
     """
-    none_idir_requester = read_json_file("local-data.json")["requester"]
+    none_idir_requester = sample_idir_requester_dict
     none_idir_requester["user_type"] = UserType.BCEID # Set to none-IDIR
     return Requester(**none_idir_requester)
 
@@ -38,6 +52,10 @@ def test_search_idir_with_valid_user_found_result(
     """
     Test valid user_id to search.
     """
+    # override dependency for requester on router.
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = mock_get_current_requester_with_idir_user
+
     test_end_point = endPoint_search + f"?user_id={valid_user_id_param}"
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -54,6 +72,10 @@ def test_search_idir_with_invalid_user_return_not_found(
     """
     Test invalid user_id to search.
     """
+    # override dependency for requester on router.
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = mock_get_current_requester_with_idir_user
+
     invalid_user_id_param = "USERNOTEXISTS"
     test_end_point = endPoint_search + f"?user_id={invalid_user_id_param}"
     LOGGER.debug(f"test_end_point: {test_end_point}")
