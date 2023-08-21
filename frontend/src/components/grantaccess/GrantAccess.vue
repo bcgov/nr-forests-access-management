@@ -463,6 +463,6 @@ function roleSelected(evt: any) {
 }
 
 .button {
-    width: 126px;
+    width: 7.875rem;
 }
 </style>
