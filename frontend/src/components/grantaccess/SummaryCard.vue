@@ -13,6 +13,10 @@ const props = defineProps({
         type: Object as PropType<FamUserRoleAssignmentCreate>,
         required: true,
     },
+    role_name: {
+        type: String,
+        required: true,
+    },
     loading: {
         type: Boolean,
         default: false,
@@ -37,6 +41,10 @@ onMounted(() => {
                         <p>
                             <label>User name:&nbsp;</label>
                             <span>{{ props.data.user_name }}</span>
+                        </p>
+                        <p>
+                            <label>Assign role:&nbsp;</label>
+                            <span>{{ props.role_name }}</span>
                         </p>
                         <p v-if="props.data.forest_client_number">
                             <label>Forest Client ID:&nbsp;</label

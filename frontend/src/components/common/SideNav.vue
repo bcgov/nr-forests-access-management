@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
 import router from '@/router';
+import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
+import { IconSize } from '@/enum/IconEnum';
 
 export interface ISideNavData {
     name: string;
     items: [ISideNavItem];
 }
 
-interface ISideNavItem {
+export interface ISideNavItem {
     name: string;
     icon: string;
     link: RouteLocationRaw;
@@ -52,10 +53,10 @@ const props = defineProps({
                             @click="router.push(child.link)"
                         >
                             <Icon
-                                class="p-sidenav-color-icon p-sidenav-padding-icon"
-                                small
+                                class="custom-carbon-icon--sidenav"
                                 :icon="child.icon.toString()"
-                            ></Icon>
+                                :size="IconSize.small"
+                            />
                             {{ child.name }}
                         </li>
                     </ul>
@@ -72,9 +73,9 @@ const props = defineProps({
                         click="mailto:SIBIFSAF@Victoria1.gov.bc.ca"
                     >
                         <Icon
-                            icon="HelpIcon"
-                            small
-                            class="p-sidenav-padding-icon"
+                            icon="help"
+                            :size="IconSize.small"
+                            class="custom-carbon-icon--help"
                         />
                         Need help?
                     </li>

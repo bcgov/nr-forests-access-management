@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import router from '@/router';
+import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     isApplicationSelected: {
@@ -21,8 +22,9 @@ const props = defineProps({
                 class="dashboard-button"
                 label="Grant new access"
                 @click="router.push('/grant')"
-                ><Icon icon="AddIcon" medium class="icon-size-1"
-            /></Button>
+            >
+                <Icon icon="add" :size="IconSize.medium" />
+            </Button>
         </div>
     </div>
 </template>

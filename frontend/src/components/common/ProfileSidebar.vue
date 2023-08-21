@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-
-// svg icon
-import CloseIcon from '@/components/icons/CheckIcon.vue';
-import LogoutIcon from '@/components/icons/LogoutIcon.vue';
+import { IconSize } from '@/enum/IconEnum';
 </script>
 
 <template>
@@ -26,7 +23,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <CloseIcon />
+                    <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
             </div>
             <!-- TODO - This code below is for displaying user information when it is available -->
@@ -39,14 +36,10 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                 </div>
                 <div class="profile-info">
                     <p class="profile-name">
-                        {{ authService.state.value.famLoginUser?.username }}
+                        {{ authService.state.value.famLoginUser!.username }}
                     </p>
-                    <p class="profile-idir">
-                        IDIR:
-                    </p>
-                    <p class="profile-email">
-                        email
-                    </p>
+                    <p class="profile-idir">IDIR:</p>
+                    <p class="profile-email">email</p>
                 </div>
             </div> -->
             <hr class="profile-divider" />
@@ -58,7 +51,11 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                 aria-label="sign out"
                 @click="authService.methods.logout"
             >
-                <i><LogoutIcon /></i>
+                <Icon
+                    icon="user--follow"
+                    :size="IconSize.small"
+                    class="custom-carbon-icon-user--follow"
+                />
                 Sign out
             </button>
         </div>
@@ -69,7 +66,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 @import '@/assets/styles/styles.scss';
 .profile-container {
     background-color: #fff;
-    border-left: .0625rem solid #dfdfe1;
+    border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
     inset: 0 0 0 70%;
@@ -106,21 +103,26 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
     }
 
     .profile-info {
-        margin: .375rem 0 0;
+        margin: 0.375rem 0 0;
         display: flex;
         flex-direction: column;
     }
 
     .profile-name,
     .profile-idir {
-        margin-bottom: .375rem;
+        margin-bottom: 0.375rem;
     }
 }
 
 .profile-name,
 .sign-out {
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: 700;
+    display: flex;
+    border: none;
+    background-color: transparent;
+    color: #000;
+    cursor: pointer;
 }
 
 .sign-out:hover {
@@ -131,7 +133,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 .profile-idir,
 .profile-email,
 .options {
-    font-size: .75rem;
+    font-size: 0.75rem;
     font-weight: 400;
 }
 

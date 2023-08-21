@@ -3,6 +3,7 @@ import Button from '@/components/common/Button.vue';
 import authService from '@/services/AuthService';
 import logo from '../assets/images/bc-gov-logo.png';
 import TreeLogs from '../assets/images/tree-logs.jpg';
+import { IconSize } from '@/enum/IconEnum';
 </script>
 
 <template>
@@ -22,15 +23,17 @@ import TreeLogs from '../assets/images/tree-logs.jpg';
                     class="landing-button p-button-primary"
                     label="Login with IDIR"
                     @click="authService.methods.login"
-                    ><Icon icon="LoginIcon" small
-                /></Button>
+                >
+                    <Icon icon="login" :size="IconSize.medium" />
+                </Button>
                 <Button
                     class="landing-button p-button-outlined"
                     label="Login with BCeID"
                     disabled
                     @click="authService.methods.login"
-                    ><Icon icon="LoginIcon" small
-                /></Button>
+                >
+                    <Icon icon="login" :size="IconSize.medium" />
+                </Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img
