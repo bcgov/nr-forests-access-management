@@ -46,6 +46,10 @@ provider "aws" {
 
 # Additional provider configuration for us-east-1 region; resources can reference this as `aws.east`.
 # This is essential for adding WAF ACL rules as they are only available at us-east-1.
+# See AWS doc: https://docs.aws.amazon.com/pdfs/waf/latest/developerguide/waf-dg.pdf#how-aws-waf-works-resources
+#     on section: "Amazon CloudFront distributions"
+# Also refer to ticket (https://app.zenhub.com/workspaces/fsa-fingerprint-61f04f08304d3e001a4f2578/issues/gh/bcgov/nr-forests-access-management/725)
+#     for specific error ("CLOUDFRONT" is not valid)
 provider "aws" {
   alias  = "east"
   region = "us-east-1"
