@@ -153,3 +153,12 @@ resource "aws_cognito_user_pool_domain" "main" {
   domain       = "${var.fam_user_pool_domain_name}"
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
 }
+
+resource "aws_wafv2_web_acl_association" "fam_waf_cognito_association" {
+  resource_arn = aws_cognito_user_pool.fam_user_pool.arn
+  web_acl_arn  = aws_wafv2_web_acl.fam_waf_cognito.arn
+  depends_on = [
+    aws_wafv2_web_acl.fam_waf_cognito,
+    aws_cognito_user_pool.fam_user_pool
+  ]
+}
