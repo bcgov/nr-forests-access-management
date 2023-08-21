@@ -1,5 +1,4 @@
 locals {
-    # Example: "fam-dev-waf"
     web_acl_name_prefix = "fam-${var.target_env}-waf"
 }
 
