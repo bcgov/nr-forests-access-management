@@ -21,7 +21,7 @@ class TestIdimProxyServiceClass(object):
         # local valid mock requester
         self.requester = Requester(
             ** {
-                "cognito_user_id": "dev-idir_e72a12c916a44a9581cf39e5dcdffae7@idir",
+                "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
                 "user_name": "IANLIU",
                 "user_type": "I",
                 "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]

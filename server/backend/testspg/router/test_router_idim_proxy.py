@@ -18,7 +18,7 @@ valid_user_id_param = "CMENG"
 # Override this.
 # Valid sample IDIR type ("user_type": "I") requester
 sample_idir_requester_dict = {
-    "cognito_user_id": "dev-idir_e72a12c916a44a9581cf39e5dcdffae7@idir",
+    "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
     "user_name": "IANLIU",
     "user_type": "I",
     "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
