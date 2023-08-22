@@ -22,16 +22,17 @@ const onError = (error: any, info: string) => {
     if (axios.isAxiosError(error)) {
         const err = error;
         const axiosResponse = err.response;
-        const status = axiosResponse?.status;
+
+        const axiosResponseHasDetail = axiosResponse?.data.detail
+            ? axiosResponse.data.detail
+            : genericErrorMsg.text;
 
         showToastTopRight(
             'error',
             axiosResponse ? axiosResponse.statusText : genericErrorMsg.title,
             axiosResponse?.data.detail.description
                 ? axiosResponse.data.detail.description
-                : axiosResponse?.data.detail
-                ? axiosResponse.data.detail
-                : genericErrorMsg.text
+                : axiosResponseHasDetail
         );
         return;
     }

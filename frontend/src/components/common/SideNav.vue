@@ -4,7 +4,7 @@ import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 import { IconSize } from '@/enum/IconEnum';
 
-interface ISideNavData {
+export interface ISideNavData {
     name: string;
     items: [ISideNavItem];
 }
@@ -23,7 +23,6 @@ const props = defineProps({
         default: '',
     },
 });
-
 </script>
 <template>
     <nav class="p-sidenav">
@@ -56,7 +55,7 @@ const props = defineProps({
                             <Icon
                                 class="custom-carbon-icon--sidenav"
                                 :icon="child.icon.toString()"
-                                :size=IconSize.small
+                                :size="IconSize.small"
                             />
                             {{ child.name }}
                         </li>
@@ -75,7 +74,7 @@ const props = defineProps({
                     >
                         <Icon
                             icon="help"
-                            :size=IconSize.small
+                            :size="IconSize.small"
                             class="custom-carbon-icon--help"
                         />
                         Need help?
@@ -88,4 +87,3 @@ const props = defineProps({
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 </style>
-
