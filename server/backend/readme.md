@@ -29,6 +29,13 @@ These instructions assume running **without** a python virtual environment (VENV
 ## Start the Database
 ==> ***See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1001__add_local_user_cognito_id.sql`."***
 
+Instruction in summary:
+* Go to **".server/flyway/local_sql/"** folder.
+* Rename file **sample_V1001__add_local_user_cognito_id.sql** to **V1001__add_local_user_cognito_id.sql**
+* Open the script and find the entry corresponding to your user.
+* Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
+
+
 **Note!!**: If you already had a database running initially and you adjust the `sample_V1001__add_local_user_cognito_id.sql` script to "V1001__..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
 
 
