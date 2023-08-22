@@ -66,9 +66,15 @@ resource "aws_api_gateway_deployment" "fam_api_gateway_deployment" {
   }
 
   rest_api_id = aws_api_gateway_rest_api.fam_api_gateway_rest_api.id
-  stage_name  = var.api_gateway_stage_name
-}
+  stage_name  = var.api_gateway_stage_name  # Terraform warns about using "stage_name" in resource "aws_api_gateway_deployment".
+                                            # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment
+                                            # If possible in the future, use "aws_api_gateway_stage" resource instead. But may face issue about:
+                                            # Error: creating API Gateway Stage (v1): ConflictException: Stage already exists.
 
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
 resource "aws_lambda_permission" "fam_api_gateway_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
@@ -81,6 +87,16 @@ resource "aws_lambda_permission" "fam_api_gateway_permission" {
   source_arn = "${aws_api_gateway_rest_api.fam_api_gateway_rest_api.execution_arn}/*/*"
 }
 
+resource "aws_wafv2_web_acl_association" "fam_waf_api_gateway_association" {
+  # Normally the "resource_arn" value should be from here: resource_arn = aws_api_gateway_stage.fam_api_gateway_stage.arn
+  # But code it with "arn:aws:...." format for now as we currently have problem create "fam_api_gateway_stage" resouce.
+  resource_arn = "arn:aws:apigateway:${data.aws_region.current.name}::/restapis/${aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}/stages/${var.api_gateway_stage_name}"
+  web_acl_arn  = aws_wafv2_web_acl.fam_waf_api_gateway.arn
+  depends_on = [
+    aws_wafv2_web_acl.fam_waf_api_gateway
+    # aws_api_gateway_stage.fam_api_gateway_stage  # enable this only if in future we could create "_stage" resource.
+  ]
+}
 
 module "fam_api_cors" {
   source  = "squidfunk/api-gateway-enable-cors/aws"
