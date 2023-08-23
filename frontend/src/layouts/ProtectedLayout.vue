@@ -29,7 +29,7 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
 };
 </script>
 <template>
-    <Header title="FAM" subtitle="Forest Access Management" />
+    <Header title="FAM" subtitle="Forests Access Management" />
 
     <SideNav :data="navigationData" />
     <div class="main">
