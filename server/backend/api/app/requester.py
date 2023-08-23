@@ -7,7 +7,6 @@ from api.app import database, jwt_validation
 from api.app.crud import crud_user
 from api.app.models.model import FamUser, FamUserType
 from api.app.utils.utils import read_json_file
-from api.config import config
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -50,22 +49,16 @@ async def get_current_requester(
     access_roles = Depends(jwt_validation.get_access_roles),
     db: Session = Depends(database.get_db)
 ):
-    # Deployment environments.
-    if config.is_on_aws():
-        fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
-        if fam_user is None:
-            raise no_requester_exception
+    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
+    if fam_user is None:
+        raise no_requester_exception
 
-        requester = {
-            "cognito_user_id": request_cognito_user_id,
-            "user_name": fam_user.user_name,
-            "user_type": fam_user.user_type_code,
-            "access_roles": access_roles
-        }
-    else:
-        # Below returns canned data for local development ONLY. Contains only for IDIR user for now (No BCeID user).
-        # This is temporary solution discussed before we have other way to get requester info locally.
-        requester = read_json_file("local-data.json")["requester"]
+    requester = {
+        "cognito_user_id": request_cognito_user_id,
+        "user_name": fam_user.user_name,
+        "user_type": fam_user.user_type_code,
+        "access_roles": access_roles
+    }
 
     LOGGER.debug(f"Current request user (requester): {requester}")
     return Requester(**requester)

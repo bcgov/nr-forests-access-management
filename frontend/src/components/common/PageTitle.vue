@@ -25,9 +25,9 @@ const props = defineProps({
 }
 
 .subtitle {
-    font-size: .875rem;
+    font-size: 0.875rem;
     line-height: 1.125rem;
-    letter-spacing: .01rem;
+    letter-spacing: 0.01rem;
     color: $text-secondary;
 }
 </style>

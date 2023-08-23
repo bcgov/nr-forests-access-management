@@ -16,7 +16,7 @@ This will do three things:
 
 Potential "gotchas":
 
-* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and`COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
+* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
 * When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
 * There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1001__add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
 * Currently the unit tests for the API depend on connecting to the forest client API. You have to put the API key into local-dev.env in order for them to work. (Somebody please make a mock for this service!)
@@ -27,6 +27,17 @@ Potential "gotchas":
 These instructions assume running **without** a python virtual environment (VENV). See below for VENV considerations. If you want to be able to debug with VS Code, don't use VENV.
 
 ## Start the Database
+==> ***See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1001__add_local_user_cognito_id.sql`."***
+
+Instruction in summary:
+* Go to **".server/flyway/local_sql/"** folder.
+* Rename file **sample_V1001__add_local_user_cognito_id.sql** to **V1001__add_local_user_cognito_id.sql**
+* Open the script and find the entry corresponding to your user.
+* Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
+
+
+**Note!!**: If you already had a database running initially and you adjust the `sample_V1001__add_local_user_cognito_id.sql` script to "V1001__..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
+
 
 When running the API locally, you still need to have a working database to connect to. Docker compose can run everything **other than the API** with the command:
 
@@ -70,22 +81,14 @@ set -o allexport; source local-dev.env; set +o allexport
 ```
 
 ### Configure external services to work locally
-FAM backend uses external services. These services genrally need some credentials or api tokens. The credentials or tokens should not be harcoded in "`local-dev.env`". For running backend locally or run tests locally, developers may find problem with connecting to these services. Developers can get the values (instruction below) and hardcod the value locally but should not commit these key values. If these are accidently commited, they should be rest.
+FAM backend uses external services. These services genrally need some credentials or api tokens. The credentials or tokens should not be harcoded in "`local-dev.env`". For running backend locally or run tests locally, developers may find problem with connecting to these services. Developers can get the values and hardcode the value locally but should not commit these key values. If these are accidently commited, they should be rest.
 
 <b>FC_API_TOKEN</b>: \
-This is an API Token for Forest Client API external service to lookup forest client number organization information. The token value can be found on <b>Github Repo Secret</b> if you have permission.
+This is an API Token for Forest Client API external service to lookup forest client number organization information.
 
 In case it needs to be reset, use [API Service Portal](https://api.gov.bc.ca/devportal/api-directory/3179?preview=false) with your IDIR credential to login and go to "Forest Client API" service to request a reset for the token.
 
-<b>IDIM_PROXY_API_KEY</b>: FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key. You can also find the key value from <b>Github Repo Secret</b> if you have permission.
-
-* Note:
-\
-This IDIM-Lookup-Proxy service also requires passing a <b>"requester"</b>'s username and IDP type as parameters. The information currently cannot be found locally by using "cognito_user_id" to lookup user in FAM `fam_user` database table locally, so developers will have problem doing this search locally or unit testing.
-\
-<b>"local-data.json"</b> is being used to overcome this problem. Developer can find the <b>"requester"</b> object in the json file and override it to their need for the search (but don't commit it as that can potentially break some tests).
-\
-The key flag to swtiching using local-data.json depends on this config: `config.py::is_on_aws()` which then depends on this env: `"DB_SECRET"`
+<b>IDIM_PROXY_API_KEY</b>: FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key.
 
 ## Run the API from VS Code launch configuration
 

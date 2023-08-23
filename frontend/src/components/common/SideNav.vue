@@ -9,7 +9,7 @@ export interface ISideNavData {
     items: [ISideNavItem];
 }
 
-interface ISideNavItem {
+export interface ISideNavItem {
     name: string;
     icon: string;
     link: RouteLocationRaw;

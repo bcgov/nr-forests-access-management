@@ -5,7 +5,7 @@ import {
     FAMUserRoleAssignmentApi,
     FAMUsersApi,
     FAMForestClientsApi,
-    IDIRBCeIDProxyApi
+    IDIRBCeIDProxyApi,
 } from 'fam-api';
 
 export class ApiServiceFactory {
@@ -30,8 +30,16 @@ export class ApiServiceFactory {
             httpInstance
         );
         this.usersApi = new FAMUsersApi(undefined, '', httpInstance);
-        this.forestClientApi = new FAMForestClientsApi(undefined, '', httpInstance);
-        this.idirBceidProxyApi = new IDIRBCeIDProxyApi(undefined, '', httpInstance)
+        this.forestClientApi = new FAMForestClientsApi(
+            undefined,
+            '',
+            httpInstance
+        );
+        this.idirBceidProxyApi = new IDIRBCeIDProxyApi(
+            undefined,
+            '',
+            httpInstance
+        );
     }
 
     getApplicationApi(): FAMApplicationsApi {

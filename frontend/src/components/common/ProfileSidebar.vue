@@ -23,10 +23,7 @@ import { IconSize } from '@/enum/IconEnum';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <Icon
-                        icon="close"
-                        :size=IconSize.small
-                    ></Icon>
+                    <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
             </div>
             <!-- TODO - This code below is for displaying user information when it is available -->
@@ -37,16 +34,12 @@ import { IconSize } from '@/enum/IconEnum';
                         alt="User avatar"
                     />
                 </div>
-                <div class="profile-info"> -->
-                     <!-- <p class="profile-name">
+                <div class="profile-info">
+                    <p class="profile-name">
                         {{ authService.state.value.famLoginUser!.username }}
-                    </p> -->
-                    <!-- <p class="profile-idir">
-                        IDIR:
                     </p>
-                    <p class="profile-email">
-                        email
-                    </p>
+                    <p class="profile-idir">IDIR:</p>
+                    <p class="profile-email">email</p>
                 </div>
             </div> -->
             <hr class="profile-divider" />
@@ -58,11 +51,11 @@ import { IconSize } from '@/enum/IconEnum';
                 aria-label="sign out"
                 @click="authService.methods.logout"
             >
-                    <Icon
-                        icon="user--follow"
-                        :size=IconSize.small
-                        class="custom-carbon-icon-user--follow"
-                    />
+                <Icon
+                    icon="user--follow"
+                    :size="IconSize.small"
+                    class="custom-carbon-icon-user--follow"
+                />
                 Sign out
             </button>
         </div>
@@ -73,7 +66,7 @@ import { IconSize } from '@/enum/IconEnum';
 @import '@/assets/styles/styles.scss';
 .profile-container {
     background-color: #fff;
-    border-left: .0625rem solid #dfdfe1;
+    border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
     inset: 0 0 0 70%;
@@ -110,20 +103,20 @@ import { IconSize } from '@/enum/IconEnum';
     }
 
     .profile-info {
-        margin: .375rem 0 0;
+        margin: 0.375rem 0 0;
         display: flex;
         flex-direction: column;
     }
 
     .profile-name,
     .profile-idir {
-        margin-bottom: .375rem;
+        margin-bottom: 0.375rem;
     }
 }
 
 .profile-name,
 .sign-out {
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: 700;
     display: flex;
     border: none;
@@ -140,7 +133,7 @@ import { IconSize } from '@/enum/IconEnum';
 .profile-idir,
 .profile-email,
 .options {
-    font-size: .75rem;
+    font-size: 0.75rem;
     font-weight: 400;
 }
 

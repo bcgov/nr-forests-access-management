@@ -34,6 +34,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   wait_for_deployment = false
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
+  web_acl_id          = "${aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
 
   viewer_certificate {
     acm_certificate_arn = "${var.cloudfront_certificate_arn}"

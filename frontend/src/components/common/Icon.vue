@@ -15,21 +15,23 @@ const props = defineProps({
     class: {
         type: String,
         required: false,
-    }
+    },
 });
 
 const iconName = computed(() => {
     // dynamic imports must start with ./ or ../ and must end with a file extension
     // https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
-    return defineAsyncComponent(() => import(`../../../node_modules/@carbon/icons-vue/es/${props.icon}/${props.size}.js`));
+    return defineAsyncComponent(
+        () =>
+            import(
+                `../../../node_modules/@carbon/icons-vue/es/${props.icon}/${props.size}.js`
+            )
+    );
 });
 </script>
 
 <template>
-    <component
-        :is="iconName"
-        :class="class"
-    ></component>
+    <component :is="iconName" :class="class"></component>
 </template>
 
 <style lang="scss">

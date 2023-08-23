@@ -22,11 +22,8 @@ const props = defineProps({
                 class="dashboard-button"
                 label="Grant new access"
                 @click="router.push('/grant')"
-                >
-                <Icon
-                    icon="add"
-                    :size=IconSize.medium
-                />
+            >
+                <Icon icon="add" :size="IconSize.medium" />
             </Button>
         </div>
     </div>
