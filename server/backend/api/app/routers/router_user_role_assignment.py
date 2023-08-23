@@ -1,17 +1,15 @@
-from http import HTTPStatus
 import logging
+from http import HTTPStatus
 
-from api.app.crud import crud_user_role, crud_user, crud_role
-from fastapi import APIRouter, Depends, Request, Response, HTTPException
+from api.app.crud import crud_role, crud_user, crud_user_role
+from api.app.models import model as models
+from api.app.requester import Requester, get_current_requester
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 
-from api.app.models import model as models
-from api.app.utils.audit_util import (
-    AuditEventType,
-    AuditEventOutcome,
-    AuditEventLog
-)
-from .. import database, schemas, jwt_validation
+from .. import database, jwt_validation, schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +24,8 @@ def create_user_role_assignment(
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
+    # cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
+    requester: Requester =Depends(get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
@@ -43,15 +42,17 @@ def create_user_role_assignment(
         event_outcome=AuditEventOutcome.SUCCESS
     )
 
+    # TODO migrate to @audit_log(??), TODO how to handle exception in audit_log, # TODO verify how exception_handler react to error.
     try:
 
-        requesting_user = get_requesting_user(db, cognito_user_id)
+        requesting_user = get_requesting_user(db, cognito_user_id) # TODO See if can use Requester
         role = crud_role.get_role(db, role_assignment_request.role_id)
 
         audit_event_log.role = role
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requesting_user
 
+        # TODO: use depends
         enforce_self_grant_guard_properties(
             db,
             requesting_user,
@@ -59,6 +60,7 @@ def create_user_role_assignment(
             role_assignment_request.user_name,
         )
 
+        # TODO: use depends
         jwt_validation.authorize_by_app_id(
             role.application.application_id, db, token_claims
         )
