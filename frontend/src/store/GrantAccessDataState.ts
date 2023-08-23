@@ -4,7 +4,7 @@ import type { FamUserRoleAssignmentCreate } from 'fam-api';
 export const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 
 export const grantAccessFormData = ref<FamUserRoleAssignmentCreate | null>();
-export const grantAccessFormRoleName = ref<String | null>();
+export const grantAccessFormRoleName = ref<string | null>();
 
 export const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
