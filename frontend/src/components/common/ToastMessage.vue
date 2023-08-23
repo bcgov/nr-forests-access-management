@@ -22,18 +22,45 @@ const onError = (error: any, info: string) => {
     if (axios.isAxiosError(error)) {
         const err = error;
         const axiosResponse = err.response;
+        const status = axiosResponse?.status;
 
-        const axiosResponseHasDetail = axiosResponse?.data.detail
-            ? axiosResponse.data.detail
-            : genericErrorMsg.text;
+        const e401_authenticationErrorMsg = {
+            title: 'Error',
+            text: 'You are not logged in. Please log in.',
+        };
 
-        showToastTopRight(
-            'error',
-            axiosResponse ? axiosResponse.statusText : genericErrorMsg.title,
-            axiosResponse?.data.detail.description
-                ? axiosResponse.data.detail.description
-                : axiosResponseHasDetail
-        );
+        const e403_authorizationErrorMsg = {
+            title: 'Error',
+            text: 'You do not have the necessary authorization for the requested action.',
+        };
+
+        if (!status) {
+            showToastTopRight(
+                'error',
+                genericErrorMsg.title,
+                genericErrorMsg.text
+            );
+        } else if (status == 401) {
+            showToastTopRight(
+                'error',
+                e401_authenticationErrorMsg.title,
+                e401_authenticationErrorMsg.text
+            );
+        } else if (status == 403) {
+            showToastTopRight(
+                'error',
+                e403_authorizationErrorMsg.title,
+                axiosResponse?.data.detail.code === 'self_grant_prohibited'
+                    ? axiosResponse?.data.detail.description
+                    : e403_authorizationErrorMsg.text
+            );
+        } else if (status == 409) {
+            showToastTopRight(
+                'error',
+                genericErrorMsg.title,
+                axiosResponse?.data.detail
+            );
+        }
         return;
     }
 
