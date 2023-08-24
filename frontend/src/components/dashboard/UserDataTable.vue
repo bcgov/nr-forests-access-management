@@ -44,8 +44,8 @@ const filters = ref({
 </script>
 
 <template>
-    <div class="p-access-table">
-        <div class="p-table-header">
+    <div class="custom-access-table">
+        <div class="custom-table-header">
             <h3>{{ selectedApplicationDisplayText }} users</h3>
             <span>
                 This table shows all the users in
@@ -122,34 +122,8 @@ const filters = ref({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-
-.p-input-icon-right {
-    width: 100%;
-    z-index: 1;
-
-    &:deep(.p-inputtext) {
-        border-bottom: none;
-        width: 100%;
-        height: 2rem;
-        border: none;
-    }
+.custom-access-table {
+    margin-top: 4.9375rem;
 }
 
-:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
-    display: none;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    box-shadow: 0 -0.0625rem 0 0 #dfdfe1 inset;
-}
-
-.p-datatable-header {
-    padding: 0 !important;
-}
-.span-icon {
-    margin-left: 0.9375rem;
-}
-.remove-action {
-    color: $text-error;
-}
 </style>

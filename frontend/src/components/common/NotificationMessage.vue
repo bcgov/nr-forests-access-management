@@ -32,28 +32,9 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-
-svg {
-    margin-right: 0.9375rem;
-    vertical-align: middle;
-}
-
-strong {
-    text-transform: capitalize;
-}
-
-.message-text {
-    color: $text-primary;
-}
-
 .message-container {
     position: relative;
     align-items: center;
 }
 
-.p-message {
-    position: absolute;
-    left: 0;
-    right: 0;
-}
 </style>

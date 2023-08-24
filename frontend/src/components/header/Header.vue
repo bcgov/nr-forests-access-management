@@ -23,7 +23,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <header class="p-header" id="header">
+    <header class="header" id="header">
         <nav
             class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
         >
@@ -67,3 +67,40 @@ const props = defineProps({
         </teleport>
     </header>
 </template>
+
+<style lang="scss" scoped>
+@import '@/assets/styles/base.scss';
+.header {
+    @extend %heading-compact-01;
+    position: fixed;
+
+    height: $header-height;
+    width: $header-width;
+    background: $light-background-brand;
+
+    padding: 0;
+    z-index: 1;
+    color: $dark-text-primary;
+    .header-title {
+        a i {
+            cursor: pointer;
+        }
+        margin: 0;
+    }
+
+    i {
+        vertical-align: middle;
+    }
+
+    .navbar {
+        margin: 0;
+        padding: 0;
+        height: 48px;
+        vertical-align: middle;
+    }
+
+    .navbar-collapse {
+        flex-grow: 0;
+    }
+}
+</style>

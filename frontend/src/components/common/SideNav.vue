@@ -25,9 +25,9 @@ const props = defineProps({
 });
 </script>
 <template>
-    <nav class="p-sidenav">
+    <nav class="sidenav">
         <a
-            class="p-sidenav-logo"
+            class="sidenav-logo"
             title="Forest Access Management"
             href="https://www2.gov.bc.ca"
         >
@@ -45,10 +45,10 @@ const props = defineProps({
                             v-for="child in item.items"
                             class="child"
                             :class="{
-                                'p-sidenav-selected':
+                                'sidenav-selected':
                                     $router.currentRoute.value.path ==
                                     child.link,
-                                'p-sidenav-disabled': child.disabled,
+                                'sidenav-disabled': child.disabled,
                             }"
                             @click="router.push(child.link)"
                         >
@@ -64,7 +64,7 @@ const props = defineProps({
             </ul>
         </div>
 
-        <div class="support-section p-sidenav-disabled">
+        <div class="support-section sidenav-disabled">
             <ul>
                 <li class="header">Support</li>
                 <ul>
@@ -86,4 +86,87 @@ const props = defineProps({
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+.sidenav-logo {
+    img {
+        margin: 0px 0px 16px 3px;
+        width: 140px;
+        height: 32px;
+    }
+}
+
+.sidenav {
+    position: fixed;
+    padding: 16px 0px;
+    width: 256px;
+    height: calc(100vh - 50px);
+    left: 0px;
+    top: 48px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: inset -1px 0px 0px $border-subtle-00;
+    .content {
+        position: relative;
+        min-height: auto;
+    }
+    .support-section {
+        position: absolute;
+        bottom: 0px;
+    }
+}
+
+.sidenav ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.sidenav li.header {
+    font-weight: 400;
+}
+
+.sidenav li {
+    @extend %helper-text-01;
+    color: $light-text-secondary;
+    align-items: center;
+    padding: 15px 16px;
+    i {
+        vertical-align: middle;
+    }
+    a {
+        text-decoration: none;
+    }
+}
+
+.sidenav li.child:hover {
+    background: $light-layer-selected-01;
+    box-shadow: inset 3px 0px 0px $light-border-interactive;
+    color: $light-text-primary;
+    cursor: pointer;
+}
+
+.sidenav-disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.sidenav-selected {
+    background: $light-layer-selected-01;
+    box-shadow: inset 3px 0px 0px $light-border-interactive;
+    color: $light-text-primary !important;
+    cursor: pointer;
+}
+
+.sidenav li a:hover,
+ul#nav li.active a {
+    color: $light-text-primary ;
+    background: $light-layer-selected-01;
+    box-shadow: inset 3px 0px 0px $light-border-interactive;
+}
+
+.sidenav-padding-icon {
+    margin-right: 25px;
+}
+
+.sidenav-color-icon {
+    color: $light-interactive;
+}
 </style>

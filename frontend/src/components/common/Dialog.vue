@@ -45,6 +45,6 @@ const props = defineProps({
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
 .error {
-    color: $text-error;
+    color: $light-text-error;
 }
 </style>
