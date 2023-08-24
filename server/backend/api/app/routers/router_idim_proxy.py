@@ -4,7 +4,8 @@ from api.app.integration.idim_proxy import IdimProxyService
 from api.app.requester import (Requester, get_current_requester,
                                internal_only_action)
 from api.app.schemas import IdimProxyIdirInfo, IdimProxySearchParamIdir
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from typing_extensions import Annotated
 
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 
@@ -14,7 +15,7 @@ router = APIRouter()
 
 @router.get("/idir", response_model=IdimProxyIdirInfo, dependencies=[Depends(internal_only_action)])
 def idir_search(
-    user_id: str,
+    user_id: Annotated[str, Query(max_length=15)],
     requester=Depends(get_current_requester)
 ):
     LOGGER.debug(f"Searching IDIR user with parameter user_id: {user_id}")
