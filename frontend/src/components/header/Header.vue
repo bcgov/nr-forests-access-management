@@ -49,7 +49,7 @@ const props = defineProps({
                 <ul class="navbar-nav">
                     <li>
                         <a
-                            title="Log Out"
+                            title="Profile"
                             v-if="authService.getters.isLoggedIn()"
                             @click="useProfileSidebarVisible.toggleVisible()"
                         >

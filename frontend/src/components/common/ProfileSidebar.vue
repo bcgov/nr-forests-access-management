@@ -26,22 +26,23 @@ import { IconSize } from '@/enum/IconEnum';
                     <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
             </div>
-            <!-- TODO - This code below is for displaying user information when it is available -->
-            <!-- <div class="sidebar-body">
-                <div class="img-wrapper">
+            <div class="sidebar-body">
+                <!-- TODO - This code below is for displaying user information when it is available -->
+                <!-- <div class="img-wrapper">
                     <img
                         src="../../assets/images/tyrannosaurus-rex1.png"
                         alt="User avatar"
                     />
-                </div>
+                </div> -->
                 <div class="profile-info">
                     <p class="profile-name">
                         {{ authService.state.value.famLoginUser!.username }}
                     </p>
-                    <p class="profile-idir">IDIR:</p>
-                    <p class="profile-email">email</p>
+                    <!-- TODO - This code below is for displaying user information when it is available -->
+                    <!-- <p class="profile-idir">IDIR:</p>
+                    <p class="profile-email">email</p> -->
                 </div>
-            </div> -->
+            </div>
             <hr class="profile-divider" />
             <p class="options">Options</p>
             <button

@@ -64,7 +64,8 @@ const props = defineProps({
             </ul>
         </div>
 
-        <div class="support-section sidenav-disabled">
+        <!-- Leaving this piece of code below commented out because we will need to reuse it again in the future when we have the functionality -->
+        <!-- <div class="support-section sidenav-disabled">
             <ul>
                 <li class="header">Support</li>
                 <ul>
@@ -81,7 +82,7 @@ const props = defineProps({
                     </li>
                 </ul>
             </ul>
-        </div>
+        </div> -->
     </nav>
 </template>
 <style lang="scss" scoped>
@@ -157,7 +158,7 @@ const props = defineProps({
 
 .sidenav li a:hover,
 ul#nav li.active a {
-    color: $light-text-primary ;
+    color: $light-text-primary;
     background: $light-layer-selected-01;
     box-shadow: inset 3px 0px 0px $light-border-interactive;
 }
