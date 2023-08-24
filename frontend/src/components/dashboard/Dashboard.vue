@@ -43,7 +43,7 @@ onMounted(async () => {
             await applicationsApi.getApplications()
         ).data;
         if (isApplicationSelected) {
-            getAppUserRoleAssignment();
+            await getAppUserRoleAssignment();
         }
     } catch (error: any) {
         return Promise.reject(error);
@@ -81,10 +81,14 @@ async function getAppUserRoleAssignment() {
     }
 }
 
-const selectApplication = (e: DropdownChangeEvent) => {
-    setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (isApplicationSelected) {
-        getAppUserRoleAssignment();
+const selectApplication = async (e: DropdownChangeEvent) => {
+    try {
+        setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+        if (applicationsUserAdministers) {
+            await getAppUserRoleAssignment();
+        }
+    } catch (error: any) {
+        return Promise.reject(error);
     }
 };
 

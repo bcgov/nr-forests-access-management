@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import router from '@/router';
-import Dialog from '../common/Dialog.vue';
 import SummaryCard from './SummaryCard.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
-import {
-    useNotificationMessage,
-    useErrorDialog,
-} from '@/store/NotificationState';
+import { useNotificationMessage } from '@/store/NotificationState';
 
 import {
     grantAccessFormData,
@@ -34,26 +30,18 @@ async function handleSubmit() {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
-        useErrorDialog.isErrorVisible = false;
         useNotificationMessage.isNotificationVisible = true;
-        router.push('/dashboard');
-        resetGrantAccessFormData();
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
+        router.push('/dashboard');
+        resetGrantAccessFormData();
         loading.value = false;
     }
 }
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="useErrorDialog.isErrorVisible"
-        :error="true"
-        :header="useErrorDialog.dialogTitle"
-        :text-first="useErrorDialog.dialogMsg"
-        text-second="Contact your administrator for more information."
-    ></Dialog>
     <PageTitle
         title="Access request summary"
         :subtitle="'You are editing in ' + selectedApplicationDisplayText"

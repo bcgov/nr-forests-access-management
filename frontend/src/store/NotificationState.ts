@@ -4,9 +4,3 @@ export const useNotificationMessage = reactive({
     notificationMsg: '',
     isNotificationVisible: false,
 })
-
-export const useErrorDialog = reactive({
-    dialogTitle: '',
-    dialogMsg: '',
-    isErrorVisible: false,
-})
