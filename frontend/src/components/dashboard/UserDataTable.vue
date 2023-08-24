@@ -44,8 +44,8 @@ const filters = ref({
 </script>
 
 <template>
-    <div class="custom-access-table">
-        <div class="custom-table-header">
+    <div class="custom-data-table">
+        <div class="custom-data-table-header">
             <h3>{{ selectedApplicationDisplayText }} users</h3>
             <span>
                 This table shows all the users in
@@ -122,8 +122,35 @@ const filters = ref({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-.custom-access-table {
+.custom-data-table {
     margin-top: 4.9375rem;
+    background: transparent;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border: 0.125rem solid $light-border-subtle-00;
+}
+
+.custom-data-table-header {
+    padding: 1rem 1rem 1.5rem;
+    h3 {
+        @extend %heading-03;
+        margin: 0;
+        padding: 0;
+    }
+
+    span {
+        @extend %body-compact-01;
+        margin: 0;
+        padding: 0;
+        color: $light-text-secondary;
+    }
+}
+
+.span-icon {
+    margin-left: 0.9375rem;
+}
+
+.remove-action {
+    color: $light-text-error;
 }
 
 </style>
