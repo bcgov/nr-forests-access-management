@@ -5,11 +5,6 @@ import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { IconSize } from '@/enum/IconEnum';
 
-import {
-    useNotificationMessage,
-    useErrorDialog,
-} from '@/store/NotificationState';
-
 const toast = useToast();
 
 const showToastTopRight = (sev: any, title: string, text: string) => {
@@ -55,13 +50,16 @@ const onError = (error: any, info: string) => {
             showToastTopRight(
                 'error',
                 e403_authorizationErrorMsg.title,
-                e403_authorizationErrorMsg.text
+                axiosResponse?.data.detail.code === 'self_grant_prohibited'
+                    ? axiosResponse?.data.detail.description
+                    : e403_authorizationErrorMsg.text
             );
         } else if (status == 409) {
-            useNotificationMessage.isNotificationVisible = false;
-            useErrorDialog.dialogTitle = axiosResponse.statusText;
-            useErrorDialog.dialogMsg = axiosResponse.data.detail;
-            useErrorDialog.isErrorVisible = true;
+            showToastTopRight(
+                'error',
+                genericErrorMsg.title,
+                axiosResponse?.data.detail
+            );
         }
         return;
     }

@@ -15,16 +15,5 @@
                 "disabled": true
             }
         ]
-    },
-    {
-        "name": "Management",
-        "items": [
-            {
-                "name": "Settings",
-                "icon": "settings",
-                "link": "#",
-                "disabled": true
-            }
-        ]
     }
 ]

@@ -13,7 +13,7 @@ import { IconSize } from '@/enum/IconEnum';
                 <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
                 <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
                 <h2 id="landing-subtitle" class="landing-subtitle">
-                    Forestry Access Management
+                    Forests Access Management
                 </h2>
 
                 <p id="landing-desc" class="landing-desc">

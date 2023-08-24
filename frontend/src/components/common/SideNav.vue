@@ -28,7 +28,7 @@ const props = defineProps({
     <nav class="p-sidenav">
         <a
             class="p-sidenav-logo"
-            title="Forest Access Management"
+            title="Forests Access Management"
             href="https://www2.gov.bc.ca"
         >
             <img
@@ -64,7 +64,8 @@ const props = defineProps({
             </ul>
         </div>
 
-        <div class="support-section p-sidenav-disabled">
+        <!-- Leaving this piece of code below commented out because we will need to reuse it again in the future when we have the functionality -->
+        <!-- <div class="support-section p-sidenav-disabled">
             <ul>
                 <li class="header">Support</li>
                 <ul>
@@ -81,7 +82,7 @@ const props = defineProps({
                     </li>
                 </ul>
             </ul>
-        </div>
+        </div> -->
     </nav>
 </template>
 <style lang="scss" scoped>
