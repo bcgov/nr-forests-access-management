@@ -80,7 +80,6 @@ onMounted(async () => {
             resetForm();
         }
     } catch (error: unknown) {
-        router.push('/dashboard');
         return Promise.reject(error);
     }
 });

@@ -19,12 +19,16 @@ async function authenticationErrorResponsesItcpt(error: any) {
     // Special handling; until MAX_RETRY reached.
     if (error.response?.status == 401) {
         if (retryCount.value < MAX_RETRY) {
-            return refreshTokenAndReTry(error.config, error.response);
+            try {
+                return await refreshTokenAndReTry(error.config, error.response);
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        } else {
+            AuthService.methods.removeFamUser(); // Done retry refresh token, token expired; remove user.
+            router.replace('/'); // 401 unauthenticated/expired, back to home page.
         }
-        AuthService.methods.removeFamUser(); // Done retry refresh token, token expired; remove user.
-        router.push('/'); // 401 unauthenticated/expired, back to home page.
     }
-
     retryCount.value = 0; // Reset counter when retry ends or not 401.
     return Promise.reject(error); // return error for next interceptor.
 }
