@@ -5,8 +5,8 @@ import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
-import Components from 'unplugin-vue-components/vite'
-import { BootstrapVueNextResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite';
+import { BootstrapVueNextResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ command, mode }) => {
@@ -14,16 +14,18 @@ export default defineConfig(async ({ command, mode }) => {
     const port = parseInt(env.VITE_PORT || '5173');
 
     return {
-        plugins: [vue(),
-        Components({
-            resolvers: [BootstrapVueNextResolver()]
-        })],
+        plugins: [
+            vue(),
+            Components({
+                resolvers: [BootstrapVueNextResolver()],
+            }),
+        ],
         test: {
             globals: true,
             environment: 'jsdom',
             coverage: {
-                reporter: ['text', 'lcov']
-            }
+                reporter: ['text', 'lcov'],
+            },
         },
         build: {
             chunkSizeWarningLimit: 1600,
@@ -32,7 +34,6 @@ export default defineConfig(async ({ command, mode }) => {
             alias: {
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
                 '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
-                '~primeicons': path.resolve(__dirname, 'node_modules/primeicons'),
 
                 // Below line is important fix for aws-amplify issue. https://dev.to/ilumin/vite-build-failed-on-project-with-aws-sdk-14dk
                 './runtimeConfig': './runtimeConfig.browser',
