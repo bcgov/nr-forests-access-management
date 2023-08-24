@@ -103,7 +103,7 @@ const props = defineProps({
     top: 48px;
     overflow-x: hidden;
     overflow-y: auto;
-    box-shadow: inset -1px 0px 0px $border-subtle-00;
+    box-shadow: inset -1px 0px 0px $light-border-subtle-00;
     .content {
         position: relative;
         min-height: auto;
