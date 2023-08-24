@@ -4,7 +4,6 @@
 @use '@bcgov-nr/nr-fsa-theme/design-tokens//dark-theme.scss' as darkTheme;
 @use '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
 
-
 // Header
 $header-height: 3rem;
 $header-width: 100vw;
@@ -16,7 +15,10 @@ $dark-text-primary: map.get(darkTheme.$dark-theme, 'text-primary');
 $light-layer-selected-01: map.get(lightTheme.$light-theme, 'layer-selected-01');
 
 //border
-$light-border-interactive: map.get(lightTheme.$light-theme, 'border-interactive');
+$light-border-interactive: map.get(
+    lightTheme.$light-theme,
+    'border-interactive'
+);
 $light-border-subtle-00: map.get(lightTheme.$light-theme, 'border-subtle-00');
 
 //text
@@ -24,8 +26,20 @@ $light-text-primary: map.get(lightTheme.$light-theme, 'text-primary');
 $light-text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
 $light-text-error: map.get(lightTheme.$light-theme, 'text-error');
 
+//button
+$light-button-tertiary: map.get(
+    lightButton.$light-button-token-overrides,
+    'button-tertiary'
+);
+$light-button-danger-primary: map.get(
+    lightButton.$light-button-token-overrides,
+    'button-danger-primary'
+);
+$light-button-danger-hover: map.get(
+    lightButton.$light-button-token-overrides,
+    'button-danger-hover'
+);
+
 $light-background-brand: map.get(lightTheme.$light-theme, 'background-brand');
 $light-support-error: map.get(lightTheme.$light-theme, 'support-error');
 $light-interactive: map.get(lightTheme.$light-theme, 'interactive');
-
-

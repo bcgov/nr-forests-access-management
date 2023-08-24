@@ -152,5 +152,4 @@ const filters = ref({
 .remove-action {
     color: $light-text-error;
 }
-
 </style>
