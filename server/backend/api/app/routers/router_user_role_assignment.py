@@ -7,7 +7,6 @@ from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from sqlalchemy.orm import Session
-from typing_extensions import Annotated
 
 from .. import database, jwt_validation, schemas
 
@@ -24,8 +23,7 @@ def create_user_role_assignment(
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_user_id: Annotated[str, Query(max_length=100)]
-        = Depends(jwt_validation.get_request_cognito_user_id),
+    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
 ):
     """
     Create FAM user_role_xref association.
@@ -99,8 +97,7 @@ def delete_user_role_assignment(
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_user_id: Annotated[str, Query(max_length=100)]
-        = Depends(jwt_validation.get_request_cognito_user_id),
+    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
 ) -> None:
     """
     Delete FAM user_role_xref association.
