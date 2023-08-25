@@ -33,14 +33,6 @@ async function authenticationErrorResponsesItcpt(error: any) {
     return Promise.reject(error); // return error for next interceptor.
 }
 
-// 403 Interceptor
-async function forbiddenErrorResponseItcpt(error: any) {
-    if (error.response?.status == 403) {
-        router.replace('/dashboard'); // Unauthorized operation, direct back to dashboard.
-    }
-    return Promise.reject(error);
-}
-
 async function refreshTokenAndReTry(
     config: AxiosRequestConfig,
     response: AxiosResponse
@@ -66,5 +58,4 @@ async function refreshTokenAndReTry(
 
 export default {
     authenticationErrorResponsesItcpt,
-    forbiddenErrorResponseItcpt,
 };
