@@ -36,7 +36,7 @@ import { IconSize } from '@/enum/IconEnum';
                 </div> -->
                 <div class="profile-info">
                     <p class="profile-name">
-                        {{ authService.state.value.famLoginUser!.username }}
+                        {{ authService.state.value.famLoginUser?.username }}
                     </p>
                     <!-- TODO - This code below is for displaying user information when it is available -->
                     <!-- <p class="profile-idir">IDIR:</p>
