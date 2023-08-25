@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, ref, reactive } from 'vue';
 import router from '@/router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import ConfirmDialog from 'primevue/confirmdialog';
@@ -50,6 +50,11 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
+});
+
+onUnmounted(() => {
+    useNotificationMessage.isNotificationVisible = false;
+    useNotificationMessage.notificationMsg = '';
 });
 
 async function getAppUserRoleAssignment() {
