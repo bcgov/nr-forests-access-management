@@ -36,9 +36,5 @@ httpInstance.interceptors.response.use(
     (response) => response,
     HttpResInterceptors.authenticationErrorResponsesItcpt
 ); // 401 error handler
-httpInstance.interceptors.response.use(
-    (response) => response,
-    HttpResInterceptors.forbiddenErrorResponseItcpt
-); // 403 error handler
 
 export default httpInstance;

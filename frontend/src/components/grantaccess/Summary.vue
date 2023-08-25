@@ -31,11 +31,11 @@ async function handleSubmit() {
             grantAccessFormData.value as FamUserRoleAssignmentCreate
         );
         useNotificationMessage.isNotificationVisible = true;
+        router.push('/dashboard');
+        resetGrantAccessFormData();
     } catch (err: any) {
         return Promise.reject(err);
     } finally {
-        router.push('/dashboard');
-        resetGrantAccessFormData();
         loading.value = false;
     }
 }
