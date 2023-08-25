@@ -35,6 +35,7 @@ export default defineConfig(async ({ command, mode }) => {
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
                 '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
 
+                '../assets/font': path.resolve(__dirname, 'node_modules/@bcgov-nr/nr-fsa-theme/assets/font'),
                 // Below line is important fix for aws-amplify issue. https://dev.to/ilumin/vite-build-failed-on-project-with-aws-sdk-14dk
                 './runtimeConfig': './runtimeConfig.browser',
             },
