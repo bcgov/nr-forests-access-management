@@ -28,7 +28,7 @@ const props = defineProps({
     <nav class="sidenav">
         <a
             class="sidenav-logo"
-            title="Forest Access Management"
+            title="Forests Access Management"
             href="https://www2.gov.bc.ca"
         >
             <img
