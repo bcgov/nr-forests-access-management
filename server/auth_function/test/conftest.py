@@ -123,13 +123,17 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    replaced_query = sql.SQL(raw_query).format(
-        lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
-        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
-    )
+    # replaced_query = sql.SQL(raw_query).format(
+    #     lambda_function.USER_TYPE_CODE_DICT[idp_name],
+    #     sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
+    #     sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
+    # )
 
-    cursor.execute(replaced_query)
+    cursor.execute(raw_query, (
+        lambda_function.USER_TYPE_CODE_DICT[idp_name],
+        cognito_event["request"]["userAttributes"]["custom:idp_username"],
+        cognito_event["request"]["userAttributes"]["custom:idp_user_id"]
+    ))
 
     yield test_user_properties
 
