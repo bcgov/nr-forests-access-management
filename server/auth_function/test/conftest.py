@@ -118,15 +118,15 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name, user_guid,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_name}, {user_guid},
+        VALUES( %s, %s, %s,
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
     replaced_query = sql.SQL(raw_query).format(
-        user_type_code = lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        user_name = sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
-        user_guid = sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
+        lambda_function.USER_TYPE_CODE_DICT[idp_name],
+        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
+        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
     )
 
     cursor.execute(replaced_query)
