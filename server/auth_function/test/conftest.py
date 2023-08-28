@@ -1,13 +1,14 @@
-import logging
-import sys
-import os
 import json
-import pytest
-from testcontainers.compose import DockerCompose
-import psycopg2
-import dotenv
-from lamda_function_test import TEST_ROLE_NAME
+import logging
+import os
+import sys
 
+import dotenv
+import psycopg2
+import pytest
+from lamda_function_test import TEST_ROLE_NAME
+from psycopg2 import sql
+from testcontainers.compose import DockerCompose
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -124,8 +125,8 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
     replaced_query = raw_query.format(
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"],
-        cognito_event["request"]["userAttributes"]["custom:idp_user_id"],
+        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
+        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
     )
 
     cursor.execute(replaced_query)
@@ -205,7 +206,7 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
         CURRENT_USER,
         CURRENT_USER)
     """
-    replaced_query = raw_query.format(client_id)
+    replaced_query = raw_query.format(sql.Literal(client_id))
     cursor.execute(replaced_query)
 
 
@@ -230,7 +231,9 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
     )
     """
     replaced_query = raw_query.format(
-        initial_user["idp_username"], initial_user["idp_type_code"], TEST_ROLE_NAME
+        sql.Literal(initial_user["idp_username"]),
+        sql.Literal(initial_user["idp_type_code"]),
+        TEST_ROLE_NAME
     )
     cursor.execute(replaced_query)
 
@@ -252,7 +255,7 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
     replaced_query = raw_query.format(
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"],
+        sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
     )
     cursor.execute(replaced_query)
 
@@ -275,10 +278,12 @@ def create_fam_child_parent_role_assignment(db_pg_transaction):
     )
     cur.execute(insert_parent_role_sql)
 
-    query = (
-        "select role_id from app_fam.fam_role "
-        + f"where role_name = '{parent_role_name}'"
+    query = sql.SQL(
+        """select role_id from app_fam.fam_role where
+           role_name = {0}""").format(
+        sql.Literal(parent_role_name)
     )
+
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
     LOGGER.debug(f"record: {parent_role_id}")
