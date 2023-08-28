@@ -118,7 +118,7 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name, user_guid,
         create_user, create_date, update_user, update_date)
-        VALUES( '{}', '{}', '{}',
+        VALUES( {}, {}, {},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
@@ -248,7 +248,7 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name,
         create_user, create_date, update_user, update_date)
-        VALUES( '{}', '{}',
+        VALUES( {}, {},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
