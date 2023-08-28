@@ -8,7 +8,7 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
     "http://localhost:3000/dashboard",
   ]
   logout_urls = [
-    "http://localhost:3000/"
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -46,7 +46,6 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
     "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
     "https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
-
   ]
   logout_urls = [
     "http://localhost:3000/",
