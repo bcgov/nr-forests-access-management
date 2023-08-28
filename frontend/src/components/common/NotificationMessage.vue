@@ -23,7 +23,7 @@ const props = defineProps({
             :sticky="true"
         >
             <Icon icon="checkmark--filled" :size="IconSize.medium" />
-            <span class="message-text">
+            <span class="custom-message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>
         </Message>
@@ -37,4 +37,7 @@ const props = defineProps({
     align-items: center;
 }
 
+.custom-message-text {
+    color: $light-text-primary;
+}
 </style>
