@@ -29,7 +29,7 @@ def test_create_user_if_not_found(
     # make sure the user doesn't exist
     user_query = (
         "SELECT user_name from app_fam.fam_user where "
-        + f"user_name = '{test_idp_username}'"
+        + f"user_name = '{sql.Literal(test_idp_username)}'"
     )
     cursor.execute(user_query)
     results = cursor.fetchall()
