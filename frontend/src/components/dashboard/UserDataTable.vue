@@ -122,6 +122,7 @@ const filters = ref({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+
 .custom-data-table {
     margin-top: 4.9375rem;
     background: transparent;
@@ -143,6 +144,22 @@ const filters = ref({
         padding: 0;
         color: $light-text-secondary;
     }
+}
+
+// update primevue style but only for FAM
+.p-input-icon-right {
+    width: 100%;
+    z-index: 1;
+
+    &:deep(.p-inputtext) {
+        border-bottom: none;
+        width: 100%;
+        height: 2rem;
+        border: none;
+    }
+}
+:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
+    display: none;
 }
 
 .span-icon {
