@@ -3,7 +3,7 @@ import logging.config
 import logging
 import json
 import psycopg2
-import psycopg2.sql
+from psycopg2 import sql
 import config
 import event_type
 from typing import Any
@@ -145,11 +145,11 @@ def populate_user_if_necessary(db_connection, event) -> None:
         ON CONFLICT (user_type_code, lower(user_name)) DO
         UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id};"""
 
-    sql_query = psycopg2.sql.SQL(raw_query).format(
-        user_type_code=psycopg2.sql.Literal(user_type_code),
-        user_guid=psycopg2.sql.Literal(user_guid),
-        cognito_user_id=psycopg2.sql.Literal(cognito_user_id),
-        user_name=psycopg2.sql.Literal(user_name),
+    sql_query = sql.SQL(raw_query).format(
+        user_type_code=sql.Literal(user_type_code),
+        user_guid=sql.Literal(user_guid),
+        cognito_user_id=sql.Literal(cognito_user_id),
+        user_name=sql.Literal(user_name),
     )
 
     db_connection.cursor().execute(sql_query)
@@ -188,10 +188,10 @@ def handle_event(db_connection, event) -> event_type.Event:
     ]
     cognito_client_id = event["callerContext"]["clientId"]
 
-    sql_query = psycopg2.sql.SQL(query).format(
-        user_guid=psycopg2.sql.Literal(user_guid),
-        user_type_code=psycopg2.sql.Literal(user_type_code),
-        cognito_client_id=psycopg2.sql.Literal(cognito_client_id),
+    sql_query = sql.SQL(query).format(
+        user_guid=sql.Literal(user_guid),
+        user_type_code=sql.Literal(user_type_code),
+        cognito_client_id=sql.Literal(cognito_client_id),
     )
 
     cursor.execute(sql_query)
