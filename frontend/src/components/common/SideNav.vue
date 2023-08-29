@@ -86,7 +86,6 @@ const props = defineProps({
     </nav>
 </template>
 <style lang="scss" scoped>
-@import '@/assets/styles/default-theme.scss';
 @import '@/assets/styles/styles.scss';
 
 .sidenav-logo {
