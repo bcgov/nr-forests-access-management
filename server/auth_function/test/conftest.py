@@ -204,14 +204,14 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
         create_user,
         update_user)
     values(
-        '{}',
+        %s,
         (select application_id from app_fam.fam_application
             where application_name = 'FAM'),
         CURRENT_USER,
         CURRENT_USER)
     """
-    replaced_query = raw_query.format(sql.Literal(client_id))
-    cursor.execute(replaced_query)
+    # replaced_query = raw_query.format(sql.Literal(client_id))
+    cursor.execute(raw_query, [client_id])
 
 
 @pytest.fixture(scope="function")
@@ -252,16 +252,19 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_name},
+        VALUES( %s, %s,
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    replaced_query = sql.SQL(raw_query).format(
-        user_type_code = lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        user_name = sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
-    )
-    cursor.execute(replaced_query)
+    # replaced_query = sql.SQL(raw_query).format(
+    #     user_type_code = lambda_function.USER_TYPE_CODE_DICT[idp_name],
+    #     user_name = sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
+    # )
+    cursor.execute(raw_query, (
+        lambda_function.USER_TYPE_CODE_DICT[idp_name],
+        cognito_event["request"]["userAttributes"]["custom:idp_username"]
+    ))
 
 
 @pytest.fixture(scope="function")
