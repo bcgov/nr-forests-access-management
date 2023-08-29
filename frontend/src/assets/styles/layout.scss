@@ -60,31 +60,3 @@ input[type='number'] {
     font-family: inherit;
 }
 
-// This should be removed once the FSA Theme is fixed
-.p-dialog .p-confirm-dialog-reject {
-    color: $light-button-tertiary;
-    border: 1px solid $light-button-tertiary;
-    background: transparent;
-    box-shadow: none;
-}
-
-.p-button.p-button-text:enabled:hover {
-    color: white;
-    background-color: $light-button-tertiary;
-}
-
-.p-dialog .p-confirm-dialog-accept {
-    color: white !important;
-    border: 1px solid $light-button-danger-primary !important;
-    background-color: $light-button-danger-primary !important;
-}
-
-.p-dialog .p-confirm-dialog-accept:hover {
-    color: white !important;
-    border: 1px solid $light-button-danger-hover !important;
-    background-color: $light-button-danger-hover !important;
-}
-/*----------- data table pagnition ---------------*/
-.p-datatable .p-paginator-bottom .p-dropdown .p-dropdown-label.p-inputtext {
-    padding-top: 7px;
-}

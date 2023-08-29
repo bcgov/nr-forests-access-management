@@ -30,6 +30,6 @@ const props = defineProps<{
 
 .invalid {
     font-size: 0.875em;
-    color: $text-error;
+    color: $light-text-error;
 }
 </style>
