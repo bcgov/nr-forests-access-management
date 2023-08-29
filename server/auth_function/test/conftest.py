@@ -123,7 +123,7 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    # For Insert, pass parameters as .execute()'s second arguments so they get proper sanitization.
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
     cursor.execute(raw_query, (
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
         cognito_event["request"]["userAttributes"]["custom:idp_username"],
@@ -155,6 +155,7 @@ def create_test_fam_role(db_pg_transaction):
         CURRENT_USER,
         CURRENT_USER)
     """
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
     cursor.execute(raw_query, [TEST_ROLE_NAME])
 
 
@@ -204,6 +205,7 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
         CURRENT_USER,
         CURRENT_USER)
     """
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
     cursor.execute(raw_query, [client_id])
 
 
@@ -227,6 +229,7 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
         CURRENT_USER
     )
     """
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
     cursor.execute(raw_query, (
         initial_user["idp_username"],
         initial_user["idp_type_code"],
