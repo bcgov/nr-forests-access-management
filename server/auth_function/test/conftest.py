@@ -226,20 +226,24 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
         update_user)
     VALUES (
         (select user_id from app_fam.fam_user where
-            user_name = '{}'
-            and user_type_code = '{}'),
+            user_name = %s
+            and user_type_code = %s),
         (select role_id from app_fam.fam_role where
-            role_name = '{}'),
+            role_name = %s),
         CURRENT_USER,
         CURRENT_USER
     )
     """
-    replaced_query = raw_query.format(
-        sql.Literal(initial_user["idp_username"]),
-        sql.Literal(initial_user["idp_type_code"]),
+    # replaced_query = raw_query.format(
+    #     sql.Literal(initial_user["idp_username"]),
+    #     sql.Literal(initial_user["idp_type_code"]),
+    #     TEST_ROLE_NAME
+    # )
+    cursor.execute(raw_query, (
+        initial_user["idp_username"],
+        initial_user["idp_type_code"],
         TEST_ROLE_NAME
-    )
-    cursor.execute(replaced_query)
+    ))
 
 
 @pytest.fixture(scope="function")
