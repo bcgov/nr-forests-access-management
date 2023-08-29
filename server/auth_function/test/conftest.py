@@ -123,12 +123,7 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    # replaced_query = sql.SQL(raw_query).format(
-    #     lambda_function.USER_TYPE_CODE_DICT[idp_name],
-    #     sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
-    #     sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_user_id"]),
-    # )
-
+    # For Insert, pass parameters as .execute()'s second arguments so they get proper sanitization.
     cursor.execute(raw_query, (
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
         cognito_event["request"]["userAttributes"]["custom:idp_username"],
@@ -152,7 +147,7 @@ def create_test_fam_role(db_pg_transaction):
          create_user,
          update_user)
     values
-        ('{}',
+        (%s,
         'just for testing',
         (select application_id from app_fam.fam_application
             where application_name = 'FAM'),
@@ -160,8 +155,7 @@ def create_test_fam_role(db_pg_transaction):
         CURRENT_USER,
         CURRENT_USER)
     """
-    replaced_query = raw_query.format(TEST_ROLE_NAME)
-    cursor.execute(replaced_query)
+    cursor.execute(raw_query, [TEST_ROLE_NAME])
 
 
 def get_insert_role_sql(role_name, role_type, parent_role_id=None):
@@ -210,7 +204,6 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
         CURRENT_USER,
         CURRENT_USER)
     """
-    # replaced_query = raw_query.format(sql.Literal(client_id))
     cursor.execute(raw_query, [client_id])
 
 
@@ -234,11 +227,6 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
         CURRENT_USER
     )
     """
-    # replaced_query = raw_query.format(
-    #     sql.Literal(initial_user["idp_username"]),
-    #     sql.Literal(initial_user["idp_type_code"]),
-    #     TEST_ROLE_NAME
-    # )
     cursor.execute(raw_query, (
         initial_user["idp_username"],
         initial_user["idp_type_code"],
@@ -261,10 +249,6 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    # replaced_query = sql.SQL(raw_query).format(
-    #     user_type_code = lambda_function.USER_TYPE_CODE_DICT[idp_name],
-    #     user_name = sql.Literal(cognito_event["request"]["userAttributes"]["custom:idp_username"]),
-    # )
     cursor.execute(raw_query, (
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
         cognito_event["request"]["userAttributes"]["custom:idp_username"]

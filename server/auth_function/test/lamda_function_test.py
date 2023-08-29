@@ -1,14 +1,14 @@
-import os
-import sys
 import logging
-from psycopg2 import sql
+import os
 import pprint
+import sys
+
 import pytest
+from psycopg2 import sql
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
 import lambda_function  # noqa
-
 
 LOGGER = logging.getLogger(__name__)
 TEST_ROLE_NAME = "EXPECTED"
