@@ -18,14 +18,16 @@ ERROR_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
 router = APIRouter()
 
 
-@router.post("", response_model=schemas.FamUserRoleAssignmentGet)
+@router.post("",
+    response_model=schemas.FamUserRoleAssignmentGet,
+    dependencies=[Depends(jwt_validation.authorize_by_application_role)]
+)
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    # cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
-    requester: Requester =Depends(get_current_requester)
+    requester: Requester = Depends(get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
@@ -42,14 +44,17 @@ def create_user_role_assignment(
         event_outcome=AuditEventOutcome.SUCCESS
     )
 
-    # TODO migrate to @audit_log(??), TODO how to handle exception in audit_log, # TODO verify how exception_handler react to error.
+    # TODO migrate to @audit_log(??),
+    # TODO how to handle exception in audit_log,
+    # TODO verify how exception_handler react to error.
     try:
 
-        requesting_user = get_requesting_user(db, cognito_user_id) # TODO See if can use Requester
+        requesting_user = get_requesting_user(db, requester.cognito_user_id) # TODO See if can use Requester to convert instead.
         role = crud_role.get_role(db, role_assignment_request.role_id)
 
+        # TODO Why we need to query this when user has role (shouldn't be queried for audit I think).
         audit_event_log.role = role
-        audit_event_log.application = role.application
+        audit_event_log.application = role.application # TODO: later router is validate with authorized_by_app_id, I think that should be first.
         audit_event_log.requesting_user = requesting_user
 
         # TODO: use depends
@@ -60,9 +65,11 @@ def create_user_role_assignment(
             role_assignment_request.user_name,
         )
 
-        # TODO: use depends
+        # TODO: use depends, but need to create another depends function passing role_id instead
         jwt_validation.authorize_by_app_id(
-            role.application.application_id, db, token_claims
+            application_id=role.application.application_id,
+            db=db,
+            claims=token_claims
         )
 
         return crud_user_role.create_user_role(
@@ -95,14 +102,13 @@ def create_user_role_assignment(
     "/{user_role_xref_id}",
     status_code=HTTPStatus.NO_CONTENT,
     response_class=Response,
-    dependencies=[Depends(jwt_validation.get_request_cognito_user_id)],
+    dependencies=[Depends(jwt_validation.authorize_by_application_role)]
 )
 def delete_user_role_assignment(
     request: Request,
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize),
-    cognito_user_id: str = Depends(jwt_validation.get_request_cognito_user_id),
+    requester: Requester = Depends(get_current_requester)
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -123,18 +129,13 @@ def delete_user_role_assignment(
     )
 
     try:
-        requesting_user = get_requesting_user(db, cognito_user_id)
+        requesting_user = get_requesting_user(db, requester.cognito_user_id)
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
 
         audit_event_log.role = user_role.role
         audit_event_log.target_user = user_role.user
         audit_event_log.application = user_role.role.application
         audit_event_log.requesting_user = requesting_user
-
-        # Enforce application-level security
-        jwt_validation.authorize_by_app_id(
-            user_role.role.application.application_id, db, token_claims
-        )
 
         # Enforce self-grant guard
         enforce_self_grant_guard_objects(
