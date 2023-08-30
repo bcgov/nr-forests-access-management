@@ -1,11 +1,11 @@
 import logging
-
 from typing import List
+
 from api.app.crud import crud_application
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
-from .. import database, schemas, jwt_validation
 
+from .. import database, jwt_validation, schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,21 +33,17 @@ def get_applications(
     "/{application_id}/fam_roles",
     response_model=List[schemas.FamApplicationRole],
     status_code=200,
+    dependencies=[Depends(jwt_validation.authorize_by_app_id)] # Enforce application-level security
 )
 def get_fam_application_roles(
     application_id: int,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize)
 ):
     """gets the roles associated with an application
 
     :param application_id: application id
     :param db: database session, defaults to Depends(database.get_db)
     """
-
-    # Enforce application-level security
-    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
-
     LOGGER.debug(f"Recieved application id: {application_id}")
     app_roles = crud_application.get_application_roles(
         application_id=application_id, db=db
@@ -59,21 +55,17 @@ def get_fam_application_roles(
     "/{application_id}/user_role_assignment",
     response_model=List[schemas.FamApplicationUserRoleAssignmentGet],
     status_code=200,
+    dependencies=[Depends(jwt_validation.authorize_by_app_id)] # Enforce application-level security
 )
 def get_fam_application_user_role_assignment(
     application_id: int,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize)
 ):
     """gets the roles associated with an application
 
     :param application_id: application id
     :param db: database session, defaults to Depends(database.get_db)
     """
-
-    # Enforce application-level security
-    jwt_validation.authorize_by_app_id(application_id, db, token_claims)
-
     LOGGER.debug(f"Loading application role assigments for application_id: {application_id}")
     app_user_role_assignment = crud_application.get_application_role_assignments(
         db=db, application_id=application_id
