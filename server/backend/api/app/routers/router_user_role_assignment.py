@@ -65,13 +65,6 @@ def create_user_role_assignment(
             role_assignment_request.user_name,
         )
 
-        # TODO: use depends, but need to create another depends function passing role_id instead
-        jwt_validation.authorize_by_app_id(
-            application_id=role.application.application_id,
-            db=db,
-            claims=token_claims
-        )
-
         return crud_user_role.create_user_role(
             db, role_assignment_request, requesting_user.cognito_user_id
         )
