@@ -1,11 +1,11 @@
-resource "aws_security_group" "test_app_sg" {
-    name = "basil-test"
+resource "aws_security_group" "fam_app_sg" {
+    name = "fam_app_sg"
     description = "FAM custom security group for application tier (lambdas)."
     vpc_id = data.aws_vpc.selected.id
     revoke_rules_on_delete = true
 
     tags = {
-        Name = "test_app_sg"
+        Name = "fam_app_sg"
         managed-by = "terraform"
     }
 
@@ -14,7 +14,23 @@ resource "aws_security_group" "test_app_sg" {
         to_port = 0
         protocol = "-1"
         cidr_blocks = ["10.10.32.0/20", "10.10.128.0/20"]
-        description = "Allow all inbound from Shared Services Web subnets"
+        description = "Central VPC Traffic Inbound from Web subnets"
+    }
+
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["10.10.0.0/19", "10.10.96.0/19"]
+        description = "Central VPC Traffic Inbound from App subnets"
+    }
+
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["10.10.64.0/21", "10.10.72.0/21"]
+        description = "Central VPC Traffic Inbound from Mgmt subnets"
     }
 
     egress {
@@ -22,7 +38,7 @@ resource "aws_security_group" "test_app_sg" {
         to_port = 0
         protocol = "-1"
         cidr_blocks = ["0.0.0.0/0"]
-        description = "Allow all outbound traffic"
+        description = "Allow All Outbound Traffic"
     }
 
 }
