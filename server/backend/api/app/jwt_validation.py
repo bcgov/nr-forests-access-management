@@ -2,24 +2,22 @@ import json
 import logging
 from urllib.request import urlopen
 
-from api.app.crud import crud_application
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2AuthorizationCodeBearer
-from jose import jwt
-
+from api.app import database
 from api.app.constants import COGNITO_USERNAME_KEY
-
+from api.app.crud import crud_application, crud_role, crud_user_role
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
 # then
 # config.get_aws_region()
-from api.config.config import (
-    get_aws_region,
-    get_user_pool_domain_name,
-    get_user_pool_id,
-    get_oidc_client_id,
-)
+from api.config.config import (get_aws_region, get_oidc_client_id,
+                               get_user_pool_domain_name, get_user_pool_id)
+from fastapi import Body, Depends, HTTPException, Request
+from fastapi.params import Path
+from fastapi.security import OAuth2AuthorizationCodeBearer
+from jose import jwt
+from requests import JSONDecodeError, request
+from sqlalchemy.orm import Session
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -37,6 +35,7 @@ ERROR_VALIDATION = "validation_failed"
 ERROR_GROUPS_REQUIRED = "authorization_groups_required"
 ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
 ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
+ERROR_INVALID_ROLE_ID = "invalid_role_id"
 
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
@@ -207,7 +206,11 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
     return claims
 
 
-def authorize_by_app_id(application_id, db, claims):
+def authorize_by_app_id(
+    application_id,
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token)
+):
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
@@ -231,6 +234,58 @@ def authorize_by_app_id(application_id, db, claims):
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+async def get_request_role_id(
+        request: Request,
+        db: Session = Depends(database.get_db)
+) -> int:
+    """
+    To get role id from request... (this is sub-dependency)
+    Some endpoints has path_params with "user_role_xref_id".
+    Some endpoints has role_id in request body.
+    """
+    user_role_xref_id = None
+    if "user_role_xref_id" in request.path_params:
+        user_role_xref_id = request.path_params["user_role_xref_id"]
+
+    if (user_role_xref_id):
+        user_role = crud_user_role.find_by_id(db, user_role_xref_id)
+        return user_role.role_id
+
+    else:
+        try:
+            rbody = await request.json()
+            return rbody["role_id"]
+        except JSONDecodeError:
+            return None
+
+def authorize_by_application_role(
+    # provide role_id argument, if not present, default to Depends
+    # (from Request "Body" object with "role_id" attribute).
+    role_id: int = Depends(get_request_role_id),
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token),
+):
+    """
+    This router validation is currently design to validate logged on "admin"
+    has authority to perform actions for application with roles in [app]_ACCESS_ADMIN.
+    This function basically is the same and depends on (authorize_by_app_id()) but for
+    the need that some routers contains target role_id in the request (instead of application_id).
+    """
+    role = crud_role.get_role(db, role_id)
+    if not role:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": ERROR_INVALID_ROLE_ID,
+                "description": f"Role ID {role_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    authorize_by_app_id(application_id=role.application_id, db=db, claims=claims)
+    return role
 
 
 def get_access_roles(claims: dict = Depends(authorize)):
