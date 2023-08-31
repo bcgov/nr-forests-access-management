@@ -317,5 +317,11 @@ class Requester(BaseModel):
     cognito_user_id: Union[str, None]
     user_name: str
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
-    user_type: Union[str, None]
+    user_type_code: Union[str, None]
     access_roles: Union[List[str], None]
+
+    class Config:
+        orm_mode = True
+        fields = {
+            "access_roles": {"exclude": True}
+        }

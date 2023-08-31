@@ -13,6 +13,12 @@ from fastapi import Depends, HTTPException, Request
 from requests import JSONDecodeError
 from sqlalchemy.orm import Session
 
+"""
+This file is intended to host functions only to guard the endpoints at framework's
+router level BEFORE reaching withint the router logic (They should not be used
+at service layer).
+"""
+
 LOGGER = logging.getLogger(__name__)
 
 ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
@@ -131,26 +137,21 @@ async def get_current_requester(
     if fam_user is None:
         raise no_requester_exception
 
-    requester = {
-        "cognito_user_id": request_cognito_user_id,
-        "user_name": fam_user.user_name,
-        "user_type": fam_user.user_type_code,
-        "access_roles": access_roles
-    }
-
+    requester = Requester.from_orm(fam_user)
+    requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
-    return Requester(**requester)
+    return requester
 
 
 async def internal_only_action(
-    requester=Depends(get_current_requester)
+    requester: Requester =Depends(get_current_requester)
 ):
-    if requester.user_type is not FamUserType.USER_TYPE_IDIR:
+    if requester.user_type_code is not FamUserType.USER_TYPE_IDIR:
         raise external_user_prohibited_exception
 
 
-def enforce_self_grant_guard_objects(
-    db: Session = Depends(database.get_db),
-    requester: Requester = Depends(get_current_requester)
-):
-    pass
+# def enforce_self_grant_guard(
+#     db: Session = Depends(database.get_db),
+#     requester: Requester = Depends(get_current_requester)
+# ):
+#     pass
