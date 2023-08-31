@@ -7,7 +7,7 @@ from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
                                     get_access_roles,
                                     get_request_cognito_user_id,
                                     validate_token)
-from api.app.models.model import FamUser, FamUserType
+from api.app.models.model import FamRole, FamUser, FamUserType
 from api.app.schemas import Requester
 from fastapi import Depends, HTTPException, Request
 from requests import JSONDecodeError
@@ -72,12 +72,13 @@ def authorize_by_app_id(
         )
 
 
-async def get_request_role_id(
+async def get_request_role_from_id(
         request: Request,
         db: Session = Depends(database.get_db)
-) -> int:
+) -> FamRole:
     """
-    To get role id from request... (this is sub-dependency)
+    (this is a sub-dependency as convenient function)
+    To get role id from request...
     Some endpoints has path_params with "user_role_xref_id".
     Some endpoints has role_id in request body.
     """
@@ -86,20 +87,27 @@ async def get_request_role_id(
         user_role_xref_id = request.path_params["user_role_xref_id"]
 
     if (user_role_xref_id):
+        LOGGER.debug(f"Retrieving role by user_role_xref_id: "
+                     f"{user_role_xref_id}")
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
-        return user_role.role_id
+        return user_role.role
 
     else:
         try:
             rbody = await request.json()
-            return rbody["role_id"]
+            LOGGER.debug(f"Try retrieving role by Request's role_id:"
+                         f"{user_role_xref_id}")
+            role = crud_role.get_role(db, rbody["role_id"])
+            return role # role could be None.
+
         except JSONDecodeError:
             return None
 
+
 def authorize_by_application_role(
-    # provide role_id argument, if not present, default to Depends
-    # (from Request "Body" object with "role_id" attribute).
-    role_id: int = Depends(get_request_role_id),
+    # Depends on "get_request_role_from_id()" to figure out
+    # what id to use to get role from endpoint.
+    role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     claims: dict = Depends(validate_token),
 ):
@@ -109,13 +117,12 @@ def authorize_by_application_role(
     This function basically is the same and depends on (authorize_by_app_id()) but for
     the need that some routers contains target role_id in the request (instead of application_id).
     """
-    role = crud_role.get_role(db, role_id)
     if not role:
         raise HTTPException(
             status_code=403,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
-                "description": f"Role ID {role_id} not found",
+                "description": f"Requester has no appropriate role.",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
