@@ -1,16 +1,18 @@
 import copy
+import datetime
 import logging
 from http import HTTPStatus
-import datetime
 
-import starlette.testclient
 import pytest
-import testspg.jwt_utils as jwt_utils
+import starlette.testclient
 import testspg.db_test_utils as db_test_utils
+import testspg.jwt_utils as jwt_utils
+from api.app.constants import UserType
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.routers.router_user_role_assignment import ERROR_SELF_GRANT_PROHIBITED
 from api.app.main import apiPrefix
+from api.app.routers.router_user_role_assignment import \
+    ERROR_SELF_GRANT_PROHIBITED
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
@@ -18,14 +20,12 @@ from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
                                CLIENT_NUMBER_EXISTS_DEACTIVATED,
                                CLIENT_NUMBER_NOT_EXISTS,
                                TEST_FOM_DEV_APPLICATION_ID,
+                               TEST_FOM_DEV_REVIEWER_ROLE_ID,
                                TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                                TEST_FOM_TEST_APPLICATION_ID,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
-                               TEST_FOM_DEV_REVIEWER_ROLE_ID)
-from api.app.models import model as models
-from api.app.constants import UserType
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"

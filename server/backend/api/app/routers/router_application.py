@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from api.app.crud import crud_application
+from api.app.routers.router_guards import authorize_by_app_id
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
@@ -33,7 +34,7 @@ def get_applications(
     "/{application_id}/fam_roles",
     response_model=List[schemas.FamApplicationRole],
     status_code=200,
-    dependencies=[Depends(jwt_validation.authorize_by_app_id)] # Enforce application-level security
+    dependencies=[Depends(authorize_by_app_id)] # Enforce application-level security
 )
 def get_fam_application_roles(
     application_id: int,
@@ -55,7 +56,7 @@ def get_fam_application_roles(
     "/{application_id}/user_role_assignment",
     response_model=List[schemas.FamApplicationUserRoleAssignmentGet],
     status_code=200,
-    dependencies=[Depends(jwt_validation.authorize_by_app_id)] # Enforce application-level security
+    dependencies=[Depends(authorize_by_app_id)] # Enforce application-level security
 )
 def get_fam_application_user_role_assignment(
     application_id: int,

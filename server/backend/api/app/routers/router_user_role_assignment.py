@@ -3,6 +3,8 @@ from http import HTTPStatus
 
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
+from api.app.routers.router_guards import (authorize_by_application_role,
+                                           get_current_requester)
 from api.app.schemas import Requester
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
@@ -20,14 +22,14 @@ router = APIRouter()
 
 @router.post("",
     response_model=schemas.FamUserRoleAssignmentGet,
-    dependencies=[Depends(jwt_validation.authorize_by_application_role)]
+    dependencies=[Depends(authorize_by_application_role)]
 )
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    requester: Requester = Depends(jwt_validation.get_current_requester)
+    requester: Requester = Depends(get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
@@ -95,13 +97,13 @@ def create_user_role_assignment(
     "/{user_role_xref_id}",
     status_code=HTTPStatus.NO_CONTENT,
     response_class=Response,
-    dependencies=[Depends(jwt_validation.authorize_by_application_role)]
+    dependencies=[Depends(authorize_by_application_role)]
 )
 def delete_user_role_assignment(
     request: Request,
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    requester: Requester = Depends(jwt_validation.get_current_requester)
+    requester: Requester = Depends(get_current_requester)
 ) -> None:
     """
     Delete FAM user_role_xref association.

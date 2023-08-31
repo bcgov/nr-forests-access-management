@@ -1,11 +1,10 @@
 import logging
-from typing_extensions import Annotated
 
 from api.app.integration.idim_proxy import IdimProxyService
+from api.app.routers.router_guards import (get_current_requester,
+                                           internal_only_action)
 from api.app.schemas import IdimProxyIdirInfo, IdimProxySearchParamIdir
 from fastapi import APIRouter, Depends, Query
-
-from api.app.jwt_validation import get_current_requester, internal_only_action
 
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 
