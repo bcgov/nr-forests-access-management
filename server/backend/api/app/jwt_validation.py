@@ -1,10 +1,13 @@
 import json
 import logging
+from http import HTTPStatus
 from urllib.request import urlopen
 
 from api.app import database
 from api.app.constants import COGNITO_USERNAME_KEY
-from api.app.crud import crud_application, crud_role, crud_user_role
+from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
+from api.app.models.model import FamUser, FamUserType
+from api.app.schemas import Requester
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
@@ -12,7 +15,7 @@ from api.app.crud import crud_application, crud_role, crud_user_role
 # config.get_aws_region()
 from api.config.config import (get_aws_region, get_oidc_client_id,
                                get_user_pool_domain_name, get_user_pool_id)
-from fastapi import Body, Depends, HTTPException, Request
+from fastapi import Depends, HTTPException, Request
 from fastapi.params import Path
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
@@ -284,7 +287,11 @@ def authorize_by_application_role(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    authorize_by_app_id(application_id=role.application_id, db=db, claims=claims)
+    authorize_by_app_id(
+        application_id=role.application_id,
+        db=db,
+        claims=claims
+    )
     return role
 
 
@@ -301,3 +308,59 @@ def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     cognito_username = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username
+
+
+async def get_current_requester(
+    request_cognito_user_id: str = Depends(get_request_cognito_user_id),
+    access_roles = Depends(get_access_roles),
+    db: Session = Depends(database.get_db)
+):
+    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
+    if fam_user is None:
+        raise no_requester_exception
+
+    requester = {
+        "cognito_user_id": request_cognito_user_id,
+        "user_name": fam_user.user_name,
+        "user_type": fam_user.user_type_code,
+        "access_roles": access_roles
+    }
+
+    LOGGER.debug(f"Current request user (requester): {requester}")
+    return Requester(**requester)
+
+
+def enforce_self_grant_guard_objects(
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester)
+):
+    pass
+
+
+ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
+no_requester_exception = HTTPException(
+    status_code=HTTPStatus.FORBIDDEN, # 403
+    detail={
+        "code": ERROR_REQUESTER_NOT_EXISTS,
+        "description": "Requester does not exist, action is not allowed",
+    }
+)
+
+
+ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
+
+
+external_user_prohibited_exception = HTTPException(
+    status_code=HTTPStatus.FORBIDDEN, # 403
+    detail={
+        "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
+        "description": "Action is not allowed for external user.",
+    }
+)
+
+
+async def internal_only_action(
+    requester=Depends(get_current_requester)
+):
+    if requester.user_type is not FamUserType.USER_TYPE_IDIR:
+        raise external_user_prohibited_exception

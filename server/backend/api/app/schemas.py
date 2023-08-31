@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, EmailStr, Field, constr
 
@@ -307,3 +307,15 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     user_name: constr(max_length=15)
     application_name: constr(max_length=35)
     send_to_email: EmailStr
+
+
+class Requester(BaseModel):
+    """
+    Class holding information for user who access FAM system after authenticated.
+    """
+    # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
+    cognito_user_id: Union[str, None]
+    user_name: str
+    # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
+    user_type: Union[str, None]
+    access_roles: Union[List[str], None]

@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
-from api.app.requester import Requester, get_current_requester
+from api.app.schemas import Requester
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -27,7 +27,7 @@ def create_user_role_assignment(
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
-    requester: Requester = Depends(get_current_requester)
+    requester: Requester = Depends(jwt_validation.get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
@@ -101,7 +101,7 @@ def delete_user_role_assignment(
     request: Request,
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    requester: Requester = Depends(get_current_requester)
+    requester: Requester = Depends(jwt_validation.get_current_requester)
 ) -> None:
     """
     Delete FAM user_role_xref association.

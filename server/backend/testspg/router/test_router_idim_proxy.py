@@ -2,10 +2,10 @@ import logging
 from http import HTTPStatus
 
 import testspg.jwt_utils as jwt_utils
+from api.app import jwt_validation
 from api.app.constants import UserType
 from api.app.main import apiPrefix
-from api.app.requester import (Requester, get_current_requester,
-                               no_requester_exception)
+from api.app.schemas import Requester
 from api.app.utils.utils import read_json_file
 from fastapi.testclient import TestClient
 from testspg.conftest import test_client_fixture
@@ -42,7 +42,7 @@ async def mock_get_current_requester_user_not_exists():
     """
     A mock for router dependency, for requester who does not exists.
     """
-    raise no_requester_exception
+    raise jwt_validation.no_requester_exception
 
 
 def test_search_idir_with_valid_user_found_result(
@@ -54,7 +54,7 @@ def test_search_idir_with_valid_user_found_result(
     """
     # override dependency for requester on router.
     app = test_client_fixture.app
-    app.dependency_overrides[get_current_requester] = mock_get_current_requester_with_idir_user
+    app.dependency_overrides[jwt_validation.get_current_requester] = mock_get_current_requester_with_idir_user
 
     test_end_point = endPoint_search + f"?user_id={valid_user_id_param}"
     LOGGER.debug(f"test_end_point: {test_end_point}")
@@ -74,7 +74,7 @@ def test_search_idir_with_invalid_user_return_not_found(
     """
     # override dependency for requester on router.
     app = test_client_fixture.app
-    app.dependency_overrides[get_current_requester] = mock_get_current_requester_with_idir_user
+    app.dependency_overrides[jwt_validation.get_current_requester] = mock_get_current_requester_with_idir_user
 
     invalid_user_id_param = "USERNOTEXISTS"
     test_end_point = endPoint_search + f"?user_id={invalid_user_id_param}"
@@ -96,7 +96,7 @@ def test_none_idir_user_cannot_search_idir_user(
 
     # override dependency for requester on router.
     app = test_client_fixture.app
-    app.dependency_overrides[get_current_requester] = \
+    app.dependency_overrides[jwt_validation.get_current_requester] = \
         mock_get_current_requester_with_none_idir_user
 
     test_end_point = endPoint_search + f"?user_id={valid_user_id_param}"
@@ -116,7 +116,7 @@ def test_search_idir_user_requester_not_found_error_raised(
 
     # override dependency for requester not exists.
     app = test_client_fixture.app
-    app.dependency_overrides[get_current_requester] = \
+    app.dependency_overrides[jwt_validation.get_current_requester] = \
         mock_get_current_requester_user_not_exists
 
     test_end_point = endPoint_search + f"?user_id={valid_user_id_param}"
