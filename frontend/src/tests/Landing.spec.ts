@@ -3,6 +3,7 @@ import { flushPromises, shallowMount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import Landing from '@/components/Landing.vue';
 import { Amplify } from 'aws-amplify';
+import AuthService from '@/services/AuthService';
 
 describe('Landing', () => {
     let wrapper: VueWrapper;
@@ -44,9 +45,9 @@ describe('Landing', () => {
     });
     it('should button Login with IDIR be clicked', async () => {
         const button = wrapper.get('[data-testid=idir-button]');
-        const buttonSpy = vi.spyOn(button, 'trigger');
+        const loginSpy = vi.spyOn(AuthService.methods, 'login');
         await button.trigger('click');
-        expect(buttonSpy).toHaveBeenCalledWith('click')
+        expect(loginSpy).toHaveBeenCalled()
     })
     it('should render BCeID button and be disabled', async () => {
         const button = wrapper.get('[data-testid=bceid-button]');
