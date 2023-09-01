@@ -326,10 +326,6 @@ class Requester(BaseModel):
 
     class Config:
         orm_mode = True
-        # fields = {
-        #     "access_roles": {"exclude": True}
-        # }
-
 
 class TargetUser(Requester):
     pass

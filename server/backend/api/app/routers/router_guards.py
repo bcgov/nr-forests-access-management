@@ -181,7 +181,7 @@ async def get_target_user_from_id(
         user_role = crud_user_role.find_by_id(
             db, request.path_params["user_role_xref_id"]
         )
-        return TargetUser.from_orm(user_role.user)
+        return TargetUser.from_orm(user_role.user) if user_role is not None else None
     else:
         # from body - {user_name/user_type_code}
         try:
@@ -191,7 +191,7 @@ async def get_target_user_from_id(
                 rbody["user_type_code"],
                 rbody["user_name"],
             )
-            return TargetUser.from_orm(user)
+            return TargetUser.from_orm(user) if user is not None else None
         except json.JSONDecodeError:
             return None
 
