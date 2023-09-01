@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("", response_model=List[schemas.FamApplication], status_code=200)
 def get_applications(
-    response: Response,
+    # response: Response,
     db: Session = Depends(database.get_db),
     access_roles: dict = Depends(jwt_validation.get_access_roles)
 ):
@@ -25,8 +25,15 @@ def get_applications(
     """
     LOGGER.debug(f"running router ... {db}")
     query_data = crud_application.get_applications_by_granted_apps(db, access_roles)
-    if len(query_data) == 0:
-        response.status_code = 204
+
+    # from fastapi v0.79.0, setting status_code to 204, 304, or any code below 200 (1xx) will remove the body from the response
+    # so when return response with status code 204, response will have no content return to user
+    # if we want to use status code 204 for empty case, we might want to apply to other methods as well
+    # and it will impact some test cases, casue the response cannot be conver to json in empty case
+
+    # if len(query_data) == 0:
+    #     response.status_code = 204
+
     return query_data
 
 
