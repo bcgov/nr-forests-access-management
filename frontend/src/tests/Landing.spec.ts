@@ -22,6 +22,10 @@ describe('Landing', () => {
         });
         await flushPromises();
     });
+    it("should render bc logo image", () => {
+        const img = wrapper.findAll('.logo');
+        expect(img.length).toBe(1);
+    });
     it('should render title with correct class', () => {
         const element = wrapper.get('#landing-title');
         expect(element.text()).toEqual('Welcome to FAM')
