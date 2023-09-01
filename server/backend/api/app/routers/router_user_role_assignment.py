@@ -113,7 +113,7 @@ def delete_user_role_assignment(
 
     audit_event_log = AuditEventLog(
         request=request,
-        event_type=AuditEventType.CREATE_USER_ROLE_ACCESS,
+        event_type=AuditEventType.REMOVE_USER_ROLE_ACCESS,
         event_outcome=AuditEventOutcome.SUCCESS
     )
 

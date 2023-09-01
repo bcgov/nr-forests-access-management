@@ -10,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 class AuditEventType(str, Enum):
     CREATE_USER_ROLE_ACCESS = "Grant User Role(S) Access"
+    REMOVE_USER_ROLE_ACCESS = "Remove User Role(S) Access"
 
 
 class AuditEventOutcome(str, Enum):
