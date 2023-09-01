@@ -4,12 +4,12 @@ import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 
-import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 import UserIdentityCard from './UserIdentityCard.vue';
+import Button from '../common/Button.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -56,7 +56,9 @@ const formValidationSchema = object({
         })
         .nullable(),
 });
+
 const loading = ref<boolean>(false);
+const buttonLabel = ref<string>('Verify');
 let applicationRoleOptions: FamApplicationRole[];
 let forestClientData: FamForestClient[] | null;
 let verifiedUserIdentity: IdimProxyIdirInfo | null;
@@ -137,6 +139,7 @@ async function verifyIdentity(userId: string, domain: string) {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     loading.value = true;
+    buttonLabel.value = 'Verifying...';
     try {
         verifiedUserIdentity = (await idirBceidProxyApi.idirSearch(userId))
             .data;
@@ -144,11 +147,13 @@ async function verifyIdentity(userId: string, domain: string) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
+        buttonLabel.value = 'Verify';
     }
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
     loading.value = true;
+    buttonLabel.value = 'Verifying...';
     try {
         forestClientData = (await forestClientApi.search(forestClientNumber))
             .data;
@@ -156,6 +161,7 @@ async function verifyForestClientNumber(forestClientNumber: string) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
+        buttonLabel.value = 'Verify';
     }
 }
 
@@ -296,8 +302,11 @@ function roleSelected(evt: any) {
                                     errors.userId == undefined
                                 "
                             >
+                                <!-- class="button p-button-tertiary p-button-outlined" -->
+
                                 <Button
-                                    class="button p-button-tertiary p-button-outlined"
+                                    class="button"
+                                    aria-label="Verify user IDIR"
                                     @click="
                                         verifyIdentity(
                                             formData.userId,
@@ -305,13 +314,8 @@ function roleSelected(evt: any) {
                                         )
                                     "
                                     :disabled="loading"
+                                    :label="buttonLabel"
                                 >
-                                    <div class="w-100">
-                                        <div v-if="loading">
-                                            <span> Loading... </span>
-                                        </div>
-                                        <div v-else>Verify</div>
-                                    </div>
                                 </Button>
                             </div>
                         </div>
@@ -402,6 +406,8 @@ function roleSelected(evt: any) {
                             <div class="col-md-2">
                                 <Button
                                     class="button p-button-tertiary p-button-outlined"
+                                    aria-label="Verify forest client number"
+                                    :label="buttonLabel"
                                     @click="
                                         verifyForestClientNumber(
                                             formData.forestClientNumber as string
@@ -412,12 +418,6 @@ function roleSelected(evt: any) {
                                             8 || loading
                                     "
                                 >
-                                    <div class="w-100">
-                                        <div v-if="loading">
-                                            <span> Loading... </span>
-                                        </div>
-                                        <div v-else>Verify</div>
-                                    </div>
                                 </Button>
                             </div>
                         </div>
