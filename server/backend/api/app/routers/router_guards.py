@@ -1,26 +1,29 @@
+import json
 import logging
 from http import HTTPStatus
+from typing import Union
 
 from api.app import database
+from api.app.constants import UserType
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
                                     get_access_roles,
                                     get_request_cognito_user_id,
                                     validate_token)
-from api.app.models.model import FamRole, FamUser, FamUserType
-from api.app.schemas import Requester
+from api.app.models.model import FamRole, FamUser
+from api.app.schemas import Requester, TargetUser
 from fastapi import Depends, HTTPException, Request
-from requests import JSONDecodeError
 from sqlalchemy.orm import Session
 
 """
 This file is intended to host functions only to guard the endpoints at framework's
 router level BEFORE reaching withint the router logic (They should not be used
-at service layer).
+at crud(service) layer).
 """
 
 LOGGER = logging.getLogger(__name__)
 
+ERROR_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
 ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
@@ -35,7 +38,7 @@ no_requester_exception = HTTPException(
 )
 
 external_user_prohibited_exception = HTTPException(
-    status_code=HTTPStatus.FORBIDDEN, # 403
+    status_code=HTTPStatus.FORBIDDEN,
     detail={
         "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
         "description": "Action is not allowed for external user.",
@@ -50,7 +53,7 @@ def authorize_by_app_id(
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
-            status_code=403,
+            status_code=HTTPStatus.FORBIDDEN,
             detail={
                 "code": ERROR_INVALID_APPLICATION_ID,
                 "description": f"Application ID {application_id} not found",
@@ -63,7 +66,7 @@ def authorize_by_app_id(
 
     if required_role not in access_roles:
         raise HTTPException(
-            status_code=403,
+            status_code=HTTPStatus.FORBIDDEN,
             detail={
                 "code": ERROR_PERMISSION_REQUIRED,
                 "description": f"Operation requires role {required_role}",
@@ -73,8 +76,8 @@ def authorize_by_app_id(
 
 
 async def get_request_role_from_id(
-        request: Request,
-        db: Session = Depends(database.get_db)
+    request: Request,
+    db: Session = Depends(database.get_db)
 ) -> FamRole:
     """
     (this is a sub-dependency as convenient function)
@@ -95,12 +98,13 @@ async def get_request_role_from_id(
     else:
         try:
             rbody = await request.json()
-            LOGGER.debug(f"Try retrieving role by Request's role_id:"
-                         f"{user_role_xref_id}")
-            role = crud_role.get_role(db, rbody["role_id"])
+            role_id = rbody["role_id"]
+            LOGGER.debug(f"Retrieving role by Request's role_id: {role_id}")
+            role = crud_role.get_role(db, role_id)
             return role # role could be None.
 
-        except JSONDecodeError:
+        # When request does not contains body part.
+        except json.JSONDecodeError:
             return None
 
 
@@ -119,7 +123,7 @@ def authorize_by_application_role(
     """
     if not role:
         raise HTTPException(
-            status_code=403,
+            status_code=HTTPStatus.FORBIDDEN,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
                 "description": f"Requester has no appropriate role.",
@@ -127,6 +131,7 @@ def authorize_by_application_role(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Delegate to this for main check.
     authorize_by_app_id(
         application_id=role.application_id,
         db=db,
@@ -153,12 +158,67 @@ async def get_current_requester(
 async def internal_only_action(
     requester: Requester =Depends(get_current_requester)
 ):
-    if requester.user_type_code is not FamUserType.USER_TYPE_IDIR:
+    if requester.user_type_code is not UserType.IDIR:
         raise external_user_prohibited_exception
 
 
-# def enforce_self_grant_guard(
-#     db: Session = Depends(database.get_db),
-#     requester: Requester = Depends(get_current_requester)
-# ):
-#     pass
+# Note!!
+# currently to take care of different scenarios (id or fields needed in path/param/body)
+# to find target user, will only consider request "path_params" and for "body"(json) for PUT/POST.
+# For now, only consider known cases ("router_user_role_assigment.py" endpoints that need this).
+# Specifically: "user_role_xref_id" and "user_name/user_type_code".
+# Very likely in future might have "cognito_user_id" case.
+async def get_target_user_from_id(
+    request: Request,
+    db: Session = Depends(database.get_db)
+) -> Union[TargetUser, None]:
+    """
+    This is used as FastAPI sub-dependency to find target_user for guard purpose.
+    For requester, use "get_current_requester()" above.
+    """
+    # from path_param - user_role_xref_id
+    if "user_role_xref_id" in request.path_params:
+        user_role = crud_user_role.find_by_id(
+            db, request.path_params["user_role_xref_id"]
+        )
+        return TargetUser.from_orm(user_role.user)
+    else:
+        # from body - {user_name/user_type_code}
+        try:
+            rbody = await request.json()
+            user = crud_user.get_user_by_domain_and_name(
+                db,
+                rbody["user_type_code"],
+                rbody["user_name"],
+            )
+            return TargetUser.from_orm(user)
+        except json.JSONDecodeError:
+            return None
+
+
+async def enforce_self_grant_guard(
+    requester: Requester = Depends(get_current_requester),
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+):
+    """
+    Self granting/removing privilege currently isn't allowed.
+    """
+    LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
+    LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
+    if target_user is not None:
+        is_same_user_name = requester.user_name == target_user.user_name
+        is_same_user_type_code = (
+            requester.user_type_code == target_user.user_type_code
+        )
+
+        if is_same_user_name and is_same_user_type_code:
+            LOGGER.debug(f"User '{requester.user_name}' should not "
+                         f"grant/remove permission privilege to self.")
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail={
+                    "code": ERROR_SELF_GRANT_PROHIBITED,
+                    "description": "Altering permission privilege to self is not allowed",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
