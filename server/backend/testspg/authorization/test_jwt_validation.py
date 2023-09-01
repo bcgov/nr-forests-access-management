@@ -41,7 +41,7 @@ def test_get_application_success(
 
     response = test_client_fixture_unit.get(f"{endPoint}", headers=headers(token))
 
-    assert response.status_code == 204
+    assert response.status_code == 200
     data = response.json()
     assert data == []
 
