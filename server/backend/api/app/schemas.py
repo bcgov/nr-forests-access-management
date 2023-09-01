@@ -309,19 +309,27 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     send_to_email: EmailStr
 
 
+# Schema classes Requester and TargetUser are for backend system used and
+# NOT intended as part of the request/respoinse body in the endpoint. Logged
+# on user with jwt token is parsed into Requester (before route handler).
+# Same as other Schema classes, it can be transformed from db model.
 class Requester(BaseModel):
     """
     Class holding information for user who access FAM system after authenticated.
     """
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None]
-    user_name: str
+    user_name: constr(max_length=15)
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
-    user_type_code: Union[str, None]
-    access_roles: Union[List[str], None]
+    user_type_code: Union[famConstants.UserType, None]
+    access_roles: Union[List[constr(max_length=50)], None]
 
     class Config:
         orm_mode = True
-        fields = {
-            "access_roles": {"exclude": True}
-        }
+        # fields = {
+        #     "access_roles": {"exclude": True}
+        # }
+
+
+class TargetUser(Requester):
+    pass
