@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, EmailStr, Field, constr
 
 from . import constants as famConstants
 
@@ -10,11 +10,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FamGroupPost(BaseModel):
-    group_name: str
-    purpose: str
-    create_user: str
+    group_name: constr(max_length=100)
+    purpose: constr(max_length=200)
+    create_user: constr(max_length=60)
     parent_group_id: int
-    update_user: Optional[str]
+    update_user: Optional[constr(max_length=60)]
 
     class Config:
         orm_mode = True
@@ -31,10 +31,10 @@ class FamGroupGet(FamGroupPost):
 
 class FamApplicationClient(BaseModel):
     application_client_id: int
-    cognito_client_id: str
-    create_user: str
+    cognito_client_id: constr(max_length=32)
+    create_user: constr(max_length=60)
     create_date: datetime
-    update_user: Optional[str]
+    update_user: Optional[constr(max_length=60)]
     update_date: datetime
 
     class Config:
@@ -42,8 +42,8 @@ class FamApplicationClient(BaseModel):
 
 
 class FamApplicationCreate(BaseModel):
-    application_name: str
-    application_description: str
+    application_name: constr(max_length=100)
+    application_description: constr(max_length=200)
     application_client_id: Optional[int]
     app_environment: Optional[famConstants.AppEnv]
 
@@ -53,9 +53,9 @@ class FamApplicationCreate(BaseModel):
 
 class FamApplication(FamApplicationCreate):
     application_id: int
-    create_user: str
+    create_user: constr(max_length=60)
     create_date: datetime
-    update_user: Optional[str]
+    update_user: Optional[constr(max_length=60)]
     update_date: Optional[datetime]
 
     class Config:
@@ -64,19 +64,19 @@ class FamApplication(FamApplicationCreate):
 
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
-    cognito_user_id: Optional[str]  # temporarily optional
-    user_name: str
-    user_guid: Optional[str]
-    create_user: str
-    update_user: Optional[str]
+    cognito_user_id: Optional[constr(max_length=100)]  # temporarily optional
+    user_name: constr(max_length=100)
+    user_guid: Optional[constr(max_length=32)]
+    create_user: constr(max_length=60)
+    update_user: Optional[constr(max_length=60)]
 
     class Config:
         orm_mode = True
 
 
 class FamRoleTypeGet(BaseModel):
-    role_type_code: str
-    description: str
+    role_type_code: famConstants.RoleType
+    description: constr(max_length=100)
     effective_date: datetime
     expiry_date: Optional[datetime]
     update_date: Optional[datetime]
@@ -89,7 +89,7 @@ class FamRoleTypeGet(BaseModel):
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreate(BaseModel):
-    user_name: str
+    user_name: constr(min_length=3, max_length=100) # db max length
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[constr(min_length=1, max_length=8), None]
@@ -110,26 +110,26 @@ class FamUserRoleAssignmentGet(BaseModel):
 
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
-    forest_client_number: str
+    forest_client_number: constr(max_length=8)
     # client_name: str
-    create_user: str
+    create_user: constr(max_length=60)
 
     class Config:
         orm_mode = True
 
 
 class FamRoleCreate(BaseModel):
-    role_name: str
-    role_purpose: Union[str, None]
+    role_name: constr(max_length=100)
+    role_purpose: Union[constr(max_length=200), None]
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
     application_id: int = Field(title="Application this role is associated with")
-    forest_client_number: Union[str, None] = Field(
+    forest_client_number: Union[constr(max_length=8), None] = Field(
         default=None, title="Forest Client this role is associated with"
     )
-    create_user: str
-    role_type_code: str
+    create_user: constr(max_length=60)
+    role_type_code: famConstants.RoleType
     client_number: Optional[FamForestClientCreate]
 
     class Config:
@@ -140,7 +140,7 @@ class FamRoleCreate(BaseModel):
 
 class FamRoleGet(FamRoleCreate):
     role_id: int
-    update_user: Union[str, None]
+    update_user: Union[constr(max_length=60), None]
     create_date: Union[datetime, None]
     update_date: Union[datetime, None]
 
@@ -175,7 +175,7 @@ class FamApplicationRole(FamRoleCreate):
 # client status into FAM's status needs (Active/Inactive).
 class FamForestClientStatus(BaseModel):
     status_code: famConstants.FamForestClientStatusType
-    description: str
+    description: constr(max_length=10)
 
     @staticmethod
     def to_fam_status(forest_client_status_code: str):
@@ -196,8 +196,8 @@ class FamForestClientStatus(BaseModel):
 
 
 class FamForestClient(BaseModel):
-    client_name: Optional[str]
-    forest_client_number: str
+    client_name: Optional[constr(max_length=60)]
+    forest_client_number: constr(max_length=8)
     status: Optional[FamForestClientStatus]
 
     class Config:
@@ -219,8 +219,8 @@ class FamForestClient(BaseModel):
 
 
 class FamRoleMin(BaseModel):
-    role_name: str
-    role_type_code: str
+    role_name: constr(max_length=100)
+    role_type_code: famConstants.RoleType
     application_id: int
 
     class Config:
@@ -247,7 +247,7 @@ class FamRoleWithClient(FamRoleCreate):
 
 class FamUserType(BaseModel):
     user_type_code: famConstants.UserType = Field(alias="code")
-    description: str
+    description: constr(max_length=35)
 
     class Config:
         orm_mode = True
@@ -284,14 +284,14 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 
 class IdimProxySearchParamIdir(BaseModel):
-    userId: str  # param for Idim-Proxy search of this form (not snake case)
+    userId: constr(max_length=15)  # param for Idim-Proxy search of this form (not snake case)
 
 
 class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
-    userId: Optional[str]
-    displayName: Optional[str]
+    userId: Optional[constr(max_length=15)]
+    displayName: Optional[constr(max_length=50)]
 
     @staticmethod
     def from_api_json(json_dict):
@@ -304,6 +304,6 @@ class IdimProxyIdirInfo(BaseModel):
 
 
 class GCNotifyGrantAccessEmailParam(BaseModel):
-    user_name: str
-    application_name: str
-    send_to_email: str
+    user_name: constr(max_length=15)
+    application_name: constr(max_length=35)
+    send_to_email: EmailStr

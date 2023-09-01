@@ -1,14 +1,14 @@
-import os
-import sys
 import logging
-from psycopg2 import sql
+import os
 import pprint
+import sys
+
 import pytest
+from psycopg2 import sql
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
 import lambda_function  # noqa
-
 
 LOGGER = logging.getLogger(__name__)
 TEST_ROLE_NAME = "EXPECTED"
@@ -27,10 +27,12 @@ def test_create_user_if_not_found(
     test_idp_username = test_user_properties["idp_username"]
 
     # make sure the user doesn't exist
-    user_query = (
-        "SELECT user_name from app_fam.fam_user where "
-        + f"user_name = '{test_idp_username}'"
+    user_query = sql.SQL(
+        """SELECT user_name from app_fam.fam_user where
+            user_name = {0}""").format(
+        sql.Literal(test_idp_username)
     )
+
     cursor.execute(user_query)
     results = cursor.fetchall()
     LOGGER.debug(f"results: {results}")

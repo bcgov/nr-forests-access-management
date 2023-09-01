@@ -23,7 +23,7 @@ const props = defineProps({
             :sticky="true"
         >
             <Icon icon="checkmark--filled" :size="IconSize.medium" />
-            <span class="message-text">
+            <span class="custom-message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>
         </Message>
@@ -32,28 +32,12 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-
-svg {
-    margin-right: 0.9375rem;
-    vertical-align: middle;
-}
-
-strong {
-    text-transform: capitalize;
-}
-
-.message-text {
-    color: $text-primary;
-}
-
 .message-container {
     position: relative;
     align-items: center;
 }
 
-.p-message {
-    position: absolute;
-    left: 0;
-    right: 0;
+.custom-message-text {
+    color: $light-text-primary;
 }
 </style>
