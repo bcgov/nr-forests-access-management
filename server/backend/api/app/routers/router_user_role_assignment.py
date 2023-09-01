@@ -20,6 +20,7 @@ router = APIRouter()
 
 @router.post("",
     response_model=schemas.FamUserRoleAssignmentGet,
+    # Guarding endpoint with Depends().
     dependencies=[
         Depends(authorize_by_application_role),
         Depends(enforce_self_grant_guard)
@@ -40,7 +41,6 @@ def create_user_role_assignment(
         f"with request: {role_assignment_request}, requestor: {token_claims}"
     )
 
-    # TODO migrate to @audit_log(??),
     audit_event_log = AuditEventLog(
         request=request,
         event_type=AuditEventType.CREATE_USER_ROLE_ACCESS,
@@ -48,15 +48,11 @@ def create_user_role_assignment(
         event_outcome=AuditEventOutcome.SUCCESS
     )
 
-    # TODO how to handle exception in @audit_log,
-    # TODO verify how exception_handler react to error.
     try:
 
-        # TODO See if can use Requester to convert instead.
         requesting_user = get_requesting_user(db, requester.cognito_user_id)
         role = crud_role.get_role(db, role_assignment_request.role_id)
 
-        # TODO Why we need to query this when user has role (shouldn't be queried for audit I think).
         audit_event_log.role = role
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requesting_user

@@ -201,7 +201,8 @@ async def enforce_self_grant_guard(
     target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
 ):
     """
-    Self granting/removing privilege currently isn't allowed.
+    Verify logged on admin (requester):
+        Self granting/removing privilege currently isn't allowed.
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")

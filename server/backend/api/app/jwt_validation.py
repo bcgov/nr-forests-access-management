@@ -30,8 +30,6 @@ ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
 ERROR_GROUPS_REQUIRED = "authorization_groups_required"
 ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
-# ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
-# ERROR_INVALID_ROLE_ID = "invalid_role_id"
 
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
@@ -46,7 +44,6 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 _jwks = None
-
 
 def init_jwks():
     global _jwks
@@ -202,92 +199,6 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
     return claims
 
 
-# def authorize_by_app_id(
-#     application_id,
-#     db: Session = Depends(database.get_db),
-#     claims: dict = Depends(validate_token)
-# ):
-#     application = crud_application.get_application(application_id=application_id, db=db)
-#     if not application:
-#         raise HTTPException(
-#             status_code=403,
-#             detail={
-#                 "code": ERROR_INVALID_APPLICATION_ID,
-#                 "description": f"Application ID {application_id} not found",
-#             },
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-
-#     required_role = f"{application.application_name.upper()}_ACCESS_ADMIN"
-#     access_roles = get_access_roles(claims)
-
-#     if required_role not in access_roles:
-#         raise HTTPException(
-#             status_code=403,
-#             detail={
-#                 "code": ERROR_PERMISSION_REQUIRED,
-#                 "description": f"Operation requires role {required_role}",
-#             },
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-
-
-# async def get_request_role_id(
-#         request: Request,
-#         db: Session = Depends(database.get_db)
-# ) -> int:
-#     """
-#     To get role id from request... (this is sub-dependency)
-#     Some endpoints has path_params with "user_role_xref_id".
-#     Some endpoints has role_id in request body.
-#     """
-#     user_role_xref_id = None
-#     if "user_role_xref_id" in request.path_params:
-#         user_role_xref_id = request.path_params["user_role_xref_id"]
-
-#     if (user_role_xref_id):
-#         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
-#         return user_role.role_id
-
-#     else:
-#         try:
-#             rbody = await request.json()
-#             return rbody["role_id"]
-#         except JSONDecodeError:
-#             return None
-
-# def authorize_by_application_role(
-#     # provide role_id argument, if not present, default to Depends
-#     # (from Request "Body" object with "role_id" attribute).
-#     role_id: int = Depends(get_request_role_id),
-#     db: Session = Depends(database.get_db),
-#     claims: dict = Depends(validate_token),
-# ):
-#     """
-#     This router validation is currently design to validate logged on "admin"
-#     has authority to perform actions for application with roles in [app]_ACCESS_ADMIN.
-#     This function basically is the same and depends on (authorize_by_app_id()) but for
-#     the need that some routers contains target role_id in the request (instead of application_id).
-#     """
-#     role = crud_role.get_role(db, role_id)
-#     if not role:
-#         raise HTTPException(
-#             status_code=403,
-#             detail={
-#                 "code": ERROR_INVALID_ROLE_ID,
-#                 "description": f"Role ID {role_id} not found",
-#             },
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-
-#     authorize_by_app_id(
-#         application_id=role.application_id,
-#         db=db,
-#         claims=claims
-#     )
-#     return role
-
-
 def get_access_roles(claims: dict = Depends(authorize)):
     groups = claims[JWT_GROUPS_KEY]
     return groups
@@ -301,33 +212,3 @@ def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     cognito_username = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username
-
-
-# async def get_current_requester(
-#     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
-#     access_roles = Depends(get_access_roles),
-#     db: Session = Depends(database.get_db)
-# ):
-#     fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
-#     if fam_user is None:
-#         raise no_requester_exception
-
-#     requester = {
-#         "cognito_user_id": request_cognito_user_id,
-#         "user_name": fam_user.user_name,
-#         "user_type": fam_user.user_type_code,
-#         "access_roles": access_roles
-#     }
-
-#     LOGGER.debug(f"Current request user (requester): {requester}")
-#     return Requester(**requester)
-
-
-# ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
-# no_requester_exception = HTTPException(
-#     status_code=HTTPStatus.FORBIDDEN, # 403
-#     detail={
-#         "code": ERROR_REQUESTER_NOT_EXISTS,
-#         "description": "Requester does not exist, action is not allowed",
-#     }
-# )
