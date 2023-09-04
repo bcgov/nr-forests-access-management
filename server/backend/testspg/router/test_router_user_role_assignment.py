@@ -65,8 +65,7 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
 
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_connection
+    test_rsa_key
 ):
     """
     test user has no authentication to the app
@@ -136,8 +135,7 @@ def test_create_user_role_assignment_with_concrete_role(
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
-    db_pg_connection
+    fom_dev_access_admin_token
 ):
     """
     test assign same role for the same user
@@ -170,8 +168,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
 
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
-    db_pg_connection
+    fom_dev_access_admin_token
 ):
     """
     test assign an abscrate role to a user without forest client number
@@ -424,7 +421,6 @@ def test_assign_same_application_roles_for_different_environments(
 def test_user_role_forest_client_number_not_exist_bad_request(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session
 ):
     """
     Test assign user role with none-existing forest client number should be
@@ -450,7 +446,6 @@ def test_user_role_forest_client_number_not_exist_bad_request(
 def test_user_role_forest_client_number_inactive_bad_request(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session
 ):
     """
     Test assign user role with inactive forest client number should be
