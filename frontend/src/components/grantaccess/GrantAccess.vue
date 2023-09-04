@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { number, object, string } from 'yup';
 
 import Dropdown from 'primevue/dropdown';
@@ -58,7 +58,6 @@ const formValidationSchema = object({
 });
 
 const loading = ref<boolean>(false);
-const buttonLabel = ref<string>('Verify');
 let applicationRoleOptions: FamApplicationRole[];
 let forestClientData: FamForestClient[] | null;
 let verifiedUserIdentity: IdimProxyIdirInfo | null;
@@ -67,6 +66,10 @@ const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
+
+const buttonLabel = computed(() => {
+    return loading.value ? 'Verifying...' : 'Verify';
+});
 
 onMounted(async () => {
     try {
@@ -139,7 +142,6 @@ async function verifyIdentity(userId: string, domain: string) {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     loading.value = true;
-    buttonLabel.value = 'Verifying...';
     try {
         verifiedUserIdentity = (await idirBceidProxyApi.idirSearch(userId))
             .data;
@@ -147,13 +149,11 @@ async function verifyIdentity(userId: string, domain: string) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
-        buttonLabel.value = 'Verify';
     }
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
     loading.value = true;
-    buttonLabel.value = 'Verifying...';
     try {
         forestClientData = (await forestClientApi.search(forestClientNumber))
             .data;
@@ -161,7 +161,6 @@ async function verifyForestClientNumber(forestClientNumber: string) {
         return Promise.reject(err);
     } finally {
         loading.value = false;
-        buttonLabel.value = 'Verify';
     }
 }
 
@@ -302,11 +301,10 @@ function roleSelected(evt: any) {
                                     errors.userId == undefined
                                 "
                             >
-                                <!-- class="button p-button-tertiary p-button-outlined" -->
-
                                 <Button
-                                    class="button"
+                                    class="button p-button-tertiary p-button-outlined"
                                     aria-label="Verify user IDIR"
+                                    :label="buttonLabel"
                                     @click="
                                         verifyIdentity(
                                             formData.userId,
@@ -314,7 +312,6 @@ function roleSelected(evt: any) {
                                         )
                                     "
                                     :disabled="loading"
-                                    :label="buttonLabel"
                                 >
                                 </Button>
                             </div>
