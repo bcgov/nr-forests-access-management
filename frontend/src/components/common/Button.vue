@@ -2,6 +2,7 @@
 import Button from 'primevue/button';
 import type { PropType } from 'vue';
 import { IconPosition } from '@/enum/IconEnum';
+
 const props = defineProps({
     label: {
         type: String,
