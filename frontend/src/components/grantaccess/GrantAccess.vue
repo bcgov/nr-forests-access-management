@@ -248,7 +248,6 @@ function roleSelected(evt: any) {
                         >
                         <div class="mt-0 col-md-3 px-0">
                             <Field
-                                class="form-control"
                                 name="userId"
                                 :validateOnChange="true"
                                 v-model="formData.userId"
