@@ -67,6 +67,7 @@ resource "aws_vpc_security_group_ingress_rule" "fam_app_sg_postgres" {
   security_group_id = aws_security_group.fam_data_sg.id
   referenced_security_group_id = aws_security_group.fam_app_sg.id
   from_port = 5432
+  to_port = 5432
   ip_protocol = "TCP"
   description = "Allow traffic to database from FAM application tier (lambdas)."
 }
