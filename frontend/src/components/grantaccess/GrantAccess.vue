@@ -205,9 +205,9 @@ function roleSelected(evt: any) {
                 <form id="grantAccessForm" class="form-container">
                     <div class="row">
                         <div class="form-group col-md-3 px-0">
-                            <label for="domainInput" class="control-label"
-                                >Select user's domain</label
-                            >
+                            <p class="control-label-radio">
+                                Select user's domain
+                            </p>
                             <div>
                                 <div class="flex align-items-center">
                                     <RadioButton
@@ -246,16 +246,16 @@ function roleSelected(evt: any) {
 
                     <div class="form-group">
                         <div class="row mb-0">
-                            <label for="userIdInput" class="control-label px-0"
+                            <span id="userIdInput" class="control-label px-0"
                                 >Type user's domain name
-                                <span class="text-danger"> *</span></label
+                                <span class="text-danger"> *</span></span
                             >
                         </div>
 
                         <div class="row mt-0">
                             <div class="col-md-3 px-0">
                                 <Field
-                                    id="userIdInput"
+                                    aria-labelledby="userIdInput"
                                     class="form-control"
                                     name="userId"
                                     :validateOnChange="true"
@@ -326,13 +326,13 @@ function roleSelected(evt: any) {
                     </div>
 
                     <div class="form-group col-md-3 px-0">
-                        <label for="roleSelect" class="control-label px-0"
+                        <span id="roleSelect" class="control-label"
                             >Assign a role
                             {{ formData.userId ? 'to ' + formData.userId : ''
-                            }}<span class="text-danger"> *</span></label
+                            }}<span class="text-danger"> *</span></span
                         >
                         <Field
-                            id="roleSelect"
+                            aria-labelledby="roleSelect"
                             class="form-select"
                             name="role_id"
                             aria-label="Role Select"
@@ -463,5 +463,24 @@ function roleSelected(evt: any) {
 
 .button {
     width: 7.875rem;
+}
+
+.control-label,
+.control-label-radio {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.02rem;
+    color: $light-text-secondary;
+    padding: 0 !important;
+}
+
+.control-label-radio {
+    margin-bottom: 0 !important;
+}
+
+.control-label {
+    display: inline-block;
+    margin-bottom: 0.313rem !important;
 }
 </style>
