@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { number, object, string } from 'yup';
 
-import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 import UserIdentityCard from './UserIdentityCard.vue';
+import Button from '../common/Button.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -56,6 +56,7 @@ const formValidationSchema = object({
         })
         .nullable(),
 });
+
 const loading = ref<boolean>(false);
 let applicationRoleOptions: FamApplicationRole[];
 let forestClientData: FamForestClient[] | null;
@@ -65,6 +66,10 @@ const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
+
+const buttonLabel = computed(() => {
+    return loading.value ? 'Verifying...' : 'Verify';
+});
 
 onMounted(async () => {
     try {
@@ -285,7 +290,9 @@ function roleSelected(evt: any) {
                             "
                         >
                             <Button
-                                class="col-md-2 button p-button-tertiary p-button-outlined"
+                                class="button p-button-tertiary p-button-outlined"
+                                aria-label="Verify user IDIR"
+                                :label="buttonLabel"
                                 @click="
                                     verifyIdentity(
                                         formData.userId,
@@ -294,12 +301,6 @@ function roleSelected(evt: any) {
                                 "
                                 :disabled="loading"
                             >
-                                <div class="w-100">
-                                    <div v-if="loading">
-                                        <span> Loading... </span>
-                                    </div>
-                                    <div v-else>Verify</div>
-                                </div>
                             </Button>
                         </div>
                     </div>
@@ -387,22 +388,18 @@ function roleSelected(evt: any) {
                         <div class="col-md-2">
                             <Button
                                 class="button p-button-tertiary p-button-outlined"
+                                aria-label="Verify forest client number"
+                                :label="buttonLabel"
                                 @click="
                                     verifyForestClientNumber(
                                         formData.forestClientNumber as string
                                     )
                                 "
-                                :disabled="
+                                v-bind:disabled="
                                     formData.forestClientNumber?.length < 8 ||
                                     loading
                                 "
                             >
-                                <div class="w-100">
-                                    <div v-if="loading">
-                                        <span> Loading... </span>
-                                    </div>
-                                    <div v-else>Verify</div>
-                                </div>
                             </Button>
                         </div>
                     </div>

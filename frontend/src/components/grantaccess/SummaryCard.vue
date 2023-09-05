@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { type PropType, onMounted } from 'vue';
+import { type PropType, onMounted, computed } from 'vue';
 import Card from 'primevue/card';
-import Button from 'primevue/button';
+import Button from '../common/Button.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
 import { useNotificationMessage } from '@/store/NotificationState';
@@ -21,6 +21,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+});
+
+const buttonLabel = computed(() => {
+    return props.loading ? 'Loading...' : 'Submit';
 });
 
 onMounted(() => {
@@ -64,13 +68,11 @@ onMounted(() => {
                             type="submit"
                             id="grantAccessSubmit"
                             class="mb-3"
+                            aria-label="Submit form"
+                            :label="buttonLabel"
                             v-on:click="$emit('submit')"
                             :disabled="props.loading"
                         >
-                            <div v-if="loading">
-                                <span> Loading... </span>
-                            </div>
-                            <div v-else>Submit</div>
                         </Button>
                         <Button
                             class="m-3"
