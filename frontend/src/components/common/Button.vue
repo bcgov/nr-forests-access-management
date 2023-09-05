@@ -1,16 +1,24 @@
-<script setup>
+<script setup lang="ts">
 import Button from 'primevue/button';
+import type { PropType } from 'vue';
+import { IconPosition } from '../../enum/IconEnum';
 const props = defineProps({
     label: {
         type: String,
         default: 'Click',
     },
+    iconPos: {
+        type: String as PropType<IconPosition>,
+        default: IconPosition.right,
+    },
 });
 </script>
 <template>
-    <Button class="nr-button"
-        ><span>{{ props.label }}</span> <slot class="icon"></slot
-    ></Button>
+    <Button class="nr-button">
+        <slot class="icon" v-if="iconPos === IconPosition.left"></slot>
+        <span>{{ props.label }}</span>
+        <slot class="icon" v-if="iconPos === IconPosition.right"></slot>
+    </Button>
 </template>
 <style lang="scss">
 .nr-button {
