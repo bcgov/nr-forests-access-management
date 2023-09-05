@@ -219,11 +219,7 @@ function roleSelected(evt: any) {
                                 :value="domainOptions.IDIR"
                                 @change="userDomainChange()"
                             />
-                            <label
-                                class="mx-2 form-check-label"
-                                for="idirSelect"
-                                >IDIR</label
-                            >
+                            <label class="mx-2" for="idirSelect">IDIR</label>
                         </div>
                         <div class="px-0">
                             <RadioButton
@@ -233,11 +229,7 @@ function roleSelected(evt: any) {
                                 :value="domainOptions.BCEID"
                                 @change="userDomainChange()"
                             />
-                            <label
-                                class="mx-2 form-check-label"
-                                for="becidSelect"
-                                >BCeID</label
-                            >
+                            <label class="mx-2" for="becidSelect">BCeID</label>
                         </div>
                     </div>
 
@@ -261,7 +253,7 @@ function roleSelected(evt: any) {
                                             : 'Type user\'s BCeID'
                                     "
                                     :validateOnChange="true"
-                                    class="w-100 p-inputtext"
+                                    class="w-100"
                                     type="text"
                                     maxlength="20"
                                     v-bind="field"
