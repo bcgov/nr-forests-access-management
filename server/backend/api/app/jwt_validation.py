@@ -2,24 +2,18 @@ import json
 import logging
 from urllib.request import urlopen
 
-from api.app.crud import crud_application
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2AuthorizationCodeBearer
-from jose import jwt
-
 from api.app.constants import COGNITO_USERNAME_KEY
-
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
 # then
 # config.get_aws_region()
-from api.config.config import (
-    get_aws_region,
-    get_user_pool_domain_name,
-    get_user_pool_id,
-    get_oidc_client_id,
-)
+from api.config.config import (get_aws_region, get_oidc_client_id,
+                               get_user_pool_domain_name, get_user_pool_id)
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2AuthorizationCodeBearer
+from jose import jwt
+from sqlalchemy.orm import Session
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -36,7 +30,6 @@ ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
 ERROR_GROUPS_REQUIRED = "authorization_groups_required"
 ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
-ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 
 aws_region = get_aws_region()
 user_pool_id = get_user_pool_id()
@@ -51,7 +44,6 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 _jwks = None
-
 
 def init_jwks():
     global _jwks
@@ -205,32 +197,6 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
         )
 
     return claims
-
-
-def authorize_by_app_id(application_id, db, claims):
-    application = crud_application.get_application(application_id=application_id, db=db)
-    if not application:
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    required_role = f"{application.application_name.upper()}_ACCESS_ADMIN"
-    access_roles = get_access_roles(claims)
-
-    if required_role not in access_roles:
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "code": ERROR_PERMISSION_REQUIRED,
-                "description": f"Operation requires role {required_role}",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
 
 def get_access_roles(claims: dict = Depends(authorize)):

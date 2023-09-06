@@ -22,15 +22,17 @@ import { IconSize } from '@/enum/IconEnum';
                 <Button
                     class="landing-button p-button-primary"
                     label="Login with IDIR"
-                    @click="authService.methods.login"
+                    id="login-idir-button"
+                    @click="authService.methods.login()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
                 <Button
                     class="landing-button p-button-outlined"
                     label="Login with BCeID"
+                    id="login-bceid-button"
                     disabled
-                    @click="authService.methods.login"
+                    @click="authService.methods.login()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>

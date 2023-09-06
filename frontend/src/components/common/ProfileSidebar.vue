@@ -7,7 +7,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { IconPosition, IconSize } from '@/enum/IconEnum';
 
 const userName = authService.state.value.famLoginUser!.username;
-const loading = ref<boolean>(userName ? false : true);
+const loading = ref(false);
 const logout = () => {
     authService.methods.logout();
     loading.value = true;
@@ -65,7 +65,7 @@ const buttonLabel = computed(() => {
                 aria-expanded="false"
                 aria-label="sign out"
                 :label="buttonLabel"
-                :iconPos="IconPosition.left"
+                :iconPosition="IconPosition.left"
                 @click="logout"
                 :disabled="loading ? true : false"
             >
@@ -144,7 +144,7 @@ const buttonLabel = computed(() => {
 .sign-out:hover:focus {
     background-color: transparent;
     background-color: #ffffff !important;
-    color: $text-secondary !important;
+    color: $light-text-secondary !important;
     box-shadow: none !important;
 }
 

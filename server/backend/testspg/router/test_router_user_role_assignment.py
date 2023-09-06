@@ -10,8 +10,7 @@ from api.app.constants import UserType
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_user_role_assignment import \
-    ERROR_SELF_GRANT_PROHIBITED
+from api.app.routers.router_guards import ERROR_SELF_GRANT_PROHIBITED
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
