@@ -22,7 +22,7 @@ import { IconSize } from '@/enum/IconEnum';
                 <Button
                     class="landing-button p-button-primary"
                     label="Login with IDIR"
-                    data-testid="idir-button"
+                    id="login-idir-button"
                     @click="authService.methods.login()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
@@ -30,7 +30,7 @@ import { IconSize } from '@/enum/IconEnum';
                 <Button
                     class="landing-button p-button-outlined"
                     label="Login with BCeID"
-                    data-testid="bceid-button"
+                    id="login-bceid-button"
                     disabled
                     @click="authService.methods.login()"
                 >

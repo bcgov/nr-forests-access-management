@@ -42,19 +42,19 @@ describe('Landing', () => {
         expect(element.classes()).toEqual(expect.arrayContaining(["landing-desc"]))
     });
     it('should render IDIR button and be enabled', () => {
-        const button = wrapper.get('[data-testid=idir-button]');
+        const button = wrapper.get('#login-idir-button');
         expect(button.classes()).toEqual(expect.arrayContaining(["landing-button", "p-button-primary"]))
         expect(button.html().includes("Login with IDIR")).toBe(true);
         expect(button.attributes()).not.toHaveProperty('disabled');
     });
     it('should button Login with IDIR be clicked', async () => {
-        const button = wrapper.get('[data-testid=idir-button]');
+        const button = wrapper.get('#login-idir-button');
         const loginSpy = vi.spyOn(AuthService.methods, 'login');
         await button.trigger('click');
         expect(loginSpy).toHaveBeenCalled()
     })
     it('should render BCeID button and be disabled', async () => {
-        const button = wrapper.get('[data-testid=bceid-button]');
+        const button = wrapper.get('#login-bceid-button');
         expect(button.classes()).toEqual(expect.arrayContaining(["landing-button", "p-button-outlined"]))
         expect(button.html().includes("Login with BCeID")).toBe(true);
         expect(button.attributes()).toHaveProperty('disabled')
