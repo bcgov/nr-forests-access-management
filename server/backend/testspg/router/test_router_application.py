@@ -2,7 +2,6 @@ import logging
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.jwt_validation import ERROR_INVALID_APPLICATION_ID
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import ERROR_INVALID_APPLICATION_ID
 from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
