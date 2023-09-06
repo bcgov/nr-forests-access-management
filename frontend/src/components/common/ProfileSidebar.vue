@@ -65,7 +65,7 @@ const buttonLabel = computed(() => {
                 aria-expanded="false"
                 aria-label="sign out"
                 :label="buttonLabel"
-                :iconpos="IconPosition.left"
+                :iconPosition="IconPosition.left"
                 @click="logout"
                 :disabled="loading ? true : false"
             >

@@ -8,7 +8,7 @@ const props = defineProps({
         type: String,
         default: 'Click',
     },
-    iconpos: {
+    iconPosition: {
         type: String as PropType<IconPosition>,
         default: IconPosition.right,
     },
@@ -16,9 +16,15 @@ const props = defineProps({
 </script>
 <template>
     <Button class="nr-button">
-        <slot class="icon" v-if="iconpos === IconPosition.left"></slot>
+        <slot
+            class="icon"
+            v-if="props.iconPosition === IconPosition.left"
+        ></slot>
         <span>{{ props.label }}</span>
-        <slot class="icon" v-if="iconpos === IconPosition.right"></slot>
+        <slot
+            class="icon"
+            v-if="props.iconPosition === IconPosition.right"
+        ></slot>
     </Button>
 </template>
 <style lang="scss">
