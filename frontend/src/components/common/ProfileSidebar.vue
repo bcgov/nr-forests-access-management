@@ -7,7 +7,7 @@ import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 import { IconPosition, IconSize } from '@/enum/IconEnum';
 
 const userName = authService.state.value.famLoginUser!.username;
-const loading = ref(userName ? false : true);
+const loading = ref(false);
 const logout = () => {
     authService.methods.logout();
     loading.value = true;
