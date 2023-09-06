@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
+import type { PropType } from 'vue';
 import { IconPosition } from '@/enum/IconEnum';
 
 const props = defineProps({
@@ -7,17 +8,17 @@ const props = defineProps({
         type: String,
         default: 'Click',
     },
-    iconPos: {
-        type: String,
+    iconpos: {
+        type: String as PropType<IconPosition>,
         default: IconPosition.right,
     },
 });
 </script>
 <template>
     <Button class="nr-button">
-        <slot class="icon" v-if="iconPos === IconPosition.left"></slot>
+        <slot class="icon" v-if="iconpos === IconPosition.left"></slot>
         <span>{{ props.label }}</span>
-        <slot class="icon" v-if="iconPos === IconPosition.right"></slot>
+        <slot class="icon" v-if="iconpos === IconPosition.right"></slot>
     </Button>
 </template>
 <style lang="scss">
