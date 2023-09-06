@@ -108,31 +108,38 @@ async function deleteUserRoleAssignment(
     confirmRemoveMessage.userName = assignment.user.user_name;
     useNotificationMessage.isNotificationVisible = false;
     useNotificationMessage.notificationMsg = '';
-    confirm.require({
-        group: 'templating',
-        icon: 'none',
-        header: 'Remove Access',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
-        accept: () => {
-            try {
-                userRoleAssignmentApi.deleteUserRoleAssignment(
-                    assignment.user_role_xref_id
-                );
-                userRoleAssignments.value = userRoleAssignments.value!.filter(
-                    (a) => {
-                        return (
-                            a.user_role_xref_id != assignment.user_role_xref_id
-                        );
-                    }
-                );
-                useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
-            } finally {
-                useNotificationMessage.isNotificationVisible = true;
-            }
-        },
-    });
+    try {
+        confirm.require({
+            group: 'templating',
+            icon: 'none',
+            header: 'Remove Access',
+            rejectLabel: 'Cancel',
+            acceptLabel: 'Remove',
+            acceptClass: 'p-button-danger',
+            accept: async () => {
+                try {
+                    await userRoleAssignmentApi.deleteUserRoleAssignment(
+                        assignment.user_role_xref_id
+                    );
+                    userRoleAssignments.value =
+                        userRoleAssignments.value!.filter((a) => {
+                            return (
+                                a.user_role_xref_id !=
+                                assignment.user_role_xref_id
+                            );
+                        });
+                    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+                    useNotificationMessage.isNotificationVisible = true;
+                } catch (error) {
+                    console.log('I am here', error);
+                    return Promise.reject(error);
+                }
+            },
+        });
+    } catch (error) {
+        console.log('Then I should go here', error);
+        return Promise.reject(error);
+    }
 }
 </script>
 
