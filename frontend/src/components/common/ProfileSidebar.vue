@@ -67,6 +67,7 @@ const buttonLabel = computed(() => {
                 :label="buttonLabel"
                 :iconPos="IconPosition.left"
                 @click="logout"
+                :disabled="loading ? true : false"
             >
                 <Icon
                     icon="user--follow"
@@ -136,24 +137,14 @@ const buttonLabel = computed(() => {
     font-weight: 700;
     display: flex;
     border: none;
-    background-color: transparent !important;
-    color: $text-secondary !important;
     cursor: pointer;
 }
 
-.sign-out:hover {
+.sign-out,
+.sign-out:hover:focus {
     background-color: transparent;
-    background-color: #ffffff;
-    color-scheme: $text-secondary !important;
-}
-
-.sign-out:focus {
-    background-color: transparent;
-    background-color: #ffffff;
-    color-scheme: $text-secondary !important;
-}
-
-.sign-out:focus {
+    background-color: #ffffff !important;
+    color: $text-secondary !important;
     box-shadow: none !important;
 }
 
