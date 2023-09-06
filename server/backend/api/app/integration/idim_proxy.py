@@ -1,8 +1,7 @@
 import logging
 
 import requests
-from api.app.requester import Requester
-from api.app.schemas import IdimProxySearchParamIdir
+from api.app.schemas import IdimProxySearchParamIdir, Requester
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
