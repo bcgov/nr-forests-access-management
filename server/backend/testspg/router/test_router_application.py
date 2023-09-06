@@ -1,8 +1,7 @@
 import logging
 import starlette.testclient
 from api.app.main import apiPrefix
-from api.app.jwt_validation import ERROR_INVALID_APPLICATION_ID
-from api.app.crud import crud_user_role
+from api.app.routers.router_guards import ERROR_INVALID_APPLICATION_ID
 import testspg.jwt_utils as jwt_utils
 from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
     TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT, \
