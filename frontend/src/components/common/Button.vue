@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import type { PropType } from 'vue';
 import { IconPosition } from '@/enum/IconEnum';
 
 const props = defineProps({
@@ -9,7 +8,7 @@ const props = defineProps({
         default: 'Click',
     },
     iconPos: {
-        type: String as PropType<IconPosition>,
+        type: String,
         default: IconPosition.right,
     },
 });

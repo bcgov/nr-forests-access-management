@@ -144,7 +144,7 @@ const buttonLabel = computed(() => {
 .sign-out:hover:focus {
     background-color: transparent;
     background-color: #ffffff !important;
-    color: $text-secondary !important;
+    color: $light-text-secondary !important;
     box-shadow: none !important;
 }
 
