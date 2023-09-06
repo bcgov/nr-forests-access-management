@@ -56,7 +56,11 @@ const filters = ref({
 
         <span class="p-input-icon-right">
             <Icon icon="search" :size="IconSize.small" />
-            <InputText class="dash-search" v-model="filters['global'].value" />
+            <InputText
+                id="dashboardSearch"
+                class="dash-search"
+                v-model="filters['global'].value"
+            />
         </span>
 
         <DataTable

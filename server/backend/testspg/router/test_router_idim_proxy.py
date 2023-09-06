@@ -2,10 +2,12 @@ import logging
 from http import HTTPStatus
 
 import testspg.jwt_utils as jwt_utils
+from api.app import jwt_validation
 from api.app.constants import UserType
 from api.app.main import apiPrefix
-from api.app.requester import (Requester, get_current_requester,
-                               no_requester_exception)
+from api.app.routers.router_guards import (get_current_requester,
+                                           no_requester_exception)
+from api.app.schemas import Requester
 from api.app.utils.utils import read_json_file
 from fastapi.testclient import TestClient
 from testspg.conftest import test_client_fixture
@@ -20,7 +22,7 @@ valid_user_id_param = "CMENG"
 sample_idir_requester_dict = {
     "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
     "user_name": "IANLIU",
-    "user_type": "I",
+    "user_type_code": UserType.IDIR,
     "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
 }
 
@@ -35,7 +37,7 @@ async def mock_get_current_requester_with_none_idir_user():
     A mock for router dependency, for requester who is not IDIR user.
     """
     none_idir_requester = sample_idir_requester_dict
-    none_idir_requester["user_type"] = UserType.BCEID # Set to none-IDIR
+    none_idir_requester["user_type_code"] = UserType.BCEID # Set to none-IDIR
     return Requester(**none_idir_requester)
 
 async def mock_get_current_requester_user_not_exists():
