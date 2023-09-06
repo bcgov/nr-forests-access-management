@@ -209,224 +209,199 @@ function roleSelected(evt: any) {
             <div class="row">
                 <form id="grantAccessForm" class="form-container">
                     <div class="row">
-                        <div class="form-group col-md-3 px-0">
-                            <label for="domainInput" class="control-label"
-                                >Select user's domain</label
-                            >
-                            <div>
-                                <div class="flex align-items-center">
-                                    <RadioButton
-                                        v-model="formData.domain"
-                                        :checked="isIdirDomainSelected()"
-                                        inputId="idirSelect"
-                                        name="domainRadioOptions"
-                                        :value="domainOptions.IDIR"
-                                        @change="userDomainChange()"
-                                        class="p-radiobutton"
-                                    />
-                                    <label
-                                        class="mx-2 form-check-label"
-                                        for="idirSelect"
-                                        >IDIR</label
-                                    >
-                                </div>
-                                <div class="flex align-items-center">
-                                    <RadioButton
-                                        v-model="formData.domain"
-                                        inputId="becidSelect"
-                                        name="domainRadioOptions"
-                                        :value="domainOptions.BCEID"
-                                        @change="userDomainChange()"
-                                        class="p-radiobutton"
-                                    />
-                                    <label
-                                        class="mx-2 form-check-label"
-                                        for="becidSelect"
-                                        >BCeID</label
-                                    >
-                                </div>
-                            </div>
+                        <label> Select user's domain </label>
+                        <div class="px-0">
+                            <RadioButton
+                                v-model="formData.domain"
+                                :checked="isIdirDomainSelected()"
+                                inputId="idirSelect"
+                                name="domainRadioOptions"
+                                :value="domainOptions.IDIR"
+                                @change="userDomainChange()"
+                            />
+                            <label class="mx-2" for="idirSelect">IDIR</label>
+                        </div>
+                        <div class="px-0">
+                            <RadioButton
+                                v-model="formData.domain"
+                                inputId="becidSelect"
+                                name="domainRadioOptions"
+                                :value="domainOptions.BCEID"
+                                @change="userDomainChange()"
+                            />
+                            <label class="mx-2" for="becidSelect">BCeID</label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div class="row mb-0">
-                            <label for="userIdInput" class="control-label px-0"
-                                >Type user's domain name
-                                <span class="text-danger"> *</span></label
+                    <div class="row">
+                        <label for="userIdInput"
+                            >Type user's id
+                            <span class="text-danger"> *</span></label
+                        >
+                        <div class="mt-0 col-md-3 px-0">
+                            <Field
+                                name="userId"
+                                :validateOnChange="true"
+                                v-model="formData.userId"
+                                v-slot="{ field }"
                             >
+                                <InputText
+                                    id="userIdInput"
+                                    :placeholder="
+                                        formData.domain === 'I'
+                                            ? 'Type user\'s IDIR'
+                                            : 'Type user\'s BCeID'
+                                    "
+                                    :validateOnChange="true"
+                                    class="w-100"
+                                    type="text"
+                                    maxlength="20"
+                                    v-bind="field"
+                                    @input="userIdChange()"
+                                    :class="{ 'is-invalid': errors.userId }"
+                                ></InputText>
+                            </Field>
+                            <ErrorMessage
+                                class="invalid-feedback"
+                                name="userId"
+                            />
                         </div>
 
-                        <div class="row mt-0">
-                            <div class="col-md-3 px-0">
-                                <Field
-                                    id="userIdInput"
-                                    class="form-control"
-                                    name="userId"
-                                    :validateOnChange="true"
-                                    v-model="formData.userId"
-                                    v-slot="{ field }"
-                                >
-                                    <InputText
-                                        :placeholder="
-                                            formData.domain === 'I'
-                                                ? 'Type user\'s IDIR'
-                                                : 'Type user\'s BCeID'
-                                        "
-                                        :validateOnChange="true"
-                                        class="w-100 p-inputtext"
-                                        type="text"
-                                        maxlength="20"
-                                        v-bind="field"
-                                        @input="userIdChange()"
-                                        :class="{ 'is-invalid': errors.userId }"
-                                    ></InputText>
-                                </Field>
-                                <ErrorMessage
-                                    class="invalid-feedback"
-                                    name="userId"
-                                />
-                            </div>
-
-                            <!-- show "Verify" button only if (all applied):
+                        <!-- show "Verify" button only if (all applied):
                                 * domain is IDIR (for now, BCeID is not availabe for verify yet)
                                 * userId field is entered.
                                 * userId entered does not contains basic validation errors.
                             -->
-                            <div
-                                class="col-md-2"
-                                v-if="
-                                    formData.domain === domainOptions.IDIR &&
-                                    formData.userId &&
-                                    errors.userId == undefined
+                        <div
+                            class="col-md-2"
+                            v-if="
+                                formData.domain === domainOptions.IDIR &&
+                                formData.userId &&
+                                errors.userId == undefined
+                            "
+                        >
+                            <Button
+                                class="button p-button-tertiary p-button-outlined"
+                                aria-label="Verify user IDIR"
+                                :label="buttonLabel"
+                                @click="
+                                    verifyIdentity(
+                                        formData.userId,
+                                        formData.domain
+                                    )
                                 "
+                                :disabled="loading"
                             >
-                                <Button
-                                    class="button p-button-tertiary p-button-outlined"
-                                    aria-label="Verify user IDIR"
-                                    :label="buttonLabel"
-                                    @click="
-                                        verifyIdentity(
-                                            formData.userId,
-                                            formData.domain
-                                        )
-                                    "
-                                    :disabled="loading"
-                                >
-                                </Button>
-                            </div>
+                            </Button>
                         </div>
                     </div>
 
                     <div class="row" v-if="verifiedUserIdentity">
-                        <div class="form-group col-md-5 px-0">
+                        <div class="col-md-5 px-0">
                             <UserIdentityCard
                                 :userIdentity="verifiedUserIdentity"
                             ></UserIdentityCard>
                         </div>
                     </div>
 
-                    <div class="form-group col-md-3 px-0">
-                        <label for="roleSelect" class="control-label px-0"
+                    <div class="row">
+                        <label
                             >Assign a role
                             {{ formData.userId ? 'to ' + formData.userId : ''
                             }}<span class="text-danger"> *</span></label
                         >
-                        <Field
-                            id="roleSelect"
-                            class="form-select"
-                            name="role_id"
-                            aria-label="Role Select"
-                            v-slot="{ field, handleChange }"
-                            v-model="formData.role_id"
-                        >
-                            <Dropdown
-                                :options="applicationRoleOptions"
-                                optionLabel="role_name"
-                                optionValue="role_id"
-                                :modelValue="field.value"
-                                placeholder="Choose an option"
-                                class="application-dropdown w-100"
-                                v-bind="field.value"
-                                @update:modelValue="handleChange"
-                                @change="roleSelected($event)"
-                                :class="{ 'is-invalid': errors.role_id }"
+                        <div class="col-md-3 px-0">
+                            <Field
+                                name="role_id"
+                                aria-label="Role Select"
+                                v-slot="{ field, handleChange }"
+                                v-model="formData.role_id"
                             >
-                            </Dropdown>
-                        </Field>
-                        <ErrorMessage class="invalid-feedback" name="role_id" />
+                                <Dropdown
+                                    :options="applicationRoleOptions"
+                                    optionLabel="role_name"
+                                    optionValue="role_id"
+                                    :modelValue="field.value"
+                                    placeholder="Choose an option"
+                                    class="w-100"
+                                    v-bind="field.value"
+                                    @update:modelValue="handleChange"
+                                    @change="roleSelected($event)"
+                                    :class="{ 'is-invalid': errors.role_id }"
+                                >
+                                </Dropdown>
+                            </Field>
+                            <ErrorMessage
+                                class="invalid-feedback"
+                                name="role_id"
+                            />
+                        </div>
                     </div>
-                    <div v-if="isAbstractRoleSelected()">
-                        <div class="row mb-0">
-                            <label
-                                for="forestClientInput"
-                                class="control-label label px-0"
-                                >Type user’s Forest Client ID (8 characters)
-                                <span class="text-danger"> *</span></label
+
+                    <div v-if="isAbstractRoleSelected()" class="row">
+                        <label for="forestClientInput"
+                            >Type user’s Forest Client ID (8 characters)
+                            <span class="text-danger"> *</span></label
+                        >
+
+                        <div class="col-md-3 px-0">
+                            <Field
+                                name="forestClientNumber"
+                                v-slot="{ field, handleChange }"
+                                v-model="formData.forestClientNumber"
                             >
+                                <InputText
+                                    id="forestClientInput"
+                                    :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
+                                    placeholder="Forest Client Id - 8 digits"
+                                    @update:modelValue="handleChange"
+                                    v-bind:disabled="loading"
+                                    :validateOnChange="true"
+                                    v-bind="field"
+                                    class="w-100"
+                                    v-on:keypress="
+                                        forestClientCheckOnlyDigit($event)
+                                    "
+                                    @input="resetForestClientNumberData()"
+                                    :class="{
+                                        'is-invalid': errors.forestClientNumber,
+                                    }"
+                                ></InputText>
+                            </Field>
+                            <ErrorMessage
+                                class="invalid-feedback"
+                                name="forestClientNumber"
+                            />
                         </div>
 
-                        <div class="row mt-0">
-                            <div class="form-group col-md-3 px-0">
-                                <Field
-                                    name="forestClientNumber"
-                                    id="forestClientInput"
-                                    class="form-control"
-                                    v-slot="{ field, handleChange }"
-                                    v-model="formData.forestClientNumber"
-                                >
-                                    <InputText
-                                        :maxlength="
-                                            FOREST_CLIENT_INPUT_MAX_LENGTH
-                                        "
-                                        placeholder="Forest Client Id - 8 digits"
-                                        @update:modelValue="handleChange"
-                                        v-bind:disabled="loading"
-                                        :validateOnChange="true"
-                                        v-bind="field"
-                                        class="w-100"
-                                        v-on:keypress="
-                                            forestClientCheckOnlyDigit($event)
-                                        "
-                                        @input="resetForestClientNumberData()"
-                                        :class="{
-                                            'is-invalid':
-                                                errors.forestClientNumber,
-                                        }"
-                                    ></InputText>
-                                </Field>
-                                <ErrorMessage
-                                    class="invalid-feedback"
-                                    name="forestClientNumber"
-                                />
-                            </div>
-                            <div class="col-md-2">
-                                <Button
-                                    class="button p-button-tertiary p-button-outlined"
-                                    aria-label="Verify forest client number"
-                                    :label="buttonLabel"
-                                    @click="
-                                        verifyForestClientNumber(
-                                            formData.forestClientNumber as string
-                                        )
-                                    "
-                                    v-bind:disabled="
-                                        formData.forestClientNumber?.length <
-                                            8 || loading
-                                    "
-                                >
-                                </Button>
-                            </div>
+                        <div class="col-md-2">
+                            <Button
+                                class="button p-button-tertiary p-button-outlined"
+                                aria-label="Verify forest client number"
+                                :label="buttonLabel"
+                                @click="
+                                    verifyForestClientNumber(
+                                        formData.forestClientNumber as string
+                                    )
+                                "
+                                v-bind:disabled="
+                                    formData.forestClientNumber?.length < 8 ||
+                                    loading
+                                "
+                            >
+                            </Button>
                         </div>
                     </div>
-                    <div class="row" v-if="forestClientData">
-                        <div class="form-group col-md-5 px-0">
+
+                    <div v-if="forestClientData" class="row">
+                        <div class="col-md-5 px-0">
                             <ForestClientCard
                                 :text="forestClientData?.[0]?.client_name"
                                 :status="forestClientData?.[0]?.status"
                             ></ForestClientCard>
                         </div>
                     </div>
+
                     <div class="row gy-1 my-0">
                         <div class="col-auto px-0">
                             <Button
