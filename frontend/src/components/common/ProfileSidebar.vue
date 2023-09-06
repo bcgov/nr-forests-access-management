@@ -1,7 +1,21 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
+import Button from './Button.vue';
+
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-import { IconSize } from '@/enum/IconEnum';
+import { IconPosition, IconSize } from '@/enum/IconEnum';
+
+const userName = authService.state.value.famLoginUser!.username;
+const loading = ref<boolean>(userName ? false : true);
+const logout = () => {
+    authService.methods.logout();
+    loading.value = true;
+};
+
+const buttonLabel = computed(() => {
+    return loading.value ? 'Signing out...' : 'Sign out';
+});
 </script>
 
 <template>
@@ -36,7 +50,7 @@ import { IconSize } from '@/enum/IconEnum';
                 </div> -->
                 <div class="profile-info">
                     <p class="profile-name">
-                        {{ authService.state.value.famLoginUser?.username }}
+                        {{ userName }}
                     </p>
                     <!-- TODO - This code below is for displaying user information when it is available -->
                     <!-- <p class="profile-idir">IDIR:</p>
@@ -45,20 +59,22 @@ import { IconSize } from '@/enum/IconEnum';
             </div>
             <hr class="profile-divider" />
             <p class="options">Options</p>
-            <button
+            <Button
                 class="sign-out"
                 title="Sign out"
                 aria-expanded="false"
                 aria-label="sign out"
-                @click="authService.methods.logout"
+                :label="buttonLabel"
+                :iconPos="IconPosition.left"
+                @click="logout"
+                :disabled="loading ? true : false"
             >
                 <Icon
                     icon="user--follow"
                     :size="IconSize.small"
                     class="custom-carbon-icon-user--follow"
                 />
-                Sign out
-            </button>
+            </Button>
         </div>
     </Transition>
 </template>
@@ -121,14 +137,15 @@ import { IconSize } from '@/enum/IconEnum';
     font-weight: 700;
     display: flex;
     border: none;
-    background-color: transparent;
-    color: #000;
     cursor: pointer;
 }
 
-.sign-out:hover {
+.sign-out,
+.sign-out:hover:focus {
     background-color: transparent;
-    background-color: #ffffff;
+    background-color: #ffffff !important;
+    color: $text-secondary !important;
+    box-shadow: none !important;
 }
 
 .profile-idir,
