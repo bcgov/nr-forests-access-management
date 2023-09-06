@@ -339,9 +339,7 @@ function roleSelected(evt: any) {
                     </div>
 
                     <div v-if="isAbstractRoleSelected()" class="row">
-                        <label
-                            for="forestClientInput"
-                            class="control-label label px-0"
+                        <label for="forestClientInput"
                             >Type user’s Forest Client ID (8 characters)
                             <span class="text-danger"> *</span></label
                         >
