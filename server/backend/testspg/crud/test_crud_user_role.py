@@ -71,12 +71,6 @@ def test_create(db_pg_session: Session):
     )
     assert found_user_role_xref is not None
 
-    # cleanup
-    crud_user_role.delete_fam_user_role_assignment(
-        db_pg_session,
-        xref_dict["user_role_xref_id"]
-    )
-
 
 def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
     # get not exists user role assignment
@@ -103,12 +97,6 @@ def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
         TEST_FOM_DEV_REVIEWER_ROLE_ID,
     )
     assert found_user_role_xref is not None
-
-    # cleanup
-    crud_user_role.delete_fam_user_role_assignment(
-        db_pg_session,
-        xref_dict["user_role_xref_id"]
-    )
 
 
 def test_construct_forest_client_role_name():
