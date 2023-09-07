@@ -9,11 +9,11 @@ import UserDataTable from './UserDataTable.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
-applicationsUserAdministers,
-isApplicationSelected,
-selectedApplication,
-selectedApplicationDisplayText,
-setSelectedApplication,
+    applicationsUserAdministers,
+    isApplicationSelected,
+    selectedApplication,
+    selectedApplicationDisplayText,
+    setSelectedApplication,
 } from '@/store/ApplicationState';
 
 import { useNotificationMessage } from '@/store/NotificationState';
