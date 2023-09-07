@@ -1,5 +1,4 @@
 import copy
-import datetime
 import logging
 from http import HTTPStatus
 
@@ -86,7 +85,7 @@ def test_create_user_role_assignment_not_authorized(
 def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session
+    db_pg_session: Session
 ):
     """
     test assign a concrete role to a user
@@ -106,7 +105,7 @@ def test_create_user_role_assignment_with_concrete_role(
 
     # verify assignment did get created
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
-        db_pg_connection, data["application_id"]
+        db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_concrete) == 1
     assert assignment_user_role_concrete[0].user_role_xref_id \
@@ -114,13 +113,13 @@ def test_create_user_role_assignment_with_concrete_role(
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
-        db_pg_connection, assignment_user_role_concrete[0].user_id
+        db_pg_session, assignment_user_role_concrete[0].user_id
     )
     assert assignment_user is not None
 
     # verify assignment linking to correct role and parent role
     assignment_role = crud_role.get_role(
-        db_pg_connection, assignment_user_role_concrete[0].role_id
+        db_pg_session, assignment_user_role_concrete[0].role_id
     )
     assert assignment_role is not None
     assert assignment_role.parent_role_id is None
@@ -191,7 +190,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
 def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session,
+    db_pg_session: Session,
 ):
     """
     test assign an abscrate role to a user
@@ -211,20 +210,20 @@ def test_create_user_role_assignment_with_abstract_role(
 
     # verify assignment did get created
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
-        db_pg_connection, data["application_id"]
+        db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_abstract) == 1
     assert assignment_user_role_abstract[0].user_role_xref_id == data["user_role_xref_id"]
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
-        db_pg_connection, assignment_user_role_abstract[0].user_id
+        db_pg_session, assignment_user_role_abstract[0].user_id
     )
     assert assignment_user is not None
 
     # verify assignment linking to correct role and parent role
     assignment_role = crud_role.get_role(
-        db_pg_connection, assignment_user_role_abstract[0].role_id
+        db_pg_session, assignment_user_role_abstract[0].role_id
     )
     assert assignment_role is not None
     assert assignment_role.parent_role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
@@ -240,7 +239,7 @@ def test_create_user_role_assignment_with_abstract_role(
 def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session
+    db_pg_session: Session
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -270,7 +269,7 @@ def test_create_user_role_assignment_with_same_username(
     assignment_three = response.json()
 
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, assignment_one["application_id"]
+        db_pg_session, assignment_one["application_id"]
     )
     assert len(assignment_user_role_items) == 3
 
@@ -297,7 +296,7 @@ def test_create_user_role_assignment_with_same_username(
 def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_connection: Session
+    db_pg_session: Session
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -311,7 +310,7 @@ def test_delete_user_role_assignment(
 
     # verify assignment did get created
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, data["application_id"]
+        db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_items) == 1
     assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
@@ -325,7 +324,7 @@ def test_delete_user_role_assignment(
 
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, data["application_id"]
+        db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_items) == 0
 
@@ -334,7 +333,7 @@ def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     fom_test_access_admin_token,
-    db_pg_connection: Session
+    db_pg_session: Session
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -373,7 +372,7 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_dev
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, TEST_FOM_DEV_APPLICATION_ID
+        db_pg_session, TEST_FOM_DEV_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 1
     assert assignment_user_role_items[0].user_role_xref_id == \
@@ -381,7 +380,7 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, TEST_FOM_TEST_APPLICATION_ID
+        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 1
     assert assignment_user_role_items[0].user_role_xref_id == \
@@ -396,11 +395,11 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify no user role assignment for fom_dev, but still have one for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, TEST_FOM_DEV_APPLICATION_ID
+        db_pg_session, TEST_FOM_DEV_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, TEST_FOM_TEST_APPLICATION_ID
+        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 1
 
@@ -413,14 +412,14 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify no user role assignment for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_connection, TEST_FOM_TEST_APPLICATION_ID
+        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 0
 
 
 def test_user_role_forest_client_number_not_exist_bad_request(
     test_client_fixture: TestClient,
-    fom_dev_access_admin_token,
+    fom_dev_access_admin_token
 ):
     """
     Test assign user role with none-existing forest client number should be
@@ -445,7 +444,7 @@ def test_user_role_forest_client_number_not_exist_bad_request(
 
 def test_user_role_forest_client_number_inactive_bad_request(
     test_client_fixture: TestClient,
-    fom_dev_access_admin_token,
+    fom_dev_access_admin_token
 ):
     """
     Test assign user role with inactive forest client number should be

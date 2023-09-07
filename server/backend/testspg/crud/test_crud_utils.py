@@ -1,10 +1,10 @@
 import logging
-import pytest
-from sqlalchemy.orm import Session
+
 import api.app.models.model as model
 import api.app.schemas as schemas
-from api.app.crud import crud_user
-from api.app.crud import crud_utils
+import pytest
+from api.app.crud import crud_user, crud_utils
+from sqlalchemy.orm import Session
 from testspg.constants import TEST_NEW_USER
 
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ def test_get_primary_key():
     assert pk_col_name == "user_id"
 
 
-def test_get_next(db_pg_connection: Session):
+def test_get_next(db_pg_session: Session):
     """fixture delivers a db session with one record in it, testing that
     the get_next method returns the primary key of the current record + 1
 
@@ -73,33 +73,30 @@ def test_get_next(db_pg_connection: Session):
     """
     fam_user_model = model.FamUser
     LOGGER.debug(f"fam_user_model type: {type(fam_user_model)}")
-    next_value_before = crud_utils.get_next(db=db_pg_connection, model=fam_user_model)
+    next_value_before = crud_utils.get_next(db=db_pg_session, model=fam_user_model)
     assert next_value_before > 0
 
     # now add record and test again that the number is greater
     request_user = schemas.FamUser(
         **TEST_NEW_USER
     )
-    new_user = crud_user.create_user(fam_user=request_user, db=db_pg_connection)
+    new_user = crud_user.create_user(fam_user=request_user, db=db_pg_session)
 
-    next_value_after = crud_utils.get_next(db=db_pg_connection, model=fam_user_model)
+    next_value_after = crud_utils.get_next(db=db_pg_session, model=fam_user_model)
     assert next_value_after > next_value_before
 
-    # clean up
-    crud_user.delete_user(db_pg_connection, new_user.user_id)
 
-
-def test_get_application_id_from_name(db_pg_connection: Session):
+def test_get_application_id_from_name(db_pg_session: Session):
     # get non exists application
     application_id = crud_utils.get_application_id_from_name(
-        db_pg_connection,
+        db_pg_session,
         "TEST"
     )
     assert application_id is None
 
     # get FAM application id
     application_id = crud_utils.get_application_id_from_name(
-        db_pg_connection,
+        db_pg_session,
         "FAM"
     )
     assert application_id == 1
