@@ -1,11 +1,12 @@
 import logging
+
 import starlette.testclient
+import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import ERROR_INVALID_APPLICATION_ID
-import testspg.jwt_utils as jwt_utils
-from testspg.constants import TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE, \
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT, \
-    TEST_FOM_DEV_APPLICATION_ID
+from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
