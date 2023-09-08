@@ -3,9 +3,6 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
-import DashboardTitle from './DashboardTitle.vue';
-import UserDataTable from './UserDataTable.vue';
-
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -14,12 +11,14 @@ import {
     selectedApplicationDisplayText,
     setSelectedApplication,
 } from '@/store/ApplicationState';
+import LoadingState from '@/store/LoadingState';
+import DashboardTitle from './DashboardTitle.vue';
+import UserDataTable from './UserDataTable.vue';
 
 import { useNotificationMessage } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
-const loading = ref<boolean>(false);
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -27,16 +26,11 @@ const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
-    try {
-        loading.value = true;
-        applicationsUserAdministers.value = (
-            await applicationsApi.getApplications()
-        ).data;
-        if (isApplicationSelected) {
-            await getAppUserRoleAssignment();
-        }
-    } finally {
-        loading.value = false;
+    applicationsUserAdministers.value = (
+        await applicationsApi.getApplications()
+    ).data;
+    if (isApplicationSelected) {
+        await getAppUserRoleAssignment();
     }
 });
 
@@ -114,7 +108,7 @@ async function deleteUserRoleAssignment(
 
         <UserDataTable
             v-if="isApplicationSelected"
-            :loading="loading"
+            :loading="LoadingState.isLoading.value"
             :userRoleAssignments="userRoleAssignments || []"
             :selectedApplicationDisplayText="selectedApplicationDisplayText"
             @deleteUserRoleAssignment="deleteUserRoleAssignment"
