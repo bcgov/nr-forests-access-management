@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, reactive } from 'vue';
 import router from '@/router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useConfirm } from 'primevue/useconfirm';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
+import NotificationMessage from '@/components/common/NotificationMessage.vue';
 import DashboardTitle from './DashboardTitle.vue';
 import UserDataTable from './UserDataTable.vue';
-import NotificationMessage from '@/components/common/NotificationMessage.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
-    setSelectedApplication,
     selectedApplicationDisplayText,
+    setSelectedApplication,
 } from '@/store/ApplicationState';
 
 import { useNotificationMessage } from '@/store/NotificationState';
@@ -23,13 +21,6 @@ import { useNotificationMessage } from '@/store/NotificationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
 const loading = ref<boolean>(false);
-
-const confirm = useConfirm();
-const confirmRemoveMessage = reactive({
-    userName: '',
-    role: '',
-});
-
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -104,50 +95,26 @@ const selectApplicationOptions = computed(() => {
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    confirmRemoveMessage.role = assignment.role.role_name;
-    confirmRemoveMessage.userName = assignment.user.user_name;
-    useNotificationMessage.isNotificationVisible = false;
-    useNotificationMessage.notificationMsg = '';
-    confirm.require({
-        group: 'templating',
-        icon: 'none',
-        header: 'Remove Access',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
-        accept: () => {
-            try {
-                userRoleAssignmentApi.deleteUserRoleAssignment(
+    try {
+        await userRoleAssignmentApi.deleteUserRoleAssignment(
+            assignment.user_role_xref_id
+        );
+        userRoleAssignments.value =
+            userRoleAssignments.value!.filter((a) => {
+                return (
+                    a.user_role_xref_id !=
                     assignment.user_role_xref_id
                 );
-                userRoleAssignments.value = userRoleAssignments.value!.filter(
-                    (a) => {
-                        return (
-                            a.user_role_xref_id != assignment.user_role_xref_id
-                        );
-                    }
-                );
-                useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
-            } finally {
-                useNotificationMessage.isNotificationVisible = true;
-            }
-        },
-    });
+            });
+        useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+        useNotificationMessage.isNotificationVisible = true;
+    } catch (error) {
+        return Promise.reject(error);
+    }
 }
 </script>
 
 <template>
-    <ConfirmDialog group="templating">
-        <template #message>
-            <p>
-                Are you sure you want to remove
-                <strong>{{ confirmRemoveMessage.role }}</strong> access to
-                <strong>{{ confirmRemoveMessage.userName }}</strong> in
-                <strong>{{ selectedApplicationDisplayText }}</strong>
-            </p>
-        </template>
-    </ConfirmDialog>
-
     <DashboardTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">

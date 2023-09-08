@@ -4,8 +4,7 @@ import logging
 
 import pytest
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.requester import Requester
-from api.app.schemas import IdimProxySearchParamIdir
+from api.app.schemas import IdimProxySearchParamIdir, Requester
 from api.app.utils.utils import read_json_file
 from requests import HTTPError
 

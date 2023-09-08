@@ -76,7 +76,12 @@ def test_client_fixture(db_pg_session) -> TestClient:
     """
     # reset to default database which points to postgres container
     app.dependency_overrides[database.get_db] = lambda: db_pg_session
-    return TestClient(app)
+
+    yield TestClient(app)
+
+    # reset other dependency override back to app default in each test
+    # during test case teardown.
+    app.dependency_overrides = {}
 
 
 @pytest.fixture(scope="function")

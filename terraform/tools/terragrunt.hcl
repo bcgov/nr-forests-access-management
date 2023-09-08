@@ -34,7 +34,7 @@ generate "tools_tfvars" {
     "https://d3d7kmp8kmi5ix.cloudfront.net/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
+    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_dev_url}https://d3d7kmp8kmi5ix.cloudfront.net",

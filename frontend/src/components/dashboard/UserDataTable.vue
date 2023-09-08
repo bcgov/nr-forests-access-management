@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { IconSize } from '@/enum/IconEnum';
-import type { PropType } from 'vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { FilterMatchMode } from 'primevue/api';
+import Column from 'primevue/column';
+import ConfirmDialog from 'primevue/confirmdialog';
+import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import { useConfirm } from 'primevue/useconfirm';
+import type { PropType } from 'vue';
+import { reactive, ref } from 'vue';
+
+const confirm = useConfirm();
 
 const props = defineProps({
     loading: {
@@ -41,9 +45,47 @@ const filters = ref({
         matchMode: FilterMatchMode.CONTAINS,
     },
 });
+
+const confirmDeleteData = reactive({
+    userName: '',
+    role: '',
+});
+
+const emit = defineEmits<{
+    (e: 'deleteUserRoleAssignment', item: FamApplicationUserRoleAssignmentGet): void
+}>()
+
+function deleteAssignment(
+    assignment: FamApplicationUserRoleAssignmentGet
+) {
+    confirmDeleteData.role = assignment.role.role_name;
+    confirmDeleteData.userName = assignment.user.user_name;
+    confirm.require({
+        group: 'deleteAssignment',
+        header: 'Remove Access',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Remove',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            emit('deleteUserRoleAssignment', assignment)
+        },
+    });
+}
+
 </script>
 
 <template>
+    <ConfirmDialog group="deleteAssignment">
+        <template #message>
+            <p>
+                Are you sure you want to remove
+                <strong>{{ confirmDeleteData.role }}</strong> access to
+                <strong>{{ confirmDeleteData.userName }}</strong> in
+                <strong>{{ selectedApplicationDisplayText }}</strong>
+            </p>
+        </template>
+    </ConfirmDialog>
+
     <div class="custom-data-table">
         <div class="custom-data-table-header">
             <h3>{{ selectedApplicationDisplayText }} users</h3>
@@ -56,7 +98,11 @@ const filters = ref({
 
         <span class="p-input-icon-right">
             <Icon icon="search" :size="IconSize.small" />
-            <InputText class="dash-search" v-model="filters['global'].value" />
+            <InputText
+                id="dashboardSearch"
+                class="dash-search"
+                v-model="filters['global'].value"
+            />
         </span>
 
         <DataTable
@@ -110,7 +156,7 @@ const filters = ref({
                 <template #body="{ data }">
                     <button
                         class="btn btn-icon"
-                        @click="$emit('deleteUserRoleAssignment', data)"
+                        @click="deleteAssignment(data)"
                     >
                         <span class="remove-action">Remove</span>
                     </button>
