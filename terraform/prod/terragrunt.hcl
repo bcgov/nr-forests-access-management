@@ -31,7 +31,7 @@ generate "prod_tfvars" {
   }
   fam_callback_urls = [
     "https://fam.nrs.gov.bc.ca/authCallback",
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/"
+    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",

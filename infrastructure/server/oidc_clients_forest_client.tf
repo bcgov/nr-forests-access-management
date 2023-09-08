@@ -4,7 +4,7 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
   ]
   logout_urls = [
@@ -43,7 +43,7 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
     "https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
@@ -81,7 +81,7 @@ resource "aws_cognito_user_pool_client" "prod_forest_client_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
     "https://nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
