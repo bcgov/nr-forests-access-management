@@ -52,12 +52,13 @@ const confirmDeleteData = reactive({
 });
 
 const emit = defineEmits<{
-    (e: 'deleteUserRoleAssignment', item: FamApplicationUserRoleAssignmentGet): void
-}>()
+    (
+        e: 'deleteUserRoleAssignment',
+        item: FamApplicationUserRoleAssignmentGet
+    ): void;
+}>();
 
-function deleteAssignment(
-    assignment: FamApplicationUserRoleAssignmentGet
-) {
+function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
     confirmDeleteData.userName = assignment.user.user_name;
     confirm.require({
@@ -67,11 +68,10 @@ function deleteAssignment(
         acceptLabel: 'Remove',
         acceptClass: 'p-button-danger',
         accept: () => {
-            emit('deleteUserRoleAssignment', assignment)
+            emit('deleteUserRoleAssignment', assignment);
         },
     });
 }
-
 </script>
 
 <template>
