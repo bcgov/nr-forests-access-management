@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type PropType, onMounted, computed } from 'vue';
-import Card from 'primevue/card';
-import Button from '../common/Button.vue';
+import Button from '@/components/common/Button.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import Card from 'primevue/card';
+import { computed, onMounted, type PropType } from 'vue';
 
 import { useNotificationMessage } from '@/store/NotificationState';
 
@@ -24,7 +24,7 @@ const props = defineProps({
 });
 
 const buttonLabel = computed(() => {
-    return props.loading ? 'Loading...' : 'Submit';
+    return props.loading ? 'Submitting...' : 'Submit';
 });
 
 onMounted(() => {
