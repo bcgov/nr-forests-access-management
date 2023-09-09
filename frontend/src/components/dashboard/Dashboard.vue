@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
+import DashboardTitle from '@/components/dashboard/DashboardTitle.vue';
+import UserDataTable from '@/components/dashboard/UserDataTable.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -12,8 +14,6 @@ import {
     setSelectedApplication,
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
-import DashboardTitle from './DashboardTitle.vue';
-import UserDataTable from './UserDataTable.vue';
 
 import { useNotificationMessage } from '@/store/NotificationState';
 
@@ -22,7 +22,7 @@ import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
-const userRoleAssignments = ref<FamApplicationUserRoleAssignmentGet[]>();
+const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
