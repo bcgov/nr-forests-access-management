@@ -17,6 +17,8 @@ const props = defineProps({
         type: String as PropType<IconPosition>,
         default: IconPosition.right,
     },
+    // Give a name if the parent component has more than 1 button
+    // and need to identify which button being clicked.
     name: {
         type: String,
         default: '',
