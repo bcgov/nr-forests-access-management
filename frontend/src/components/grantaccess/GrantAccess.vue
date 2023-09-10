@@ -58,13 +58,6 @@ const formValidationSchema = object({
         .nullable(),
 });
 
-// Verify buttons.
-let buttonClicked: string;
-enum ButtonClicked {
-    verifyIdir = 'verifyIdir',
-    verifyFC = 'verifyFC',
-}
-
 let applicationRoleOptions: FamApplicationRole[];
 const forestClientData = ref<FamForestClient[] | null>(null);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
@@ -270,18 +263,14 @@ function roleSelected(evt: any) {
                             <Button
                                 class="button p-button-tertiary p-button-outlined"
                                 aria-label="Verify user IDIR"
-                                :label="
-                                    buttonClicked == ButtonClicked.verifyIdir &&
-                                    LoadingState.isLoading.value
-                                        ? 'Verifying...'
-                                        : 'Verify'
-                                "
+                                :name="'verifyIdir'"
+                                :label="'Verify'"
+                                :loading-label="'Verifying...'"
                                 @click="
-                                    buttonClicked = ButtonClicked.verifyIdir;
                                     verifyIdentity(
                                         formData.userId,
                                         formData.domain
-                                    );
+                                    )
                                 "
                                 :disabled="LoadingState.isLoading.value"
                             >
@@ -373,17 +362,13 @@ function roleSelected(evt: any) {
                             <Button
                                 class="button p-button-tertiary p-button-outlined"
                                 aria-label="Verify forest client number"
-                                :label="
-                                    buttonClicked == ButtonClicked.verifyFC &&
-                                    LoadingState.isLoading.value
-                                        ? 'Verifying'
-                                        : 'Verify'
-                                "
+                                :name="'verifyFC'"
+                                :label="'Verify'"
+                                :loading-label="'Verifying...'"
                                 @click="
-                                    buttonClicked = ButtonClicked.verifyFC;
                                     verifyForestClientNumber(
                                         formData.forestClientNumber as string
-                                    );
+                                    )
                                 "
                                 v-bind:disabled="
                                     formData.forestClientNumber?.length < 8 ||
