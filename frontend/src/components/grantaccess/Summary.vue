@@ -12,7 +12,6 @@ import {
     grantAccessFormRoleName,
     resetGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
-import LoadingState from '@/store/LoadingState';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
 
 const apiServiceFactory = new ApiServiceFactory();
@@ -45,7 +44,6 @@ async function handleSubmit() {
             v-if="grantAccessFormData"
             :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
             :role_name="(grantAccessFormRoleName as string)"
-            :loading="LoadingState.isLoading.value"
             @submit="handleSubmit()"
         />
     </div>
