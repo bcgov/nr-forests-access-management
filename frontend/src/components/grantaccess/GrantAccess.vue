@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 
+import Button from '@/components/common/Button.vue';
+import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
+import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
-import ForestClientCard from './ForestClientCard.vue';
-import UserIdentityCard from './UserIdentityCard.vue';
-import Button from '../common/Button.vue';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -21,11 +21,12 @@ import {
     domainOptions,
     getGrantAccessFormData,
     grantAccessFormData,
+    grantAccessFormRoleName,
     resetGrantAccessFormData,
     setGrantAccessFormData,
-    grantAccessFormRoleName,
 } from '@/store/GrantAccessDataState';
 
+import LoadingState from '@/store/LoadingState';
 import {
     FamForestClientStatusType,
     type FamApplicationRole,
@@ -57,35 +58,26 @@ const formValidationSchema = object({
         .nullable(),
 });
 
-const loading = ref<boolean>(false);
 let applicationRoleOptions: FamApplicationRole[];
-let forestClientData: FamForestClient[] | null;
-let verifiedUserIdentity: IdimProxyIdirInfo | null;
+const forestClientData = ref<FamForestClient[] | null>(null);
+const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 
-const buttonLabel = computed(() => {
-    return loading.value ? 'Verifying...' : 'Verify';
-});
-
 onMounted(async () => {
-    try {
-        applicationRoleOptions = (
-            await applicationsApi.getFamApplicationRoles(
-                selectedApplication.value?.application_id as number
-            )
-        ).data;
+    applicationRoleOptions = (
+        await applicationsApi.getFamApplicationRoles(
+            selectedApplication.value?.application_id as number
+        )
+    ).data;
 
-        if (grantAccessFormData.value) {
-            formData.value = getGrantAccessFormData();
-        } else {
-            resetForm();
-        }
-    } catch (error: unknown) {
-        return Promise.reject(error);
+    if (grantAccessFormData.value) {
+        formData.value = getGrantAccessFormData();
+    } else {
+        resetForm();
     }
 });
 
@@ -120,11 +112,11 @@ function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
 }
 
 function resetVerifiedUserIdentity() {
-    verifiedUserIdentity = null;
+    verifiedUserIdentity.value = null;
 }
 
 function resetForestClientNumberData() {
-    forestClientData = null;
+    forestClientData.value = null;
     formData.value['forestClientNumber'] = '';
 }
 
@@ -141,27 +133,15 @@ function cancelForm() {
 async function verifyIdentity(userId: string, domain: string) {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
-    loading.value = true;
-    try {
-        verifiedUserIdentity = (await idirBceidProxyApi.idirSearch(userId))
-            .data;
-    } catch (err: any) {
-        return Promise.reject(err);
-    } finally {
-        loading.value = false;
-    }
+    verifiedUserIdentity.value = (
+        await idirBceidProxyApi.idirSearch(userId)
+    ).data;
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
-    loading.value = true;
-    try {
-        forestClientData = (await forestClientApi.search(forestClientNumber))
-            .data;
-    } catch (err: any) {
-        return Promise.reject(err);
-    } finally {
-        loading.value = false;
-    }
+    forestClientData.value = (
+        await forestClientApi.search(forestClientNumber)
+    ).data;
 }
 
 /*
@@ -171,11 +151,11 @@ function areVerificationsPassed() {
     return (
         // userId verification.
         (!isIdirDomainSelected() ||
-            (isIdirDomainSelected() && verifiedUserIdentity?.found)) &&
+            (isIdirDomainSelected() && verifiedUserIdentity.value?.found)) &&
         // forestClientNumber verification
         (!isAbstractRoleSelected() ||
             (isAbstractRoleSelected() &&
-                forestClientData?.[0]?.status?.status_code ==
+                forestClientData.value?.[0]?.status?.status_code ==
                     FamForestClientStatusType.A))
     );
 }
@@ -283,14 +263,16 @@ function roleSelected(evt: any) {
                             <Button
                                 class="button p-button-tertiary p-button-outlined"
                                 aria-label="Verify user IDIR"
-                                :label="buttonLabel"
+                                :name="'verifyIdir'"
+                                :label="'Verify'"
+                                :loading-label="'Verifying...'"
                                 @click="
                                     verifyIdentity(
                                         formData.userId,
                                         formData.domain
                                     )
                                 "
-                                :disabled="loading"
+                                :disabled="LoadingState.isLoading.value"
                             >
                             </Button>
                         </div>
@@ -355,7 +337,9 @@ function roleSelected(evt: any) {
                                     :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
                                     placeholder="Forest Client Id - 8 digits"
                                     @update:modelValue="handleChange"
-                                    v-bind:disabled="loading"
+                                    v-bind:disabled="
+                                        LoadingState.isLoading.value
+                                    "
                                     :validateOnChange="true"
                                     v-bind="field"
                                     class="w-100"
@@ -378,7 +362,9 @@ function roleSelected(evt: any) {
                             <Button
                                 class="button p-button-tertiary p-button-outlined"
                                 aria-label="Verify forest client number"
-                                :label="buttonLabel"
+                                :name="'verifyFC'"
+                                :label="'Verify'"
+                                :loading-label="'Verifying...'"
                                 @click="
                                     verifyForestClientNumber(
                                         formData.forestClientNumber as string
@@ -386,7 +372,7 @@ function roleSelected(evt: any) {
                                 "
                                 v-bind:disabled="
                                     formData.forestClientNumber?.length < 8 ||
-                                    loading
+                                    LoadingState.isLoading.value
                                 "
                             >
                             </Button>
