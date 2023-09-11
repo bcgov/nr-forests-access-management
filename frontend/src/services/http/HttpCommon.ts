@@ -30,36 +30,36 @@ const httpInstance = axios.create(defaultAxiosConfig);
 httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
 
 /*
-  Private functions "startLoading" "stopLoading" and "stopLoadingWhenError" 
+  Private functions "loadingStart" "loadingStop" and "loadingStopWhenError" 
   are auxiliary special helpers for both request/response interceptors.
 
   When http request happens => assign isLoading state with true.
   When http response received or error happens =>  assign isLoading state with false
 */
-const startLoading = (config: AxiosRequestConfig) => {
+const loadingStart = (config: AxiosRequestConfig) => {
     LoadingState.isLoading.value = true;
     return config;
 };
 
-const stopLoading = (res: AxiosResponse) => {
+const loadingStop = (res: AxiosResponse) => {
     LoadingState.isLoading.value = false;
     return res;
 };
 
-const stopLoadingWhenError = (err: any) => {
+const loadingStopWhenError = (err: any) => {
     LoadingState.isLoading.value = false;
     return Promise.reject(err); // Based on Axios, return reject(err)
 };
 
 // Request Interceptors - note, last one is the first in execution sequence.
 httpInstance.interceptors.request.use(HttpReqInterceptors.addAuthHeaderItcpt);
-httpInstance.interceptors.request.use(startLoading, stopLoadingWhenError);
+httpInstance.interceptors.request.use(loadingStart, loadingStopWhenError);
 
 // Response Interceptors
 httpInstance.interceptors.response.use(
     (response) => response,
     HttpResInterceptors.authenticationErrorResponsesItcpt
 ); // 401 error handler
-httpInstance.interceptors.response.use(stopLoading, stopLoadingWhenError);
+httpInstance.interceptors.response.use(loadingStop, loadingStopWhenError);
 
 export default httpInstance;
