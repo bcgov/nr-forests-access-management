@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import Button from './Button.vue';
+import Button from '@/components/common/Button.vue';
+import { computed, ref } from 'vue';
 
+import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-import { IconPosition, IconSize } from '@/enum/IconEnum';
 
 const userName = authService.state.value.famLoginUser!.username;
+
+// use local loading state, can't use LoadingState instance
+// due to logout() is handled by library.
 const loading = ref(false);
+
 const logout = () => {
     authService.methods.logout();
     loading.value = true;

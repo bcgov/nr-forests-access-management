@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
-import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import authService from '@/services/AuthService';
 import { IconSize } from '@/enum/IconEnum';
+import authService from '@/services/AuthService';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -53,10 +53,7 @@ const props = defineProps({
                             v-if="authService.getters.isLoggedIn()"
                             @click="useProfileSidebarVisible.toggleVisible()"
                         >
-                            <Icon
-                                icon="user--avatar"
-                                :size=IconSize.medium
-                            />
+                            <Icon icon="user--avatar" :size="IconSize.medium" />
                         </a>
                     </li>
                 </ul>

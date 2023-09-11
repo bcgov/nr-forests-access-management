@@ -15,7 +15,7 @@ sqlacodegen==3.0.0rc1
 python-dotenv==1.0.0
 
 # used to mock out sqlalchemy for testing
-mock==4.0.3
+mock==5.1.0
 mock-alchemy==0.2.5
 
 # used to create test JWT

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Button from '@/components/common/Button.vue';
-import authService from '@/services/AuthService';
-import logo from '../assets/images/bc-gov-logo.png';
-import TreeLogs from '../assets/images/tree-logs.jpg';
 import { IconSize } from '@/enum/IconEnum';
+import authService from '@/services/AuthService';
+import logo from '@/assets/images/bc-gov-logo.png';
+import TreeLogs from '@/assets/images/tree-logs.jpg';
 </script>
 
 <template>
