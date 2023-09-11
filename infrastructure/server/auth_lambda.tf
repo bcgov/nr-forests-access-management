@@ -80,7 +80,7 @@ resource "aws_lambda_function" "fam-auth-function" {
   runtime = "python3.8"
 
   vpc_config {
-    security_group_ids = [data.aws_security_group.sg_app.id]
+    security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
     subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
   }
 

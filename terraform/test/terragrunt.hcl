@@ -14,10 +14,8 @@ generate "test_tfvars" {
   fam_user_pool_name = "test-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "test-fam-user-pool-domain"
   famdb_cluster_name = "test-fam-cluster"
-  aws_security_group_data = "fam_data_sg"
   subnet_data_a = "Data_Test_aza_net"
   subnet_data_b = "Data_Test_azb_net"
-  aws_security_group_app = "fam_app_sg"
   subnet_app_a = "App_Test_aza_net"
   subnet_app_b = "App_Test_azb_net"
   cognito_app_client_logout_chain_url = {
