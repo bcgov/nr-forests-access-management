@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type PropType, onMounted, computed } from 'vue';
-import Card from 'primevue/card';
-import Button from '../common/Button.vue';
+import Button from '@/components/common/Button.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import Card from 'primevue/card';
+import { onMounted, type PropType } from 'vue';
 
 import { useNotificationMessage } from '@/store/NotificationState';
 
+import LoadingState from '@/store/LoadingState';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
 
 const props = defineProps({
@@ -17,14 +18,6 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    loading: {
-        type: Boolean,
-        default: false,
-    },
-});
-
-const buttonLabel = computed(() => {
-    return props.loading ? 'Loading...' : 'Submit';
 });
 
 onMounted(() => {
@@ -67,11 +60,13 @@ onMounted(() => {
                         <Button
                             type="submit"
                             id="grantAccessSubmit"
+                            :name="'grantAccessSubmit'"
                             class="mb-3"
                             aria-label="Submit form"
-                            :label="buttonLabel"
+                            :label="'Submit'"
+                            :loading-label="'Submitting...'"
                             v-on:click="$emit('submit')"
-                            :disabled="props.loading"
+                            :disabled="LoadingState.isLoading.value"
                         >
                         </Button>
                         <Button
@@ -79,7 +74,7 @@ onMounted(() => {
                             outlined
                             @click="$router.push('/grant')"
                             label="Edit Form"
-                            :disabled="props.loading"
+                            :disabled="LoadingState.isLoading.value"
                         >
                         </Button>
                     </div>
