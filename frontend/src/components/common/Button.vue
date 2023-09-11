@@ -40,14 +40,20 @@ watchEffect(() => {
 });
 
 function onClicked(event: any) {
-    // determine this is the target button being clicked.
-    if (event['target']['name'] == props.name) {
+    // determine this is the target button being clicked by
+    // utlizing html "data-" dataset attribute ("data-target-btn")
+    if (event['target']['dataset']['targetBtn'] == props.name) {
         targetButtonClicked = true;
     }
 }
 </script>
 <template>
-    <Button class="nr-button" :name="props.name" @click="onClicked($event)">
+    <Button
+        class="nr-button"
+        :name="props.name"
+        :data-target-btn="props.name"
+        @click="onClicked($event)"
+    >
         <slot
             class="icon"
             v-if="props.iconPosition === IconPosition.left"
