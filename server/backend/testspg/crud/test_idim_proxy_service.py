@@ -4,8 +4,7 @@ import logging
 
 import pytest
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.requester import Requester
-from api.app.schemas import IdimProxySearchParamIdir
+from api.app.schemas import IdimProxySearchParamIdir, Requester
 from api.app.utils.utils import read_json_file
 from requests import HTTPError
 
@@ -20,7 +19,12 @@ class TestIdimProxyServiceClass(object):
     def setup_class(self):
         # local valid mock requester
         self.requester = Requester(
-            **read_json_file("local-data.json")["requester"]
+            ** {
+                "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
+                "user_name": "IANLIU",
+                "user_type": "I",
+                "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
+            }
         )
 
     def test_verify_init(self):

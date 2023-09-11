@@ -1,28 +1,32 @@
 @use 'sass:map';
 @use '@bcgov-nr/nr-fsa-theme/design-tokens/light-theme.scss' as lightTheme;
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-buttons.scss' as lightButtons;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/dark-theme.scss' as darkTheme;
+// need to use type family first, and then use stylesheet, so the body type tokens can get the font path correctly
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss';
+@use '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
 
 // Header
 $header-height: 3rem;
 $header-width: 100vw;
 
-// Main Navigation
-$text-error: map.get(lightTheme.$light-theme, 'text-error');
-$text-primary: map.get(lightTheme.$light-theme, 'text-primary');
-$text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
+//darkTheme
+$dark-text-primary: map.get(darkTheme.$dark-theme, 'text-primary');
 
-// Buttons
-$light-button-tertiary: map.get(
-    lightButtons.$light-button-token-overrides,
-    'button-tertiary'
-);
+//lightTheme
+$light-layer-selected-01: map.get(lightTheme.$light-theme, 'layer-selected-01');
 
-$light-button-danger-primary: map.get(
-    lightButtons.$light-button-token-overrides,
-    'button-danger-primary'
+//border
+$light-border-interactive: map.get(
+    lightTheme.$light-theme,
+    'border-interactive'
 );
+$light-border-subtle-00: map.get(lightTheme.$light-theme, 'border-subtle-00');
 
-$light-button-danger-hover: map.get(
-    lightButtons.$light-button-token-overrides,
-    'button-danger-hover'
-);
+//text
+$light-text-primary: map.get(lightTheme.$light-theme, 'text-primary');
+$light-text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
+$light-text-error: map.get(lightTheme.$light-theme, 'text-error');
+
+$light-background-brand: map.get(lightTheme.$light-theme, 'background-brand');
+$light-support-error: map.get(lightTheme.$light-theme, 'support-error');
+$light-interactive: map.get(lightTheme.$light-theme, 'interactive');

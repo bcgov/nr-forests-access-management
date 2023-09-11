@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import SummaryCard from '@/components/grantaccess/SummaryCard.vue';
 import router from '@/router';
-import Dialog from '../common/Dialog.vue';
-import SummaryCard from './SummaryCard.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import { onMounted } from 'vue';
 
-import {
-    useNotificationMessage,
-    useErrorDialog,
-} from '@/store/NotificationState';
+import { useNotificationMessage } from '@/store/NotificationState';
 
+import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     grantAccessFormData,
+    grantAccessFormRoleName,
     resetGrantAccessFormData,
 } from '@/store/GrantAccessDataState';
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import type { FamUserRoleAssignmentCreate } from 'fam-api/dist/model/fam-user-role-assignment-create';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
-const loading = ref<boolean>(false);
 
 onMounted(() => {
     if (!grantAccessFormData.value) {
@@ -28,31 +24,16 @@ onMounted(() => {
 });
 
 async function handleSubmit() {
-    try {
-        loading.value = true;
-        await userRoleAssignmentApi.createUserRoleAssignment(
-            grantAccessFormData.value as FamUserRoleAssignmentCreate
-        );
-        useErrorDialog.isErrorVisible = false;
-        useNotificationMessage.isNotificationVisible = true;
-        router.push('/dashboard');
-        resetGrantAccessFormData();
-    } catch (err: any) {
-        return Promise.reject(err);
-    } finally {
-        loading.value = false;
-    }
+    await userRoleAssignmentApi.createUserRoleAssignment(
+        grantAccessFormData.value as FamUserRoleAssignmentCreate
+    );
+    useNotificationMessage.isNotificationVisible = true;
+    router.push('/dashboard');
+    resetGrantAccessFormData();
 }
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="useErrorDialog.isErrorVisible"
-        :error="true"
-        :header="useErrorDialog.dialogTitle"
-        :text-first="useErrorDialog.dialogMsg"
-        text-second="Contact your administrator for more information."
-    ></Dialog>
     <PageTitle
         title="Access request summary"
         :subtitle="'You are editing in ' + selectedApplicationDisplayText"
@@ -62,7 +43,7 @@ async function handleSubmit() {
         <SummaryCard
             v-if="grantAccessFormData"
             :data="(grantAccessFormData as FamUserRoleAssignmentCreate)"
-            :loading="loading"
+            :role_name="(grantAccessFormRoleName as string)"
             @submit="handleSubmit()"
         />
     </div>

@@ -3,11 +3,7 @@ import { app } from '@/main';
 import axios from 'axios';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import ErrorFilledIcon from '../icons/ErrorFilledIcon.vue';
-import {
-    useNotificationMessage,
-    useErrorDialog,
-} from '@/store/NotificationState';
+import { IconSize } from '@/enum/IconEnum';
 
 const toast = useToast();
 
@@ -54,13 +50,16 @@ const onError = (error: any, info: string) => {
             showToastTopRight(
                 'error',
                 e403_authorizationErrorMsg.title,
-                e403_authorizationErrorMsg.text
+                axiosResponse?.data.detail.code === 'self_grant_prohibited'
+                    ? axiosResponse?.data.detail.description
+                    : e403_authorizationErrorMsg.text
             );
         } else if (status == 409) {
-            useNotificationMessage.isNotificationVisible = false;
-            useErrorDialog.dialogTitle = axiosResponse.statusText;
-            useErrorDialog.dialogMsg = axiosResponse.data.detail;
-            useErrorDialog.isErrorVisible = true;
+            showToastTopRight(
+                'error',
+                genericErrorMsg.title,
+                axiosResponse?.data.detail
+            );
         }
         return;
     }
@@ -75,6 +74,10 @@ app.config.errorHandler = (err, instance, info) => {
 
 <template>
     <Toast group="tl" position="top-right" #icon>
-        <ErrorFilledIcon class="iconTest"></ErrorFilledIcon>
+        <Icon
+            icon="error--filled"
+            :size="IconSize.large"
+            class="custom-carbon-icon-error--filled"
+        />
     </Toast>
 </template>

@@ -1,54 +1,71 @@
-<script setup>
-import { computed, defineAsyncComponent } from 'vue';
+<script setup lang="ts">
+import { defineAsyncComponent } from 'vue';
+import type { PropType } from 'vue';
+import { IconSize } from '@/enum/IconEnum';
+
 const props = defineProps({
     icon: {
         type: String,
         required: true,
     },
-    small: {
-        type: Boolean,
-        required: false,
-        default: false,
+    size: {
+        type: String as PropType<IconSize>,
+        required: true,
+        default: IconSize.small,
     },
-    medium: {
-        type: Boolean,
+    class: {
+        type: String,
         required: false,
-        default: false,
-    },
-    large: {
-        type: Boolean,
-        required: false,
-        default: false,
     },
 });
-const iconName = computed(() => {
-    return defineAsyncComponent(() => import(`../icons/${props.icon}.vue`));
-});
+
+const icons = {
+    // whenever we add an import here, we need to declare the module in alltypes.d.ts
+    // to get rid of the type error
+    close16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/close/16')
+    ),
+    'user--follow16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user--follow/16')
+    ),
+    dashboard16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/dashboard/16')
+    ),
+    'virtual-column--key16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/virtual-column--key/16')
+    ),
+    settings16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/settings/16')
+    ),
+    help16: defineAsyncComponent(() => import('@carbon/icons-vue/es/help/16')),
+    search16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search/16')
+    ),
+
+    'checkmark--filled20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark--filled/20')
+    ),
+    login20: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/login/20')
+    ),
+    add20: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/20')),
+    'user--avatar--filled20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user--avatar--filled/20')
+    ),
+    'user--avatar20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user--avatar/20')
+    ),
+
+    'error--filled24': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/error--filled/24')
+    ),
+} as any;
 </script>
 
 <template>
-    <component
-        :class="{
-            'icon-small': small,
-            'icon-medium': medium,
-            'icon-large': large,
-        }"
-        :is="iconName"
-    ></component>
+    <component :is="icons[props.icon + props.size]" :class="class"></component>
 </template>
 
 <style lang="scss">
-.icon-large {
-    width: 2rem !important;
-    height: 2rem !important;
-}
-.icon-medium {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
-}
-
-.icon-small {
-    width: 1rem !important;
-    height: 1rem !important;
-}
+@import '@/assets/styles/icon.scss';
 </style>

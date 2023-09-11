@@ -1,13 +1,14 @@
-import logging
-import sys
-import os
 import json
-import pytest
-from testcontainers.compose import DockerCompose
-import psycopg2
-import dotenv
-from lamda_function_test import TEST_ROLE_NAME
+import logging
+import os
+import sys
 
+import dotenv
+import psycopg2
+import pytest
+from lamda_function_test import TEST_ROLE_NAME
+from psycopg2 import sql
+from testcontainers.compose import DockerCompose
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -117,18 +118,17 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name, user_guid,
         create_user, create_date, update_user, update_date)
-        VALUES( '{}', '{}', '{}',
+        VALUES( %s, %s, %s,
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    replaced_query = raw_query.format(
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
+    cursor.execute(raw_query, (
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
         cognito_event["request"]["userAttributes"]["custom:idp_username"],
-        cognito_event["request"]["userAttributes"]["custom:idp_user_id"],
-    )
-
-    cursor.execute(replaced_query)
+        cognito_event["request"]["userAttributes"]["custom:idp_user_id"]
+    ))
 
     yield test_user_properties
 
@@ -147,7 +147,7 @@ def create_test_fam_role(db_pg_transaction):
          create_user,
          update_user)
     values
-        ('{}',
+        (%s,
         'just for testing',
         (select application_id from app_fam.fam_application
             where application_name = 'FAM'),
@@ -155,8 +155,8 @@ def create_test_fam_role(db_pg_transaction):
         CURRENT_USER,
         CURRENT_USER)
     """
-    replaced_query = raw_query.format(TEST_ROLE_NAME)
-    cursor.execute(replaced_query)
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
+    cursor.execute(raw_query, [TEST_ROLE_NAME])
 
 
 def get_insert_role_sql(role_name, role_type, parent_role_id=None):
@@ -199,14 +199,14 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
         create_user,
         update_user)
     values(
-        '{}',
+        %s,
         (select application_id from app_fam.fam_application
             where application_name = 'FAM'),
         CURRENT_USER,
         CURRENT_USER)
     """
-    replaced_query = raw_query.format(client_id)
-    cursor.execute(replaced_query)
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
+    cursor.execute(raw_query, [client_id])
 
 
 @pytest.fixture(scope="function")
@@ -221,18 +221,20 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
         update_user)
     VALUES (
         (select user_id from app_fam.fam_user where
-            user_name = '{}'
-            and user_type_code = '{}'),
+            user_name = %s
+            and user_type_code = %s),
         (select role_id from app_fam.fam_role where
-            role_name = '{}'),
+            role_name = %s),
         CURRENT_USER,
         CURRENT_USER
     )
     """
-    replaced_query = raw_query.format(
-        initial_user["idp_username"], initial_user["idp_type_code"], TEST_ROLE_NAME
-    )
-    cursor.execute(replaced_query)
+    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
+    cursor.execute(raw_query, (
+        initial_user["idp_username"],
+        initial_user["idp_type_code"],
+        TEST_ROLE_NAME
+    ))
 
 
 @pytest.fixture(scope="function")
@@ -245,16 +247,15 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_name,
         create_user, create_date, update_user, update_date)
-        VALUES( '{}', '{}',
+        VALUES( %s, %s,
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
     idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    replaced_query = raw_query.format(
+    cursor.execute(raw_query, (
         lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"],
-    )
-    cursor.execute(replaced_query)
+        cognito_event["request"]["userAttributes"]["custom:idp_username"]
+    ))
 
 
 @pytest.fixture(scope="function")
@@ -275,10 +276,12 @@ def create_fam_child_parent_role_assignment(db_pg_transaction):
     )
     cur.execute(insert_parent_role_sql)
 
-    query = (
-        "select role_id from app_fam.fam_role "
-        + f"where role_name = '{parent_role_name}'"
+    query = sql.SQL(
+        """select role_id from app_fam.fam_role where
+           role_name = {0}""").format(
+        sql.Literal(parent_role_name)
     )
+
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
     LOGGER.debug(f"record: {parent_role_id}")

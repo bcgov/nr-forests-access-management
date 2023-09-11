@@ -1,17 +1,14 @@
-from sqlalchemy.orm import Session
-import logging
 import datetime
-import pytest
-from sqlalchemy.exc import NoResultFound
-from api.app.crud import crud_application
-import api.app.schemas as schemas
+import logging
+
 import api.app.constants as constants
-from testspg.constants import (
-    TEST_NOT_EXIST_APPLICATION_ID,
-    TEST_FOM_DEV_APPLICATION_ID,
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_NOT_EXIST_ROLE_ID,
-)
+import api.app.schemas as schemas
+from api.app.crud import crud_application
+from sqlalchemy.orm import Session
+from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
+                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                               TEST_NOT_EXIST_APPLICATION_ID,
+                               TEST_NOT_EXIST_ROLE_ID)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,53 +40,53 @@ def test_get_applications(db_pg_session: Session):
     assert apps[1].app_environment == "DEV"
 
 
-def test_get_application(db_pg_connection: Session):
-    apps = crud_application.get_applications(db=db_pg_connection)
+def test_get_application(db_pg_session: Session):
+    apps = crud_application.get_applications(db=db_pg_session)
     assert len(apps) > 1
 
     for app in apps:
         app_by_id = crud_application.get_application(
-            db=db_pg_connection, application_id=app.application_id
+            db=db_pg_session, application_id=app.application_id
         )
         assert app_by_id.application_id == app.application_id
 
     app_by_id = crud_application.get_application(
-        db=db_pg_connection, application_id=TEST_APPLICATION_ID_FAM
+        db=db_pg_session, application_id=TEST_APPLICATION_ID_FAM
     )
     assert app_by_id.application_id == TEST_APPLICATION_ID_FAM
     assert app_by_id.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_id = crud_application.get_application(
-        db=db_pg_connection, application_id=TEST_NOT_EXIST_APPLICATION_ID
+        db=db_pg_session, application_id=TEST_NOT_EXIST_APPLICATION_ID
     )
     assert app_by_id is None
 
 
-def test_get_application_by_name(db_pg_connection: Session):
-    apps = crud_application.get_applications(db=db_pg_connection)
+def test_get_application_by_name(db_pg_session: Session):
+    apps = crud_application.get_applications(db=db_pg_session)
     assert len(apps) > 1
 
     for app in apps:
         app_by_name = crud_application.get_application_by_name(
-            db=db_pg_connection, application_name=app.application_name
+            db=db_pg_session, application_name=app.application_name
         )
         assert app_by_name.application_name == app.application_name
 
     app_by_name = crud_application.get_application_by_name(
-        db=db_pg_connection, application_name=TEST_APPLICATION_NAME_FAM
+        db=db_pg_session, application_name=TEST_APPLICATION_NAME_FAM
     )
     assert app_by_name.application_id == TEST_APPLICATION_ID_FAM
     assert app_by_name.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_name = crud_application.get_application_by_name(
-        db=db_pg_connection, application_name=TEST_APPLICATION_NAME_NOT_FOUND
+        db=db_pg_session, application_name=TEST_APPLICATION_NAME_NOT_FOUND
     )
     assert app_by_name is None
 
 
-def test_get_application_roles(db_pg_connection: Session):
+def test_get_application_roles(db_pg_session: Session):
     app_roles = crud_application.get_application_roles(
-        db=db_pg_connection, application_id=TEST_FOM_DEV_APPLICATION_ID
+        db=db_pg_session, application_id=TEST_FOM_DEV_APPLICATION_ID
     )
 
     for app_role in app_roles:
@@ -119,16 +116,16 @@ def test_get_application_roles(db_pg_connection: Session):
     assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
 
 
-def test_get_application_id_by_role_id(db_pg_connection: Session):
+def test_get_application_id_by_role_id(db_pg_session: Session):
     app_id = crud_application.get_application_id_by_role_id(
-        db=db_pg_connection, role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
+        db=db_pg_session, role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
     )
     assert app_id == TEST_FOM_DEV_APPLICATION_ID
 
 
-def test_get_application_id_by_user_role_xref_id(db_pg_connection: Session):
+def test_get_application_id_by_user_role_xref_id(db_pg_session: Session):
     app_id = crud_application.get_application_id_by_user_role_xref_id(
-        db=db_pg_connection,
+        db=db_pg_session,
         user_role_xref_id=1,  # the first user in our db has role FAM admin
     )
     assert app_id == TEST_APPLICATION_ROLE_ID_FAM

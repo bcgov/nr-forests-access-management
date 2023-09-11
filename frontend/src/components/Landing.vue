@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import Button from '@/components/common/Button.vue';
+import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
-import logo from '../assets/images/bc-gov-logo.png';
-import TreeLogs from '../assets/images/tree-logs.jpg';
+import logo from '@/assets/images/bc-gov-logo.png';
+import TreeLogs from '@/assets/images/tree-logs.jpg';
 </script>
 
 <template>
@@ -12,7 +13,7 @@ import TreeLogs from '../assets/images/tree-logs.jpg';
                 <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
                 <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
                 <h2 id="landing-subtitle" class="landing-subtitle">
-                    Forestry Access Management
+                    Forests Access Management
                 </h2>
 
                 <p id="landing-desc" class="landing-desc">
@@ -21,16 +22,20 @@ import TreeLogs from '../assets/images/tree-logs.jpg';
                 <Button
                     class="landing-button p-button-primary"
                     label="Login with IDIR"
-                    @click="authService.methods.login"
-                    ><Icon icon="LoginIcon" small
-                /></Button>
+                    id="login-idir-button"
+                    @click="authService.methods.login()"
+                >
+                    <Icon icon="login" :size="IconSize.medium" />
+                </Button>
                 <Button
                     class="landing-button p-button-outlined"
                     label="Login with BCeID"
+                    id="login-bceid-button"
                     disabled
-                    @click="authService.methods.login"
-                    ><Icon icon="LoginIcon" small
-                /></Button>
+                    @click="authService.methods.login()"
+                >
+                    <Icon icon="login" :size="IconSize.medium" />
+                </Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
                 <img

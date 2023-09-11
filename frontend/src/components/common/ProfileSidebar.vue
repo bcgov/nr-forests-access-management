@@ -1,10 +1,25 @@
 <script setup lang="ts">
+import Button from '@/components/common/Button.vue';
+import { computed, ref } from 'vue';
+
+import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
-// svg icon
-import CloseIcon from '@/components/icons/CheckIcon.vue';
-import LogoutIcon from '@/components/icons/LogoutIcon.vue';
+const userName = authService.state.value.famLoginUser!.username;
+
+// use local loading state, can't use LoadingState instance
+// due to logout() is handled by library.
+const loading = ref(false);
+
+const logout = () => {
+    authService.methods.logout();
+    loading.value = true;
+};
+
+const buttonLabel = computed(() => {
+    return loading.value ? 'Signing out...' : 'Sign out';
+});
 </script>
 
 <template>
@@ -26,41 +41,44 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
                     @click="useProfileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
-                    <CloseIcon />
+                    <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
             </div>
-            <!-- TODO - This code below is for displaying user information when it is available -->
-            <!-- <div class="sidebar-body">
-                <div class="img-wrapper">
+            <div class="sidebar-body">
+                <!-- TODO - This code below is for displaying user information when it is available -->
+                <!-- <div class="img-wrapper">
                     <img
                         src="../../assets/images/tyrannosaurus-rex1.png"
                         alt="User avatar"
                     />
-                </div>
+                </div> -->
                 <div class="profile-info">
                     <p class="profile-name">
-                        {{ authService.state.value.famLoginUser?.username }}
+                        {{ userName }}
                     </p>
-                    <p class="profile-idir">
-                        IDIR:
-                    </p>
-                    <p class="profile-email">
-                        email
-                    </p>
+                    <!-- TODO - This code below is for displaying user information when it is available -->
+                    <!-- <p class="profile-idir">IDIR:</p>
+                    <p class="profile-email">email</p> -->
                 </div>
-            </div> -->
+            </div>
             <hr class="profile-divider" />
             <p class="options">Options</p>
-            <button
+            <Button
                 class="sign-out"
                 title="Sign out"
                 aria-expanded="false"
                 aria-label="sign out"
-                @click="authService.methods.logout"
+                :label="buttonLabel"
+                :iconPosition="IconPosition.left"
+                @click="logout"
+                :disabled="loading ? true : false"
             >
-                <i><LogoutIcon /></i>
-                Sign out
-            </button>
+                <Icon
+                    icon="user--follow"
+                    :size="IconSize.small"
+                    class="custom-carbon-icon-user--follow"
+                />
+            </Button>
         </div>
     </Transition>
 </template>
@@ -69,7 +87,7 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
 @import '@/assets/styles/styles.scss';
 .profile-container {
     background-color: #fff;
-    border-left: .0625rem solid #dfdfe1;
+    border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
     inset: 0 0 0 70%;
@@ -106,32 +124,38 @@ import LogoutIcon from '@/components/icons/LogoutIcon.vue';
     }
 
     .profile-info {
-        margin: .375rem 0 0;
+        margin: 0.375rem 0 0;
         display: flex;
         flex-direction: column;
     }
 
     .profile-name,
     .profile-idir {
-        margin-bottom: .375rem;
+        margin-bottom: 0.375rem;
     }
 }
 
 .profile-name,
 .sign-out {
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: 700;
+    display: flex;
+    border: none;
+    cursor: pointer;
 }
 
-.sign-out:hover {
+.sign-out,
+.sign-out:hover:focus {
     background-color: transparent;
-    background-color: #ffffff;
+    background-color: #ffffff !important;
+    color: $light-text-secondary !important;
+    box-shadow: none !important;
 }
 
 .profile-idir,
 .profile-email,
 .options {
-    font-size: .75rem;
+    font-size: 0.75rem;
     font-weight: 400;
 }
 

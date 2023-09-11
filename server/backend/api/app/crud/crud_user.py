@@ -1,6 +1,5 @@
 import logging
 
-from api.app import constants as famConstants
 from api.app.models import model as models
 from sqlalchemy.orm import Session, load_only
 
@@ -74,27 +73,6 @@ def create_user(fam_user: schemas.FamUser, db: Session):
     db.add(db_item)
     db.flush()
     return db_item
-
-
-def delete_user(db: Session, user_id: int):
-    """deletes a user
-
-    :param db: _description_
-    :type db: Session
-    :param user_id: _description_
-    :type user_id: int
-    :return: _description_
-    :rtype: _type_
-    """
-    fam_user = (
-        db.query(models.FamUser)
-        .options(load_only("user_id"))
-        .filter(models.FamUser.user_id == user_id)
-        .one()
-    )
-    db.delete(fam_user)
-    db.flush()
-    return fam_user
 
 
 def find_or_create(

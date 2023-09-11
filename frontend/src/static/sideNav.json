@@ -4,25 +4,14 @@
         "items": [
             {
                 "name": "Dashboard",
-                "icon": "DashboardIcon",
+                "icon": "dashboard",
                 "link": "/dashboard",
                 "disabled": false
             },
             {
                 "name": "Grant Access",
-                "icon": "VirtualColumnKeyIcon",
+                "icon": "virtual-column--key",
                 "link": "/grant",
-                "disabled": true
-            }
-        ]
-    },
-    {
-        "name": "Management",
-        "items": [
-            {
-                "name": "Settings",
-                "icon": "SettingsIcon",
-                "link": "#",
                 "disabled": true
             }
         ]

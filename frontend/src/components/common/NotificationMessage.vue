@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Message from 'primevue/message';
+import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     msgText: {
@@ -7,10 +8,6 @@ const props = defineProps({
         required: true,
     },
     severity: {
-        type: String,
-        required: true,
-    },
-    icon: {
         type: String,
         required: true,
     },
@@ -25,8 +22,8 @@ const props = defineProps({
             :severity="props.severity"
             :sticky="true"
         >
-            <Icon :icon="props.icon" medium />
-            <span class="message-text">
+            <Icon icon="checkmark--filled" :size="IconSize.medium" />
+            <span class="custom-message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>
         </Message>
@@ -34,29 +31,13 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/styles.scss';
-
-svg {
-    margin-right: .9375rem;
-    vertical-align: middle;
-}
-
-strong {
-    text-transform: capitalize;
-}
-
-.message-text {
-    color: $text-primary;
-}
-
+@import '@/assets/styles/styles.scss';
 .message-container {
     position: relative;
     align-items: center;
 }
 
-.p-message {
-    position: absolute;
-    left: 0;
-    right: 0;
+.custom-message-text {
+    color: $light-text-primary;
 }
 </style>

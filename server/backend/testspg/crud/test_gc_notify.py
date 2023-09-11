@@ -1,4 +1,5 @@
 import logging
+from pydantic import ValidationError
 import pytest
 from requests import HTTPError
 from api.app.integration.gc_notify import GCNotifyEmailService
@@ -32,16 +33,14 @@ class TestGCNotifyEmailServiceClass(object):
         """
         The test checks the error handling when provide an invalid email address
         """
-        test_params: GCNotifyGrantAccessEmailParam = GCNotifyGrantAccessEmailParam(
-            **{
-                "user_name": "cmeng",
-                "application_name": "fam",
-                "send_to_email": "catherine.meng",
-            }
-        )
-
         with pytest.raises(Exception) as excinfo:
-            self.gc_notify_email_service.send_granted_access_email(test_params)
+            _test_params = GCNotifyGrantAccessEmailParam(
+                **{
+                    "user_name": "cmeng",
+                    "application_name": "fam",
+                    "send_to_email": "catherine.meng",
+                }
+            )
 
-        assert excinfo.type == HTTPError
-        assert excinfo.match("400 Client Error: Bad Request")
+        assert excinfo.type == ValidationError
+        assert excinfo.match("value is not a valid email address")

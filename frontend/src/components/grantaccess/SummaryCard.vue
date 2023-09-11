@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type PropType, onMounted } from 'vue';
-import Card from 'primevue/card';
-import Button from 'primevue/button';
+import Button from '@/components/common/Button.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import Card from 'primevue/card';
+import { onMounted, type PropType } from 'vue';
 
 import { useNotificationMessage } from '@/store/NotificationState';
 
+import LoadingState from '@/store/LoadingState';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
 
 const props = defineProps({
@@ -13,9 +14,9 @@ const props = defineProps({
         type: Object as PropType<FamUserRoleAssignmentCreate>,
         required: true,
     },
-    loading: {
-        type: Boolean,
-        default: false,
+    role_name: {
+        type: String,
+        required: true,
     },
 });
 
@@ -38,6 +39,10 @@ onMounted(() => {
                             <label>User name:&nbsp;</label>
                             <span>{{ props.data.user_name }}</span>
                         </p>
+                        <p>
+                            <label>Assign role:&nbsp;</label>
+                            <span>{{ props.role_name }}</span>
+                        </p>
                         <p v-if="props.data.forest_client_number">
                             <label>Forest Client ID:&nbsp;</label
                             ><span>
@@ -55,21 +60,21 @@ onMounted(() => {
                         <Button
                             type="submit"
                             id="grantAccessSubmit"
+                            :name="'grantAccessSubmit'"
                             class="mb-3"
+                            aria-label="Submit form"
+                            :label="'Submit'"
+                            :loading-label="'Submitting...'"
                             v-on:click="$emit('submit')"
-                            :disabled="props.loading"
+                            :disabled="LoadingState.isLoading.value"
                         >
-                            <div v-if="loading">
-                                <span> Loading... </span>
-                            </div>
-                            <div v-else>Submit</div>
                         </Button>
                         <Button
                             class="m-3"
                             outlined
                             @click="$router.push('/grant')"
                             label="Edit Form"
-                            :disabled="props.loading"
+                            :disabled="LoadingState.isLoading.value"
                         >
                         </Button>
                     </div>

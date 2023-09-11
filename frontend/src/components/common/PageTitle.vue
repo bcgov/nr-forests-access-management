@@ -21,13 +21,13 @@ const props = defineProps({
 .title {
     font-size: 2rem;
     line-height: 2.5rem;
-    color: $text-primary;
+    color: $light-text-primary;
 }
 
 .subtitle {
-    font-size: .875rem;
+    font-size: 0.875rem;
     line-height: 1.125rem;
-    letter-spacing: .01rem;
-    color: $text-secondary;
+    letter-spacing: 0.01rem;
+    color: $light-text-secondary;
 }
 </style>

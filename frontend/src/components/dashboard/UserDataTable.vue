@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
-import type { PropType } from 'vue';
+import { IconSize } from '@/enum/IconEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { FilterMatchMode } from 'primevue/api';
+import Column from 'primevue/column';
+import ConfirmDialog from 'primevue/confirmdialog';
+import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import { useConfirm } from 'primevue/useconfirm';
+import type { PropType } from 'vue';
+import { reactive, ref } from 'vue';
+
+const confirm = useConfirm();
 
 const props = defineProps({
     loading: {
@@ -40,11 +45,49 @@ const filters = ref({
         matchMode: FilterMatchMode.CONTAINS,
     },
 });
+
+const confirmDeleteData = reactive({
+    userName: '',
+    role: '',
+});
+
+const emit = defineEmits<{
+    (
+        e: 'deleteUserRoleAssignment',
+        item: FamApplicationUserRoleAssignmentGet
+    ): void;
+}>();
+
+function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
+    confirmDeleteData.role = assignment.role.role_name;
+    confirmDeleteData.userName = assignment.user.user_name;
+    confirm.require({
+        group: 'deleteAssignment',
+        header: 'Remove Access',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Remove',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            emit('deleteUserRoleAssignment', assignment);
+        },
+    });
+}
 </script>
 
 <template>
-    <div class="p-access-table">
-        <div class="p-table-header">
+    <ConfirmDialog group="deleteAssignment">
+        <template #message>
+            <p>
+                Are you sure you want to remove
+                <strong>{{ confirmDeleteData.role }}</strong> access to
+                <strong>{{ confirmDeleteData.userName }}</strong> in
+                <strong>{{ selectedApplicationDisplayText }}</strong>
+            </p>
+        </template>
+    </ConfirmDialog>
+
+    <div class="custom-data-table">
+        <div class="custom-data-table-header">
             <h3>{{ selectedApplicationDisplayText }} users</h3>
             <span>
                 This table shows all the users in
@@ -54,8 +97,12 @@ const filters = ref({
         </div>
 
         <span class="p-input-icon-right">
-            <i class="pi pi-search" />
-            <InputText class="dash-search" v-model="filters['global'].value" />
+            <Icon icon="search" :size="IconSize.small" />
+            <InputText
+                id="dashboardSearch"
+                class="dash-search"
+                v-model="filters['global'].value"
+            />
         </span>
 
         <DataTable
@@ -80,7 +127,7 @@ const filters = ref({
             <template #loading> Loading users data. Please wait. </template>
             <Column header="User name" sortable field="user.user_name">
                 <template #body="{ data }">
-                    <Icon icon="AvatarFilledIcon" medium />
+                    <Icon icon="user--avatar--filled" :size="IconSize.medium" />
                     <span class="span-icon">
                         {{ data.user.user_name }}
                     </span>
@@ -109,7 +156,7 @@ const filters = ref({
                 <template #body="{ data }">
                     <button
                         class="btn btn-icon"
-                        @click="$emit('deleteUserRoleAssignment', data)"
+                        @click="deleteAssignment(data)"
                     >
                         <span class="remove-action">Remove</span>
                     </button>
@@ -122,6 +169,30 @@ const filters = ref({
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 
+.custom-data-table {
+    margin-top: 4.9375rem;
+    background: transparent;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border: 0.125rem solid $light-border-subtle-00;
+}
+
+.custom-data-table-header {
+    padding: 1rem 1rem 1.5rem;
+    h3 {
+        @extend %heading-03;
+        margin: 0;
+        padding: 0;
+    }
+
+    span {
+        @extend %body-compact-01;
+        margin: 0;
+        padding: 0;
+        color: $light-text-secondary;
+    }
+}
+
+// update primevue style but only for FAM
 .p-input-icon-right {
     width: 100%;
     z-index: 1;
@@ -133,22 +204,15 @@ const filters = ref({
         border: none;
     }
 }
-
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
     display: none;
 }
 
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    box-shadow: 0 -.0625rem 0 0 #dfdfe1 inset;
+.span-icon {
+    margin-left: 0.9375rem;
 }
 
-.p-datatable-header {
-    padding: 0 !important;
-}
-.span-icon {
-    margin-left: .9375rem;
-}
 .remove-action {
-    color: $text-error;
+    color: $light-text-error;
 }
 </style>
