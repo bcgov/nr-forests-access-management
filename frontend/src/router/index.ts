@@ -7,6 +7,7 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import SummaryView from '@/views/SummaryView.vue';
+import { getApplicationRoles } from './GrantAccessGuards';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -27,7 +28,7 @@ const routes = [
         name: 'landing',
         meta: {
             title: 'Welcome to FAM',
-            layout: 'SimpleLayout'
+            layout: 'SimpleLayout',
         },
         component: LandingView,
     },
@@ -36,7 +37,7 @@ const routes = [
         name: 'dashboard',
         meta: {
             title: 'Dashboard',
-            layout: 'ProtectedLayout'
+            layout: 'ProtectedLayout',
         },
         component: DashboardView,
     },
@@ -45,16 +46,21 @@ const routes = [
         name: 'grant',
         meta: {
             title: 'Grant Access',
-            layout: 'ProtectedLayout'
+            layout: 'ProtectedLayout',
+            isRequiredAuth: true,
         },
         component: GrantAccessView,
+        // beforeEnter: [getApplicationRoles(to, from, next)]
+        beforeEnter: (to, from, next) => {
+            getApplicationRoles(to, from, next);
+        },
     },
     {
         path: '/summary',
         name: 'summary',
         meta: {
             title: 'Access request summary',
-            layout: 'ProtectedLayout'
+            layout: 'ProtectedLayout',
         },
         component: SummaryView,
     },

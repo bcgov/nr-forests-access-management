@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
+import { loadingData } from '@/router/GrantAccessGuards';
 
 const props = defineProps({
     isApplicationSelected: {
@@ -9,6 +10,11 @@ const props = defineProps({
         default: false,
     },
 });
+
+const handleClick = () => {
+    loadingData.value = true;
+    router.push('/grant');
+};
 </script>
 
 <template>
@@ -20,8 +26,8 @@ const props = defineProps({
             <Button
                 v-if="props.isApplicationSelected"
                 class="dashboard-button"
-                label="Grant new access"
-                @click="router.push('/grant')"
+                :label="loadingData ? 'Loading...' : 'Grant new access'"
+                @click="handleClick"
             >
                 <Icon icon="add" :size="IconSize.medium" />
             </Button>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { number, object, string } from 'yup';
 
 import Dropdown from 'primevue/dropdown';
@@ -10,18 +10,19 @@ import RadioButton from 'primevue/radiobutton';
 import ForestClientCard from './ForestClientCard.vue';
 import UserIdentityCard from './UserIdentityCard.vue';
 import Button from '../common/Button.vue';
+import ProgressSpinner from 'primevue/progressspinner';
+
+import {
+    resetForm,
+    applicationRoleOptions,
+    loadingData,
+} from '@/router/GrantAccessGuards';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import {
-    selectedApplication,
-    selectedApplicationDisplayText,
-} from '@/store/ApplicationState';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import {
     FOREST_CLIENT_INPUT_MAX_LENGTH,
     domainOptions,
-    getGrantAccessFormData,
-    grantAccessFormData,
-    resetGrantAccessFormData,
     setGrantAccessFormData,
     grantAccessFormRoleName,
 } from '@/store/GrantAccessDataState';
@@ -58,35 +59,15 @@ const formValidationSchema = object({
 });
 
 const loading = ref<boolean>(false);
-let applicationRoleOptions: FamApplicationRole[];
 let forestClientData: FamForestClient[] | null;
 let verifiedUserIdentity: IdimProxyIdirInfo | null;
 
 const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 
 const buttonLabel = computed(() => {
     return loading.value ? 'Verifying...' : 'Verify';
-});
-
-onMounted(async () => {
-    try {
-        applicationRoleOptions = (
-            await applicationsApi.getFamApplicationRoles(
-                selectedApplication.value?.application_id as number
-            )
-        ).data;
-
-        if (grantAccessFormData.value) {
-            formData.value = getGrantAccessFormData();
-        } else {
-            resetForm();
-        }
-    } catch (error: unknown) {
-        return Promise.reject(error);
-    }
 });
 
 const isIdirDomainSelected = () => {
@@ -126,11 +107,6 @@ function resetVerifiedUserIdentity() {
 function resetForestClientNumberData() {
     forestClientData = null;
     formData.value['forestClientNumber'] = '';
-}
-
-function resetForm() {
-    resetGrantAccessFormData();
-    formData.value = defaultFormData;
 }
 
 function cancelForm() {
@@ -327,7 +303,9 @@ function roleSelected(evt: any) {
                                     v-bind="field.value"
                                     @update:modelValue="handleChange"
                                     @change="roleSelected($event)"
-                                    :class="{ 'is-invalid': errors.role_id }"
+                                    :class="{
+                                        'is-invalid': errors.role_id,
+                                    }"
                                 >
                                 </Dropdown>
                             </Field>
