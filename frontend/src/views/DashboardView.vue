@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Dashboard from '@/components/dashboard/Dashboard.vue';
+import ManagePermissions from '@/components/managePermissions/ManagePermissions.vue';
 </script>
 
 <template>
-    <Dashboard />
+    <ManagePermissions />
 </template>

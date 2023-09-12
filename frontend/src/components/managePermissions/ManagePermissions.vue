@@ -3,8 +3,8 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
-import DashboardTitle from '@/components/dashboard/DashboardTitle.vue';
-import UserDataTable from '@/components/dashboard/UserDataTable.vue';
+import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
+import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -85,7 +85,7 @@ async function deleteUserRoleAssignment(
 </script>
 
 <template>
-    <DashboardTitle :isApplicationSelected="isApplicationSelected" />
+    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">
         <div class="application-group">
