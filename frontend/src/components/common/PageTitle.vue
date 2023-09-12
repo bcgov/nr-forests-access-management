@@ -22,6 +22,7 @@ const props = defineProps({
     font-size: 2rem;
     line-height: 2.5rem;
     color: $light-text-primary;
+    font-weight: 400;
 }
 
 .subtitle {
