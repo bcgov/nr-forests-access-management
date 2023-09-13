@@ -45,7 +45,7 @@ def mock_forest_client():
 def test_init_with_request_param_client_number_too_long_error(
 ):
     request_dict = {**sample_request_dict, "forest_client_number": CLIENT_NUMBER_LEN_TOO_LONG}
-    with pytest.raises(ValidationError, match="ensure this value has at most 8 characters"):
+    with pytest.raises(ValidationError, match="String should have at most 8 characters"):
         request = FamUserRoleAssignmentCreate(**request_dict)
         UserRoleValidator(request)
 

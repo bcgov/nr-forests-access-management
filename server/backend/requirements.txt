@@ -6,7 +6,6 @@ pydantic-core==2.6.3
 httpx==0.24.1
 uvicorn[standard]==0.23.2
 SQLAlchemy==2.0.20
-# sqlmodel==0.0.8
 email-validator==2.0.0.post2
 requests==2.31.0
 psycopg2-binary==2.9.7

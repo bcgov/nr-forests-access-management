@@ -122,7 +122,6 @@ def create_user_role(
 def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
     record = (
         db.query(models.FamUserRoleXref)
-        .options(load_only("user_role_xref_id"))
         .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
         .one()
     )

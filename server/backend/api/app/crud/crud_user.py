@@ -68,7 +68,7 @@ def create_user(fam_user: schemas.FamUser, db: Session):
     """
     LOGGER.debug(f"Creating Fam_User: {fam_user}")
 
-    fam_user_dict = fam_user.dict()
+    fam_user_dict = fam_user.model_dump()
     db_item = models.FamUser(**fam_user_dict)
     db.add(db_item)
     db.flush()
