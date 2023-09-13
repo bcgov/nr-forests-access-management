@@ -8,16 +8,16 @@ body {
 .main {
     position: absolute;
     display: block;
-    top: $header-height;
+    height: calc(100vh - $header-height);
     left: 16rem;
     right: 0;
-    bottom: 1rem;
+    bottom: 0;
     overflow: auto;
     padding: 2.62rem 2rem 0;
 }
 
 .page-body {
-    margin-top: 3rem;
+    margin-top: 2rem;
 }
 
 .form-container {
@@ -59,4 +59,3 @@ input[type='number'] {
 .p-inputtext {
     font-family: inherit;
 }
-

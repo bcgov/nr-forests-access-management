@@ -5,7 +5,7 @@
         <div class="col-6">
             <PageTitle
                 title="Manage permissions"
-                subtitle="Add permissions or edit users for the selected application"
+                subtitle="Add permissions or edit users and delegated admins for the selected application"
             />
         </div>
     </div>

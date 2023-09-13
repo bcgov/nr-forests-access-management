@@ -85,17 +85,17 @@ async function deleteUserRoleAssignment(
 </script>
 
 <template>
-    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
+    <ManagePermissionsTitle />
 
     <div class="page-body">
         <div class="application-group">
-            <label>Select an application you would like to grant access</label>
+            <label>You are modifying access in this application:</label>
             <Dropdown
                 v-model="selectedApplication"
                 @change="selectApplication"
                 :options="selectApplicationOptions"
                 optionLabel="application_description"
-                placeholder="Choose an option"
+                placeholder="Choose or enter an application to manage permissions"
                 class="application-dropdown"
             />
         </div>
@@ -107,7 +107,6 @@ async function deleteUserRoleAssignment(
         />
 
         <UserDataTable
-            v-if="isApplicationSelected"
             :loading="LoadingState.isLoading.value"
             :userRoleAssignments="userRoleAssignments || []"
             :selectedApplicationDisplayText="selectedApplicationDisplayText"
@@ -126,5 +125,9 @@ async function deleteUserRoleAssignment(
 
 .application-group {
     display: grid;
+
+    label {
+        margin-bottom: 0.5rem;
+    }
 }
 </style>
