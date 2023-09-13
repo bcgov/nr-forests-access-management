@@ -115,7 +115,7 @@ If you have multiple python projects locally and you want to isolate your FAM de
 cd server/backend
 python3 -m venv venv
 . ./venv/bin/activate
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 python serverstart.py
 ```
 
@@ -136,7 +136,7 @@ Assuming you've already installed the dependencies from requirements.txt, you ju
 
 ```
 cd server/backend
-pip3 install -r requirements-dev.txt
+pip install -r requirements-dev.txt
 ```
 
 ## Run tests from the command line
