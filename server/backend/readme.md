@@ -4,8 +4,8 @@ Backend API for Forest Access Management
 
 # Running the API with Docker Compose
 
-* On the command line, go to the root of the repository
-* Enter the command: `docker-compose up`
+- On the command line, go to the root of the repository
+- Enter the command: `docker-compose up`
 
 This will do three things:
 
@@ -16,28 +16,28 @@ This will do three things:
 
 Potential "gotchas":
 
-* The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
-* When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
-* There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1001__add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
-* Currently the unit tests for the API depend on connecting to the forest client API. You have to put the API key into local-dev.env in order for them to work. (Somebody please make a mock for this service!)
-* Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
+- The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
+- When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
+- There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1001\_\_add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
+- Currently the unit tests for the API depend on connecting to the forest client API. You have to put the API key into local-dev.env in order for them to work. (Somebody please make a mock for this service!)
+- Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
 
 # Running the API locally
 
 These instructions assume running **without** a python virtual environment (VENV). See below for VENV considerations. If you want to be able to debug with VS Code, don't use VENV.
 
 ## Start the Database
-==> ***See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1001__add_local_user_cognito_id.sql`."***
+
+==> **_See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1001__add_local_user_cognito_id.sql`."_**
 
 Instruction in summary:
-* Go to **".server/flyway/local_sql/"** folder.
-* Rename file **sample_V1001__add_local_user_cognito_id.sql** to **V1001__add_local_user_cognito_id.sql**
-* Open the script and find the entry corresponding to your user.
-* Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
 
+- Go to **".server/flyway/local_sql/"** folder.
+- Rename file **sample_V1001\_\_add_local_user_cognito_id.sql** to **V1001\_\_add_local_user_cognito_id.sql**
+- Open the script and find the entry corresponding to your user.
+- Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
 
-**Note!!**: If you already had a database running initially and you adjust the `sample_V1001__add_local_user_cognito_id.sql` script to "V1001__..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
-
+**Note!!**: If you already had a database running initially and you adjust the `sample_V1001__add_local_user_cognito_id.sql` script to "V1001\_\_..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
 
 When running the API locally, you still need to have a working database to connect to. Docker compose can run everything **other than the API** with the command:
 
@@ -56,21 +56,22 @@ pip install -r requirements.txt
 
 Potential gotchas (developer notes -- may not need!):
 
-* `sudo apt-get install libpq-dev` -
-    (was missing pg_config executable)
+- `sudo apt-get install libpq-dev` -
+  (was missing pg_config executable)
 
-* `pip install wheel` -
-    (needed to make this explicit)
+- `pip install wheel` -
+  (needed to make this explicit)
 
-* `sudo apt-get install python3-dev` -
-    (build was failing without this, should make sure that you are running python 3.8. )
+- `sudo apt-get install python3-dev` -
+  (build was failing without this, should make sure that you are running python 3.8. )
 
-* `sudo apt-get install python3.8` -
-    Make sure you are running python 3.8
+- `sudo apt-get install python3.8` -
+  Make sure you are running python 3.8
 
-* Make sure you have the correct Python interpreter selected. <Cntl><Shift><P> "Python: Select Interpreter" will give you the option if you don't want the default VENV (from settings.json). Default is VENV.
+- Make sure you have the correct Python interpreter selected. <Cntl><Shift><P> "Python: Select Interpreter" will give you the option if you don't want the default VENV (from settings.json). Default is VENV.
 
 ## Create or update the necessary environment variables
+
 In general, if there is a setting change in local-dev.env, run below to have correct environments setup.
 
 Note: This is no longer necessary if running through Docker or running tests through VS Code testrunner, as they both reference the .env file at startup.
@@ -81,6 +82,7 @@ set -o allexport; source local-dev.env; set +o allexport
 ```
 
 ### Configure external services to work locally
+
 FAM backend uses external services. These services genrally need some credentials or api tokens. The credentials or tokens should not be harcoded in "`local-dev.env`". For running backend locally or run tests locally, developers may find problem with connecting to these services. Developers can get the values and hardcode the value locally but should not commit these key values. If these are accidently commited, they should be rest.
 
 <b>FC_API_TOKEN</b>: \
@@ -117,6 +119,12 @@ pip install -r requirements.txt
 python serverstart.py
 ```
 
+Can use pip3 to check virtual environment dependencies version.
+
+```
+pip3 freeze
+```
+
 # Running the tests
 
 Tests are running using pytest. They can be run from the command line or using VS Code tools.
@@ -137,19 +145,21 @@ pip install -r requirements-dev.txt
 cd server/backend
 ```
 
-* bring up VENV environment
+- bring up VENV environment
+
 ```
 . ./venv/bin/activate
 ```
 
-* run postgres tests
+- run postgres tests
+
 ```
 pytest
 ```
 
 Potential gotchas:
 
-* `server/backend/pytest.ini` includes some default env values but it utilizes "pytest-dotenv" to load necessary environment from local-dev.env file (see env_files: line). Some are not actually used (confirm), but need to be provided with some value for the code to run in test mode. If new tests need new environment value to be read, add it to local-dev.env should be fine (in general, keep it under one file) then if necessary, override the value in pytest.ini or config file.
+- `server/backend/pytest.ini` includes some default env values but it utilizes "pytest-dotenv" to load necessary environment from local-dev.env file (see env_files: line). Some are not actually used (confirm), but need to be provided with some value for the code to run in test mode. If new tests need new environment value to be read, add it to local-dev.env should be fine (in general, keep it under one file) then if necessary, override the value in pytest.ini or config file.
 
 ## Run tests from VS Code
 
@@ -158,12 +168,13 @@ There is a test configuration in .vscode/launch.json. In VS Code there is a buns
 If you created your virtualenv in the folder `backend` then the `.vscode/settings.json` should be able to find the virtualenv that you are looking for, and the tests should be configured.
 
 If for some reason not then:
-* <ctrl><shift>P
-* type in `Python: Configure Tests`
-* Select `Pytest`
-* For Root Directory select `.`
+
+- <ctrl><shift>P
+- type in `Python: Configure Tests`
+- Select `Pytest`
+- For Root Directory select `.`
 
 for test Output,
-* find the `output` tab
-* select `Python Test Log` in from the pulldown, top right of the output window
 
+- find the `output` tab
+- select `Python Test Log` in from the pulldown, top right of the output window
