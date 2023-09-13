@@ -19,8 +19,8 @@ endPoint_search = f"{apiPrefix}/forest_clients/search"
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_error_type", [
-    ("11", "value_error.any_str.min_length"),
-    ("000001011", "value_error.any_str.max_length")
+    ("11", "string_too_short"),
+    ("000001011", "string_too_long")
 ])
 def test_search_client_number_invalid_length_error(
     client_id_to_test,

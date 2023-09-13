@@ -34,7 +34,7 @@ def get_roles(db: Session) -> List[models.FamRole]:
 def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
     LOGGER.debug(f"Creating Fam role: {role}")
 
-    fam_role_dict = role.dict()
+    fam_role_dict = role.model_dump()
     forest_client_number = fam_role_dict["forest_client_number"]
     del fam_role_dict["forest_client_number"]
 
