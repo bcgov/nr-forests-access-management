@@ -15,3 +15,5 @@ declare module '@carbon/icons-vue/es/user--avatar--filled/20';
 declare module '@carbon/icons-vue/es/user--avatar/20';
 
 declare module '@carbon/icons-vue/es/error--filled/24';
+declare module '@carbon/icons-vue/es/trash-can/16';
+declare module '@carbon/icons-vue/es/edit/16';

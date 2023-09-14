@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { IconSize } from '@/enum/IconEnum';
-import { isApplicationSelected } from '@/store/ApplicationState';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { reactive, ref } from 'vue';
+import IconCapitol from '@/components/common/IconCapitol.vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
-import ConfirmDialog from 'primevue/confirmdialog';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import { IconSize } from '@/enum/IconEnum';
 import { useConfirm } from 'primevue/useconfirm';
+import ConfirmDialog from 'primevue/confirmdialog';
 import type { PropType } from 'vue';
-import { reactive, ref } from 'vue';
-
-import IconCapitol from '@/components/common/IconCapitol.vue';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
 const confirm = useConfirm();
 
@@ -29,6 +27,11 @@ const props = defineProps({
     selectedApplicationDisplayText: {
         type: String,
         requried: true,
+    },
+    isApplicationSelected: {
+        type: Boolean,
+        required: true,
+        default: false,
     },
 });
 
@@ -90,7 +93,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     </ConfirmDialog>
 
     <div class="custom-data-table-bg-layer">
-        <div v-if="!isApplicationSelected" class="no-app-selected">
+        <div v-if="!props.isApplicationSelected" class="no-app-selected">
             <IconCapitol />
             <p class="no-app-selected-title" no-app-selected>
                 Nothing to show yet!
@@ -109,7 +112,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     levels
                 </span>
             </div>
-
             <span class="p-input-icon-right">
                 <Icon icon="search" :size="IconSize.small" />
                 <InputText
@@ -135,17 +137,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     'role.client_number.forest_client_number',
                 ]"
                 paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                currentPageReportTemplate="{currentPage} of {totalPages} pages"
+                currentPageReportTemplate="{first} - {last} of {totalRecords} items"
+                stripedRows
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User name" sortable field="user.user_name">
                     <template #body="{ data }">
-                        <Icon
-                            icon="user--avatar--filled"
-                            :size="IconSize.medium"
-                        />
-                        <span class="span-icon">
+                        <span>
                             {{ data.user.user_name }}
                         </span>
                     </template>
@@ -153,6 +152,26 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 <Column
                     field="user.user_type.description"
                     header="Domain"
+                    sortable
+                ></Column>
+                <Column
+                    field="firstName"
+                    header="First name"
+                    sortable
+                ></Column>
+                <Column
+                    field="lastName"
+                    header="Last name"
+                    sortable
+                ></Column>
+                <Column
+                    field="email"
+                    header="Email"
+                    sortable
+                ></Column>
+                <Column
+                    field="role.client_number.forest_client_number"
+                    header="Client ID"
                     sortable
                 ></Column>
                 <Column field="role.role_name" header="Role" sortable>
@@ -165,17 +184,20 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     </template></Column
                 >
                 <Column
-                    field="role.client_number.forest_client_number"
-                    header="Forest Client ID"
-                    sortable
-                ></Column>
-                <Column>
+                    header="Action"
+                >
                     <template #body="{ data }">
+                        <button
+                            class="btn btn-icon"
+                            disabled
+                        >
+                            <Icon icon="edit" :size="IconSize.small"/>
+                        </button>
                         <button
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
                         >
-                            <span class="remove-action">Remove</span>
+                            <Icon icon="trash-can" :size="IconSize.small"/>
                         </button>
                     </template>
                 </Column>
@@ -187,26 +209,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 
-.custom-data-table-bg-layer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin-top: 3rem;
-    width: 100%;
-    height: auto;
-    border-radius: 0.25rem;
-    background: $light-layer-one;
-    // justify-content: center;
-    // align-items: center;
+.btn-icon {
+    padding: 0.4rem !important;
+    margin-right: 0.5rem;
 }
 
-.custom-data-table {
-    margin: 4.9375rem 2.5rem 2.5rem;
-    background: transparent;
-    border-radius: 0.25rem 0.25rem 0 0;
-    border: 0.125rem solid $light-border-subtle-00;
+.btn-icon:disabled {
+    border: none;
 }
-
 .custom-data-table-header {
     padding: 1rem 1rem 1.5rem;
     h3 {
@@ -223,6 +233,25 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     }
 }
 
+.custom-data-table-bg-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: 5rem;
+    width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+    background: $light-layer-one;
+}
+
+.custom-data-table {
+    margin: 4.9375rem 2.5rem 2.5rem;
+    background: transparent;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border: 0.125rem solid $light-border-subtle-00;
+}
+
+
 // update primevue style but only for FAM
 .p-input-icon-right {
     width: 100%;
@@ -237,14 +266,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
     display: none;
-}
-
-.span-icon {
-    margin-left: 0.9375rem;
-}
-
-.remove-action {
-    color: $light-text-error;
 }
 
 /// ----------- no application selected

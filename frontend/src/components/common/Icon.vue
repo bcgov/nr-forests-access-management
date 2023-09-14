@@ -59,6 +59,12 @@ const icons = {
     'error--filled24': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/24')
     ),
+    'trash-can16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/trash-can/16')
+    ),
+    edit16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/edit/16')
+    ),
 } as any;
 </script>
 

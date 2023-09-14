@@ -28,10 +28,10 @@ onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
         await applicationsApi.getApplications()
-    ).data;
-    if (isApplicationSelected) {
-        await getAppUserRoleAssignment();
-    }
+        ).data;
+        if (isApplicationSelected) {
+            await getAppUserRoleAssignment();
+        }
 });
 
 onUnmounted(() => {
@@ -85,7 +85,7 @@ async function deleteUserRoleAssignment(
 </script>
 
 <template>
-    <ManagePermissionsTitle />
+    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">
         <div class="application-group">
@@ -107,6 +107,7 @@ async function deleteUserRoleAssignment(
         />
 
         <UserDataTable
+            :isApplicationSelected="isApplicationSelected"
             :loading="LoadingState.isLoading.value"
             :userRoleAssignments="userRoleAssignments || []"
             :selectedApplicationDisplayText="selectedApplicationDisplayText"
