@@ -11,7 +11,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = var.minimum_oidc_attribute_list
+  read_attributes                               = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [ var.fam_console_idp_name ]
 
