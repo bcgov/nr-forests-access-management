@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import Button from '@/components/common/Button.vue';
 import { computed, ref } from 'vue';
-
+import Avatar from 'primevue/avatar';
+import Button from '@/components/common/Button.vue';
 import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
 
 const userName = authService.state.value.famLoginUser!.username;
+const initals = userName ? userName.slice(0, 2) : '';
+const displayName = authService.state.value.famLoginUser!.displayName;
+const email = authService.state.value.famLoginUser!.email;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -45,20 +48,16 @@ const buttonLabel = computed(() => {
                 </button>
             </div>
             <div class="sidebar-body">
-                <!-- TODO - This code below is for displaying user information when it is available -->
-                <!-- <div class="img-wrapper">
-                    <img
-                        src="../../assets/images/tyrannosaurus-rex1.png"
-                        alt="User avatar"
-                    />
-                </div> -->
+                <Avatar
+                    :label="initals"
+                    class="mr-2 profile-avatar"
+                    size="xlarge"
+                    shape="circle"
+                />
                 <div class="profile-info">
-                    <p class="profile-name">
-                        {{ userName }}
-                    </p>
-                    <!-- TODO - This code below is for displaying user information when it is available -->
-                    <!-- <p class="profile-idir">IDIR:</p>
-                    <p class="profile-email">email</p> -->
+                    <p class="profile-name">{{ displayName }}</p>
+                    <p class="profile-idir">IDIR: {{ userName }}</p>
+                    <p class="profile-email">{{ email }}</p>
                 </div>
             </div>
             <hr class="profile-divider" />
@@ -85,6 +84,7 @@ const buttonLabel = computed(() => {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+@import '@/assets/styles/base.scss';
 .profile-container {
     background-color: #fff;
     border-left: 0.0625rem solid #dfdfe1;
@@ -119,8 +119,11 @@ const buttonLabel = computed(() => {
     display: flex;
     margin: 1.875rem 0 0;
 
-    .img-wrapper {
+    .profile-avatar {
         margin-right: 2rem;
+        margin-top: 0.5rem;
+        background: $light-background-brand;
+        color: $dark-text-primary;
     }
 
     .profile-info {
