@@ -99,8 +99,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     Nothing to show yet!
                 </p>
                 <p class="no-app-selected-text">
-                    Choose an application to show a list of users or delegated
-                    admins with access to it.
+                    Choose an application to show a list of users with access to it.
                 </p>
                 <p class="no-app-selected-text"> The list will display here.</p>
             </div>
