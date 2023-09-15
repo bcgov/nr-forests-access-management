@@ -7,10 +7,9 @@ on:
       # Enable a specific branch to temporarily test in the tools environment.
       - "feat/718-auth-lambda-db-user"
       - "feat/773-lambda-segregation"
-
+      - "feat/802-aws-bastion-host-terraform"
 
 jobs:
-
   aws-tools-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
