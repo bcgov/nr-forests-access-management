@@ -28,10 +28,10 @@ onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
         await applicationsApi.getApplications()
-        ).data;
-        if (isApplicationSelected) {
-            await getAppUserRoleAssignment();
-        }
+    ).data;
+    if (isApplicationSelected) {
+        await getAppUserRoleAssignment();
+    }
 });
 
 onUnmounted(() => {

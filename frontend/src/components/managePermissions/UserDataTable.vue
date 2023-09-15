@@ -100,8 +100,9 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             </p>
             <p class="no-app-selected-text">
                 Choose an application to show a list of users or delegated
-                admins with access to it. The list will display here.
+                admins with access to it.
             </p>
+            <p class="no-app-selected-text"> The list will display here.</p>
         </div>
         <div class="custom-data-table" v-else>
             <div class="custom-data-table-header">
@@ -187,12 +188,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     header="Action"
                 >
                     <template #body="{ data }">
+                        <!-- Hidden until functionality is available
                         <button
                             class="btn btn-icon"
-                            disabled
                         >
                             <Icon icon="edit" :size="IconSize.small"/>
-                        </button>
+                        </button> -->
                         <button
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
@@ -219,6 +220,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 .custom-data-table-header {
     padding: 1rem 1rem 1.5rem;
+    background-color: $light-layer-two;
     h3 {
         @extend %heading-03;
         margin: 0;
@@ -239,7 +241,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     right: 0;
     margin-top: 5rem;
     width: 100%;
-    height: auto;
+    min-height: calc(100vh - 22rem);
     border-radius: 0.25rem;
     background: $light-layer-one;
 }
@@ -276,7 +278,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     justify-content: center;
     align-items: center;
     height: calc(100vh - 20rem);
-    margin: 0 23rem;
+    margin: 0 25rem;
 
     svg {
         width: 3rem;
@@ -293,11 +295,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 .no-app-selected-text {
     font-size: 0.875rem;
     color: $light-text-secondary;
+    margin-bottom: 0 !important;
 }
 
-@media (min-width: 1380px) {
+@media (min-width: 1920px) {
     .no-app-selected {
-        margin: 0 32.5rem;
+        margin: 0 40.5rem;
     }
 }
 </style>
