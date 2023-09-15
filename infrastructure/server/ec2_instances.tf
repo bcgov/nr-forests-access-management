@@ -21,6 +21,16 @@ resource "aws_instance" "fam_bastion_host" {
       Name = "fam_bastion_host"
       managed-by = "terraform"
   }
+  user_data = <<EOF
+  #!/bin/bash
+  echo "Installing postgresql15.x86_64" > init.log
+  sudo yum update
+  sudo yum install postgresql15.x86_64
+  echo "Postgres installation done" >> init.log
+
+  EOF
+
+
 }
 
 resource "aws_ec2_instance_state" "fam_bastion_host_state" {
