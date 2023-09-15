@@ -15,7 +15,7 @@ variable "fam_bastion_host_instance_type" {
 resource "aws_instance" "fam_bastion_host" {
   ami                     = "${var.fam_bastion_host_instance_ami}"
   instance_type           = "${var.fam_bastion_host_instance_type}"
-  subnet_id = data.aws_subnet.a_app
+  subnet_id = data.aws_subnet.a_app.id
   vpc_security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
   tags = {
       Name = "fam_bastion_host"
