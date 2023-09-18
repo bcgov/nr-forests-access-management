@@ -6,6 +6,7 @@ on:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
       - "feat/718-auth-lambda-db-user"
+      - "feat/773-lambda-segregation"
 
 
 jobs:

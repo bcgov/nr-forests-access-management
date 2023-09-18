@@ -2,6 +2,10 @@ data "aws_kms_alias" "rds_key" {
   name = "alias/aws/rds"
 }
 
+locals {
+    aws_security_group_fam_data_sg_id = "${aws_security_group.fam_data_sg.id}"
+}
+
 resource "random_password" "famdb_master_password" {
   length           = 16
   special          = true
@@ -52,7 +56,7 @@ module "aurora_postgresql_v2" {
   database_name     = var.famdb_database_name
 
   vpc_id                 = data.aws_vpc.selected.id
-  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
+  vpc_security_group_ids = [local.aws_security_group_fam_data_sg_id]
   db_subnet_group_name   = aws_db_subnet_group.famdb_subnet_group.name
 
   master_username = var.famdb_master_username
@@ -263,7 +267,7 @@ resource "aws_db_proxy" "famdb_proxy_api" {
   role_arn            = aws_iam_role.famdb_api_user_rds_proxy_secret_access_role.arn
   # vpc_security_group_ids = [data.aws_security_group.sg_app.id]
   # vpc_subnet_ids         = [data.aws_subnet.a_datapp_a.id, data.aws_subnet.a_datapp_b.id]
-  vpc_security_group_ids = [data.aws_security_group.sg_data.id]
+  vpc_security_group_ids = [local.aws_security_group_fam_data_sg_id]
   vpc_subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
 
 

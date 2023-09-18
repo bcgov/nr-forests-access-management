@@ -129,12 +129,6 @@ variable "prod_oidc_bcsc_idp_client_id" {
 
 
 # Networking Variables
-
-variable "aws_security_group_data" {
-  description = "Value of the name tag for the DATA security group"
-  type = string
-}
-
 variable "subnet_data_a" {
   description = "Value of the name tag for a subnet in the DATA security group"
   type = string
@@ -142,11 +136,6 @@ variable "subnet_data_a" {
 
 variable "subnet_data_b" {
   description = "Value of the name tag for a subnet in the DATA security group"
-  type = string
-}
-
-variable "aws_security_group_app" {
-  description = "Value of the name tag for the APP security group"
   type = string
 }
 
