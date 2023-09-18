@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import router from '@/router';
-import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     isApplicationSelected: {
@@ -19,23 +17,16 @@ const props = defineProps({
                 subtitle="Add permissions or edit users for the selected application"
             />
         </div>
-        <div class="col-6">
-            <Button
-                v-if="props.isApplicationSelected"
-                class="dashboard-button"
-                label="Grant new access"
-                @click="router.push('/grant')"
-            >
-                <Icon icon="add" :size="IconSize.medium" />
-            </Button>
-        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+<<<<<<< HEAD:frontend/src/components/managePermissions/ManagePermissionsTitle.vue
 .dashboard-button {
     width: 14.6875rem;
     float: right;
 }
+=======
+>>>>>>> 5f86799 (search bar styles and add user btn on dataTable):frontend/src/components/dashboard/DashboardTitle.vue
 </style>
