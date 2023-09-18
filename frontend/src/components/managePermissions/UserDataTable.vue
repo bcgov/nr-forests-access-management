@@ -140,7 +140,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 >
                     <template #empty> No user found. </template>
                     <template #loading> Loading users data. Please wait. </template>
-                    <Column header="User name" sortable field="user.user_name">
+                    <Column header="User Name" sortable field="user.user_name">
                         <template #body="{ data }">
                             <span>
                                 {{ data.user.user_name }}
@@ -155,12 +155,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     <!-- Hidden until information is available
                     <Column
                         field="firstName"
-                        header="First name"
+                        header="First Name"
                         sortable
                     ></Column>
                     <Column
                         field="lastName"
-                        header="Last name"
+                        header="Last Name"
                         sortable
                     ></Column>
                     <Column
