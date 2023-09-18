@@ -99,9 +99,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     Nothing to show yet!
                 </p>
                 <p class="no-app-selected-text">
-                    Choose an application to show a list of users with access to it.
-                </p>
-                <p class="no-app-selected-text"> The list will display here.</p>
+                    Choose an application to show a list of users with access to it. The list will display here.</p>
             </div>
             <div class="custom-data-table" v-else>
                 <div class="custom-data-table-header">
@@ -154,6 +152,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                         header="Domain"
                         sortable
                     ></Column>
+                    <!-- Hidden until information is available
                     <Column
                         field="firstName"
                         header="First name"
@@ -169,6 +168,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                         header="Email"
                         sortable
                     ></Column>
+                     -->
                     <Column
                         field="role.client_number.forest_client_number"
                         header="Client ID"
@@ -283,7 +283,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     justify-content: center;
     align-items: center;
     height: calc(100vh - 20rem);
-    margin: 0 25rem;
+    margin: 0 26rem;
 
     svg {
         width: 3rem;
@@ -305,7 +305,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 @media (min-device-width: 1920px) {
     .no-app-selected {
-        margin: 0 40.5rem;
+        margin: 0 43.3rem;
     }
 
     .custom-data-table-bg-layer {
