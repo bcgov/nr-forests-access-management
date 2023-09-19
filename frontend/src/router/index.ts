@@ -5,7 +5,7 @@ import NotFound from '@/components/NotFound.vue';
 import AuthService from '@/services/AuthService';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
-import DashboardView from '@/views/DashboardView.vue';
+import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import SummaryView from '@/views/SummaryView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
@@ -33,12 +33,12 @@ const routes = [
     },
     {
         path: '/dashboard',
-        name: 'dashboard',
+        name: 'Manage Permissions',
         meta: {
-            title: 'Dashboard',
+            title: 'Manage Permissions',
             layout: 'ProtectedLayout'
         },
-        component: DashboardView,
+        component: ManagePermissionsView,
     },
     {
         path: '/grant',
