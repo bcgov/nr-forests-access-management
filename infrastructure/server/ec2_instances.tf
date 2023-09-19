@@ -1,3 +1,6 @@
+locals {
+    fam_bastion_host_instance_profile_name_prefix = "fam_bastion_host"
+}
 
 variable "fam_bastion_host_instance_ami" {
   description = "Instance image for Bastion Host"
@@ -44,12 +47,12 @@ resource "aws_ec2_instance_state" "fam_bastion_host_state" {
 
 # TODO: experimeting on permission below.
 resource "aws_iam_instance_profile" "fam_ec2_bastion_host_profile" {
-  name = "${aws_instance.fam_bastion_host}_instance_profile"
+  name = "${local.fam_waf_api_gateway_resource_name}_instance_profile"
   role = "${aws_iam_role.fam_ec2_bastion_host_role.name}"
 }
 
 resource "aws_iam_role" "fam_ec2_bastion_host_role" {
-  name = "${aws_instance.fam_bastion_host}_role"
+  name = "${local.fam_waf_api_gateway_resource_name}_role"
 
   assume_role_policy = <<EOF
 {
