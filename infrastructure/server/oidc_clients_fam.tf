@@ -22,7 +22,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = var.minimum_oidc_attribute_list
+  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
 
   depends_on = [
     aws_cognito_identity_provider.dev_idir_oidc_provider,
