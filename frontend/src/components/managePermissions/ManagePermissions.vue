@@ -3,8 +3,8 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
-import DashboardTitle from '@/components/dashboard/DashboardTitle.vue';
-import UserDataTable from '@/components/dashboard/UserDataTable.vue';
+import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
+import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -85,17 +85,17 @@ async function deleteUserRoleAssignment(
 </script>
 
 <template>
-    <DashboardTitle :isApplicationSelected="isApplicationSelected" />
+    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">
         <div class="application-group">
-            <label>Select an application you would like to grant access</label>
+            <label>You are modifying access in this application:</label>
             <Dropdown
                 v-model="selectedApplication"
                 @change="selectApplication"
                 :options="selectApplicationOptions"
                 optionLabel="application_description"
-                placeholder="Choose an option"
+                placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
             />
         </div>
@@ -107,7 +107,7 @@ async function deleteUserRoleAssignment(
         />
 
         <UserDataTable
-            v-if="isApplicationSelected"
+            :isApplicationSelected="isApplicationSelected"
             :loading="LoadingState.isLoading.value"
             :userRoleAssignments="userRoleAssignments || []"
             :selectedApplicationDisplayText="selectedApplicationDisplayText"
@@ -126,5 +126,9 @@ async function deleteUserRoleAssignment(
 
 .application-group {
     display: grid;
+
+    label {
+        margin-bottom: 0.5rem;
+    }
 }
 </style>

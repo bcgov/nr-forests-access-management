@@ -13,7 +13,7 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
-        "@bcgov-nr/nr-fsa-theme": "^1.1.5",
+        "@bcgov-nr/nr-fsa-theme": "^1.2.0",
         "@carbon/icons-vue": "^10.72.1",
         "aws-amplify": "^5.3.6",
         "axios": "0.26.1",

@@ -14,7 +14,10 @@ const props = defineProps({
 <template>
     <div class="row">
         <div class="col-6">
-            <PageTitle title="Dashboard" subtitle="Manage permissions" />
+            <PageTitle
+                title="Manage permissions"
+                subtitle="Add permissions or edit users for the selected application"
+            />
         </div>
         <div class="col-6">
             <Button
@@ -31,7 +34,6 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-
 .dashboard-button {
     width: 14.6875rem;
     float: right;

@@ -3,7 +3,7 @@
         "name": "Main activities",
         "items": [
             {
-                "name": "Dashboard",
+                "name": "Manage Permissions",
                 "icon": "dashboard",
                 "link": "/dashboard",
                 "disabled": false
