@@ -48,6 +48,7 @@ const icons = {
     login20: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/login/20')
     ),
+    add16: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/16')),
     add20: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/20')),
     'user--avatar--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/user--avatar--filled/20')
