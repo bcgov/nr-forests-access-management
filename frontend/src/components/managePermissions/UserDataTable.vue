@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import router from '@/router';
 import IconCapitol from '@/components/common/IconCapitol.vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
@@ -110,14 +111,24 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                         levels
                     </span>
                 </div>
-                <span class="p-input-icon-right">
-                    <Icon icon="search" :size="IconSize.small" />
-                    <InputText
-                        id="dashboardSearch"
-                        class="dash-search"
-                        v-model="filters['global'].value"
-                    />
-                </span>
+                <div class="search-container">
+                    <Button
+                        class="btn-add-user"
+                        label="Add user permission"
+                        @click="router.push('/grant')"
+                    >
+                        <Icon icon="add" :size="IconSize.small" />
+                    </Button>
+                    <span class="p-input-icon-left">
+                        <Icon icon="search" :size="IconSize.small" />
+                        <InputText
+                            id="dashboardSearch"
+                            class="dash-search"
+                            placeholder="Search by keyword"
+                            v-model="filters['global'].value"
+                        />
+                    </span>
+                </div>
 
                 <DataTable
                     v-model:filters="filters"
@@ -258,11 +269,38 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     border: 0.125rem solid $light-border-subtle-00;
 }
 
+.search-container {
+    display: flex;
+}
+
+.btn-add-user {
+    width: 16rem;
+    z-index: 2;
+}
+
+.dash-search {
+    border-radius: 0 0 0 0;
+}
+
+.btn-icon {
+    padding: 0.4rem !important;
+    margin-right: 0.5rem;
+}
+
+.btn-icon:disabled {
+    border: none;
+}
+
 
 // update primevue style but only for FAM
-.p-input-icon-right {
-    width: 100%;
+.p-input-icon-left {
+    height: 2.63rem;
     z-index: 1;
+    flex-grow: 1;
+
+    svg {
+        top: 52%;
+    }
 
     &:deep(.p-inputtext) {
         border-bottom: none;
