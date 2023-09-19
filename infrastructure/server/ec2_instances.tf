@@ -20,7 +20,7 @@ resource "aws_instance" "fam_bastion_host" {
 
   depends_on = [aws_security_group.fam_app_sg]
 
-  iam_instance_profile = "${aws_iam_role.fam_ec2_bastion_host_profile.id}"
+  iam_instance_profile = "${aws_iam_instance_profile.fam_ec2_bastion_host_profile.id}"
 
   tags = {
       Name = "fam_bastion_host"
