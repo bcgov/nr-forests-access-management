@@ -22,11 +22,4 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-<<<<<<< HEAD:frontend/src/components/managePermissions/ManagePermissionsTitle.vue
-.dashboard-button {
-    width: 14.6875rem;
-    float: right;
-}
-=======
->>>>>>> 5f86799 (search bar styles and add user btn on dataTable):frontend/src/components/dashboard/DashboardTitle.vue
 </style>
