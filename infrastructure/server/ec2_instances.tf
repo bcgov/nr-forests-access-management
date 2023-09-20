@@ -15,6 +15,10 @@ variable "fam_bastion_host_instance_type" {
   default     = "t2.micro"
 }
 
+resource "aws_ebs_encryption_by_default" "fam_default_ebs_encryption" {
+  enabled = true
+}
+
 resource "aws_instance" "fam_bastion_host" {
   ami                     = "${var.fam_bastion_host_instance_ami}"
   instance_type           = "${var.fam_bastion_host_instance_type}"
@@ -29,14 +33,14 @@ resource "aws_instance" "fam_bastion_host" {
       Name = "fam_bastion_host"
       managed-by = "terraform"
   }
-  user_data = <<EOF
-  #!/bin/bash
-  echo "Installing postgresql15.x86_64" > init.log
-  sudo yum update
-  sudo yum install postgresql15.x86_64
-  echo "Postgres installation done" >> init.log
+  # user_data = <<EOF
+  # #!/bin/bash
+  # echo "Installing postgresql15.x86_64" > init.log
+  # sudo yum update
+  # sudo yum install postgresql15.x86_64
+  # echo "Postgres installation done" >> init.log
 
-  EOF
+  # EOF
 }
 
 resource "aws_ec2_instance_state" "fam_bastion_host_state" {
