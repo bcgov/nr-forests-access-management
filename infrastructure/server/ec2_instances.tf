@@ -16,7 +16,6 @@ variable "fam_bastion_host_instance_type" {
 }
 
 resource "aws_ebs_encryption_by_default" "fam_default_ebs_encryption" {
-  provider = aws.fam-ca
   enabled = true
 }
 
