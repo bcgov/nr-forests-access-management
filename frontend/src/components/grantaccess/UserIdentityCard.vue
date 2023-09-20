@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { toRaw } from 'vue';
 import type { IdimProxyIdirInfo } from 'fam-api';
 import Card from 'primevue/card';
-import Icon from '../common/Icon.vue';
+import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps<{
     userIdentity: IdimProxyIdirInfo;
 }>(); // Vue3 alternative way for Type the defineProps().
-console.log(toRaw(props.userIdentity))
 </script>
 
 <template>
