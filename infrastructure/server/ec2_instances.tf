@@ -16,6 +16,7 @@ variable "fam_bastion_host_instance_type" {
 }
 
 resource "aws_ebs_encryption_by_default" "fam_default_ebs_encryption" {
+  provider = aws.fam-ca
   enabled = true
 }
 
@@ -25,7 +26,7 @@ resource "aws_instance" "fam_bastion_host" {
   subnet_id = data.aws_subnet.a_app.id
   vpc_security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
 
-  depends_on = [aws_security_group.fam_app_sg]
+  depends_on = [aws_security_group.fam_app_sg, aws_ebs_encryption_by_default.aws_ebs_encryption_by_default.fam_default_ebs_encryption]
 
   iam_instance_profile = "${aws_iam_instance_profile.fam_ec2_bastion_host_profile.id}"
 
