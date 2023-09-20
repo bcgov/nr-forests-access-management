@@ -29,6 +29,10 @@ resource "aws_instance" "fam_bastion_host" {
 
   iam_instance_profile = "${aws_iam_instance_profile.fam_ec2_bastion_host_profile.id}"
 
+  root_block_device {
+    encrypted = true
+  }
+
   tags = {
       Name = "fam_bastion_host"
       managed-by = "terraform"
