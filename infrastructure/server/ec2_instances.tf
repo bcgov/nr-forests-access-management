@@ -15,10 +15,9 @@ variable "fam_util_ec2_instance_type" {
   default     = "t2.micro"
 }
 
-# Comment out to see if any difference.
-# resource "aws_ebs_encryption_by_default" "fam_default_ebs_encryption" {
-#   enabled = true
-# }
+resource "aws_ebs_encryption_by_default" "fam_default_ebs_encryption" {
+  enabled = true
+}
 
 resource "aws_instance" "fam_util_ec2_instance" {
   ami                     = "${var.fam_util_ec2_instance_ami}"
