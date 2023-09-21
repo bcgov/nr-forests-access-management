@@ -20,7 +20,7 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                     Grant access to your users
                 </p>
                 <Button
-                    class="landing-button p-button-primary"
+                    class="landing-button"
                     label="Login with IDIR"
                     id="login-idir-button"
                     @click="authService.methods.login()"
@@ -28,7 +28,8 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
                 <Button
-                    class="landing-button p-button-outlined"
+                    class="landing-button"
+                    outlined
                     label="Login with BCeID"
                     id="login-bceid-button"
                     disabled
@@ -49,12 +50,5 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
 </template>
 
 <style scoped lang="scss">
-@import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
-
-/* for some reason, the button on focus effect in the shared stylesheet
- doesn't work on the landing button, add it here */
-.landing-button:focus {
-    outline: 0.125rem solid #ffffff;
-    outline-offset: -0.25rem;
-}
+@import '@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss';
 </style>
