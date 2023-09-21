@@ -97,7 +97,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         </template>
     </ConfirmDialog>
     <div class="data-table-container">
-        <span class="custom-data-table-bg-layer"></span>
         <div v-if="!props.isApplicationSelected" class="no-app-selected">
             <IconCapitol />
             <p class="no-app-selected-title" no-app-selected>
@@ -226,18 +225,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 .data-table-container {
     margin-top: 2rem;
-    padding-top: 1rem;
-}
-
-.custom-data-table-bg-layer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    min-height: calc(100vh - 13.5rem);
-    border-radius: 0.25rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding: 1rem 0rem;
     background: $light-layer-one;
     z-index: -1;
+    min-height: calc(100vh - 18.745rem);
 }
 
 .btn-icon {
@@ -248,6 +241,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 .btn-icon:disabled {
     border: none;
 }
+
+.custom-data-table {
+    margin: 2.5rem 2rem;
+    background: transparent;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border: 0.125rem solid $light-border-subtle-00;
+}
+
 .custom-data-table-header {
     padding: 1rem 1rem 1.5rem;
     background-color: $light-layer-two;
@@ -263,14 +264,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         padding: 0;
         color: $light-text-secondary;
     }
-}
-
-.custom-data-table {
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
-    background: transparent;
-    border-radius: 0.25rem 0.25rem 0 0;
-    border: 0.125rem solid $light-border-subtle-00;
 }
 
 .search-container {
@@ -324,7 +317,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 20rem);
+    height: calc(100vh - 21.745rem);
+    min-height: 12.5rem;
     margin: 0 26rem;
 
     svg {
