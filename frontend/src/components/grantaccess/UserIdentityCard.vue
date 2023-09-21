@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Card class="mb-2 p-0">
+    <Card class="mb-2 p-0 custom-card">
         <template #header>
             <Icon icon="checkmark--filled" :size="IconSize.medium" />
             <p>Verified user information</p>
@@ -33,6 +33,10 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+
+.custom-card {
+    width: 38rem;
+}
 
 label {
     color: $light-text-primary;
