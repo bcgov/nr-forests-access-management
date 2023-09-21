@@ -50,4 +50,11 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
 
 <style scoped lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
+
+/* for some reason, the button on focus effect in the shared stylesheet
+ doesn't work on the landing button, add it here */
+.landing-button:focus {
+    outline: 0.125rem solid #ffffff;
+    outline-offset: -0.25rem;
+}
 </style>
