@@ -31,7 +31,7 @@ resource "aws_cognito_user_pool_client" "dev_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name"])}"
+  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
 }
 
 resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
@@ -69,7 +69,7 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name"])}"
+  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
 }
 
 resource "aws_cognito_user_pool_client" "prod_silva_oidc_client" {
@@ -107,5 +107,5 @@ resource "aws_cognito_user_pool_client" "prod_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name"])}"
+  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
 }
