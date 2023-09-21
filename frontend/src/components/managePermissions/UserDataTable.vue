@@ -291,7 +291,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 // update primevue style but only for FAM
 .p-input-icon-left {
-    height: 2.63rem;
     z-index: 1;
     flex-grow: 1;
 
@@ -302,7 +301,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     &:deep(.p-inputtext) {
         border-bottom: none;
         width: 100%;
-        height: 2rem;
         border: none;
     }
 }
