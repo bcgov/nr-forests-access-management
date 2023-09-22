@@ -299,9 +299,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     }
 
     &:deep(.p-inputtext) {
-        border-bottom: none;
         width: 100%;
-        border: none;
+        border-bottom: 0.125rem solid transparent;
+    }
+
+    &:deep(.p-inputtext:hover) {
+        border-bottom: 0.125rem solid transparent;
     }
 }
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
