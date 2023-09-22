@@ -28,9 +28,12 @@ $light-text-secondary: map.get(lightTheme.$light-theme, 'text-secondary');
 $light-text-error: map.get(lightTheme.$light-theme, 'text-error');
 
 $light-background-brand: map.get(lightTheme.$light-theme, 'background-brand');
-$light-support-error: map.get(lightTheme.$light-theme, 'support-error');
 $light-interactive: map.get(lightTheme.$light-theme, 'interactive');
 
 //background
 $light-layer-one: map.get(lightTheme.$light-theme, 'layer-01');
-$light-layer-two: map.get(lightTheme.$light-theme, 'layer-02')
+$light-layer-two: map.get(lightTheme.$light-theme, 'layer-02');
+
+//support
+$light-support-error: map.get(lightTheme.$light-theme, 'support-error');
+$light-support-success: map.get(lightTheme.$light-theme, 'support-success');
