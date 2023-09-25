@@ -13,6 +13,9 @@ on:
         required: false
         type: string
         default: "false"
+      aws_role_to_assume:
+        required: true
+        type: string
     secrets:
       licenceplate:
         required: true
@@ -47,6 +50,7 @@ env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
+  AWS_REGION: ca-central-1
 
 jobs:
   aws-server-deployment:
@@ -80,7 +84,6 @@ jobs:
           path: ./infrastructure/server/fam_auth_function.zip
           if-no-files-found: error
 
-      # Steps to deploy Ian's python as a lambda
       - name: Install and Package Dependencies - FAM API
         run: |
           cd server/backend
@@ -109,13 +112,21 @@ jobs:
           mkdir infrastructure/server/sql
           rsync -r server/flyway/sql/* infrastructure/server/sql
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
-          # This gets rid of the extra output that kills automated output readability
-          terraform_wrapper: false
+          role-to-assume: ${{ inputs.aws_role_to_assume }}
+          role-session-name: server-${{ inputs.environment_name }}-deployment
+          aws-region: ${{ env.AWS_REGION }}
+
+      # TODO: To be removed, migration off the Terraform Cloud
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.2
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+      #     # This gets rid of the extra output that kills automated output readability
+      #     terraform_wrapper: false
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0

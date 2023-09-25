@@ -9,6 +9,9 @@ on:
       tf_subcommand:
         required: true
         type: string
+      aws_role_to_assume:
+        required: true
+        type: string
     secrets:
       licenceplate:
         required: true
@@ -20,6 +23,7 @@ env:
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform-frontend
   TG_SERVER_SRC_PATH: terraform
+  AWS_REGION: ca-central-1
 
 jobs:
   aws-frontend-deployment:
@@ -39,11 +43,19 @@ jobs:
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+          role-to-assume: ${{ inputs.aws_role_to_assume }}
+          role-session-name: frontend-${{ inputs.environment_name }}-deployment
+          aws-region: ${{ env.AWS_REGION }}
+
+      # TODO: To be removed, migration off the Terraform Cloud
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.2
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0

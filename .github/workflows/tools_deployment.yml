@@ -5,18 +5,24 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/718-auth-lambda-db-user"
-      - "feat/773-lambda-segregation"
+      - "feat/915-tfc-to-s3-migration"
 
+env:
+  AWS_ROLE_TO_ASSUME: "arn:aws:iam::377481750915:role/BCGOV_tools_Automation_Admin_Role"
+
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 
 jobs:
-
   aws-tools-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
       tf_subcommand: apply
       execute_flyway: true
+      aws_role_to_assume: $AWS_ROLE_TO_ASSUME
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
@@ -39,6 +45,7 @@ jobs:
     with:
       environment_name: tools
       tf_subcommand: apply
+      aws_role_to_assume: $AWS_ROLE_TO_ASSUME
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
