@@ -49,9 +49,7 @@ env:
   TG_SRC_PATH: terraform
 
 jobs:
-
   aws-server-deployment:
-
     name: Run Terraform to Deploy Server
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
@@ -63,7 +61,7 @@ jobs:
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - name: Auth function zip
         run: |
@@ -158,10 +156,10 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
-
 
       - id: smoke_test
         name: Smoke Test
@@ -178,8 +176,3 @@ jobs:
           else
             echo "Not executing terraform apply - smoke test skipped"
           fi
-
-
-
-
-
