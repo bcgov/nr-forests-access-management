@@ -13,9 +13,6 @@ on:
         required: false
         type: string
         default: "false"
-      aws_role_to_assume:
-        required: true
-        type: string
     secrets:
       licenceplate:
         required: true
@@ -45,7 +42,8 @@ on:
         required: true
       gc_notify_email_api_key:
         required: true
-
+      aws_role_to_assume:
+        required: true
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -115,7 +113,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws_role_to_assume }}
+          role-to-assume: ${{ secrets.aws_role_to_assume }}
           role-session-name: server-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 

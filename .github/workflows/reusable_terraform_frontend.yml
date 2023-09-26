@@ -9,13 +9,12 @@ on:
       tf_subcommand:
         required: true
         type: string
-      aws_role_to_assume:
-        required: true
-        type: string
     secrets:
       licenceplate:
         required: true
       tfc_team_token:
+        required: true
+      aws_role_to_assume:
         required: true
 
 env:
@@ -46,7 +45,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws_role_to_assume }}
+          role-to-assume: ${{ secrets.aws_role_to_assume }}
           role-session-name: frontend-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 
