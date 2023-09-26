@@ -127,6 +127,15 @@ p * {
     align-self: baseline !important;
 }
 
+p {
+    display: flex;
+    flex-direction: column;
+}
+
+p * {
+    align-self: baseline !important;
+}
+
 .col {
     align-self: center;
 }
@@ -148,6 +157,13 @@ p * {
 
 .custom-carbon-icon-checkmark--filled {
     margin-right: 1rem !important;
+}
+
+.org-status-wrapper {
+    margin-top: 0.1rem;
+}
+.status {
+    margin-bottom: 0.6rem !important;
 }
 
 .org-status-wrapper {
