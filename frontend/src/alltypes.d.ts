@@ -9,6 +9,7 @@ declare module '@carbon/icons-vue/es/help/16';
 declare module '@carbon/icons-vue/es/search/16';
 
 declare module '@carbon/icons-vue/es/login/20';
+declare module '@carbon/icons-vue/es/checkmark--filled/16';
 declare module '@carbon/icons-vue/es/checkmark--filled/20';
 declare module '@carbon/icons-vue/es/add/16';
 declare module '@carbon/icons-vue/es/add/20';

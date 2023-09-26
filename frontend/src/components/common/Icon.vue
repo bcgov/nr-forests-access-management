@@ -41,7 +41,9 @@ const icons = {
     search16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/search/16')
     ),
-
+    'checkmark--filled16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark--filled/16')
+    ),
     'checkmark--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark--filled/20')
     ),
