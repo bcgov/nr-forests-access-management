@@ -261,7 +261,8 @@ function roleSelected(evt: any) {
                             "
                         >
                             <Button
-                                class="button p-button-tertiary p-button-outlined"
+                                class="button"
+                                outlined
                                 aria-label="Verify user IDIR"
                                 :name="'verifyIdir'"
                                 :label="'Verify'"
@@ -360,7 +361,8 @@ function roleSelected(evt: any) {
 
                         <div class="col-md-2">
                             <Button
-                                class="button p-button-tertiary p-button-outlined"
+                                class="button"
+                                outlined
                                 aria-label="Verify forest client number"
                                 :name="'verifyFC'"
                                 :label="'Verify'"
@@ -393,7 +395,7 @@ function roleSelected(evt: any) {
                             <Button
                                 type="button"
                                 id="grantAccessSubmit"
-                                class="mb-3 button p-button"
+                                class="mb-3 button"
                                 label="Next"
                                 :disabled="
                                     !(meta.valid && areVerificationsPassed())
