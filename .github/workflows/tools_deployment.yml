@@ -22,7 +22,7 @@ jobs:
       environment_name: tools
       tf_subcommand: apply
       execute_flyway: true
-      aws_role_to_assume: "${{ env.AWS_ROLE_TO_ASSUME }}"
+      aws_role_to_assume: ${{ env.AWS_ROLE_TO_ASSUME }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
     with:
       environment_name: tools
       tf_subcommand: apply
-      aws_role_to_assume: "${{ env.AWS_ROLE_TO_ASSUME }}"
+      aws_role_to_assume: ${{ env.AWS_ROLE_TO_ASSUME }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
