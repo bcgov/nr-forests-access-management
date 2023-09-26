@@ -2,25 +2,11 @@
 import Card from 'primevue/card';
 import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
-import type { FamForestClientStatus } from 'fam-api/dist/model/fam-forest-client-status';
+import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
 
 const props = defineProps({
-    status: {
-        type: Object as PropType<FamForestClientStatus>,
-        required: true,
-        default: {
-            description: "Doesn't exist",
-        },
-    },
-    clientName: {
-        type: String,
-        required: true,
-        default: '',
-    },
-    clientId: {
-        type: String,
-        required: true,
-        default: '',
+    forestClientData: {
+        type: Object as PropType<FamForestClient>
     }
 });
 
@@ -44,25 +30,25 @@ const props = defineProps({
                         >
                             <label class="col">Client ID: </label>
                             <span class="col">
-                                {{ props.clientId }}
+                                {{ props.forestClientData?.forest_client_number }}
                             </span>
                         </p>
                         <p
                             class="col"
-                            v-if="props.status.description != 'Doesn\'t exist'"
+                            v-if="props.forestClientData?.client_name != 'Doesn\'t exist'"
                         >
                             <label class="row">Organization name: </label>
                             <span class="organization-name row">
-                                {{ props.clientName }}
+                                {{ props.forestClientData?.client_name }}
                             </span>
                         </p>
                         <p
                             class="col org-status-wrapper"
                         >
-                            <label class="row">Organization status: </label>
+                            <label class="row status">Organization status: </label>
                             <Tag
                                 class="custom-tag"
-                                :text="props.status.description"
+                                :text="props.forestClientData?.status?.description"
                             />
                         </p>
                         <p class="col flex-grow-0">
@@ -85,6 +71,15 @@ const props = defineProps({
 
 p > label {
     margin-top: .25rem;
+}
+
+p {
+    display: flex;
+    flex-direction: column;
+}
+
+p * {
+    align-self: baseline !important;
 }
 
 .col {
@@ -113,6 +108,13 @@ p > label {
 
 .custom-carbon-icon-checkmark--filled {
  margin-right: 1rem !important;
+}
+
+.org-status-wrapper {
+    margin-top: 0.1rem;
+}
+.status {
+    margin-bottom: 0.6rem !important;
 }
 
 .custom-tag {
