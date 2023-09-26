@@ -12,15 +12,18 @@ const props = defineProps<{
 <template>
     <Card class="mb-2 p-0 custom-card">
         <template #header>
-            <Icon icon="checkmark--filled" :size="IconSize.medium" />
+            <Icon icon="checkmark--filled" :size="IconSize.small" />
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div class="col">
+            <div class="col user-id">
                 <label class="row">User ID:</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
-            <div class="col" v-if="props.userIdentity.found">
+            <div
+                class="col"
+                v-if="props.userIdentity.found"
+            >
                 <label class="row" >Display Name: </label>
                 <span  class="row">{{ props.userIdentity.displayName }}</span>
             </div>
@@ -35,19 +38,14 @@ const props = defineProps<{
 @import '@/assets/styles/styles.scss';
 
 .custom-card {
-    width: 38rem;
+    width: $card-width;
+    margin-top:$card-margin-top;
 }
 
-label {
-    color: $light-text-primary;
-    margin: 0 0 0.75rem !important;
-}
-
-span {
-    margin: 0 !important;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    letter-spacing: 0.01rem;
+.user-id {
+    margin-left: 2rem;
+    margin-right: 2.5rem;
+    flex-grow: 0;
 }
 
 .invalid {
