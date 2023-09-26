@@ -110,7 +110,7 @@ jobs:
           mkdir infrastructure/server/sql
           rsync -r server/flyway/sql/* infrastructure/server/sql
 
-      - name: Configure aws credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.aws_role_to_assume }}
@@ -145,6 +145,7 @@ jobs:
 
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
+          target_env = ${{ inputs.environment_name }}
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           execute_flyway = ${{ inputs.execute_flyway }}
           dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"

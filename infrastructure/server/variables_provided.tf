@@ -1,3 +1,8 @@
+variable "target_env" {
+  description = "AWS workload account env"
+  type        = string
+}
+
 variable "fam_user_pool_name" {
   description = "Name for the FAM user pool"
   type        = string
