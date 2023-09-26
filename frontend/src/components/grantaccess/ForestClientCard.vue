@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
+import Button from 'primevue/button';
 import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
 import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
@@ -51,14 +52,14 @@ const props = defineProps({
                                 :text="props.forestClientData?.status?.description"
                             />
                         </p>
-                        <p class="col flex-grow-0">
+                        <Button class="btn-trash">
                             <Icon
-                                class="row"
+                                class="row custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
                             />
-                        </p>
+                        </Button>
                     </div>
                 </div>
             </template>
@@ -120,6 +121,14 @@ p * {
 .custom-tag {
     display: inline !important;
     align-self: flex-start !important;
+}
+
+.btn-trash {
+    padding: 0;
+    background-color: transparent;
+    color: blue;
+    border: none;
+    margin-bottom: 1.5rem;
 }
 
 </style>

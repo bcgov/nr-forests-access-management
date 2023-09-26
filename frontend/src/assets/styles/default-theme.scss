@@ -41,3 +41,7 @@ $light-layer-two: map.get(lightTheme.$light-theme, 'layer-02');
 //support
 $light-support-error: map.get(lightTheme.$light-theme, 'support-error');
 $light-support-success: map.get(lightTheme.$light-theme, 'support-success');
+
+//icon
+$light-icon-primary: map.get(lightTheme.$light-theme, 'icon-primary');
+
