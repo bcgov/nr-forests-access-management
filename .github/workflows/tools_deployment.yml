@@ -42,7 +42,6 @@ jobs:
     with:
       environment_name: tools
       tf_subcommand: apply
-      aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
