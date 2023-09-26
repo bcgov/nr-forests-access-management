@@ -9,9 +9,6 @@ on:
       tf_subcommand:
         required: true
         type: string
-      # aws_automation_admin_role:
-      #   required: true
-      #   type: string
     secrets:
       licenceplate:
         required: true
@@ -77,7 +74,7 @@ jobs:
           # Run terraform
           cat > github.auto.tfvars <<EOF
           target_env = "${{ inputs.environment_name }}"
-          aws_terraform_assume_role = "${{ secrets.aws_role_to_assume }}"
+          aws_terraform_assume_role = "${{ env.AWS_AUTOMATION_ADMIN_ROLE }}"
           oidc_idir_idp_client_secret = "NA"
           oidc_bceid_business_idp_client_secret = "NA"
           db_cluster_snapshot_identifier = "NA"
