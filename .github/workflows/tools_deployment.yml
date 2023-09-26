@@ -7,13 +7,13 @@ on:
       # Enable a specific branch to temporarily test in the tools environment.
       - "feat/915-tfc-to-s3-migration"
 
-env:
-  AWS_ROLE_TO_ASSUME: "arn:aws:iam::377481750915:role/BCGOV_tools_Automation_Admin_Role"
-
 # permission can be added at job level or workflow level
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
+
+env:
+  AWS_ROLE_TO_ASSUME: arn:aws:iam::377481750915:role/BCGOV_tools_Automation_Admin_Role
 
 jobs:
   aws-tools-deployment-server:
