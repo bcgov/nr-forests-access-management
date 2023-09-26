@@ -12,9 +12,6 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
 
-env:
-  AWS_ROLE_TO_ASSUME: arn:aws:iam::377481750915:role/BCGOV_tools_Automation_Admin_Role
-
 jobs:
   aws-tools-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
@@ -22,7 +19,7 @@ jobs:
       environment_name: tools
       tf_subcommand: apply
       execute_flyway: true
-      aws_role_to_assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+      aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
