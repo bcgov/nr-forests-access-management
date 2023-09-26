@@ -19,6 +19,7 @@ jobs:
       environment_name: tools
       tf_subcommand: apply
       execute_flyway: true
+      aws_automation_admin_role: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
@@ -42,6 +43,7 @@ jobs:
     with:
       environment_name: tools
       tf_subcommand: apply
+      aws_automation_admin_role: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }}
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}

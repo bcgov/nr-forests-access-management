@@ -63,6 +63,8 @@ generate "tfvars" {
 EOF
 }
 
+# TODO, remove next line from pevious role setting.
+# role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite"
@@ -70,7 +72,7 @@ generate "provider" {
 provider "aws" {
   region  = "${local.region}"
   assume_role {
-    role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
+    role_arn = "$${var.aws_terraform_assume_role}"
   }
 }
 EOF
