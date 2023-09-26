@@ -151,7 +151,7 @@ jobs:
 
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
-          target_env = ${{ inputs.environment_name }}
+          target_env = "${{ inputs.environment_name }}"
           aws_terraform_assume_role = "${{ env.AWS_AUTOMATION_ADMIN_ROLE }}"
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           execute_flyway = ${{ inputs.execute_flyway }}

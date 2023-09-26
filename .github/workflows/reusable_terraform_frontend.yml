@@ -76,7 +76,7 @@ jobs:
         run: |
           # Run terraform
           cat > github.auto.tfvars <<EOF
-          target_env = ${{ inputs.environment_name }}
+          target_env = "${{ inputs.environment_name }}"
           aws_terraform_assume_role = "${{ env.AWS_AUTOMATION_ADMIN_ROLE }}"
           oidc_idir_idp_client_secret = "NA"
           oidc_bceid_business_idp_client_secret = "NA"
