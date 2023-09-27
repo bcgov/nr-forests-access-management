@@ -37,11 +37,6 @@ const props = defineProps<{
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 
-.custom-card {
-    width: $card-width;
-    margin-top:$card-margin-top;
-}
-
 .user-id {
     margin-left: 2rem;
     margin-right: 2.5rem;

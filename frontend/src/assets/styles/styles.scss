@@ -17,3 +17,8 @@
 body {
     font-family: map.get(typeFamily.$type-family, 'sans');
 }
+
+.custom-card {
+    width: $card-width;
+    margin-top:$card-margin-top;
+}

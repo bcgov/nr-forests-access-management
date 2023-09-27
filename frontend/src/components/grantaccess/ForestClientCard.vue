@@ -87,11 +87,6 @@ p * {
     align-self: center;
 }
 
-.custom-card {
-    width: $card-width;
-    margin-top:$card-margin-top;
-}
-
 .content-wrapper {
     flex-direction: row !important;
     width: 100%;
@@ -125,10 +120,13 @@ p * {
 
 .btn-trash {
     padding: 0;
-    background-color: transparent;
-    color: blue;
     border: none;
     margin-bottom: 1.5rem;
+}
+
+.btn-trash,
+.btn-trash:hover {
+    background-color: transparent !important;
 }
 
 </style>
