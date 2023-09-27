@@ -4,10 +4,10 @@ terraform {
 
 locals {
   # !! tfc will be deprecated
-  tfc_hostname     = "app.terraform.io"
-  tfc_organization = "bcgov"
-  environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  tfc_workspace    = get_env("tfc_workspace")
+  # tfc_hostname     = "app.terraform.io"
+  # tfc_organization = "bcgov"
+  # environment      = reverse(split("/", get_terragrunt_dir()))[0]
+  # tfc_workspace    = get_env("tfc_workspace")
 
   # Terraform remote config
   tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
