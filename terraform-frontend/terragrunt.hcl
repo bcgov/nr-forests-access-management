@@ -68,9 +68,9 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region  = "ca-central-1"
-  assume_role {
-    role_arn = "$${var.aws_terraform_assume_role}"
-  }
+  # assume_role {
+  #   role_arn = "$${var.aws_terraform_assume_role}"
+  # }
 }
 
 # Additional provider configuration for us-east-1 region; resources can reference this as `aws.east`.
@@ -82,9 +82,9 @@ provider "aws" {
 provider "aws" {
   alias  = "east"
   region = "us-east-1"
-  assume_role {
-    role_arn = "$${var.aws_terraform_assume_role}"
-  }
+  # assume_role {
+  #   role_arn = "$${var.aws_terraform_assume_role}"
+  # }
 }
 
 EOF
