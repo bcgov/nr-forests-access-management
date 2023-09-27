@@ -3,10 +3,10 @@ variable "target_env" {
   type        = string
 }
 
-variable "aws_terraform_assume_role" {
-  description = "AWS Assume Role for Terraform"
-  type        = string
-}
+# variable "aws_terraform_assume_role" {
+#   description = "AWS Assume Role for Terraform"
+#   type        = string
+# }
 
 variable "fam_user_pool_name" {
   description = "Name for the FAM user pool"

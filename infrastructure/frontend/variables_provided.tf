@@ -3,10 +3,10 @@ variable "target_env" {
   type        = string
 }
 
-variable "aws_terraform_assume_role" {
-  description = "AWS Assume Role for Terraform"
-  type        = string
-}
+# variable "aws_terraform_assume_role" {
+#   description = "AWS Assume Role for Terraform"
+#   type        = string
+# }
 
 variable "cloudfront_vanity_domain" {
   description = "Alternate vanity domain to use for cloudfront distribution for frontend"
