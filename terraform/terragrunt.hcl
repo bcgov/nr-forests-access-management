@@ -54,7 +54,6 @@ terraform {
 EOF
 }
 
-
 generate "tfvars" {
   path              = "terragrunt.auto.tfvars"
   if_exists         = "overwrite"
