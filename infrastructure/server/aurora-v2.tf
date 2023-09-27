@@ -124,15 +124,15 @@ resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" {
-  secret_id     = aws_secretsmanager_secret.famdb_mastercreds_secret.id
-  secret_string = <<EOF
-   {
-    "username": "${var.famdb_master_username}",
-    "password": "${random_password.famdb_master_password.result}"
-   }
-EOF
-}
+# resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" {
+#   secret_id     = aws_secretsmanager_secret.famdb_mastercreds_secret.id
+#   secret_string = <<EOF
+#    {
+#     "username": "${var.famdb_master_username}",
+#     "password": "${random_password.famdb_master_password.result}"
+#    }
+# EOF
+# }
 
 # Create API Lambda DB User Credentials
 

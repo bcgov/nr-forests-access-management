@@ -48,7 +48,7 @@ resource "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "fam_oidc_client_id_secret_version" {
-  secret_id     = aws_secretsmanager_secret.fam_oidc_client_id_secret.id
-  secret_string = aws_cognito_user_pool_client.fam_console_oidc_client.id
-}
+# resource "aws_secretsmanager_secret_version" "fam_oidc_client_id_secret_version" {
+#   secret_id     = aws_secretsmanager_secret.fam_oidc_client_id_secret.id
+#   secret_string = aws_cognito_user_pool_client.fam_console_oidc_client.id
+# }
