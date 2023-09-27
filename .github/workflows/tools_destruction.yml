@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   aws-tools-destruction-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
@@ -12,7 +11,7 @@ jobs:
       tf_subcommand: destroy
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
+      # tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
       dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
@@ -38,5 +37,3 @@ jobs:
   #   secrets:
   #     licenceplate: ${{ secrets.LICENCEPLATE}}
   #     tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
-
-
