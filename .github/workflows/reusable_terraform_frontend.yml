@@ -71,14 +71,25 @@ jobs:
           tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
-          cat > github.auto.tfvars <<EOF
-          oidc_idir_idp_client_secret = "NA"
-          oidc_bceid_business_idp_client_secret = "NA"
-          db_cluster_snapshot_identifier = "NA"
-          execute_flyway = false
-          target_env = "${{ inputs.environment_name }}"
-          aws_terraform_assume_role = "${{ env.AWS_AUTOMATION_ADMIN_ROLE }}"
-          EOF
+          # cat > github.auto.tfvars <<EOF
+          # oidc_idir_idp_client_secret = "NA"
+          # oidc_bceid_business_idp_client_secret = "NA"
+          # db_cluster_snapshot_identifier = "NA"
+          # execute_flyway = false
+          # target_env = "${{ inputs.environment_name }}"
+          # aws_terraform_assume_role = "${{ env.AWS_AUTOMATION_ADMIN_ROLE }}"
+          # EOF
+          touch github.auto.tfvars
+          echo oidc_idir_idp_client_secret="NA" >> github.auto.tfvars
+          echo oidc_bceid_business_idp_client_secret="NA" >> github.auto.tfvars
+          echo db_cluster_snapshot_identifier="NA" >> github.auto.tfvars
+          echo execute_flyway=false >> github.auto.tfvars
+          echo target_env="${{ inputs.environment_name }}" >> github.auto.tfvars
+          echo aws_terraform_assume_role="${{ env.AWS_AUTOMATION_ADMIN_ROLE }}" >> github.auto.tfvars
+
+          echo "cat github.auto.tfvars"
+          cat github.auto.tfvars
+
           terragrunt run-all output -json
 
       - name: Create env.json file
