@@ -31,6 +31,8 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   ]
 }
 
+# TODO: remove this?
+
 # Need to write the client ID to an AWS Secret so that the API lambda can
 # read it at run time. At build time, specifying it as an env variable will
 # create a dependency cycle
@@ -40,13 +42,13 @@ resource "random_pet" "fam_oidc_client_id_secret_name" {
   length = 2
 }
 
-resource "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
-  name = random_pet.fam_oidc_client_id_secret_name.id
+# resource "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
+#   name = random_pet.fam_oidc_client_id_secret_name.id
 
-  tags = {
-    managed-by = "terraform"
-  }
-}
+#   tags = {
+#     managed-by = "terraform"
+#   }
+# }
 
 # resource "aws_secretsmanager_secret_version" "fam_oidc_client_id_secret_version" {
 #   secret_id     = aws_secretsmanager_secret.fam_oidc_client_id_secret.id

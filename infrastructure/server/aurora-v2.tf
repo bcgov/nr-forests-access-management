@@ -111,18 +111,19 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
   }
 }
 
+# TODO: remove this?
 resource "random_pet" "master_creds_secret_name" {
   prefix = "famdb-master-creds"
   length = 2
 }
 
-resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
-  name = random_pet.master_creds_secret_name.id
+# resource "aws_secretsmanager_secret" "famdb_mastercreds_secret" {
+#   name = random_pet.master_creds_secret_name.id
 
-  tags = {
-    managed-by = "terraform"
-  }
-}
+#   tags = {
+#     managed-by = "terraform"
+#   }
+# }
 
 # resource "aws_secretsmanager_secret_version" "famdb_mastercreds_secret_version" {
 #   secret_id     = aws_secretsmanager_secret.famdb_mastercreds_secret.id
