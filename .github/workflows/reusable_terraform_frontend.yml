@@ -102,6 +102,6 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
-          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
+          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
