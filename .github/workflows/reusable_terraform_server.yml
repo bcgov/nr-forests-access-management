@@ -42,8 +42,8 @@ on:
         required: true
       gc_notify_email_api_key:
         required: true
-      aws_role_to_assume:
-        required: true
+      # aws_role_to_assume:
+      #   required: true
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -57,7 +57,8 @@ jobs:
     environment: ${{ inputs.environment_name }}
 
     env:
-      AWS_AUTOMATION_ADMIN_ROLE: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }}
+      AWS_AUTOMATION_ADMIN_ROLE: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }} # original assume_role for provider.
+      AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_ROLE }} # AWS-GHA OIDC auth role.
 
     steps:
       - name: Checkout
@@ -116,7 +117,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.aws_role_to_assume }}
+          role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
           role-session-name: server-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 

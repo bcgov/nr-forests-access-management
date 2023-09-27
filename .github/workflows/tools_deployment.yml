@@ -19,7 +19,7 @@ jobs:
       environment_name: tools
       tf_subcommand: apply
       execute_flyway: true
-      # aws_automation_admin_role: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }}
+
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
-      aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
+      # aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
 
   aws-tools-deployment-frontend:
     needs: aws-tools-deployment-server
@@ -47,4 +47,4 @@ jobs:
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
       tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
-      aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
+      # aws_role_to_assume: ${{ secrets.AWS_ASSUME_ROLE }}
