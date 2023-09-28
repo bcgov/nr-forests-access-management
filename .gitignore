@@ -87,6 +87,8 @@ terraform/tools/github.auto.tfvars
 terraform/tools/.terraform.lock.hcl
 terraform/tools/output.txt
 
+**.terraform.lock.hcl
+
 # Sonar cloud
 **/.scannerwork/**/*
 
