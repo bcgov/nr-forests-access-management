@@ -14,7 +14,7 @@ locals {
   tf_workspace            = get_env("tf_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
   aws_license_plate       = split("-", "${local.tf_workspace}")[0]
   statefile_bucket_name   = "${local.tf_remote_state_prefix}-${local.tf_workspace}" # Example @tools: "terraform-remote-state-sfha4x-tools"
-  statefile_key          = "frontend"
+  statefile_key          = "frontend.tfstate"
   statelock_table_name    = "${local.tf_remote_state_prefix}-lock-${local.aws_license_plate}" # Example @tools: "terraform-remote-state-lock-sfha4x"
 }
 
