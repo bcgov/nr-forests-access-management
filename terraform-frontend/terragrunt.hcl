@@ -9,13 +9,12 @@ locals {
   # environment      = reverse(split("/", get_terragrunt_dir()))[0]
   # tfc_workspace    = get_env("tfc_workspace")
 
-  # Terraform remote config
+  # Terraform remote S3 config #TODO - rename 'tf_workspace'
   tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
   tf_workspace            = get_env("tf_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
-  tf_workspace_component  = "frontend"
   aws_license_plate       = split("-", "${local.tf_workspace}")[0]
   statefile_bucket_name   = "${local.tf_remote_state_prefix}-${local.tf_workspace}" # Example @tools: "terraform-remote-state-sfha4x-tools"
-  statefile_path          = "${local.tf_workspace_component}"
+  statefile_key          = "frontend"
   statelock_table_name    = "${local.tf_remote_state_prefix}-lock-${local.aws_license_plate}" # Example @tools: "terraform-remote-state-lock-sfha4x"
 }
 
@@ -43,7 +42,7 @@ generate "remote_state" {
 terraform {
   backend "s3" {
     bucket         = "${local.statefile_bucket_name}"
-    key            = "${local.statefile_path}"            # Path and name of the state file within the bucket
+    key            = "${local.statefile_key}"            # Path and name of the state file within the bucket
     region         = "ca-central-1"                       # AWS region where the bucket is located
     dynamodb_table = "${local.statelock_table_name}"
     encrypt        = true
