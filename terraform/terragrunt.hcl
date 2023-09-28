@@ -6,10 +6,10 @@ locals {
   region                  = "ca-central-1"
 
   # !! tfc will be deprecated
-  tfc_hostname            = "app.terraform.io"
-  tfc_organization        = "bcgov"
-  environment             = reverse(split("/", get_terragrunt_dir()))[0]
-  tfc_workspace           = get_env("tfc_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
+  # tfc_hostname            = "app.terraform.io"
+  # tfc_organization        = "bcgov"
+  # environment             = reverse(split("/", get_terragrunt_dir()))[0]
+  # tfc_workspace           = get_env("tfc_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
 
   # Terraform remote S3 config #TODO - rename 'tf_workspace'
   tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
