@@ -69,7 +69,8 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json
+          terragrunt run-all output -json > server_output.json
+          cat server_output.json
 
       - name: Create env.json file
         uses: DamianReeves/write-file-action@master
