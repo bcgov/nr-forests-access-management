@@ -76,7 +76,7 @@ jobs:
         with:
           path: infrastructure/frontend/dist/env.json
           contents: |
-            ${{ steps.terragrunt-server-output.outputs }}
+            ${{ steps.terragrunt-server-output.outputs.stdout }}
           write-mode: overwrite
 
       - id: terragrunt-server-output-test
