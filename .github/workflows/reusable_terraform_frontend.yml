@@ -67,7 +67,6 @@ jobs:
         name: Terragrunt Server Output
         working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          # tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
           tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
@@ -99,7 +98,6 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          # tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
           tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
