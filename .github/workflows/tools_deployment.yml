@@ -36,6 +36,7 @@ jobs:
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
 
   aws-tools-deployment-server:
+    needs: aws-tools-deployment-server-plan
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
@@ -68,7 +69,7 @@ jobs:
       licenceplate: ${{ secrets.LICENCEPLATE}}
 
   aws-tools-deployment-frontend:
-    needs: aws-tools-deployment-server
+    needs: [aws-tools-deployment-server, aws-tools-deployment-frontend-plan]
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
       environment_name: tools
