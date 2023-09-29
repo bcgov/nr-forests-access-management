@@ -51,13 +51,6 @@ jobs:
           role-session-name: frontend-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 
-      # TODO: To be removed, migration off the Terraform Cloud
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v2.0.2
-      #   with:
-      #     terraform_version: ${{ env.TF_VERSION }}
-      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
-
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
@@ -83,7 +76,7 @@ jobs:
         with:
           path: infrastructure/frontend/dist/env.json
           contents: |
-            ${{ steps.terragrunt-server-output.outputs.stdout }}
+            ${{ steps.terragrunt-server-output.outputs }}
           write-mode: overwrite
 
       - id: terragrunt-server-output-test
