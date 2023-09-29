@@ -32,6 +32,9 @@ jobs:
       AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_ROLE }} # AWS-GHA OIDC auth role.
       # AWS_AUTOMATION_ADMIN_ROLE: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }} # original assume_role for provider.
 
+    # outputs:
+    #   server-output: ${{ steps.terragrunt-server-output.outputs }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2.5.0
@@ -69,17 +72,15 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json >> "$GITHUB_OUTPUT"
+          terragrunt run-all output -json >> ../../infrastructure/frontend/dist/env.json
 
-      - name: Create env.json file
-        uses: DamianReeves/write-file-action@master
-        with:
-          path: infrastructure/frontend/dist/env.json
-          contents: |
-            ${{ steps.terragrunt-server-output.outputs }}
-          # contents: |
-          #   ${{ steps.terragrunt-server-output.outputs.stdout }}
-          write-mode: overwrite
+      # - name: Create env.json file
+      #   uses: DamianReeves/write-file-action@master
+      #   with:
+      #     path: infrastructure/frontend/dist/env.json
+      #     contents: |
+      #       ${{ steps.terragrunt-server-output.outputs.stdout }}
+      #     write-mode: overwrite
 
       - id: terragrunt-server-output-test
         working-directory: infrastructure/frontend/dist
@@ -90,9 +91,9 @@ jobs:
           cat env.json
           echo "===================================="
 
-      - name: Terragrunt ${{ inputs.tf_subcommand }}
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-        env:
-          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-        run: |
-          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+      # - name: Terragrunt ${{ inputs.tf_subcommand }}
+      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+      #   env:
+      #     tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+      #   run: |
+      #     terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
