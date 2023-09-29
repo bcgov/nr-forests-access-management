@@ -69,15 +69,16 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json > server_output.json
-          cat server_output.json
+          terragrunt run-all output -json >> "$GITHUB_OUTPUT"
 
       - name: Create env.json file
         uses: DamianReeves/write-file-action@master
         with:
           path: infrastructure/frontend/dist/env.json
           contents: |
-            ${{ steps.terragrunt-server-output.outputs.stdout }}
+            ${{ steps.terragrunt-server-output.outputs }}
+          # contents: |
+          #   ${{ steps.terragrunt-server-output.outputs.stdout }}
           write-mode: overwrite
 
       - id: terragrunt-server-output-test
