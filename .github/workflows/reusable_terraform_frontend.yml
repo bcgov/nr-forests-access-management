@@ -32,9 +32,6 @@ jobs:
       AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_ROLE }} # AWS-GHA OIDC auth role.
       # AWS_AUTOMATION_ADMIN_ROLE: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }} # original assume_role for provider.
 
-    # outputs:
-    #   server-output: ${{ steps.terragrunt-server-output.outputs }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2.5.0
@@ -91,9 +88,9 @@ jobs:
           cat env.json
           echo "===================================="
 
-      # - name: Terragrunt ${{ inputs.tf_subcommand }}
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
-      #   run: |
-      #     terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+        run: |
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
