@@ -16,8 +16,6 @@ on:
     secrets:
       licenceplate:
         required: true
-      # tfc_team_token:
-      #   required: true
       dev_oidc_idir_idp_client_secret:
         required: true
       test_oidc_idir_idp_client_secret:
@@ -57,7 +55,6 @@ jobs:
 
     env:
       AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_ROLE }} # AWS-GHA OIDC auth role.
-      # AWS_AUTOMATION_ADMIN_ROLE: ${{ vars.AWS_AUTOMATION_ADMIN_ROLE }} # original assume_role for provider.
 
     steps:
       - name: Checkout
@@ -120,15 +117,6 @@ jobs:
           role-session-name: server-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 
-      # TODO: To be removed, migration off the Terraform Cloud
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v2.0.2
-      #   with:
-      #     terraform_version: ${{ env.TF_VERSION }}
-      #     cli_config_credentials_token: ${{ secrets.tfc_team_token }}
-      #     # This gets rid of the extra output that kills automated output readability
-      #     terraform_wrapper: false
-
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
@@ -168,7 +156,6 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          # tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
           tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           # Run terraform
@@ -178,7 +165,6 @@ jobs:
         name: Smoke Test
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          # tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
           tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
