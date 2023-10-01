@@ -11,11 +11,11 @@ locals {
   # environment             = reverse(split("/", get_terragrunt_dir()))[0]
   # tfc_workspace           = get_env("tfc_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
 
-  # Terraform remote S3 config #TODO - rename 'tf_workspace'
+  # Terraform remote S3 config
   tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
-  tf_workspace            = get_env("tf_workspace")  # [AWS_LICENSE_PLATE]-[ENV]
-  aws_license_plate       = split("-", "${local.tf_workspace}")[0]
-  statefile_bucket_name   = "${local.tf_remote_state_prefix}-${local.tf_workspace}" # Example @tools: "terraform-remote-state-sfha4x-tools"
+  aws_license_plate       = get_env("licenceplate")
+  target_env              = get_env("target_env")
+  statefile_bucket_name   = "${local.tf_remote_state_prefix}-${local.aws_license_plate}-${local.target_env}" # Example @tools: "terraform-remote-state-sfha4x-tools"
   statefile_key           = "server.tfstate"
   statelock_table_name    = "${local.tf_remote_state_prefix}-lock-${local.aws_license_plate}" # Example @tools: "terraform-remote-state-lock-sfha4x"
 }
@@ -61,8 +61,6 @@ generate "tfvars" {
 EOF
 }
 
-# TODO, remove next line from pevious role setting.
-# role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite"

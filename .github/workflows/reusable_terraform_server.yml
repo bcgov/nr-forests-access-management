@@ -156,7 +156,8 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
         run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
@@ -165,7 +166,8 @@ jobs:
         name: Smoke Test
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tf_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
         run: |
           if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
           then
