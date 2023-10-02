@@ -11,9 +11,12 @@ const props = defineProps({
     }
 });
 
+console.log(props.forestClientData?.status?.status_code)
+
 </script>
 <template>
-    <div>
+    <!-- temporary condition until invalid input handling is implemented -->
+    <div v-if="props.forestClientData?.status?.status_code === 'A'">
         <Card class="custom-card">
             <template #header>
                 <Icon icon="checkmark--filled" :size="IconSize.small" />
@@ -52,14 +55,15 @@ const props = defineProps({
                                 :text="props.forestClientData?.status?.description"
                             />
                         </p>
-                        <Button class="btn-trash">
+                        <!-- hidden until functionaly arrives -->
+                        <!-- <Button class="btn-trash">
                             <Icon
                                 class="row custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
                             />
-                        </Button>
+                        </Button> -->
                     </div>
                 </div>
             </template>
