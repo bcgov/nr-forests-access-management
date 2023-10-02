@@ -310,7 +310,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     align-items: center;
     height: calc(100vh - 21.745rem);
     min-height: 12.5rem;
-    margin: 0 26rem;
+    margin: 0 5rem;
 
     svg {
         width: 3rem;

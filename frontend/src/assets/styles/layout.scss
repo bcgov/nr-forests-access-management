@@ -9,11 +9,10 @@ body {
     position: absolute;
     display: block;
     height: calc(100vh - $header-height);
-    left: 16rem;
-    right: 0;
+    max-width: 100%;
     bottom: 0;
     overflow: auto;
-    padding: 2.62rem 2rem 0;
+    padding: 1.06rem 1rem 0 1rem;
 }
 
 .page-body {
