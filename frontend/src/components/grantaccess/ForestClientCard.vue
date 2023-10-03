@@ -10,8 +10,6 @@ const props = defineProps({
         type: Object as PropType<FamForestClient>,
     },
 });
-
-console.log(props.forestClientData);
 </script>
 <template>
     <!-- temporary condition until invalid input handling is implemented -->
