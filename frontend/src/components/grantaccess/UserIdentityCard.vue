@@ -12,7 +12,17 @@ const props = defineProps<{
 <template>
     <Card class="mb-2 p-0 custom-card">
         <template #header>
-            <Icon icon="checkmark--filled" :size="IconSize.small" />
+            <Icon
+                icon="checkmark--filled"
+                :size="IconSize.small"
+                v-if="props.userIdentity.found"
+            />
+            <Icon
+                class="custom-carbon-icon-error--filled"
+                icon="error--filled"
+                :size="IconSize.small"
+                v-else
+            />
             <p>Verified user information</p>
         </template>
         <template #content>
@@ -20,14 +30,14 @@ const props = defineProps<{
                 <label class="row">User ID:</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
-            <div
-                class="col"
-                v-if="props.userIdentity.found"
-            >
-                <label class="row" >Display Name: </label>
-                <span  class="row">{{ props.userIdentity.displayName }}</span>
+            <div class="col" v-if="props.userIdentity.found">
+                <label class="row">Display Name: </label>
+                <span class="row">{{ props.userIdentity.displayName }}</span>
             </div>
-            <div class="col d-flex align-items-center" v-if="!props.userIdentity.found">
+            <div
+                class="col d-flex align-items-center"
+                v-if="!props.userIdentity.found"
+            >
                 <span class="px-0 invalid"> User does not exist </span>
             </div>
         </template>
@@ -41,10 +51,5 @@ const props = defineProps<{
     margin-left: 2rem;
     margin-right: 2.5rem;
     flex-grow: 0;
-}
-
-.invalid {
-    font-size: 0.875em;
-    color: $light-text-error;
 }
 </style>

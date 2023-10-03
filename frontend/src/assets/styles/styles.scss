@@ -20,5 +20,10 @@ body {
 
 .custom-card {
     width: $card-width;
-    margin-top:$card-margin-top;
+    margin-top: $card-margin-top;
+}
+
+.invalid {
+    font-size: 0.875em;
+    color: $light-text-error;
 }

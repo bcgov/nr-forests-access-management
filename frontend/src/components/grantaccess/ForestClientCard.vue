@@ -1,25 +1,34 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
-import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
 import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
 
 const props = defineProps({
     forestClientData: {
-        type: Object as PropType<FamForestClient>
-    }
+        type: Object as PropType<FamForestClient>,
+    },
 });
 
-console.log(props.forestClientData?.status?.status_code)
-
+console.log(props.forestClientData);
 </script>
 <template>
     <!-- temporary condition until invalid input handling is implemented -->
-    <div v-if="props.forestClientData?.status?.status_code === 'A'">
+    <div>
         <Card class="custom-card">
             <template #header>
-                <Icon icon="checkmark--filled" :size="IconSize.small" />
+                <Icon
+                    icon="checkmark--filled"
+                    :size="IconSize.small"
+                    v-if="props.forestClientData?.status?.status_code == 'A'"
+                />
+                <Icon
+                    class="custom-carbon-icon-error--filled"
+                    icon="error--filled"
+                    :size="IconSize.small"
+                    v-else
+                />
                 <p>Verified Client ID information</p>
             </template>
             <template #content>
@@ -28,19 +37,40 @@ console.log(props.forestClientData?.status?.status_code)
                         <Icon
                             class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
-                            :size="IconSize.small"/>
+                            :size="IconSize.small"
+                            v-if="
+                                props.forestClientData?.status?.status_code ==
+                                'A'
+                            "
+                        />
+
+                        <Icon
+                            class="row flex-grow-0 custom-carbon-icon-error--filled"
+                            icon="error--filled"
+                            style="margin-right: 1rem"
+                            :size="IconSize.small"
+                            v-else
+                        />
+                        <p
+                            class="invalid col"
+                            v-if="!props.forestClientData"
+                            style="margin-top: 0.75rem"
+                        >
+                            Please enter an active Forest Client ID
+                        </p>
+
                         <p
                             class="col flex-grow-0 client-id-wrapper"
+                            v-if="props.forestClientData"
                         >
                             <label class="col">Client ID: </label>
                             <span class="col">
-                                {{ props.forestClientData?.forest_client_number }}
+                                {{
+                                    props.forestClientData?.forest_client_number
+                                }}
                             </span>
                         </p>
-                        <p
-                            class="col"
-                            v-if="props.forestClientData?.client_name != 'Doesn\'t exist'"
-                        >
+                        <p class="col" v-if="props.forestClientData">
                             <label class="row">Organization name: </label>
                             <span class="organization-name row">
                                 {{ props.forestClientData?.client_name }}
@@ -48,13 +78,25 @@ console.log(props.forestClientData?.status?.status_code)
                         </p>
                         <p
                             class="col org-status-wrapper"
+                            v-if="props.forestClientData"
                         >
-                            <label class="row status">Organization status: </label>
+                            <label class="row status"
+                                >Organization status:
+                            </label>
                             <Tag
                                 class="custom-tag"
-                                :text="props.forestClientData?.status?.description"
+                                :severity="
+                                    props.forestClientData?.status
+                                        ?.status_code == 'A'
+                                        ? 'success'
+                                        : 'danger'
+                                "
+                                :value="
+                                    props.forestClientData?.status?.description
+                                "
                             />
                         </p>
+
                         <!-- hidden until functionaly arrives -->
                         <!-- <Button class="btn-trash">
                             <Icon
@@ -75,7 +117,7 @@ console.log(props.forestClientData?.status?.status_code)
 @import '@/assets/styles/styles.scss';
 
 p > label {
-    margin-top: .25rem;
+    margin-top: 0.25rem;
 }
 
 p {
@@ -107,7 +149,7 @@ p * {
 }
 
 .custom-carbon-icon-checkmark--filled {
- margin-right: 1rem !important;
+    margin-right: 1rem !important;
 }
 
 .org-status-wrapper {
@@ -132,5 +174,4 @@ p * {
 .btn-trash:hover {
     background-color: transparent !important;
 }
-
 </style>
