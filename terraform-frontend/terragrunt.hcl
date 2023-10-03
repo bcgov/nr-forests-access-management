@@ -3,12 +3,6 @@ terraform {
 }
 
 locals {
-  # !! tfc will be deprecated
-  # tfc_hostname     = "app.terraform.io"
-  # tfc_organization = "bcgov"
-  # environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  # tfc_workspace    = get_env("tfc_workspace")
-
   # Terraform remote S3 config
   tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
   aws_license_plate       = get_env("licenceplate")
@@ -18,23 +12,7 @@ locals {
   statelock_table_name    = "${local.tf_remote_state_prefix}-lock-${local.aws_license_plate}" # Example @tools: "terraform-remote-state-lock-sfha4x"
 }
 
-# generate "remote_state" {
-#   path      = "backend.tf"
-#   if_exists = "overwrite"
-#   contents  = <<EOF
-# terraform {
-#   backend "remote" {
-#     hostname = "${local.tfc_hostname}"
-#     organization = "${local.tfc_organization}"
-#     workspaces {
-#       name = "${local.tfc_workspace}"
-#     }
-#   }
-# }
-# EOF
-# }
-
-# Migratoin from TFC to S3
+# Remote S3 state for Terraform.
 generate "remote_state" {
   path      = "backend.tf"
   if_exists = "overwrite"
