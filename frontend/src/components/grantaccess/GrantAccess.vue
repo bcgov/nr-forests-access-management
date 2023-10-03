@@ -45,6 +45,8 @@ const defaultFormData = {
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 
+const forestError = ref<boolean>(false);
+
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
@@ -59,10 +61,17 @@ const formValidationSchema = object({
                 string()
                     .required('Forest Client number is required')
                     .min(8, `Forest Client ID must be 8 characters long`)
-                    .when('forestNumberError', (forestNumberError, schema) => {
-                        console.log(forestNumberError, schema);
-                        return forestNumberError ? string().required() : schema;
-                    }),
+                    .test(
+                        'validator-forestNumberError',
+                        (value, { createError, path }) => {
+                            if (forestError.value === true)
+                                return createError({
+                                    path,
+                                    message: `Client ID ${value} is inactive and cannot be added.`,
+                                });
+                            else return true;
+                        }
+                    ),
         })
         .nullable(),
 });
@@ -125,8 +134,10 @@ function resetVerifiedUserIdentity() {
 }
 
 function resetForestClientNumberData() {
-    forestClientData.value = [];
+    // forestClientData.value = [];
     formData.value['forestClientNumber'] = '';
+    formData.value['forestNumberError'] = false;
+    forestError.value = false;
 }
 
 function resetForm() {
@@ -154,10 +165,12 @@ async function verifyForestClientNumber(forestClientNumber: string) {
         ) {
             addForestClientNumber(result.data[0] as FamForestClient);
             formData.value['forestNumberError'] = false;
+            forestError.value = false;
             // forestNumberError.value = false;
         } else {
             // forestNumberError.value = true;
             formData.value['forestNumberError'] = true;
+            forestError.value = true;
         }
     });
 }
@@ -429,6 +442,21 @@ function removeForestClientFromList(index: number) {
                                 </Button>
                             </div>
                         </div>
+                        <Field
+                            name="forestNumberError"
+                            :validateOnChange="true"
+                            v-model="formData.forestNumberError"
+                            v-slot="{ field }"
+                        >
+                            <InputText
+                                id="forestNumberError"
+                                v-bind="field"
+                                class="w-100"
+                                :class="{
+                                    'is-invalid': errors.forestNumberError,
+                                }"
+                            ></InputText>
+                        </Field>
                     </div>
 
                     <div v-if="forestClientData.length > 0" class="row">
