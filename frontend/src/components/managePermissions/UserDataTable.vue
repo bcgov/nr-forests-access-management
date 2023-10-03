@@ -376,6 +376,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 @media (min-device-width: 1920px) {
     .no-app-selected {
         margin: 0 43.3rem;
+        width: auto;
     }
 
     .custom-data-table-bg-layer {

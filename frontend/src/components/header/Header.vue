@@ -46,15 +46,14 @@ const props = defineProps({
                 <strong class="subtitle">{{ props.subtitle }} {{ environmentLabel }}</strong>
             </span>
 
-                    <li>
-                        <a
-                            title="Profile"
-                            v-if="authService.getters.isLoggedIn()"
-                            @click="useProfileSidebarVisible.toggleVisible()"
-                        >
-                            <Icon icon="user--avatar" :size="IconSize.medium" />
-                        </a>
-                    </li>
+                <a
+                    title="Profile"
+                    v-if="authService.getters.isLoggedIn()"
+                    @click="useProfileSidebarVisible.toggleVisible()"
+                >
+                    <Icon icon="user--avatar" :size="IconSize.medium" />
+                </a>
+
         </nav>
         <teleport to=".modals">
             <ProfileSidebar />
