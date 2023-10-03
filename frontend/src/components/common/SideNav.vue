@@ -28,8 +28,10 @@ const props = defineProps({
 
 </script>
 <template>
-    <Sidebar v-model:visible="useSideNavVisible.isSideNavVisible">
-        <nav class="sidenav">
+    <Sidebar
+        v-model:visible="useSideNavVisible.isSideNavVisible"
+    >
+        <template #header>
             <a
                 class="sidenav-logo"
                 title="Forests Access Management"
@@ -40,6 +42,8 @@ const props = defineProps({
                     alt="B.C. Government Logo"
                 />
             </a>
+        </template>
+        <nav class="sidenav">
             <div class="content">
                 <ul>
                     <div v-for="item in props.data">
@@ -104,14 +108,13 @@ const props = defineProps({
 
 .sidenav {
     position: fixed;
-    padding: 1rem 0rem;
-    width: 16rem;
+    padding: 0.75rem 0rem;
+    width: 100%;
     height: calc(100vh - 3.125rem);
     left: 0rem;
     top: 3rem;
     overflow-x: hidden;
     overflow-y: auto;
-    box-shadow: inset -0.063rem 0rem 0rem $light-border-subtle-00;
     .content {
         position: relative;
         min-height: auto;
@@ -172,5 +175,12 @@ ul#nav li.active a {
     color: $light-text-primary;
     background: $light-layer-selected-01;
     box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
+}
+
+
+@media (min-device-width: 768px) {
+    .sidenav {
+        width: 100%;
+    }
 }
 </style>

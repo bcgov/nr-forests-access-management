@@ -95,7 +95,7 @@ async function deleteUserRoleAssignment(
                 @change="selectApplication"
                 :options="selectApplicationOptions"
                 optionLabel="application_description"
-                placeholder="Choose an application to manage..."
+                placeholder="Choose or enter an application to manage permissions"
                 class="application-dropdown"
             />
         </div>
@@ -123,7 +123,7 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-dropdown {
-    max-width: 22.4rem;
+    max-width: 29rem;
     padding: 0;
 }
 
@@ -159,4 +159,11 @@ async function deleteUserRoleAssignment(
     z-index: -1;
     min-height: calc(100vh - 18.745rem);
 }
+
+@media (max-device-width: 390px) {
+    .application-dropdown{
+        max-width: 22.4rem;
+    }
+}
+
 </style>

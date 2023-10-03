@@ -330,6 +330,41 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     margin-bottom: 0 !important;
 }
 
+//------ media queries
+
+@media (max-device-width: 390px){
+    .data-table-container {
+        min-height: calc(100vh - 17.9rem);
+    }
+}
+
+@media (min-device-width: 768px) {
+    .no-app-selected {
+        width: 100%;
+        height: calc(100vh - 19.5rem);
+        margin: 0;
+    }
+
+    .data-table-container {
+        width: calc(100vw + 0.5rem);
+        margin-right: 0;
+    }
+
+    .custom-data-table {
+        width: calc(100vw - 3rem);
+    }
+}
+
+@media (min-device-width: 1366px) {
+    .data-table-container {
+        width: calc(100% + 3.5rem);
+    }
+
+    .custom-data-table {
+        width: calc(100% - 3.5rem);
+    }
+}
+
 @media (min-device-width: 1920px) {
     .no-app-selected {
         margin: 0 43.3rem;
@@ -338,5 +373,10 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     .custom-data-table-bg-layer {
         min-height: calc(100vh - 19.9rem);
     }
+
+    .data-table-container {
+        min-height: calc(100vh - 17.1rem);
+    }
 }
+
 </style>

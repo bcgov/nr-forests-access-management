@@ -32,7 +32,7 @@ const props = defineProps({
             class="navbar px-2 justify-content-start"
         >
             <Button
-                class="toggleSideNav "
+                class="toggleSideNav"
                 @click="useSideNavVisible.toggleSideNavVisible()"
             >
                 <Icon
@@ -70,7 +70,9 @@ li {
 }
 
 .toggleSideNav {
-    padding: 0;
+    padding: 0.88rem;
+    border: none;
+    border-radius: 0;
 }
 .subtitle {
     display: none
@@ -88,6 +90,7 @@ li {
     color: $dark-text-primary;
     .header-title {
         margin: 0 auto 0 0 ;
+        padding-left: 1rem;
         a i {
             cursor: pointer;
         }
@@ -99,13 +102,19 @@ li {
 
     .navbar {
         margin: 0;
-        padding: 0;
+        padding: 0 0.5rem 0 0  !important;
         height: 3rem;
         vertical-align: middle;
     }
 
     .navbar-collapse {
         flex-grow: 0;
+    }
+}
+
+@media (min-device-width: 1366px) {
+    .toggleSideNav {
+        display: none;
     }
 }
 </style>

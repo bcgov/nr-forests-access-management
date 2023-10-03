@@ -16,7 +16,7 @@ body {
 }
 
 .page-body {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
 }
 
 .form-container {
@@ -57,4 +57,21 @@ input[type='number'] {
 .p-component,
 .p-inputtext {
     font-family: inherit;
+}
+
+@media (min-device-width: 768px) {
+    .main {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+    }
+}
+
+@media (min-device-width: 1366px) {
+    .page-body {
+        width:  100%;
+    }
+
+    .main {
+        left: 16rem;
+        width: calc(100vw - 16rem);
+    }
 }
