@@ -7,6 +7,7 @@ generate "dev_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  target_env = "dev"
   cloudfront_vanity_domain = "fam-dev.nrs.gov.bc.ca"
   cloudfront_certificate_arn = "arn:aws:acm:us-east-1:521834415778:certificate/d9407a0e-98b4-47d0-be73-adefe7011d34"
 EOF
