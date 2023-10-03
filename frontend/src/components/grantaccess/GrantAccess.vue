@@ -384,8 +384,7 @@ function roleSelected(evt: any) {
                     <div v-if="forestClientData" class="row">
                         <div class="col-md-5 px-0">
                             <ForestClientCard
-                                :text="forestClientData?.[0]?.client_name"
-                                :status="forestClientData?.[0]?.status"
+                                :forestClientData="forestClientData[0]"
                             ></ForestClientCard>
                         </div>
                     </div>
