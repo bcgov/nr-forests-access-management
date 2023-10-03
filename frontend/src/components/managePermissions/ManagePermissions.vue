@@ -100,25 +100,35 @@ async function deleteUserRoleAssignment(
             />
         </div>
 
-        <NotificationMessage
-            v-if="useNotificationMessage.isNotificationVisible"
-            severity="success"
-            :msgText="useNotificationMessage.notificationMsg"
-        />
+        <div class="dashboard-background-layout">
+            <NotificationMessage
+                v-if="useNotificationMessage.isNotificationVisible"
+                severity="success"
+                :msgText="useNotificationMessage.notificationMsg"
+                class="dashboard-notification"
+            />
 
-        <UserDataTable
-            :isApplicationSelected="isApplicationSelected"
-            :loading="LoadingState.isLoading.value"
-            :userRoleAssignments="userRoleAssignments || []"
-            :selectedApplicationDisplayText="selectedApplicationDisplayText"
-            @deleteUserRoleAssignment="deleteUserRoleAssignment"
-        />
+            <UserDataTable
+                :isApplicationSelected="isApplicationSelected"
+                :loading="LoadingState.isLoading.value"
+                :userRoleAssignments="userRoleAssignments || []"
+                :selectedApplicationDisplayText="selectedApplicationDisplayText"
+                @deleteUserRoleAssignment="deleteUserRoleAssignment"
+            />
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
 
+.application-group {
+    display: grid;
+
+    label {
+        margin-bottom: 0.5rem;
+    }
+}
 .application-dropdown {
     height: 3rem;
     padding: 0;
@@ -128,11 +138,21 @@ async function deleteUserRoleAssignment(
     }
 }
 
-.application-group {
-    display: grid;
-
-    label {
-        margin-bottom: 0.5rem;
+.dashboard-notification {
+    margin: 0rem 2.5rem;
+    &:deep(.p-message) {
+        position: relative;
+        margin-bottom: -1rem;
     }
+}
+
+.dashboard-background-layout {
+    margin-top: 2rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding: 1rem 0rem;
+    background: $light-layer-one;
+    z-index: -1;
+    min-height: calc(100vh - 18.745rem);
 }
 </style>

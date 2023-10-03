@@ -26,11 +26,11 @@ const props = defineProps<{
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div class="col user-id">
+            <div class="col-2 user-id">
                 <label class="row">User ID:</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
-            <div class="col" v-if="props.userIdentity.found">
+            <div class="col-6" v-if="props.userIdentity.found">
                 <label class="row">Display Name: </label>
                 <span class="row">{{ props.userIdentity.displayName }}</span>
             </div>
