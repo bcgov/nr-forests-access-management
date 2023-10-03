@@ -7,7 +7,6 @@ on:
       - "main"
 
 jobs:
-
   aws-dev-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
@@ -16,7 +15,6 @@ jobs:
       execute_flyway: true
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
       dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
@@ -30,7 +28,6 @@ jobs:
       idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
 
-
   aws-dev-deployment-frontend:
     needs: aws-dev-deployment-server
     uses: ./.github/workflows/reusable_terraform_frontend.yml
@@ -39,4 +36,3 @@ jobs:
       tf_subcommand: apply
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
