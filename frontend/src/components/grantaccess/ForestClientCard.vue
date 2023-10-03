@@ -31,7 +31,10 @@ const props = defineProps({
             </template>
             <template #content>
                 <div class="w-100">
-                    <div class="content-wrapper">
+                    <div
+                        v-for="(forestItem, index) in props.forestClientData"
+                        class="content-wrapper"
+                    >
                         <Icon
                             class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
@@ -71,7 +74,7 @@ const props = defineProps({
                         <p class="col" v-if="props.forestClientData">
                             <label class="row">Organization name: </label>
                             <span class="organization-name row">
-                                {{ props.forestClientData?.client_name }}
+                                {{ forestItem.client_name }}
                             </span>
                         </p>
                         <p
@@ -102,6 +105,7 @@ const props = defineProps({
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
+                                @click="$emit('removeItem', index)"
                             />
                         </Button> -->
                     </div>

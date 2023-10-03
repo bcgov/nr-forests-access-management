@@ -68,6 +68,8 @@ function onClicked(event: any) {
 <style lang="scss">
 .nr-button {
     display: flex;
+    gap: 2rem;
+    white-space: nowrap;
 }
 .nr-button .icon {
     margin-right: auto;

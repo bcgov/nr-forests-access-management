@@ -2,7 +2,7 @@
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
-import { number, object, string } from 'yup';
+import { boolean, number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
@@ -34,32 +34,41 @@ import {
     type IdimProxyIdirInfo,
 } from 'fam-api';
 
+import { IconSize } from '@/enum/IconEnum';
+
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
     forestClientNumber: '',
+    forestNumberError: false,
     role_id: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
     role_id: number().required('Please select a value'),
+    forestNumberError: boolean(),
     forestClientNumber: string()
         .when('role_id', {
             is: (_role_id: number) => isAbstractRoleSelected(),
             then: () =>
                 string()
                     .required('Forest Client number is required')
-                    .min(8, 'Forest Client ID must be 8 characters long'),
+                    .min(8, `Forest Client ID must be 8 characters long`)
+                    .when('forestNumberError', (forestNumberError, schema) => {
+                        console.log(forestNumberError, schema);
+                        return forestNumberError ? string().required() : schema;
+                    }),
         })
         .nullable(),
 });
 
 let applicationRoleOptions: FamApplicationRole[];
-const forestClientData = ref<FamForestClient[] | null>(null);
+const forestClientData = ref<FamForestClient[]>([]);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
 const apiServiceFactory = new ApiServiceFactory();
@@ -116,7 +125,7 @@ function resetVerifiedUserIdentity() {
 }
 
 function resetForestClientNumberData() {
-    forestClientData.value = null;
+    forestClientData.value = [];
     formData.value['forestClientNumber'] = '';
 }
 
@@ -139,9 +148,31 @@ async function verifyIdentity(userId: string, domain: string) {
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
-    forestClientData.value = (
-        await forestClientApi.search(forestClientNumber)
-    ).data;
+    await forestClientApi.search(forestClientNumber).then((result) => {
+        if (
+            result.data[0].status?.status_code === FamForestClientStatusType.A
+        ) {
+            addForestClientNumber(result.data[0] as FamForestClient);
+            formData.value['forestNumberError'] = false;
+            // forestNumberError.value = false;
+        } else {
+            // forestNumberError.value = true;
+            formData.value['forestNumberError'] = true;
+        }
+    });
+}
+
+function addForestClientNumber(forentClientNumber: FamForestClient) {
+    if (
+        !forestClientData.value.find(
+            (item) =>
+                forentClientNumber.forest_client_number ===
+                item.forest_client_number
+        )
+    ) {
+        forestClientData.value.push(forentClientNumber);
+    } else {
+    }
 }
 
 /*
@@ -171,6 +202,10 @@ function roleSelected(evt: any) {
     })[0];
     grantAccessFormRoleName.value = role.role_name;
     resetForestClientNumberData();
+}
+
+function removeForestClientFromList(index: number) {
+    forestClientData.value.splice(index, 1);
 }
 </script>
 
@@ -239,7 +274,7 @@ function roleSelected(evt: any) {
                                     v-bind="field"
                                     @input="userIdChange()"
                                     :class="{ 'is-invalid': errors.userId }"
-                                ></InputText>
+                                />
                             </Field>
                             <ErrorMessage
                                 class="invalid-feedback"
@@ -288,12 +323,16 @@ function roleSelected(evt: any) {
                     </div>
 
                     <div class="row">
-                        <label
-                            >Assign a role
-                            {{ formData.userId ? 'to ' + formData.userId : ''
-                            }}<span class="text-danger"> *</span></label
-                        >
-                        <div class="col-md-3 px-0">
+                        <div class="px-0 col-md-6">
+                            <label
+                                >Assign a role
+                                {{
+                                    formData.userId
+                                        ? 'to ' + formData.userId
+                                        : ''
+                                }}<span class="text-danger"> *</span></label
+                            >
+
                             <Field
                                 name="role_id"
                                 aria-label="Role Select"
@@ -307,84 +346,96 @@ function roleSelected(evt: any) {
                                     :modelValue="field.value"
                                     placeholder="Choose an option"
                                     class="w-100"
+                                    style="width: 100% !important"
                                     v-bind="field.value"
                                     @update:modelValue="handleChange"
                                     @change="roleSelected($event)"
-                                    :class="{ 'is-invalid': errors.role_id }"
+                                    :class="{
+                                        'is-invalid': errors.role_id,
+                                    }"
                                 >
                                 </Dropdown>
                             </Field>
                             <ErrorMessage
                                 class="invalid-feedback"
                                 name="role_id"
-                            />
+                            >
+                            </ErrorMessage>
                         </div>
                     </div>
 
-                    <div v-if="isAbstractRoleSelected()" class="row">
-                        <label for="forestClientInput"
-                            >Type user’s Forest Client ID (8 characters)
-                            <span class="text-danger"> *</span></label
-                        >
-
-                        <div class="col-md-3 px-0">
-                            <Field
-                                name="forestClientNumber"
-                                v-slot="{ field, handleChange }"
-                                v-model="formData.forestClientNumber"
-                            >
-                                <InputText
-                                    id="forestClientInput"
-                                    :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
-                                    placeholder="Forest Client Id - 8 digits"
-                                    @update:modelValue="handleChange"
+                    <div v-if="isAbstractRoleSelected()">
+                        <div class="row mb-0">
+                            <div class="px-0 col-md-6">
+                                <label for="forestClientInput"
+                                    >User’s Client ID (8 digits)
+                                    <span class="text-danger"> *</span></label
+                                >
+                            </div>
+                        </div>
+                        <div class="row pt-0 mt-0">
+                            <div class="px-0 col-4">
+                                <Field
+                                    name="forestClientNumber"
+                                    v-slot="{ field, meta, handleChange }"
+                                    v-model="formData.forestClientNumber"
+                                >
+                                    <InputText
+                                        id="forestClientInput"
+                                        :maxlength="
+                                            FOREST_CLIENT_INPUT_MAX_LENGTH
+                                        "
+                                        placeholder="Enter and verify the client ID"
+                                        @update:modelValue="handleChange"
+                                        v-bind:disabled="
+                                            LoadingState.isLoading.value
+                                        "
+                                        :validateOnChange="true"
+                                        v-bind="field"
+                                        class="w-100"
+                                        v-on:keypress="
+                                            forestClientCheckOnlyDigit($event)
+                                        "
+                                        @input="resetForestClientNumberData()"
+                                        :class="{
+                                            'is-invalid':
+                                                errors.forestClientNumber,
+                                        }"
+                                    ></InputText>
+                                </Field>
+                                <ErrorMessage
+                                    class="invalid-feedback"
+                                    name="forestClientNumber"
+                                />
+                            </div>
+                            <div class="pr-1 col-2">
+                                <Button
+                                    outlined
+                                    aria-label="Verify forest client number"
+                                    :name="'verifyFC'"
+                                    :label="'Add Client Numbers'"
+                                    :loading-label="'Verifying...'"
+                                    @click="
+                                        verifyForestClientNumber(
+                                            formData.forestClientNumber as string
+                                        )
+                                    "
                                     v-bind:disabled="
-                                        LoadingState.isLoading.value
+                                        formData.forestClientNumber?.length <
+                                            8 || LoadingState.isLoading.value
                                     "
-                                    :validateOnChange="true"
-                                    v-bind="field"
-                                    class="w-100"
-                                    v-on:keypress="
-                                        forestClientCheckOnlyDigit($event)
-                                    "
-                                    @input="resetForestClientNumberData()"
-                                    :class="{
-                                        'is-invalid': errors.forestClientNumber,
-                                    }"
-                                ></InputText>
-                            </Field>
-                            <ErrorMessage
-                                class="invalid-feedback"
-                                name="forestClientNumber"
-                            />
-                        </div>
-
-                        <div class="col-md-2">
-                            <Button
-                                class="button"
-                                outlined
-                                aria-label="Verify forest client number"
-                                :name="'verifyFC'"
-                                :label="'Verify'"
-                                :loading-label="'Verifying...'"
-                                @click="
-                                    verifyForestClientNumber(
-                                        formData.forestClientNumber as string
-                                    )
-                                "
-                                v-bind:disabled="
-                                    formData.forestClientNumber?.length < 8 ||
-                                    LoadingState.isLoading.value
-                                "
-                            >
-                            </Button>
+                                >
+                                    <Icon icon="add" :size="IconSize.small" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
-                    <div v-if="forestClientData" class="row">
+                    <div v-if="forestClientData.length > 0" class="row">
                         <div class="col-md-5 px-0">
                             <ForestClientCard
-                                :forestClientData="forestClientData[0]"
+                                :forestClientData="forestClientData"
+                                @remove-item="removeForestClientFromList"
                             ></ForestClientCard>
                         </div>
                     </div>
