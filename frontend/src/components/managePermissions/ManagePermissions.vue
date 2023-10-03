@@ -139,7 +139,7 @@ async function deleteUserRoleAssignment(
 }
 
 .dashboard-notification {
-    margin: 0rem 2.5rem;
+    margin: 0rem 2rem;
     &:deep(.p-message) {
         position: relative;
         margin-bottom: -1rem;
