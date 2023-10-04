@@ -28,7 +28,7 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
-  # aliases             = ["${var.cloudfront_vanity_domain}"] # TODO: Temporarily commented out. Enable this.
+  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
@@ -37,10 +37,9 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   web_acl_id          = "${aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
 
   viewer_certificate {
-    cloudfront_default_certificate = true # TODO: remove this. Temporary only.
-    # acm_certificate_arn = "${var.cloudfront_certificate_arn}"
-    # ssl_support_method = "sni-only"
-    # minimum_protocol_version = "TLSv1.2_2021"
+    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
+    ssl_support_method = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   origin {
