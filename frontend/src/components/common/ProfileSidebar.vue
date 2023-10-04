@@ -90,7 +90,7 @@ const buttonLabel = computed(() => {
     border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
-    inset: 0 0 0 70%;
+    inset: 0 0 0 10%;
     margin: 3rem 0 0;
     padding: 0 1rem 0;
     position: fixed;
@@ -206,5 +206,23 @@ const buttonLabel = computed(() => {
 .fade-out {
     visibility: hidden;
     background-color: rgba($color: #131315, $alpha: 0);
+}
+
+@media (min-device-width: 425px) {
+    .profile-container {
+        inset: 0 0 0 30%;
+    }
+}
+
+@media (min-device-width: 768px) {
+    .profile-container {
+        inset: 0 0 0 60%;
+    }
+}
+
+@media (min-device-width: 900px) {
+    .profile-container {
+        inset: 0 0 0 70%;
+    }
 }
 </style>
