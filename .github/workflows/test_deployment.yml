@@ -3,6 +3,12 @@ name: DEPLOY Test Environment
 on:
   workflow_dispatch:
 
+# When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
+# permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
 jobs:
   aws-test-deployment-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
