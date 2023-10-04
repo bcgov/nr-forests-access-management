@@ -2,13 +2,30 @@
 import Card from 'primevue/card';
 import Tag from 'primevue/tag';
 import { IconSize } from '@/enum/IconEnum';
-import type { PropType } from 'vue';
+import { ref, watchEffect, type PropType } from 'vue';
 import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
+import { FamForestClientStatusType } from 'fam-api';
 
 const props = defineProps({
     forestClientData: {
-        type: Object as PropType<FamForestClient>,
+        type: Object as PropType<FamForestClient[]>,
     },
+});
+
+const activeClientCheck = ref<boolean>(true);
+
+const checkClientData = (data: FamForestClient[] | undefined) => {
+    if (data === undefined) return;
+    activeClientCheck.value = true;
+    data.forEach((clientData) => {
+        if (clientData.status?.status_code !== FamForestClientStatusType.A) {
+            activeClientCheck.value = false;
+        }
+    });
+};
+
+watchEffect(() => {
+    checkClientData(props.forestClientData);
 });
 </script>
 <template>
@@ -17,15 +34,17 @@ const props = defineProps({
         <Card class="custom-card">
             <template #header>
                 <Icon
-                    icon="checkmark--filled"
+                    :class="
+                        !activeClientCheck
+                            ? 'custom-carbon-icon-error--filled'
+                            : ''
+                    "
+                    :icon="
+                        activeClientCheck
+                            ? 'checkmark--filled'
+                            : 'error--filled'
+                    "
                     :size="IconSize.small"
-                    v-if="props.forestClientData?.status?.status_code == 'A'"
-                />
-                <Icon
-                    class="custom-carbon-icon-error--filled"
-                    icon="error--filled"
-                    :size="IconSize.small"
-                    v-else
                 />
                 <p>Verified Client ID information</p>
             </template>
@@ -39,10 +58,7 @@ const props = defineProps({
                             class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
                             :size="IconSize.small"
-                            v-if="
-                                props.forestClientData?.status?.status_code ==
-                                'A'
-                            "
+                            v-if="forestItem.status?.status_code == 'A'"
                         />
 
                         <Icon
@@ -66,9 +82,7 @@ const props = defineProps({
                         >
                             <label class="col">Client ID: </label>
                             <span class="col">
-                                {{
-                                    props.forestClientData?.forest_client_number
-                                }}
+                                {{ forestItem.forest_client_number }}
                             </span>
                         </p>
                         <p class="col" v-if="props.forestClientData">
@@ -87,19 +101,15 @@ const props = defineProps({
                             <Tag
                                 class="custom-tag"
                                 :severity="
-                                    props.forestClientData?.status
-                                        ?.status_code == 'A'
+                                    forestItem.status?.status_code == 'A'
                                         ? 'success'
                                         : 'danger'
                                 "
-                                :value="
-                                    props.forestClientData?.status?.description
-                                "
+                                :value="forestItem.status?.description"
                             />
                         </p>
 
-                        <!-- hidden until functionaly arrives -->
-                        <!-- <Button class="btn-trash">
+                        <Button class="btn-trash">
                             <Icon
                                 class="row custom-carbon-icon--trash-can"
                                 icon="trash-can"
@@ -107,7 +117,7 @@ const props = defineProps({
                                 title="Remove client"
                                 @click="$emit('removeItem', index)"
                             />
-                        </Button> -->
+                        </Button>
                     </div>
                 </div>
             </template>
@@ -159,13 +169,14 @@ p * {
     margin-right: 3rem;
 }
 
+.org-status-wrapper {
+    margin-top: 0.1rem;
+}
+
 .custom-carbon-icon-checkmark--filled {
     margin-right: 1rem !important;
 }
 
-.org-status-wrapper {
-    margin-top: 0.1rem;
-}
 .status {
     margin-bottom: 0.6rem !important;
 }

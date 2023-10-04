@@ -45,7 +45,10 @@ const defaultFormData = {
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 
-const forestError = ref<boolean>(false);
+const forestClientInactive = ref<boolean>(false);
+const forestClientDuplicate = ref<boolean>(false);
+
+const forestClientInput = ref();
 
 const formValidationSchema = object({
     userId: string()
@@ -62,12 +65,23 @@ const formValidationSchema = object({
                     .required('Forest Client number is required')
                     .min(8, `Forest Client ID must be 8 characters long`)
                     .test(
-                        'validator-forestNumberError',
+                        'validator-forestClientInactive',
                         (value, { createError, path }) => {
-                            if (forestError.value === true)
+                            if (forestClientInactive.value === true)
                                 return createError({
                                     path,
                                     message: `Client ID ${value} is inactive and cannot be added.`,
+                                });
+                            else return true;
+                        }
+                    )
+                    .test(
+                        'validator-forestClientDuplicate',
+                        (value, { createError, path }) => {
+                            if (forestClientDuplicate.value === true)
+                                return createError({
+                                    path,
+                                    message: `Client ID ${value} has been added already.`,
                                 });
                             else return true;
                         }
@@ -137,7 +151,8 @@ function resetForestClientNumberData() {
     // forestClientData.value = [];
     formData.value['forestClientNumber'] = '';
     formData.value['forestNumberError'] = false;
-    forestError.value = false;
+    forestClientInactive.value = false;
+    forestClientDuplicate.value = false;
 }
 
 function resetForm() {
@@ -164,13 +179,11 @@ async function verifyForestClientNumber(forestClientNumber: string) {
             result.data[0].status?.status_code === FamForestClientStatusType.A
         ) {
             addForestClientNumber(result.data[0] as FamForestClient);
-            formData.value['forestNumberError'] = false;
-            forestError.value = false;
-            // forestNumberError.value = false;
+            forestClientInactive.value = false;
         } else {
-            // forestNumberError.value = true;
-            formData.value['forestNumberError'] = true;
-            forestError.value = true;
+            forestClientInactive.value = true;
+            forestClientInput.value.$el.focus();
+            forestClientInput.value.$el.blur();
         }
     });
 }
@@ -185,6 +198,9 @@ function addForestClientNumber(forentClientNumber: FamForestClient) {
     ) {
         forestClientData.value.push(forentClientNumber);
     } else {
+        forestClientDuplicate.value = true;
+        forestClientInput.value.$el.focus();
+        forestClientInput.value.$el.blur();
     }
 }
 
@@ -395,6 +411,7 @@ function removeForestClientFromList(index: number) {
                                 >
                                     <InputText
                                         id="forestClientInput"
+                                        ref="forestClientInput"
                                         :maxlength="
                                             FOREST_CLIENT_INPUT_MAX_LENGTH
                                         "
@@ -442,21 +459,6 @@ function removeForestClientFromList(index: number) {
                                 </Button>
                             </div>
                         </div>
-                        <Field
-                            name="forestNumberError"
-                            :validateOnChange="true"
-                            v-model="formData.forestNumberError"
-                            v-slot="{ field }"
-                        >
-                            <InputText
-                                id="forestNumberError"
-                                v-bind="field"
-                                class="w-100"
-                                :class="{
-                                    'is-invalid': errors.forestNumberError,
-                                }"
-                            ></InputText>
-                        </Field>
                     </div>
 
                     <div v-if="forestClientData.length > 0" class="row">
