@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.4.0...v1.5.0) (2023-10-03)
+
+
+### Features
+
+* [#846](https://github.com/bcgov/nr-forests-access-management/issues/846) user information card new design style ([#913](https://github.com/bcgov/nr-forests-access-management/issues/913)) ([5986c57](https://github.com/bcgov/nr-forests-access-management/commit/5986c57a2b01567ee31c0f08b80689523160a699))
+* [#847](https://github.com/bcgov/nr-forests-access-management/issues/847) adjust forest client information card ([#932](https://github.com/bcgov/nr-forests-access-management/issues/932)) ([43d5a56](https://github.com/bcgov/nr-forests-access-management/commit/43d5a5668cb54c07a9d62802fdf0f7192fe764ae))
+* [#849](https://github.com/bcgov/nr-forests-access-management/issues/849) adjust styling manage permissions ([#890](https://github.com/bcgov/nr-forests-access-management/issues/890)) ([4adfb59](https://github.com/bcgov/nr-forests-access-management/commit/4adfb59347318229d4d8908a3683614ff69a7ccb))
+* 851 search bar in the manage permissions page ([#895](https://github.com/bcgov/nr-forests-access-management/issues/895)) ([55927e9](https://github.com/bcgov/nr-forests-access-management/commit/55927e921ede4f3aad669a18dc8fc6d802d04421))
+* drawio adjust ([#910](https://github.com/bcgov/nr-forests-access-management/issues/910)) ([ab7c5ab](https://github.com/bcgov/nr-forests-access-management/commit/ab7c5abc5cf47b41a0eec00e32451c63391cf56b))
+
+
+### Bug Fixes
+
+* [#720](https://github.com/bcgov/nr-forests-access-management/issues/720) make user attribute displayname and email writable  ([#912](https://github.com/bcgov/nr-forests-access-management/issues/912)) ([32029f5](https://github.com/bcgov/nr-forests-access-management/commit/32029f530dc7c0c45f2431c2bc47caf4cf2b838b))
+* [#897](https://github.com/bcgov/nr-forests-access-management/issues/897) frontend minor style changes ([#914](https://github.com/bcgov/nr-forests-access-management/issues/914)) ([2a2a291](https://github.com/bcgov/nr-forests-access-management/commit/2a2a291f9a0270c84b703d0e3b23097fa29acaf4))
+* [#933](https://github.com/bcgov/nr-forests-access-management/issues/933) added redirect urls for silva client as required ([#944](https://github.com/bcgov/nr-forests-access-management/issues/944)) ([9fd0afa](https://github.com/bcgov/nr-forests-access-management/commit/9fd0afa038414e4f799d775ebc629b0932235131))
+
 ## [1.4.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.3.0...v1.4.0) (2023-09-14)
 
 
