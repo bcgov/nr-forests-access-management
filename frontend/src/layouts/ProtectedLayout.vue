@@ -7,6 +7,7 @@ import SideNav, {
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { isApplicationSelected } from '@/store/ApplicationState';
+import { useSideNavVisible } from '@/store/SideNavState'
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
@@ -27,9 +28,10 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
         });
     });
 };
+
 </script>
 <template>
-    <Header title="FAM" subtitle="Forests Access Management" />
+    <Header :title="useSideNavVisible.isDesktopSize ? 'FAM Forestry Access Management' : 'FAM'" subtitle="Forests Access Management" />
 
     <SideNav :data="navigationData" />
     <div class="main">

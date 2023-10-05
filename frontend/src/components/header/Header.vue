@@ -69,6 +69,7 @@ li {
 }
 
 .toggleSideNav {
+    margin-right: 0.5rem;
     padding: 0.88rem;
     border: none;
     border-radius: 0;
