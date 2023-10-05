@@ -26,6 +26,10 @@ const props = defineProps({
     },
 });
 
+window.addEventListener("resize", (event) => {
+    useSideNavVisible.isSideNavVisible = window.innerWidth >= 1024 && true
+});
+
 </script>
 <template>
     <Sidebar

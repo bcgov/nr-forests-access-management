@@ -29,7 +29,7 @@ const props = defineProps({
 <template>
     <header class="header" id="header">
         <nav
-            class="navbar px-2 justify-content-start"
+            class="navbar justify-content-start"
         >
             <Button
                 class="toggleSideNav"
@@ -89,7 +89,6 @@ li {
     color: $dark-text-primary;
     .header-title {
         margin: 0 auto 0 0 ;
-        padding-left: 1rem;
         a i {
             cursor: pointer;
         }
@@ -101,7 +100,7 @@ li {
 
     .navbar {
         margin: 0;
-        padding: 0 0.5rem 0 0  !important;
+        padding: 0 1rem 0 0;
         height: 3rem;
         vertical-align: middle;
     }
@@ -111,7 +110,10 @@ li {
     }
 }
 
-@media (min-device-width: 1366px) {
+@media (min-device-width: 1024px) {
+    .navbar {
+        padding: 0 1rem 0 1rem  !important;
+    }
     .toggleSideNav {
         display: none;
     }

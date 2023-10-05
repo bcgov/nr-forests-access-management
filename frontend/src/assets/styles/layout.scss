@@ -17,6 +17,7 @@ body {
 
 .page-body {
     margin-top: 1.5rem;
+    width: 100%;
 }
 
 .form-container {
@@ -65,7 +66,7 @@ input[type='number'] {
     }
 }
 
-@media (min-device-width: 1366px) {
+@media (min-device-width: 1024px) {
     .page-body {
         width:  100%;
     }

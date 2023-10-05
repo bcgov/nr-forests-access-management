@@ -230,18 +230,17 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 .btn-icon:disabled {
     border: none;
+}
+
 .data-table-container {
-    margin-top: 2rem;
-    margin-left: -2rem;
-    margin-right: -2rem;
-    padding: 1rem 0rem;
+    margin: 0.05rem;
     background: $light-layer-one;
     z-index: -1;
     min-height: calc(100vh - 18.745rem);
 }
 
 .custom-data-table {
-    margin: 2.5rem 2rem;
+    margin: 1.2rem 1rem;
     background: transparent;
     border-radius: 0.25rem 0.25rem 0 0;
     border: 0.125rem solid $light-border-subtle-00;
@@ -343,33 +342,15 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 @media (max-device-width: 390px){
     .data-table-container {
         min-height: calc(100vh - 17.9rem);
+        margin: 0;
+        padding: 0;
     }
+
 }
 
 @media (min-device-width: 768px) {
-    .no-app-selected {
-        width: 100%;
-        height: calc(100vh - 19.5rem);
-        margin: 0;
-    }
-
     .data-table-container {
-        width: calc(100vw + 0.5rem);
-        margin-right: 0;
-    }
-
-    .custom-data-table {
-        width: calc(100vw - 3rem);
-    }
-}
-
-@media (min-device-width: 1366px) {
-    .data-table-container {
-        width: calc(100% + 3.5rem);
-    }
-
-    .custom-data-table {
-        width: calc(100% - 3.5rem);
+        margin: 0.4rem;
     }
 }
 

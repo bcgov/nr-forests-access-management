@@ -122,11 +122,6 @@ async function deleteUserRoleAssignment(
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
 
-.application-dropdown {
-    max-width: 29rem;
-    padding: 0;
-}
-
 .application-group {
     display: grid;
     label {
@@ -134,6 +129,7 @@ async function deleteUserRoleAssignment(
     }
 }
 .application-dropdown {
+    max-width: calc(100vw - 2rem);
     height: 3rem;
     padding: 0;
 
@@ -152,17 +148,31 @@ async function deleteUserRoleAssignment(
 
 .dashboard-background-layout {
     margin-top: 2rem;
-    margin-left: -2rem;
-    margin-right: -2rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
     padding: 1rem 0rem;
     background: $light-layer-one;
     z-index: -1;
+    width: 99.9vw;
     min-height: calc(100vh - 18.745rem);
 }
 
-@media (max-device-width: 390px) {
-    .application-dropdown{
-        max-width: 22.4rem;
+@media (min-device-width: 495px) {
+    .application-dropdown {
+        max-width: 29rem;
+    }
+}
+
+@media (min-device-width: 768px) {
+    .dashboard-background-layout {
+        width: 100vw;
+        margin-left: -1.5rem;
+    }
+}
+
+@media (min-device-width: 1024px) {
+    .dashboard-background-layout {
+        width: calc(100vw - 16rem);
     }
 }
 
