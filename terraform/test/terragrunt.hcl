@@ -11,6 +11,7 @@ generate "test_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  target_env = "test"
   fam_user_pool_name = "test-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "test-fam-user-pool-domain"
   famdb_cluster_name = "test-fam-cluster"
