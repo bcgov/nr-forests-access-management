@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.5.0...v1.6.0) (2023-10-05)
+
+
+### Features
+
+* [#915](https://github.com/bcgov/nr-forests-access-management/issues/915) tfc s3 migration deployment ([#948](https://github.com/bcgov/nr-forests-access-management/issues/948)) ([e325af6](https://github.com/bcgov/nr-forests-access-management/commit/e325af6c5eabb2cdc32b0fbb412ab7e0cd47cc8d))
+
 ## [1.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.4.0...v1.5.0) (2023-10-03)
 
 
