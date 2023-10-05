@@ -1,5 +1,6 @@
 # Local .terraform directories
 **/.terraform/*
+*-debug.*.json
 
 # .tfstate files
 *.tfstate
@@ -85,6 +86,8 @@ infrastructure/server/fam-ui-api.zip
 terraform/tools/github.auto.tfvars
 terraform/tools/.terraform.lock.hcl
 terraform/tools/output.txt
+
+**.terraform.lock.hcl
 
 # Sonar cloud
 **/.scannerwork/**/*

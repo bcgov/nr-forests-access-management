@@ -11,6 +11,7 @@ generate "prod_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  target_env = "prod"
   fam_user_pool_name = "prod-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "prod-fam-user-pool-domain"
   famdb_cluster_name = "prod-fam-cluster"

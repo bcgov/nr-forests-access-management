@@ -11,6 +11,7 @@ generate "dev_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  target_env = "dev"
   fam_user_pool_name = "dev-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "dev-fam-user-pool-domain"
   famdb_cluster_name = "dev-fam-cluster"
