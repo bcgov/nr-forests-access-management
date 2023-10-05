@@ -12,19 +12,32 @@ const props = defineProps<{
 <template>
     <Card class="mb-2 p-0 custom-card">
         <template #header>
-            <Icon icon="checkmark--filled" :size="IconSize.medium" />
+            <Icon
+                icon="checkmark--filled"
+                :size="IconSize.small"
+                v-if="props.userIdentity.found"
+            />
+            <Icon
+                class="custom-carbon-icon-error--filled"
+                icon="error--filled"
+                :size="IconSize.small"
+                v-else
+            />
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div class="col">
+            <div class="col-2 user-id">
                 <label class="row">User ID:</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
-            <div class="col" v-if="props.userIdentity.found">
-                <label class="row" >Display Name: </label>
-                <span  class="row">{{ props.userIdentity.displayName }}</span>
+            <div class="col-6" v-if="props.userIdentity.found">
+                <label class="row">Display Name: </label>
+                <span class="row">{{ props.userIdentity.displayName }}</span>
             </div>
-            <div class="col d-flex align-items-center" v-if="!props.userIdentity.found">
+            <div
+                class="col d-flex align-items-center"
+                v-if="!props.userIdentity.found"
+            >
                 <span class="px-0 invalid"> User does not exist </span>
             </div>
         </template>
@@ -34,24 +47,9 @@ const props = defineProps<{
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 
-.custom-card {
-    width: 38rem;
-}
-
-label {
-    color: $light-text-primary;
-    margin: 0 0 0.75rem !important;
-}
-
-span {
-    margin: 0 !important;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    letter-spacing: 0.01rem;
-}
-
-.invalid {
-    font-size: 0.875em;
-    color: $light-text-error;
+.user-id {
+    margin-left: 2rem;
+    margin-right: 2.5rem;
+    flex-grow: 0;
 }
 </style>

@@ -1,13 +1,17 @@
 @use 'sass:map';
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-theme.scss' as lightTheme;
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/dark-theme.scss' as darkTheme;
+@use '@bcgov-nr/nr-theme/design-tokens/light-theme.scss' as lightTheme;
+@use '@bcgov-nr/nr-theme/design-tokens/dark-theme.scss' as darkTheme;
 // need to use type family first, and then use stylesheet, so the body type tokens can get the font path correctly
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss';
-@use '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
+@use '@bcgov-nr/nr-theme/design-tokens/type-family.scss';
+@use '@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss';
 
 // Header
 $header-height: 3rem;
 $header-width: 100vw;
+
+// Card
+$card-width: 38rem;
+$card-margin-top: 2rem;
 
 //darkTheme
 $dark-text-primary: map.get(darkTheme.$dark-theme, 'text-primary');
@@ -37,3 +41,7 @@ $light-layer-two: map.get(lightTheme.$light-theme, 'layer-02');
 //support
 $light-support-error: map.get(lightTheme.$light-theme, 'support-error');
 $light-support-success: map.get(lightTheme.$light-theme, 'support-success');
+
+//icon
+$light-icon-primary: map.get(lightTheme.$light-theme, 'icon-primary');
+

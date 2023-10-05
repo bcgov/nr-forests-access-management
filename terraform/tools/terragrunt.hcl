@@ -11,6 +11,7 @@ generate "tools_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  target_env = "tools"
   fam_user_pool_name = "tools-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "tools-fam-user-pool-domain"
   famdb_cluster_name = "tools-fam-cluster"

@@ -90,29 +90,29 @@ const props = defineProps({
 
 .sidenav-logo {
     img {
-        margin: 0px 0px 16px 3px;
-        width: 140px;
-        height: 32px;
+        margin: 0px 0px 1rem 0.188rem;
+        width: 8.75rem;
+        height: 2rem;
     }
 }
 
 .sidenav {
     position: fixed;
-    padding: 16px 0px;
-    width: 256px;
-    height: calc(100vh - 50px);
-    left: 0px;
-    top: 48px;
+    padding: 1rem 0rem;
+    width: 16rem;
+    height: calc(100vh - 3.125rem);
+    left: 0rem;
+    top: 3rem;
     overflow-x: hidden;
     overflow-y: auto;
-    box-shadow: inset -1px 0px 0px $light-border-subtle-00;
+    box-shadow: inset -0.063rem 0rem 0rem $light-border-subtle-00;
     .content {
         position: relative;
         min-height: auto;
     }
     .support-section {
         position: absolute;
-        bottom: 0px;
+        bottom: 0rem;
     }
 }
 
@@ -129,7 +129,7 @@ const props = defineProps({
     @extend %helper-text-01;
     color: $light-text-secondary;
     align-items: center;
-    padding: 15px 16px;
+    padding: 0.9375rem 1rem;
     i {
         vertical-align: middle;
     }
@@ -138,9 +138,13 @@ const props = defineProps({
     }
 }
 
+.sidenav li.child {
+    font-size: 0.875rem;
+}
+
 .sidenav li.child:hover {
     background: $light-layer-selected-01;
-    box-shadow: inset 3px 0px 0px $light-border-interactive;
+    box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
     color: $light-text-primary;
     cursor: pointer;
 }
@@ -152,7 +156,7 @@ const props = defineProps({
 
 .sidenav-selected {
     background: $light-layer-selected-01;
-    box-shadow: inset 3px 0px 0px $light-border-interactive;
+    box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
     color: $light-text-primary !important;
     cursor: pointer;
 }
@@ -161,14 +165,6 @@ const props = defineProps({
 ul#nav li.active a {
     color: $light-text-primary;
     background: $light-layer-selected-01;
-    box-shadow: inset 3px 0px 0px $light-border-interactive;
-}
-
-.sidenav-padding-icon {
-    margin-right: 25px;
-}
-
-.sidenav-color-icon {
-    color: $light-interactive;
+    box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
 }
 </style>

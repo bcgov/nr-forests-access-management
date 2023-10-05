@@ -22,6 +22,7 @@ const props = defineProps({
 const icons = {
     // whenever we add an import here, we need to declare the module in alltypes.d.ts
     // to get rid of the type error
+    // small icons
     close16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/close/16')
     ),
@@ -41,14 +42,25 @@ const icons = {
     search16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/search/16')
     ),
+    'checkmark--filled16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark--filled/16')
+    ),
+    'error--filled16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/error--filled/16')
+    ),
+    add16: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/16')),
+    'trash-can16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/trash-can/16')
+    ),
+    edit16: defineAsyncComponent(() => import('@carbon/icons-vue/es/edit/16')),
 
+    // medium icons
     'checkmark--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark--filled/20')
     ),
     login20: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/login/20')
     ),
-    add16: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/16')),
     add20: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/20')),
     'user--avatar--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/user--avatar--filled/20')
@@ -57,14 +69,9 @@ const icons = {
         () => import('@carbon/icons-vue/es/user--avatar/20')
     ),
 
+    // large icons
     'error--filled24': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/24')
-    ),
-    'trash-can16': defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/trash-can/16')
-    ),
-    edit16: defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/edit/16')
     ),
 } as any;
 </script>

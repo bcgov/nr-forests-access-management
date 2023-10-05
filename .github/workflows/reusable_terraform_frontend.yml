@@ -12,20 +12,22 @@ on:
     secrets:
       licenceplate:
         required: true
-      tfc_team_token:
-        required: true
 
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform-frontend
   TG_SERVER_SRC_PATH: terraform
+  AWS_REGION: ca-central-1
 
 jobs:
   aws-frontend-deployment:
     name: Run Terraform to Deploy Frontend
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
+
+    env:
+      AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_ROLE }} # AWS-GHA OIDC auth role.
 
     steps:
       - name: Checkout
@@ -39,11 +41,12 @@ jobs:
           mkdir ../infrastructure/frontend/dist
           rsync -r dist/* ../infrastructure/frontend/dist
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.tfc_team_token }}
+          role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+          role-session-name: frontend-${{ inputs.environment_name }}-deployment
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terragrunt
         uses: peter-murray/terragrunt-github-action@v1.0.0
@@ -54,7 +57,8 @@ jobs:
         name: Terragrunt Server Output
         working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}"
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
         run: |
           # Run terraform
           cat > github.auto.tfvars <<EOF
@@ -63,15 +67,7 @@ jobs:
           db_cluster_snapshot_identifier = "NA"
           execute_flyway = false
           EOF
-          terragrunt run-all output -json
-
-      - name: Create env.json file
-        uses: DamianReeves/write-file-action@master
-        with:
-          path: infrastructure/frontend/dist/env.json
-          contents: |
-            ${{ steps.terragrunt-server-output.outputs.stdout }}
-          write-mode: overwrite
+          terragrunt run-all output -json > ../../infrastructure/frontend/dist/env.json
 
       - id: terragrunt-server-output-test
         working-directory: infrastructure/frontend/dist
@@ -85,6 +81,7 @@ jobs:
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
-          tfc_workspace: "${{ secrets.licenceplate }}-${{ inputs.environment_name }}-frontend"
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
         run: |
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
