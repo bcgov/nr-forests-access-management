@@ -35,6 +35,7 @@ resource "aws_instance" "fam_util_ec2_instance" {
       managed-by = "terraform"
   }
 
+  # Script to install postgresql.
   user_data = <<EOF
   #!/bin/bash
   echo "Installing postgresql.x86_64" > init.log
