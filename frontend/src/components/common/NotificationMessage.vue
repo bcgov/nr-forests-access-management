@@ -22,7 +22,16 @@ const props = defineProps({
             :severity="props.severity"
             :sticky="true"
         >
-            <Icon icon="checkmark--filled" :size="IconSize.medium" />
+            <Icon
+                :icon="
+                    props.severity === 'success'
+                        ? 'checkmark--filled'
+                        : props.severity === 'error'
+                        ? 'error--filled'
+                        : 'warning--filled'
+                "
+                :size="IconSize.medium"
+            />
             <span class="custom-message-text">
                 <strong>{{ props.severity }}</strong> {{ props.msgText }}
             </span>

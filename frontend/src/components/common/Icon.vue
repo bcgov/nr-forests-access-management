@@ -58,6 +58,12 @@ const icons = {
     'checkmark--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark--filled/20')
     ),
+    'error--filled20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/error--filled/20')
+    ),
+    'warning--filled20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/warning--filled/20')
+    ),
     login20: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/login/20')
     ),

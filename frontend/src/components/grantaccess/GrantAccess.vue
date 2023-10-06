@@ -17,7 +17,6 @@ import {
     selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
 import {
-    FOREST_CLIENT_INPUT_MAX_LENGTH,
     domainOptions,
     getGrantAccessFormData,
     grantAccessFormData,
@@ -39,7 +38,7 @@ import { IconSize } from '@/enum/IconEnum';
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
-    forestClientNumber: '',
+    forestClientNumberList: [],
     forestNumberError: false,
     role_id: null as number | null,
 };
@@ -48,8 +47,6 @@ const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone defa
 const forestClientInactive = ref<boolean>(false);
 const forestClientDuplicate = ref<boolean>(false);
 
-const forestClientInput = ref();
-
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
@@ -57,37 +54,7 @@ const formValidationSchema = object({
         .nullable(),
     role_id: number().required('Please select a value'),
     forestNumberError: boolean(),
-    forestClientNumber: string()
-        .when('role_id', {
-            is: (_role_id: number) => isAbstractRoleSelected(),
-            then: () =>
-                string()
-                    .required('Forest Client number is required')
-                    .min(8, `Forest Client ID must be 8 characters long`)
-                    .test(
-                        'validator-forestClientInactive',
-                        (value, { createError, path }) => {
-                            if (forestClientInactive.value === true)
-                                return createError({
-                                    path,
-                                    message: `Client ID ${value} is inactive and cannot be added.`,
-                                });
-                            else return true;
-                        }
-                    )
-                    .test(
-                        'validator-forestClientDuplicate',
-                        (value, { createError, path }) => {
-                            if (forestClientDuplicate.value === true)
-                                return createError({
-                                    path,
-                                    message: `Client ID ${value} has been added already.`,
-                                });
-                            else return true;
-                        }
-                    ),
-        })
-        .nullable(),
+    forestClientNumber: string(),
 });
 
 let applicationRoleOptions: FamApplicationRole[];
@@ -137,18 +104,11 @@ function userIdChange() {
     resetForestClientNumberData();
 }
 
-function forestClientCheckOnlyDigit(evt: KeyboardEvent) {
-    if (isNaN(parseInt(evt.key))) {
-        evt.preventDefault();
-    }
-}
-
 function resetVerifiedUserIdentity() {
     verifiedUserIdentity.value = null;
 }
 
 function resetForestClientNumberData() {
-    // forestClientData.value = [];
     formData.value['forestClientNumber'] = '';
     formData.value['forestNumberError'] = false;
     forestClientInactive.value = false;
@@ -174,33 +134,37 @@ async function verifyIdentity(userId: string, domain: string) {
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
-    await forestClientApi.search(forestClientNumber).then((result) => {
-        if (
-            result.data[0].status?.status_code === FamForestClientStatusType.A
-        ) {
-            addForestClientNumber(result.data[0] as FamForestClient);
-            forestClientInactive.value = false;
-        } else {
-            forestClientInactive.value = true;
-            forestClientInput.value.$el.focus();
-            forestClientInput.value.$el.blur();
-        }
-    });
+    const forestNumbers = forestClientNumber.split(/[ ,]+/);
+
+    for (const item of forestNumbers) {
+        if (isNaN(parseInt(item))) return;
+        await forestClientApi.search(item).then((result) => {
+            if (
+                result.data[0].status?.status_code ===
+                FamForestClientStatusType.A
+            ) {
+                addForestClientNumber(result.data[0] as FamForestClient);
+                forestClientInactive.value = false;
+            } else {
+                forestClientInactive.value = true;
+            }
+        });
+    }
+
+    formData.value['forestClientNumber'] = '';
 }
 
-function addForestClientNumber(forentClientNumber: FamForestClient) {
+function addForestClientNumber(forestClientNumber: FamForestClient) {
     if (
         !forestClientData.value.find(
             (item) =>
-                forentClientNumber.forest_client_number ===
+                forestClientNumber.forest_client_number ===
                 item.forest_client_number
         )
     ) {
-        forestClientData.value.push(forentClientNumber);
+        forestClientData.value.push(forestClientNumber);
     } else {
         forestClientDuplicate.value = true;
-        forestClientInput.value.$el.focus();
-        forestClientInput.value.$el.blur();
     }
 }
 
@@ -221,7 +185,7 @@ function areVerificationsPassed() {
 }
 
 function toSummary() {
-    setGrantAccessFormData(formData.value);
+    setGrantAccessFormData(formData.value, forestClientData.value);
     router.push('/summary');
 }
 
@@ -411,10 +375,6 @@ function removeForestClientFromList(index: number) {
                                 >
                                     <InputText
                                         id="forestClientInput"
-                                        ref="forestClientInput"
-                                        :maxlength="
-                                            FOREST_CLIENT_INPUT_MAX_LENGTH
-                                        "
                                         placeholder="Enter and verify the client ID"
                                         @update:modelValue="handleChange"
                                         v-bind:disabled="
@@ -423,20 +383,43 @@ function removeForestClientFromList(index: number) {
                                         :validateOnChange="true"
                                         v-bind="field"
                                         class="w-100"
-                                        v-on:keypress="
-                                            forestClientCheckOnlyDigit($event)
-                                        "
                                         @input="resetForestClientNumberData()"
                                         :class="{
                                             'is-invalid':
-                                                errors.forestClientNumber,
+                                                errors.forestClientNumber ||
+                                                forestClientInactive ||
+                                                forestClientDuplicate,
                                         }"
                                     ></InputText>
                                 </Field>
-                                <ErrorMessage
+                                <small
+                                    v-if="
+                                        !forestClientInactive &&
+                                        !forestClientDuplicate
+                                    "
+                                    >Add and verify the Client IDs. Add multiple
+                                    numbers by separating them with
+                                    commas</small
+                                >
+                                <small
                                     class="invalid-feedback"
-                                    name="forestClientNumber"
-                                />
+                                    v-if="
+                                        forestClientInactive ||
+                                        forestClientDuplicate
+                                    "
+                                >
+                                    {{
+                                        `Client ID ${
+                                            formData.forestClientNumber
+                                        }  ${
+                                            forestClientInactive
+                                                ? ' is inactive and cannot be added.'
+                                                : forestClientDuplicate
+                                                ? ' has already been added.'
+                                                : ''
+                                        }`
+                                    }}
+                                </small>
                             </div>
                             <div class="pr-1 col-2">
                                 <Button

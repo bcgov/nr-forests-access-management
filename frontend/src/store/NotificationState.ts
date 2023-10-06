@@ -1,6 +1,13 @@
 import { reactive } from "vue"
 
-export const useNotificationMessage = reactive({
+export const successNotificationMessage = reactive({
     notificationMsg: '',
-    isNotificationVisible: false,
+});
+
+export const warningNotificationMessage = reactive({
+    notificationMsg: '',
+});
+
+export const errorNotificationMessage = reactive({
+    notificationMsg: '',
 })

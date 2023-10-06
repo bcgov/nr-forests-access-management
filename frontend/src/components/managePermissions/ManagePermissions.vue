@@ -15,7 +15,11 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 
-import { useNotificationMessage } from '@/store/NotificationState';
+import {
+    successNotificationMessage,
+    warningNotificationMessage,
+    errorNotificationMessage,
+} from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
@@ -35,8 +39,9 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    useNotificationMessage.isNotificationVisible = false;
-    useNotificationMessage.notificationMsg = '';
+    successNotificationMessage.notificationMsg = '';
+    warningNotificationMessage.notificationMsg = '';
+    errorNotificationMessage.notificationMsg = '';
 });
 
 async function getAppUserRoleAssignment() {
@@ -79,8 +84,7 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
-    useNotificationMessage.isNotificationVisible = true;
+    successNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
 }
 </script>
 
@@ -102,9 +106,23 @@ async function deleteUserRoleAssignment(
 
         <div class="dashboard-background-layout">
             <NotificationMessage
-                v-if="useNotificationMessage.isNotificationVisible"
+                v-if="successNotificationMessage.notificationMsg.length > 0"
                 severity="success"
-                :msgText="useNotificationMessage.notificationMsg"
+                :msgText="successNotificationMessage.notificationMsg"
+                class="dashboard-notification"
+            />
+
+            <NotificationMessage
+                v-if="errorNotificationMessage.notificationMsg.length > 0"
+                severity="error"
+                :msgText="errorNotificationMessage.notificationMsg"
+                class="dashboard-notification"
+            />
+
+            <NotificationMessage
+                v-if="warningNotificationMessage.notificationMsg.length > 0"
+                severity="warn"
+                :msgText="warningNotificationMessage.notificationMsg"
                 class="dashboard-notification"
             />
 
