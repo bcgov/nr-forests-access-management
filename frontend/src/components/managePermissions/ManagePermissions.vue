@@ -15,7 +15,7 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 
-import { useNotificationMessage } from '@/store/NotificationState';
+import { notificationMessageState } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
@@ -35,8 +35,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    useNotificationMessage.isNotificationVisible = false;
-    useNotificationMessage.notificationMsg = '';
+    notificationMessageState.isVisible = false;
+    notificationMessageState.notificationMsg = '';
 });
 
 async function getAppUserRoleAssignment() {
@@ -79,8 +79,8 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
-    useNotificationMessage.isNotificationVisible = true;
+    notificationMessageState.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+    notificationMessageState.isVisible = true;
 }
 </script>
 
@@ -102,9 +102,9 @@ async function deleteUserRoleAssignment(
 
         <div class="dashboard-background-layout">
             <NotificationMessage
-                v-if="useNotificationMessage.isNotificationVisible"
+                v-if="notificationMessageState.isVisible"
                 severity="success"
-                :msgText="useNotificationMessage.notificationMsg"
+                :msgText="notificationMessageState.notificationMsg"
                 class="dashboard-notification"
             />
 

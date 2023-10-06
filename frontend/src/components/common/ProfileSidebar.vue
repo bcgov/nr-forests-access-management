@@ -4,7 +4,7 @@ import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
 import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
-import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
+import { profileSidebarVisible } from '@/store/ProfileVisibleState';
 
 const userName = authService.state.value.famLoginUser!.username;
 const initals = userName ? userName.slice(0, 2) : '';
@@ -28,20 +28,20 @@ const buttonLabel = computed(() => {
 <template>
     <div
         :class="
-            useProfileSidebarVisible.isProfileVisible ? 'fade-in' : 'fade-out'
+            profileSidebarVisible.isVisible ? 'fade-in' : 'fade-out'
         "
-        @click="useProfileSidebarVisible.toggleVisible()"
+        @click="profileSidebarVisible.toggleVisible()"
     ></div>
     <Transition name="slide">
         <div
             class="profile-container"
-            v-if="useProfileSidebarVisible.isProfileVisible"
+            v-if="profileSidebarVisible.isVisible"
         >
             <div class="profile-header">
                 <h2>Profile</h2>
                 <button
                     class="btn-icon"
-                    @click="useProfileSidebarVisible.toggleVisible()"
+                    @click="profileSidebarVisible.toggleVisible()"
                     aria-label="Close"
                 >
                     <Icon icon="close" :size="IconSize.small"></Icon>

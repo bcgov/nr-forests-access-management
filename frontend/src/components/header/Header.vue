@@ -5,7 +5,7 @@ import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
+import { profileSidebarVisible } from '@/store/ProfileVisibleState';
 import { sideNavState } from '@/store/SideNavState'
 
 const environmentSettings = new EnvironmentSettings();
@@ -49,7 +49,7 @@ const props = defineProps({
                 <a
                     title="Profile"
                     v-if="authService.getters.isLoggedIn()"
-                    @click="useProfileSidebarVisible.toggleVisible()"
+                    @click="profileSidebarVisible.toggleVisible()"
                 >
                     <Icon icon="user--avatar" :size="IconSize.medium" />
                 </a>

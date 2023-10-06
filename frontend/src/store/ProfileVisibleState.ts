@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
 
-export const useProfileSidebarVisible = reactive({
-    isProfileVisible: false,
+export const profileSidebarVisible = reactive({
+    isVisible: false,
     toggleVisible() {
-        this.isProfileVisible = !this.isProfileVisible
+        this.isVisible = !this.isVisible
     }
 })
