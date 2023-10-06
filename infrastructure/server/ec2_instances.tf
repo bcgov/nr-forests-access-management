@@ -37,12 +37,13 @@ resource "aws_instance" "fam_util_ec2_instance" {
 
   user_data = <<EOF
   #!/bin/bash
-  echo "Installing postgresql15.x86_64" > init.log
+  echo "Installing postgresql.x86_64" > init.log
   sudo yum update -y >> init.log 2>&1 &
   sudo yum install -y postgresql.x86_64 >> init.log 2>&1 &
   echo "Postgres installation done" >> init.log
 
   EOF
+
 }
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
