@@ -1,13 +1,14 @@
 import { reactive } from 'vue'
 
+
 export const useSideNavVisible = reactive({
-    isSideNavVisible: false,
+    isSideNavVisible: window.innerWidth >= 1024 ? true : false,
     isDesktopSize: false,
     toggleSideNavVisible() {
         this.isSideNavVisible = !this.isSideNavVisible
     },
     isDesktop() {
-        return window.innerWidth >= 1024 && true
+        return window.innerWidth >= 1024
     }
 })
 
