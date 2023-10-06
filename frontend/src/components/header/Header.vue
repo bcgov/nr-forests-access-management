@@ -32,7 +32,7 @@ const props = defineProps({
             class="navbar justify-content-start"
         >
             <Button
-                class="toggleSideNav"
+                class="btn-toggleSideNav"
                 @click="useSideNavVisible.toggleSideNavVisible()"
             >
                 <Icon
@@ -68,7 +68,7 @@ li {
     list-style: none;
 }
 
-.toggleSideNav {
+.btn-toggleSideNav {
     margin-right: 0.5rem;
     padding: 0.88rem;
     border: none;
@@ -115,7 +115,7 @@ li {
     .navbar {
         padding: 0 1rem 0 1rem  !important;
     }
-    .toggleSideNav {
+    .btn-toggleSideNav {
         display: none;
     }
 }
