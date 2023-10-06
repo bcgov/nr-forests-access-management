@@ -25,39 +25,20 @@ const props = defineProps({
 <template>
     <header class="header" id="header">
         <nav
-            class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
+            class="navbar justify-content-between flex-nowrap px-2"
         >
             <span class="header-title">
                 {{ props.title }}
                 <strong>{{ props.subtitle }} {{ environmentLabel }}</strong>
             </span>
-
-            <button
-                class="navbar-toggler"
-                type="button"
-                title="Toggle Main Navigation"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
+            <a
+                title="Profile"
+                v-if="authService.getters.isLoggedIn()"
+                @click="useProfileSidebarVisible.toggleVisible()"
             >
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <Icon icon="user--avatar" :size="IconSize.medium" />
+            </a>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li>
-                        <a
-                            title="Profile"
-                            v-if="authService.getters.isLoggedIn()"
-                            @click="useProfileSidebarVisible.toggleVisible()"
-                        >
-                            <Icon icon="user--avatar" :size="IconSize.medium" />
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </nav>
         <teleport to=".modals">
             <ProfileSidebar />
