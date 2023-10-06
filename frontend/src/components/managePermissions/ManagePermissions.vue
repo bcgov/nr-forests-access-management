@@ -95,7 +95,7 @@ async function deleteUserRoleAssignment(
                 @change="selectApplication"
                 :options="selectApplicationOptions"
                 optionLabel="application_description"
-                placeholder="Choose or enter an application to manage permissions"
+                placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
             />
         </div>
