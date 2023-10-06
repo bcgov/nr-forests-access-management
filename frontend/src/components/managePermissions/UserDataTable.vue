@@ -352,6 +352,22 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     .data-table-container {
         margin: 0.4rem;
     }
+
+    .no-app-selected {
+        margin: 0 14rem;
+    }
+}
+
+@media (min-device-width: 1280px) {
+    .no-app-selected {
+        margin: 0 25rem;
+    }
+}
+
+@media (min-device-width: 1536px) {
+    .no-app-selected {
+        margin: 0 33rem;
+    }
 }
 
 @media (min-device-width: 1920px) {
