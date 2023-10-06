@@ -21,7 +21,6 @@ resource "aws_instance" "fam_util_ec2_instance" {
   subnet_id = data.aws_subnet.a_app.id
   vpc_security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
 
-  # depends_on = [aws_security_group.fam_app_sg]
   depends_on = [aws_security_group.fam_app_sg]
 
   iam_instance_profile = "${aws_iam_instance_profile.fam_util_ec2_instance_profile.id}"
@@ -32,17 +31,18 @@ resource "aws_instance" "fam_util_ec2_instance" {
   }
 
   tags = {
-      Name = "fam_bastion_host"
+      Name = "fam_util_ec2_host"
       managed-by = "terraform"
   }
-  # user_data = <<EOF
-  # #!/bin/bash
-  # echo "Installing postgresql15.x86_64" > init.log
-  # sudo yum update
-  # sudo yum install postgresql15.x86_64
-  # echo "Postgres installation done" >> init.log
 
-  # EOF
+  user_data = <<EOF
+  #!/bin/bash
+  echo "Installing postgresql15.x86_64" > init.log
+  sudo yum update
+  sudo yum install postgresql15.x86_64
+  echo "Postgres installation done" >> init.log
+
+  EOF
 }
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {

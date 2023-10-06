@@ -5,7 +5,7 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/915-tfc-to-s3-migration"
+      - "feat/802-aws-bastion-host-terraform"
 
 # When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
@@ -18,8 +18,8 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
-      tf_subcommand: apply
-      execute_flyway: true
+      tf_subcommand: plan
+      execute_flyway: false
 
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
@@ -41,6 +41,6 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
       environment_name: tools
-      tf_subcommand: apply
+      tf_subcommand: plan
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
