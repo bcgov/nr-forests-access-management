@@ -2,7 +2,7 @@
 import router from '@/router';
 import Sidebar from 'primevue/sidebar';
 import { IconSize } from '@/enum/IconEnum';
-import { useSideNavVisible } from '@/store/SideNavState';
+import { sideNavState } from '@/store/SideNavState';
 import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -29,7 +29,7 @@ const props = defineProps({
 </script>
 <template>
     <Sidebar
-        v-model:visible="useSideNavVisible.isSideNavVisible"
+        v-model:visible="sideNavState.isVisible"
     >
         <template #header>
             <a

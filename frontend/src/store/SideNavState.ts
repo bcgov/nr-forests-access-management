@@ -1,18 +1,20 @@
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
-
-export const useSideNavVisible = reactive({
-    isSideNavVisible: window.innerWidth >= 1024 ? true : false,
-    isDesktopSize: false,
-    toggleSideNavVisible() {
-        this.isSideNavVisible = !this.isSideNavVisible
-    },
-    isDesktop() {
-        return window.innerWidth >= 1024
-    }
-})
+let screenSize = window.innerWidth
 
 window.addEventListener("resize", (event) => {
-    useSideNavVisible.isSideNavVisible = useSideNavVisible.isDesktop()
-    useSideNavVisible.isDesktopSize = useSideNavVisible.isDesktop()
+    screenSize = window.innerWidth
+    sideNavState.isVisible = sideNavState.isDesktop()
+    sideNavState.isDesktopSize = sideNavState.isDesktop()
 });
+
+export const sideNavState = shallowReactive({
+    isVisible: screenSize >= 1024 ? true : false,
+    isDesktopSize: screenSize >= 1024,
+    toggleSideNavVisible() {
+        this.isVisible = !this.isVisible
+    },
+    isDesktop() {
+        return screenSize >= 1024
+    }
+})

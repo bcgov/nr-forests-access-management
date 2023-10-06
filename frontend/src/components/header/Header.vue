@@ -6,7 +6,7 @@ import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
-import { useSideNavVisible } from '@/store/SideNavState'
+import { sideNavState } from '@/store/SideNavState'
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -33,7 +33,7 @@ const props = defineProps({
         >
             <Button
                 class="btn-toggleSideNav"
-                @click="useSideNavVisible.toggleSideNavVisible()"
+                @click="sideNavState.toggleSideNavVisible()"
             >
                 <Icon
                     class="custom-carbon-icon--menu"
