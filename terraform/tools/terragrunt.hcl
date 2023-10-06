@@ -22,8 +22,6 @@ generate "tools_tfvars" {
   subnet_data_b = "Data_Tools_azb_net"
   subnet_app_a = "App_Tools_aza_net"
   subnet_app_b = "App_Tools_azb_net"
-  fam_bastion_host_instance_ami = "ami-092e716d46cd65cac"
-  fam_bastion_host_instance_type = "t2.micro"
   cognito_app_client_logout_chain_url = {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"

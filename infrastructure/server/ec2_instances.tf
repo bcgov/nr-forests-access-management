@@ -49,7 +49,7 @@ resource "aws_instance" "fam_util_ec2_instance" {
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
   instance_id = aws_instance.fam_util_ec2_instance.id
-  # fam_bastion_host instance created in dormant state.
+  # fam_util_ec2_instance instance created in dormant state.
   state       = "stopped"
 }
 
