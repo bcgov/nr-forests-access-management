@@ -18,8 +18,8 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: tools
-      tf_subcommand: plan
-      execute_flyway: false
+      tf_subcommand: apply
+      execute_flyway: true
 
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
@@ -41,6 +41,6 @@ jobs:
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
       environment_name: tools
-      tf_subcommand: plan
+      tf_subcommand: apply
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
