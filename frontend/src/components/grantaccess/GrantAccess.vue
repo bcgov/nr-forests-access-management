@@ -4,6 +4,7 @@ import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 
+import Breadcrumb from 'primevue/breadcrumb';
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
@@ -66,6 +67,11 @@ const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
+
+const breadCrumbItems = ref([
+    {label: 'Manage Permission', to: '/dashboard'},
+]);
+
 
 onMounted(async () => {
     applicationRoleOptions = (
@@ -181,6 +187,7 @@ function roleSelected(evt: any) {
         :validation-schema="formValidationSchema"
         as="div"
     >
+        <Breadcrumb :model="breadCrumbItems"/>
         <PageTitle
             title="Grant access to a user"
             :subtitle="'You are editing in ' + selectedApplicationDisplayText"
