@@ -208,19 +208,19 @@ const buttonLabel = computed(() => {
     background-color: rgba($color: #131315, $alpha: 0);
 }
 
-@media (min-device-width: 425px) {
+@media (min-width: 425px) {
     .profile-container {
         inset: 0 0 0 30%;
     }
 }
 
-@media (min-device-width: 768px) {
+@media (min-width: 790px) {
     .profile-container {
         inset: 0 0 0 60%;
     }
 }
 
-@media (min-device-width: 900px) {
+@media (min-width: 900px) {
     .profile-container {
         inset: 0 0 0 70%;
     }
