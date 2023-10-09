@@ -13,14 +13,6 @@ export const setGrantAccessFormData = (formData: any, forestClientList: any) => 
         user_name: formData.userId,
         user_type_code: formData.domain,
         role_id: formData.role_id,
-        ...(formData.forestClientNumber
-            ? {
-                forest_client_number: formData.forestClientNumber.padStart(
-                    FOREST_CLIENT_INPUT_MAX_LENGTH,
-                    '0'
-                ),
-            }
-            : {}),
         forest_client_number_list: forestClientList
     };
 }
@@ -33,8 +25,6 @@ export const getGrantAccessFormData = () => {
     const data = {
         domain: grantAccessFormData.value?.user_type_code as string,
         userId: grantAccessFormData.value?.user_name as string,
-        forestClientNumber:
-            grantAccessFormData.value?.forest_client_number_list as FamForestClient[],
         role_id: grantAccessFormData.value?.role_id as number | null,
     };
     return data;
