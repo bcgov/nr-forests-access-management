@@ -157,20 +157,20 @@ async function deleteUserRoleAssignment(
     min-height: calc(100vh - 18.745rem);
 }
 
-@media (min-device-width: 495px) {
+@media (min-width: 495px) {
     .application-dropdown {
         max-width: 29rem;
     }
 }
 
-@media (min-device-width: 768px) {
+@media (min-width: 768px) {
     .dashboard-background-layout {
         width: 100vw;
         margin-left: -1.5rem;
     }
 }
 
-@media (min-device-width: 1024px) {
+@media (min-width: 1024px) {
     .dashboard-background-layout {
         width: calc(100vw - 16rem);
     }

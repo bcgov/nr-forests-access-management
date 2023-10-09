@@ -178,7 +178,7 @@ ul#nav li.active a {
 }
 
 
-@media (min-device-width: 768px) {
+@media (min-width: 768px) {
     .sidenav {
         width: 100%;
     }
