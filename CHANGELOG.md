@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.6.0...v1.7.0) (2023-10-10)
+
+
+### Features
+
+* [#934](https://github.com/bcgov/nr-forests-access-management/issues/934) profile sidebar for mobile ([#946](https://github.com/bcgov/nr-forests-access-management/issues/946)) ([68479fd](https://github.com/bcgov/nr-forests-access-management/commit/68479fd913966b730d569ad12ecfed50da980c88))
+
+
+### Bug Fixes
+
+* [#722](https://github.com/bcgov/nr-forests-access-management/issues/722) Update terraform CloudFront to use the new certificate ([#947](https://github.com/bcgov/nr-forests-access-management/issues/947)) ([6d60d93](https://github.com/bcgov/nr-forests-access-management/commit/6d60d9385bf545b1effe24e910b04bc7ca3a1288))
+
 ## [1.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.5.0...v1.6.0) (2023-10-05)
 
 
