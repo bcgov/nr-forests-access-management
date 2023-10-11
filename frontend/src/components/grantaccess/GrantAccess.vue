@@ -393,6 +393,7 @@ function removeForestClientFromList(index: number) {
                                     ></InputText>
                                 </Field>
                                 <small
+                                    class="helper-text"
                                     v-if="
                                         !forestClientInactive &&
                                         !forestClientDuplicate
@@ -482,6 +483,14 @@ function removeForestClientFromList(index: number) {
 @import '@/assets/styles/styles.scss';
 .text-danger {
     font-weight: normal;
+}
+
+.helper-text {
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1rem;
+    letter-spacing: 0.02rem;
 }
 
 .button {
