@@ -63,6 +63,9 @@ resource "aws_iam_role" "fam_util_ec2_instance_role" {
   name = "${local.fam_util_ec2_instance_profile_name_prefix}_role"
 
   assume_role_policy = <<EOF
+  {
+
+  }
   EOF
 
 }
