@@ -90,7 +90,7 @@ const buttonLabel = computed(() => {
     border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
-    inset: 0 0 0 10%;
+    inset: 0 0 0 0;
     margin: 3rem 0 0;
     padding: 0 1rem 0;
     position: fixed;
@@ -200,7 +200,7 @@ const buttonLabel = computed(() => {
     position: fixed;
     width: 100%;
     inset: 3rem 0 0 0;
-    z-index: 999;
+    z-index: 1110;
 }
 
 .fade-out {
@@ -214,6 +214,12 @@ const buttonLabel = computed(() => {
     }
 }
 
+@media (min-width: 600px) {
+    .profile-container {
+        inset: 0 0 0 50%;
+    }
+}
+
 @media (min-width: 790px) {
     .profile-container {
         inset: 0 0 0 60%;
@@ -221,6 +227,12 @@ const buttonLabel = computed(() => {
 }
 
 @media (min-width: 900px) {
+    .profile-container {
+        inset: 0 0 0 60%;
+    }
+}
+
+@media (min-width: 1366px) {
     .profile-container {
         inset: 0 0 0 70%;
     }
