@@ -55,5 +55,14 @@ resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
 
 resource "aws_iam_instance_profile" "fam_util_ec2_instance_profile" {
   name = "${local.fam_util_ec2_instance_profile_name_prefix}_instance_profile"
-  role = "EC2-Default-SSM-AD-Role"
+  # role = "EC2-Default-SSM-AD-Role" # default role
+  role = "${aws_iam_role.fam_util_ec2_instance_role.name}"
+}
+
+resource "aws_iam_role" "fam_util_ec2_instance_role" {
+  name = "${local.fam_util_ec2_instance_profile_name_prefix}_role"
+
+  assume_role_policy = <<EOF
+  EOF
+
 }
