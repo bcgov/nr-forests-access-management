@@ -36,8 +36,8 @@ generate "tools_tfvars" {
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "${local.common_vars.inputs.idp_logout_chain_dev_url}https://fam-tools.nrs.gov.bc.ca",
-    "${local.common_vars.inputs.idp_logout_chain_dev_url}http://localhost:5173"
+    "${local.common_vars.inputs.idp_logout_chain_tools_url}https://fam-tools.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_tools_url}http://localhost:5173"
   ]
   fam_console_idp_name = "DEV-IDIR"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
