@@ -13,7 +13,7 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           # Deep fetch is required for SonarCloud
           fetch-depth: 0
@@ -60,7 +60,7 @@ jobs:
       POSTGRES_PORT: 5432
       USE_POSTGRES: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           # Deep fetch is required for SonarCloud
           fetch-depth: 0
