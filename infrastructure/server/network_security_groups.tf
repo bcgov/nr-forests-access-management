@@ -9,15 +9,15 @@ resource "aws_security_group" "fam_app_sg" {
         managed-by = "terraform"
     }
 
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-        description = "Allow All Outbound Traffic"
-    }
-
 }
+
+resource "aws_vpc_security_group_egress_rule" "fam_app_sg_outbound" {
+  security_group_id = aws_security_group.fam_app_sg.id
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+  description = "Allow All Outbound Traffic"
+}
+
 
 resource "aws_security_group" "fam_data_sg" {
     name = "fam_data_sg"
