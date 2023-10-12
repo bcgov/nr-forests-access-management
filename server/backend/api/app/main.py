@@ -104,15 +104,6 @@ app.include_router(router_idim_proxy.router,
                    dependencies=[Depends(jwt_validation.authorize)],
                    tags=["IDIR/BCeID Proxy"])
 
-# These two routers are disabled for MVP
-
-app.include_router(router_user.router,
-                   prefix=apiPrefix + '/fam_users',
-                   tags=["FAM Users"])
-app.include_router(router_role.router,
-                   prefix=apiPrefix + '/fam_roles',
-                   tags=["FAM Roles"])
-
 # This router is used to proxy the BCSC userinfo endpoint
 
 app.include_router(router_bcsc_proxy.router,
