@@ -15,8 +15,8 @@ from starlette.responses import RedirectResponse
 from .jwt_validation import init_jwks
 from .kms_lookup import init_bcsc_public_key
 from .routers import (router_application, router_bcsc_proxy,
-                      router_forest_client, router_idim_proxy, router_role,
-                      router_smoke_test, router_user,
+                      router_forest_client, router_idim_proxy,
+                      router_smoke_test,
                       router_user_role_assignment)
 
 logConfigFile = os.path.join(
