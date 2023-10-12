@@ -68,5 +68,4 @@ resource "aws_iam_instance_profile" "fam_util_ec2_instance_profile" {
 
 #   }
 #   EOF
-
 # }
