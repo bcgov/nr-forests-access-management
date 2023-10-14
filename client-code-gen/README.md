@@ -59,6 +59,7 @@ Depending on the Axios version used at frontend, please be aware different axios
 
 ```
 In some cases, it would be good idea to delete "/gen" directory before running script to regenerate new api client code to avoid leaving unnecessary files from last version generated code.
+If you encounter folder permission during npm install or during generation, can issue command to temporarily change `gen` folder and files permission with `chmod -R 777`.
 ```
 
 ## How to Use/Integrate with Generated Client/Lib
