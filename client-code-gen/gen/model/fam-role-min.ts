@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleType } from './role-type';
 
 /**
  * 
@@ -28,10 +31,10 @@ export interface FamRoleMin {
     'role_name': string;
     /**
      * 
-     * @type {string}
+     * @type {RoleType}
      * @memberof FamRoleMin
      */
-    'role_type_code': string;
+    'role_type_code': RoleType;
     /**
      * 
      * @type {number}
@@ -39,4 +42,6 @@ export interface FamRoleMin {
      */
     'application_id': number;
 }
+
+
 
