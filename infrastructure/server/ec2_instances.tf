@@ -55,17 +55,31 @@ resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
 
 resource "aws_iam_instance_profile" "fam_util_ec2_instance_profile" {
   name = "${local.fam_util_ec2_instance_profile_name_prefix}_instance_profile"
-  role = "FAM-EC2-Test-Role"
   # role = "EC2-Default-SSM-AD-Role" # default role
-  # role = "${aws_iam_role.fam_util_ec2_instance_role.name}"
+  role = aws_iam_role.fam_util_ec2_instance_role.name
 }
 
-# resource "aws_iam_role" "fam_util_ec2_instance_role" {
-#   name = "${local.fam_util_ec2_instance_profile_name_prefix}_role"
+resource "aws_iam_role" "fam_util_ec2_instance_role" {
+  name = "${local.fam_util_ec2_instance_profile_name_prefix}_role"
+  description = "The role for the developer resource EC2"
 
-#   assume_role_policy = <<EOF
-#   {
+  assume_role_policy = <<EOF
+  {
+  "Version": "2012-10-17",
+  "Statement": {
+  "Effect": "Allow",
+  "Principal": {"Service": "ec2.amazonaws.com"},
+  "Action": "sts:AssumeRole"
+  }
+  }
+  EOF
 
-#   }
-#   EOF
-# }
+  tags = {
+    managed-by = "terraform"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "fam_util_ec2_ssm_policy" {
+  role       = aws_iam_role.fam_util_ec2_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
