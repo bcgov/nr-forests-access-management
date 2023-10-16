@@ -49,6 +49,8 @@ With CLI:
 >> npm run gen-api
 
 The generated client is located at "./gen" directory specified by the "-o" option at the script.
+
+- Make sure (and adjust) "axios" package version to be consistent with "frontend" axios version.
 ```
 
 Note:
