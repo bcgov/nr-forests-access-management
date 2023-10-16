@@ -64,15 +64,17 @@ resource "aws_iam_role" "fam_util_ec2_instance_role" {
   description = "The role for the developer resource EC2"
 
   assume_role_policy = <<EOF
-  {
+{
   "Version": "2012-10-17",
-  "Statement": {
-  "Effect": "Allow",
-  "Principal": {"Service": "ec2.amazonaws.com"},
-  "Action": "sts:AssumeRole"
-  }
-  }
-  EOF
+  "Statement": [
+    {
+    "Effect": "Allow",
+    "Principal": {"Service": "ec2.amazonaws.com"},
+    "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
 
   tags = {
     managed-by = "terraform"
