@@ -15,7 +15,7 @@ jobs:
   auth-function-ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Auth function zip
         run: |
@@ -28,7 +28,7 @@ jobs:
           rm -rf auth_function_packaging
 
       - name: Auth function upload zip file artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fam-auth-function-zip
           path: ./infrastructure/server/fam_auth_function.zip
