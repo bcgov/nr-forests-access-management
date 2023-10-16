@@ -12,11 +12,11 @@ import { sideNavState } from '@/store/SideNavState'
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 onMounted(() => {
-    disableSideNavOption('Grant Access', !isApplicationSelected.value);
+    disableSideNavOption('Add User Permission', !isApplicationSelected.value);
 });
 
 watch(isApplicationSelected, (value) => {
-    disableSideNavOption('Grant Access', !value);
+    disableSideNavOption('Add User Permission', !value);
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
