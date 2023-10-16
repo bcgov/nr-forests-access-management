@@ -130,7 +130,7 @@ display: grid;
     }
 }
 .application-dropdown {
-    max-width: calc(100vw - 2rem);
+    max-width: calc(100vw - 3rem);
     height: 3rem;
     padding: 0;
 
@@ -174,6 +174,10 @@ display: grid;
 @media (min-width: 1024px) {
     .dashboard-background-layout {
         width: calc(100vw - 16rem);
+    }
+
+    .application-dropdown {
+        max-width: 38rem;
     }
 }
 
