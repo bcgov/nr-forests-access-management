@@ -9,7 +9,7 @@ body {
     position: absolute;
     display: block;
     height: calc(100vh - $header-height);
-    max-width: 100%;
+    width: 100vw;
     bottom: 0;
     overflow: auto;
     padding: 1.06rem 1rem 0 1rem;

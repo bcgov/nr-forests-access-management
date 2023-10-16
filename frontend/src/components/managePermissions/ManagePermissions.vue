@@ -123,7 +123,8 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-group {
-    display: grid;
+display: grid;
+
     label {
         margin-bottom: 0.5rem;
     }
@@ -139,10 +140,10 @@ async function deleteUserRoleAssignment(
 }
 
 .dashboard-notification {
-    margin: 0rem 2rem;
+    margin: -0.79rem 1.5rem 0rem 1.5rem;
+
     &:deep(.p-message) {
         position: relative;
-        margin-bottom: -1rem;
     }
 }
 
@@ -153,8 +154,7 @@ async function deleteUserRoleAssignment(
     padding: 1rem 0rem;
     background: $light-layer-one;
     z-index: -1;
-    width: 99.9vw;
-    min-height: calc(100vh - 18.745rem);
+    min-height: calc(100vh - 16.9rem);
 }
 
 @media (min-width: 495px) {
@@ -167,6 +167,7 @@ async function deleteUserRoleAssignment(
     .dashboard-background-layout {
         width: 100vw;
         margin-left: -1.5rem;
+        min-height: calc(100vh - 17.1rem);
     }
 }
 
