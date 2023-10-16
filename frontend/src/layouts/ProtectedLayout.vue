@@ -31,7 +31,7 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
 
 </script>
 <template>
-    <Header :title="sideNavState.isDesktop() ? 'FAM Forestry Access Management' : 'FAM'" subtitle="Forests Access Management" />
+    <Header :title="sideNavState.isDesktopSize ? 'FAM Forestry Access Management' : 'FAM'" subtitle="Forests Access Management" />
 
     <SideNav :data="navigationData" />
     <div class="main">
