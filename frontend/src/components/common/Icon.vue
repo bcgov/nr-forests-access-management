@@ -73,6 +73,9 @@ const icons = {
     'error--filled24': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/24')
     ),
+    menu20: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/menu/20')
+    ),
 } as any;
 </script>
 

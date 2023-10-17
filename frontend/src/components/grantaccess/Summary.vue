@@ -4,7 +4,7 @@ import router from '@/router';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import { onMounted } from 'vue';
 
-import { useNotificationMessage } from '@/store/NotificationState';
+import { notificationMessageState } from '@/store/NotificationState';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -27,7 +27,7 @@ async function handleSubmit() {
     await userRoleAssignmentApi.createUserRoleAssignment(
         grantAccessFormData.value as FamUserRoleAssignmentCreate
     );
-    useNotificationMessage.isNotificationVisible = true;
+    notificationMessageState.isVisible = true;
     router.push('/dashboard');
     resetGrantAccessFormData();
 }
