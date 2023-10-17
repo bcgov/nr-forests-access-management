@@ -31,6 +31,7 @@ resource "aws_instance" "fam_util_ec2_instance" {
   }
 
   metadata_options {
+    # Enable IMDSv2 (Instance Metadata Service Version 2)
     http_tokens = "required"
   }
 
