@@ -72,11 +72,11 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application Roles
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationRoles: async (applicationId: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFamApplicationRoles: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationRoles', 'applicationId', applicationId)
             const localVarPath = `/fam_applications/{application_id}/fam_roles`
@@ -110,11 +110,11 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application User Role Assignment
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationUserRoleAssignment: async (applicationId: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFamApplicationUserRoleAssignment: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationUserRoleAssignment', 'applicationId', applicationId)
             const localVarPath = `/fam_applications/{application_id}/user_role_assignment`
@@ -168,22 +168,22 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application Roles
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFamApplicationRoles(applicationId: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationRole>>> {
+        async getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationRole>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationRoles(applicationId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application User Role Assignment
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFamApplicationUserRoleAssignment(applicationId: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>> {
+        async getFamApplicationUserRoleAssignment(applicationId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationUserRoleAssignment(applicationId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -209,21 +209,21 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application Roles
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationRoles(applicationId: any, options?: any): AxiosPromise<Array<FamApplicationRole>> {
+        getFamApplicationRoles(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationRole>> {
             return localVarFp.getFamApplicationRoles(applicationId, options).then((request) => request(axios, basePath));
         },
         /**
          * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
          * @summary Get Fam Application User Role Assignment
-         * @param {any} applicationId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationUserRoleAssignment(applicationId: any, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>> {
+        getFamApplicationUserRoleAssignment(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>> {
             return localVarFp.getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(axios, basePath));
         },
     };
@@ -247,22 +247,22 @@ export interface FAMApplicationsApiInterface {
     /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application Roles
-     * @param {any} applicationId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
      */
-    getFamApplicationRoles(applicationId: any, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationRole>>;
+    getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationRole>>;
 
     /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application User Role Assignment
-     * @param {any} applicationId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
      */
-    getFamApplicationUserRoleAssignment(applicationId: any, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>;
+    getFamApplicationUserRoleAssignment(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>;
 
 }
 
@@ -287,24 +287,24 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application Roles
-     * @param {any} applicationId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi
      */
-    public getFamApplicationRoles(applicationId: any, options?: AxiosRequestConfig) {
+    public getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig) {
         return FAMApplicationsApiFp(this.configuration).getFamApplicationRoles(applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
      * @summary Get Fam Application User Role Assignment
-     * @param {any} applicationId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi
      */
-    public getFamApplicationUserRoleAssignment(applicationId: any, options?: AxiosRequestConfig) {
+    public getFamApplicationUserRoleAssignment(applicationId: number, options?: AxiosRequestConfig) {
         return FAMApplicationsApiFp(this.configuration).getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 }
