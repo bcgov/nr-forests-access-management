@@ -30,6 +30,12 @@ resource "aws_instance" "fam_util_ec2_instance" {
     encrypted = true
   }
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  monitoring = true
+
   tags = {
       Name = "fam_util_ec2_host"
       managed-by = "terraform"
