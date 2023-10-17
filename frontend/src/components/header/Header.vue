@@ -45,6 +45,7 @@ const props = defineProps({
                 {{ props.title }}
                 <strong class="subtitle">{{ props.subtitle }} {{ environmentLabel }}</strong>
             </span>
+
               <a
                   title="Profile"
                   v-if="authService.getters.isLoggedIn()"
@@ -73,7 +74,7 @@ li {
     border-radius: 0;
 }
 .subtitle {
-    display: none
+    display: none;
 }
 .header {
     @extend %heading-compact-01;
@@ -113,6 +114,11 @@ li {
     .navbar {
         padding: 0 1rem 0 1rem  !important;
     }
+
+    .subtitle {
+        display: inline;
+    }
+
     .btn-toggleSideNav {
         display: none;
     }
