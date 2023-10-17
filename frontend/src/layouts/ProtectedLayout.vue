@@ -7,15 +7,16 @@ import SideNav, {
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { isApplicationSelected } from '@/store/ApplicationState';
+import { sideNavState } from '@/store/SideNavState'
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 onMounted(() => {
-    disableSideNavOption('Grant Access', !isApplicationSelected.value);
+    disableSideNavOption('Add User Permission', !isApplicationSelected.value);
 });
 
 watch(isApplicationSelected, (value) => {
-    disableSideNavOption('Grant Access', !value);
+    disableSideNavOption('Add User Permission', !value);
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
@@ -27,6 +28,7 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
         });
     });
 };
+
 </script>
 <template>
     <Header title="FAM" subtitle="Forests Access Management" />
