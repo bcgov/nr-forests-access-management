@@ -22,4 +22,7 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+div {
+    width: auto;
+}
 </style>
