@@ -4,7 +4,7 @@ import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import Card from 'primevue/card';
 import { onMounted, type PropType } from 'vue';
 
-import { useNotificationMessage } from '@/store/NotificationState';
+import { notificationMessageState } from '@/store/NotificationState';
 
 import LoadingState from '@/store/LoadingState';
 import type { FamUserRoleAssignmentCreate } from 'fam-api';
@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    useNotificationMessage.notificationMsg =
+    notificationMessageState.notificationMsg =
         props.data != undefined
             ? `New access granted to ${props.data.user_name}`
             : '';

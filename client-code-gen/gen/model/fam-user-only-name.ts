@@ -70,3 +70,5 @@ export interface FamUserOnlyName {
     'user_type': FamUserType;
 }
 
+
+

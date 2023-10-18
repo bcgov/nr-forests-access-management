@@ -66,9 +66,7 @@ function onClicked(event: any) {
     </Button>
 </template>
 <style lang="scss">
-.nr-button {
-    display: flex;
-}
+
 .nr-button .icon {
     margin-right: auto;
 }
