@@ -19,6 +19,9 @@ import { FamForestClient } from './fam-forest-client';
 // May contain unused imports in some cases
 // @ts-ignore
 import { FamRoleMin } from './fam-role-min';
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleType } from './role-type';
 
 /**
  * 
@@ -64,10 +67,10 @@ export interface FamRoleWithClient {
     'create_user': string;
     /**
      * 
-     * @type {string}
+     * @type {RoleType}
      * @memberof FamRoleWithClient
      */
-    'role_type_code': string;
+    'role_type_code': RoleType;
     /**
      * 
      * @type {FamForestClient}
@@ -87,4 +90,6 @@ export interface FamRoleWithClient {
      */
     'parent_role'?: FamRoleMin;
 }
+
+
 

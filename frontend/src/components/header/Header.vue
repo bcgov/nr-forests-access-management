@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
+import Button from 'primevue/button';
+import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { useProfileSidebarVisible } from '@/store/ProfileVisibleState';
+import { profileSidebarState } from '@/store/ProfileSidebarState';
+import { sideNavState } from '@/store/SideNavState'
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -20,44 +23,36 @@ const props = defineProps({
         required: true,
     },
 });
+
 </script>
 
 <template>
     <header class="header" id="header">
         <nav
-            class="navbar navbar-expand-md justify-content-between px-2 navbar-dark"
+            class="navbar justify-content-start"
         >
+            <Button
+                class="btn-toggleSideNav"
+                @click="sideNavState.toggleSideNavVisible()"
+            >
+                <Icon
+                    class="custom-carbon-icon--menu"
+                    icon="menu"
+                    :size="IconSize.medium"
+                />
+            </Button>
             <span class="header-title">
                 {{ props.title }}
-                <strong>{{ props.subtitle }} {{ environmentLabel }}</strong>
+                <strong class="subtitle">{{ props.subtitle }} {{ environmentLabel }}</strong>
             </span>
 
-            <button
-                class="navbar-toggler"
-                type="button"
-                title="Toggle Main Navigation"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li>
-                        <a
-                            title="Profile"
-                            v-if="authService.getters.isLoggedIn()"
-                            @click="useProfileSidebarVisible.toggleVisible()"
-                        >
-                            <Icon icon="user--avatar" :size="IconSize.medium" />
-                        </a>
-                    </li>
-                </ul>
-            </div>
+              <a
+                  title="Profile"
+                  v-if="authService.getters.isLoggedIn()"
+                  @click="profileSidebarState.toggleVisible()"
+              >
+                  <Icon icon="user--avatar" :size="IconSize.medium" />
+              </a>
         </nav>
         <teleport to=".modals">
             <ProfileSidebar />
@@ -67,6 +62,20 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+
+li {
+    list-style: none;
+}
+
+.btn-toggleSideNav {
+    margin-right: 0.5rem;
+    padding: 0.88rem;
+    border: none;
+    border-radius: 0;
+}
+.subtitle {
+    display: none;
+}
 .header {
     @extend %heading-compact-01;
     position: fixed;
@@ -79,10 +88,10 @@ const props = defineProps({
     z-index: 1;
     color: $dark-text-primary;
     .header-title {
+        margin: 0 auto 0 0 ;
         a i {
             cursor: pointer;
         }
-        margin: 0;
     }
 
     i {
@@ -91,13 +100,27 @@ const props = defineProps({
 
     .navbar {
         margin: 0;
-        padding: 0;
-        height: 48px;
+        padding: 0 1rem 0 0;
+        height: 3rem;
         vertical-align: middle;
     }
 
     .navbar-collapse {
         flex-grow: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .navbar {
+        padding: 0 1rem 0 1rem  !important;
+    }
+
+    .subtitle {
+        display: inline;
+    }
+
+    .btn-toggleSideNav {
+        display: none;
     }
 }
 </style>

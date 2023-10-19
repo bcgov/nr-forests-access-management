@@ -49,6 +49,8 @@ With CLI:
 >> npm run gen-api
 
 The generated client is located at "./gen" directory specified by the "-o" option at the script.
+
+- Make sure (and adjust) "axios" package version to be consistent with "frontend" axios version.
 ```
 
 Note:
@@ -59,7 +61,13 @@ Depending on the Axios version used at frontend, please be aware different axios
 
 ```
 In some cases, it would be good idea to delete "/gen" directory before running script to regenerate new api client code to avoid leaving unnecessary files from last version generated code.
+If you encounter folder permission during npm install or during generation, can issue command to temporarily change `gen` folder and files permission with `chmod -R 777`.
 ```
+### Special Care on openapi.json Spec
+* Current openapi(Swagger) spec produced from FastAPI is having issue. Specifically for the "Path" parameter of two endpoints: `"/{application_id}/fam_roles"` and `"/{application_id}/user_role_assignment"`. The path parameter in the produced spec isn't correctly typed (it has "any" type). This, however, only happens on these two endpoints and not on the endpoint that has the same signature `(@router.delete("/{user_role_xref_id}",))`
+* We suspect FastAPI version (after we bump up verson to 0.100.0) might be related to this issue. However, we can not downgrade to lower than 0.90.0 and up to today's(2023/10/17) version 0.103.0 does not resolve to correct schema.
+* Temporary solution is to add `"type":"integer",` into the corresponding `schema` section of the produced openapi.json manually.
+* This is not a desirable behaviour but a temporary solution. So in the future, please verify again with higher FastAPI version and investigate further it further to see if it is fixed.
 
 ## How to Use/Integrate with Generated Client/Lib
 The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs (currently named it as 'fam-api').
