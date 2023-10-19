@@ -7,6 +7,7 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import SummaryView from '@/views/SummaryView.vue';
+import { populateBreadcrumb, type Breadcrumb } from '@/store/BreadcrumbState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -21,42 +22,63 @@ import SummaryView from '@/views/SummaryView.vue';
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax.
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 
+const breadcrumbRouteItems = {
+    dashboard: {
+        to: '/dashboard',
+        label: 'Manage Permissions',
+    },
+    grantAccess: {
+        to: '/grant',
+        label: 'Grant Access'
+    }
+} as Breadcrumb;
+
 const routes = [
     {
         path: '/',
         name: 'landing',
         meta: {
             title: 'Welcome to FAM',
-            layout: 'SimpleLayout'
+            layout: 'SimpleLayout',
+            hasBreadcrumb: false
         },
         component: LandingView,
     },
     {
-        path: '/dashboard',
-        name: 'Manage Permissions',
+        path: breadcrumbRouteItems.dashboard.to,
+        name: breadcrumbRouteItems.dashboard.label,
         meta: {
-            title: 'Manage Permissions',
-            layout: 'ProtectedLayout'
+            title: breadcrumbRouteItems.dashboard.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: false
         },
         component: ManagePermissionsView,
     },
     {
-        path: '/grant',
-        name: 'grant',
+        path: breadcrumbRouteItems.grantAccess.to,
+        name: breadcrumbRouteItems.grantAccess.label,
         meta: {
-            title: 'Grant Access',
-            layout: 'ProtectedLayout'
+            title: breadcrumbRouteItems.grantAccess.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true
         },
         component: GrantAccessView,
+        beforeEnter: () => {
+            populateBreadcrumb([breadcrumbRouteItems.dashboard])
+        }
     },
     {
         path: '/summary',
         name: 'summary',
         meta: {
             title: 'Access request summary',
-            layout: 'ProtectedLayout'
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true
         },
         component: SummaryView,
+        beforeEnter: () => {
+            populateBreadcrumb([breadcrumbRouteItems.dashboard, breadcrumbRouteItems.grantAccess])
+        }
     },
     {
         path: '/authCallback',
