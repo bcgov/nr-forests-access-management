@@ -27,9 +27,9 @@ const breadcrumbRouteItems = {
         to: '/dashboard',
         label: 'Manage Permissions',
     },
-    grantAccess: {
+    addUserPermission: {
         to: '/grant',
-        label: 'Grant Access'
+        label: 'Add User Permission'
     }
 } as Breadcrumb;
 
@@ -55,10 +55,10 @@ const routes = [
         component: ManagePermissionsView,
     },
     {
-        path: breadcrumbRouteItems.grantAccess.to,
-        name: breadcrumbRouteItems.grantAccess.label,
+        path: breadcrumbRouteItems.addUserPermission.to,
+        name: breadcrumbRouteItems.addUserPermission.label,
         meta: {
-            title: breadcrumbRouteItems.grantAccess.label,
+            title: breadcrumbRouteItems.addUserPermission.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true
         },
@@ -77,7 +77,7 @@ const routes = [
         },
         component: SummaryView,
         beforeEnter: () => {
-            populateBreadcrumb([breadcrumbRouteItems.dashboard, breadcrumbRouteItems.grantAccess])
+            populateBreadcrumb([breadcrumbRouteItems.dashboard, breadcrumbRouteItems.addUserPermission])
         }
     },
     {

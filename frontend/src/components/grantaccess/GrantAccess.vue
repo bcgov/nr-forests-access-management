@@ -67,7 +67,6 @@ const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 
-
 onMounted(async () => {
     applicationRoleOptions = (
         await applicationsApi.getFamApplicationRoles(
