@@ -8,16 +8,16 @@ body {
 .main {
     position: absolute;
     display: block;
-    top: $header-height;
-    left: 16rem;
-    right: 0;
-    bottom: 1rem;
+    height: calc(100vh - $header-height);
+    width: 100vw;
+    bottom: 0;
     overflow: auto;
-    padding: 2.62rem 2rem 0;
+    padding: 1.06rem 1rem 0 1rem;
 }
 
 .page-body {
-    margin-top: 3rem;
+    margin-top: 1.5rem;
+    width: 100%;
 }
 
 .form-container {
@@ -60,3 +60,19 @@ input[type='number'] {
     font-family: inherit;
 }
 
+@media (min-width: 768px) {
+    .main {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .page-body {
+        width:  100%;
+    }
+
+    .main {
+        left: 16rem;
+        width: calc(100vw - 16rem);
+    }
+}

@@ -3,8 +3,8 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
-import DashboardTitle from '@/components/dashboard/DashboardTitle.vue';
-import UserDataTable from '@/components/dashboard/UserDataTable.vue';
+import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
+import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
@@ -15,7 +15,7 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 
-import { useNotificationMessage } from '@/store/NotificationState';
+import { notificationMessageState } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
@@ -35,8 +35,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    useNotificationMessage.isNotificationVisible = false;
-    useNotificationMessage.notificationMsg = '';
+    notificationMessageState.isVisible = false;
+    notificationMessageState.notificationMsg = '';
 });
 
 async function getAppUserRoleAssignment() {
@@ -79,52 +79,106 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    useNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
-    useNotificationMessage.isNotificationVisible = true;
+    notificationMessageState.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+    notificationMessageState.isVisible = true;
 }
 </script>
 
 <template>
-    <DashboardTitle :isApplicationSelected="isApplicationSelected" />
+    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">
         <div class="application-group">
-            <label>Select an application you would like to grant access</label>
+            <label>You are modifying access in this application:</label>
             <Dropdown
                 v-model="selectedApplication"
                 @change="selectApplication"
                 :options="selectApplicationOptions"
                 optionLabel="application_description"
-                placeholder="Choose an option"
+                placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
             />
         </div>
 
-        <NotificationMessage
-            v-if="useNotificationMessage.isNotificationVisible"
-            severity="success"
-            :msgText="useNotificationMessage.notificationMsg"
-        />
+        <div class="dashboard-background-layout">
+            <NotificationMessage
+                v-if="notificationMessageState.isVisible"
+                severity="success"
+                :msgText="notificationMessageState.notificationMsg"
+                class="dashboard-notification"
+            />
 
-        <UserDataTable
-            v-if="isApplicationSelected"
-            :loading="LoadingState.isLoading.value"
-            :userRoleAssignments="userRoleAssignments || []"
-            :selectedApplicationDisplayText="selectedApplicationDisplayText"
-            @deleteUserRoleAssignment="deleteUserRoleAssignment"
-        />
+            <UserDataTable
+                :isApplicationSelected="isApplicationSelected"
+                :loading="LoadingState.isLoading.value"
+                :userRoleAssignments="userRoleAssignments || []"
+                :selectedApplicationDisplayText="selectedApplicationDisplayText"
+                @deleteUserRoleAssignment="deleteUserRoleAssignment"
+            />
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
 
+.application-group {
+display: grid;
+
+    label {
+        margin-bottom: 0.5rem;
+    }
+}
 .application-dropdown {
-    width: 19rem;
+    max-width: calc(100vw - 3rem);
+    height: 3rem;
     padding: 0;
+
+    &:deep(.p-dropdown-label) {
+        padding: 0.8375rem 1rem;
+    }
 }
 
-.application-group {
-    display: grid;
+.dashboard-notification {
+    margin: -0.79rem 1.5rem 0rem 1.5rem;
+
+    &:deep(.p-message) {
+        position: relative;
+    }
 }
+
+.dashboard-background-layout {
+    margin-top: 2rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 1rem 0rem;
+    background: $light-layer-one;
+    z-index: -1;
+    min-height: calc(100vh - 16.9rem);
+}
+
+@media (min-width: 495px) {
+    .application-dropdown {
+        max-width: 29rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-background-layout {
+        width: 100vw;
+        margin-left: -1.5rem;
+        min-height: calc(100vh - 17.1rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-background-layout {
+        width: calc(100vw - 16rem);
+    }
+
+    .application-dropdown {
+        max-width: 38rem;
+    }
+}
+
 </style>

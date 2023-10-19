@@ -3,8 +3,12 @@ name: DESTROY Development Backend
 on:
   workflow_dispatch:
 
-jobs:
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 
+jobs:
   aws-dev-destruction-server:
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
@@ -12,7 +16,6 @@ jobs:
       tf_subcommand: destroy
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
       dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
@@ -37,4 +40,3 @@ jobs:
   #     tf_subcommand: destroy
   #   secrets:
   #     licenceplate: ${{ secrets.LICENCEPLATE}}
-  #     tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}

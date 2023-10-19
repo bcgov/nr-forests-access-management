@@ -14,10 +14,18 @@
 
 
 
-export * from './api/bcscproxy-api';
-export * from './api/famapplications-api';
-export * from './api/famforest-clients-api';
-export * from './api/famuser-role-assignment-api';
-export * from './api/idirbce-idproxy-api';
-export * from './api/smoke-test-api';
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+
+export const RoleType = {
+    A: 'A',
+    C: 'C'
+} as const;
+
+export type RoleType = typeof RoleType[keyof typeof RoleType];
+
+
 

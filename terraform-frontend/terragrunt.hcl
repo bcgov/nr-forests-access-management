@@ -3,23 +3,27 @@ terraform {
 }
 
 locals {
-  tfc_hostname     = "app.terraform.io"
-  tfc_organization = "bcgov"
-  environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  tfc_workspace    = get_env("tfc_workspace")
+  # Terraform remote S3 config
+  tf_remote_state_prefix  = "terraform-remote-state" # Do not change this, given by cloud.pathfinder.
+  aws_license_plate       = get_env("licenceplate")
+  target_env              = get_env("target_env")
+  statefile_bucket_name   = "${local.tf_remote_state_prefix}-${local.aws_license_plate}-${local.target_env}" # Example @tools: "terraform-remote-state-sfha4x-tools"
+  statefile_key          = "frontend.tfstate"
+  statelock_table_name    = "${local.tf_remote_state_prefix}-lock-${local.aws_license_plate}" # Example @tools: "terraform-remote-state-lock-sfha4x"
 }
 
+# Remote S3 state for Terraform.
 generate "remote_state" {
   path      = "backend.tf"
   if_exists = "overwrite"
   contents  = <<EOF
 terraform {
-  backend "remote" {
-    hostname = "${local.tfc_hostname}"
-    organization = "${local.tfc_organization}"
-    workspaces {
-      name = "${local.tfc_workspace}"
-    }
+  backend "s3" {
+    bucket         = "${local.statefile_bucket_name}"
+    key            = "${local.statefile_key}"            # Path and name of the state file within the bucket
+    region         = "ca-central-1"                       # AWS region where the bucket is located
+    dynamodb_table = "${local.statelock_table_name}"
+    encrypt        = true
   }
 }
 EOF
@@ -39,9 +43,6 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region  = "ca-central-1"
-  assume_role {
-    role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
-  }
 }
 
 # Additional provider configuration for us-east-1 region; resources can reference this as `aws.east`.
@@ -53,9 +54,6 @@ provider "aws" {
 provider "aws" {
   alias  = "east"
   region = "us-east-1"
-  assume_role {
-    role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
-  }
 }
 
 EOF

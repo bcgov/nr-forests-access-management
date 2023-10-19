@@ -1,5 +1,88 @@
 # Changelog
 
+## [1.7.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.7.0...v1.7.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* [#938](https://github.com/bcgov/nr-forests-access-management/issues/938) Remove unnecessary flows from nsgs based on security reviews. ([#960](https://github.com/bcgov/nr-forests-access-management/issues/960)) ([6614d74](https://github.com/bcgov/nr-forests-access-management/commit/6614d74e3e0f3c351df0ec78b162bd9d20d8a1d3))
+* incorrect swapped action ([#965](https://github.com/bcgov/nr-forests-access-management/issues/965)) ([1976022](https://github.com/bcgov/nr-forests-access-management/commit/19760228422e2f260651b6cc50583e48476ebfa5))
+
+
+### Miscellaneous
+
+* swap out unmaintained action ([#961](https://github.com/bcgov/nr-forests-access-management/issues/961)) ([b30fdf9](https://github.com/bcgov/nr-forests-access-management/commit/b30fdf9ad73842bf42cf22082931c8d485d6a456))
+* Update actions/upload-artifact action to v3 ([#967](https://github.com/bcgov/nr-forests-access-management/issues/967)) ([9b70fe0](https://github.com/bcgov/nr-forests-access-management/commit/9b70fe091912a66c01f508f71d0a9a7f249a8ac6))
+* update checkout action for node 12 deprecation ([#962](https://github.com/bcgov/nr-forests-access-management/issues/962)) ([75894bc](https://github.com/bcgov/nr-forests-access-management/commit/75894bc8d261991ed3739e6c8ae91b8a0198328c))
+
+## [1.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.6.0...v1.7.0) (2023-10-10)
+
+
+### Features
+
+* [#934](https://github.com/bcgov/nr-forests-access-management/issues/934) profile sidebar for mobile ([#946](https://github.com/bcgov/nr-forests-access-management/issues/946)) ([68479fd](https://github.com/bcgov/nr-forests-access-management/commit/68479fd913966b730d569ad12ecfed50da980c88))
+
+
+### Bug Fixes
+
+* [#722](https://github.com/bcgov/nr-forests-access-management/issues/722) Update terraform CloudFront to use the new certificate ([#947](https://github.com/bcgov/nr-forests-access-management/issues/947)) ([6d60d93](https://github.com/bcgov/nr-forests-access-management/commit/6d60d9385bf545b1effe24e910b04bc7ca3a1288))
+
+## [1.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.5.0...v1.6.0) (2023-10-05)
+
+
+### Features
+
+* [#915](https://github.com/bcgov/nr-forests-access-management/issues/915) tfc s3 migration deployment ([#948](https://github.com/bcgov/nr-forests-access-management/issues/948)) ([e325af6](https://github.com/bcgov/nr-forests-access-management/commit/e325af6c5eabb2cdc32b0fbb412ab7e0cd47cc8d))
+
+## [1.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.4.0...v1.5.0) (2023-10-03)
+
+
+### Features
+
+* [#846](https://github.com/bcgov/nr-forests-access-management/issues/846) user information card new design style ([#913](https://github.com/bcgov/nr-forests-access-management/issues/913)) ([5986c57](https://github.com/bcgov/nr-forests-access-management/commit/5986c57a2b01567ee31c0f08b80689523160a699))
+* [#847](https://github.com/bcgov/nr-forests-access-management/issues/847) adjust forest client information card ([#932](https://github.com/bcgov/nr-forests-access-management/issues/932)) ([43d5a56](https://github.com/bcgov/nr-forests-access-management/commit/43d5a5668cb54c07a9d62802fdf0f7192fe764ae))
+* [#849](https://github.com/bcgov/nr-forests-access-management/issues/849) adjust styling manage permissions ([#890](https://github.com/bcgov/nr-forests-access-management/issues/890)) ([4adfb59](https://github.com/bcgov/nr-forests-access-management/commit/4adfb59347318229d4d8908a3683614ff69a7ccb))
+* 851 search bar in the manage permissions page ([#895](https://github.com/bcgov/nr-forests-access-management/issues/895)) ([55927e9](https://github.com/bcgov/nr-forests-access-management/commit/55927e921ede4f3aad669a18dc8fc6d802d04421))
+* drawio adjust ([#910](https://github.com/bcgov/nr-forests-access-management/issues/910)) ([ab7c5ab](https://github.com/bcgov/nr-forests-access-management/commit/ab7c5abc5cf47b41a0eec00e32451c63391cf56b))
+
+
+### Bug Fixes
+
+* [#720](https://github.com/bcgov/nr-forests-access-management/issues/720) make user attribute displayname and email writable  ([#912](https://github.com/bcgov/nr-forests-access-management/issues/912)) ([32029f5](https://github.com/bcgov/nr-forests-access-management/commit/32029f530dc7c0c45f2431c2bc47caf4cf2b838b))
+* [#897](https://github.com/bcgov/nr-forests-access-management/issues/897) frontend minor style changes ([#914](https://github.com/bcgov/nr-forests-access-management/issues/914)) ([2a2a291](https://github.com/bcgov/nr-forests-access-management/commit/2a2a291f9a0270c84b703d0e3b23097fa29acaf4))
+* [#933](https://github.com/bcgov/nr-forests-access-management/issues/933) added redirect urls for silva client as required ([#944](https://github.com/bcgov/nr-forests-access-management/issues/944)) ([9fd0afa](https://github.com/bcgov/nr-forests-access-management/commit/9fd0afa038414e4f799d775ebc629b0932235131))
+
+## [1.4.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.3.0...v1.4.0) (2023-09-14)
+
+
+### Features
+
+* [#715](https://github.com/bcgov/nr-forests-access-management/issues/715) component integration test for landing page ([#861](https://github.com/bcgov/nr-forests-access-management/issues/861)) ([f441fcc](https://github.com/bcgov/nr-forests-access-management/commit/f441fcc8cc0829ebef7df475fd3f0cf6d2c549de))
+* [#720](https://github.com/bcgov/nr-forests-access-management/issues/720) Add user display name and email to the profile section ([#891](https://github.com/bcgov/nr-forests-access-management/issues/891)) ([aeb8be9](https://github.com/bcgov/nr-forests-access-management/commit/aeb8be9853a4837206d49f5c6280a0a8815d209d))
+* [#751](https://github.com/bcgov/nr-forests-access-management/issues/751) further restrict api lambda user ([#870](https://github.com/bcgov/nr-forests-access-management/issues/870)) ([cbe5f13](https://github.com/bcgov/nr-forests-access-management/commit/cbe5f13f578b6a8720b80592eb1133194706becf))
+* Custom network security groups to segregate lambdas [#773](https://github.com/bcgov/nr-forests-access-management/issues/773) ([#841](https://github.com/bcgov/nr-forests-access-management/issues/841)) ([8ee4ae1](https://github.com/bcgov/nr-forests-access-management/commit/8ee4ae1c275de3fe7df2528ae28b27d9609a2362))
+
+
+### Bug Fixes
+
+* [#719](https://github.com/bcgov/nr-forests-access-management/issues/719) use same button component ([#864](https://github.com/bcgov/nr-forests-access-management/issues/864)) ([9d42f90](https://github.com/bcgov/nr-forests-access-management/commit/9d42f909026a36dc727c4d6de6777bf6ffaf012e))
+* [#831](https://github.com/bcgov/nr-forests-access-management/issues/831) remove user role confirm dialog bug ([#871](https://github.com/bcgov/nr-forests-access-management/issues/871)) ([5a3cfe6](https://github.com/bcgov/nr-forests-access-management/commit/5a3cfe6c7e7605bfa46331ee31f99c2d4a2d91aa))
+* [#839](https://github.com/bcgov/nr-forests-access-management/issues/839) fix browser console error for labels ([#866](https://github.com/bcgov/nr-forests-access-management/issues/866)) ([ab15111](https://github.com/bcgov/nr-forests-access-management/commit/ab1511150a15a67169b65fee9e28a8977b35d210))
+* [#848](https://github.com/bcgov/nr-forests-access-management/issues/848) profile signout incorrect ([#869](https://github.com/bcgov/nr-forests-access-management/issues/869)) ([f7fe57a](https://github.com/bcgov/nr-forests-access-management/commit/f7fe57a0b22ec18ed8a9d656a1f45dfe7b5b6846))
+* [#848](https://github.com/bcgov/nr-forests-access-management/issues/848) user name disappearing when log out ([#865](https://github.com/bcgov/nr-forests-access-management/issues/865)) ([b879047](https://github.com/bcgov/nr-forests-access-management/commit/b87904797e1399f067a14783f9ddc26a0f015b9a))
+* [#858](https://github.com/bcgov/nr-forests-access-management/issues/858) upgrade fastapi version to solve pipeline issue ([#862](https://github.com/bcgov/nr-forests-access-management/issues/862)) ([0a98744](https://github.com/bcgov/nr-forests-access-management/commit/0a98744a87d298f5f92786b9cf630647eb476cdf))
+* [#867](https://github.com/bcgov/nr-forests-access-management/issues/867) add user email return to silva application ([#872](https://github.com/bcgov/nr-forests-access-management/issues/872)) ([4d2725a](https://github.com/bcgov/nr-forests-access-management/commit/4d2725aebe0dc400a0f2e9b2066d17152eaae258))
+* [#867](https://github.com/bcgov/nr-forests-access-management/issues/867) fix url of oidc debugger tool  ([#873](https://github.com/bcgov/nr-forests-access-management/issues/873)) ([b093196](https://github.com/bcgov/nr-forests-access-management/commit/b09319622a66edb6ba1094937f130259450d6bc2))
+* [#874](https://github.com/bcgov/nr-forests-access-management/issues/874) frontend improvement no try catch ([#875](https://github.com/bcgov/nr-forests-access-management/issues/875)) ([fb4128c](https://github.com/bcgov/nr-forests-access-management/commit/fb4128c57fce37633fb9544b3a215a079b0e2ad4))
+* Freeze important pydantic and SQLAlchemy dependencies version. ([#881](https://github.com/bcgov/nr-forests-access-management/issues/881)) ([feeec18](https://github.com/bcgov/nr-forests-access-management/commit/feeec1821ed4bbca9416e192717fb45532ee7caa))
+* minor backend improvement part2 ([#860](https://github.com/bcgov/nr-forests-access-management/issues/860)) ([c049bab](https://github.com/bcgov/nr-forests-access-management/commit/c049bab490ea7ac9ccf326fa603e945cc5c3e663))
+
+
+### Miscellaneous
+
+* **deps:** update dependency mock to v5 ([#832](https://github.com/bcgov/nr-forests-access-management/issues/832)) ([d32ffb1](https://github.com/bcgov/nr-forests-access-management/commit/d32ffb1e685e5bbaaca7ef69006e69500fc7dad4))
+* **deps:** update dependency mypy to v1 ([#833](https://github.com/bcgov/nr-forests-access-management/issues/833)) ([4026caf](https://github.com/bcgov/nr-forests-access-management/commit/4026cafac47405bc7e7ebe7877e908042eccb5e3))
+
 ## [1.3.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.2.2...v1.3.0) (2023-08-30)
 
 

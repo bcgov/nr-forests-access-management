@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
+@use '@bcgov-nr/nr-theme/design-tokens/type-family.scss' as typeFamily;
 
 // Import all of Bootstrap's CSS
 @import '~bootstrap/scss/bootstrap';
@@ -8,7 +8,7 @@
 
 // Components
 
-@import '@bcgov-nr/nr-fsa-theme/style-sheets/primevue-components-overrides.scss';
+@import '@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss';
 
 :root {
     --font-family: map.get(typeFamily.$type-family, 'sans');
@@ -16,4 +16,14 @@
 
 body {
     font-family: map.get(typeFamily.$type-family, 'sans');
+}
+
+.custom-card {
+    width: $card-width;
+    margin-top: $card-margin-top;
+}
+
+.invalid {
+    font-size: 0.875em;
+    color: $light-text-error;
 }

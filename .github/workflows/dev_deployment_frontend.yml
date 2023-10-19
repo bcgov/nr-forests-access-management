@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   aws-test-deployment-frontend:
     uses: ./.github/workflows/reusable_terraform_frontend.yml
     with:
@@ -13,5 +12,3 @@ jobs:
       tf_subcommand: apply
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
-      tfc_team_token: ${{ secrets.TFC_TEAM_TOKEN }}
-

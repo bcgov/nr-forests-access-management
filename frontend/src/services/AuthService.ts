@@ -9,6 +9,8 @@ const FAM_LOGIN_USER = 'famLoginUser';
 
 export interface FamLoginUser {
     username?: string;
+    displayName?: string;
+    email?: string;
     idpProvider?: string;
     roles?: string[];
     authToken?: CognitoUserSession;
@@ -102,6 +104,8 @@ function parseToken(authToken: CognitoUserSession): FamLoginUser {
     const decodedAccessToken = authToken.getAccessToken().decodePayload();
     const famLoginUser = {
         username: decodedIdToken['custom:idp_username'],
+        displayName: decodedIdToken['custom:idp_display_name'],
+        email: decodedIdToken['email'],
         idpProvider: decodedIdToken['identities']['providerName'],
         roles: decodedAccessToken['cognito:groups'],
         authToken: authToken,

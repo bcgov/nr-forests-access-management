@@ -4,6 +4,10 @@
     color: $light-support-error !important;
 }
 
+.custom-carbon-icon-checkmark--filled {
+    color: $light-support-success !important;
+}
+
 .custom-carbon-icon-user--follow {
     margin-right: 1.125rem;
     align-self: center;
@@ -11,9 +15,17 @@
 }
 .custom-carbon-icon--help,
 .custom-carbon-icon--sidenav  {
-    margin-right: 1.5625rem;
+    margin-right: 1.5rem;
 }
 
 .custom-carbon-icon--sidenav {
     color: $light-interactive;
+}
+
+.custom-carbon-icon--trash-can {
+    color: $light-icon-primary;
+}
+
+.custom-carbon-icon--menu {
+    color: $light-icon-on-color;
 }

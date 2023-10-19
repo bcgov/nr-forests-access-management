@@ -5,7 +5,7 @@ resource "aws_cognito_user_pool_client" "dev_spar_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
-    "http://localhost:3000/dashboard",
+    "http://localhost:3000/",
     "http://localhost:3000/silent-check-sso"
   ]
   logout_urls                                   = [
@@ -41,11 +41,13 @@ resource "aws_cognito_user_pool_client" "test_spar_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
+    "http://localhost:3000/",
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
-    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/",
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -76,10 +78,10 @@ resource "aws_cognito_user_pool_client" "prod_spar_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://nr-spar-webapp-prod-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-spar-webapp-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-spar-webapp-prod-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
