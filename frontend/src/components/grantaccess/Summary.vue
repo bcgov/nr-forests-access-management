@@ -5,9 +5,9 @@ import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import { onMounted } from 'vue';
 
 import {
-    successNotificationMessage,
-    errorNotificationMessage,
-    warningNotificationMessage,
+    pushSuccessNotification,
+    pushWarningNotification,
+    pushErrorNotification,
 } from '@/store/NotificationState';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
@@ -56,21 +56,27 @@ async function handleSubmit() {
         }
 
         if (successList.length > 0) {
-            successNotificationMessage.notificationMsg = `${
-                grantAccessFormData.value!.user_name
-            } was successfully added with Client IDs: ${successList.join(
-                ', '
-            )}`;
+            pushSuccessNotification(
+                `${
+                    grantAccessFormData.value!.user_name
+                } was successfully added with Client IDs: ${successList.join(
+                    ', '
+                )}`
+            );
         }
         if (warningList.length > 0) {
-            warningNotificationMessage.notificationMsg = `${
-                grantAccessFormData.value!.user_name
-            } already exists with Client IDs: ${warningList.join(', ')}`;
+            pushWarningNotification(
+                `${
+                    grantAccessFormData.value!.user_name
+                } already exists with Client IDs: ${warningList.join(', ')}`
+            );
         }
         if (errorList.length > 0) {
-            errorNotificationMessage.notificationMsg = `${
-                grantAccessFormData.value!.user_name
-            } was not added with Client IDs: ${errorList.join(', ')}`;
+            pushErrorNotification(
+                `${
+                    grantAccessFormData.value!.user_name
+                } was not added with Client IDs: ${errorList.join(', ')}`
+            );
         }
 
         router.push('/dashboard');
@@ -79,11 +85,13 @@ async function handleSubmit() {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignment
         );
-        successNotificationMessage.notificationMsg = `${
-            grantAccessFormData.value!.user_name
-        } was successfully added with the role ${
-            grantAccessFormRoleName.value
-        }`;
+        pushSuccessNotification(
+            `${
+                grantAccessFormData.value!.user_name
+            } was successfully added with the role ${
+                grantAccessFormRoleName.value
+            }`
+        );
         router.push('/dashboard');
         resetGrantAccessFormData();
     }

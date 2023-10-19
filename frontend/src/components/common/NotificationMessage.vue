@@ -2,6 +2,8 @@
 import Message from 'primevue/message';
 import { IconSize } from '@/enum/IconEnum';
 
+import { clearNotification } from '@/store/NotificationState';
+
 const props = defineProps({
     msgText: {
         type: String,
@@ -12,6 +14,10 @@ const props = defineProps({
         required: true,
     },
 });
+
+const closeNotification = () => {
+    clearNotification(props.severity);
+};
 </script>
 
 <template>
@@ -21,6 +27,7 @@ const props = defineProps({
             :class="props.severity"
             :severity="props.severity"
             :sticky="true"
+            @close="closeNotification()"
         >
             <Icon
                 :icon="

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { computed, onMounted, onUnmounted, shallowRef, ref } from 'vue';
 
 import NotificationMessage from '@/components/common/NotificationMessage.vue';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
@@ -16,9 +16,8 @@ import {
 import LoadingState from '@/store/LoadingState';
 
 import {
-    successNotificationMessage,
-    warningNotificationMessage,
-    errorNotificationMessage,
+    pushSuccessNotification,
+    resetNotification,
 } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
@@ -39,9 +38,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    successNotificationMessage.notificationMsg = '';
-    warningNotificationMessage.notificationMsg = '';
-    errorNotificationMessage.notificationMsg = '';
+    resetNotification();
 });
 
 async function getAppUserRoleAssignment() {
@@ -84,7 +81,9 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    successNotificationMessage.notificationMsg = `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`;
+    pushSuccessNotification(
+        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+    );
 }
 </script>
 
@@ -105,26 +104,7 @@ async function deleteUserRoleAssignment(
         </div>
 
         <div class="dashboard-background-layout">
-            <NotificationMessage
-                v-if="successNotificationMessage.notificationMsg.length > 0"
-                severity="success"
-                :msgText="successNotificationMessage.notificationMsg"
-                class="dashboard-notification"
-            />
-
-            <NotificationMessage
-                v-if="errorNotificationMessage.notificationMsg.length > 0"
-                severity="error"
-                :msgText="errorNotificationMessage.notificationMsg"
-                class="dashboard-notification"
-            />
-
-            <NotificationMessage
-                v-if="warningNotificationMessage.notificationMsg.length > 0"
-                severity="warn"
-                :msgText="warningNotificationMessage.notificationMsg"
-                class="dashboard-notification"
-            />
+            <NotificationStack />
 
             <UserDataTable
                 :isApplicationSelected="isApplicationSelected"
@@ -153,14 +133,6 @@ async function deleteUserRoleAssignment(
 
     &:deep(.p-dropdown-label) {
         padding: 0.8375rem 1rem;
-    }
-}
-
-.dashboard-notification {
-    margin: 0rem 2rem;
-    &:deep(.p-message) {
-        position: relative;
-        margin-bottom: -1rem;
     }
 }
 

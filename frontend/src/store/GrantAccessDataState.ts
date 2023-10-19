@@ -8,7 +8,7 @@ export const grantAccessFormRoleName = ref<string | null>();
 
 export const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
-export const setGrantAccessFormData = (formData: any, forestClientList: any) => {
+export const setGrantAccessFormData = (formData: any, forestClientList: FamForestClient[]) => {
     grantAccessFormData.value = {
         user_name: formData.userId,
         user_type_code: formData.domain,

@@ -2,30 +2,13 @@
 import Card from 'primevue/card';
 import Tag from 'primevue/tag';
 import { IconSize } from '@/enum/IconEnum';
-import { ref, watchEffect, type PropType } from 'vue';
+import type { PropType } from 'vue';
 import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
-import { FamForestClientStatusType } from 'fam-api';
 
 const props = defineProps({
     forestClientData: {
         type: Object as PropType<FamForestClient[]>,
     },
-});
-
-const activeClientCheck = ref<boolean>(true);
-
-const checkClientData = (data: FamForestClient[] | undefined) => {
-    if (data === undefined) return;
-    activeClientCheck.value = true;
-    data.forEach((clientData) => {
-        if (clientData.status?.status_code !== FamForestClientStatusType.A) {
-            activeClientCheck.value = false;
-        }
-    });
-};
-
-watchEffect(() => {
-    checkClientData(props.forestClientData);
 });
 </script>
 <template>
@@ -33,19 +16,7 @@ watchEffect(() => {
     <div>
         <Card class="custom-card">
             <template #header>
-                <Icon
-                    :class="
-                        !activeClientCheck
-                            ? 'custom-carbon-icon-error--filled'
-                            : ''
-                    "
-                    :icon="
-                        activeClientCheck
-                            ? 'checkmark--filled'
-                            : 'error--filled'
-                    "
-                    :size="IconSize.small"
-                />
+                <Icon icon="checkmark--filled" :size="IconSize.small" />
                 <p>Verified Client ID information</p>
             </template>
             <template #content>
