@@ -19,7 +19,7 @@
         "axios": "0.26.1",
         "bootstrap": "^5.2.3",
         "fam-api": "file:../client-code-gen/gen",
-        "primevue": "^3.27.0",
+        "primevue": "3.34.0",
         "vee-validate": "^4.7.3",
         "vue": "^3.2.38",
         "vue-router": "^4.1.5"

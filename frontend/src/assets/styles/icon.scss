@@ -15,7 +15,7 @@
 }
 .custom-carbon-icon--help,
 .custom-carbon-icon--sidenav  {
-    margin-right: 1.5625rem;
+    margin-right: 1.5rem;
 }
 
 .custom-carbon-icon--sidenav {
@@ -24,4 +24,8 @@
 
 .custom-carbon-icon--trash-can {
     color: $light-icon-primary;
+}
+
+.custom-carbon-icon--menu {
+    color: $light-icon-on-color;
 }

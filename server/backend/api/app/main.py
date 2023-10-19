@@ -15,8 +15,8 @@ from starlette.responses import RedirectResponse
 from .jwt_validation import init_jwks
 from .kms_lookup import init_bcsc_public_key
 from .routers import (router_application, router_bcsc_proxy,
-                      router_forest_client, router_idim_proxy, router_role,
-                      router_smoke_test, router_user,
+                      router_forest_client, router_idim_proxy,
+                      router_smoke_test,
                       router_user_role_assignment)
 
 logConfigFile = os.path.join(
@@ -72,6 +72,13 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id
 )
 
+# Temporary assign openapi_version = "3.0.3" to fix not able to generate correct api-client for frontend.
+# Due to current fastapi==0.100.0, this default to swagger spec version to 3.1.0, but version 3.1.0 is not
+# yet well supported by openapi-generator.
+# Also, FastAPI only 'hardcoded' with '3.0.3' it isn't truly convert to 3.0.3 openapi spec. However, it does
+# temporarily solve openapi-generator issue.
+app.openapi_version = "3.0.3"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_allow_origins(),
@@ -103,15 +110,6 @@ app.include_router(router_idim_proxy.router,
                    prefix=apiPrefix + '/identity_search',
                    dependencies=[Depends(jwt_validation.authorize)],
                    tags=["IDIR/BCeID Proxy"])
-
-# These two routers are disabled for MVP
-
-app.include_router(router_user.router,
-                   prefix=apiPrefix + '/fam_users',
-                   tags=["FAM Users"])
-app.include_router(router_role.router,
-                   prefix=apiPrefix + '/fam_roles',
-                   tags=["FAM Roles"])
 
 # This router is used to proxy the BCSC userinfo endpoint
 

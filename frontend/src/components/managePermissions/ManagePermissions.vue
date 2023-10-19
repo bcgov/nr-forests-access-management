@@ -105,7 +105,6 @@ async function deleteUserRoleAssignment(
 
         <div class="dashboard-background-layout">
             <NotificationStack />
-
             <UserDataTable
                 :isApplicationSelected="isApplicationSelected"
                 :loading="LoadingState.isLoading.value"
@@ -121,13 +120,14 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-group {
-    display: grid;
+display: grid;
 
     label {
         margin-bottom: 0.5rem;
     }
 }
 .application-dropdown {
+    max-width: calc(100vw - 3rem);
     height: 3rem;
     padding: 0;
 
@@ -138,11 +138,36 @@ async function deleteUserRoleAssignment(
 
 .dashboard-background-layout {
     margin-top: 2rem;
-    margin-left: -2rem;
-    margin-right: -2rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
     padding: 1rem 0rem;
     background: $light-layer-one;
     z-index: -1;
-    min-height: calc(100vh - 18.745rem);
+    min-height: calc(100vh - 16.9rem);
 }
+
+@media (min-width: 495px) {
+    .application-dropdown {
+        max-width: 29rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-background-layout {
+        width: 100vw;
+        margin-left: -1.5rem;
+        min-height: calc(100vh - 17.1rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-background-layout {
+        width: calc(100vw - 16rem);
+    }
+
+    .application-dropdown {
+        max-width: 38rem;
+    }
+}
+
 </style>
