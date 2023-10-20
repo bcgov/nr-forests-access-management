@@ -1,15 +1,8 @@
 import { ref } from 'vue';
-export interface IBreadcrumbItem {
-    label: string,
-    to: string
-};
-
-export type Breadcrumb = {
-    [key: string]: IBreadcrumbItem
-};
+import type { IRouteInfo } from '@/router';
 
 export const breadcrumbState = ref();
 
-export const populateBreadcrumb = (breadcrumbItem: IBreadcrumbItem[]) => {
+export const populateBreadcrumb = (breadcrumbItem: IRouteInfo[]) => {
     breadcrumbState.value = breadcrumbItem;
 };
