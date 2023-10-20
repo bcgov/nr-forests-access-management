@@ -125,7 +125,6 @@ def get_application_role_assignments(
     crossref = (
         db.query(models.FamUserRoleXref)
         .join(models.FamRole)
-        .options(joinedload('role.parent_role'))
         .filter(models.FamRole.application_id == application_id)
         .all()
     )

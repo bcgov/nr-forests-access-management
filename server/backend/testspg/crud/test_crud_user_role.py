@@ -47,7 +47,7 @@ def test_create_user_role_with_user_types_not_exists(
         assert schemas.FamUserRoleAssignmentCreate(**user_role)
     assert (
         str(e.value).find(
-            "value is not a valid enumeration member; permitted: 'I', 'B'"
+            "Input should be 'I' or 'B'"
         )
         != -1
     )
