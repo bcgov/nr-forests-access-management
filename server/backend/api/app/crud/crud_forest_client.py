@@ -25,7 +25,7 @@ def get_forest_client(db: Session, forest_client_number: str) -> models.FamFores
 def create_forest_client(fam_forest_client: schemas.FamForestClientCreate, db: Session):
     LOGGER.debug(f"Creating Fam_Forest_Client with: {fam_forest_client}")
 
-    fam_forest_client_dict = fam_forest_client.dict()
+    fam_forest_client_dict = fam_forest_client.model_dump()
     db_item = models.FamForestClient(**fam_forest_client_dict)
     db.add(db_item)
     db.flush()
