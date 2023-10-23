@@ -2,7 +2,7 @@
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
-import { boolean, number, object, string } from 'yup';
+import { number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
@@ -42,18 +42,9 @@ const defaultFormData = {
     role_id: null as number | null,
 };
 
-const defaultForestClientNumberError = {
-    inactive: false,
-    invalid: false,
-    duplicate: false,
-    message: string,
-};
-
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 
-const forestClientNumberError = ref(
-    JSON.parse(JSON.stringify(defaultForestClientNumberError))
-);
+const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const formValidationSchema = object({
     userId: string()
@@ -129,9 +120,7 @@ function resetVerifiedUserIdentity() {
 
 function resetForestClientNumberData() {
     formData.value['forestClientNumber'] = '';
-    forestClientNumberError.value = JSON.parse(
-        JSON.stringify(defaultForestClientNumberError)
-    );
+    forestClientNumberVerifyErrors.value = [];
 }
 
 function resetForm() {
@@ -153,44 +142,56 @@ async function verifyIdentity(userId: string, domain: string) {
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
-    const forestNumbers = forestClientNumber.split(/[ ,]+/);
+    forestClientNumberVerifyErrors.value = [];
+    let forestNumbers = forestClientNumber.split(/[ ,]+/);
 
     for (const item of forestNumbers) {
-        forestClientNumberError.value.message = item;
         if (isNaN(parseInt(item))) {
-            forestClientNumberError.value.invalid = true;
-            break;
+            forestClientNumberVerifyErrors.value.push(
+                `Client ID ${item}  is invalid and cannot be added.`
+            );
         }
         await forestClientApi
             .search(item)
             .then((result) => {
-                if (
-                    result.data[0].status?.status_code ===
-                    FamForestClientStatusType.A
-                ) {
+                if (result.data[0]) {
                     if (
-                        isForestClientNumberNotAdded(
-                            result.data[0].forest_client_number
-                        )
+                        result.data[0].status?.status_code ===
+                        FamForestClientStatusType.A
                     ) {
-                        forestClientData.value.push(result.data[0]);
-                        forestClientNumberError.value.message = '';
-                        resetForestClientNumberData();
-                        return;
+                        if (
+                            isForestClientNumberNotAdded(
+                                result.data[0].forest_client_number
+                            )
+                        ) {
+                            forestClientData.value.push(result.data[0]);
+                            forestNumbers = forestNumbers.filter(
+                                (number) => number !== item
+                            ); //Remove successfully added numbers so the user can edit in the input only errored ones
+                        } else {
+                            forestClientNumberVerifyErrors.value.push(
+                                `Client ID ${item} has already been added.`
+                            );
+                        }
                     } else {
-                        forestClientNumberError.value.duplicate = true;
-                        return;
+                        forestClientNumberVerifyErrors.value.push(
+                            `Client ID ${item} is inactive and cannot be added.`
+                        );
                     }
                 } else {
-                    forestClientNumberError.value.inactive = true;
-                    return;
+                    forestClientNumberVerifyErrors.value.push(
+                        `Client ID ${item}  is invalid and cannot be added.`
+                    );
                 }
             })
             .catch((error) => {
-                forestClientNumberError.value.invalid = true;
-                return;
+                forestClientNumberVerifyErrors.value.push(
+                    `An error occured. Client ID ${item}  could not be added.`
+                );
             });
     }
+    //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
+    formData.value['forestClientNumber'] = forestNumbers.toString();
 }
 
 function isForestClientNumberNotAdded(forestClientNumber: string) {
@@ -418,9 +419,8 @@ function removeForestClientFromList(index: number) {
                                         :class="{
                                             'is-invalid':
                                                 errors.forestClientNumber ||
-                                                forestClientNumberError.inactive ||
-                                                forestClientNumberError.duplicate ||
-                                                forestClientNumberError.invalid,
+                                                forestClientNumberVerifyErrors.length >
+                                                    0,
                                         }"
                                     ></InputText>
                                 </Field>
@@ -432,9 +432,8 @@ function removeForestClientFromList(index: number) {
                                     class="helper-text"
                                     v-if="
                                         !errors.forestClientNumber &&
-                                        !forestClientNumberError.inactive &&
-                                        !forestClientNumberError.duplicate &&
-                                        !forestClientNumberError.invalid
+                                        forestClientNumberVerifyErrors.length ===
+                                            0
                                     "
                                     >Add and verify the Client IDs. Add multiple
                                     numbers by separating them with
@@ -442,25 +441,9 @@ function removeForestClientFromList(index: number) {
                                 >
                                 <small
                                     class="invalid-feedback"
-                                    v-if="
-                                        forestClientNumberError.inactive ||
-                                        forestClientNumberError.duplicate ||
-                                        forestClientNumberError.invalid
-                                    "
+                                    v-for="error in forestClientNumberVerifyErrors"
                                 >
-                                    {{
-                                        `Client ID ${
-                                            forestClientNumberError.message
-                                        }  ${
-                                            forestClientNumberError.inactive
-                                                ? ' is inactive and cannot be added.'
-                                                : forestClientNumberError.duplicate
-                                                ? ' has already been added.'
-                                                : forestClientNumberError.invalid
-                                                ? ' is invalid and cannot be added.'
-                                                : ''
-                                        }`
-                                    }}
+                                    {{ error }}
                                 </small>
                             </div>
                             <div class="pr-1 col-2">
@@ -477,7 +460,9 @@ function removeForestClientFromList(index: number) {
                                     "
                                     v-bind:disabled="
                                         formData.forestClientNumber?.length <
-                                            8 || LoadingState.isLoading.value
+                                            8 ||
+                                        errors.forestClientNumber ||
+                                        LoadingState.isLoading.value
                                     "
                                 >
                                     <Icon icon="add" :size="IconSize.small" />

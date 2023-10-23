@@ -4,11 +4,7 @@ import router from '@/router';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import { onMounted } from 'vue';
 
-import {
-    pushSuccessNotification,
-    pushWarningNotification,
-    pushErrorNotification,
-} from '@/store/NotificationState';
+import { pushNotification } from '@/store/NotificationState';
 
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import {
@@ -17,6 +13,7 @@ import {
     resetGrantAccessFormData,
     type FamUserRoleAssignment,
 } from '@/store/GrantAccessDataState';
+import { Severity } from '@/enum/SeverityEnum';
 
 const apiServiceFactory = new ApiServiceFactory();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
@@ -56,7 +53,8 @@ async function handleSubmit() {
         }
 
         if (successList.length > 0) {
-            pushSuccessNotification(
+            pushNotification(
+                Severity.success,
                 `${
                     grantAccessFormData.value!.user_name
                 } was successfully added with Client IDs: ${successList.join(
@@ -65,14 +63,16 @@ async function handleSubmit() {
             );
         }
         if (warningList.length > 0) {
-            pushWarningNotification(
+            pushNotification(
+                Severity.warning,
                 `${
                     grantAccessFormData.value!.user_name
                 } already exists with Client IDs: ${warningList.join(', ')}`
             );
         }
         if (errorList.length > 0) {
-            pushErrorNotification(
+            pushNotification(
+                Severity.error,
                 `${
                     grantAccessFormData.value!.user_name
                 } was not added with Client IDs: ${errorList.join(', ')}`
@@ -85,7 +85,8 @@ async function handleSubmit() {
         await userRoleAssignmentApi.createUserRoleAssignment(
             grantAccessFormData.value as FamUserRoleAssignment
         );
-        pushSuccessNotification(
+        pushNotification(
+            Severity.success,
             `${
                 grantAccessFormData.value!.user_name
             } was successfully added with the role ${

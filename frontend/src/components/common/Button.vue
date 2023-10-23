@@ -67,7 +67,6 @@ function onClicked(event: any) {
 </template>
 <style lang="scss">
 .nr-button {
-    display: flex;
     gap: 2rem;
     white-space: nowrap;
 }

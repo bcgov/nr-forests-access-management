@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import { computed, onMounted, onUnmounted, shallowRef, ref } from 'vue';
+import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
-import NotificationMessage from '@/components/common/NotificationMessage.vue';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
@@ -15,12 +14,10 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 
-import {
-    pushSuccessNotification,
-    resetNotification,
-} from '@/store/NotificationState';
+import { pushNotification, resetNotification } from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import { Severity } from '@/enum/SeverityEnum';
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -81,7 +78,8 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    pushSuccessNotification(
+    pushNotification(
+        Severity.success,
         `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
     );
 }
@@ -120,7 +118,7 @@ async function deleteUserRoleAssignment(
 @import '@/assets/styles/base.scss';
 
 .application-group {
-display: grid;
+    display: grid;
 
     label {
         margin-bottom: 0.5rem;
@@ -169,5 +167,4 @@ display: grid;
         max-width: 38rem;
     }
 }
-
 </style>
