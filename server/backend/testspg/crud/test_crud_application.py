@@ -91,7 +91,7 @@ def test_get_application_roles(db_pg_session: Session):
 
     for app_role in app_roles:
         # test the schema definitions work, will raise error if they do not
-        schemas.FamApplicationRole.from_orm(app_role)
+        schemas.FamApplicationRole.model_validate(app_role)
 
     assert len(app_roles) == 2
 
