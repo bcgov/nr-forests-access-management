@@ -460,9 +460,10 @@ function removeForestClientFromList(index: number) {
                                     "
                                     v-bind:disabled="
                                         formData.forestClientNumber?.length <
-                                            8 ||
-                                        errors.forestClientNumber ||
-                                        LoadingState.isLoading.value
+                                            8 || errors.forestClientNumber
+                                            ? true
+                                            : false ||
+                                              LoadingState.isLoading.value
                                     "
                                 >
                                     <Icon icon="add" :size="IconSize.small" />
