@@ -525,7 +525,7 @@ function removeForestClientFromList(index: number) {
                                     v-bind:disabled="
                                         formData.forestClientNumber?.length <
                                             FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                                        errors.forestClientNumber ||
+                                        !!errors.forestClientNumber ||
                                         LoadingState.isLoading.value
                                     "
                                 >
