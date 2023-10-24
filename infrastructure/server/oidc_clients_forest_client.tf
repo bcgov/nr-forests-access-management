@@ -3,13 +3,13 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls = [
+  callback_urls = concat([
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
-  ]
-  logout_urls = [
+  ], [for i in range(50) : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
+  logout_urls = concat([
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
-  ]
+  ], [for i in range(50) : "${var.cognito_app_client_logout_chain_url.dev}https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]

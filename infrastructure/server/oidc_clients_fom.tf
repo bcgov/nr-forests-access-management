@@ -3,13 +3,13 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = [
+  callback_urls                                 = concat([
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:4200/admin/search"
-  ]
-  logout_urls                                   = [
+  ], [for i in range(50) : "https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/search"])
+  logout_urls                                   = concat([
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true"
-  ]
+  ], [for i in range(50) : "${var.cognito_app_client_logout_chain_url.dev}https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
