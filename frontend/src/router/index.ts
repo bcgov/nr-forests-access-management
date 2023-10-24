@@ -6,7 +6,6 @@ import AuthService from '@/services/AuthService';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import SummaryView from '@/views/SummaryView.vue';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
@@ -74,19 +73,6 @@ const routes = [
         component: GrantAccessView,
         beforeEnter: () => {
             populateBreadcrumb([routeItems.dashboard])
-        }
-    },
-    {
-        path: '/summary',
-        name: 'summary',
-        meta: {
-            title: 'Access request summary',
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: true
-        },
-        component: SummaryView,
-        beforeEnter: () => {
-            populateBreadcrumb([routeItems.dashboard, routeItems.addUserPermission])
         }
     },
     {

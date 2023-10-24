@@ -16,14 +16,6 @@ import {
     selectedApplication,
     selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
-import {
-    domainOptions,
-    getGrantAccessFormData,
-    grantAccessFormData,
-    grantAccessFormRoleName,
-    resetGrantAccessFormData,
-    setGrantAccessFormData,
-} from '@/store/GrantAccessDataState';
 
 import LoadingState from '@/store/LoadingState';
 import {
@@ -31,9 +23,16 @@ import {
     type FamApplicationRole,
     type FamForestClient,
     type IdimProxyIdirInfo,
+    type FamUserRoleAssignmentCreate,
 } from 'fam-api';
 
 import { IconSize } from '@/enum/IconEnum';
+import { Severity } from '@/enum/SeverityEnum';
+import { pushNotification } from '@/store/NotificationState';
+
+const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
+
+const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -75,6 +74,7 @@ const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
+const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
 onMounted(async () => {
     applicationRoleOptions = (
@@ -82,12 +82,6 @@ onMounted(async () => {
             selectedApplication.value?.application_id as number
         )
     ).data;
-
-    if (grantAccessFormData.value) {
-        formData.value = getGrantAccessFormData();
-    } else {
-        resetForm();
-    }
 });
 
 const isIdirDomainSelected = () => {
@@ -124,7 +118,6 @@ function resetForestClientNumberData() {
 }
 
 function resetForm() {
-    resetGrantAccessFormData();
     formData.value = defaultFormData;
 }
 
@@ -184,9 +177,9 @@ async function verifyForestClientNumber(forestClientNumber: string) {
                     );
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 forestClientNumberVerifyErrors.value.push(
-                    `An error occured. Client ID ${item}  could not be added.`
+                    `An error occured. Client ID ${item} could not be added.`
                 );
             });
     }
@@ -216,17 +209,88 @@ function areVerificationsPassed() {
     );
 }
 
-function toSummary() {
-    setGrantAccessFormData(formData.value, forestClientData.value);
-    router.push('/summary');
+function toRequestPayload(
+    formData: any,
+    forestClientNumber: FamForestClient | null
+) {
+    const request = {
+        user_name: formData.userId,
+        user_type_code: formData.domain,
+        role_id: formData.role_id,
+        ...(forestClientNumber
+            ? {
+                  forest_client_number:
+                      forestClientNumber.forest_client_number.padStart(
+                          FOREST_CLIENT_INPUT_MAX_LENGTH,
+                          '0'
+                      ),
+              }
+            : {}),
+    } as FamUserRoleAssignmentCreate;
+    return request;
 }
 
-function roleSelected(evt: any) {
-    let role = applicationRoleOptions.filter((role) => {
-        return role.role_id == evt.value;
-    })[0];
-    grantAccessFormRoleName.value = role.role_name;
-    resetForestClientNumberData();
+async function handleSubmit() {
+    if (forestClientData.value.length > 0) {
+        const successList: string[] = [];
+        const warningList: string[] = [];
+        const errorList: string[] = [];
+        for (const item of forestClientData.value) {
+            const data = toRequestPayload(formData.value, item);
+
+            await userRoleAssignmentApi
+                .createUserRoleAssignment(data as FamUserRoleAssignmentCreate)
+                .then(() => {
+                    successList.push(item.forest_client_number);
+                })
+                .catch((error) => {
+                    if (error.response?.status === 409) {
+                        warningList.push(item.forest_client_number);
+                    } else {
+                        errorList.push(item.forest_client_number);
+                    }
+                });
+        }
+
+        if (successList.length > 0) {
+            pushNotification(
+                Severity.success,
+                `${
+                    formData.value.userId
+                } was successfully added with Client IDs: ${successList.join(
+                    ', '
+                )}`
+            );
+        }
+        if (warningList.length > 0) {
+            pushNotification(
+                Severity.warning,
+                `${
+                    formData.value.userId
+                } already exists with Client IDs: ${warningList.join(', ')}`
+            );
+        }
+        if (errorList.length > 0) {
+            pushNotification(
+                Severity.error,
+                `${
+                    formData.value.userId
+                } was not added with Client IDs: ${errorList.join(', ')}`
+            );
+        }
+
+        router.push('/dashboard');
+    } else {
+        const data = toRequestPayload(formData.value, null);
+        await userRoleAssignmentApi.createUserRoleAssignment(data);
+        pushNotification(
+            Severity.success,
+            `${formData.value.userId} was successfully added with the role ${
+                getSelectedRole()?.role_name
+            }`
+        );
+        router.push('/dashboard');
+    }
 }
 
 function removeForestClientFromList(index: number) {
@@ -374,7 +438,7 @@ function removeForestClientFromList(index: number) {
                                     style="width: 100% !important"
                                     v-bind="field.value"
                                     @update:modelValue="handleChange"
-                                    @change="roleSelected($event)"
+                                    @change="resetForestClientNumberData()"
                                     :class="{
                                         'is-invalid': errors.role_id,
                                     }"
@@ -460,8 +524,8 @@ function removeForestClientFromList(index: number) {
                                     "
                                     v-bind:disabled="
                                         formData.forestClientNumber?.length <
-                                            8 ||
-                                        !!errors.forestClientNumber ||
+                                            FOREST_CLIENT_INPUT_MAX_LENGTH ||
+                                        errors.forestClientNumber ||
                                         LoadingState.isLoading.value
                                     "
                                 >
@@ -481,23 +545,28 @@ function removeForestClientFromList(index: number) {
                     </div>
 
                     <div class="row gy-1 my-0">
-                        <div class="col-auto px-0">
+                        <div class="col-auto px-0 button-stack">
+                            <Button
+                                type="button"
+                                id="grantAccessCancel"
+                                class="mb-3 button"
+                                severity="secondary"
+                                label="Cancel"
+                                :disabled="LoadingState.isLoading.value"
+                                @click="cancelForm()"
+                            ></Button>
                             <Button
                                 type="button"
                                 id="grantAccessSubmit"
-                                class="mb-3 button"
-                                label="Next"
-                                :disabled="
-                                    !(meta.valid && areVerificationsPassed())
-                                "
-                                @click="toSummary()"
-                            ></Button>
-                            <Button
                                 class="m-3 button"
-                                outlined
-                                label="Cancel"
-                                @click="cancelForm()"
-                            ></Button>
+                                label="Submit Application"
+                                :disabled="
+                                    !(meta.valid && areVerificationsPassed()) ||
+                                    LoadingState.isLoading.value
+                                "
+                                @click="handleSubmit()"
+                                ><Icon icon="checkmark" :size="IconSize.small"
+                            /></Button>
                         </div>
                     </div>
                 </form>
@@ -521,5 +590,11 @@ function removeForestClientFromList(index: number) {
 
 .button {
     width: 7.875rem;
+}
+
+.button-stack {
+    Button {
+        width: 15rem;
+    }
 }
 </style>
