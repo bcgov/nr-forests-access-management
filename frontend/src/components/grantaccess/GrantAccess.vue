@@ -154,33 +154,33 @@ async function verifyForestClientNumber(forestClientNumber: string) {
         await forestClientApi
             .search(item)
             .then((result) => {
-                if (result.data[0]) {
-                    if (
-                        result.data[0].status?.status_code ===
-                        FamForestClientStatusType.A
-                    ) {
-                        if (
-                            isForestClientNumberNotAdded(
-                                result.data[0].forest_client_number
-                            )
-                        ) {
-                            forestClientData.value.push(result.data[0]);
-                            forestNumbers = forestNumbers.filter(
-                                (number) => number !== item
-                            ); //Remove successfully added numbers so the user can edit in the input only errored ones
-                        } else {
-                            forestClientNumberVerifyErrors.value.push(
-                                `Client ID ${item} has already been added.`
-                            );
-                        }
-                    } else {
-                        forestClientNumberVerifyErrors.value.push(
-                            `Client ID ${item} is inactive and cannot be added.`
-                        );
-                    }
-                } else {
+                if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
                         `Client ID ${item}  is invalid and cannot be added.`
+                    );
+                    return;
+                }
+                if (
+                    result.data[0].status?.status_code !==
+                    FamForestClientStatusType.A
+                ) {
+                    forestClientNumberVerifyErrors.value.push(
+                        `Client ID ${item} is inactive and cannot be added.`
+                    );
+                    return;
+                }
+                if (
+                    isForestClientNumberNotAdded(
+                        result.data[0].forest_client_number
+                    )
+                ) {
+                    forestClientData.value.push(result.data[0]);
+                    forestNumbers = forestNumbers.filter(
+                        (number) => number !== item
+                    ); //Remove successfully added numbers so the user can edit in the input only errored ones
+                } else {
+                    forestClientNumberVerifyErrors.value.push(
+                        `Client ID ${item} has already been added.`
                     );
                 }
             })
@@ -461,7 +461,7 @@ function removeForestClientFromList(index: number) {
                                     v-bind:disabled="
                                         formData.forestClientNumber?.length <
                                             8 ||
-                                        errors.forestClientNumber ||
+                                        !!errors.forestClientNumber ||
                                         LoadingState.isLoading.value
                                     "
                                 >
