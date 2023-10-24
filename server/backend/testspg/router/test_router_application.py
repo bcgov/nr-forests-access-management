@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
@@ -15,11 +16,9 @@ TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
 TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
 TEST_APPLICATION_ID_NOT_FOUND = 0
 
-
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     # Test Accss Roles: FAM_ACCESS_ADMIN only
     access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
@@ -66,8 +65,7 @@ def test_get_applications(
 
 def test_get_fam_application_roles(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     # create a concrete role with an abstract role as parent
     # this role won't be returned
@@ -121,8 +119,7 @@ def test_get_fam_application_roles(
 
 def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     role_assignment_end_point = endPoint + \
         f"/{TEST_APPLICATION_ID_NOT_FOUND}/user_role_assignment"
@@ -135,8 +132,7 @@ def test_get_fam_application_user_role_assignment_no_matching_application(
 
 def test_get_fam_application_user_role_assignment_no_role_assignments(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
 
@@ -152,8 +148,7 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
 
 def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
 
@@ -187,8 +182,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
 
 def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key,
-    db_pg_session
+    test_rsa_key
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
 
@@ -222,3 +216,31 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     assert data[0]["role"]["parent_role"]["role_type_code"] == "A"
     assert data[0]["role"]["parent_role"]["role_name"] == "FOM_SUBMITTER"
 
+
+def test_fam_application_endpoints_invlid_path_application_id_type(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key
+):
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    # endpoint path /{application_id} should be int type, provided as invalid str type.
+    invalid_path_param = "not-int-str-application-id"
+    invalid_path_router_msg = "Input should be a valid integer"
+
+    # endpont GET: /{application_id}/fam_roles
+    application_role_endpoint = endPoint + f"/{invalid_path_param}/fam_roles"
+    response = test_client_fixture.get(
+        application_role_endpoint,
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert invalid_path_router_msg in response.text
+
+    # endpont GET: /{application_id}/user_role_assignment
+    application_role_assignment_endpoint = endPoint + \
+        f"/{invalid_path_param}/user_role_assignment"
+    response = test_client_fixture.get(
+        application_role_assignment_endpoint,
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert invalid_path_router_msg in response.text
