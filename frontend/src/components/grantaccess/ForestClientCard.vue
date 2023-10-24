@@ -7,7 +7,7 @@ import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
 
 const props = defineProps({
     forestClientData: {
-        type: Object as PropType<FamForestClient>,
+        type: Object as PropType<FamForestClient[]>,
     },
 });
 </script>
@@ -16,30 +16,20 @@ const props = defineProps({
     <div>
         <Card class="custom-card">
             <template #header>
-                <Icon
-                    icon="checkmark--filled"
-                    :size="IconSize.small"
-                    v-if="props.forestClientData?.status?.status_code == 'A'"
-                />
-                <Icon
-                    class="custom-carbon-icon-error--filled"
-                    icon="error--filled"
-                    :size="IconSize.small"
-                    v-else
-                />
+                <Icon icon="checkmark--filled" :size="IconSize.small" />
                 <p>Verified Client ID information</p>
             </template>
             <template #content>
                 <div class="w-100">
-                    <div class="content-wrapper">
+                    <div
+                        v-for="(forestItem, index) in props.forestClientData"
+                        class="content-wrapper"
+                    >
                         <Icon
                             class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
                             :size="IconSize.small"
-                            v-if="
-                                props.forestClientData?.status?.status_code ==
-                                'A'
-                            "
+                            v-if="forestItem.status?.status_code == 'A'"
                         />
 
                         <Icon
@@ -63,15 +53,13 @@ const props = defineProps({
                         >
                             <label class="col">Client ID: </label>
                             <span class="col">
-                                {{
-                                    props.forestClientData?.forest_client_number
-                                }}
+                                {{ forestItem.forest_client_number }}
                             </span>
                         </p>
                         <p class="col" v-if="props.forestClientData">
                             <label class="row">Organization name: </label>
                             <span class="organization-name row">
-                                {{ props.forestClientData?.client_name }}
+                                {{ forestItem.client_name }}
                             </span>
                         </p>
                         <p
@@ -84,26 +72,23 @@ const props = defineProps({
                             <Tag
                                 class="custom-tag"
                                 :severity="
-                                    props.forestClientData?.status
-                                        ?.status_code == 'A'
+                                    forestItem.status?.status_code == 'A'
                                         ? 'success'
                                         : 'danger'
                                 "
-                                :value="
-                                    props.forestClientData?.status?.description
-                                "
+                                :value="forestItem.status?.description"
                             />
                         </p>
 
-                        <!-- hidden until functionaly arrives -->
-                        <!-- <Button class="btn-trash">
+                        <Button class="btn-trash">
                             <Icon
                                 class="row custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
+                                @click="$emit('removeItem', index)"
                             />
-                        </Button> -->
+                        </Button>
                     </div>
                 </div>
             </template>
@@ -116,6 +101,15 @@ const props = defineProps({
 
 p > label {
     margin-top: 0.25rem;
+}
+
+p {
+    display: flex;
+    flex-direction: column;
+}
+
+p * {
+    align-self: baseline !important;
 }
 
 p {
@@ -146,8 +140,16 @@ p * {
     margin-right: 3rem;
 }
 
+.org-status-wrapper {
+    margin-top: 0.1rem;
+}
+
 .custom-carbon-icon-checkmark--filled {
     margin-right: 1rem !important;
+}
+
+.status {
+    margin-bottom: 0.6rem !important;
 }
 
 .org-status-wrapper {

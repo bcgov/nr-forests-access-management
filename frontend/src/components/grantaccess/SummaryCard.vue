@@ -2,29 +2,20 @@
 import Button from '@/components/common/Button.vue';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import Card from 'primevue/card';
-import { onMounted, type PropType } from 'vue';
-
-import { notificationMessageState } from '@/store/NotificationState';
+import type { PropType } from 'vue';
 
 import LoadingState from '@/store/LoadingState';
-import type { FamUserRoleAssignmentCreate } from 'fam-api';
+import type { FamUserRoleAssignment } from '@/store/GrantAccessDataState';
 
 const props = defineProps({
     data: {
-        type: Object as PropType<FamUserRoleAssignmentCreate>,
+        type: Object as PropType<FamUserRoleAssignment>,
         required: true,
     },
     role_name: {
         type: String,
         required: true,
     },
-});
-
-onMounted(() => {
-    notificationMessageState.notificationMsg =
-        props.data != undefined
-            ? `New access granted to ${props.data.user_name}`
-            : '';
 });
 </script>
 <template>
@@ -43,10 +34,26 @@ onMounted(() => {
                             <label>Assign role:&nbsp;</label>
                             <span>{{ props.role_name }}</span>
                         </p>
-                        <p v-if="props.data.forest_client_number">
+                        <p
+                            v-if="
+                                props.data.forest_client_number_list.length > 0
+                            "
+                        >
                             <label>Forest Client ID:&nbsp;</label
-                            ><span>
-                                {{ props.data.forest_client_number }}
+                            ><span
+                                v-for="(forest_number, index) in props.data
+                                    .forest_client_number_list"
+                            >
+                                {{
+                                    `${forest_number.forest_client_number}${
+                                        index <
+                                        props.data.forest_client_number_list
+                                            .length -
+                                            1
+                                            ? ', '
+                                            : ''
+                                    }`
+                                }}
                             </span>
                         </p>
                         <p>
