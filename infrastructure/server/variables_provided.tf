@@ -335,3 +335,9 @@ variable "prod_override_bcsc_userinfo_proxy_endpoint" {
   type = string
   default = "not used unless overridden in terragrunt"
 }
+
+variable "dev_pr_url_count" {
+  description = "Number of pull request redirect urls of Cognito dev clients"
+  type = number
+  default = 50
+}
