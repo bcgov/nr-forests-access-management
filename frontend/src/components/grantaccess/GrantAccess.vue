@@ -179,7 +179,7 @@ async function verifyForestClientNumber(forestClientNumber: string) {
             })
             .catch(() => {
                 forestClientNumberVerifyErrors.value.push(
-                    `An error occured. Client ID ${item} could not be added.`
+                    `An error has occured. Client ID ${item} could not be added.`
                 );
             });
     }
@@ -282,13 +282,39 @@ async function handleSubmit() {
         router.push('/dashboard');
     } else {
         const data = toRequestPayload(formData.value, null);
-        await userRoleAssignmentApi.createUserRoleAssignment(data);
-        pushNotification(
-            Severity.success,
-            `${formData.value.userId} was successfully added with the role ${
-                getSelectedRole()?.role_name
-            }`
-        );
+        await userRoleAssignmentApi
+            .createUserRoleAssignment(data)
+            .then(() => {
+                pushNotification(
+                    Severity.success,
+                    `${
+                        formData.value.userId
+                    } was successfully added with the role ${
+                        getSelectedRole()?.role_name
+                    }`
+                );
+            })
+            .catch((error) => {
+                if (error.response?.status === 409) {
+                    pushNotification(
+                        Severity.warning,
+                        `${
+                            formData.value.userId
+                        } already exists with the role ${
+                            getSelectedRole()?.role_name
+                        }`
+                    );
+                } else {
+                    pushNotification(
+                        Severity.error,
+                        `An error has occured. ${
+                            formData.value.userId
+                        } could not be added with the role ${
+                            getSelectedRole()?.role_name
+                        }.`
+                    );
+                }
+            });
         router.push('/dashboard');
     }
 }
