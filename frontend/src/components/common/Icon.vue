@@ -45,6 +45,9 @@ const icons = {
     'checkmark--filled16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark--filled/16')
     ),
+    checkmark16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark/16')
+    ),
     'error--filled16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/16')
     ),
@@ -57,6 +60,9 @@ const icons = {
     // medium icons
     'checkmark--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark--filled/20')
+    ),
+    checkmark: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark/20')
     ),
     'error--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/20')
@@ -79,9 +85,7 @@ const icons = {
     'error--filled24': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/error--filled/24')
     ),
-    menu20: defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/menu/20')
-    ),
+    menu20: defineAsyncComponent(() => import('@carbon/icons-vue/es/menu/20')),
 } as any;
 </script>
 
