@@ -7,11 +7,11 @@ resource "aws_cognito_user_pool_client" "dev_spar_oidc_client" {
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/",
     "http://localhost:3000/silent-check-sso"
-  ], [for i in range(50) : "https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
+  ], [for i in range("${var.dev_pr_url_count}") : "https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   logout_urls                                   = concat([
     "${var.cognito_app_client_logout_chain_url.dev}https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
-  ], [for i in range(50) : "${var.cognito_app_client_logout_chain_url.dev}https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
+  ], [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
