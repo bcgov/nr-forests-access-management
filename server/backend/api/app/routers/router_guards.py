@@ -46,7 +46,7 @@ external_user_prohibited_exception = HTTPException(
 )
 
 def authorize_by_app_id(
-    application_id,
+    application_id: int,
     db: Session = Depends(database.get_db),
     claims: dict = Depends(validate_token)
 ):
