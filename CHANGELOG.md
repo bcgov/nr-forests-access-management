@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.8.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.7.1...v1.8.0) (2023-10-25)
+
+
+### Features
+
+* [#802](https://github.com/bcgov/nr-forests-access-management/issues/802) aws bastion host terraform ([#892](https://github.com/bcgov/nr-forests-access-management/issues/892)) ([643549e](https://github.com/bcgov/nr-forests-access-management/commit/643549e8f9519a17e0b4bb024a898a994c34ef4f))
+* [#842](https://github.com/bcgov/nr-forests-access-management/issues/842) breadcrumb component ([#980](https://github.com/bcgov/nr-forests-access-management/issues/980)) ([8a721cf](https://github.com/bcgov/nr-forests-access-management/commit/8a721cffa9b1441d25ad06d642f059e13dd12d8a))
+* [#853](https://github.com/bcgov/nr-forests-access-management/issues/853) forest client number multiple values ([#956](https://github.com/bcgov/nr-forests-access-management/issues/956)) ([cf3cf26](https://github.com/bcgov/nr-forests-access-management/commit/cf3cf26caa9864ef4e11d8937e2cd76027205f27))
+* [#896](https://github.com/bcgov/nr-forests-access-management/issues/896) sidenav collapseble for mobile ([#943](https://github.com/bcgov/nr-forests-access-management/issues/943)) ([3678cdf](https://github.com/bcgov/nr-forests-access-management/commit/3678cdf58a90b1f7337bce5ddbcf76a722860a5b))
+* [#990](https://github.com/bcgov/nr-forests-access-management/issues/990) added 50 dev urls for each cognito client ([#996](https://github.com/bcgov/nr-forests-access-management/issues/996)) ([1286162](https://github.com/bcgov/nr-forests-access-management/commit/128616290a08e3761ecdaf3f6c18e596ab36dc8b))
+
+
+### Bug Fixes
+
+* [#365](https://github.com/bcgov/nr-forests-access-management/issues/365) Remove Unused Endponts. ([#968](https://github.com/bcgov/nr-forests-access-management/issues/968)) ([2976dfc](https://github.com/bcgov/nr-forests-access-management/commit/2976dfcf4efad92a20c8a6cb1b2ceebb8d1b2dfb))
+* [#952](https://github.com/bcgov/nr-forests-access-management/issues/952) eliminate summary page ([#991](https://github.com/bcgov/nr-forests-access-management/issues/991)) ([c565197](https://github.com/bcgov/nr-forests-access-management/commit/c56519777f0b68ea79620ba6d61b32e2a21f26d4))
+* [#987](https://github.com/bcgov/nr-forests-access-management/issues/987) add missing type check router guards ([#992](https://github.com/bcgov/nr-forests-access-management/issues/992)) ([c9c7189](https://github.com/bcgov/nr-forests-access-management/commit/c9c7189a2c6a26e0c4d56cc2a1a92f104a4ff9a2))
+* broken frontend build from previous merge ([#989](https://github.com/bcgov/nr-forests-access-management/issues/989)) ([d6d1b1f](https://github.com/bcgov/nr-forests-access-management/commit/d6d1b1f5a0969aba9befbe5a5d7ce4370d98abbf))
+* update redirect url for spar as requested ([#977](https://github.com/bcgov/nr-forests-access-management/issues/977)) ([ea0ad6e](https://github.com/bcgov/nr-forests-access-management/commit/ea0ad6e08e78c2dff955ae24a6dbbc46aa733164))
+
+
+### Miscellaneous
+
+* [#978](https://github.com/bcgov/nr-forests-access-management/issues/978) pydantic sqlalchemy upgrade ([#982](https://github.com/bcgov/nr-forests-access-management/issues/982)) ([d5410db](https://github.com/bcgov/nr-forests-access-management/commit/d5410db0ef00a5032382a1ae1e2018def4fe3ca3))
+* **deps:** Bump @babel/traverse from 7.22.1 to 7.23.2 in /frontend ([#979](https://github.com/bcgov/nr-forests-access-management/issues/979)) ([b21477a](https://github.com/bcgov/nr-forests-access-management/commit/b21477a40f883a8b255c99439d0d273ebee98fc8))
+* **deps:** update dependency cryptography to v41.0.4 [security] ([#923](https://github.com/bcgov/nr-forests-access-management/issues/923)) ([b0cb28a](https://github.com/bcgov/nr-forests-access-management/commit/b0cb28a9eab8c652c06ae81421db880a9b7cd57c))
+
 ## [1.7.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.7.0...v1.7.1) (2023-10-16)
 
 
