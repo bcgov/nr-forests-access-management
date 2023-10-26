@@ -66,7 +66,7 @@ const formValidationSchema = object({
         .nullable(),
 });
 
-let applicationRoleOptions: FamApplicationRole[];
+let applicationRoleOptions = ref<FamApplicationRole[]>([]);
 const forestClientData = ref<FamForestClient[]>([]);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
@@ -77,7 +77,7 @@ const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
 onMounted(async () => {
-    applicationRoleOptions = (
+    applicationRoleOptions.value = (
         await applicationsApi.getFamApplicationRoles(
             selectedApplication.value?.application_id as number
         )
@@ -94,7 +94,7 @@ function userDomainChange() {
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions?.find(
+    return applicationRoleOptions.value?.find(
         (item) => item.role_id === formData.value.role_id
     );
 };
