@@ -278,8 +278,6 @@ async function handleSubmit() {
                 } was not added with Client IDs: ${errorList.join(', ')}`
             );
         }
-
-        router.push('/dashboard');
     } else {
         const data = toRequestPayload(formData.value, null);
         await userRoleAssignmentApi
@@ -315,8 +313,8 @@ async function handleSubmit() {
                     );
                 }
             });
-        router.push('/dashboard');
     }
+    router.push('/dashboard');
 }
 
 function removeForestClientFromList(index: number) {
