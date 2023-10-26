@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.0...v1.8.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* [#999](https://github.com/bcgov/nr-forests-access-management/issues/999) fix the role not render problem on the grant access page ([#1000](https://github.com/bcgov/nr-forests-access-management/issues/1000)) ([28ee71e](https://github.com/bcgov/nr-forests-access-management/commit/28ee71e94728a91a480680e35efe2eec2591b7c5))
+
 ## [1.8.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.7.1...v1.8.0) (2023-10-25)
 
 
