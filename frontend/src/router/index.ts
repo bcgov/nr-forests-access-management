@@ -48,7 +48,8 @@ const routes = [
         meta: {
             title: 'Welcome to FAM',
             layout: 'SimpleLayout',
-            hasBreadcrumb: false
+            hasBreadcrumb: false,
+            hasSteps: false
         },
         component: LandingView,
     },
@@ -58,7 +59,8 @@ const routes = [
         meta: {
             title: routeItems.dashboard.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: false
+            hasBreadcrumb: false,
+            hasSteps: false
         },
         component: ManagePermissionsView,
     },
@@ -68,7 +70,8 @@ const routes = [
         meta: {
             title: routeItems.addUserPermission.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: true
+            hasBreadcrumb: true,
+            hasSteps: true
         },
         component: GrantAccessView,
         beforeEnter: () => {

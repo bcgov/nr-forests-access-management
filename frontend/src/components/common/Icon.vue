@@ -10,7 +10,7 @@ const props = defineProps({
     },
     size: {
         type: String as PropType<IconSize>,
-        required: true,
+        required: false,
         default: IconSize.small,
     },
     class: {
@@ -56,6 +56,18 @@ const icons = {
         () => import('@carbon/icons-vue/es/trash-can/16')
     ),
     edit16: defineAsyncComponent(() => import('@carbon/icons-vue/es/edit/16')),
+    'checkmark--outline16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/checkmark--outline/16')
+    ),
+    incomplete16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/incomplete/16')
+    ),
+    circleDash16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/circle-dash/16')
+    ),
+    warning16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/warning/16')
+    ),
 
     // medium icons
     'checkmark--filled20': defineAsyncComponent(

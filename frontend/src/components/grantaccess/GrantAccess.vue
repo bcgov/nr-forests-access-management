@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import router from '@/router';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
+import router from '@/router';
+import { ErrorMessage, Field, Form as VeeForm, type FieldMeta } from 'vee-validate';
 import { number, object, string } from 'yup';
 
-import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
+import Button from '@/components/common/Button.vue';
 import RadioButton from 'primevue/radiobutton';
-
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import { IconSize, IconSteps } from '@/enum/IconEnum';
+import { stepItems, type IStepInfo } from '@/store/stepState';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
@@ -26,13 +27,13 @@ import {
     type FamUserRoleAssignmentCreate,
 } from 'fam-api';
 
-import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { pushNotification } from '@/store/NotificationState';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
+
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -76,6 +77,36 @@ const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
+const initialSteps = ref({
+    userInfo: {
+        stepNumber: 1,
+        label: 'User Information',
+        active: false,
+        icon: IconSteps.queue,
+        errorMessage:''
+    },
+    addUser: {
+        stepNumber: 2,
+        label: 'Add User Roles',
+        active: false,
+        icon: IconSteps.queue,
+        errorMessage: ''
+    },
+});
+
+const orgInfo = ref({
+    label: 'Organization Information',
+    active: false,
+    isVisible: false,
+    icon: IconSteps.queue,
+    errorMessage: ''
+});
+
+stepItems.value = [
+    initialSteps.value.userInfo,
+    initialSteps.value.addUser
+];
+
 onMounted(async () => {
     applicationRoleOptions.value = (
         await applicationsApi.getFamApplicationRoles(
@@ -106,6 +137,11 @@ const isAbstractRoleSelected = () => {
 function userIdChange() {
     resetVerifiedUserIdentity();
     resetForestClientNumberData();
+    initialSteps.value.userInfo.active = false;
+    initialSteps.value.userInfo.icon = IconSteps.incomplete;
+    initialSteps.value.userInfo.errorMessage = '';
+    initialSteps.value.addUser.active = false;
+    orgInfo.value.active = false;
 }
 
 function resetVerifiedUserIdentity() {
@@ -132,6 +168,17 @@ async function verifyIdentity(userId: string, domain: string) {
     verifiedUserIdentity.value = (
         await idirBceidProxyApi.idirSearch(userId)
     ).data;
+
+    if(verifiedUserIdentity.value.found) {
+        initialSteps.value.userInfo.active = true;
+        initialSteps.value.userInfo.errorMessage = '';
+        initialSteps.value.userInfo.icon = IconSteps.checkmark;
+        initialSteps.value.addUser.active = initialSteps.value.addUser.icon === IconSteps.checkmark ? true : false;
+        orgInfo.value.active = initialSteps.value.addUser.icon === IconSteps.checkmark ? true : false;
+    } else {
+        initialSteps.value.userInfo.icon = IconSteps.warning;
+        initialSteps.value.userInfo.errorMessage = 'User does not exist';
+    }
 }
 
 async function verifyForestClientNumber(forestClientNumber: string) {
@@ -185,6 +232,10 @@ async function verifyForestClientNumber(forestClientNumber: string) {
     }
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
     formData.value['forestClientNumber'] = forestNumbers.toString();
+
+    orgInfo.value.icon = forestClientNumberVerifyErrors.value.length > 0 ? IconSteps.warning : IconSteps.checkmark;
+    orgInfo.value.active = forestClientNumberVerifyErrors.value.length > 0 ? false : true;
+    orgInfo.value.errorMessage = forestClientNumberVerifyErrors.value.length > 0 ? 'Client ID cannot be added.' : '';
 }
 
 function isForestClientNumberNotAdded(forestClientNumber: string) {
@@ -317,9 +368,50 @@ async function handleSubmit() {
     router.push('/dashboard');
 }
 
+function roleSelected() {
+    initialSteps.value.addUser.icon = IconSteps.checkmark;
+
+    //check if orgInfo is present on steps
+    const tempOrgInfo = stepItems.value!.find(item => item.label === orgInfo.value.label);
+
+    //remove orgInfo from steps if another role is selected
+    if(tempOrgInfo && !isAbstractRoleSelected()) {
+       const orgInfoIndex = stepItems.value!.indexOf(tempOrgInfo);
+       stepItems.value!.splice(orgInfoIndex, 1);
+    };
+
+    if(isAbstractRoleSelected() ) {
+        if(tempOrgInfo) {
+            return;
+        } else {
+            stepItems.value!.push(orgInfo.value);
+        }
+    };
+    resetForestClientNumberData();
+}
+
 function removeForestClientFromList(index: number) {
     forestClientData.value.splice(index, 1);
+    if(forestClientData.value.length < 1) {
+        orgInfo.value.active = false;
+        orgInfo.value.icon = IconSteps.queue;
+    };
 }
+
+const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
+    step.errorMessage = '';
+    if(forestClientData.value.length > 0) {
+        step.active = true;
+        step.icon = IconSteps.checkmark;
+    } else if(!meta.dirty) {
+        step.active = false;
+        step.icon = IconSteps.queue;
+    } else {
+        step.active = false;
+        step.icon = IconSteps.incomplete;
+    };
+};
+
 </script>
 
 <template>
@@ -458,11 +550,16 @@ function removeForestClientFromList(index: number) {
                                     optionValue="role_id"
                                     :modelValue="field.value"
                                     placeholder="Choose an option"
+                                    :disabled="!initialSteps.userInfo.active"
                                     class="w-100"
                                     style="width: 100% !important"
                                     v-bind="field.value"
                                     @update:modelValue="handleChange"
-                                    @change="resetForestClientNumberData()"
+                                    @change="
+                                        resetForestClientNumberData(),
+                                        roleSelected(),
+                                        initialSteps.userInfo.active ? initialSteps.addUser.active = true : false
+                                    "
                                     :class="{
                                         'is-invalid': errors.role_id,
                                     }"
@@ -503,7 +600,7 @@ function removeForestClientFromList(index: number) {
                                         :validateOnChange="true"
                                         v-bind="field"
                                         class="w-100"
-                                        @input="resetForestClientNumberData()"
+                                        @input="resetForestClientNumberData(), changeStep(orgInfo, meta)"
                                         :class="{
                                             'is-invalid':
                                                 errors.forestClientNumber ||
