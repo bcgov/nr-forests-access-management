@@ -174,7 +174,7 @@ async function verifyIdentity(userId: string, domain: string) {
         initialSteps.value.userInfo.errorMessage = '';
         initialSteps.value.userInfo.icon = IconSteps.checkmark;
         initialSteps.value.addUser.active = initialSteps.value.addUser.icon === IconSteps.checkmark ? true : false;
-        orgInfo.value.active = initialSteps.value.addUser.icon === IconSteps.checkmark ? true : false;
+        orgInfo.value.active = forestClientData.value.length > 0 ? true : false;
     } else {
         initialSteps.value.userInfo.icon = IconSteps.warning;
         initialSteps.value.userInfo.errorMessage = 'User does not exist';
