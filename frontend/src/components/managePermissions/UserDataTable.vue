@@ -223,15 +223,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 
-.btn-icon {
-    padding: 0.4rem !important;
-    margin-right: 0.5rem;
-}
-
-.btn-icon:disabled {
-    border: none;
-}
-
 .data-table-container {
     margin: 0.05rem;
     z-index: -1;
