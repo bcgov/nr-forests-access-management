@@ -139,7 +139,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 v-model:filters="filters"
                 :value="props.userRoleAssignments"
                 paginator
-                :rows="5"
+                :rows="50"
                 :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
                 filterDisplay="menu"
                 :loading="props.loading"
