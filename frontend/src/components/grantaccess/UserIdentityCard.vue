@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Card class="mb-2 p-0 custom-card">
+    <Card class="custom-card">
         <template #header>
             <Icon
                 icon="checkmark--filled"

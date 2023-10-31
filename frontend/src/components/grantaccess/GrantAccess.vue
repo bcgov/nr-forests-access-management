@@ -519,6 +519,7 @@ function removeForestClientFromList(index: number) {
                         </div>
                         <div class="no-label-column">
                             <Button
+                                class="w-100"
                                 aria-label="Add Client Numbers"
                                 :name="'verifyFC'"
                                 :label="'Add Client Numbers'"
@@ -588,26 +589,22 @@ function removeForestClientFromList(index: number) {
 }
 
 .button-stack {
-    display: inline-grid;
-    justify-content: start;
-    grid-template-columns: auto auto;
     padding: 0;
     margin-top: 3rem;
     margin-bottom: 2.5rem;
     gap: 1rem;
-
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
     Button {
-        width: 15rem;
-        gap: 2rem;
-        white-space: nowrap;
+        width: auto !important;
     }
 }
 
 .grid-container-element {
-    width: 100%;
     padding: 0;
-    display: inline-grid;
-    grid-template-columns: auto min-content;
+    display: block;
+    width: 100%;
 }
 .no-label-column {
     margin-top: 1.5rem;
@@ -617,24 +614,37 @@ function removeForestClientFromList(index: number) {
     margin-bottom: 2rem;
 }
 
-@media (max-width: 768px) {
-    .button-stack {
-        width: 38rem;
-        grid-template-columns: 1fr 1fr;
-        Button {
-            width: auto !important;
-        }
+@media (min-width: 390px) {
+    .grid-container-element {
+        display: inline-grid;
+        grid-template-columns: auto min-content;
     }
 }
 
-@media (max-width: 390px) {
+@media (min-width: 768px) {
     .button-stack {
         width: 100% !important;
+        grid-template-columns: 1fr 1fr;
     }
-
     .grid-container-element {
-        display: block;
+        display: inline-grid;
+        grid-template-columns: auto min-content;
+    }
+}
+
+@media (min-width: 1024px) {
+    .button-stack {
+        justify-content: start;
         grid-template-columns: auto auto;
+        width: 38rem;
+        Button {
+            width: 15rem !important;
+            gap: 2rem;
+            white-space: nowrap;
+        }
+    }
+    .grid-container-element {
+        width: 38rem;
     }
 }
 </style>

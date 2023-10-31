@@ -58,15 +58,27 @@ input[type='number'] {
     color: $light-text-secondary;
 }
 
-@media (min-width: 390px) {
-    .form-container {
-        width: 38rem;
-    }
+.invalid {
+    font-size: 0.875em;
+    color: $light-text-error;
+}
+
+.custom-card {
+    margin-top: $card-margin-top;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
     .main {
         padding: 2.5rem 2.5rem 0 2.5rem;
+        width: 100vw;
+    }
+    .form-container {
+        width: 38rem;
+    }
+
+    .custom-card {
+        width: $card-width;
     }
 }
 
