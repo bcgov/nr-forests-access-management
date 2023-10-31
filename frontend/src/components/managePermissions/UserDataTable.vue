@@ -16,6 +16,11 @@ import Button from '@/components/common/Button.vue';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
+type emit = (
+        e: 'deleteUserRoleAssignment',
+        item: FamApplicationUserRoleAssignmentGet
+) => void
+
 const confirm = useConfirm();
 
 const props = defineProps({
@@ -62,12 +67,8 @@ const confirmDeleteData = reactive({
     role: '',
 });
 
-const emit = defineEmits<{
-    (
-        e: 'deleteUserRoleAssignment',
-        item: FamApplicationUserRoleAssignmentGet
-    ): void;
-}>();
+const emits = defineEmits<emit>();
+
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
@@ -79,7 +80,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         acceptLabel: 'Remove',
         acceptClass: 'p-button-danger',
         accept: () => {
-            emit('deleteUserRoleAssignment', assignment);
+            emits('deleteUserRoleAssignment', assignment);
         },
     });
 }
