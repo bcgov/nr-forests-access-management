@@ -17,9 +17,9 @@ import Button from '@/components/common/Button.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 
 type emit = (
-        e: 'deleteUserRoleAssignment',
-        item: FamApplicationUserRoleAssignmentGet
-) => void
+    e: 'deleteUserRoleAssignment',
+    item: FamApplicationUserRoleAssignmentGet
+) => void;
 
 const confirm = useConfirm();
 
