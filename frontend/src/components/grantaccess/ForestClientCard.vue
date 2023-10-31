@@ -26,14 +26,14 @@ const props = defineProps({
                         class="content-wrapper"
                     >
                         <Icon
-                            class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
+                            class="flex-grow-0 custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
                             :size="IconSize.small"
                             v-if="forestItem.status?.status_code == 'A'"
                         />
 
                         <Icon
-                            class="row flex-grow-0 custom-carbon-icon-error--filled"
+                            class="flex-grow-0 custom-carbon-icon-error--filled"
                             icon="error--filled"
                             style="margin-right: 1rem"
                             :size="IconSize.small"
@@ -58,7 +58,7 @@ const props = defineProps({
                         </p>
                         <p class="col" v-if="props.forestClientData">
                             <label class="row">Organization name: </label>
-                            <span class="organization-name row">
+                            <span class="organization-name">
                                 {{ forestItem.client_name }}
                             </span>
                         </p>
@@ -66,9 +66,7 @@ const props = defineProps({
                             class="col org-status-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label class="row status"
-                                >Organization status:
-                            </label>
+                            <label class="status">Organization status: </label>
                             <Tag
                                 class="custom-tag"
                                 :severity="
@@ -82,7 +80,7 @@ const props = defineProps({
 
                         <Button class="btn-trash">
                             <Icon
-                                class="row custom-carbon-icon--trash-can"
+                                class="custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
@@ -162,6 +160,7 @@ p * {
 .custom-tag {
     display: inline !important;
     align-self: flex-start !important;
+    // height: 1.5rem;
 }
 
 .btn-trash {

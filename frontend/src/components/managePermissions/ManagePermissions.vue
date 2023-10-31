@@ -135,13 +135,12 @@ async function deleteUserRoleAssignment(
 }
 
 .dashboard-background-layout {
-    margin-top: 2rem;
-    margin-left: -1rem;
-    margin-right: -1rem;
+    overflow-y: scroll;
+    margin-top: 3rem;
     padding: 1rem 0rem;
     background: $light-layer-one;
     z-index: -1;
-    min-height: calc(100vh - 16.9rem);
+    min-height: calc(100vh - 17.4rem);
 }
 
 @media (min-width: 495px) {
@@ -152,17 +151,13 @@ async function deleteUserRoleAssignment(
 
 @media (min-width: 768px) {
     .dashboard-background-layout {
-        width: 100vw;
-        margin-left: -1.5rem;
+        width: calc(100vw - 16rem) !important;
+        margin-left: -2.5rem;
         min-height: calc(100vh - 17.1rem);
     }
 }
 
 @media (min-width: 1024px) {
-    .dashboard-background-layout {
-        width: calc(100vw - 16rem);
-    }
-
     .application-dropdown {
         max-width: 38rem;
     }

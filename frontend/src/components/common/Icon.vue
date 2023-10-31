@@ -56,6 +56,9 @@ const icons = {
         () => import('@carbon/icons-vue/es/trash-can/16')
     ),
     edit16: defineAsyncComponent(() => import('@carbon/icons-vue/es/edit/16')),
+    'search--locate16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search--locate/16')
+    ),
 
     // medium icons
     'checkmark--filled20': defineAsyncComponent(
@@ -79,6 +82,9 @@ const icons = {
     ),
     'user--avatar20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/user--avatar/20')
+    ),
+    'search--locate20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search--locate/20')
     ),
 
     // large icons

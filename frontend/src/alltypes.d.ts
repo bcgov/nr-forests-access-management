@@ -14,6 +14,7 @@ declare module '@carbon/icons-vue/es/checkmark/16';
 declare module '@carbon/icons-vue/es/add/16';
 declare module '@carbon/icons-vue/es/trash-can/16';
 declare module '@carbon/icons-vue/es/edit/16';
+declare module '@carbon/icons-vue/es/search--locate/16';
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';
@@ -24,6 +25,7 @@ declare module '@carbon/icons-vue/es/checkmark/20';
 declare module '@carbon/icons-vue/es/add/20';
 declare module '@carbon/icons-vue/es/user--avatar--filled/20';
 declare module '@carbon/icons-vue/es/user--avatar/20';
+declare module '@carbon/icons-vue/es/search--locate/20';
 
 // large
 declare module '@carbon/icons-vue/es/error--filled/24';
