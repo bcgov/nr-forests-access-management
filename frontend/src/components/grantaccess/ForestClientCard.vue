@@ -40,7 +40,7 @@ const props = defineProps({
                             v-else
                         />
                         <p
-                            class="invalid col"
+                            class="invalid"
                             v-if="!props.forestClientData"
                             style="margin-top: 0.75rem"
                         >
@@ -48,22 +48,22 @@ const props = defineProps({
                         </p>
 
                         <p
-                            class="col flex-grow-0 client-id-wrapper"
+                            class="flex-grow-0 client-id-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label class="col">Client ID: </label>
-                            <span class="col">
+                            <label>Client ID: </label>
+                            <span>
                                 {{ forestItem.forest_client_number }}
                             </span>
                         </p>
-                        <p class="col" v-if="props.forestClientData">
-                            <label class="row">Organization name: </label>
+                        <p v-if="props.forestClientData">
+                            <label>Organization name: </label>
                             <span class="organization-name">
                                 {{ forestItem.client_name }}
                             </span>
                         </p>
                         <p
-                            class="col org-status-wrapper"
+                            class="org-status-wrapper"
                             v-if="props.forestClientData"
                         >
                             <label class="status">Organization status: </label>
@@ -119,19 +119,16 @@ p * {
     align-self: baseline !important;
 }
 
-.col {
-    align-self: center;
-}
-
 .content-wrapper {
     flex-direction: row !important;
     width: 100%;
+    min-height: 3.25rem !important;
+    align-items: center;
+    justify-content: center;
 }
 
 .content-wrapper:not(:first-child) {
     border-top: $light-border-subtle-00 0.06rem solid;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
 }
 
 .client-id-wrapper {
@@ -140,10 +137,12 @@ p * {
 
 .org-status-wrapper {
     margin-top: 0.1rem;
+    margin-left: 2rem;
 }
 
 .custom-carbon-icon-checkmark--filled {
     margin-right: 1rem !important;
+    margin-bottom: 1rem;
 }
 
 .status {
@@ -160,13 +159,12 @@ p * {
 .custom-tag {
     display: inline !important;
     align-self: flex-start !important;
-    // height: 1.5rem;
 }
 
 .btn-trash {
     padding: 0;
     border: none;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .btn-trash,

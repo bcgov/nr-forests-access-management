@@ -230,7 +230,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 
 .custom-data-table {
-    margin: 1.2rem 2.5rem;
+    margin: 1.5rem 2.5rem;
     background: transparent;
     border-radius: 0.25rem 0.25rem 0 0;
     border: 0.125rem solid $light-border-subtle-00;
