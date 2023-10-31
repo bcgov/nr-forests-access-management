@@ -67,7 +67,7 @@ const confirmDeleteData = reactive({
     role: '',
 });
 
-const emits = defineEmits<emit>();
+const emit = defineEmits<emit>();
 
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
@@ -80,7 +80,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         acceptLabel: 'Remove',
         acceptClass: 'p-button-danger',
         accept: () => {
-            emits('deleteUserRoleAssignment', assignment);
+            emit('deleteUserRoleAssignment', assignment);
         },
     });
 }
