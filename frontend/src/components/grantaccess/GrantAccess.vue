@@ -324,7 +324,7 @@ function removeForestClientFromList(index: number) {
 
 <template>
     <PageTitle
-        title="Add user access"
+        title="Add user permission"
         subtitle="Add a new permission to a user. All fields are mandatory unless noted"
     />
     <VeeForm

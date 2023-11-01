@@ -15,6 +15,7 @@ declare module '@carbon/icons-vue/es/add/16';
 declare module '@carbon/icons-vue/es/trash-can/16';
 declare module '@carbon/icons-vue/es/edit/16';
 declare module '@carbon/icons-vue/es/search--locate/16';
+declare module '@carbon/icons-vue/es/group--access/16';
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';
