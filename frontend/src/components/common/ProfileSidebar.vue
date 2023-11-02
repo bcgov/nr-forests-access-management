@@ -62,22 +62,26 @@ const buttonLabel = computed(() => {
             </div>
             <hr class="profile-divider" />
             <p class="options">Options</p>
-            <Button
-                class="sign-out"
-                title="Sign out"
-                aria-expanded="false"
-                aria-label="sign out"
-                :label="buttonLabel"
-                :iconPosition="IconPosition.left"
-                @click="logout"
-                :disabled="loading ? true : false"
-            >
+            <div class="sign-out-wrapper">
                 <Icon
+                    title="Sign out"
                     icon="user--follow"
                     :size="IconSize.small"
                     class="custom-carbon-icon-user--follow"
+                    @click="logout"
+                    :disabled="loading ? true : false"
                 />
-            </Button>
+                <Button
+                    class="sign-out"
+                    title="Sign out"
+                    aria-expanded="false"
+                    aria-label="sign out"
+                    :label="buttonLabel"
+                    @click="logout"
+                    :disabled="loading ? true : false"
+                >
+                </Button>
+            </div>
         </div>
     </Transition>
 </template>
@@ -138,6 +142,15 @@ const buttonLabel = computed(() => {
     }
 }
 
+.sign-out-wrapper {
+    display: flex;
+}
+
+.custom-carbon-icon-user--follow {
+    margin: 0 1.2rem 0 0;
+    cursor: pointer;
+}
+
 .profile-name,
 .sign-out {
     font-size: 0.875rem;
@@ -145,6 +158,7 @@ const buttonLabel = computed(() => {
     display: flex;
     border: none;
     cursor: pointer;
+    padding: 0;
 }
 
 .sign-out,
@@ -153,6 +167,7 @@ const buttonLabel = computed(() => {
     background-color: #ffffff !important;
     color: $light-text-secondary !important;
     box-shadow: none !important;
+    outline: none !important;
 }
 
 .profile-idir,
