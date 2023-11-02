@@ -9,3 +9,11 @@ export interface IStepInfo {
 };
 
 export const stepItems = ref<IStepInfo[]>();
+
+export const setStepItems = (newStepItemsValue: IStepInfo[]) => {
+    stepItems.value = newStepItemsValue;
+}
+
+export const addNewStep = (newStep: IStepInfo) => {
+    stepItems.value?.push(newStep)
+}

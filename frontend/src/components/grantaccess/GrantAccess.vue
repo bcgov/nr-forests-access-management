@@ -12,7 +12,7 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { IconSize, IconSteps } from '@/enum/IconEnum';
-import { stepItems, type IStepInfo } from '@/store/stepState';
+import { stepItems, setStepItems, addNewStep, type IStepInfo } from '@/store/stepState';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
@@ -77,24 +77,24 @@ const forestClientApi = apiServiceFactory.getForestClientApi();
 const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
-const initialSteps = ref({
-    userInfo: {
-        stepNumber: 1,
-        label: 'User Information',
-        active: false,
-        icon: IconSteps.queue,
-        errorMessage:''
-    },
-    addUser: {
-        stepNumber: 2,
-        label: 'Add User Roles',
-        active: false,
-        icon: IconSteps.queue,
-        errorMessage: ''
-    },
+
+const userInfoStep = ref({
+    stepNumber: 1,
+    label: 'User Information',
+    active: false,
+    icon: IconSteps.queue,
+    errorMessage:''
+})
+
+const addUserStep = ref({
+    stepNumber: 2,
+    label: 'Add User Roles',
+    active: false,
+    icon: IconSteps.queue,
+    errorMessage: ''
 });
 
-const orgInfo = ref({
+const orgInfoStep = ref({
     label: 'Organization Information',
     active: false,
     isVisible: false,
@@ -102,12 +102,8 @@ const orgInfo = ref({
     errorMessage: ''
 });
 
-stepItems.value = [
-    initialSteps.value.userInfo,
-    initialSteps.value.addUser
-];
-
 onMounted(async () => {
+    setStepItems([userInfoStep.value, addUserStep.value])
     applicationRoleOptions.value = (
         await applicationsApi.getFamApplicationRoles(
             selectedApplication.value?.application_id as number
@@ -137,11 +133,11 @@ const isAbstractRoleSelected = () => {
 function userIdChange() {
     resetVerifiedUserIdentity();
     resetForestClientNumberData();
-    initialSteps.value.userInfo.active = false;
-    initialSteps.value.userInfo.icon = IconSteps.incomplete;
-    initialSteps.value.userInfo.errorMessage = '';
-    initialSteps.value.addUser.active = false;
-    orgInfo.value.active = false;
+    userInfoStep.value.active = false;
+    userInfoStep.value.icon = IconSteps.incomplete;
+    userInfoStep.value.errorMessage = '';
+    addUserStep.value.active = false;
+    orgInfoStep.value.active = false;
 }
 
 function resetVerifiedUserIdentity() {
@@ -170,14 +166,14 @@ async function verifyIdentity(userId: string, domain: string) {
     ).data;
 
     if(verifiedUserIdentity.value.found) {
-        initialSteps.value.userInfo.active = true;
-        initialSteps.value.userInfo.errorMessage = '';
-        initialSteps.value.userInfo.icon = IconSteps.checkmark;
-        initialSteps.value.addUser.active = initialSteps.value.addUser.icon === IconSteps.checkmark ? true : false;
-        orgInfo.value.active = forestClientData.value.length > 0 ? true : false;
+        userInfoStep.value.active = true;
+        userInfoStep.value.errorMessage = '';
+        userInfoStep.value.icon = IconSteps.checkmark;
+        addUserStep.value.active = addUserStep.value.icon === IconSteps.checkmark ? true : false;
+        orgInfoStep.value.active = forestClientData.value.length > 0 ? true : false;
     } else {
-        initialSteps.value.userInfo.icon = IconSteps.warning;
-        initialSteps.value.userInfo.errorMessage = 'User does not exist';
+        userInfoStep.value.icon = IconSteps.warning;
+        userInfoStep.value.errorMessage = 'User does not exist';
     }
 }
 
@@ -233,9 +229,9 @@ async function verifyForestClientNumber(forestClientNumber: string) {
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
     formData.value['forestClientNumber'] = forestNumbers.toString();
 
-    orgInfo.value.icon = forestClientNumberVerifyErrors.value.length > 0 ? IconSteps.warning : IconSteps.checkmark;
-    orgInfo.value.active = forestClientNumberVerifyErrors.value.length > 0 ? false : true;
-    orgInfo.value.errorMessage = forestClientNumberVerifyErrors.value.length > 0 ? 'Client ID cannot be added.' : '';
+    orgInfoStep.value.icon = forestClientNumberVerifyErrors.value.length > 0 ? IconSteps.warning : IconSteps.checkmark;
+    orgInfoStep.value.active = forestClientNumberVerifyErrors.value.length > 0 ? false : true;
+    orgInfoStep.value.errorMessage = forestClientNumberVerifyErrors.value.length > 0 ? 'Client ID cannot be added.' : '';
 }
 
 function isForestClientNumberNotAdded(forestClientNumber: string) {
@@ -369,12 +365,12 @@ async function handleSubmit() {
 }
 
 function roleSelected() {
-    initialSteps.value.addUser.icon = IconSteps.checkmark;
+    addUserStep.value.icon = IconSteps.checkmark;
 
-    //check if orgInfo is present on steps
-    const tempOrgInfo = stepItems.value!.find(item => item.label === orgInfo.value.label);
+    //check if orgInfoStep is present on steps
+    const tempOrgInfo = stepItems.value!.find(item => item.label === orgInfoStep.value.label);
 
-    //remove orgInfo from steps if another role is selected
+    //remove orgInfoStep from steps if another role is selected
     if(tempOrgInfo && !isAbstractRoleSelected()) {
        const orgInfoIndex = stepItems.value!.indexOf(tempOrgInfo);
        stepItems.value!.splice(orgInfoIndex, 1);
@@ -384,7 +380,8 @@ function roleSelected() {
         if(tempOrgInfo) {
             return;
         } else {
-            stepItems.value!.push(orgInfo.value);
+            addNewStep(orgInfoStep.value);
+
         }
     };
     resetForestClientNumberData();
@@ -393,8 +390,8 @@ function roleSelected() {
 function removeForestClientFromList(index: number) {
     forestClientData.value.splice(index, 1);
     if(forestClientData.value.length < 1) {
-        orgInfo.value.active = false;
-        orgInfo.value.icon = IconSteps.queue;
+        orgInfoStep.value.active = false;
+        orgInfoStep.value.icon = IconSteps.queue;
     };
 }
 
@@ -550,7 +547,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                     optionValue="role_id"
                                     :modelValue="field.value"
                                     placeholder="Choose an option"
-                                    :disabled="!initialSteps.userInfo.active"
+                                    :disabled="!userInfoStep.active"
                                     class="w-100"
                                     style="width: 100% !important"
                                     v-bind="field.value"
@@ -558,7 +555,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                     @change="
                                         resetForestClientNumberData(),
                                         roleSelected(),
-                                        initialSteps.userInfo.active ? initialSteps.addUser.active = true : false
+                                        userInfoStep.active ? addUserStep.active = true : false
                                     "
                                     :class="{
                                         'is-invalid': errors.role_id,
@@ -600,7 +597,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                         :validateOnChange="true"
                                         v-bind="field"
                                         class="w-100"
-                                        @input="resetForestClientNumberData(), changeStep(orgInfo, meta)"
+                                        @input="resetForestClientNumberData(), changeStep(orgInfoStep, meta)"
                                         :class="{
                                             'is-invalid':
                                                 errors.forestClientNumber ||
