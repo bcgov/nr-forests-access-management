@@ -72,7 +72,7 @@ const routes = [
         },
         component: GrantAccessView,
         beforeEnter: () => {
-            populateBreadcrumb([routeItems.dashboard])
+            populateBreadcrumb([routeItems.dashboard, routeItems.addUserPermission])
         }
     },
     {
