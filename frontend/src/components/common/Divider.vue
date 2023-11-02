@@ -7,10 +7,10 @@
 
 hr.solid {
     padding: 0;
-    border-top: 0.0625rem solid black;
+    border-top: 0.0625rem solid $light-border-strong-01;
     height: 0.0625rem;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
     align-self: stretch;
 }
 </style>

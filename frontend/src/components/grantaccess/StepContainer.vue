@@ -8,25 +8,31 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    divider: {
+        type: Boolean,
+        default: true,
+    },
 });
 </script>
 
 <template>
-    <div class="group">
-        <h1 class="title">{{ props.title }}</h1>
-        <h2 class="subtitle">{{ props.subtitle }}</h2>
+    <h1 class="title">{{ props.title }}</h1>
+    <h2 class="subtitle">{{ props.subtitle }}</h2>
+    <div class="step-content">
+        <slot />
     </div>
+    <Divider v-if="props.divider" />
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-.group {
-    padding: 0 !important;
-    margin-bottom: 2.5rem;
+
+.step-content {
+    margin-top: 1.5rem;
 }
 .title {
     font-size: 1.25rem;
-    line-height: 1.75rem; /* 140% */
+    line-height: 1.75rem;
     color: $light-text-primary;
     font-weight: 400;
 }
