@@ -75,9 +75,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     LOGGER.debug(f"context: {context}")
     LOGGER.info(f"event: {event}")
     LOGGER.info(f"event request: {event.get('request')}")
-    LOGGER.info(f"event request user attribute: {event['request'][
-            'userAttributes'
-        ]}")
+    LOGGER.info(f"event request user attribute: {event['request']['userAttributes']}")
 
     try:
         audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
