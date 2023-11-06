@@ -468,97 +468,93 @@ function removeForestClientFromList(index: number) {
                     </ErrorMessage>
                 </StepContainer>
 
-                <div v-if="isAbstractRoleSelected()">
-                    <StepContainer
-                        title="Organization information"
-                        subtitle="Associate one or more Client IDs to this user"
-                        :divider="false"
-                    >
-                        <div class="input-with-verify-field">
-                            <div>
-                                <label for="forestClientInput"
-                                    >User’s Client ID (8 digits)
-                                </label>
-                                <Field
-                                    name="forestClientNumber"
-                                    v-slot="{ field, meta, handleChange }"
-                                    v-model="formData.forestClientNumber"
-                                >
-                                    <InputText
-                                        id="forestClientInput"
-                                        placeholder="Enter and verify the client ID"
-                                        @update:modelValue="handleChange"
-                                        v-bind:disabled="
-                                            LoadingState.isLoading.value
-                                        "
-                                        :validateOnChange="true"
-                                        v-bind="field"
-                                        class="w-100 custom-input"
-                                        @input="resetForestClientNumberData()"
-                                        :class="{
-                                            'is-invalid':
-                                                errors.forestClientNumber ||
-                                                forestClientNumberVerifyErrors.length >
-                                                    0,
-                                        }"
-                                    ></InputText>
-                                </Field>
-                                <ErrorMessage
-                                    class="invalid-feedback"
-                                    name="forestClientNumber"
-                                />
-                                <small
-                                    id="forestClientInput-help"
-                                    class="helper-text"
-                                    v-if="
-                                        !errors.forestClientNumber &&
-                                        forestClientNumberVerifyErrors.length ===
-                                            0
-                                    "
-                                    >Add and verify the Client IDs. Add multiple
-                                    numbers by separating them with
-                                    commas</small
-                                >
-                                <small
-                                    class="invalid-feedback"
-                                    v-for="error in forestClientNumberVerifyErrors"
-                                >
-                                    {{ error }}
-                                </small>
-                            </div>
-                            <div class="no-label-column">
-                                <Button
-                                    class="w-100"
-                                    aria-label="Add Client Numbers"
-                                    :name="'verifyFC'"
-                                    :label="'Add Client Numbers'"
-                                    @click="
-                                        verifyForestClientNumber(
-                                            formData.forestClientNumber as string
-                                        )
-                                    "
+                <StepContainer
+                    v-if="isAbstractRoleSelected()"
+                    title="Organization information"
+                    subtitle="Associate one or more Client IDs to this user"
+                    :divider="false"
+                >
+                    <div class="input-with-verify-field">
+                        <div>
+                            <label for="forestClientInput"
+                                >User’s Client ID (8 digits)
+                            </label>
+                            <Field
+                                name="forestClientNumber"
+                                v-slot="{ field, meta, handleChange }"
+                                v-model="formData.forestClientNumber"
+                            >
+                                <InputText
+                                    id="forestClientInput"
+                                    placeholder="Enter and verify the client ID"
+                                    @update:modelValue="handleChange"
                                     v-bind:disabled="
-                                        formData.forestClientNumber?.length <
-                                            FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                                        !!errors.forestClientNumber ||
                                         LoadingState.isLoading.value
                                     "
-                                >
-                                    <Icon icon="add" :size="IconSize.small" />
-                                </Button>
-                            </div>
+                                    :validateOnChange="true"
+                                    v-bind="field"
+                                    class="w-100 custom-input"
+                                    @input="resetForestClientNumberData()"
+                                    :class="{
+                                        'is-invalid':
+                                            errors.forestClientNumber ||
+                                            forestClientNumberVerifyErrors.length >
+                                                0,
+                                    }"
+                                ></InputText>
+                            </Field>
+                            <ErrorMessage
+                                class="invalid-feedback"
+                                name="forestClientNumber"
+                            />
+                            <small
+                                id="forestClientInput-help"
+                                class="helper-text"
+                                v-if="
+                                    !errors.forestClientNumber &&
+                                    forestClientNumberVerifyErrors.length === 0
+                                "
+                                >Add and verify the Client IDs. Add multiple
+                                numbers by separating them with commas</small
+                            >
+                            <small
+                                class="invalid-feedback"
+                                v-for="error in forestClientNumberVerifyErrors"
+                            >
+                                {{ error }}
+                            </small>
                         </div>
-                    </StepContainer>
-                </div>
-
-                <div v-if="forestClientData.length > 0">
-                    <div class="px-0">
-                        <ForestClientCard
-                            :forestClientData="forestClientData"
-                            @remove-item="removeForestClientFromList"
-                        ></ForestClientCard>
+                        <div class="no-label-column">
+                            <Button
+                                class="w-100"
+                                aria-label="Add Client Numbers"
+                                :name="'verifyFC'"
+                                :label="'Add Client Numbers'"
+                                @click="
+                                    verifyForestClientNumber(
+                                        formData.forestClientNumber as string
+                                    )
+                                "
+                                v-bind:disabled="
+                                    formData.forestClientNumber?.length <
+                                        FOREST_CLIENT_INPUT_MAX_LENGTH ||
+                                    !!errors.forestClientNumber ||
+                                    LoadingState.isLoading.value
+                                "
+                            >
+                                <Icon icon="add" :size="IconSize.small" />
+                            </Button>
+                        </div>
                     </div>
-                </div>
+
+                    <ForestClientCard
+                        v-if="forestClientData.length > 0"
+                        class="px-0"
+                        :forestClientData="forestClientData"
+                        @remove-item="removeForestClientFromList"
+                    />
+                </StepContainer>
+
                 <div class="button-stack">
                     <Button
                         type="button"
