@@ -16,12 +16,14 @@ const props = defineProps({
 </script>
 
 <template>
-    <h1 class="title">{{ props.title }}</h1>
-    <h2 class="subtitle">{{ props.subtitle }}</h2>
-    <div class="step-content">
-        <slot />
+    <div>
+        <h1 class="title">{{ props.title }}</h1>
+        <h2 class="subtitle">{{ props.subtitle }}</h2>
+        <div class="step-content">
+            <slot />
+        </div>
+        <Divider v-if="props.divider" />
     </div>
-    <Divider v-if="props.divider" />
 </template>
 
 <style lang="scss" scoped>
