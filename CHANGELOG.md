@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.1...v1.8.2) (2023-11-06)
+
+
+### Bug Fixes
+
+* [#1017](https://github.com/bcgov/nr-forests-access-management/issues/1017) audit bcsc ([#1019](https://github.com/bcgov/nr-forests-access-management/issues/1019)) ([35de359](https://github.com/bcgov/nr-forests-access-management/commit/35de359d06c3d60e83df2cb9748321502fd7ae3d))
+* [#953](https://github.com/bcgov/nr-forests-access-management/issues/953) paginator default page ([#1009](https://github.com/bcgov/nr-forests-access-management/issues/1009)) ([2a3b4a1](https://github.com/bcgov/nr-forests-access-management/commit/2a3b4a18a63302c30b1b901628936ca14f7b6cec))
+* [#995](https://github.com/bcgov/nr-forests-access-management/issues/995) current route on breadcrumb ([#1013](https://github.com/bcgov/nr-forests-access-management/issues/1013)) ([5d616c6](https://github.com/bcgov/nr-forests-access-management/commit/5d616c6d5729a58a1bcae6b29987e40dfb0b8613))
+* [#997](https://github.com/bcgov/nr-forests-access-management/issues/997) frontend small fixes ([#1016](https://github.com/bcgov/nr-forests-access-management/issues/1016)) ([70ec2d8](https://github.com/bcgov/nr-forests-access-management/commit/70ec2d8e6d80adcedcbb1000dfe102980582a57a))
+* [Snyk] Security upgrade cryptography from 41.0.4 to 41.0.5 ([#998](https://github.com/bcgov/nr-forests-access-management/issues/998)) ([fa6086c](https://github.com/bcgov/nr-forests-access-management/commit/fa6086ca1bc9f32bebfeb0c85280fe6a5ab0b86d))
+
 ## [1.8.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.0...v1.8.1) (2023-10-26)
 
 
