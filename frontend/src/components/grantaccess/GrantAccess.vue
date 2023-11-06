@@ -400,7 +400,10 @@ function removeForestClientFromList(index: number) {
                                 user</small
                             >
                         </div>
-                        <div class="no-label-column">
+                        <div
+                            v-if="formData.domain === 'I'"
+                            class="no-label-column"
+                        >
                             <Button
                                 class="button w-100"
                                 aria-label="Verify user IDIR"
