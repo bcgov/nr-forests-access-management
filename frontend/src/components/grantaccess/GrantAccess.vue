@@ -28,7 +28,8 @@ import {
 
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
-import { pushNotification } from '@/store/NotificationState';
+import { pushNotification} from '@/store/NotificationState';
+
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
@@ -242,44 +243,14 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        pushNotification(
-            Severity.success,
-            `${username} ${
-                successIdList[0] === ''
-                    ? `was successfully added with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `was successfully added with Client IDs: ${successIdList.join(
-                          ', '
-                      )}`
-            }`
-        );
+        pushNotification(Severity.success, username, successIdList);
     }
     if (warningIdList.length > 0) {
-        pushNotification(
-            Severity.warning,
-            `${username} ${
-                warningIdList[0] === ''
-                    ? `already exists with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `already exists with Client IDs: ${warningIdList.join(
-                          ', '
-                      )}`
-            }`
-        );
+        pushNotification(Severity.warning, username, warningIdList);
     }
     if (errorIdList.length > 0) {
         pushNotification(
-            Severity.error,
-            `An error has occured. ${username} ${
-                errorIdList[0] === ''
-                    ? `could not be added with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `was not added with Client IDs: ${errorIdList.join(', ')}`
-            }`
-        );
+            Severity.error, username, errorIdList);
     }
     return '';
 };
