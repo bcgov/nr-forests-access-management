@@ -84,8 +84,8 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
             event["request"]["userAttributes"]["custom:idp_name"]
         ]
         if (
-            audit_event_log["requestingUser"]["userType"] == "I"
-            or audit_event_log["requestingUser"]["userType"] == "B"
+            audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR
+            or audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS
         ):
             audit_event_log["requestingUser"]["idpUserName"] = event["request"][
                 "userAttributes"
