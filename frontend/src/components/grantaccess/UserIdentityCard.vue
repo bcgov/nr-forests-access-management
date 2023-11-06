@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Card class="mb-2 p-0 custom-card">
+    <Card class="custom-card">
         <template #header>
             <Icon
                 icon="checkmark--filled"
@@ -27,11 +27,11 @@ const props = defineProps<{
         </template>
         <template #content>
             <div class="col-2 user-id">
-                <label class="row">User ID:</label>
+                <label class="row">Username</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
             <div class="col-6" v-if="props.userIdentity.found">
-                <label class="row">Display Name: </label>
+                <label class="row">Display Name</label>
                 <span class="row">{{ props.userIdentity.displayName }}</span>
             </div>
             <div

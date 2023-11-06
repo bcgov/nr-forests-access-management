@@ -230,7 +230,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 
 .custom-data-table {
-    margin: 1.2rem 1rem;
+    margin: 1.5rem 2.5rem;
     background: transparent;
     border-radius: 0.25rem 0.25rem 0 0;
     border: 0.125rem solid $light-border-subtle-00;
@@ -329,17 +329,17 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 //------ media queries
 
-@media (max-width: 390px){
+@media (max-width: 390px) {
     .data-table-container {
         margin: 0;
         padding: 0;
     }
-
 }
 
 @media (min-width: 768px) {
     .data-table-container {
-        margin: 0.4rem;
+        margin: 0;
+        padding: 0;
     }
 
     .no-app-selected {
@@ -365,5 +365,4 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         width: auto;
     }
 }
-
 </style>

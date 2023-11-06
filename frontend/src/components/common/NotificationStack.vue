@@ -16,7 +16,7 @@ import { notifications } from '@/store/NotificationState';
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 .notification-stack {
-    margin: 0rem 2rem;
+    margin: 0rem 2.5rem;
     padding-bottom: 1rem;
     &:deep(.p-message) {
         position: relative;

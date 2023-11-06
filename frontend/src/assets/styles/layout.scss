@@ -11,7 +11,7 @@ body {
     height: calc(100vh - $header-height);
     width: 100vw;
     bottom: 0;
-    overflow: auto;
+    overflow-y: auto;
     overflow-x: hidden;
     padding: 1.06rem 1rem 0 1rem;
 }
@@ -19,14 +19,6 @@ body {
 .page-body {
     margin-top: 1.5rem;
     width: 100%;
-}
-
-.form-container {
-    margin: auto 0;
-
-    .row {
-        margin: 1rem auto;
-    }
 }
 
 // Remove Arrows/Spinners for input type=number
@@ -61,15 +53,38 @@ input[type='number'] {
     font-family: inherit;
 }
 
+.helper-text {
+    font-size: 0.75rem;
+    color: $light-text-secondary;
+}
+
+.invalid {
+    font-size: 0.875em;
+    color: $light-text-error;
+}
+
+.custom-card {
+    margin-top: $card-margin-top;
+    width: 100%;
+}
+
 @media (min-width: 768px) {
     .main {
-        padding: 1.5rem 1.5rem 0 1.5rem;
+        padding: 2.5rem 2.5rem 0 2.5rem;
+        width: 100vw;
+    }
+    .form-container {
+        width: 38rem;
+    }
+
+    .custom-card {
+        width: $card-width;
     }
 }
 
 @media (min-width: 1024px) {
     .page-body {
-        width:  100%;
+        width: 100%;
     }
 
     .main {
