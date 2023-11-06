@@ -3,7 +3,6 @@ import { sideNavState } from "@/store/SideNavState";
 export let screenSize = window.innerWidth
 
 window.addEventListener("resize", (event) => {
-    console.log(screenSize)
     screenSize = window.innerWidth
     sideNavState.isVisible = isDesktop()
 });
