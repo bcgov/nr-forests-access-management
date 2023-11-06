@@ -37,7 +37,7 @@ const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend w
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
-    forestClientNumberList: [],
+    forestClientNumber: '',
     role_id: null as number | null,
 };
 
@@ -114,15 +114,12 @@ function resetVerifiedUserIdentity() {
 
 function resetForestClientNumberData() {
     formData.value['forestClientNumber'] = '';
+    forestClientData.value = [];
     forestClientNumberVerifyErrors.value = [];
 }
 
-function resetForm() {
-    formData.value = defaultFormData;
-}
-
 function cancelForm() {
-    resetForm();
+    formData.value = defaultFormData;
     router.push('/dashboard');
 }
 
@@ -183,6 +180,7 @@ async function verifyForestClientNumber(forestClientNumber: string) {
                 );
             });
     }
+
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
     formData.value['forestClientNumber'] = forestNumbers.toString();
 }
@@ -211,16 +209,16 @@ function areVerificationsPassed() {
 
 function toRequestPayload(
     formData: any,
-    forestClientNumber: FamForestClient | null
+    forestClientData: FamForestClient | null
 ) {
     const request = {
         user_name: formData.userId,
         user_type_code: formData.domain,
         role_id: formData.role_id,
-        ...(forestClientNumber
+        ...(forestClientData
             ? {
                   forest_client_number:
-                      forestClientNumber.forest_client_number.padStart(
+                      forestClientData.forest_client_number.padStart(
                           FOREST_CLIENT_INPUT_MAX_LENGTH,
                           '0'
                       ),
@@ -428,12 +426,11 @@ function removeForestClientFromList(index: number) {
                             </Button>
                         </div>
                     </div>
-                    <div v-if="verifiedUserIdentity">
-                        <div class="col-md-5 px-0">
-                            <UserIdentityCard
-                                :userIdentity="verifiedUserIdentity"
-                            ></UserIdentityCard>
-                        </div>
+
+                    <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
+                        <UserIdentityCard
+                            :userIdentity="verifiedUserIdentity"
+                        ></UserIdentityCard>
                     </div>
                 </StepContainer>
 
