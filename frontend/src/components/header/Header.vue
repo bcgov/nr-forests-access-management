@@ -51,7 +51,9 @@ const props = defineProps({
                   v-if="authService.getters.isLoggedIn()"
                   @click="profileSidebarState.toggleVisible()"
               >
-                  <Icon icon="user--avatar" :size="IconSize.medium" />
+                  <Icon
+                    icon="user--avatar"
+                    :size="IconSize.medium" />
               </a>
         </nav>
         <teleport to=".modals">
@@ -108,6 +110,10 @@ li {
     .navbar-collapse {
         flex-grow: 0;
     }
+}
+
+a > svg {
+    cursor: pointer;
 }
 
 @media (min-width: 1024px) {
