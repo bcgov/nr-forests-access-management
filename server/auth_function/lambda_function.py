@@ -73,6 +73,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     }
 
     LOGGER.debug(f"context: {context}")
+    LOGGER.info(f"event: {event}")
 
     try:
         audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
@@ -82,9 +83,13 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
         audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
             event["request"]["userAttributes"]["custom:idp_name"]
         ]
-        audit_event_log["requestingUser"]["idpUserName"] = event["request"][
-            "userAttributes"
-        ]["custom:idp_username"]
+        if (
+            audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR
+            or audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS
+        ):
+            audit_event_log["requestingUser"]["idpUserName"] = event["request"][
+                "userAttributes"
+            ]["custom:idp_username"]
         audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
 
         db_connection = obtain_db_connection()
