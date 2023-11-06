@@ -37,7 +37,7 @@ const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend w
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
-    forestClientNumber: '',
+    forestClientNumber: '', // form field input, for multiple forest client numbers
     role_id: null as number | null,
 };
 
