@@ -45,6 +45,9 @@ ALTER TABLE app_fam.fam_application_admin ADD CONSTRAINT Reffam_application_admi
 ;
 
 -- Add proxy user and grant privileges
-CREATE USER ${admin_api_db_user} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${admin_api_db_password}';
-GRANT USAGE ON SCHEMA app_fam TO ${admin_api_db_user};
-GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_application_admin IN SCHEMA app_fam TO ${admin_api_db_user};
+CREATE USER ${admin_api_db_user} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${admin_api_db_password}'
+;
+GRANT USAGE ON SCHEMA app_fam TO ${admin_api_db_user}
+;
+GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_application_admin TO ${admin_api_db_user}
+;
