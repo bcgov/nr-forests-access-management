@@ -114,15 +114,6 @@ p * {
     align-self: baseline !important;
 }
 
-p {
-    display: flex;
-    flex-direction: column;
-}
-
-p * {
-    align-self: baseline !important;
-}
-
 .content-wrapper {
     flex-direction: row !important;
     width: 100%;

@@ -105,16 +105,22 @@ const isAbstractRoleSelected = () => {
 
 function userIdChange() {
     resetVerifiedUserIdentity();
-    resetForestClientNumberData();
+    removeForestClientSection();
 }
 
 function resetVerifiedUserIdentity() {
     verifiedUserIdentity.value = null;
 }
 
-function resetForestClientNumberData() {
-    formData.value['forestClientNumber'] = '';
+const removeForestClientSection = () => {
+    // cleanup the forest client number input field
+    cleanupForestClientNumberInput();
+    // remove the forest client card data
     forestClientData.value = [];
+}
+
+const cleanupForestClientNumberInput = () => {
+    formData.value['forestClientNumber'] = '';
     forestClientNumberVerifyErrors.value = [];
 }
 
@@ -457,7 +463,7 @@ function removeForestClientFromList(index: number) {
                             style="width: 100% !important"
                             v-bind="field.value"
                             @update:modelValue="handleChange"
-                            @change="resetForestClientNumberData()"
+                            @change="removeForestClientSection()"
                             :class="{
                                 'is-invalid': errors.role_id,
                             }"
@@ -494,7 +500,7 @@ function removeForestClientFromList(index: number) {
                                     :validateOnChange="true"
                                     v-bind="field"
                                     class="w-100 custom-input"
-                                    @input="resetForestClientNumberData()"
+                                    @input="cleanupForestClientNumberInput()"
                                     :class="{
                                         'is-invalid':
                                             errors.forestClientNumber ||
