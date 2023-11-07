@@ -33,11 +33,11 @@ export type RouteItems = {
 const routeItems = {
     dashboard: {
         to: '/dashboard',
-        label: 'Manage Permissions',
+        label: 'Manage permissions',
     },
     addUserPermission: {
         to: '/grant',
-        label: 'Add User Permission'
+        label: 'Add user permission'
     }
 } as RouteItems;
 

@@ -11,9 +11,9 @@ describe('disableSideNavOption', () => {
         wrapper = shallowMount(ProtectedLayout);
         await flushPromises();
     });
-    it('should change value for navigation option Add User Permission', async () => {
-        (wrapper.vm as any).disableSideNavOption('Add User Permission', false);
-        let value = sideNavData.map(item => item.items.find(child => child.name === 'Add User Permission')?.disabled)[0];
+    it('should change value for navigation option Add user permission', async () => {
+        (wrapper.vm as any).disableSideNavOption('Add user permission', false);
+        let value = sideNavData.map(item => item.items.find(child => child.name === 'Add user permission')?.disabled)[0];
         expect(value).toBe(false)
     });
 });

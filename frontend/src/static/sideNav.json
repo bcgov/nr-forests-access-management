@@ -3,13 +3,13 @@
         "name": "Main activities",
         "items": [
             {
-                "name": "Manage Permissions",
-                "icon": "dashboard",
+                "name": "Manage permissions",
+                "icon": "group--access",
                 "link": "/dashboard",
                 "disabled": false
             },
             {
-                "name": "Add User Permission",
+                "name": "Add user permission",
                 "icon": "virtual-column--key",
                 "link": "/grant",
                 "disabled": true

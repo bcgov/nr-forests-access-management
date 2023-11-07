@@ -18,6 +18,8 @@ declare module '@carbon/icons-vue/es/checkmark--outline/16';
 declare module '@carbon/icons-vue/es/incomplete/16';
 declare module '@carbon/icons-vue/es/circle-dash/16';
 declare module '@carbon/icons-vue/es/warning/16';
+declare module '@carbon/icons-vue/es/search--locate/16';
+declare module '@carbon/icons-vue/es/group--access/16';
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';
@@ -29,6 +31,7 @@ declare module '@carbon/icons-vue/es/add/20';
 declare module '@carbon/icons-vue/es/user--avatar--filled/20';
 declare module '@carbon/icons-vue/es/menu/20';
 declare module '@carbon/icons-vue/es/user--avatar/20';
+declare module '@carbon/icons-vue/es/search--locate/20';
 
 // large
 declare module '@carbon/icons-vue/es/error--filled/24';

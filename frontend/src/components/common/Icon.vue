@@ -67,6 +67,11 @@ const icons = {
     ),
     warning16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/warning/16')
+    'search--locate16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search--locate/16')
+    ),
+    'group--access16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/group--access/16')
     ),
 
     // medium icons
@@ -91,6 +96,9 @@ const icons = {
     ),
     'user--avatar20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/user--avatar/20')
+    ),
+    'search--locate20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search--locate/20')
     ),
 
     // large icons

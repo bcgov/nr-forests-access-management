@@ -25,22 +25,24 @@ const props = defineProps({
                         v-for="(forestItem, index) in props.forestClientData"
                         class="content-wrapper"
                     >
-                        <Icon
-                            class="row flex-grow-0 custom-carbon-icon-checkmark--filled"
-                            icon="checkmark--filled"
-                            :size="IconSize.small"
-                            v-if="forestItem.status?.status_code == 'A'"
-                        />
+                        <p class="icon-wrapper">
+                            <Icon
+                                class="flex-grow-0 custom-carbon-icon-checkmark--filled"
+                                icon="checkmark--filled"
+                                :size="IconSize.small"
+                                v-if="forestItem.status?.status_code == 'A'"
+                            />
 
-                        <Icon
-                            class="row flex-grow-0 custom-carbon-icon-error--filled"
-                            icon="error--filled"
-                            style="margin-right: 1rem"
-                            :size="IconSize.small"
-                            v-else
-                        />
+                            <Icon
+                                class="flex-grow-0 custom-carbon-icon-error--filled"
+                                icon="error--filled"
+                                style="margin-right: 1rem"
+                                :size="IconSize.small"
+                                v-else
+                            />
+                        </p>
                         <p
-                            class="invalid col"
+                            class="invalid"
                             v-if="!props.forestClientData"
                             style="margin-top: 0.75rem"
                         >
@@ -48,27 +50,28 @@ const props = defineProps({
                         </p>
 
                         <p
-                            class="col flex-grow-0 client-id-wrapper"
+                            class="flex-grow-0 client-id-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label class="col">Client ID: </label>
-                            <span class="col">
+                            <label>Client ID: </label>
+                            <span>
                                 {{ forestItem.forest_client_number }}
                             </span>
                         </p>
-                        <p class="col" v-if="props.forestClientData">
-                            <label class="row">Organization name: </label>
-                            <span class="organization-name row">
+                        <p
+                            class="org-name-wrapper"
+                            v-if="props.forestClientData"
+                        >
+                            <label>Organization name: </label>
+                            <span class="organization-name">
                                 {{ forestItem.client_name }}
                             </span>
                         </p>
                         <p
-                            class="col org-status-wrapper"
+                            class="org-status-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label class="row status"
-                                >Organization status:
-                            </label>
+                            <label class="status">Organization status: </label>
                             <Tag
                                 class="custom-tag"
                                 :severity="
@@ -79,10 +82,9 @@ const props = defineProps({
                                 :value="forestItem.status?.description"
                             />
                         </p>
-
                         <Button class="btn-trash">
                             <Icon
-                                class="row custom-carbon-icon--trash-can"
+                                class="custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
@@ -121,31 +123,42 @@ p * {
     align-self: baseline !important;
 }
 
-.col {
-    align-self: center;
-}
-
 .content-wrapper {
     flex-direction: row !important;
     width: 100%;
+    min-height: 3.25rem !important;
+    align-items: center;
+    justify-content: center;
 }
 
 .content-wrapper:not(:first-child) {
     border-top: $light-border-subtle-00 0.06rem solid;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    padding-top: 1rem;
+}
+
+.icon-wrapper {
+    display: block;
 }
 
 .client-id-wrapper {
-    margin-right: 3rem;
+    margin-right: 2rem;
+}
+
+.org-name-wrapper {
+    min-width: 13rem;
+    margin-right: 2rem;
 }
 
 .org-status-wrapper {
-    margin-top: 0.1rem;
+    padding-top: 0.2rem;
+    margin-right: 2rem;
 }
 
-.custom-carbon-icon-checkmark--filled {
+.custom-carbon-icon-checkmark--filled,
+.custom-carbon-icon-error--filled,
+.custom-carbon-icon--trash-can {
     margin-right: 1rem !important;
+    float: left;
 }
 
 .status {
@@ -165,9 +178,11 @@ p * {
 }
 
 .btn-trash {
+    display: block;
     padding: 0;
     border: none;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 2rem;
 }
 
 .btn-trash,
