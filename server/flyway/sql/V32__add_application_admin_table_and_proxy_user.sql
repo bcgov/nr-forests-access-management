@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS app_fam.fam_application_admin
     update_date                 timestamp(6)    DEFAULT CURRENT_DATE
 );
 
--- Add column comments
+-- Add table/column comments
+COMMENT ON TABLE app_fam.fam_application_admin IS 'Application Admin is a cross-reference object that allows for the identification of who are the administrators(User) for an Application, as well as which Applications the User can administer.'
+;
 COMMENT ON COLUMN app_fam.fam_application_admin.application_admin_id IS 'Automatically generated key used to identify the uniqueness of a User administers the Application.'
 ;
 COMMENT ON COLUMN app_fam.fam_application_admin.user_id IS 'Unique ID to reference and identify the user within FAM system.'
@@ -49,5 +51,12 @@ CREATE USER ${admin_api_db_user} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWO
 ;
 GRANT USAGE ON SCHEMA app_fam TO ${admin_api_db_user}
 ;
+-- -- on 'fam_application_admin' table
 GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_application_admin TO ${admin_api_db_user}
 ;
+-- -- on 'fam_application' and 'fam_user' tables for ${admin_api_db_user} user.
+GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_application TO ${admin_api_db_user}
+;
+GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_user TO ${admin_api_db_user}
+;
+
