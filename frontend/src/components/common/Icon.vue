@@ -65,8 +65,6 @@ const icons = {
     circleDash16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/circle-dash/16')
     ),
-    warning16: defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/warning/16')
     'search--locate16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/search--locate/16')
     ),
