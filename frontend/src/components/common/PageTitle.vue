@@ -28,8 +28,6 @@ const isActive = (item: MenuItem) => {
 const iconClass = (item: MenuItem) => {
     if(item.icon === IconSteps.incomplete) {
         return '';
-    } else if(item.icon === IconSteps.warning) {
-        return 'inactive invalid';
     } else if (!item.active) {
         return 'inactive';
     };
@@ -63,7 +61,7 @@ const iconClass = (item: MenuItem) => {
                 <div>
                     <p>{{ item.label }}</p>
                     <p :class="iconClass(item)">{{
-                        item.errorMessage ? item.errorMessage : `step ${ index + 1 }`}}</p>
+                        `step ${ index + 1 }`}}</p>
                 </div>
             </span>
         </template>
@@ -108,9 +106,5 @@ svg {
 
 .inactive {
     color: $light-text-primary;
-}
-
-.invalid {
-    color: red !important;
 }
 </style>
