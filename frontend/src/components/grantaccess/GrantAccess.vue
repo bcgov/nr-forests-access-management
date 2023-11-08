@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm, type FieldMeta } from 'vee-validate';
+import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 
+import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
-import Button from '@/components/common/Button.vue';
-import RadioButton from 'primevue/radiobutton';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import RadioButton from 'primevue/radiobutton';
+
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
-import { IconSize, IconSteps } from '@/enum/IconEnum';
-import { stepItems, setStepItems, addNewStep, type IStepInfo } from '@/store/stepState';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
@@ -27,13 +26,14 @@ import {
     type FamUserRoleAssignmentCreate,
 } from 'fam-api';
 
+import { IconSize, IconSteps } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { pushNotification } from '@/store/NotificationState';
+import { setStepItems, addNewStep , type IStepInfo, stepItems } from '@/store/stepState';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
-
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -83,7 +83,6 @@ const userInfoStep = ref({
     label: 'User Information',
     active: false,
     icon: IconSteps.queue,
-    errorMessage:''
 })
 
 const addUserStep = ref({
@@ -91,7 +90,6 @@ const addUserStep = ref({
     label: 'Add User Roles',
     active: false,
     icon: IconSteps.queue,
-    errorMessage: ''
 });
 
 const orgInfoStep = ref({
@@ -99,7 +97,6 @@ const orgInfoStep = ref({
     active: false,
     isVisible: false,
     icon: IconSteps.queue,
-    errorMessage: ''
 });
 
 onMounted(async () => {
@@ -117,7 +114,9 @@ const isIdirDomainSelected = () => {
 
 function userDomainChange() {
     resetVerifiedUserIdentity();
+    userIdChange();
     formData.value.userId = '';
+    userInfoStep.value.icon = IconSteps.incomplete;
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
@@ -132,13 +131,22 @@ const isAbstractRoleSelected = () => {
 
 function userIdChange() {
     resetVerifiedUserIdentity();
-    resetForestClientNumberData();
-    userInfoStep.value.active = false;
-    userInfoStep.value.icon = IconSteps.incomplete;
-    userInfoStep.value.errorMessage = '';
-    addUserStep.value.active = false;
-    orgInfoStep.value.active = false;
     removeForestClientSection();
+    formData.value['role_id'] = -1;
+
+    if(formData.value.domain === 'B' && formData.value.userId.length >=2) {
+        userInfoStep.value.icon = IconSteps.checkmark;
+    } else {
+        userInfoStep.value.icon = IconSteps.incomplete;
+    }
+
+    userInfoStep.value.active = true;
+
+    addUserStep.value.active = false;
+    addUserStep.value.icon = IconSteps.queue;
+
+    orgInfoStep.value.active = false;
+    orgInfoStep.value.icon = IconSteps.queue
 }
 
 function resetVerifiedUserIdentity() {
@@ -171,13 +179,9 @@ async function verifyIdentity(userId: string, domain: string) {
 
     if(verifiedUserIdentity.value.found) {
         userInfoStep.value.active = true;
-        userInfoStep.value.errorMessage = '';
         userInfoStep.value.icon = IconSteps.checkmark;
         addUserStep.value.active = addUserStep.value.icon === IconSteps.checkmark ? true : false;
         orgInfoStep.value.active = forestClientData.value.length > 0 ? true : false;
-    } else {
-        userInfoStep.value.icon = IconSteps.warning;
-        userInfoStep.value.errorMessage = 'User does not exist';
     }
 }
 
@@ -234,9 +238,8 @@ async function verifyForestClientNumber(forestClientNumber: string) {
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
     formData.value['forestClientNumber'] = forestNumbers.toString();
 
-    orgInfoStep.value.icon = forestClientNumberVerifyErrors.value.length > 0 ? IconSteps.warning : IconSteps.checkmark;
-    orgInfoStep.value.active = forestClientNumberVerifyErrors.value.length > 0 ? false : true;
-    orgInfoStep.value.errorMessage = forestClientNumberVerifyErrors.value.length > 0 ? 'Client ID cannot be added.' : '';
+    orgInfoStep.value.active = true;
+    orgInfoStep.value.icon = IconSteps.checkmark;
 }
 
 function isForestClientNumberNotAdded(forestClientNumber: string) {
@@ -369,16 +372,25 @@ async function handleSubmit() {
     router.push('/dashboard');
 }
 
-function roleSelected() {
-    addUserStep.value.icon = IconSteps.checkmark;
+function removeForestClientFromList(index: number) {
+    forestClientData.value.splice(index, 1);
 
+    if(forestClientData.value.length < 1) {
+        orgInfoStep.value.active = false;
+        orgInfoStep.value.icon = IconSteps.queue;
+    };
+}
+
+const handleNewStep = () => {
     //check if orgInfoStep is present on steps
     const tempOrgInfo = stepItems.value!.find(item => item.label === orgInfoStep.value.label);
 
     //remove orgInfoStep from steps if another role is selected
     if(tempOrgInfo && !isAbstractRoleSelected()) {
-       const orgInfoIndex = stepItems.value!.indexOf(tempOrgInfo);
-       stepItems.value!.splice(orgInfoIndex, 1);
+        orgInfoStep.value.active = false;
+        orgInfoStep.value.icon = IconSteps.queue;
+        const orgInfoIndex = stepItems.value!.indexOf(tempOrgInfo);
+        stepItems.value!.splice(orgInfoIndex, 1);
     };
 
     if(isAbstractRoleSelected() ) {
@@ -386,22 +398,11 @@ function roleSelected() {
             return;
         } else {
             addNewStep(orgInfoStep.value);
-
-        }
-    };
-    resetForestClientNumberData();
-}
-
-function removeForestClientFromList(index: number) {
-    forestClientData.value.splice(index, 1);
-    if(forestClientData.value.length < 1) {
-        orgInfoStep.value.active = false;
-        orgInfoStep.value.icon = IconSteps.queue;
+        };
     };
 }
 
 const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
-    step.errorMessage = '';
     if(forestClientData.value.length > 0) {
         step.active = true;
         step.icon = IconSteps.checkmark;
@@ -478,7 +479,11 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                     type="text"
                                     maxlength="20"
                                     v-bind="field"
-                                    @input="userIdChange()"
+                                    @input="
+                                        userIdChange(),
+                                        addUserStep.active = false,
+                                        addUserStep.icon = IconSteps.queue
+                                    "
                                     :class="{ 'is-invalid': errors.userId }"
                                 />
                             </Field>
@@ -553,7 +558,11 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                             style="width: 100% !important"
                             v-bind="field.value"
                             @update:modelValue="handleChange"
-                            @change="removeForestClientSection()"
+                            @change="
+                                userInfoStep.active ? addUserStep.active = true : false,
+                                addUserStep.active ? addUserStep.icon = IconSteps.checkmark : addUserStep.icon = IconSteps.queue,
+                                handleNewStep()
+                            "
                             :class="{
                                 'is-invalid': errors.role_id,
                             }"
@@ -580,22 +589,6 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                 v-slot="{ field, meta, handleChange }"
                                 v-model="formData.forestClientNumber"
                             >
-                                <Dropdown
-                                    :options="applicationRoleOptions"
-                                    optionLabel="role_name"
-                                    optionValue="role_id"
-                                    :modelValue="field.value"
-                                    placeholder="Choose an option"
-                                    :disabled="!userInfoStep.active"
-                                    class="w-100"
-                                    style="width: 100% !important"
-                                    v-bind="field.value"
-                                    @update:modelValue="handleChange"
-                                    @change="
-                                        resetForestClientNumberData(),
-                                        roleSelected(),
-                                        userInfoStep.active ? addUserStep.active = true : false
-                                    "
                                 <InputText
                                     id="forestClientInput"
                                     placeholder="Enter and verify the client ID"
@@ -606,7 +599,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                     :validateOnChange="true"
                                     v-bind="field"
                                     class="w-100 custom-input"
-                                    @input="cleanupForestClientNumberInput()"
+                                    @input="cleanupForestClientNumberInput(), changeStep(orgInfoStep, meta)"
                                     :class="{
                                         'is-invalid':
                                             errors.forestClientNumber ||
@@ -629,98 +622,6 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                 >Add and verify the Client IDs. Add multiple
                                 numbers by separating them with commas</small
                             >
-                            </ErrorMessage>
-                        </div>
-                    </div>
-
-                    <div v-if="isAbstractRoleSelected()">
-                        <div class="row mb-0">
-                            <div class="px-0 col-md-6">
-                                <label for="forestClientInput"
-                                    >User’s Client ID (8 digits)
-                                    <span class="text-danger"> *</span></label
-                                >
-                            </div>
-                        </div>
-                        <div class="row pt-0 mt-0">
-                            <div class="px-0 col-4">
-                                <Field
-                                    name="forestClientNumber"
-                                    v-slot="{ field, meta, handleChange }"
-                                    v-model="formData.forestClientNumber"
-                                >
-                                    <InputText
-                                        id="forestClientInput"
-                                        placeholder="Enter and verify the client ID"
-                                        @update:modelValue="handleChange"
-                                        v-bind:disabled="
-                                            LoadingState.isLoading.value
-                                        "
-                                        :validateOnChange="true"
-                                        v-bind="field"
-                                        class="w-100"
-                                        @input="resetForestClientNumberData(), changeStep(orgInfoStep, meta)"
-                                        :class="{
-                                            'is-invalid':
-                                                errors.forestClientNumber ||
-                                                forestClientNumberVerifyErrors.length >
-                                                    0,
-                                        }"
-                                    ></InputText>
-                                </Field>
-                                <ErrorMessage
-                                    class="invalid-feedback"
-                                    name="forestClientNumber"
-                                />
-                                <small
-                                    class="helper-text"
-                                    v-if="
-                                        !errors.forestClientNumber &&
-                                        forestClientNumberVerifyErrors.length ===
-                                            0
-                                    "
-                                    >Add and verify the Client IDs. Add multiple
-                                    numbers by separating them with
-                                    commas</small
-                                >
-                                <small
-                                    class="invalid-feedback"
-                                    v-for="error in forestClientNumberVerifyErrors"
-                                >
-                                    {{ error }}
-                                </small>
-                            </div>
-                            <div class="pr-1 col-2">
-                                <Button
-                                    outlined
-                                    aria-label="Add Client Numbers"
-                                    :name="'verifyFC'"
-                                    :label="'Add Client Numbers'"
-                                    :loading-label="'Verifying...'"
-                                    @click="
-                                        verifyForestClientNumber(
-                                            formData.forestClientNumber as string
-                                        )
-                                    "
-                                    v-bind:disabled="
-                                        formData.forestClientNumber?.length <
-                                            FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                                        !!errors.forestClientNumber ||
-                                        LoadingState.isLoading.value
-                                    "
-                                >
-                                    <Icon icon="add" :size="IconSize.small" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="forestClientData.length > 0" class="row">
-                        <div class="col-md-5 px-0">
-                            <ForestClientCard
-                                :forestClientData="forestClientData"
-                                @remove-item="removeForestClientFromList"
-                            ></ForestClientCard>
                             <small
                                 class="invalid-feedback"
                                 v-for="error in forestClientNumberVerifyErrors"
