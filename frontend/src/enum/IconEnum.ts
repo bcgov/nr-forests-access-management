@@ -14,5 +14,4 @@ export enum IconSteps {
     queue = 'circleDash',
     incomplete = 'incomplete',
     checkmark = 'checkmark--outline',
-    warning = 'warning'
 };
