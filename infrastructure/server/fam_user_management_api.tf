@@ -25,7 +25,7 @@ locals {
 
 # resource "aws_iam_role_policy" "fam_user_management_api_lambda_access_policy" {
 #   name   = "${local.api_lambda_name}-access-policy"
-#   role   = aws_iam_role.fam_api_lambda_exec.id
+#   role   = aws_iam_role.fam_user_management_api_lambda_exec.id
 #   policy = <<-EOF
 #   {
 #     "Version": "2012-10-17",
@@ -74,7 +74,7 @@ locals {
 
 resource "aws_iam_role_policy" "fam_user_management_api_lambda_access_policy" {
   name   = "${local.api_lambda_name}-access-policy"
-  role   = aws_iam_role.fam_api_lambda_exec.id
+  role   = aws_iam_role.fam_user_management_api_lambda_exec.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
