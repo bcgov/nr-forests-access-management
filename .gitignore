@@ -67,6 +67,7 @@ frontend/domain.txt
 server/credentials.tfrc.json
 server/fam_auth_function.zip
 server/fam-ui-api.zip
+server/fam-ui-user-management-api.zip
 
 server/junk.bash
 infrastructure/server/github.auto.tfvars
@@ -82,6 +83,7 @@ infrastructure/server/fam_auth_function.zip
 terraform/test/github.auto.tfvars
 infrastructure/fam-ui-api.zip
 infrastructure/server/fam-ui-api.zip
+infrastructure/server/fam-ui-user-management-api.zip
 
 terraform/tools/github.auto.tfvars
 terraform/tools/.terraform.lock.hcl

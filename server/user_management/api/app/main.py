@@ -2,17 +2,18 @@ import logging.config
 import os.path
 
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
+from mangum import Mangum
 
-from api.config.config import get_root_path
+from api.config.config import get_root_path, get_allow_origins
 from .routers import router_smoke_test
+
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
 )
-
 logging.config.fileConfig(logConfigFile, disable_existing_loggers=False)
-
 LOGGER = logging.getLogger("api.app.main")
 
 
@@ -46,6 +47,14 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_allow_origins(),
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
+
 app.include_router(
     router_smoke_test.router, prefix=apiPrefix + "/smoke_test", tags=["Smoke Test"]
 )
@@ -54,3 +63,6 @@ app.include_router(
 @app.get("/", include_in_schema=False, tags=["docs"])
 def main():
     return RedirectResponse(url="/docs/")
+
+
+handler = Mangum(app)

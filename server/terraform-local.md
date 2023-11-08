@@ -93,6 +93,7 @@ tar \
 --exclude='./.terraform.lock.hcl' \
 --exclude='./fam_auth_function.zip' \
 --exclude='./fam-ui-api.zip' \
+--exclude='./fam-ui-user-management-api.zip' \
 --exclude='./github.auto.tfvars' \
 --exclude='localtest.auto.tfvars' \
 -zcvf "$UPLOAD_FILE_NAME" -C "$CONTENT_DIRECTORY" .

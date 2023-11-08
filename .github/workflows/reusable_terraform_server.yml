@@ -105,6 +105,29 @@ jobs:
           path: ./infrastructure/server/fam-ui-api.zip
           if-no-files-found: error
 
+      - name: Install and Package Dependencies - FAM User Management API
+        run: |
+          cd server/user_management
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-ui-user-management-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/user_management
+          zip -u ../fam-ui-user-management-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-user-management-api.zip ../infrastructure/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v3
+        with:
+          name: fam-ui-user-management-api
+          path: ./infrastructure/server/fam-ui-user-management-api.zip
+          if-no-files-found: error
+
       - name: Stage Flyway SQL files
         run: |
           mkdir infrastructure/server/sql
