@@ -138,15 +138,22 @@ function userIdChange() {
     userInfoStep.value.errorMessage = '';
     addUserStep.value.active = false;
     orgInfoStep.value.active = false;
+    removeForestClientSection();
 }
 
 function resetVerifiedUserIdentity() {
     verifiedUserIdentity.value = null;
 }
 
-function resetForestClientNumberData() {
-    formData.value['forestClientNumber'] = '';
+const removeForestClientSection = () => {
+    // cleanup the forest client number input field
+    cleanupForestClientNumberInput();
+    // remove the forest client card data
     forestClientData.value = [];
+}
+
+const cleanupForestClientNumberInput = () => {
+    formData.value['forestClientNumber'] = '';
     forestClientNumberVerifyErrors.value = [];
 }
 
@@ -546,7 +553,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                             style="width: 100% !important"
                             v-bind="field.value"
                             @update:modelValue="handleChange"
-                            @change="resetForestClientNumberData()"
+                            @change="removeForestClientSection()"
                             :class="{
                                 'is-invalid': errors.role_id,
                             }"
@@ -599,7 +606,7 @@ const changeStep = (step: IStepInfo, meta: FieldMeta<any>) => {
                                     :validateOnChange="true"
                                     v-bind="field"
                                     class="w-100 custom-input"
-                                    @input="resetForestClientNumberData()"
+                                    @input="cleanupForestClientNumberInput()"
                                     :class="{
                                         'is-invalid':
                                             errors.forestClientNumber ||

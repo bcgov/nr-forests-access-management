@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.2...v1.9.0) (2023-11-07)
+
+
+### Features
+
+* [#844](https://github.com/bcgov/nr-forests-access-management/issues/844) adjust grant access user page ([#1011](https://github.com/bcgov/nr-forests-access-management/issues/1011)) ([789bbab](https://github.com/bcgov/nr-forests-access-management/commit/789bbab44f8cbbf205e227e91450aadf754ed319))
+
+
+### Bug Fixes
+
+* [#1020](https://github.com/bcgov/nr-forests-access-management/issues/1020) fix forest client number add error ([#1025](https://github.com/bcgov/nr-forests-access-management/issues/1025)) ([1a8eb3b](https://github.com/bcgov/nr-forests-access-management/commit/1a8eb3b2f90a74c535ee9a303a51738415312480))
+* [#1020](https://github.com/bcgov/nr-forests-access-management/issues/1020) fix grant access page role change issue ([#1023](https://github.com/bcgov/nr-forests-access-management/issues/1023)) ([84dbc4b](https://github.com/bcgov/nr-forests-access-management/commit/84dbc4b2cc2d27a151f1a2709121477da154b49a))
+* [#984](https://github.com/bcgov/nr-forests-access-management/issues/984) added to return login user email for SPAR ([#1024](https://github.com/bcgov/nr-forests-access-management/issues/1024)) ([b550415](https://github.com/bcgov/nr-forests-access-management/commit/b550415f5761b8de2684f3fd22cf2847aed8a44a))
+
 ## [1.8.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.1...v1.8.2) (2023-11-06)
 
 
