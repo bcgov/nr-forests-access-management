@@ -1,23 +1,23 @@
 # Looking up a few things so they can be changed for this file in one place only
 
-# data "aws_secretsmanager_secret" "db_api_creds_secret" {
-#   name = aws_secretsmanager_secret.famdb_apicreds_secret.name
-# }
+data "aws_secretsmanager_secret" "db_admin_management_api_creds_secret" {
+  name = aws_secretsmanager_secret.famdb_admin_management_apicreds_secret.name
+}
 
 # data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
 #   name = aws_secretsmanager_secret.fam_oidc_client_id_secret.name
 # }
 
-# data "aws_rds_cluster" "api_database" {
-#   cluster_identifier = var.famdb_cluster_name
-#   depends_on = [
-#     module.aurora_postgresql_v2
-#   ]
-# }
+data "aws_rds_cluster" "admin_management_api_database" {
+  cluster_identifier = var.famdb_cluster_name
+  depends_on = [
+    module.aurora_postgresql_v2
+  ]
+}
 
-# data "aws_db_proxy" "api_lambda_db_proxy" {
-#   name = aws_db_proxy.famdb_proxy_api.name
-# }
+data "aws_db_proxy" "admin_management_api_lambda_db_proxy" {
+  name = aws_db_proxy.famdb_proxy_api.name
+}
 
 locals {
   admin_management_api_lambda_name = "fam-admin-management-api-lambda-${var.target_env}"
@@ -50,7 +50,7 @@ locals {
 #           "secretsmanager:DescribeSecret",
 #           "secretsmanager:GetSecretValue"
 #         ],
-#         "Resource": "${data.aws_secretsmanager_secret.db_api_creds_secret.arn}"
+#         "Resource": "${data.aws_secretsmanager_secret.db_admin_management_api_creds_secret.arn}"
 #       },
 #       {
 #         "Effect": "Allow",
@@ -92,6 +92,14 @@ resource "aws_iam_role_policy" "fam_admin_management_api_lambda_access_policy" {
             "ec2:UnassignPrivateIpAddresses"
         ],
         "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "${data.aws_secretsmanager_secret.db_admin_management_api_creds_secret.arn}"
       },
       {
         "Effect": "Allow",
@@ -152,10 +160,10 @@ resource "aws_lambda_function" "fam-admin-management-api-function" {
   environment {
 
     variables = {
-      # DB_SECRET                = "${data.aws_secretsmanager_secret.db_api_creds_secret.name}"
-      # PG_DATABASE              = "${data.aws_rds_cluster.api_database.database_name}"
-      # PG_PORT                  = "5432"
-      # PG_HOST                  = "${data.aws_db_proxy.api_lambda_db_proxy.endpoint}"
+      DB_SECRET                = "${data.aws_secretsmanager_secret.db_admin_management_api_creds_secret.name}"
+      PG_DATABASE              = "${data.aws_rds_cluster.admin_management_api_database.database_name}"
+      PG_PORT                  = "5432"
+      PG_HOST                  = "${data.aws_db_proxy.admin_management_api_lambda_db_proxy.endpoint}"
       # COGNITO_REGION           = "${data.aws_region.current.name}"
       # COGNITO_USER_POOL_ID     = "${aws_cognito_user_pool.fam_user_pool.id}"
       # COGNITO_USER_POOL_DOMAIN = "${var.fam_user_pool_domain_name}"
