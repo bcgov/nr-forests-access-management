@@ -38,8 +38,8 @@ services:
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
       - FLYWAY_PLACEHOLDERS_api_db_password=test
-      - FLYWAY_PLACEHOLDERS_admin_api_db_user=fam_proxy_admin_api
-      - FLYWAY_PLACEHOLDERS_admin_api_db_password=ojkr97y663kvqcwlm8hyvf8dalxd
+      - FLYWAY_PLACEHOLDERS_admin_mgmt_api_db_user=fam_proxy_admin_mgmt_api
+      - FLYWAY_PLACEHOLDERS_admin_mgmt_api_db_password=test
       - FLYWAY_PLACEHOLDERS_client_id_fom_public="nolongerinuse1"
       - FLYWAY_PLACEHOLDERS_client_id_fom_ministry="nolongerinuse2"
       - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78
