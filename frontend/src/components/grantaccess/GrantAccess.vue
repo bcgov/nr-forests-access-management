@@ -79,14 +79,12 @@ const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
 
 const userInfoStep = ref({
-    stepNumber: 1,
     label: 'User Information',
     active: false,
     icon: IconSteps.queue,
 })
 
 const addUserStep = ref({
-    stepNumber: 2,
     label: 'Add User Roles',
     active: false,
     icon: IconSteps.queue,
@@ -95,7 +93,6 @@ const addUserStep = ref({
 const orgInfoStep = ref({
     label: 'Organization Information',
     active: false,
-    isVisible: false,
     icon: IconSteps.queue,
 });
 
@@ -113,10 +110,9 @@ const isIdirDomainSelected = () => {
 };
 
 function userDomainChange() {
-    resetVerifiedUserIdentity();
     userIdChange();
     formData.value.userId = '';
-    userInfoStep.value.icon = IconSteps.incomplete;
+    userInfoStep.value.icon = IconSteps.queue;
 }
 
 const getSelectedRole = (): FamApplicationRole | undefined => {
@@ -132,6 +128,7 @@ const isAbstractRoleSelected = () => {
 function userIdChange() {
     resetVerifiedUserIdentity();
     removeForestClientSection();
+    handleNewStep();
     formData.value['role_id'] = -1;
 
     if(formData.value.domain === 'B' && formData.value.userId.length >=2) {
@@ -180,8 +177,6 @@ async function verifyIdentity(userId: string, domain: string) {
     if(verifiedUserIdentity.value.found) {
         userInfoStep.value.active = true;
         userInfoStep.value.icon = IconSteps.checkmark;
-        addUserStep.value.active = addUserStep.value.icon === IconSteps.checkmark ? true : false;
-        orgInfoStep.value.active = forestClientData.value.length > 0 ? true : false;
     }
 }
 
@@ -386,7 +381,7 @@ const handleNewStep = () => {
     const tempOrgInfo = stepItems.value!.find(item => item.label === orgInfoStep.value.label);
 
     //remove orgInfoStep from steps if another role is selected
-    if(tempOrgInfo && !isAbstractRoleSelected()) {
+    if(tempOrgInfo) {
         orgInfoStep.value.active = false;
         orgInfoStep.value.icon = IconSteps.queue;
         const orgInfoIndex = stepItems.value!.indexOf(tempOrgInfo);
