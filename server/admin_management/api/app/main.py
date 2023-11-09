@@ -31,7 +31,7 @@ def custom_generate_unique_id(route: APIRouter):
 
 
 app = FastAPI(
-    title="Forest Access Management - FAM - User Management API",
+    title="Forest Access Management - FAM - Admin Management API",
     description=description,
     version="0.0.1",
     contact={

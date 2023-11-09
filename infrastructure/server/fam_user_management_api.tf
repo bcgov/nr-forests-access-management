@@ -20,12 +20,12 @@
 # }
 
 locals {
-  user_management_api_lambda_name = "fam-user-management-api-lambda-${var.target_env}"
+  admin_management_api_lambda_name = "fam-admin-management-api-lambda-${var.target_env}"
 }
 
-# resource "aws_iam_role_policy" "fam_user_management_api_lambda_access_policy" {
-#   name   = "${local.api_lambda_name}-access-policy"
-#   role   = aws_iam_role.fam_user_management_api_lambda_exec.id
+# resource "aws_iam_role_policy" "fam_admin_management_api_lambda_access_policy" {
+#   name   = "${local.admin_management_api_lambda_name}-access-policy"
+#   role   = aws_iam_role.fam_admin_management_api_lambda_exec.id
 #   policy = <<-EOF
 #   {
 #     "Version": "2012-10-17",
@@ -72,9 +72,9 @@ locals {
 #   EOF
 # }
 
-resource "aws_iam_role_policy" "fam_user_management_api_lambda_access_policy" {
-  name   = "${local.api_lambda_name}-access-policy"
-  role   = aws_iam_role.fam_user_management_api_lambda_exec.id
+resource "aws_iam_role_policy" "fam_admin_management_api_lambda_access_policy" {
+  name   = "${local.admin_management_api_lambda_name}-access-policy"
+  role   = aws_iam_role.fam_admin_management_api_lambda_exec.id
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -105,7 +105,7 @@ resource "aws_iam_role_policy" "fam_user_management_api_lambda_access_policy" {
   EOF
 }
 
-data "aws_iam_policy_document" "fam_user_management_api_lambda_exec_policydoc" {
+data "aws_iam_policy_document" "fam_admin_management_api_lambda_exec_policydoc" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -116,9 +116,9 @@ data "aws_iam_policy_document" "fam_user_management_api_lambda_exec_policydoc" {
   }
 }
 
-resource "aws_iam_role" "fam_user_management_api_lambda_exec" {
-  name               = "${local.user_management_api_lambda_name}-role"
-  assume_role_policy = data.aws_iam_policy_document.fam_user_management_api_lambda_exec_policydoc.json
+resource "aws_iam_role" "fam_admin_management_api_lambda_exec" {
+  name               = "${local.admin_management_api_lambda_name}-role"
+  assume_role_policy = data.aws_iam_policy_document.fam_admin_management_api_lambda_exec_policydoc.json
 }
 
 # Had to move COGNITO_CLIENT_ID out of ENV and into an AWS Secret because of a
@@ -126,13 +126,13 @@ resource "aws_iam_role" "fam_user_management_api_lambda_exec" {
 # when running local or in docker.
 # Need to supply COGNITO_CLIENT_ID_SECRET_NAME when deploying with terraform
 
-resource "aws_lambda_function" "fam-user-management-api-function" {
-  filename      = "fam-ui-user-management-api.zip"
-  function_name = local.user_management_api_lambda_name
-  role          = aws_iam_role.fam_user_management_api_lambda_exec.arn
+resource "aws_lambda_function" "fam-admin-management-api-function" {
+  filename      = "fam-admin-management-api.zip"
+  function_name = local.admin_management_api_lambda_name
+  role          = aws_iam_role.fam_admin_management_api_lambda_exec.arn
   handler       = "api.app.main.handler"
 
-  source_code_hash = filebase64sha256("fam-ui-user-management-api.zip")
+  source_code_hash = filebase64sha256("fam-admin-management-api.zip")
 
   runtime = "python3.8"
 
