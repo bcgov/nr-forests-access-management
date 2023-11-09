@@ -45,7 +45,8 @@ const iconClass = (item: MenuItem) => {
     <Steps
         v-if="route.meta.hasSteps && stepItems"
         :readonly="false"
-        :model="stepItems" aria-label="Form Steps"
+        :model="stepItems"
+        aria-label="Form Steps"
         :pt="{
             menuitem: ({ context }) => ({
                 class: isActive(context.item) && 'p-highlight p-steps-current'
