@@ -21,10 +21,6 @@ const props = defineProps({
 
 const route = useRoute();
 
-const isActive = (item: MenuItem) => {
-    return item.active;
-};
-
 const iconClass = (item: MenuItem) => {
     if(item.icon === IconSteps.incomplete) {
         return '';
@@ -49,7 +45,7 @@ const iconClass = (item: MenuItem) => {
         aria-label="Form Steps"
         :pt="{
             menuitem: ({ context }) => ({
-                class: isActive(context.item) && 'p-highlight p-steps-current'
+                class: context.item.active && 'p-highlight p-steps-current'
             })
         }"
     >
