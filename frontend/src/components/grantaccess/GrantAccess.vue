@@ -58,9 +58,10 @@ const formValidationSchema = object({
                 string()
                     .nullable()
                     .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
+                    .matches(/^[0-9\,\b]+$/, 'Please enter a digit or comma')
                     .matches(
-                        /^\d{8}(,\s?\d{8})*$/,
-                        'Each Forest Client ID must be 8 digits long'
+                        /^\d{8}(,?\d{8})*$/,
+                        'Please enter a Forest Client ID with 8 digits long'
                     ),
         })
         .nullable(),
@@ -117,12 +118,12 @@ const removeForestClientSection = () => {
     cleanupForestClientNumberInput();
     // remove the forest client card data
     forestClientData.value = [];
-}
+};
 
 const cleanupForestClientNumberInput = () => {
     formData.value['forestClientNumber'] = '';
     forestClientNumberVerifyErrors.value = [];
-}
+};
 
 function cancelForm() {
     formData.value = defaultFormData;
@@ -322,6 +323,7 @@ async function handleSubmit() {
 }
 
 function removeForestClientFromList(index: number) {
+    forestClientNumberVerifyErrors.value = [];
     forestClientData.value.splice(index, 1);
 }
 </script>
