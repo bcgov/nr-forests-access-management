@@ -1,5 +1,7 @@
+import json
 import logging
 import os
+import boto3
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,3 +39,57 @@ def get_allow_origins():
     allow_origins = [get_env_var("ALLOW_ORIGIN")] if is_on_aws() else ["*"]
     LOGGER.info(f"allow_origins -- {allow_origins}")
     return allow_origins
+
+
+def get_db_string():
+    """retrieves a database connection string for a variety of different
+    environments including:
+    * local dev with postgres db
+    * deployed app using amazon rds
+
+    """
+    db_conn_string = None
+
+    if is_on_aws():
+        db_conn_string = get_aws_db_string()
+    else:
+        db_conn_string = get_local_dev_db_string()
+
+    LOGGER.debug(f"Database connection url: {db_conn_string}")
+    return db_conn_string
+
+
+def get_aws_db_string():
+    secret_value = get_aws_db_secret()
+    secret_json = json.loads(secret_value["SecretString"])
+
+    username = secret_json.get("username")
+    password = secret_json.get("password")
+
+    host = get_env_var('PG_HOST')
+    port = get_env_var('PG_PORT')
+    dbname = get_env_var('PG_DATABASE')
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
+
+
+def get_local_dev_db_string():
+    username = get_env_var('POSTGRES_USER')
+    password = get_env_var('POSTGRES_PASSWORD')
+    host = get_env_var('POSTGRES_HOST')
+    port = get_env_var('POSTGRES_PORT')
+    dbname = get_env_var('POSTGRES_DB')
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
+
+
+def get_aws_db_secret():
+    secret_name = os.environ.get("DB_SECRET")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(service_name="secretsmanager", region_name=get_aws_region())
+
+    return client.get_secret_value(SecretId=secret_name)
+
+def get_aws_region():
+    env_var = "COGNITO_REGION"
+    return get_env_var(env_var)
