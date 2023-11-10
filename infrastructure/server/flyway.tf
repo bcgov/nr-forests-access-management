@@ -243,8 +243,8 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
         "placeholders": {
           "api_db_username" : "${local.flyway_db_creds.username}",
           "api_db_password" : "md5${md5(join("", [local.flyway_db_creds.password, local.flyway_db_creds.username]))}",
-          "admin_management_api_db_username" : "${local.flyway_db_admin_management_api_creds.username}",,
-          "admin_management_api_db_password" : "md5${md5(join("", [local.flyway_db_admin_management_api_creds.password, local.flyway_db_admin_management_api_creds.username]))}",
+          # "admin_management_api_db_username" : "${local.flyway_db_admin_management_api_creds.username}",,
+          # "admin_management_api_db_password" : "md5${md5(join("", [local.flyway_db_admin_management_api_creds.password, local.flyway_db_admin_management_api_creds.username]))}",
           "auth_lambda_db_user" : "${local.flyway_db_auth_creds.username}",
           "auth_lambda_db_password" : "md5${md5(join("", [local.flyway_db_auth_creds.password, local.flyway_db_auth_creds.username]))}",
           "client_id_fam_console" : "${aws_cognito_user_pool_client.fam_console_oidc_client.id}",
