@@ -1,3 +1,7 @@
 pytest==7.2.0
 testcontainers==3.7.1
 testcontainers-core==0.0.1rc1
+
+# used to create test JWT
+pycryptodome==3.16.0
+
