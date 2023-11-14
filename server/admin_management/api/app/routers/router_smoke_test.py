@@ -2,9 +2,10 @@ import logging
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from .. import database
+
 from api.app.models import model as models
 from api.app.routers.router_guards import authorize_by_fam_admin
+from api.app import database
 
 LOGGER = logging.getLogger(__name__)
 
