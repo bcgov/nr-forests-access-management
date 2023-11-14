@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - "feat/884-user-management-lambda"
 
 jobs:
   ci-auth:
