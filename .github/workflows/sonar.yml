@@ -120,7 +120,7 @@ jobs:
 
       - name: Tests and coverage
         run: |
-          cd server/auth_management
+          cd server/admin_management
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
           pytest --cov=. --cov-branch --cov-report=xml \
