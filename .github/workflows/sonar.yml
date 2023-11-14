@@ -108,6 +108,7 @@ jobs:
       POSTGRES_HOST: localhost
       POSTGRES_DB: fam
       POSTGRES_PORT: 5432
+      USE_POSTGRES: false
     steps:
       - uses: actions/checkout@v4
         with:
