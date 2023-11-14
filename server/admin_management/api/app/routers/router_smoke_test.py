@@ -23,11 +23,11 @@ def smoke_test(
 
     try:
         fam_apps = db.query(models.FamApplication).all()
-        if len(fam_apps) == 0:
+        if fam_apps is None:
             response.status_code = 417
         else:
             response.status_code = 200
-        return f"succcss + {response.status_code}"
+        return f"success + {response.status_code} + {len(fam_apps)}"
 
     except Exception as e:
         LOGGER.exception(e)
