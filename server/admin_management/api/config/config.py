@@ -93,3 +93,36 @@ def get_aws_db_secret():
 def get_aws_region():
     env_var = "COGNITO_REGION"
     return get_env_var(env_var)
+
+_client_id = None
+
+def get_oidc_client_id():
+
+    # Outside of AWS, you can set COGNITO_CLIENT_ID
+    # Inside AWS, you have to get this value from an AWS Secret
+
+    global _client_id
+
+    if not _client_id:
+        client_id_secret_name = os.environ.get("COGNITO_CLIENT_ID_SECRET")
+        if client_id_secret_name:
+            session = boto3.session.Session()
+            client = session.client(
+                service_name="secretsmanager", region_name=get_aws_region()
+            )
+            secret_value = client.get_secret_value(SecretId=client_id_secret_name)
+            LOGGER.info(f"Secret retrieved -- value: [{secret_value}]")
+            _client_id = secret_value["SecretString"]
+
+    if not _client_id:
+        _client_id = os.environ.get("COGNITO_CLIENT_ID")
+
+    return _client_id
+
+def get_user_pool_domain_name():
+    env_var = "COGNITO_USER_POOL_DOMAIN"
+    return get_env_var(env_var)
+
+def get_user_pool_id():
+    env_var = "COGNITO_USER_POOL_ID"
+    return get_env_var(env_var)

@@ -1,18 +1,19 @@
 import logging
-
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
+
 from .. import database
 from api.app.models import model as models
+from api.app.routers.router_guards import authorize_by_fam_admin
 
 LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("", status_code=200)
+@router.get("", status_code=200, dependencies=[Depends(authorize_by_fam_admin)])
 def smoke_test(
     response: Response,
-    db: Session = Depends(database.get_db),
+    db: Session = Depends(database.get_db)
 ):
 
     """
