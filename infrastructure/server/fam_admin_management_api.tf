@@ -4,10 +4,6 @@ data "aws_secretsmanager_secret" "db_admin_management_api_creds_secret" {
   name = aws_secretsmanager_secret.famdb_admin_management_apicreds_secret.name
 }
 
-data "aws_secretsmanager_secret" "fam_oidc_client_id_secret" {
-  name = aws_secretsmanager_secret.fam_oidc_client_id_secret.name
-}
-
 data "aws_rds_cluster" "admin_management_api_database" {
   cluster_identifier = var.famdb_cluster_name
   depends_on = [
