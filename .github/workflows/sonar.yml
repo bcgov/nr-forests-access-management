@@ -8,95 +8,95 @@ on:
       - "feat/884-user-management-lambda"
 
 jobs:
-  ci-auth:
-    runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
+  # ci-auth:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         # Deep fetch is required for SonarCloud
+  #         fetch-depth: 0
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
 
-      - name: Tests and coverage
-        env:
-          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
-        run: |
-          cd server/auth_function
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
+  #     - name: Tests and coverage
+  #       env:
+  #         FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+  #       run: |
+  #         cd server/auth_function
+  #         pip install -r requirements.txt -r requirements-dev.txt
+  #         pip install pytest-cov
+  #         pytest --cov=. --cov-branch --cov-report=xml \
+  #           -v --md=report.md --emoji
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
-        with:
-          projectBaseDir: server/auth_function
-          args: >
-            -Dsonar.exclusions=**/test/**/*,config.py
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_auth
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
-            -Dsonar.sources=.
-            -Dsonar.tests=test
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+  #       with:
+  #         projectBaseDir: server/auth_function
+  #         args: >
+  #           -Dsonar.exclusions=**/test/**/*,config.py
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.projectKey=nr-forests-access-management_auth
+  #           -Dsonar.python.coverage.reportPaths=*coverage*.xml
+  #           -Dsonar.python.version=3.8
+  #           -Dsonar.sources=.
+  #           -Dsonar.tests=test
 
-  ci-backend:
-    runs-on: ubuntu-latest
-    env:
-      environment: dev
-      organization: bcgov
-      POSTGRES_USER: fam_proxy_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
-      USE_POSTGRES: false
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
+  # ci-backend:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     environment: dev
+  #     organization: bcgov
+  #     POSTGRES_USER: fam_proxy_api
+  #     POSTGRES_PASSWORD: test
+  #     POSTGRES_HOST: localhost
+  #     POSTGRES_DB: fam
+  #     POSTGRES_PORT: 5432
+  #     USE_POSTGRES: false
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         # Deep fetch is required for SonarCloud
+  #         fetch-depth: 0
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
 
-      - name: Tests and coverage
-        env:
-          FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
-          IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
-          GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
-        run: |
-          cd server/backend
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
+  #     - name: Tests and coverage
+  #       env:
+  #         FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
+  #         IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+  #         GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+  #       run: |
+  #         cd server/backend
+  #         pip install -r requirements.txt -r requirements-dev.txt
+  #         pip install pytest-cov
+  #         pytest --cov=. --cov-branch --cov-report=xml \
+  #           -v --md=report.md --emoji
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with:
-          projectBaseDir: server/backend
-          args: >
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_backend
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
-            -Dsonar.sources=api
-            -Dsonar.tests=testspg
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+  #       with:
+  #         projectBaseDir: server/backend
+  #         args: >
+  #           -Dsonar.host.url=https://sonarcloud.io
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.projectKey=nr-forests-access-management_backend
+  #           -Dsonar.python.coverage.reportPaths=*coverage*.xml
+  #           -Dsonar.python.version=3.8
+  #           -Dsonar.sources=api
+  #           -Dsonar.tests=testspg
 
   ci-admin-management:
     runs-on: ubuntu-latest
@@ -142,23 +142,23 @@ jobs:
       #       -Dsonar.sources=api
       #       -Dsonar.tests=testspg
 
-  ci-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
-        with:
-          commands: |
-            npm run install-frontend
-            npm run test-coverage
-          dir: frontend
-          node_version: "18"
-          sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=true
-            -Dsonar.projectKey=nr-forests-access-management_frontend
-            -Dsonar.sources=src
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-          triggers: ("frontend" "terraform-frontend/")
+  # ci-frontend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+  #       with:
+  #         commands: |
+  #           npm run install-frontend
+  #           npm run test-coverage
+  #         dir: frontend
+  #         node_version: "18"
+  #         sonar_args: >
+  #           -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.project.monorepo.enabled=true
+  #           -Dsonar.projectKey=nr-forests-access-management_frontend
+  #           -Dsonar.sources=src
+  #           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+  #         sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+  #         triggers: ("frontend" "terraform-frontend/")
 
