@@ -308,11 +308,11 @@ class FamUser(Base):
     cognito_user_id = Column(String(100))
     update_user = Column(
         String(30),
-        comment="The user or proxy account that created or last updated the " "record.",
+        comment="The user or proxy account that created or last updated the record.",
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,""
         comment="The date and time the record was created or last updated.",
     )
 
@@ -399,7 +399,6 @@ class FamApplicationClient(Base):
         + "record. ",
     )
     update_date = Column(
-        # String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),

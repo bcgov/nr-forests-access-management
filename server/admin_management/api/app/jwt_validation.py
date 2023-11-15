@@ -102,8 +102,7 @@ def validate_token(
             status_code=401,
             detail={
                 "code": ERROR_INVALID_ALGORITHM,
-                "description": "Invalid header. "
-                "Use an RS256 signed JWT Access Token",
+                "description": "Invalid header. Use an RS256 signed JWT Access Token",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -113,7 +112,7 @@ def validate_token(
             status_code=401,
             detail={
                 "code": ERROR_MISSING_KID,
-                "description": "Invalid header. " "No KID in token header",
+                "description": "Invalid header. No KID in token header",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -126,8 +125,7 @@ def validate_token(
             status_code=401,
             detail={
                 "code": ERROR_NO_RSA_KEY,
-                "description": "Invalid header. "
-                "Unable to find jwks key referenced in token",
+                "description": "Invalid header. Unable to find jwks key referenced in token",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
