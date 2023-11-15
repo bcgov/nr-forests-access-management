@@ -125,21 +125,21 @@ jobs:
           pytest --cov=. --cov-branch --cov-report=xml \
             -v --md=report.md --emoji
 
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN_MANAGEMENT}}
-      #   with:
-      #     projectBaseDir: server/admin_management
-      #     args: >
-      #       -Dsonar.host.url=https://sonarcloud.io
-      #       -Dsonar.organization=bcgov-sonarcloud
-      #       -Dsonar.projectKey=nr-forests-access-management_admin
-      #       -Dsonar.python.coverage.reportPaths=*coverage*.xml
-      #       -Dsonar.python.version=3.8
-      #       -Dsonar.sources=api
-      #       -Dsonar.tests=tests
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN }}
+        with:
+          projectBaseDir: server/admin_management
+          args: >
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forests-access-management_admin
+            -Dsonar.python.coverage.reportPaths=*coverage*.xml
+            -Dsonar.python.version=3.8
+            -Dsonar.sources=api
+            -Dsonar.tests=tests
 
   ci-frontend:
     runs-on: ubuntu-latest
