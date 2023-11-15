@@ -312,7 +312,7 @@ class FamUser(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.utcnow,""
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
