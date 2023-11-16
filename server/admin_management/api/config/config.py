@@ -94,7 +94,9 @@ def get_aws_region():
     env_var = "COGNITO_REGION"
     return get_env_var(env_var)
 
+
 _client_id = None
+
 
 def get_oidc_client_id():
 

@@ -35,9 +35,9 @@ app = FastAPI(
     description=description,
     version="0.0.1",
     contact={
-        "name": "Guy Lafleur",
-        "url": "https://en.wikipedia.org/wiki/Guy_Lafleur",
-        "email": "guy.lafleur@montreal.canadians.ca",
+        "name": "Team Heartwood",
+        "url": "https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Team+Heartwood",
+        "email": "SIBIFSAF@Victoria1.gov.bc.ca",
     },
     license_info={
         "name": "Apache 2.0",

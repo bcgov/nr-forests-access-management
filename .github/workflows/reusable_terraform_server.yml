@@ -105,7 +105,7 @@ jobs:
           path: ./infrastructure/server/fam-ui-api.zip
           if-no-files-found: error
 
-      - name: Install and Package Dependencies - FAM User Management API
+      - name: Install and Package Dependencies - FAM Admin Management API
         run: |
           cd server/admin_management
           mkdir packaging
@@ -121,7 +121,7 @@ jobs:
           mv fam-admin-management-api.zip ../infrastructure/server
           cd ..
 
-      - name: Upload zip file artifact - FAM API
+      - name: Upload zip file artifact - FAM Admin Management API
         uses: actions/upload-artifact@v3
         with:
           name: fam-admin-management-api
