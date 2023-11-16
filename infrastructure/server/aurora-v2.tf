@@ -172,6 +172,44 @@ resource "aws_secretsmanager_secret_version" "famdb_apicreds_secret_version" {
 EOF
 }
 
+# Create Admin Management API Lambda DB User Credentials
+
+resource "random_password" "famdb_admin_management_api_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+variable "famdb_admin_management_api_username" {
+  description = "The username for the DB admin management api user"
+  type        = string
+  default     = "fam_admin_management_api"
+  sensitive   = true
+}
+
+resource "random_pet" "admin_management_api_creds_secret_name" {
+  prefix = "famdb-admin-management-api-creds"
+  length = 2
+}
+
+resource "aws_secretsmanager_secret" "famdb_admin_management_apicreds_secret" {
+  name = random_pet.admin_management_api_creds_secret_name.id
+
+  tags = {
+    managed-by = "terraform"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "famdb_admin_management_apicreds_secret_version" {
+  secret_id     = aws_secretsmanager_secret.famdb_admin_management_apicreds_secret.id
+  secret_string = <<EOF
+   {
+    "username": "${var.famdb_admin_management_api_username}",
+    "password": "${random_password.famdb_admin_management_api_password.result}"
+   }
+EOF
+}
+
 # Create Auth Lambda DB User Credentials
 
 variable "famdb_auth_lambda_user" {
@@ -250,6 +288,7 @@ resource "aws_iam_role_policy" "famdb_api_user_rds_proxy_secret_access_policy" {
         ],
         "Resource": [
           "${aws_secretsmanager_secret.famdb_apicreds_secret.arn}",
+          "${aws_secretsmanager_secret.famdb_admin_management_apicreds_secret.arn}",
           "${aws_secretsmanager_secret.famdb_auth_lambda_creds_secret.arn}"
         ]
       }
@@ -276,6 +315,13 @@ resource "aws_db_proxy" "famdb_proxy_api" {
     description = "API Lambda User"
     iam_auth    = "DISABLED"
     secret_arn  = aws_secretsmanager_secret.famdb_apicreds_secret.arn
+  }
+
+  auth {
+    auth_scheme = "SECRETS"
+    description = "Admin Management API Lambda User"
+    iam_auth    = "DISABLED"
+    secret_arn  = aws_secretsmanager_secret.famdb_admin_management_apicreds_secret.arn
   }
 
   auth {
