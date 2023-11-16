@@ -285,9 +285,9 @@ const composeAndPushNotificationMessages = (
 };
 
 const handleSubmit = async () => {
-    const submittedSuccessList: string[] = [];
-    const submittedWarningList: string[] = [];
-    const submittedErrorList: string[] = [];
+    const successForestClientIdList: string[] = [];
+    const warningForestClientIdList: string[] = [];
+    const errorForestClientIdList: string[] = [];
 
     do {
         const item = forestClientData.value.pop();
@@ -296,19 +296,19 @@ const handleSubmit = async () => {
         await userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
-                submittedSuccessList.push(
+                successForestClientIdList.push(
                     item?.forest_client_number ? item.forest_client_number : ''
                 );
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    submittedWarningList.push(
+                    warningForestClientIdList.push(
                         item?.forest_client_number
                             ? item?.forest_client_number
                             : ''
                     );
                 } else {
-                    submittedErrorList.push(
+                    errorForestClientIdList.push(
                         item?.forest_client_number
                             ? item.forest_client_number
                             : ''
@@ -318,9 +318,9 @@ const handleSubmit = async () => {
     } while (forestClientData.value.length > 0);
 
     composeAndPushNotificationMessages(
-        submittedSuccessList,
-        submittedWarningList,
-        submittedErrorList
+        successForestClientIdList,
+        warningForestClientIdList,
+        errorForestClientIdList
     );
 
     router.push('/dashboard');
