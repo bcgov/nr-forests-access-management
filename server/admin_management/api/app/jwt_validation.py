@@ -5,8 +5,12 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
 
-from api.config.config import (get_aws_region, get_oidc_client_id,
-                               get_user_pool_domain_name, get_user_pool_id)
+from api.config.config import (
+    get_aws_region,
+    get_oidc_client_id,
+    get_user_pool_domain_name,
+    get_user_pool_id,
+)
 
 
 JWT_GROUPS_KEY = "cognito:groups"
@@ -38,6 +42,7 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 _jwks = None
+
 
 def init_jwks():
     global _jwks

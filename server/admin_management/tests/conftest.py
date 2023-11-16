@@ -110,4 +110,3 @@ def override_get_rsa_key_method_none():
 
 def override_get_rsa_key_none(kid):
     return None
-

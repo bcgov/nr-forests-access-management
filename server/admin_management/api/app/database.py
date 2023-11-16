@@ -1,4 +1,3 @@
-
 import logging
 
 from sqlalchemy import create_engine
@@ -29,9 +28,9 @@ def get_db():
                 _db_url = config.get_db_string()
             engine = create_engine(_db_url, echo=False)
             LOGGER.debug("database engine created!")
-            _session_local = sessionmaker(autocommit=False,
-                                          autoflush=False,
-                                          bind=engine)
+            _session_local = sessionmaker(
+                autocommit=False, autoflush=False, bind=engine
+            )
 
         db = _session_local()
         yield db

@@ -68,8 +68,7 @@ class FamApplication(Base):
     )
     fam_role = relationship("FamRole", back_populates="application")
     fam_application_admin = relationship(
-        "FamApplicationAdmin",
-        back_populates="application"
+        "FamApplicationAdmin", back_populates="application"
     )
     __table_args__ = (
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
@@ -88,7 +87,7 @@ class FamApplication(Base):
     )
 
     def __repr__(self):
-        return f'FamApplication({self.application_id}, {self.application_name}, {self.app_environment})'
+        return f"FamApplication({self.application_id}, {self.application_name}, {self.app_environment})"
 
 
 class FamApplicationAdmin(Base):
@@ -98,20 +97,20 @@ class FamApplicationAdmin(Base):
         ForeignKeyConstraint(
             ["application_id"],
             ["app_fam.fam_application.application_id"],
-            name="reffam_application_admin_application"
+            name="reffam_application_admin_application",
         ),
         ForeignKeyConstraint(
             ["user_id"],
             ["app_fam.fam_user.user_id"],
-            name="reffam_application_admin_user"
+            name="reffam_application_admin_user",
         ),
         {
-            "comment": "Application Admin is a cross-reference object that " +
-            "allows for the identification of who are the " +
-            "administrators(User) for an Application, as well as which " +
-            " Applications the User can administer.",
-            'schema': 'app_fam'
-        }
+            "comment": "Application Admin is a cross-reference object that "
+            + "allows for the identification of who are the "
+            + "administrators(User) for an Application, as well as which "
+            + " Applications the User can administer.",
+            "schema": "app_fam",
+        },
     )
     application_admin_id = Column(
         BigInteger,
@@ -121,22 +120,22 @@ class FamApplicationAdmin(Base):
             minvalue=1,
             maxvalue=9223372036854775807,
             cycle=False,
-            cache=1
+            cache=1,
         ),
         primary_key=True,
-        comment="Automatically generated key used to identify the " +
-        "uniqueness of a User administers the Application."
+        comment="Automatically generated key used to identify the "
+        + "uniqueness of a User administers the Application.",
     )
     user_id = Column(
         BigInteger,
         nullable=False,
         index=True,
-        comment="Unique ID to reference and identify the user within FAM system."
+        comment="Unique ID to reference and identify the user within FAM system.",
     )
     application_id = Column(
         BigInteger,
-        comment="Unique ID to reference and identify the application within " +
-        "FAM system.",
+        comment="Unique ID to reference and identify the application within "
+        + "FAM system.",
     )
     create_user = Column(
         String(30),
@@ -317,10 +316,10 @@ class FamUser(Base):
     )
 
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
-    user_type_relation = relationship("FamUserType", backref="user_relation", lazy="joined")
-    fam_application_admin = relationship(
-        "FamApplicationAdmin", back_populates="user"
+    user_type_relation = relationship(
+        "FamUserType", backref="user_relation", lazy="joined"
     )
+    fam_application_admin = relationship("FamApplicationAdmin", back_populates="user")
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
@@ -521,7 +520,9 @@ class FamRole(Base):
     )
 
     application = relationship("FamApplication", back_populates="fam_role")
-    client_number = relationship("FamForestClient", back_populates="fam_role", lazy="joined")
+    client_number = relationship(
+        "FamForestClient", back_populates="fam_role", lazy="joined"
+    )
     parent_role = relationship(
         "FamRole", remote_side=[role_id], back_populates="parent_role_reverse"
     )

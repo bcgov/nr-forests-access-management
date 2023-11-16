@@ -11,11 +11,9 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.get("", status_code=200, dependencies=[Depends(authorize_by_fam_admin)])
-def smoke_test(
-    response: Response,
-    db: Session = Depends(database.get_db)
-):
+def smoke_test(response: Response, db: Session = Depends(database.get_db)):
 
     """
     List of different applications that are administered by FAM
