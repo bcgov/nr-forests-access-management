@@ -58,9 +58,10 @@ const formValidationSchema = object({
                 string()
                     .nullable()
                     .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
+                    .matches(/^[0-9,\b]+$/, 'Please enter a digit or comma')
                     .matches(
-                        /^\d{8}(,\s?\d{8})*$/,
-                        'Each Forest Client ID must be 8 digits long'
+                        /^\d{8}(,?\d{8})*$/,
+                        'Please enter a Forest Client ID with 8 digits long'
                     ),
         })
         .nullable(),
@@ -117,12 +118,12 @@ const removeForestClientSection = () => {
     cleanupForestClientNumberInput();
     // remove the forest client card data
     forestClientData.value = [];
-}
+};
 
 const cleanupForestClientNumberInput = () => {
     formData.value['forestClientNumber'] = '';
     forestClientNumberVerifyErrors.value = [];
-}
+};
 
 function cancelForm() {
     formData.value = defaultFormData;
@@ -215,7 +216,7 @@ function areVerificationsPassed() {
 
 function toRequestPayload(
     formData: any,
-    forestClientData: FamForestClient | null
+    forestClientData: FamForestClient | undefined
 ) {
     const request = {
         user_name: formData.userId,
@@ -234,94 +235,99 @@ function toRequestPayload(
     return request;
 }
 
-async function handleSubmit() {
-    if (forestClientData.value.length > 0) {
-        const successList: string[] = [];
-        const warningList: string[] = [];
-        const errorList: string[] = [];
-        for (const item of forestClientData.value) {
-            const data = toRequestPayload(formData.value, item);
+const composeAndPushNotificationMessages = (
+    successIdList: string[],
+    warningIdList: string[],
+    errorIdList: string[]
+) => {
+    const username = formData.value.userId.toUpperCase();
+    if (successIdList.length > 0) {
+        pushNotification(
+            Severity.success,
+            `${username} ${
+                successIdList[0] === ''
+                    ? `was successfully added with the role ${
+                          getSelectedRole()?.role_name
+                      }`
+                    : `was successfully added with Client IDs: ${successIdList.join(
+                          ', '
+                      )}`
+            }`
+        );
+    }
+    if (warningIdList.length > 0) {
+        pushNotification(
+            Severity.warning,
+            `${username} ${
+                warningIdList[0] === ''
+                    ? `already exists with the role ${
+                          getSelectedRole()?.role_name
+                      }`
+                    : `already exists with Client IDs: ${warningIdList.join(
+                          ', '
+                      )}`
+            }`
+        );
+    }
+    if (errorIdList.length > 0) {
+        pushNotification(
+            Severity.error,
+            `An error has occured. ${username} ${
+                errorIdList[0] === ''
+                    ? `could not be added with the role ${
+                          getSelectedRole()?.role_name
+                      }`
+                    : `was not added with Client IDs: ${errorIdList.join(', ')}`
+            }`
+        );
+    }
+    return '';
+};
 
-            await userRoleAssignmentApi
-                .createUserRoleAssignment(data as FamUserRoleAssignmentCreate)
-                .then(() => {
-                    successList.push(item.forest_client_number);
-                })
-                .catch((error) => {
-                    if (error.response?.status === 409) {
-                        warningList.push(item.forest_client_number);
-                    } else {
-                        errorList.push(item.forest_client_number);
-                    }
-                });
-        }
+const handleSubmit = async () => {
+    const successForestClientIdList: string[] = [];
+    const warningForestClientIdList: string[] = [];
+    const errorForestClientIdList: string[] = [];
 
-        if (successList.length > 0) {
-            pushNotification(
-                Severity.success,
-                `${
-                    formData.value.userId
-                } was successfully added with Client IDs: ${successList.join(
-                    ', '
-                )}`
-            );
-        }
-        if (warningList.length > 0) {
-            pushNotification(
-                Severity.warning,
-                `${
-                    formData.value.userId
-                } already exists with Client IDs: ${warningList.join(', ')}`
-            );
-        }
-        if (errorList.length > 0) {
-            pushNotification(
-                Severity.error,
-                `${
-                    formData.value.userId
-                } was not added with Client IDs: ${errorList.join(', ')}`
-            );
-        }
-    } else {
-        const data = toRequestPayload(formData.value, null);
+    do {
+        const item = forestClientData.value.pop();
+        const data = toRequestPayload(formData.value, item);
+
         await userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
-                pushNotification(
-                    Severity.success,
-                    `${
-                        formData.value.userId
-                    } was successfully added with the role ${
-                        getSelectedRole()?.role_name
-                    }`
+                successForestClientIdList.push(
+                    item?.forest_client_number ? item.forest_client_number : ''
                 );
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    pushNotification(
-                        Severity.warning,
-                        `${
-                            formData.value.userId
-                        } already exists with the role ${
-                            getSelectedRole()?.role_name
-                        }`
+                    warningForestClientIdList.push(
+                        item?.forest_client_number
+                            ? item?.forest_client_number
+                            : ''
                     );
                 } else {
-                    pushNotification(
-                        Severity.error,
-                        `An error has occured. ${
-                            formData.value.userId
-                        } could not be added with the role ${
-                            getSelectedRole()?.role_name
-                        }.`
+                    errorForestClientIdList.push(
+                        item?.forest_client_number
+                            ? item.forest_client_number
+                            : ''
                     );
                 }
             });
-    }
+    } while (forestClientData.value.length > 0);
+
+    composeAndPushNotificationMessages(
+        successForestClientIdList,
+        warningForestClientIdList,
+        errorForestClientIdList
+    );
+
     router.push('/dashboard');
-}
+};
 
 function removeForestClientFromList(index: number) {
+    forestClientNumberVerifyErrors.value = [];
     forestClientData.value.splice(index, 1);
 }
 </script>
