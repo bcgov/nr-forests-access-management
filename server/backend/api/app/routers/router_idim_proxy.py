@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("/idir", response_model=IdimProxyIdirInfo, dependencies=[Depends(internal_only_action)])
 def idir_search(
-    user_id: str = Query(max_length=15),
+    user_id: str = Query(max_length=20),
     # user_id: str = Annotated[str, Query(max_length=15)], # Although 'Annotated' is recommended by FastAPI, however, using Annotated has a bug
                                                            # It will throw pydantic.error_wrappers.ValidationError which is 500, not 422 we need.
                                                            # known issue: https://github.com/tiangolo/fastapi/issues/4974
