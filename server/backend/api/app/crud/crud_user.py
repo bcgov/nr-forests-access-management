@@ -1,7 +1,7 @@
 import logging
 
 from api.app.models import model as models
-from sqlalchemy.orm import Session, load_only
+from sqlalchemy.orm import Session
 
 from .. import schemas
 
