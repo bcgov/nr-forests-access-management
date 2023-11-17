@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse
 from mangum import Mangum
 
 from api.config.config import get_root_path, get_allow_origins
-from api.app.routers import router_smoke_test
+from api.app.routers import router_smoke_test, router_application_admin
 
 
 logConfigFile = os.path.join(
@@ -57,6 +57,11 @@ app.add_middleware(
 
 app.include_router(
     router_smoke_test.router, prefix=apiPrefix + "/smoke_test", tags=["Smoke Test"]
+)
+app.include_router(
+    router_application_admin.router,
+    prefix=apiPrefix + "/application_admin",
+    tags=["FAM Application Admin"],
 )
 
 
