@@ -80,3 +80,9 @@ class ApplicationAdminService:
         return self.application_admin_repo.get_application_admin_by_id(
             application_admin_id
         )
+
+    def delete_application_admin(self, application_admin_id: int):
+        print(879324, application_admin_id)
+        return self.application_admin_repo.delete_application_admin(
+            application_admin_id
+        )

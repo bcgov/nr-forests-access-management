@@ -87,7 +87,7 @@ async def get_target_user_from_id(
     if "application_admin_id" in request.path_params:
         application_admin_service = ApplicationAdminService(db)
         application_admin = application_admin_service.get_application_admin_by_id(
-            request.path_params["user_role_xref_id"]
+            request.path_params["application_admin_id"]
         )
         user = user_service.find_user_by_id(application_admin.user_id)
         return TargetUser.model_validate(user) if user is not None else None

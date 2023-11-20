@@ -53,3 +53,12 @@ class ApplicationAdminRepository:
             )
             .one_or_none()
         )
+
+    def delete_application_admin(self, application_admin_id: int):
+        record = (
+            self.db.query(models.FamApplicationAdmin)
+            .filter(models.FamApplicationAdmin.application_admin_id == application_admin_id)
+            .one()
+        )
+        self.db.delete(record)
+        self.db.flush()

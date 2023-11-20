@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 
@@ -38,11 +38,9 @@ def create_application_admin(
     )
 
     try:
-        user_service = UserService(db)
         application_admin_service = ApplicationAdminService(db)
-
-        requesting_user: models.FamUser = user_service.get_user_by_cognito_user_id(
-            requester.cognito_user_id
+        requesting_user: models.FamUser = get_requesting_user(
+            db, requester.cognito_user_id
         )
         return application_admin_service.create_application_admin(
             application_admin_request, requesting_user.cognito_user_id
@@ -51,3 +49,32 @@ def create_application_admin(
     except Exception as e:
         LOGGER.exception(e)
         raise e
+
+
+@router.delete(
+    "/{application_admin_id}",
+    response_class=Response,
+    dependencies=[Depends(authorize_by_fam_admin), Depends(enforce_self_grant_guard)],
+)
+def delete_application_admin(
+    application_admin_id: int,
+    request: Request,
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester),
+):
+    try:
+        application_admin_service = ApplicationAdminService(db)
+        return application_admin_service.delete_application_admin(
+            application_admin_id
+        )
+
+    except Exception as e:
+        LOGGER.exception(e)
+        raise e
+
+
+def get_requesting_user(db: Session, cognito_user_id: str) -> models.FamUser:
+    user_service = UserService(db)
+    requester = user_service.get_user_by_cognito_user_id(db, cognito_user_id)
+    return requester
+
