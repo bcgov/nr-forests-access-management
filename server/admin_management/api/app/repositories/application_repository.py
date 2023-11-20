@@ -17,4 +17,3 @@ class ApplicationRepository:
             .filter(models.FamApplication.application_id == application_id)
             .one_or_none()
         )
-

@@ -1,6 +1,7 @@
 import logging
 from http import HTTPStatus
 from sqlalchemy.orm import Session
+from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
@@ -18,6 +19,16 @@ class ApplicationAdminService:
         self.application_admin_repo = ApplicationAdminRepository(db)
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
+
+    def get_application_admin_by_id(self, application_admin_id: int) -> schemas.FamAppAdminGet:
+        return self.application_admin_repo.get_application_admin_by_id(
+            application_admin_id
+        )
+
+    def get_application_admin_by_user_id(
+        self, user_id: int
+    ) -> List[schemas.FamAppAdminGet]:
+        return self.application_admin_repo.get_application_admin_by_user_id(user_id)
 
     def create_application_admin(
         self, request: schemas.FamAppAdminCreate, requester: str
@@ -49,8 +60,10 @@ class ApplicationAdminService:
             service_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Verify if user is admin already
-        fam_application_admin_user = self.application_admin_repo.get_application_admin(
-            request.application_id, fam_user.user_id
+        fam_application_admin_user = (
+            self.application_admin_repo.get_application_admin_by_app_and_user_id(
+                request.application_id, fam_user.user_id
+            )
         )
         if fam_application_admin_user:
             LOGGER.debug(
@@ -76,13 +89,7 @@ class ApplicationAdminService:
         )
         return app_admin_user_assignment
 
-    def get_application_admin_by_id(self, application_admin_id: int):
-        return self.application_admin_repo.get_application_admin_by_id(
-            application_admin_id
-        )
-
     def delete_application_admin(self, application_admin_id: int):
-        print(879324, application_admin_id)
         return self.application_admin_repo.delete_application_admin(
             application_admin_id
         )

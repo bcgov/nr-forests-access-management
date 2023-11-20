@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
+from typing import List
 
 
 from api.app.models import model as models
@@ -64,17 +65,36 @@ def delete_application_admin(
 ):
     try:
         application_admin_service = ApplicationAdminService(db)
-        return application_admin_service.delete_application_admin(
-            application_admin_id
-        )
+        return application_admin_service.delete_application_admin(application_admin_id)
 
     except Exception as e:
         LOGGER.exception(e)
         raise e
 
 
+@router.get(
+    "/{user_id}",
+    response_model=List[schemas.FamAppAdminGet],
+    status_code=200,
+    dependencies=[Depends(authorize_by_fam_admin)],
+)
+def get_application_admin_by_userid(
+    user_id: int,
+    db: Session = Depends(database.get_db),
+):
+    LOGGER.debug(f"Loading application admin access for user_id: {user_id}")
+    application_admin_service = ApplicationAdminService(db)
+    application_admin_access = (
+        application_admin_service.get_application_admin_by_user_id(user_id)
+    )
+    LOGGER.debug(
+        f"Finished loading application admin access - # of results = {len(application_admin_access)}"
+    )
+
+    return application_admin_access
+
+
 def get_requesting_user(db: Session, cognito_user_id: str) -> models.FamUser:
     user_service = UserService(db)
     requester = user_service.get_user_by_cognito_user_id(db, cognito_user_id)
     return requester
-

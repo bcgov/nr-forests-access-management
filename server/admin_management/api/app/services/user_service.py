@@ -12,6 +12,15 @@ class UserService:
     def __init__(self, db: Session):
         self.user_repo = UserRepository(db)
 
+    def get_user_by_domain_and_name(self, user_type_code: str, user_name: str):
+        return self.user_repo.get_user_by_domain_and_name(user_type_code, user_name)
+
+    def get_user_by_id(self, user_id: int):
+        return self.user_repo.get_user_by_id(user_id)
+
+    def get_user_by_cognito_user_id(self, cognito_user_id: str):
+        return self.user_repo.get_user_by_cognito_user_id(cognito_user_id)
+
     def find_or_create(self, user_type_code: str, user_name: str, requester: str):
         LOGGER.debug(
             f"Request for finding or creating a user with user_type: {user_type_code}, "
@@ -33,12 +42,3 @@ class UserService:
 
         LOGGER.debug(f"User {fam_user.user_id} found.")
         return fam_user
-
-    def get_user_by_domain_and_name(self, user_type_code: str, user_name: str):
-        return self.user_repo.get_user_by_domain_and_name(user_type_code, user_name)
-
-    def find_user_by_id(self, user_id: int):
-        return self.user_repo.find_user_by_id(user_id)
-
-    def get_user_by_cognito_user_id(self, cognito_user_id: str):
-        return self.user_repo.get_user_by_cognito_user_id(cognito_user_id)
