@@ -9,6 +9,8 @@ from typing_extensions import Annotated
 LOGGER = logging.getLogger(__name__)
 
 
+
+# -------------------------------------- Requester --------------------------------------- #
 # Schema classes Requester and TargetUser are for backend system used and
 # NOT intended as part of the request/respoinse body in the endpoint. Logged
 # on user with jwt token is parsed into Requester (before route handler).
@@ -34,6 +36,7 @@ class TargetUser(Requester):
     pass
 
 
+# -------------------------------------- FAM User --------------------------------------- #
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[
@@ -47,6 +50,7 @@ class FamUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# -------------------------------------- FAM Application Admin --------------------------------------- #
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreate(BaseModel):
     user_name: Annotated[

@@ -8,7 +8,7 @@ from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
 
-from api.app.crud import crud_utils
+from api.app.services import service_utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +23,9 @@ class ApplicationAdminService:
         self, request: schemas.FamAppAdminCreate, requester: str
     ) -> schemas.FamAppAdminGet:
         # Request has information: user_name, user_type_code, application_id
-        LOGGER.debug(f"Request for assigning an application admin: {request}.")
+        LOGGER.debug(
+            f"Request for assigning an application admin to a user: {request}."
+        )
 
         # Verify if user_type_code in enum (IDIR, BCEID)
         if (
@@ -31,24 +33,20 @@ class ApplicationAdminService:
             and request.user_type_code != famConstants.UserType.BCEID
         ):
             error_msg = f"Invalid user type: {request.user_type_code}."
-            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            service_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-        # Verify if user already exists or add a new user.
+        # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, requester
         )
 
-        # Verify if application exists.
+        # Verify if application exists
         fam_application = self.application_service.get_application(
             request.application_id
         )
         if not fam_application:
             error_msg = f"Application id {request.application_id} does not exist."
-            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
-        LOGGER.debug(
-            f"Application for requesting admin is found: {fam_application.application_name}"
-            + f"({request.application_id})."
-        )
+            service_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Verify if user is admin already
         fam_application_admin_user = self.application_admin_repo.get_application_admin(
@@ -60,7 +58,7 @@ class ApplicationAdminService:
                 + f"{fam_application_admin_user.application_admin_id}."
             )
             error_msg = "User is admin already."
-            crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+            service_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
         else:
             # Create application admin if user is not admin yet
             fam_application_admin_user = (
@@ -78,6 +76,7 @@ class ApplicationAdminService:
         )
         return app_admin_user_assignment
 
-
     def get_application_admin_by_id(self, application_admin_id: int):
-        return self.application_admin_repo.get_application_admin_by_id(application_admin_id)
+        return self.application_admin_repo.get_application_admin_by_id(
+            application_admin_id
+        )

@@ -14,7 +14,6 @@ from api.app.jwt_validation import (
 )
 from api.app.schemas import Requester, TargetUser
 from api.app.models.model import FamUser
-from api.app.crud import crud_user
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.user_service import UserService
 
@@ -57,8 +56,9 @@ async def get_current_requester(
     access_roles=Depends(get_access_roles),
     db: Session = Depends(database.get_db),
 ):
-    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
-        db, request_cognito_user_id
+    user_service = UserService(db)
+    fam_user: FamUser = user_service.get_user_by_cognito_user_id(
+        request_cognito_user_id
     )
     if fam_user is None:
         raise no_requester_exception
@@ -83,22 +83,19 @@ async def get_target_user_from_id(
     For requester, use "get_current_requester()" above.
     """
     # from path_param - application_admin_id, when remove admin access for a user
+    user_service = UserService(db)
     if "application_admin_id" in request.path_params:
         application_admin_service = ApplicationAdminService(db)
-        user_service = UserService(db)
         application_admin = application_admin_service.get_application_admin_by_id(
-            db, request.path_params["user_role_xref_id"]
+            request.path_params["user_role_xref_id"]
         )
         user = user_service.find_user_by_id(application_admin.user_id)
-        return (
-            TargetUser.model_validate(user) if user is not None else None
-        )
+        return TargetUser.model_validate(user) if user is not None else None
     else:
         # from body - {user_name/user_type_code}, when grant admin access
         try:
             rbody = await request.json()
-            user = crud_user.get_user_by_domain_and_name(
-                db,
+            user = user_service.get_user_by_domain_and_name(
                 rbody["user_type_code"],
                 rbody["user_name"],
             )

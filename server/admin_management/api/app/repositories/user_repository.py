@@ -28,7 +28,7 @@ class UserRepository:
         )
         return fam_user
 
-    def create_user(self, fam_user: schemas.FamUser)-> models.FamUser:
+    def create_user(self, fam_user: schemas.FamUser) -> models.FamUser:
         LOGGER.debug(f"Creating fam user: {fam_user}")
 
         fam_user_dict = fam_user.model_dump()
@@ -37,10 +37,16 @@ class UserRepository:
         self.db.flush()
         return db_item
 
-
-    def find_user_by_id(self, user_id: int)-> models.FamUser:
+    def find_user_by_id(self, user_id: int) -> models.FamUser:
         return (
             self.db.query(models.FamUser)
             .filter(models.FamUser.user_id == user_id)
+            .one_or_none()
+        )
+
+    def get_user_by_cognito_user_id(self, cognito_user_id: str) -> models.FamUser:
+        return (
+            self.db.query(models.FamUser)
+            .filter(models.FamUser.cognito_user_id == cognito_user_id)
             .one_or_none()
         )

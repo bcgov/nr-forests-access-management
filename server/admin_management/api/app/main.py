@@ -19,7 +19,7 @@ LOGGER = logging.getLogger("api.app.main")
 
 apiPrefix = ""
 description = """
-Forest Access Management API used by the Forest Access Management application
+Forest Access Management Admin Management API used by the Forest Access Management application
 to define admin access to forest applications.
 """
 
