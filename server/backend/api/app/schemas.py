@@ -61,7 +61,7 @@ class FamApplication(FamApplicationCreate):
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[Annotated[str, StringConstraints(max_length=100)]] = None  # temporarily optional
-    user_name: Annotated[str, StringConstraints(max_length=100)]
+    user_name: Annotated[str, StringConstraints(max_length=20)]
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     create_user: Annotated[str, StringConstraints(max_length=60)]
     update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
@@ -81,7 +81,7 @@ class FamRoleTypeGet(BaseModel):
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreate(BaseModel):
-    user_name: Annotated[str, StringConstraints(min_length=3, max_length=100)] # db max length
+    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)] # IDIM search max length
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[
@@ -258,13 +258,13 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 
 class IdimProxySearchParamIdir(BaseModel):
-    userId: Annotated[str, StringConstraints(max_length=15)]  # param for Idim-Proxy search of this form (not snake case)
+    userId: Annotated[str, StringConstraints(max_length=20)]  # param for Idim-Proxy search of this form (not snake case)
 
 
 class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
-    userId: Optional[Annotated[str, StringConstraints(max_length=15)]] = None
+    userId: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     displayName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
 
     @staticmethod
@@ -278,7 +278,7 @@ class IdimProxyIdirInfo(BaseModel):
 
 
 class GCNotifyGrantAccessEmailParam(BaseModel):
-    user_name: Annotated[str, StringConstraints(max_length=15)]
+    user_name: Annotated[str, StringConstraints(max_length=20)]
     application_name: Annotated[str, StringConstraints(max_length=35)]
     send_to_email: EmailStr
 
@@ -293,12 +293,13 @@ class Requester(BaseModel):
     """
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
-    user_name: Annotated[str, StringConstraints(max_length=15)]
+    user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
     access_roles: Union[List[Annotated[str, StringConstraints(max_length=50)]], None] = None
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class TargetUser(Requester):
     pass

@@ -8,6 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 REQUESTER_ACCOUNT_TYPE_INTERNAL = "Internal"
 
+
 class IdimProxyService():
     """
     The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
