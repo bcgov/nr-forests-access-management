@@ -27,10 +27,10 @@ class ApplicationAdminService:
             application_admin_id
         )
 
-    def get_application_admin_by_applicationid(
+    def get_application_admin_by_application_id(
         self, application_id: int
     ) -> List[schemas.FamAppAdminGet]:
-        return self.application_admin_repo.get_application_admin_by_applicationid(
+        return self.application_admin_repo.get_application_admin_by_application_id(
             application_id
         )
 

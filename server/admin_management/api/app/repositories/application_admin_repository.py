@@ -35,7 +35,7 @@ class ApplicationAdminRepository:
             .one_or_none()
         )
 
-    def get_application_admin_by_applicationid(
+    def get_application_admin_by_application_id(
         self, application_id: int
     ) -> List[models.FamApplicationAdmin]:
         return (

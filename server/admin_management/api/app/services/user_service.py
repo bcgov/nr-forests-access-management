@@ -15,9 +15,6 @@ class UserService:
     def get_user_by_domain_and_name(self, user_type_code: str, user_name: str):
         return self.user_repo.get_user_by_domain_and_name(user_type_code, user_name)
 
-    def get_user_by_id(self, user_id: int):
-        return self.user_repo.get_user_by_id(user_id)
-
     def get_user_by_cognito_user_id(self, cognito_user_id: str):
         return self.user_repo.get_user_by_cognito_user_id(cognito_user_id)
 

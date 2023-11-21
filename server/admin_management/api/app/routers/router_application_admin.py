@@ -129,9 +129,11 @@ def delete_application_admin(
             )
         else:
             audit_event_log.event_outcome = AuditEventOutcome.FAIL
-            audit_event_log.exception = HTTPException(
+            exception = HTTPException(
                 status_code=404, detail="Application Admin id not exists"
             )
+            audit_event_log.exception = exception
+            raise exception
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -157,7 +159,7 @@ def get_application_admin_by_applicationid(
     )
     application_admin_service = ApplicationAdminService(db)
     application_admin_access = (
-        application_admin_service.get_application_admin_by_applicationid(application_id)
+        application_admin_service.get_application_admin_by_application_id(application_id)
     )
     LOGGER.debug(
         f"Finished loading application admin access for application - # of results = {len(application_admin_access)}"
