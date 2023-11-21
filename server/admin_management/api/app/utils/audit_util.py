@@ -88,12 +88,11 @@ class AuditEventLog:
             "requestIP": self.request.client.host if self.request.client else "unknown",
         }
 
-        if self.exception:
-            if type(self.exception) == HTTPException:
-                log_item["exception"] = {
-                    "exceptionType": "HTTPException",
-                    "statusCode": self.exception.status_code,
-                    "details": self.exception.detail,
-                }
+        if self.exception and type(self.exception) == HTTPException:
+            log_item["exception"] = {
+                "exceptionType": "HTTPException",
+                "statusCode": self.exception.status_code,
+                "details": self.exception.detail,
+            }
 
         LOGGER.info(json.dumps(log_item))
