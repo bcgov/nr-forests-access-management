@@ -129,7 +129,9 @@ def delete_application_admin(
             )
         else:
             audit_event_log.event_outcome = AuditEventOutcome.FAIL
-            audit_event_log.exception = HTTPException(status_code=404, detail="Application Admin id not exists")
+            audit_event_log.exception = HTTPException(
+                status_code=404, detail="Application Admin id not exists"
+            )
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -141,22 +143,24 @@ def delete_application_admin(
 
 
 @router.get(
-    "/{user_id}",
+    "/{application_id}/admins",
     response_model=List[schemas.FamAppAdminGet],
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )
-def get_application_admin_by_userid(
-    user_id: int,
+def get_application_admin_by_applicationid(
+    application_id: int,
     db: Session = Depends(database.get_db),
 ):
-    LOGGER.debug(f"Loading application admin access for user_id: {user_id}")
+    LOGGER.debug(
+        f"Loading application admin access for application_id: {application_id}"
+    )
     application_admin_service = ApplicationAdminService(db)
     application_admin_access = (
-        application_admin_service.get_application_admin_by_user_id(user_id)
+        application_admin_service.get_application_admin_by_applicationid(application_id)
     )
     LOGGER.debug(
-        f"Finished loading application admin access - # of results = {len(application_admin_access)}"
+        f"Finished loading application admin access for application - # of results = {len(application_admin_access)}"
     )
 
     return application_admin_access

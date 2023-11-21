@@ -35,13 +35,13 @@ class ApplicationAdminRepository:
             .one_or_none()
         )
 
-    def get_application_admin_by_user_id(
-        self, user_id: int
+    def get_application_admin_by_applicationid(
+        self, application_id: int
     ) -> List[models.FamApplicationAdmin]:
         return (
             self.db.query(models.FamApplicationAdmin)
             .filter(
-                models.FamApplicationAdmin.user_id == user_id
+                models.FamApplicationAdmin.application_id == application_id
             )
             .all()
         )

@@ -20,15 +20,19 @@ class ApplicationAdminService:
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
 
-    def get_application_admin_by_id(self, application_admin_id: int) -> schemas.FamAppAdminGet:
+    def get_application_admin_by_id(
+        self, application_admin_id: int
+    ) -> schemas.FamAppAdminGet:
         return self.application_admin_repo.get_application_admin_by_id(
             application_admin_id
         )
 
-    def get_application_admin_by_user_id(
-        self, user_id: int
+    def get_application_admin_by_applicationid(
+        self, application_id: int
     ) -> List[schemas.FamAppAdminGet]:
-        return self.application_admin_repo.get_application_admin_by_user_id(user_id)
+        return self.application_admin_repo.get_application_admin_by_applicationid(
+            application_id
+        )
 
     def create_application_admin(
         self, request: schemas.FamAppAdminCreate, requester: str
