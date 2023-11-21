@@ -28,13 +28,6 @@ class UserRepository:
         )
         return fam_user
 
-    def get_user_by_id(self, user_id: int) -> models.FamUser:
-        return (
-            self.db.query(models.FamUser)
-            .filter(models.FamUser.user_id == user_id)
-            .one_or_none()
-        )
-
     def get_user_by_cognito_user_id(self, cognito_user_id: str) -> models.FamUser:
         return (
             self.db.query(models.FamUser)
