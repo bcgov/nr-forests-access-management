@@ -4,7 +4,7 @@ from http import HTTPStatus
 from api.app import constants as famConstants
 from api.app.models import model as models
 from api.app.integration.forest_client.forest_client import ForestClientService
-from sqlalchemy.orm import Session, load_only
+from sqlalchemy.orm import Session
 
 from .. import schemas
 from . import crud_forest_client, crud_role, crud_user, crud_utils

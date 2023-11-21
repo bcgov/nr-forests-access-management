@@ -2,13 +2,11 @@ import logging
 from http import HTTPStatus
 
 import testspg.jwt_utils as jwt_utils
-from api.app import jwt_validation
 from api.app.constants import UserType
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import (get_current_requester,
                                            no_requester_exception)
 from api.app.schemas import Requester
-from api.app.utils.utils import read_json_file
 from fastapi.testclient import TestClient
 from testspg.conftest import test_client_fixture
 
@@ -26,11 +24,13 @@ sample_idir_requester_dict = {
     "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
 }
 
+
 async def mock_get_current_requester_with_idir_user():
     """
     A mock for router dependency, for requester who is IDIR user.
     """
     return Requester(**sample_idir_requester_dict)
+
 
 async def mock_get_current_requester_with_none_idir_user():
     """
@@ -39,6 +39,7 @@ async def mock_get_current_requester_with_none_idir_user():
     none_idir_requester = sample_idir_requester_dict
     none_idir_requester["user_type_code"] = UserType.BCEID # Set to none-IDIR
     return Requester(**none_idir_requester)
+
 
 async def mock_get_current_requester_user_not_exists():
     """
@@ -67,6 +68,7 @@ def test_search_idir_with_valid_user_found_result(
     assert response.json()['found'] == True
     assert response.json()['userId'] == valid_user_id_param
 
+
 def test_search_idir_with_invalid_user_return_not_found(
     test_client_fixture: test_client_fixture,
     test_rsa_key
@@ -88,6 +90,7 @@ def test_search_idir_with_invalid_user_return_not_found(
     assert response.json()['found'] == False
     assert response.json()['userId'] == invalid_user_id_param
 
+
 def test_none_idir_user_cannot_search_idir_user(
     test_client_fixture: TestClient,
     test_rsa_key
@@ -107,6 +110,7 @@ def test_none_idir_user_cannot_search_idir_user(
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert "Action is not allowed for external user." in response.text
+
 
 def test_search_idir_user_requester_not_found_error_raised(
     test_client_fixture: TestClient,
