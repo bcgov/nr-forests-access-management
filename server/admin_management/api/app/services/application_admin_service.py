@@ -9,7 +9,7 @@ from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
 
-from api.app.services import service_utils
+from api.app.utils import utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class ApplicationAdminService:
             and request.user_type_code != famConstants.UserType.BCEID
         ):
             error_msg = f"Invalid user type: {request.user_type_code}."
-            service_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
@@ -57,7 +57,7 @@ class ApplicationAdminService:
         )
         if not fam_application:
             error_msg = f"Application id {request.application_id} does not exist."
-            service_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Verify if user is admin already
         fam_application_admin_user = (
@@ -71,7 +71,7 @@ class ApplicationAdminService:
                 + f"{fam_application_admin_user.application_admin_id}."
             )
             error_msg = "User is admin already."
-            service_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+            utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
         else:
             # Create application admin if user is not admin yet
             fam_application_admin_user = (
