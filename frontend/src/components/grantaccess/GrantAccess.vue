@@ -28,7 +28,7 @@ import {
 
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
-import { pushNotification} from '@/store/NotificationState';
+import { setNotificationMsg } from '@/store/NotificationState';
 
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
@@ -243,14 +243,13 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        pushNotification(Severity.success, username, successIdList);
+        setNotificationMsg(successIdList, username, Severity.success);
     }
     if (warningIdList.length > 0) {
-        pushNotification(Severity.warning, username, warningIdList);
+        setNotificationMsg(warningIdList, username, Severity.warning );
     }
     if (errorIdList.length > 0) {
-        pushNotification(
-            Severity.error, username, errorIdList);
+        setNotificationMsg(errorIdList, username, Severity.error);
     }
     return '';
 };
