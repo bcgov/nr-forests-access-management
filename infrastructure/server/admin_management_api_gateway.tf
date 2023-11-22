@@ -4,6 +4,11 @@ resource "aws_api_gateway_rest_api" "admin_management_api_gateway_rest_api" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+
+  tags = {
+    Name = "fam_admin_api_gateway"
+    managed-by = "terraform"
+  }
 }
 
 resource "aws_api_gateway_resource" "admin_management_api_gateway_resource_proxy" {
@@ -63,6 +68,10 @@ resource "aws_api_gateway_stage" "admin_management_api_gateway_stage" {
   deployment_id = aws_api_gateway_deployment.admin_management_api_gateway_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id
   stage_name    = "v1"
+
+  tags = {
+    managed-by = "terraform"
+  }
 }
 
 resource "aws_lambda_permission" "admin_management_api_lambda_permission" {
