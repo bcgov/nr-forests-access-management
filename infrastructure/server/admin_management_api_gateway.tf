@@ -73,7 +73,7 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
 
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_rest_api.admin_management_api_gateway_resource_proxy.id,
+      aws_api_gateway_resource.admin_management_api_gateway_resource_proxy.id,
       aws_api_gateway_method.admin_management_api_gateway_method_proxy.id,
       aws_api_gateway_integration.admin_management_api_gateway_integration_proxy.id
     ]))
