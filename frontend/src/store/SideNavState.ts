@@ -1,4 +1,4 @@
-import { shallowReactive, ref } from 'vue';
+import { shallowReactive } from 'vue';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 
 export const sideNavState = shallowReactive({
