@@ -30,6 +30,11 @@ resource "aws_api_gateway_integration" "admin_management_api_gateway_integration
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.fam_admin_management_api_function.invoke_arn
+
+  depends_on = [
+    "aws_api_gateway_method.admin_management_api_gateway_method_proxy",
+    "aws_lambda_function.fam_admin_management_api_function"
+  ]
 }
 
 # TODO: not sure why original api has this, comment out for now.
@@ -61,6 +66,10 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
   # ]
 
   rest_api_id = aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id
+
+  depends_on = [
+    aws_api_gateway_integration.admin_management_api_gateway_integration_proxy
+  ]
 
   triggers = {
     redeployment = sha1(jsonencode([
