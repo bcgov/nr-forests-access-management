@@ -36,7 +36,7 @@ def create_application_admin(
 ):
 
     LOGGER.debug(
-        f"Executing 'create_user_role_assignment' "
+        f"Executing 'create_application_admin' "
         f"with request: {application_admin_request}, requestor: {token_claims}"
     )
 
@@ -51,19 +51,15 @@ def create_application_admin(
         application_service = ApplicationService(db)
         user_service = UserService(db)
 
-        audit_event_log.requesting_user: models.FamUser = (
-            user_service.get_user_by_cognito_user_id(requester.cognito_user_id)
+        audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
+            requester.cognito_user_id
         )
-        audit_event_log.application: models.FamApplication = (
-            application_service.get_application(
-                application_admin_request.application_id
-            )
+        audit_event_log.application = application_service.get_application(
+            application_admin_request.application_id
         )
-        audit_event_log.target_user: models.FamUser = (
-            user_service.get_user_by_domain_and_name(
-                application_admin_request.user_type_code,
-                application_admin_request.user_name,
-            )
+        audit_event_log.target_user = user_service.get_user_by_domain_and_name(
+            application_admin_request.user_type_code,
+            application_admin_request.user_name,
         )
 
         return application_admin_service.create_application_admin(
@@ -116,13 +112,11 @@ def delete_application_admin(
             application_admin_id
         )
         if application_admin:
-            audit_event_log.requesting_user: models.FamUser = (
-                user_service.get_user_by_cognito_user_id(requester.cognito_user_id)
+            audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
+                requester.cognito_user_id
             )
-            audit_event_log.application: models.FamApplication = (
-                application_admin.application
-            )
-            audit_event_log.target_user: models.FamUser = application_admin.user
+            audit_event_log.application = application_admin.application
+            audit_event_log.target_user = application_admin.user
 
             return application_admin_service.delete_application_admin(
                 application_admin_id
@@ -130,7 +124,7 @@ def delete_application_admin(
         else:
             audit_event_log.event_outcome = AuditEventOutcome.FAIL
             exception = HTTPException(
-                status_code=404, detail="Application Admin id not exists"
+                status_code=400, detail="Application Admin id not exists"
             )
             audit_event_log.exception = exception
             raise exception
@@ -159,7 +153,9 @@ def get_application_admin_by_applicationid(
     )
     application_admin_service = ApplicationAdminService(db)
     application_admin_access = (
-        application_admin_service.get_application_admin_by_application_id(application_id)
+        application_admin_service.get_application_admin_by_application_id(
+            application_id
+        )
     )
     LOGGER.debug(
         f"Finished loading application admin access for application - # of results = {len(application_admin_access)}"

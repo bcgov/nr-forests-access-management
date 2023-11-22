@@ -89,7 +89,11 @@ async def get_target_user_from_id(
         application_admin = application_admin_service.get_application_admin_by_id(
             request.path_params["application_admin_id"]
         )
-        return TargetUser.model_validate(application_admin.user) if application_admin is not None else None
+        return (
+            TargetUser.model_validate(application_admin.user)
+            if application_admin is not None
+            else None
+        )
     else:
         # from body - {user_name/user_type_code}, when grant admin access
         try:

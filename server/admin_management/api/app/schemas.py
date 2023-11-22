@@ -54,7 +54,7 @@ class FamUser(BaseModel):
 class FamAppAdminCreate(BaseModel):
     user_name: Annotated[
         str, StringConstraints(min_length=3, max_length=20)
-    ]  # db max length
+    ]
     user_type_code: famConstants.UserType
     application_id: int
 
