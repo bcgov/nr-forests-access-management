@@ -32,8 +32,8 @@ resource "aws_api_gateway_integration" "admin_management_api_gateway_integration
   uri                     = aws_lambda_function.fam_admin_management_api_function.invoke_arn
 
   depends_on = [
-    "aws_api_gateway_method.admin_management_api_gateway_method_proxy",
-    "aws_lambda_function.fam_admin_management_api_function"
+    aws_api_gateway_method.admin_management_api_gateway_method_proxy,
+    aws_lambda_function.fam_admin_management_api_function
   ]
 }
 
