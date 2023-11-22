@@ -70,6 +70,7 @@ const closeNotification = () => {
     background-color: transparent;
     border: none;
     color: $light-link-primary;
+    padding: 0;
 }
 
 .btn-see-all:hover {
