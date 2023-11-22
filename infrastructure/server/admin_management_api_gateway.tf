@@ -104,7 +104,7 @@ resource "aws_wafv2_web_acl_association" "waf_admin_management_api_gateway_assoc
   ]
 }
 
-module "fam_api_cors" {
+module "admin_management_api_cors" {
   source  = "squidfunk/api-gateway-enable-cors/aws"
   version = "0.3.3"
 
