@@ -18,6 +18,8 @@ $dark-text-primary: map.get(darkTheme.$dark-theme, 'text-primary');
 
 //lightTheme
 $light-layer-selected-01: map.get(lightTheme.$light-theme, 'layer-selected-01');
+$light-link-primary: map.get(lightTheme.$light-theme, 'link-primary');
+$light-link-primary-hover: map.get(lightTheme.$light-theme, 'link-primary-hover');
 
 //border
 $light-border-interactive: map.get(

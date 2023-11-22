@@ -1,13 +1,15 @@
-import { sideNavState } from "@/store/SideNavState";
+import {sideNavState } from "@/store/SideNavState";
 
-export let screenSize = window.innerWidth
+export const screenSize = () => {
+     return window.innerWidth
+};
+
 
 window.addEventListener("resize", (event) => {
-    screenSize = window.innerWidth
-    sideNavState.isVisible = isDesktop()
+    sideNavState.isVisible = isDesktop();
 });
 
 
 export const isDesktop = () => {
-    return screenSize >= 1024
-}
+    return screenSize() >= 1024
+};
