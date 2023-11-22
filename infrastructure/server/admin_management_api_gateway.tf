@@ -60,11 +60,15 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
   #   # aws_api_gateway_integration.admin_management_api_gateway_integration_proxy_root
   # ]
 
-  triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id))
-  }
-
   rest_api_id = aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_rest_api.admin_management_api_gateway_resource_proxy.id,
+      aws_api_gateway_method.admin_management_api_gateway_method_proxy.id,
+      aws_api_gateway_integration.admin_management_api_gateway_integration_proxy.id
+    ]))
+  }
 
   # TODO: remove this after success deployment.
   # stage_name  = var.api_gateway_stage_name  # Terraform warns about using "stage_name" in resource "aws_api_gateway_deployment".
