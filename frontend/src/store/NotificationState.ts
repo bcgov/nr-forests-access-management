@@ -49,16 +49,16 @@ export const setNotificationMsg = (forestClientNumberList: string[], userId: any
         error: `was not added with Client ${isPlural}:`
     };
 
-    const clientIdList = forestClientNumberList.slice(0 , 3);
+    const clientIdList = forestClientNumberList.slice(0 , 2);
 
     seeAll.seeAllMsg[severity].msg = `${userId} ${msgByType[severity]} ${forestClientNumberList.join(', ')}`;
 
-    seeAll.seeAllMsg[severity].isVisible = forestClientNumberList.length > 3
+    seeAll.seeAllMsg[severity].isVisible = forestClientNumberList.length > 2
 
     const notificationMsg = `
         ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
-        ${isPlural === 'IDs' && forestClientNumberList.length > 3 ?
-        'and ' + (forestClientNumberList.length - 3) + ' more...'
+        ${isPlural === 'IDs' && forestClientNumberList.length > 2 ?
+        'and ' + (forestClientNumberList.length - 2) + ' more...'
         : ''}
     `;
     pushNotification(severity, notificationMsg);
