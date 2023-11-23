@@ -1,6 +1,6 @@
 output "fam_admin_management_api_base_url" {
   description = "Base URL for Admin Management API Gateway."
-  value       = aws_api_gateway_deployment.admin_management_api_gateway_deployment.invoke_url
+  value       = aws_api_gateway_deployment.admin_management_api_gateway_stage.invoke_url
 }
 
 output "fam_api_base_url" {
