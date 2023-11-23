@@ -12,6 +12,8 @@ from api.config.config import (
     get_user_pool_id,
 )
 
+from api.app.constants import COGNITO_USERNAME_KEY
+
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -199,3 +201,13 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
 def get_access_roles(claims: dict = Depends(authorize)):
     groups = claims[JWT_GROUPS_KEY]
     return groups
+
+
+def get_request_cognito_user_id(claims: dict = Depends(authorize)):
+    # This is NOT user's name, display name or user ID.
+    # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
+    # It is the "cognito_user_id" column for fam_user table.
+    # Example value: idir_b5ecdb094dfb4149a6a8445a0mangled0@idir
+    cognito_username = claims[COGNITO_USERNAME_KEY]
+    LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
+    return cognito_username
