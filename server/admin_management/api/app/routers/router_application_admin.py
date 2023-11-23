@@ -9,8 +9,8 @@ from api.app.routers.router_guards import (
     get_current_requester,
     authorize_by_fam_admin,
     enforce_self_grant_guard,
-    require_exist_application_admin,
-    require_exist_application,
+    validate_param_application_admin_id,
+    validate_param_application_id,
 )
 from api.app import database, jwt_validation, schemas
 from api.app.schemas import Requester
@@ -30,7 +30,7 @@ router = APIRouter()
     dependencies=[
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),
-        Depends(require_exist_application),
+        Depends(validate_param_application_id),
     ],
 )
 def create_application_admin(
@@ -95,7 +95,7 @@ def create_application_admin(
     dependencies=[
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),
-        Depends(require_exist_application_admin),
+        Depends(validate_param_application_admin_id),
     ],
 )
 def delete_application_admin(
