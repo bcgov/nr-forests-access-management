@@ -138,7 +138,7 @@ async def enforce_self_grant_guard(
             )
 
 
-def require_exist_application_admin(
+async def require_exist_application_admin(
     application_admin_id: int, db: Session = Depends(database.get_db)
 ):
     application_admin_service = ApplicationAdminService(db)
@@ -156,7 +156,7 @@ def require_exist_application_admin(
         )
 
 
-def require_exist_application(
+async def require_exist_application(
     application_admin_request: FamAppAdminCreate, db: Session = Depends(database.get_db)
 ):
     application_service = ApplicationService(db)
