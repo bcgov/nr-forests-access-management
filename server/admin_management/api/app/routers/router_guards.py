@@ -25,6 +25,7 @@ ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
+ERROR_INVALID_APPLICATION_ADMIN_ID = "invalid_application_admin_id"
 
 
 no_requester_exception = HTTPException(
@@ -134,3 +135,21 @@ async def enforce_self_grant_guard(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+
+def require_exist_application_admin(
+    application_admin_id: int, db: Session = Depends(database.get_db)
+):
+    application_admin_service = ApplicationAdminService(db)
+    application_admin = application_admin_service.get_application_admin_by_id(
+        application_admin_id
+    )
+    if not application_admin:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_APPLICATION_ADMIN_ID,
+                "description": f"Application Admin ID {application_admin_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )

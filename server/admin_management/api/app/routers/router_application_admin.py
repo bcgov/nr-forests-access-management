@@ -9,6 +9,7 @@ from api.app.routers.router_guards import (
     get_current_requester,
     authorize_by_fam_admin,
     enforce_self_grant_guard,
+    require_exist_application_admin,
 )
 from api.app import database, jwt_validation, schemas
 from api.app.schemas import Requester
@@ -86,7 +87,11 @@ def create_application_admin(
 @router.delete(
     "/{application_admin_id}",
     response_class=Response,
-    dependencies=[Depends(authorize_by_fam_admin), Depends(enforce_self_grant_guard)],
+    dependencies=[
+        Depends(authorize_by_fam_admin),
+        Depends(enforce_self_grant_guard),
+        Depends(require_exist_application_admin),
+    ],
 )
 def delete_application_admin(
     application_admin_id: int,
@@ -111,23 +116,13 @@ def delete_application_admin(
         application_admin = application_admin_service.get_application_admin_by_id(
             application_admin_id
         )
-        if application_admin:
-            audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
-                requester.cognito_user_id
-            )
-            audit_event_log.application = application_admin.application
-            audit_event_log.target_user = application_admin.user
+        audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
+            requester.cognito_user_id
+        )
+        audit_event_log.application = application_admin.application
+        audit_event_log.target_user = application_admin.user
 
-            return application_admin_service.delete_application_admin(
-                application_admin_id
-            )
-        else:
-            audit_event_log.event_outcome = AuditEventOutcome.FAIL
-            exception = HTTPException(
-                status_code=400, detail="Application Admin id not exists"
-            )
-            audit_event_log.exception = exception
-            raise exception
+        return application_admin_service.delete_application_admin(application_admin_id)
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
