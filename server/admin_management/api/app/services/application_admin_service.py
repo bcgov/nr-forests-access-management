@@ -42,26 +42,10 @@ class ApplicationAdminService:
             f"Request for assigning an application admin to a user: {request}."
         )
 
-        # Verify if user_type_code in enum (IDIR, BCEID)
-        if (
-            request.user_type_code != famConstants.UserType.IDIR
-            and request.user_type_code != famConstants.UserType.BCEID
-        ):
-            error_msg = f"Invalid user type: {request.user_type_code}."
-            utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
-
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, requester
         )
-
-        # Verify if application exists
-        fam_application = self.application_service.get_application(
-            request.application_id
-        )
-        if not fam_application:
-            error_msg = f"Application id {request.application_id} does not exist."
-            utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Verify if user is admin already
         fam_application_admin_user = (

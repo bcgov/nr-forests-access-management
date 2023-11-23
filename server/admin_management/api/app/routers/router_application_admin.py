@@ -10,6 +10,7 @@ from api.app.routers.router_guards import (
     authorize_by_fam_admin,
     enforce_self_grant_guard,
     require_exist_application_admin,
+    require_exist_application,
 )
 from api.app import database, jwt_validation, schemas
 from api.app.schemas import Requester
@@ -26,7 +27,11 @@ router = APIRouter()
 @router.post(
     "",
     response_model=schemas.FamAppAdminGet,
-    dependencies=[Depends(authorize_by_fam_admin), Depends(enforce_self_grant_guard)],
+    dependencies=[
+        Depends(authorize_by_fam_admin),
+        Depends(enforce_self_grant_guard),
+        Depends(require_exist_application),
+    ],
 )
 def create_application_admin(
     application_admin_request: schemas.FamAppAdminCreate,

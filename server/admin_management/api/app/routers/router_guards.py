@@ -12,10 +12,11 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
-from api.app.schemas import Requester, TargetUser
+from api.app.schemas import Requester, TargetUser, FamAppAdminCreate
 from api.app.models.model import FamUser
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.user_service import UserService
+from api.app.services.application_service import ApplicationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -150,6 +151,24 @@ def require_exist_application_admin(
             detail={
                 "code": ERROR_INVALID_APPLICATION_ADMIN_ID,
                 "description": f"Application Admin ID {application_admin_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+def require_exist_application(
+    application_admin_request: FamAppAdminCreate, db: Session = Depends(database.get_db)
+):
+    application_service = ApplicationService(db)
+    application = application_service.get_application(
+        application_admin_request.application_id
+    )
+    if not application:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_APPLICATION_ID,
+                "description": f"Application ID {application_admin_request.application_id} not found",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
