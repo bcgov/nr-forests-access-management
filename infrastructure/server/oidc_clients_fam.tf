@@ -6,7 +6,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   callback_urls                        = "${concat(var.fam_callback_urls,
                                             [
                                               "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
-                                              "${aws_api_gateway_deployment.admin_management_api_gateway_stage.invoke_url}/docs/oauth2-redirect"
+                                              "${aws_api_gateway_stage.admin_management_api_gateway_stage.invoke_url}/docs/oauth2-redirect"
                                             ]
                                           )}"
   logout_urls                          = var.fam_logout_urls
