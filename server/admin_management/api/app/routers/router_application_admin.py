@@ -144,7 +144,7 @@ def delete_application_admin(
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )
-def get_application_admin_by_applicationid(
+def get_application_admin_by_application_id(
     application_id: int,
     db: Session = Depends(database.get_db),
 ):
