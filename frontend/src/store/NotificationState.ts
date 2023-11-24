@@ -3,7 +3,7 @@
     It is structured this way so it doesn't stack multiple messages with the same severity (by design).
     It is intended to be used in conjunction with the NotificationStack component.
 */
-import { reactive, ref } from "vue"
+import { ref } from "vue"
 import type { Severity } from "@/enum/SeverityEnum";
 
 const defaultNotification = ({
