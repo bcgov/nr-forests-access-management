@@ -2,7 +2,7 @@
 import Message from 'primevue/message';
 import { IconSize } from '@/enum/IconEnum';
 
-import { clearNotification, seeAll } from '@/store/NotificationState';
+import { clearNotification, showFullNotificationMsg } from '@/store/NotificationState';
 import type { Severity } from '@/enum/SeverityEnum';
 
 const props = defineProps({
@@ -14,6 +14,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    showFullMsg :{
+        type: Boolean,
+        required: false
+    }
 });
 
 const closeNotification = () => {
@@ -44,9 +48,9 @@ const closeNotification = () => {
                 <strong>{{ props.severity }}</strong>
                 {{ props.msgText }}
                 <button
+                    v-if="props.showFullMsg"
                     class="btn-see-all"
-                    v-if="seeAll.seeAllMsg[severity as Severity].isVisible"
-                    @click=" seeAll.showAll(props.severity as Severity)"
+                    @click=" showFullNotificationMsg(props.severity as Severity)"
                 >
                     See all
                 </button>

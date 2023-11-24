@@ -6,22 +6,10 @@
 import { reactive, ref } from "vue"
 import type { Severity } from "@/enum/SeverityEnum";
 
-const defaultNotification = {
-    success: "",
-    warn: "",
-    error: "",
-};
-
-export const seeAll = reactive({
-    seeAllMsg: {
-        success: {msg: "", isVisible: false},
-        warn: {msg: "", isVisible: false},
-        error: {msg: "", isVisible: false},
-    },
-    showAll(severity: Severity) {
-        this.seeAllMsg[severity].isVisible = false;
-        pushNotification(severity, this.seeAllMsg[severity].msg);
-    }
+const defaultNotification = ({
+    success: {msg: "", fullMsg: "", showFullMsg: false},
+    warn: {msg: "", fullMsg: "", showFullMsg: false},
+    error: {msg: "", fullMsg: "", showFullMsg: false},
 });
 
 export const notifications = ref(
@@ -29,19 +17,25 @@ export const notifications = ref(
 );
 
 export const pushNotification = (severity: Severity, message: string) => {
-    notifications.value[severity] = message;
+    notifications.value[severity].msg = message;
 }
 
 export const clearNotification = (severity: string) => {
-    notifications.value[severity] = '';
+    notifications.value[severity].msg = "";
+    notifications.value[severity].fullMsg = "";
+    notifications.value[severity].showFullMsg = false;
 }
 
 export const resetNotification = () => {
     notifications.value = JSON.parse(JSON.stringify(defaultNotification));
 };
 
+export const showFullNotificationMsg = (severity: Severity) => {
+    notifications.value[severity].showFullMsg = false;
+    pushNotification(severity, notifications.value[severity].fullMsg);
+};
+
 export const setNotificationMsg = (forestClientNumberList: string[], userId: any, severity: Severity) => {
-    seeAll.seeAllMsg[severity].isVisible = true;
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs'
     const msgByType = {
         success: `was successfully added with Client ${isPlural}:`,
@@ -51,9 +45,8 @@ export const setNotificationMsg = (forestClientNumberList: string[], userId: any
 
     const clientIdList = forestClientNumberList.slice(0 , 2);
 
-    seeAll.seeAllMsg[severity].msg = `${userId} ${msgByType[severity]} ${forestClientNumberList.join(', ')}`;
-
-    seeAll.seeAllMsg[severity].isVisible = forestClientNumberList.length > 2
+    notifications.value[severity].fullMsg = `${userId} ${msgByType[severity]} ${forestClientNumberList.join(', ')}`;
+    notifications.value[severity].showFullMsg = forestClientNumberList.length > 2
 
     const notificationMsg = `
         ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
@@ -61,5 +54,6 @@ export const setNotificationMsg = (forestClientNumberList: string[], userId: any
         'and ' + (forestClientNumberList.length - 2) + ' more...'
         : ''}
     `;
+
     pushNotification(severity, notificationMsg);
 };
