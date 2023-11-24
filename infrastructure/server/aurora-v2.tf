@@ -183,7 +183,7 @@ resource "random_password" "famdb_admin_management_api_password" {
 variable "famdb_admin_management_api_username" {
   description = "The username for the DB admin management api user"
   type        = string
-  default     = "fam_admin_management_api"
+  default     = "fam_proxy_admin_management_api"
   sensitive   = true
 }
 
