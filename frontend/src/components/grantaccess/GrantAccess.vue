@@ -246,7 +246,7 @@ const composeAndPushNotificationMessages = (
         setNotificationMsg(successIdList, username, Severity.success);
     }
     if (warningIdList.length > 0) {
-        setNotificationMsg(warningIdList, username, Severity.warning );
+        setNotificationMsg(warningIdList, username, Severity.warning);
     }
     if (errorIdList.length > 0) {
         setNotificationMsg(errorIdList, username, Severity.error);
