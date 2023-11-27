@@ -243,13 +243,13 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        setNotificationMsg(successIdList, username, Severity.success);
+        setNotificationMsg(successIdList, username, Severity.success, getSelectedRole()?.role_name);
     }
     if (warningIdList.length > 0) {
-        setNotificationMsg(warningIdList, username, Severity.warning);
+        setNotificationMsg(warningIdList, username, Severity.warning, getSelectedRole()?.role_name);
     }
     if (errorIdList.length > 0) {
-        setNotificationMsg(errorIdList, username, Severity.error);
+        setNotificationMsg(errorIdList, username, Severity.error, getSelectedRole()?.role_name);
     }
     return '';
 };

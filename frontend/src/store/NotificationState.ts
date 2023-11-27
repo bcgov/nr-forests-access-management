@@ -35,12 +35,12 @@ export const showFullNotificationMsg = (severity: Severity) => {
     pushNotification(severity, notifications.value[severity].fullMsg);
 };
 
-export const setNotificationMsg = (forestClientNumberList: string[], userId: any, severity: Severity) => {
+export const setNotificationMsg = (forestClientNumberList: string[], userId: any, severity: Severity, role = '') => {
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs'
     const msgByType = {
-        success: `was successfully added with Client ${isPlural}:`,
-        warn: `already exists with Client ${isPlural}:`,
-        error: `was not added with Client ${isPlural}:`
+        success: forestClientNumberList[0] === '' ? `was successfully added with the role ${role}` : `was successfully added with Client ${isPlural}:`,
+        warn: forestClientNumberList[0] === '' ? `already exists with the role ${role}` : `already exists with Client ${isPlural}:`,
+        error: forestClientNumberList[0] === '' ? `was not added with Client IDs: ${role}` : `was not added with Client ${isPlural}:`
     };
 
     const clientIdList = forestClientNumberList.slice(0 , 2);
