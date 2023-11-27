@@ -2,9 +2,10 @@ from api.app import constants as famConstants
 
 
 TEST_CREATOR = "TESTER"
+TEST_FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 
 # ---------------------- test user data ----------------------------- #
-TEST_NOT_INVALID_USER_TYPE = 'NS'
+TEST_NOT_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
 
 TEST_NEW_USER = {
