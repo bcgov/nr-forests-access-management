@@ -17,19 +17,19 @@ LOGGER = logging.getLogger(__name__)
 
 
 def test_create_application_admin(application_admin_service: ApplicationAdminService):
-    # # test invalid user type
-    # with pytest.raises(ValidationError) as e:
-    #     application_admin_service.create_application_admin(
-    #         schemas.FamAppAdminCreate(
-    #             **{
-    #                 "user_type_code": TEST_NOT_INVALID_USER_TYPE,
-    #                 "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
-    #                 "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
-    #             }
-    #         ),
-    #         TEST_CREATOR,
-    #     )
-    # assert str(e.value).find("Input should be 'I' or 'B'") != -1
+    # test invalid user type
+    with pytest.raises(ValidationError) as e:
+        application_admin_service.create_application_admin(
+            schemas.FamAppAdminCreate(
+                **{
+                    "user_type_code": TEST_NOT_INVALID_USER_TYPE,
+                    "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
+                    "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
+                }
+            ),
+            TEST_CREATOR,
+        )
+    assert str(e.value).find("Input should be 'I' or 'B'") != -1
 
     # test create application admin
     new_application_admin = application_admin_service.create_application_admin(

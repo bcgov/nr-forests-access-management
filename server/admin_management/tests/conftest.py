@@ -74,6 +74,23 @@ def test_client_fixture_unit() -> TestClient:
 
 
 @pytest.fixture(scope="function")
+def test_client_fixture(db_pg_session) -> TestClient:
+    """returns a requests object of the current app,
+    with the objects defined in the model created in it.
+
+    :rtype: starlette.testclient
+    """
+    # reset to default database which points to postgres container
+    app.dependency_overrides[database.get_db] = lambda: db_pg_session
+
+    yield TestClient(app)
+
+    # reset other dependency override back to app default in each test
+    # during test case teardown.
+    app.dependency_overrides = {}
+
+
+@pytest.fixture(scope="function")
 def test_rsa_key():
 
     new_key = RSA.generate(2048)
