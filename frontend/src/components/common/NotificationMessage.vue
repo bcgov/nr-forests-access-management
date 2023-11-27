@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Message from 'primevue/message';
 import { IconSize } from '@/enum/IconEnum';
 
-import { clearNotification, showFullNotificationMsg } from '@/store/NotificationState';
+import {
+    clearNotification,
+    showFullNotificationMsg,
+} from '@/store/NotificationState';
 import type { Severity } from '@/enum/SeverityEnum';
 
 const props = defineProps({
@@ -14,11 +18,13 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    showFullMsg :{
+    hasFullMsg: {
         type: Boolean,
-        required: false
-    }
+        required: false,
+    },
 });
+
+const showSeeAll = ref(props.hasFullMsg as Boolean);
 
 const closeNotification = () => {
     clearNotification(props.severity);
@@ -48,9 +54,12 @@ const closeNotification = () => {
                 <strong>{{ props.severity }}</strong>
                 {{ props.msgText }}
                 <button
-                    v-if="props.showFullMsg"
+                    v-if="showSeeAll"
                     class="btn-see-all"
-                    @click=" showFullNotificationMsg(props.severity as Severity)"
+                    @click="() => {
+                        showFullNotificationMsg(props.severity as Severity);
+                        showSeeAll = false
+                    }"
                 >
                     See all
                 </button>

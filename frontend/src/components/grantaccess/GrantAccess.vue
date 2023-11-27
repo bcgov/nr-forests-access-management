@@ -30,7 +30,6 @@ import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { setNotificationMsg } from '@/store/NotificationState';
 
-
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
@@ -243,13 +242,28 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        setNotificationMsg(successIdList, username, Severity.success, getSelectedRole()?.role_name);
+        setNotificationMsg(
+            successIdList,
+            username,
+            Severity.success,
+            getSelectedRole()?.role_name
+        );
     }
     if (warningIdList.length > 0) {
-        setNotificationMsg(warningIdList, username, Severity.warning, getSelectedRole()?.role_name);
+        setNotificationMsg(
+            warningIdList,
+            username,
+            Severity.warning,
+            getSelectedRole()?.role_name
+        );
     }
     if (errorIdList.length > 0) {
-        setNotificationMsg(errorIdList, username, Severity.error, getSelectedRole()?.role_name);
+        setNotificationMsg(
+            errorIdList,
+            username,
+            Severity.error,
+            getSelectedRole()?.role_name
+        );
     }
     return '';
 };

@@ -8,7 +8,7 @@ import { notifications } from '@/store/NotificationState';
             v-if="value.msg.length > 0"
             :severity="key.toString()"
             :msg-text="value.msg"
-            :showFullMsg="value.showFullMsg"
+            :hasFullMsg="value.fullMsg !== ''"
             class="notification-stack"
         />
     </div>
