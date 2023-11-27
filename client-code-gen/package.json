@@ -4,6 +4,7 @@
   "description": "OpenAPI Generation for API Client Code",
   "scripts": {
     "dockergen-app-access-control-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/app-access-control-openapi.json -g typescript-axios --config local/api.json -o /local/gen/app-access-control-api",
+    "dockergen-admin-management-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/admin-management-openapi.json -g typescript-axios --config local/api.json -o /local/gen/admin-management-api",
     "dockergen-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/openapi.json -g typescript-axios --config local/api.json -o /local/gen",
     "dockergen-api-win": "docker run --rm -v %cd%:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/openapi.json -g typescript-axios --config local/api.json -o local/gen",
     "gen-api": "rm -rf gen && openapi-generator-cli generate -i openapi.json --generator-name typescript-axios -o gen --config api.json"
