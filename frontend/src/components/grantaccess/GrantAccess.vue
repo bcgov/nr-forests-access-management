@@ -28,7 +28,7 @@ import {
 
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
-import { setNotificationMsg } from '@/store/NotificationState';
+import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
@@ -242,7 +242,7 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        setNotificationMsg(
+        setGrantAccessNotificationMsg(
             successIdList,
             username,
             Severity.success,
@@ -250,7 +250,7 @@ const composeAndPushNotificationMessages = (
         );
     }
     if (warningIdList.length > 0) {
-        setNotificationMsg(
+        setGrantAccessNotificationMsg(
             warningIdList,
             username,
             Severity.warning,
@@ -258,7 +258,7 @@ const composeAndPushNotificationMessages = (
         );
     }
     if (errorIdList.length > 0) {
-        setNotificationMsg(
+        setGrantAccessNotificationMsg(
             errorIdList,
             username,
             Severity.error,

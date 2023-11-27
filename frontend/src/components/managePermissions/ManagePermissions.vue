@@ -14,7 +14,10 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 
-import { pushNotification, resetNotification } from '@/store/NotificationState';
+import {
+    setNotificationMsg,
+    resetNotification,
+} from '@/store/NotificationState';
 
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 import { Severity } from '@/enum/SeverityEnum';
@@ -78,9 +81,11 @@ async function deleteUserRoleAssignment(
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });
-    pushNotification(
+
+    setNotificationMsg(
         Severity.success,
-        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`,
+        ''
     );
 }
 </script>

@@ -16,10 +16,6 @@ export const notifications = ref(
     JSON.parse(JSON.stringify(defaultNotification))
 );
 
-export const pushNotification = (severity: Severity, message: string) => {
-    notifications.value[severity].msg = message;
-};
-
 export const clearNotification = (severity: string) => {
     notifications.value[severity].msg = '';
     notifications.value[severity].fullMsg = '';
@@ -29,16 +25,26 @@ export const resetNotification = () => {
     notifications.value = JSON.parse(JSON.stringify(defaultNotification));
 };
 
-export const showFullNotificationMsg = (severity: Severity) => {
-    pushNotification(severity, notifications.value[severity].fullMsg);
+export const setNotificationMsg = (
+    severity: Severity,
+    msg: str = '',
+    fullMsg: str = ''
+) => {
+    notifications.value[severity].msg = msg;
+    notifications.value[severity].fullMsg = fullMsg;
 };
 
-export const setNotificationMsg = (
+export const showFullNotificationMsg = (severity: Severity) => {
+    notifications.value[severity].msg = notifications.value[severity].fullMsg;
+};
+
+export const setGrantAccessNotificationMsg = (
     forestClientNumberList: string[],
     userId: any,
     severity: Severity,
     role = ''
 ) => {
+    let notificationFullMsg = '';
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
     const msgByType = {
         success:
@@ -57,10 +63,11 @@ export const setNotificationMsg = (
 
     const clientIdList = forestClientNumberList.slice(0, 2);
 
-    if (forestClientNumberList.length > 2)
-        notifications.value[severity].fullMsg = `${userId} ${
+    if (forestClientNumberList.length > 2) {
+        notificationFullMsg = `${userId} ${
             msgByType[severity]
         } ${forestClientNumberList.join(', ')}`;
+    }
 
     const notificationMsg = `
         ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
@@ -71,5 +78,5 @@ export const setNotificationMsg = (
         }
     `;
 
-    pushNotification(severity, notificationMsg);
+    setNotificationMsg(severity, notificationMsg, notificationFullMsg);
 };
