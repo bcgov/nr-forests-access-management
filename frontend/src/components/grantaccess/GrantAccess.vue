@@ -283,7 +283,7 @@ function toRequestPayload(
 const composeAndPushNotificationMessages = (
     successIdList: string[],
     warningIdList: string[],
-    errorIdList: string[]
+    errorIdList: {errorMsg: string, forestClienNumber: string[]}
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
@@ -302,9 +302,16 @@ const composeAndPushNotificationMessages = (
             getSelectedRole()?.role_name
         );
     }
-    if (errorIdList.length > 0) {
+
+    if(errorIdList.errorMsg) {
+        setNotificationMsg(
+        Severity.error,
+        `An error has occured. ${errorIdList.errorMsg}`
+        );
+    };
+    if (errorIdList.forestClienNumber.length > 0) {
         setGrantAccessNotificationMsg(
-            errorIdList,
+            errorIdList.forestClienNumber,
             username,
             Severity.error,
             getSelectedRole()?.role_name
@@ -312,6 +319,54 @@ const composeAndPushNotificationMessages = (
     }
     return '';
 };
+
+const handleSubmit = async () => {
+    const successForestClientIdList: string[] = [];
+    const warningForestClientIdList: string[] = [];
+    const errorForestClientIdList = {errorMsg: '', forestClienNumber: [] as string[]};
+
+    do {
+        const item = forestClientData.value.pop();
+        const data = toRequestPayload(formData.value, item);
+
+        await userRoleAssignmentApi
+            .createUserRoleAssignment(data)
+            .then(() => {
+                successForestClientIdList.push(
+                    item?.forest_client_number ? item.forest_client_number : ''
+                );
+            })
+            .catch((error) => {
+                if (error.response?.status === 409) {
+                    warningForestClientIdList.push(
+                        item?.forest_client_number
+                            ? item?.forest_client_number
+                            : ''
+                    );
+                } else if (error.response.data.detail.code === "self_grant_prohibited") {
+                    errorForestClientIdList.errorMsg = error.response.data.detail.description;
+                } else {
+                    errorForestClientIdList.forestClienNumber.push(
+                        item?.forest_client_number
+                            ? item?.forest_client_number
+                            : '');
+                }
+            });
+    } while (forestClientData.value.length > 0);
+
+    composeAndPushNotificationMessages(
+        successForestClientIdList,
+        warningForestClientIdList,
+        errorForestClientIdList
+    );
+
+    router.push('/dashboard');
+};
+
+function removeForestClientFromList(index: number) {
+    forestClientNumberVerifyErrors.value = [];
+    forestClientData.value.splice(index, 1);
+}
 </script>
 
 <template>
