@@ -24,7 +24,7 @@ import {
     type FamForestClient,
     type IdimProxyIdirInfo,
     type FamUserRoleAssignmentCreate,
-} from 'fam-api';
+} from 'fam-app-acsctl-api';
 
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';

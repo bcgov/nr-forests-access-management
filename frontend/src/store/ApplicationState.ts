@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue';
-import type { FamApplication } from 'fam-api';
+import type { FamApplication } from 'fam-app-acsctl-api';
 
 // The applications the user has access to administer
 export const applicationsUserAdministers = ref<FamApplication[]>([]);

@@ -1,10 +1,10 @@
 import httpInstance from '@/services/http/HttpCommon';
 import {
     FAMApplicationsApi,
-    FAMUserRoleAssignmentApi,
     FAMForestClientsApi,
-    IDIRBCeIDProxyApi,
-} from 'fam-api';
+    FAMUserRoleAssignmentApi,
+    IDIRBCeIDProxyApi
+} from 'fam-app-acsctl-api';
 
 export class ApiServiceFactory {
     private applicationsApi: FAMApplicationsApi;

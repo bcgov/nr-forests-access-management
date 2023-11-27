@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IdimProxyIdirInfo } from 'fam-api';
+import type { IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 import Card from 'primevue/card';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';

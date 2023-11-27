@@ -13,8 +13,7 @@ import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
 import IconCapitol from '@/components/common/IconCapitol.vue';
 import Button from '@/components/common/Button.vue';
-
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
