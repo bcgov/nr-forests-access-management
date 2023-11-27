@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUpdated } from 'vue';
+import { ref } from 'vue';
 import Message from 'primevue/message';
 import { IconSize } from '@/enum/IconEnum';
 
@@ -25,10 +25,6 @@ const props = defineProps({
 });
 
 const showSeeAll = ref(props.hasFullMsg as Boolean);
-
-onUpdated(() => {
-    showSeeAll.value = props.hasFullMsg;
-});
 
 const closeNotification = () => {
     clearNotification(props.severity);
@@ -58,7 +54,7 @@ const closeNotification = () => {
                 <strong>{{ props.severity }}</strong>
                 {{ props.msgText }}
                 <button
-                    v-if="showSeeAll"
+                    v-if="hasFullMsg && showSeeAll"
                     class="btn-see-all"
                     @click="() => {
                         showFullNotificationMsg(props.severity as Severity);
