@@ -47,6 +47,13 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
+# Temporary assign openapi_version = "3.0.3" to fix not able to generate correct api-client for frontend.
+# Due to current fastapi==0.100.0, this default to swagger spec version to 3.1.0, but version 3.1.0 is not
+# yet well supported by openapi-generator.
+# Also, FastAPI only 'hardcoded' with '3.0.3' it isn't truly convert to 3.0.3 openapi spec. However, it does
+# temporarily solve openapi-generator issue.
+app.openapi_version = "3.0.3"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_allow_origins(),
