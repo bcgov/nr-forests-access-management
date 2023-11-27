@@ -89,7 +89,7 @@ resource "aws_iam_role" "fam_admin_management_api_lambda_exec" {
 # when running local or in docker.
 # Need to supply COGNITO_CLIENT_ID_SECRET_NAME when deploying with terraform
 
-resource "aws_lambda_function" "fam-admin-management-api-function" {
+resource "aws_lambda_function" "fam_admin_management_api_function" {
   filename      = "fam-admin-management-api.zip"
   function_name = local.admin_management_api_lambda_name
   role          = aws_iam_role.fam_admin_management_api_lambda_exec.arn
