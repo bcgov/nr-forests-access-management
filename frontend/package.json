@@ -2,7 +2,7 @@
     "name": "fam-frontend",
     "version": "0.0.0",
     "scripts": {
-        "install-frontend": "cd ../client-code-gen/gen && npm ci && cd ../../frontend && npm ci",
+        "install-frontend": "cd ../client-code-gen/gen/app-access-control-api && npm ci && cd ../../../frontend && npm ci",
         "dev": "vite",
         "build": "run-p type-check build-only",
         "preview": "vite preview --port 5173",
@@ -18,7 +18,7 @@
         "aws-amplify": "^5.3.6",
         "axios": "0.26.1",
         "bootstrap": "^5.2.3",
-        "fam-api": "file:../client-code-gen/gen",
+        "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "primevue": "3.34.0",
         "vee-validate": "^4.7.3",
         "vue": "^3.2.38",
