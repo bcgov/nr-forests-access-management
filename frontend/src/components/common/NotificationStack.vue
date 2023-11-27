@@ -5,7 +5,7 @@ import { notifications } from '@/store/NotificationState';
 <template>
     <div v-for="(value, key) in notifications">
         <NotificationMessage
-            v-if="value.msg.length > 0"
+            v-if="value.msg !== ''"
             :severity="key.toString()"
             :msg-text="value.msg"
             :hasFullMsg="value.fullMsg !== ''"
