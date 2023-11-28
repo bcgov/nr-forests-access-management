@@ -9,7 +9,7 @@ from api.app.services.application_admin_service import ApplicationAdminService
 from tests.constants import (
     TEST_NEW_APPLICATION_ADMIN,
     TEST_CREATOR,
-    TEST_NOT_INVALID_USER_TYPE,
+    TEST_INVALID_USER_TYPE,
 )
 
 
@@ -22,7 +22,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
         application_admin_service.create_application_admin(
             schemas.FamAppAdminCreate(
                 **{
-                    "user_type_code": TEST_NOT_INVALID_USER_TYPE,
+                    "user_type_code": TEST_INVALID_USER_TYPE,
                     "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
                     "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
                 }

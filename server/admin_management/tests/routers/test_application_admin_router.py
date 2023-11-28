@@ -11,8 +11,7 @@ from api.app.routers.router_guards import (
 
 from tests.constants import (
     TEST_NEW_APPLICATION_ADMIN,
-    TEST_NOT_INVALID_USER_TYPE,
-    TEST_NOT_INVALID_USER_TYPE,
+    TEST_INVALID_USER_TYPE,
     TEST_NEW_APPLICATION_ADMIN,
     TEST_NOT_EXIST_APPLICATION_ID,
     TEST_APPLICATION_ID_FAM,
@@ -64,7 +63,7 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
-            "user_type_code": TEST_NOT_INVALID_USER_TYPE,
+            "user_type_code": TEST_INVALID_USER_TYPE,
             "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
             "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
         },

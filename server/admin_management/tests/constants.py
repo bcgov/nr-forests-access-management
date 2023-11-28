@@ -6,7 +6,7 @@ TEST_FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
 INVALID_APPLICATION_ID = "invalid_application_id"
 
 # ---------------------- test user data ----------------------------- #
-TEST_NOT_INVALID_USER_TYPE = "NS"
+TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
 
 TEST_NEW_USER = {
