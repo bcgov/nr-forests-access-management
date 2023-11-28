@@ -142,10 +142,7 @@ def delete_application_admin(
     "/{application_id}/admins",
     response_model=List[schemas.FamAppAdminGet],
     status_code=200,
-    dependencies=[
-        Depends(authorize_by_fam_admin),
-        Depends(validate_param_application_id),
-    ],
+    dependencies=[Depends(authorize_by_fam_admin)],
 )
 def get_application_admin_by_application_id(
     application_id: int,

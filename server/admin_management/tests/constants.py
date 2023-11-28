@@ -3,6 +3,7 @@ from api.app import constants as famConstants
 
 TEST_CREATOR = "TESTER"
 TEST_FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
+INVALID_APPLICATION_ID = "invalid_application_id"
 
 # ---------------------- test user data ----------------------------- #
 TEST_NOT_INVALID_USER_TYPE = "NS"
