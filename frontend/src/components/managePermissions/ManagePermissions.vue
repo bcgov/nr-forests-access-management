@@ -19,8 +19,8 @@ import {
     resetNotification,
 } from '@/store/NotificationState';
 
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-api/dist/model/fam-application-user-role-assignment-get';
 import { Severity } from '@/enum/SeverityEnum';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();

@@ -26,31 +26,31 @@ The generated client can be used both as:
 
 The generation utilizes [OpenAPI Generator Cli with "typescript-axios" as the client](https://openapi-generator.tech/docs/generators/typescript-axios).
 
-The *package.json* contains simple scripts "gen-api-docker" and "gen-api" to run.
+The *package.json* contains simple scripts to run.
 Two things are required to generate the client code:
-* The FAM backend OpenAPI spec (.json or .yaml): Default to 'local' file <mark>openapi.json</mark>.
+* The FAM backend OpenAPI spec (.json or .yaml): Default to 'local' file <mark>[some-api-component]-openapi.json</mark>.
 * Generator options: This is currently using a file <mark>api.json</mark> to include options.
 
 Update OpenAPI Spec:
 ```
 * Start backend server and navigate to OpenAPI spec at your browser, for example (locally) "http://localhost:8000/openapi.json".
 
-* Copy the json content and update it to the "openapi.json" file at root directory.
+* Copy the json content and update it to the "[some-api-component]-openapi.json" file at root directory.
 ```
 
 To generate, build and compile the typescript sources to javascript use:
 ```
-With Docker:
->> npm run dockergen-api-bash
-or for Windows(CMD/Powershell), use script >>(npm run dockergen-api-win)
+With Docker (example: for `admin-management-api`):
+>> npm run dockergen-admin-management-api-bash
+or for Windows(CMD/Powershell), use script >>(npm run dockergen-admin-management-api-win)
 
 With CLI:
 >> npm install
->> npm run gen-api
+>> npm run gen-admin-management-api
 
-The generated client is located at "./gen" directory specified by the "-o" option at the script.
+The generated client is located at "./gen/[xyz]-api" directory specified by the "-o" option at the script.
 
-- Make sure (and adjust) "axios" package version to be consistent with "frontend" axios version.
+- Make sure (and adjust) "axios" package version to be consistent with "frontend" axios version. This is important. During generation, this version could be changed by generation script.
 ```
 
 Note:
@@ -60,7 +60,7 @@ Depending on the Axios version used at frontend, please be aware different axios
 ```
 
 ```
-In some cases, it would be good idea to delete "/gen" directory before running script to regenerate new api client code to avoid leaving unnecessary files from last version generated code.
+In some cases, it would be good idea to delete "/gen/[xyz]-api" directory before running script to regenerate new api client code to avoid leaving unnecessary files from last version generated code.
 If you encounter folder permission during npm install or during generation, can issue command to temporarily change `gen` folder and files permission with `chmod -R 777`.
 ```
 ### Special Care on openapi.json Spec
@@ -70,43 +70,41 @@ If you encounter folder permission during npm install or during generation, can 
 * This is not a desirable behaviour but a temporary solution. So in the future, please verify again with higher FastAPI version and investigate further it further to see if it is fixed.
 
 ## How to Use/Integrate with Generated Client/Lib
-The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs (currently named it as 'fam-api').
+The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs.
 
 * In frontend package.json, add this dependency:
   ```
   For example:
-  "fam-api": "file:../client-code-gen/gen"
+  "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api"
   ```
 
 * Before runing `npm ci` or `npm install` for fronend dependencies, run:
   ```
-  cd ../client-code-gen/gen
+  cd ../client-code-gen/gen/admin-management-api
   npm install
 
   cd ../../frontend
   npm ci
 
   If it is the first time.
-  This will install fam-api for the frontend.
+  This will install fam-admin-mgmt-api for the frontend.
   ```
 
 
-* After `fam-api` is installed from "/gen", The generated api services and models can be imported, example:
+* After `fam-admin-mgmt-api` is installed from "/gen/admin-management-api", The generated api services and models can be imported, example:
   ```
   import {
-    FAMApplicationsApi,
-    FAMRolesApi,
-    FAMUserRoleAssignmentApi,
-    FAMUsersApi
-  } from 'fam-api';
+    FAMSomeApi1,
+    FAMSomeApi2
+  } from 'fam-admin-mgmt-api';
 
   If there is a new api module, just added it in the import.
   ```
 
 * Configure(supply) api services to use the axios instance (if not using global axios), example:
   ```
-    // Instanciation for generated 'fam-api' client.
-       this.applicationsApi = new FAMApplicationsApi(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
+    // Using api client.
+       this.applicationsApi = new FAMSomeApi1(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
   ```
 
 ## References:

@@ -3,7 +3,7 @@ import Card from 'primevue/card';
 import Tag from 'primevue/tag';
 import { IconSize } from '@/enum/IconEnum';
 import type { PropType } from 'vue';
-import type { FamForestClient } from 'fam-api/dist/model/fam-forest-client';
+import type { FamForestClient } from 'fam-app-acsctl-api';
 
 const props = defineProps({
     forestClientData: {
