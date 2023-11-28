@@ -3,27 +3,80 @@
     It is structured this way so it doesn't stack multiple messages with the same severity (by design).
     It is intended to be used in conjunction with the NotificationStack component.
 */
-import type { Severity } from "@/enum/SeverityEnum";
-import { ref } from "vue"
+import { ref } from 'vue';
+import type { Severity } from '@/enum/SeverityEnum';
 
 const defaultNotification = {
-    success: "",
-    warn: "",
-    error: "",
+    success: { msg: '', fullMsg: '' },
+    warn: { msg: '', fullMsg: '' },
+    error: { msg: '', fullMsg: '' },
 };
 
 export const notifications = ref(
     JSON.parse(JSON.stringify(defaultNotification))
 );
 
-export const pushNotification = (severity: Severity, message: string) => {
-    notifications.value[severity] = message;
-}
-
 export const clearNotification = (severity: string) => {
-    notifications.value[severity] = '';
-}
+    notifications.value[severity].msg = '';
+    notifications.value[severity].fullMsg = '';
+};
 
 export const resetNotification = () => {
     notifications.value = JSON.parse(JSON.stringify(defaultNotification));
-}
+};
+
+export const setNotificationMsg = (
+    severity: Severity,
+    msg: str = '',
+    fullMsg: str = ''
+) => {
+    notifications.value[severity].msg = msg;
+    notifications.value[severity].fullMsg = fullMsg;
+};
+
+export const showFullNotificationMsg = (severity: Severity) => {
+    notifications.value[severity].msg = notifications.value[severity].fullMsg;
+};
+
+export const setGrantAccessNotificationMsg = (
+    forestClientNumberList: string[],
+    userId: any,
+    severity: Severity,
+    role = ''
+) => {
+    let notificationFullMsg = '';
+    const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
+    const msgByType = {
+        success:
+            forestClientNumberList[0] === ''
+                ? `was successfully added with the role ${role}`
+                : `was successfully added with Client ${isPlural}:`,
+        warn:
+            forestClientNumberList[0] === ''
+                ? `already exists with the role ${role}`
+                : `already exists with Client ${isPlural}:`,
+        error:
+            forestClientNumberList[0] === ''
+                ? `was not added with Client IDs: ${role}`
+                : `was not added with Client ${isPlural}:`,
+    };
+
+    const clientIdList = forestClientNumberList.slice(0, 2);
+
+    if (forestClientNumberList.length > 2) {
+        notificationFullMsg = `${userId} ${
+            msgByType[severity]
+        } ${forestClientNumberList.join(', ')}`;
+    }
+
+    const notificationMsg = `
+        ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
+        ${
+            isPlural === 'IDs' && forestClientNumberList.length > 2
+                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+                : ''
+        }
+    `;
+
+    setNotificationMsg(severity, notificationMsg, notificationFullMsg);
+};

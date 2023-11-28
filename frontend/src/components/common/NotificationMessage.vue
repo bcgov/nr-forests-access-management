@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Message from 'primevue/message';
 import { IconSize } from '@/enum/IconEnum';
 
-import { clearNotification } from '@/store/NotificationState';
+import {
+    clearNotification,
+    showFullNotificationMsg,
+} from '@/store/NotificationState';
+import type { Severity } from '@/enum/SeverityEnum';
 
 const props = defineProps({
     msgText: {
@@ -13,7 +18,13 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    hasFullMsg: {
+        type: Boolean,
+        required: false,
+    },
 });
+
+const showSeeAll = ref(props.hasFullMsg as Boolean);
 
 const closeNotification = () => {
     clearNotification(props.severity);
@@ -40,7 +51,18 @@ const closeNotification = () => {
                 :size="IconSize.medium"
             />
             <span class="custom-message-text">
-                <strong>{{ props.severity }}</strong> {{ props.msgText }}
+                <strong>{{ props.severity }}</strong>
+                {{ props.msgText }}
+                <button
+                    v-if="hasFullMsg && showSeeAll"
+                    class="btn-see-all"
+                    @click="() => {
+                        showFullNotificationMsg(props.severity as Severity);
+                        showSeeAll = false
+                    }"
+                >
+                    See all
+                </button>
             </span>
         </Message>
     </div>
@@ -55,5 +77,16 @@ const closeNotification = () => {
 
 .custom-message-text {
     color: $light-text-primary;
+}
+
+.btn-see-all {
+    background-color: transparent;
+    border: none;
+    color: $light-link-primary;
+    padding: 0;
+}
+
+.btn-see-all:hover {
+    color: $light-link-primary-hover;
 }
 </style>
