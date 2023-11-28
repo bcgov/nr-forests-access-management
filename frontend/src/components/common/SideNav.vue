@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import router from '@/router';
 import Sidebar from 'primevue/sidebar';
+import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
 import { sideNavState } from '@/store/SideNavState';
 import type { PropType } from 'vue';
@@ -25,12 +25,9 @@ const props = defineProps({
         default: '',
     },
 });
-
 </script>
 <template>
-    <Sidebar
-        v-model:visible="sideNavState.isVisible"
-    >
+    <Sidebar v-model:visible="sideNavState.isVisible">
         <template #header>
             <a
                 class="sidenav-logo"
@@ -93,7 +90,6 @@ const props = defineProps({
             </div> -->
         </nav>
     </Sidebar>
-
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
@@ -176,7 +172,6 @@ ul#nav li.active a {
     background: $light-layer-selected-01;
     box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
 }
-
 
 @media (min-width: 768px) {
     .sidenav {

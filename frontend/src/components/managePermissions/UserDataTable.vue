@@ -68,7 +68,6 @@ const confirmDeleteData = reactive({
 
 const emit = defineEmits<emit>();
 
-
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
     confirmDeleteData.userName = assignment.user.user_name;

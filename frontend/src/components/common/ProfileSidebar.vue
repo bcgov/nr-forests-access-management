@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
-import { IconPosition, IconSize } from '@/enum/IconEnum';
+import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 
@@ -27,16 +27,11 @@ const buttonLabel = computed(() => {
 
 <template>
     <div
-        :class="
-            profileSidebarState.isVisible ? 'fade-in' : 'fade-out'
-        "
+        :class="profileSidebarState.isVisible ? 'fade-in' : 'fade-out'"
         @click="profileSidebarState.toggleVisible()"
     ></div>
     <Transition name="slide">
-        <div
-            class="profile-container"
-            v-if="profileSidebarState.isVisible"
-        >
+        <div class="profile-container" v-if="profileSidebarState.isVisible">
             <div class="profile-header">
                 <h2>Profile</h2>
                 <button

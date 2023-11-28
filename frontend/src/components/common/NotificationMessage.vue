@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Message from 'primevue/message';
-import { IconSize } from '@/enum/IconEnum';
 
 import {
     clearNotification,
     showFullNotificationMsg,
 } from '@/store/NotificationState';
+import { IconSize } from '@/enum/IconEnum';
 import type { Severity } from '@/enum/SeverityEnum';
 
 const props = defineProps({

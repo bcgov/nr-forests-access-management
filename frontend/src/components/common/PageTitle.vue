@@ -15,14 +15,10 @@ const props = defineProps({
 });
 
 const route = useRoute();
-
 </script>
 
 <template>
-    <Breadcrumb
-        v-if="route.meta.hasBreadcrumb"
-        :model="breadcrumbState"
-    />
+    <Breadcrumb v-if="route.meta.hasBreadcrumb" :model="breadcrumbState" />
     <h1 class="title">{{ props.title }}</h1>
     <h2 class="subtitle">{{ props.subtitle }}</h2>
 </template>

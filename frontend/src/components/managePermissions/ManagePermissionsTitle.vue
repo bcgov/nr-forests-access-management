@@ -1,13 +1,4 @@
-<script setup lang="ts">
-
-const props = defineProps({
-    isApplicationSelected: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-});
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <div class="row">
