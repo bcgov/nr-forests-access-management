@@ -28,7 +28,7 @@ import {
 
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
-import { pushNotification } from '@/store/NotificationState';
+import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
@@ -242,43 +242,27 @@ const composeAndPushNotificationMessages = (
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
-        pushNotification(
+        setGrantAccessNotificationMsg(
+            successIdList,
+            username,
             Severity.success,
-            `${username} ${
-                successIdList[0] === ''
-                    ? `was successfully added with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `was successfully added with Client IDs: ${successIdList.join(
-                          ', '
-                      )}`
-            }`
+            getSelectedRole()?.role_name
         );
     }
     if (warningIdList.length > 0) {
-        pushNotification(
+        setGrantAccessNotificationMsg(
+            warningIdList,
+            username,
             Severity.warning,
-            `${username} ${
-                warningIdList[0] === ''
-                    ? `already exists with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `already exists with Client IDs: ${warningIdList.join(
-                          ', '
-                      )}`
-            }`
+            getSelectedRole()?.role_name
         );
     }
     if (errorIdList.length > 0) {
-        pushNotification(
+        setGrantAccessNotificationMsg(
+            errorIdList,
+            username,
             Severity.error,
-            `An error has occured. ${username} ${
-                errorIdList[0] === ''
-                    ? `could not be added with the role ${
-                          getSelectedRole()?.role_name
-                      }`
-                    : `was not added with Client IDs: ${errorIdList.join(', ')}`
-            }`
+            getSelectedRole()?.role_name
         );
     }
     return '';
