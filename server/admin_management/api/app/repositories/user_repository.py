@@ -1,5 +1,6 @@
 import logging
 from sqlalchemy.orm import Session
+from typing import List
 
 from api.app.models import model as models
 from api.app import schemas
@@ -34,6 +35,9 @@ class UserRepository:
             .filter(models.FamUser.cognito_user_id == cognito_user_id)
             .one_or_none()
         )
+
+    def get_users(self) -> List[models.FamUser]:
+        return self.db.query(models.FamUser).all()
 
     def create_user(self, fam_user: schemas.FamUser) -> models.FamUser:
         LOGGER.debug(f"Creating fam user: {fam_user}")

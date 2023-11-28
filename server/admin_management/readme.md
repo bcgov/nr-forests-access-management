@@ -19,3 +19,4 @@ Note: This is no longer necessary if running through Docker or running tests thr
 cd server/admin_management
 set -o allexport; source local-dev.env; set +o allexport
 ```
+

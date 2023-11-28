@@ -15,6 +15,12 @@ import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 from api.app.main import app
 
+from api.app.repositories.user_repository import UserRepository
+from api.app.repositories.application_repository import ApplicationRepository
+from api.app.repositories.application_admin_repository import ApplicationAdminRepository
+from api.app.services.user_service import UserService
+from api.app.services.application_admin_service import ApplicationAdminService
+
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
 COMPOSE_PATH = os.path.join(os.path.dirname(__file__), "../../../")
@@ -68,6 +74,23 @@ def test_client_fixture_unit() -> TestClient:
 
 
 @pytest.fixture(scope="function")
+def test_client_fixture(db_pg_session) -> TestClient:
+    """returns a requests object of the current app,
+    with the objects defined in the model created in it.
+
+    :rtype: starlette.testclient
+    """
+    # reset to default database which points to postgres container
+    app.dependency_overrides[database.get_db] = lambda: db_pg_session
+
+    yield TestClient(app)
+
+    # reset other dependency override back to app default in each test
+    # during test case teardown.
+    app.dependency_overrides = {}
+
+
+@pytest.fixture(scope="function")
 def test_rsa_key():
 
     new_key = RSA.generate(2048)
@@ -110,3 +133,24 @@ def override_get_rsa_key_method_none():
 
 def override_get_rsa_key_none(kid):
     return None
+
+
+@pytest.fixture(scope="function")
+def user_repo(db_pg_session: Session):
+    return UserRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def application_repo(db_pg_session: Session):
+    return ApplicationRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def application_admin_repo(db_pg_session: Session):
+    return ApplicationAdminRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def user_service(db_pg_session: Session):
+    return UserService(db_pg_session)
+
+@pytest.fixture(scope="function")
+def application_admin_service(db_pg_session: Session):
+    return ApplicationAdminService(db_pg_session)

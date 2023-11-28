@@ -18,6 +18,9 @@ class UserService:
     def get_user_by_cognito_user_id(self, cognito_user_id: str):
         return self.user_repo.get_user_by_cognito_user_id(cognito_user_id)
 
+    def get_users(self):
+        return self.user_repo.get_users()
+
     def find_or_create(self, user_type_code: str, user_name: str, requester: str):
         LOGGER.debug(
             f"Request for finding or creating a user with user_type: {user_type_code}, "
