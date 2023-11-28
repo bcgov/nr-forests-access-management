@@ -344,7 +344,7 @@ const handleSubmit = async () => {
                             : ''
                     );
                 } else if (error.response.data.detail.code === "self_grant_prohibited") {
-                    errorForestClientIdList.errorMsg = error.response.data.detail.description;
+                    errorForestClientIdList.errorMsg = 'Granting roles to self is not allowed.';
                 } else {
                     errorForestClientIdList.forestClienNumber.push(
                         item?.forest_client_number
