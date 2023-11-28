@@ -70,7 +70,7 @@ If you encounter folder permission during npm install or during generation, can 
 * This is not a desirable behaviour but a temporary solution. So in the future, please verify again with higher FastAPI version and investigate further it further to see if it is fixed.
 
 ## How to Use/Integrate with Generated Client/Lib
-The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs (currently named it as 'fam-api').
+The generated api client code (under /gen directory) can be used in frontend (located `frontend` folder under project root) as one of its dependencies/libs.
 
 * In frontend package.json, add this dependency:
   ```
@@ -103,8 +103,8 @@ The generated api client code (under /gen directory) can be used in frontend (lo
 
 * Configure(supply) api services to use the axios instance (if not using global axios), example:
   ```
-    // Instanciation for generated 'fam-api' client.
-       this.applicationsApi = new FAMApplicationsApi(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
+    // Using api client.
+       this.applicationsApi = new FAMSomeApi1(undefined, '', httpInstance) // Note, Axios is strange, second parameter needs empty string, not null.
   ```
 
 ## References:

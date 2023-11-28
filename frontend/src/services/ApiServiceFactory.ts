@@ -13,7 +13,6 @@ export class ApiServiceFactory {
     private idirBceidProxyApi: IDIRBCeIDProxyApi;
 
     constructor() {
-        // Instanciation for generated 'fam-api' client.
         this.applicationsApi = new FAMApplicationsApi(
             undefined,
             '',
