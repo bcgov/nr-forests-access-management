@@ -159,7 +159,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                     return;
                 }
                 if (
-                    ifForestClientNumberNotAdded(
+                    isForestClientNumberNotAdded(
                         result.data[0].forest_client_number
                     )
                 ) {
@@ -184,7 +184,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     formData.value['forestClientNumbers'] = forestNumbers.toString();
 };
 
-const ifForestClientNumberNotAdded = (forestClientNumber: string) => {
+const isForestClientNumberNotAdded = (forestClientNumber: string) => {
     return !forestClientData.value.find(
         (item) => forestClientNumber === item.forest_client_number
     );

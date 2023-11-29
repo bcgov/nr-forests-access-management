@@ -61,7 +61,10 @@ const getAppUserRoleAssignment = async () => {
 
 const selectApplication = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (applicationsUserAdministers) {
+    if (
+        applicationsUserAdministers.value &&
+        applicationsUserAdministers.value.length > 0
+    ) {
         await getAppUserRoleAssignment();
     }
 };
