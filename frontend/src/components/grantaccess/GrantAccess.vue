@@ -3,20 +3,21 @@ import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
-
-import Button from '@/components/common/Button.vue';
-import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
-import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 
+import Button from '@/components/common/Button.vue';
+import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
+import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import { IconSize } from '@/enum/IconEnum';
+import { Severity } from '@/enum/SeverityEnum';
+import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
-
 import LoadingState from '@/store/LoadingState';
 import {
     FamForestClientStatusType,
@@ -26,32 +27,23 @@ import {
     type FamUserRoleAssignmentCreate,
 } from 'fam-app-acsctl-api';
 
-import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
-import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
-
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
-
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
     userId: '',
-    forestClientNumber: '', // form field input, for multiple forest client numbers
+    forestClientNumbers: '', // form field input, for multiple forest client numbers
     role_id: null as number | null,
 };
-
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
-
-const forestClientNumberVerifyErrors = ref([] as Array<string>);
-
 const formValidationSchema = object({
     userId: string()
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
     role_id: number().required('Please select a value'),
-    forestClientNumber: string()
+    forestClientNumbers: string()
         .when('role_id', {
             is: (_role_id: number) => isAbstractRoleSelected(),
             then: () =>
@@ -67,9 +59,11 @@ const formValidationSchema = object({
         .nullable(),
 });
 
-let applicationRoleOptions = ref<FamApplicationRole[]>([]);
-const forestClientData = ref<FamForestClient[]>([]);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
+const applicationRoleOptions = ref<FamApplicationRole[]>([]);
+
+const forestClientData = ref<FamForestClient[]>([]);
+const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
@@ -85,15 +79,34 @@ onMounted(async () => {
     ).data;
 });
 
+/* ------------------ User information method ------------------------- */
 const isIdirDomainSelected = () => {
     return formData.value.domain === domainOptions.IDIR;
 };
 
-function userDomainChange() {
+const userDomainChange = () => {
     resetVerifiedUserIdentity();
     formData.value.userId = '';
-}
+};
 
+const userIdChange = () => {
+    resetVerifiedUserIdentity();
+    removeForestClientSection();
+};
+
+const resetVerifiedUserIdentity = () => {
+    verifiedUserIdentity.value = null;
+};
+
+const verifyUserId = async (userId: string, domain: string) => {
+    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
+
+    verifiedUserIdentity.value = (
+        await idirBceidProxyApi.idirSearch(userId)
+    ).data;
+};
+
+/* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamApplicationRole | undefined => {
     return applicationRoleOptions.value?.find(
         (item) => item.role_id === formData.value.role_id
@@ -104,15 +117,7 @@ const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
 };
 
-function userIdChange() {
-    resetVerifiedUserIdentity();
-    removeForestClientSection();
-}
-
-function resetVerifiedUserIdentity() {
-    verifiedUserIdentity.value = null;
-}
-
+/* ----------------- Forest client number method ----------------------- */
 const removeForestClientSection = () => {
     // cleanup the forest client number input field
     cleanupForestClientNumberInput();
@@ -121,26 +126,13 @@ const removeForestClientSection = () => {
 };
 
 const cleanupForestClientNumberInput = () => {
-    formData.value['forestClientNumber'] = '';
+    formData.value['forestClientNumbers'] = '';
     forestClientNumberVerifyErrors.value = [];
 };
 
-function cancelForm() {
-    formData.value = defaultFormData;
-    router.push('/dashboard');
-}
-
-async function verifyIdentity(userId: string, domain: string) {
-    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
-
-    verifiedUserIdentity.value = (
-        await idirBceidProxyApi.idirSearch(userId)
-    ).data;
-}
-
-async function verifyForestClientNumber(forestClientNumber: string) {
+const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
-    let forestNumbers = forestClientNumber.split(/[ ,]+/);
+    let forestNumbers = forestClientNumbers.split(/[ ,]+/);
 
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
@@ -189,19 +181,30 @@ async function verifyForestClientNumber(forestClientNumber: string) {
     }
 
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
-    formData.value['forestClientNumber'] = forestNumbers.toString();
-}
+    formData.value['forestClientNumbers'] = forestNumbers.toString();
+};
 
-function isForestClientNumberNotAdded(forestClientNumber: string) {
+const isForestClientNumberNotAdded = (forestClientNumber: string) => {
     return !forestClientData.value.find(
         (item) => forestClientNumber === item.forest_client_number
     );
-}
+};
+
+const removeForestClientFromList = (index: number) => {
+    forestClientData.value.splice(index, 1);
+};
+
+/* ---------------------- Form method ---------------------------------- */
+
+const cancelForm = () => {
+    formData.value = defaultFormData;
+    router.push('/dashboard');
+};
 
 /*
 Two verifications are cunnretly in place: userId and forestClientNumber.
 */
-function areVerificationsPassed() {
+const areVerificationsPassed = () => {
     return (
         // userId verification.
         (!isIdirDomainSelected() ||
@@ -212,7 +215,49 @@ function areVerificationsPassed() {
                 forestClientData.value?.[0]?.status?.status_code ==
                     FamForestClientStatusType.A))
     );
-}
+};
+
+const handleSubmit = async () => {
+    const successForestClientIdList: string[] = [];
+    const warningForestClientIdList: string[] = [];
+    const errorForestClientIdList: string[] = [];
+
+    do {
+        const item = forestClientData.value.pop();
+        const data = toRequestPayload(formData.value, item);
+
+        await userRoleAssignmentApi
+            .createUserRoleAssignment(data)
+            .then(() => {
+                successForestClientIdList.push(
+                    item?.forest_client_number ? item.forest_client_number : ''
+                );
+            })
+            .catch((error) => {
+                if (error.response?.status === 409) {
+                    warningForestClientIdList.push(
+                        item?.forest_client_number
+                            ? item?.forest_client_number
+                            : ''
+                    );
+                } else {
+                    errorForestClientIdList.push(
+                        item?.forest_client_number
+                            ? item.forest_client_number
+                            : ''
+                    );
+                }
+            });
+    } while (forestClientData.value.length > 0);
+
+    composeAndPushNotificationMessages(
+        successForestClientIdList,
+        warningForestClientIdList,
+        errorForestClientIdList
+    );
+
+    router.push('/dashboard');
+};
 
 function toRequestPayload(
     formData: any,
@@ -267,53 +312,6 @@ const composeAndPushNotificationMessages = (
     }
     return '';
 };
-
-const handleSubmit = async () => {
-    const successForestClientIdList: string[] = [];
-    const warningForestClientIdList: string[] = [];
-    const errorForestClientIdList: string[] = [];
-
-    do {
-        const item = forestClientData.value.pop();
-        const data = toRequestPayload(formData.value, item);
-
-        await userRoleAssignmentApi
-            .createUserRoleAssignment(data)
-            .then(() => {
-                successForestClientIdList.push(
-                    item?.forest_client_number ? item.forest_client_number : ''
-                );
-            })
-            .catch((error) => {
-                if (error.response?.status === 409) {
-                    warningForestClientIdList.push(
-                        item?.forest_client_number
-                            ? item?.forest_client_number
-                            : ''
-                    );
-                } else {
-                    errorForestClientIdList.push(
-                        item?.forest_client_number
-                            ? item.forest_client_number
-                            : ''
-                    );
-                }
-            });
-    } while (forestClientData.value.length > 0);
-
-    composeAndPushNotificationMessages(
-        successForestClientIdList,
-        warningForestClientIdList,
-        errorForestClientIdList
-    );
-
-    router.push('/dashboard');
-};
-
-function removeForestClientFromList(index: number) {
-    forestClientNumberVerifyErrors.value = [];
-    forestClientData.value.splice(index, 1);
-}
 </script>
 
 <template>
@@ -404,7 +402,7 @@ function removeForestClientFromList(index: number) {
                                 :name="'verifyIdir'"
                                 :label="'Verify'"
                                 @click="
-                                    verifyIdentity(
+                                    verifyUserId(
                                         formData.userId,
                                         formData.domain
                                     )
@@ -476,9 +474,9 @@ function removeForestClientFromList(index: number) {
                                 >User’s Client ID (8 digits)
                             </label>
                             <Field
-                                name="forestClientNumber"
+                                name="forestClientNumbers"
                                 v-slot="{ field, meta, handleChange }"
-                                v-model="formData.forestClientNumber"
+                                v-model="formData.forestClientNumbers"
                             >
                                 <InputText
                                     id="forestClientInput"
@@ -493,7 +491,7 @@ function removeForestClientFromList(index: number) {
                                     @input="cleanupForestClientNumberInput()"
                                     :class="{
                                         'is-invalid':
-                                            errors.forestClientNumber ||
+                                            errors.forestClientNumbers ||
                                             forestClientNumberVerifyErrors.length >
                                                 0,
                                     }"
@@ -501,13 +499,13 @@ function removeForestClientFromList(index: number) {
                             </Field>
                             <ErrorMessage
                                 class="invalid-feedback"
-                                name="forestClientNumber"
+                                name="forestClientNumbers"
                             />
                             <small
                                 id="forestClientInput-help"
                                 class="helper-text"
                                 v-if="
-                                    !errors.forestClientNumber &&
+                                    !errors.forestClientNumbers &&
                                     forestClientNumberVerifyErrors.length === 0
                                 "
                                 >Add and verify the Client IDs. Add multiple
@@ -528,13 +526,13 @@ function removeForestClientFromList(index: number) {
                                 :label="'Add Client Numbers'"
                                 @click="
                                     verifyForestClientNumber(
-                                        formData.forestClientNumber as string
+                                        formData.forestClientNumbers as string
                                     )
                                 "
                                 v-bind:disabled="
-                                    formData.forestClientNumber?.length <
+                                    formData.forestClientNumbers?.length <
                                         FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                                    !!errors.forestClientNumber ||
+                                    !!errors.forestClientNumbers ||
                                     LoadingState.isLoading.value
                                 "
                             >

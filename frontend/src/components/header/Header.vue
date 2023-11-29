@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
 import Button from 'primevue/button';
+import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { sideNavState } from '@/store/SideNavState'
+import { sideNavState } from '@/store/SideNavState';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -23,14 +23,11 @@ const props = defineProps({
         required: true,
     },
 });
-
 </script>
 
 <template>
     <header class="header" id="header">
-        <nav
-            class="navbar justify-content-start"
-        >
+        <nav class="navbar justify-content-start">
             <Button
                 class="btn-toggleSideNav"
                 @click="sideNavState.toggleSideNavVisible()"
@@ -43,18 +40,18 @@ const props = defineProps({
             </Button>
             <span class="header-title">
                 {{ props.title }}
-                <strong class="subtitle">{{ props.subtitle }} {{ environmentLabel }}</strong>
+                <strong class="subtitle"
+                    >{{ props.subtitle }} {{ environmentLabel }}</strong
+                >
             </span>
 
-              <a
-                  title="Profile"
-                  v-if="authService.getters.isLoggedIn()"
-                  @click="profileSidebarState.toggleVisible()"
-              >
-                  <Icon
-                    icon="user--avatar"
-                    :size="IconSize.medium" />
-              </a>
+            <a
+                title="Profile"
+                v-if="authService.getters.isLoggedIn()"
+                @click="profileSidebarState.toggleVisible()"
+            >
+                <Icon icon="user--avatar" :size="IconSize.medium" />
+            </a>
         </nav>
         <teleport to=".modals">
             <ProfileSidebar />
@@ -90,7 +87,7 @@ li {
     z-index: 1;
     color: $dark-text-primary;
     .header-title {
-        margin: 0 auto 0 0 ;
+        margin: 0 auto 0 0;
         a i {
             cursor: pointer;
         }
@@ -118,7 +115,7 @@ a > svg {
 
 @media (min-width: 1024px) {
     .navbar {
-        padding: 0 1rem 0 1rem  !important;
+        padding: 0 1rem 0 1rem !important;
     }
 
     .subtitle {
