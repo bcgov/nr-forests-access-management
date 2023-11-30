@@ -84,7 +84,7 @@ async function deleteUserRoleAssignment(
             Severity.success,
             `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
         );
-    } catch (error) {
+    } catch (error: any) {
         setNotificationMsg(
             Severity.error,
             `An error has occured. ${error.response.data.detail.description}`
