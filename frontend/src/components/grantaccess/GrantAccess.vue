@@ -220,7 +220,7 @@ const areVerificationsPassed = () => {
 const handleSubmit = async () => {
     const successForestClientIdList: string[] = [];
     const warningForestClientIdList: string[] = [];
-    const errorForestClientIdList = {errorMsg: '', forestClienNumber: [] as string[]};
+    const errorNotification = {msg: '', errorForestClientIdList: [] as string[]};
 
     do {
         const item = forestClientData.value.pop();
@@ -241,9 +241,9 @@ const handleSubmit = async () => {
                             : ''
                     );
                 } else if (error.response.data.detail.code === "self_grant_prohibited") {
-                    errorForestClientIdList.errorMsg = 'Granting roles to self is not allowed.';
+                    errorNotification.msg = 'Granting roles to self is not allowed.';
                 } else {
-                    errorForestClientIdList.forestClienNumber.push(
+                    errorNotification.errorForestClientIdList.push(
                         item?.forest_client_number
                             ? item?.forest_client_number
                             : '');
@@ -254,7 +254,7 @@ const handleSubmit = async () => {
     composeAndPushNotificationMessages(
         successForestClientIdList,
         warningForestClientIdList,
-        errorForestClientIdList
+        errorNotification
     );
 
     router.push('/dashboard');
@@ -284,7 +284,7 @@ function toRequestPayload(
 const composeAndPushNotificationMessages = (
     successIdList: string[],
     warningIdList: string[],
-    errorIdList: {errorMsg: string, forestClienNumber: string[]}
+    errorMsg: {msg: string, errorForestClientIdList: string[]}
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
@@ -304,19 +304,19 @@ const composeAndPushNotificationMessages = (
         );
     }
 
-    if(errorIdList.errorMsg) {
+    if(errorMsg.msg) {
         setGrantAccessNotificationMsg(
-            errorIdList.forestClienNumber,
+            errorMsg.errorForestClientIdList,
             username,
             Severity.error,
             getSelectedRole()?.role_name,
-            `An error has occured. ${errorIdList.errorMsg}`
+            `An error has occured. ${errorMsg.msg}`
         );
     }
 
-    if (errorIdList.forestClienNumber.length > 0) {
+    if (errorMsg.errorForestClientIdList.length > 0) {
         setGrantAccessNotificationMsg(
-            errorIdList.forestClienNumber,
+            errorMsg.errorForestClientIdList,
             username,
             Severity.error,
             getSelectedRole()?.role_name
