@@ -5,20 +5,34 @@ import sys
 
 import pytest
 from psycopg2 import sql
+from constant import TEST_ROLE_NAME
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
 import lambda_function  # noqa
+from util import (
+    format_user_properties,
+    initial_user_without_guid_or_cognito_id,
+    initial_user,
+    create_user_role_xref_record,
+    create_test_fam_cognito_client,
+)
 
 LOGGER = logging.getLogger(__name__)
-TEST_ROLE_NAME = "EXPECTED"
 
 
-def test_create_user_if_not_found(
-    db_pg_transaction, cognito_event, cognito_context, test_user_properties
-):
-
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
+def test_create_user_if_not_found(db_pg_transaction, cognito_event, cognito_context):
     cursor = db_pg_transaction.cursor()
+    test_user_properties = format_user_properties(cognito_event)
 
     # shorter variables
     test_idp_type_code = test_user_properties["idp_type_code"]
@@ -29,9 +43,8 @@ def test_create_user_if_not_found(
     # make sure the user doesn't exist
     user_query = sql.SQL(
         """SELECT user_name from app_fam.fam_user where
-            user_name = {0}""").format(
-        sql.Literal(test_idp_username)
-    )
+            user_name = {0}"""
+    ).format(sql.Literal(test_idp_username))
 
     cursor.execute(user_query)
     results = cursor.fetchall()
@@ -68,17 +81,27 @@ def test_create_user_if_not_found(
     assert count == 1
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
 def test_update_user_if_already_exists(
     db_pg_transaction,
     cognito_event,
     cognito_context,
-    test_user_properties,
-    initial_user_without_guid_or_cognito_id,
 ):
     """
     if the user has already been created but does not have a guid or a cognito user
     id then, it will be updated, and the guid / cognito user id will be populated.
     """
+
+    initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event)
+    test_user_properties = format_user_properties(cognito_event)
 
     test_idp_type_code = test_user_properties["idp_type_code"]
     test_idp_user_id = test_user_properties["idp_user_id"]
@@ -110,17 +133,25 @@ def test_update_user_if_already_exists(
     assert count == 1
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
 def test_direct_role_assignment(
-    db_pg_transaction,
-    cognito_event,
-    cognito_context,
-    initial_user,
-    create_test_fam_role,
-    create_test_fam_cognito_client,
-    create_user_role_xref_record,
+    db_pg_transaction, cognito_event, cognito_context, create_test_fam_role
 ):
     """role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
+
+    test_user_properties = format_user_properties(cognito_event)
+    initial_user(db_pg_transaction, cognito_event)
+    create_test_fam_cognito_client(db_pg_transaction, cognito_event)
+    create_user_role_xref_record(db_pg_transaction, test_user_properties)
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
@@ -134,18 +165,28 @@ def test_direct_role_assignment(
     assert TEST_ROLE_NAME in override_groups
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
 def test_parent_role_assignment(
     db_pg_transaction,
     cognito_event,
     cognito_context,
-    initial_user,
-    create_test_fam_cognito_client,
     create_fam_child_parent_role_assignment,
-    create_user_role_xref_record,
 ):
     """if set up as a fom submitter for a specific forest client, then you are assigned
     to the child role that has a forest client
     """
+    test_user_properties = format_user_properties(cognito_event)
+    initial_user(db_pg_transaction, cognito_event)
+    create_test_fam_cognito_client(db_pg_transaction, cognito_event)
+    create_user_role_xref_record(db_pg_transaction, test_user_properties)
 
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
     groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"][
@@ -156,6 +197,15 @@ def test_parent_role_assignment(
     assert groups[0] == TEST_ROLE_NAME
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
 def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context):
     """runs against a database that contains only data that has been injected
     by the migrations.  Should not contain any roles in the result
@@ -168,6 +218,15 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
     assert groups == []
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=["cognito_event"],
+)
 def test_exception_with_wrong_cognito_event(
     db_pg_transaction, cognito_event, cognito_context
 ):

@@ -6,7 +6,7 @@ import sys
 import dotenv
 import psycopg2
 import pytest
-from lamda_function_test import TEST_ROLE_NAME
+from constant import TEST_ROLE_NAME
 from psycopg2 import sql
 from testcontainers.compose import DockerCompose
 
@@ -56,7 +56,6 @@ def get_local_db_string():
 # Create one database session for all the tests to use
 @pytest.fixture(scope="session")
 def db_pg_connection(db_pg_container):
-
     db_connection_string = get_local_db_string()
     db_connection = psycopg2.connect(db_connection_string, sslmode="disable")
     db_connection.autocommit = False
@@ -67,7 +66,6 @@ def db_pg_connection(db_pg_container):
 # Use this fixture in tests so that each test does a rollback at the end
 @pytest.fixture(scope="function")
 def db_pg_transaction(db_pg_connection, monkeypatch):
-
     # Override the methods that the auth function uses to handle transactions
     monkeypatch.setattr(
         lambda_function, "obtain_db_connection", lambda: db_pg_connection
@@ -80,8 +78,8 @@ def db_pg_transaction(db_pg_connection, monkeypatch):
 
 # Load a sample cognito test event if necessary
 @pytest.fixture(scope="session")
-def cognito_event():
-    event_file_path = os.path.join(os.path.dirname(__file__), "login_event.json")
+def cognito_event(request):
+    event_file_path = os.path.join(os.path.dirname(__file__), request.param)
 
     with open(event_file_path, "r") as file:
         event = json.load(file)
@@ -96,46 +94,8 @@ def cognito_context():
     yield context
 
 
-@pytest.fixture(scope="session")
-def test_user_properties(cognito_event):
-    user_attribs = cognito_event["request"]["userAttributes"]
-    test_user_properties = {}
-    test_user_properties["idp_type_code"] = lambda_function.USER_TYPE_CODE_DICT[
-        user_attribs["custom:idp_name"]
-    ]
-    test_user_properties["idp_user_id"] = user_attribs["custom:idp_user_id"]
-    test_user_properties["idp_username"] = user_attribs["custom:idp_username"]
-
-    test_user_properties["cognito_user_id"] = cognito_event["userName"]
-    return test_user_properties
-
-
-@pytest.fixture(scope="function")
-def initial_user(db_pg_transaction, cognito_event, test_user_properties):
-
-    cursor = db_pg_transaction.cursor()
-
-    raw_query = """INSERT INTO app_fam.fam_user
-        (user_type_code, user_name, user_guid,
-        create_user, create_date, update_user, update_date)
-        VALUES( %s, %s, %s,
-        CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
-    # print(f"query is\n:{raw_query}")
-
-    idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, (
-        lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"],
-        cognito_event["request"]["userAttributes"]["custom:idp_user_id"]
-    ))
-
-    yield test_user_properties
-
-
 @pytest.fixture(scope="function")
 def create_test_fam_role(db_pg_transaction):
-
     # Set up expected role in DB
     cursor = db_pg_transaction.cursor()
     raw_query = """
@@ -186,79 +146,6 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
 
 
 @pytest.fixture(scope="function")
-def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
-
-    client_id = cognito_event["callerContext"]["clientId"]
-    cursor = db_pg_transaction.cursor()
-    # Set up expected client in DB
-    # cursor = db_transaction.cursor()
-    raw_query = """
-    insert into app_fam.fam_application_client
-        (cognito_client_id,
-        application_id,
-        create_user,
-        update_user)
-    values(
-        %s,
-        (select application_id from app_fam.fam_application
-            where application_name = 'FAM'),
-        CURRENT_USER,
-        CURRENT_USER)
-    """
-    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, [client_id])
-
-
-@pytest.fixture(scope="function")
-def create_user_role_xref_record(db_pg_transaction, test_user_properties):
-    initial_user = test_user_properties
-    cursor = db_pg_transaction.cursor()
-    raw_query = """
-    insert into app_fam.fam_user_role_xref
-        (user_id,
-        role_id,
-        create_user,
-        update_user)
-    VALUES (
-        (select user_id from app_fam.fam_user where
-            user_name = %s
-            and user_type_code = %s),
-        (select role_id from app_fam.fam_role where
-            role_name = %s),
-        CURRENT_USER,
-        CURRENT_USER
-    )
-    """
-    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, (
-        initial_user["idp_username"],
-        initial_user["idp_type_code"],
-        TEST_ROLE_NAME
-    ))
-
-
-@pytest.fixture(scope="function")
-def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
-
-    cursor = db_pg_transaction.cursor()
-
-    # Only insert the bare minimum to simulate entering user in advance of first login
-
-    raw_query = """INSERT INTO app_fam.fam_user
-        (user_type_code, user_name,
-        create_user, create_date, update_user, update_date)
-        VALUES( %s, %s,
-        CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
-    # print(f"query is\n:{raw_query}")
-
-    idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    cursor.execute(raw_query, (
-        lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"]
-    ))
-
-
-@pytest.fixture(scope="function")
 def create_fam_child_parent_role_assignment(db_pg_transaction):
     """
     * creates a parent role (type = A, abstract),
@@ -278,9 +165,8 @@ def create_fam_child_parent_role_assignment(db_pg_transaction):
 
     query = sql.SQL(
         """select role_id from app_fam.fam_role where
-           role_name = {0}""").format(
-        sql.Literal(parent_role_name)
-    )
+           role_name = {0}"""
+    ).format(sql.Literal(parent_role_name))
 
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
