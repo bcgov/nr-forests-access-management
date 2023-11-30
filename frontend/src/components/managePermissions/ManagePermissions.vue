@@ -72,17 +72,25 @@ const selectApplication = async (e: DropdownChangeEvent) => {
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    await userRoleAssignmentApi.deleteUserRoleAssignment(
-        assignment.user_role_xref_id
-    );
-    userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
-        return a.user_role_xref_id != assignment.user_role_xref_id;
-    });
+    try {
+        await userRoleAssignmentApi.deleteUserRoleAssignment(
+            assignment.user_role_xref_id
+        );
+        userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
+            return a.user_role_xref_id != assignment.user_role_xref_id;
+        });
 
-    setNotificationMsg(
-        Severity.success,
-        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
-    );
+        setNotificationMsg(
+            Severity.success,
+            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+        );
+    } catch (error) {
+        setNotificationMsg(
+            Severity.error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    };
+
 }
 </script>
 
