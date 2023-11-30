@@ -42,9 +42,12 @@ export const setGrantAccessNotificationMsg = (
     forestClientNumberList: string[],
     userId: any,
     severity: Severity,
-    role = ''
+    role = '',
+    specificMsg = ''
 ) => {
     let notificationFullMsg = '';
+    let notificationMsg = '';
+
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
     const msgByType = {
         success:
@@ -62,21 +65,25 @@ export const setGrantAccessNotificationMsg = (
     };
 
     const clientIdList = forestClientNumberList.slice(0, 2);
-
     if (forestClientNumberList.length > 2) {
         notificationFullMsg = `${userId} ${
             msgByType[severity]
         } ${forestClientNumberList.join(', ')}`;
     }
 
-    const notificationMsg = `
-        ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
-        ${
-            isPlural === 'IDs' && forestClientNumberList.length > 2
-                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
-                : ''
-        }
-    `;
+    if(specificMsg) {
+        notificationMsg = specificMsg
+    } else {
+        notificationMsg = `
+            ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
+            ${
+                isPlural === 'IDs' && forestClientNumberList.length > 2
+                    ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+                    : ''
+            }
+        `;
+    }
+
 
     setNotificationMsg(severity, notificationMsg, notificationFullMsg);
 };
