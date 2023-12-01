@@ -48,30 +48,30 @@ export const setGrantAccessNotificationMsg = (
     let notificationFullMsg = '';
     let notificationMsg = specificMsg;
 
-    const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
-    const msgByType = {
-        success:
-            forestClientNumberList[0] === ''
-                ? `was successfully added with the role ${role}`
-                : `was successfully added with Client ${isPlural}:`,
-        warn:
-            forestClientNumberList[0] === ''
-                ? `already exists with the role ${role}`
-                : `already exists with Client ${isPlural}:`,
-        error:
-            forestClientNumberList[0] === ''
-                ? `was not added with Client IDs: ${role}`
-                : `was not added with Client ${isPlural}:`,
-    };
-
-    const clientIdList = forestClientNumberList.slice(0, 2);
-    if (forestClientNumberList.length > 2) {
-        notificationFullMsg = `${userId} ${
-            msgByType[severity]
-        } ${forestClientNumberList.join(', ')}`;
-    }
-
     if (specificMsg == '') {
+        const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
+        const msgByType = {
+            success:
+                forestClientNumberList[0] === ''
+                    ? `was successfully added with the role ${role}`
+                    : `was successfully added with Client ${isPlural}:`,
+            warn:
+                forestClientNumberList[0] === ''
+                    ? `already exists with the role ${role}`
+                    : `already exists with Client ${isPlural}:`,
+            error:
+                forestClientNumberList[0] === ''
+                    ? `was not added with Client IDs: ${role}`
+                    : `was not added with Client ${isPlural}:`,
+        };
+
+        const clientIdList = forestClientNumberList.slice(0, 2);
+        if (forestClientNumberList.length > 2) {
+            notificationFullMsg = `${userId} ${
+                msgByType[severity]
+            } ${forestClientNumberList.join(', ')}`;
+        }
+
         notificationMsg = `
             ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
             ${
