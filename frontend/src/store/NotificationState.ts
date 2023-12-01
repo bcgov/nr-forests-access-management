@@ -40,7 +40,7 @@ export const showFullNotificationMsg = (severity: Severity) => {
 
 export const setGrantAccessNotificationMsg = (
     forestClientNumberList: string[],
-    userId: any,
+    userId: string,
     severity: Severity,
     role = '',
     specificMsg = ''
