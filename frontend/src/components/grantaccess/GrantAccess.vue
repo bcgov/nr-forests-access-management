@@ -213,14 +213,14 @@ const areVerificationsPassed = () => {
         (!isAbstractRoleSelected() ||
             (isAbstractRoleSelected() &&
                 forestClientData.value?.[0]?.status?.status_code ==
-                    FamForestClientStatusType.A))
+                FamForestClientStatusType.A))
     );
 };
 
 const handleSubmit = async () => {
     const successForestClientIdList: string[] = [];
     const warningForestClientIdList: string[] = [];
-    const errorNotification = {msg: '', errorForestClientIdList: [] as string[]};
+    const errorNotification = { msg: '', errorForestClientIdList: [] as string[] };
 
     do {
         const item = forestClientData.value.pop();
@@ -270,12 +270,12 @@ function toRequestPayload(
         role_id: formData.role_id,
         ...(forestClientData
             ? {
-                  forest_client_number:
-                      forestClientData.forest_client_number.padStart(
-                          FOREST_CLIENT_INPUT_MAX_LENGTH,
-                          '0'
-                      ),
-              }
+                forest_client_number:
+                    forestClientData.forest_client_number.padStart(
+                        FOREST_CLIENT_INPUT_MAX_LENGTH,
+                        '0'
+                    ),
+            }
             : {}),
     } as FamUserRoleAssignmentCreate;
     return request;
@@ -284,7 +284,7 @@ function toRequestPayload(
 const composeAndPushNotificationMessages = (
     successIdList: string[],
     warningIdList: string[],
-    errorMsg: {msg: string, errorForestClientIdList: string[]}
+    errorMsg: { msg: string, errorForestClientIdList: string[] }
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
@@ -304,7 +304,7 @@ const composeAndPushNotificationMessages = (
         );
     }
 
-    if(errorMsg.msg) {
+    if (errorMsg.msg) {
         setGrantAccessNotificationMsg(
             errorMsg.errorForestClientIdList,
             username,
@@ -328,263 +328,136 @@ const composeAndPushNotificationMessages = (
 </script>
 
 <template>
-    <PageTitle
-        title="Add user permission"
-        subtitle="Add a new permission to a user. All fields are mandatory unless noted"
-    />
-    <VeeForm
-        ref="form"
-        v-slot="{ errors, meta }"
-        :validation-schema="formValidationSchema"
-        as="div"
-    >
+    <PageTitle title="Add user permission"
+        subtitle="Add a new permission to a user. All fields are mandatory unless noted" />
+    <VeeForm ref="form" v-slot="{ errors, meta }" :validation-schema="formValidationSchema" as="div">
         <div class="page-body">
             <form id="grantAccessForm" class="form-container">
-                <StepContainer
-                    title="User information"
-                    :subtitle="`Enter the user information to add a new user to ${selectedApplicationDisplayText}`"
-                >
+                <StepContainer title="User information"
+                    :subtitle="`Enter the user information to add a new user to ${selectedApplicationDisplayText}`">
                     <div class="user-radio-group">
                         <label> Select user's domain </label>
                         <div class="px-0">
-                            <RadioButton
-                                v-model="formData.domain"
-                                :checked="isIdirDomainSelected()"
-                                inputId="idirSelect"
-                                name="domainRadioOptions"
-                                :value="domainOptions.IDIR"
-                                @change="userDomainChange()"
-                            />
+                            <RadioButton v-model="formData.domain" :checked="isIdirDomainSelected()" inputId="idirSelect"
+                                name="domainRadioOptions" :value="domainOptions.IDIR" @change="userDomainChange()" />
                             <label class="mx-2" for="idirSelect">IDIR</label>
                         </div>
                         <div class="px-0">
-                            <RadioButton
-                                v-model="formData.domain"
-                                inputId="becidSelect"
-                                name="domainRadioOptions"
-                                :value="domainOptions.BCEID"
-                                @change="userDomainChange()"
-                            />
+                            <RadioButton v-model="formData.domain" inputId="becidSelect" name="domainRadioOptions"
+                                :value="domainOptions.BCEID" @change="userDomainChange()" />
                             <label class="mx-2" for="becidSelect">BCeID</label>
                         </div>
                     </div>
                     <div class="input-with-verify-field">
                         <div>
                             <label for="userIdInput">Username</label>
-                            <Field
-                                name="userId"
-                                :validateOnChange="true"
-                                v-model="formData.userId"
-                                v-slot="{ field }"
-                            >
-                                <InputText
-                                    id="userIdInput"
-                                    :placeholder="
-                                        formData.domain === 'I'
-                                            ? 'Type user\'s IDIR'
-                                            : 'Type user\'s BCeID'
-                                    "
-                                    :validateOnChange="true"
-                                    class="w-100 custom-input"
-                                    type="text"
-                                    maxlength="20"
-                                    v-bind="field"
-                                    @input="userIdChange()"
-                                    :class="{ 'is-invalid': errors.userId }"
-                                />
+                            <Field name="userId" :validateOnChange="true" v-model="formData.userId" v-slot="{ field }">
+                                <InputText id="userIdInput" :placeholder="formData.domain === 'I'
+                                    ? 'Type user\'s IDIR'
+                                    : 'Type user\'s BCeID'
+                                    " :validateOnChange="true" class="w-100 custom-input" type="text" maxlength="20"
+                                    v-bind="field" @input="userIdChange()" :class="{ 'is-invalid': errors.userId }" />
                             </Field>
-                            <ErrorMessage
-                                class="invalid-feedback"
-                                name="userId"
-                            />
-                            <small
-                                id="userIdInput-helper"
-                                class="helper-text"
-                                v-if="!errors.userId"
-                                >Enter and verify the username for this
-                                user</small
-                            >
+                            <ErrorMessage class="invalid-feedback" name="userId" />
+                            <small id="userIdInput-helper" class="helper-text" v-if="!errors.userId">Enter and verify the
+                                username for this
+                                user</small>
                         </div>
-                        <div
-                            v-if="formData.domain === 'I'"
-                            class="no-label-column"
-                        >
-                            <Button
-                                class="button w-100"
-                                aria-label="Verify user IDIR"
-                                :name="'verifyIdir'"
-                                :label="'Verify'"
-                                @click="
+                        <div v-if="formData.domain === 'I'" class="no-label-column">
+                            <Button class="button w-100" aria-label="Verify user IDIR" :name="'verifyIdir'"
+                                :label="'Verify'" @click="
                                     verifyUserId(
                                         formData.userId,
                                         formData.domain
                                     )
-                                "
-                                :disabled="
-                                    LoadingState.isLoading.value ||
-                                    formData.domain !== domainOptions.IDIR ||
-                                    !formData.userId ||
-                                    errors.userId !== undefined
-                                "
-                                ><Icon
-                                    icon="search--locate"
-                                    :size="IconSize.small"
-                                />
+                                    " :disabled="LoadingState.isLoading.value ||
+        formData.domain !== domainOptions.IDIR ||
+        !formData.userId ||
+        errors.userId !== undefined
+        ">
+                                <Icon icon="search--locate" :size="IconSize.small" />
                             </Button>
                         </div>
                     </div>
 
                     <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
-                        <UserIdentityCard
-                            :userIdentity="verifiedUserIdentity"
-                        ></UserIdentityCard>
+                        <UserIdentityCard :userIdentity="verifiedUserIdentity"></UserIdentityCard>
                     </div>
                 </StepContainer>
 
-                <StepContainer
-                    title="Add user roles"
-                    subtitle="Enter a specific role for this user"
-                    :divider="isAbstractRoleSelected()"
-                >
+                <StepContainer title="Add user roles" subtitle="Enter a specific role for this user"
+                    :divider="isAbstractRoleSelected()">
                     <label>Assign a role to the user</label>
 
-                    <Field
-                        name="role_id"
-                        aria-label="Role Select"
-                        v-slot="{ field, handleChange }"
-                        v-model="formData.role_id"
-                    >
-                        <Dropdown
-                            :options="applicationRoleOptions"
-                            optionLabel="role_name"
-                            optionValue="role_id"
-                            :modelValue="field.value"
-                            placeholder="Choose an option"
-                            class="w-100 custom-input"
-                            style="width: 100% !important"
-                            v-bind="field.value"
-                            @update:modelValue="handleChange"
-                            @change="removeForestClientSection()"
-                            :class="{
+                    <Field name="role_id" aria-label="Role Select" v-slot="{ field, handleChange }"
+                        v-model="formData.role_id">
+                        <Dropdown :options="applicationRoleOptions" optionLabel="role_name" optionValue="role_id"
+                            :modelValue="field.value" placeholder="Choose an option" class="w-100 custom-input"
+                            style="width: 100% !important" v-bind="field.value" @update:modelValue="handleChange"
+                            @change="removeForestClientSection()" :class="{
                                 'is-invalid': errors.role_id,
-                            }"
-                        >
+                            }">
                         </Dropdown>
                     </Field>
                     <ErrorMessage class="invalid-feedback" name="role_id">
                     </ErrorMessage>
                 </StepContainer>
 
-                <StepContainer
-                    v-if="isAbstractRoleSelected()"
-                    title="Organization information"
-                    subtitle="Associate one or more Client IDs to this user"
-                    :divider="false"
-                >
+                <StepContainer v-if="isAbstractRoleSelected()" title="Organization information"
+                    subtitle="Associate one or more Client IDs to this user" :divider="false">
                     <div class="input-with-verify-field">
                         <div>
-                            <label for="forestClientInput"
-                                >User’s Client ID (8 digits)
+                            <label for="forestClientInput">User’s Client ID (8 digits)
                             </label>
-                            <Field
-                                name="forestClientNumbers"
-                                v-slot="{ field, meta, handleChange }"
-                                v-model="formData.forestClientNumbers"
-                            >
-                                <InputText
-                                    id="forestClientInput"
-                                    placeholder="Enter and verify the client ID"
-                                    @update:modelValue="handleChange"
-                                    v-bind:disabled="
-                                        LoadingState.isLoading.value
-                                    "
-                                    :validateOnChange="true"
-                                    v-bind="field"
-                                    class="w-100 custom-input"
-                                    @input="cleanupForestClientNumberInput()"
-                                    :class="{
+                            <Field name="forestClientNumbers" v-slot="{ field, meta, handleChange }"
+                                v-model="formData.forestClientNumbers">
+                                <InputText id="forestClientInput" placeholder="Enter and verify the client ID"
+                                    @update:modelValue="handleChange" v-bind:disabled="LoadingState.isLoading.value
+                                        " :validateOnChange="true" v-bind="field" class="w-100 custom-input"
+                                    @input="cleanupForestClientNumberInput()" :class="{
                                         'is-invalid':
                                             errors.forestClientNumbers ||
                                             forestClientNumberVerifyErrors.length >
-                                                0,
-                                    }"
-                                ></InputText>
+                                            0,
+                                    }"></InputText>
                             </Field>
-                            <ErrorMessage
-                                class="invalid-feedback"
-                                name="forestClientNumbers"
-                            />
-                            <small
-                                id="forestClientInput-help"
-                                class="helper-text"
-                                v-if="
-                                    !errors.forestClientNumbers &&
-                                    forestClientNumberVerifyErrors.length === 0
-                                "
-                                >Add and verify the Client IDs. Add multiple
-                                numbers by separating them with commas</small
-                            >
-                            <small
-                                class="invalid-feedback"
-                                v-for="error in forestClientNumberVerifyErrors"
-                            >
+                            <ErrorMessage class="invalid-feedback" name="forestClientNumbers" />
+                            <small id="forestClientInput-help" class="helper-text" v-if="!errors.forestClientNumbers &&
+                                forestClientNumberVerifyErrors.length === 0
+                                ">Add and verify the Client IDs. Add multiple
+                                numbers by separating them with commas</small>
+                            <small class="invalid-feedback" v-for="error in forestClientNumberVerifyErrors">
                                 {{ error }}
                             </small>
                         </div>
                         <div class="no-label-column">
-                            <Button
-                                class="w-100"
-                                aria-label="Add Client Numbers"
-                                :name="'verifyFC'"
-                                :label="'Add Client Numbers'"
-                                @click="
+                            <Button class="w-100" aria-label="Add Client Numbers" :name="'verifyFC'"
+                                :label="'Add Client Numbers'" @click="
                                     verifyForestClientNumber(
                                         formData.forestClientNumbers as string
                                     )
-                                "
-                                v-bind:disabled="
-                                    formData.forestClientNumbers?.length <
-                                        FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                                    !!errors.forestClientNumbers ||
-                                    LoadingState.isLoading.value
-                                "
-                            >
+                                    " v-bind:disabled="formData.forestClientNumbers?.length <
+        FOREST_CLIENT_INPUT_MAX_LENGTH ||
+        !!errors.forestClientNumbers ||
+        LoadingState.isLoading.value
+        ">
                                 <Icon icon="add" :size="IconSize.small" />
                             </Button>
                         </div>
                     </div>
 
-                    <ForestClientCard
-                        v-if="forestClientData.length > 0"
-                        class="px-0"
-                        :forestClientData="forestClientData"
-                        @remove-item="removeForestClientFromList"
-                    />
+                    <ForestClientCard v-if="forestClientData.length > 0" class="px-0" :forestClientData="forestClientData"
+                        @remove-item="removeForestClientFromList" />
                 </StepContainer>
 
                 <div class="button-stack">
-                    <Button
-                        type="button"
-                        id="grantAccessCancel"
-                        class="button w100"
-                        severity="secondary"
-                        label="Cancel"
-                        :disabled="LoadingState.isLoading.value"
-                        @click="cancelForm()"
-                        >&nbsp;</Button
-                    >
-                    <Button
-                        type="button"
-                        id="grantAccessSubmit"
-                        class="button w100"
-                        label="Submit Application"
-                        :disabled="
-                            !(meta.valid && areVerificationsPassed()) ||
-                            LoadingState.isLoading.value
-                        "
-                        @click="handleSubmit()"
-                        ><Icon icon="checkmark" :size="IconSize.small"
-                    /></Button>
+                    <Button type="button" id="grantAccessCancel" class="button w100" severity="secondary" label="Cancel"
+                        :disabled="LoadingState.isLoading.value" @click="cancelForm()">&nbsp;</Button>
+                    <Button type="button" id="grantAccessSubmit" class="button w100" label="Submit Application" :disabled="!(meta.valid && areVerificationsPassed()) ||
+                        LoadingState.isLoading.value
+                        " @click="handleSubmit()">
+                        <Icon icon="checkmark" :size="IconSize.small" />
+                    </Button>
                 </div>
             </form>
         </div>
@@ -609,6 +482,7 @@ const composeAndPushNotificationMessages = (
     width: 100%;
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
+
     Button {
         width: auto !important;
     }
@@ -619,6 +493,7 @@ const composeAndPushNotificationMessages = (
     display: block;
     width: 100%;
 }
+
 .no-label-column {
     margin-top: 1.5rem;
 }
@@ -643,6 +518,7 @@ const composeAndPushNotificationMessages = (
         width: 100% !important;
         grid-template-columns: 1fr 1fr;
     }
+
     .input-with-verify-field {
         display: inline-grid;
         grid-template-columns: auto min-content;
@@ -654,12 +530,14 @@ const composeAndPushNotificationMessages = (
         justify-content: start;
         grid-template-columns: auto auto;
         width: 38rem;
+
         Button {
             width: 15rem !important;
             gap: 2rem;
             white-space: nowrap;
         }
     }
+
     .input-with-verify-field {
         width: 38rem;
     }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { onMounted, onUnmounted, shallowRef } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
@@ -100,25 +100,17 @@ async function deleteUserRoleAssignment(
     <div class="page-body">
         <div class="application-group">
             <label>You are modifying access in this application:</label>
-            <Dropdown
-                v-model="selectedApplication"
-                @change="selectApplication"
-                :options="applicationsUserAdministers"
-                optionLabel="application_description"
-                placeholder="Choose an application to manage permissions"
-                class="application-dropdown"
-            />
+            <Dropdown v-model="selectedApplication" @change="selectApplication" :options="applicationsUserAdministers"
+                optionLabel="application_description" placeholder="Choose an application to manage permissions"
+                class="application-dropdown" />
         </div>
 
         <div class="dashboard-background-layout">
             <NotificationStack />
-            <UserDataTable
-                :isApplicationSelected="isApplicationSelected"
-                :loading="LoadingState.isLoading.value"
+            <UserDataTable :isApplicationSelected="isApplicationSelected" :loading="LoadingState.isLoading.value"
                 :userRoleAssignments="userRoleAssignments || []"
                 :selectedApplicationDisplayText="selectedApplicationDisplayText"
-                @deleteUserRoleAssignment="deleteUserRoleAssignment"
-            />
+                @deleteUserRoleAssignment="deleteUserRoleAssignment" />
         </div>
     </div>
 </template>
@@ -133,6 +125,7 @@ async function deleteUserRoleAssignment(
         margin-bottom: 0.5rem;
     }
 }
+
 .application-dropdown {
     max-width: calc(100vw - 3rem);
     height: 3rem;
@@ -169,6 +162,7 @@ async function deleteUserRoleAssignment(
     .application-dropdown {
         max-width: 38rem;
     }
+
     .dashboard-background-layout {
         width: calc(100vw - 16rem) !important;
     }

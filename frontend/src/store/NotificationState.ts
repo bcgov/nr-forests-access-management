@@ -71,8 +71,8 @@ export const setGrantAccessNotificationMsg = (
         } ${forestClientNumberList.join(', ')}`;
     }
 
-    if(specificMsg) {
-        notificationMsg = specificMsg
+    if (specificMsg) {
+        notificationMsg = specificMsg;
     } else {
         notificationMsg = `
             ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
@@ -83,7 +83,6 @@ export const setGrantAccessNotificationMsg = (
             }
         `;
     }
-
 
     setNotificationMsg(severity, notificationMsg, notificationFullMsg);
 };
