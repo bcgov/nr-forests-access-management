@@ -10,13 +10,6 @@ from constant import TEST_ROLE_NAME
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
 import lambda_function  # noqa
-from util import (
-    format_user_properties,
-    initial_user_without_guid_or_cognito_id,
-    initial_user,
-    create_user_role_xref_record,
-    create_test_fam_cognito_client,
-)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,11 +21,12 @@ LOGGER = logging.getLogger(__name__)
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
-def test_create_user_if_not_found(db_pg_transaction, cognito_event, cognito_context):
+def test_create_user_if_not_found(
+    db_pg_transaction, cognito_event, cognito_context, test_user_properties
+):
     cursor = db_pg_transaction.cursor()
-    test_user_properties = format_user_properties(cognito_event)
 
     # shorter variables
     test_idp_type_code = test_user_properties["idp_type_code"]
@@ -88,20 +82,19 @@ def test_create_user_if_not_found(db_pg_transaction, cognito_event, cognito_cont
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
 def test_update_user_if_already_exists(
     db_pg_transaction,
     cognito_event,
     cognito_context,
+    test_user_properties,
+    initial_user_without_guid_or_cognito_id,
 ):
     """
     if the user has already been created but does not have a guid or a cognito user
     id then, it will be updated, and the guid / cognito user id will be populated.
     """
-
-    initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event)
-    test_user_properties = format_user_properties(cognito_event)
 
     test_idp_type_code = test_user_properties["idp_type_code"]
     test_idp_user_id = test_user_properties["idp_user_id"]
@@ -140,18 +133,19 @@ def test_update_user_if_already_exists(
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
 def test_direct_role_assignment(
-    db_pg_transaction, cognito_event, cognito_context, create_test_fam_role
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
 ):
     """role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
-
-    test_user_properties = format_user_properties(cognito_event)
-    initial_user(db_pg_transaction, cognito_event)
-    create_test_fam_cognito_client(db_pg_transaction, cognito_event)
-    create_user_role_xref_record(db_pg_transaction, test_user_properties)
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
@@ -172,21 +166,20 @@ def test_direct_role_assignment(
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
 def test_parent_role_assignment(
     db_pg_transaction,
     cognito_event,
     cognito_context,
+    initial_user,
+    create_test_fam_cognito_client,
     create_fam_child_parent_role_assignment,
+    create_user_role_xref_record,
 ):
     """if set up as a fom submitter for a specific forest client, then you are assigned
     to the child role that has a forest client
     """
-    test_user_properties = format_user_properties(cognito_event)
-    initial_user(db_pg_transaction, cognito_event)
-    create_test_fam_cognito_client(db_pg_transaction, cognito_event)
-    create_user_role_xref_record(db_pg_transaction, test_user_properties)
 
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
     groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"][
@@ -204,7 +197,7 @@ def test_parent_role_assignment(
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
 def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context):
     """runs against a database that contains only data that has been injected
@@ -225,7 +218,7 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
         "login_event_bceid.json",
         "login_event_bcsc.json",
     ],
-    indirect=["cognito_event"],
+    indirect=True,
 )
 def test_exception_with_wrong_cognito_event(
     db_pg_transaction, cognito_event, cognito_context
