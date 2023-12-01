@@ -46,7 +46,7 @@ export const setGrantAccessNotificationMsg = (
     specificMsg = ''
 ) => {
     let notificationFullMsg = '';
-    let notificationMsg = '';
+    let notificationMsg = specificMsg;
 
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
     const msgByType = {
@@ -71,9 +71,7 @@ export const setGrantAccessNotificationMsg = (
         } ${forestClientNumberList.join(', ')}`;
     }
 
-    if (specificMsg) {
-        notificationMsg = specificMsg;
-    } else {
+    if (specificMsg == '') {
         notificationMsg = `
             ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
             ${
