@@ -94,7 +94,7 @@ def cognito_context():
     yield context
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def test_user_properties(cognito_event):
     user_attribs = cognito_event["request"]["userAttributes"]
     test_user_properties = {}
@@ -115,7 +115,7 @@ def test_user_properties(cognito_event):
 
 
 @pytest.fixture(scope="function")
-def initial_user(db_pg_transaction, cognito_event):
+def initial_user(db_pg_transaction, cognito_event, test_user_properties):
     cursor = db_pg_transaction.cursor()
 
     raw_query = """INSERT INTO app_fam.fam_user
@@ -141,6 +141,8 @@ def initial_user(db_pg_transaction, cognito_event):
             cognito_event["request"]["userAttributes"].get("custom:idp_user_id"),
         ),
     )
+
+    yield test_user_properties
 
 
 @pytest.fixture(scope="function")
@@ -219,6 +221,7 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
 
 @pytest.fixture(scope="function")
 def create_user_role_xref_record(db_pg_transaction, test_user_properties):
+    initial_user = test_user_properties
     cursor = db_pg_transaction.cursor()
     raw_query = """
     insert into app_fam.fam_user_role_xref
@@ -240,8 +243,8 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
     cursor.execute(
         raw_query,
         (
-            test_user_properties.get("idp_username"),
-            test_user_properties.get("idp_type_code"),
+            initial_user.get("idp_username"),
+            initial_user.get("idp_type_code"),
             TEST_ROLE_NAME,
         ),
     )
