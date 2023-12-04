@@ -23,14 +23,13 @@ import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
-const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
-        await applicationsApi.getApplications()
+        await apiServiceFactory.getAppAccessControlApiService().applicationsApi
+            .getApplications()
     ).data;
     if (isApplicationSelected) {
         await getAppUserRoleAssignment();
@@ -45,7 +44,8 @@ async function getAppUserRoleAssignment() {
     if (!selectedApplication.value) return;
 
     const userRoleAssignmentList = (
-        await applicationsApi.getFamApplicationUserRoleAssignment(
+        await apiServiceFactory.getAppAccessControlApiService().applicationsApi
+            .getFamApplicationUserRoleAssignment(
             selectedApplication.value.application_id
         )
     ).data;
@@ -75,7 +75,8 @@ const selectApplicationOptions = computed(() => {
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    await userRoleAssignmentApi.deleteUserRoleAssignment(
+    await apiServiceFactory.getAppAccessControlApiService().userRoleAssignmentApi.
+        deleteUserRoleAssignment(
         assignment.user_role_xref_id
     );
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {

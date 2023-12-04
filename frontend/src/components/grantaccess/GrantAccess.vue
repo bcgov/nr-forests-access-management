@@ -24,6 +24,7 @@ import {
     type FamForestClient,
     type IdimProxyIdirInfo,
     type FamUserRoleAssignmentCreate,
+    UserType,
 } from 'fam-app-acsctl-api';
 
 import { IconSize } from '@/enum/IconEnum';
@@ -32,7 +33,7 @@ import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
-const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
+const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
 
 const defaultFormData = {
     domain: domainOptions.IDIR,
@@ -72,14 +73,10 @@ const forestClientData = ref<FamForestClient[]>([]);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
 const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
-const forestClientApi = apiServiceFactory.getForestClientApi();
-const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
-const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
 onMounted(async () => {
     applicationRoleOptions.value = (
-        await applicationsApi.getFamApplicationRoles(
+        await apiServiceFactory.getAppAccessControlApiService().applicationsApi.getFamApplicationRoles(
             selectedApplication.value?.application_id as number
         )
     ).data;
@@ -134,7 +131,8 @@ async function verifyIdentity(userId: string, domain: string) {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     verifiedUserIdentity.value = (
-        await idirBceidProxyApi.idirSearch(userId)
+        await apiServiceFactory.getAppAccessControlApiService().idirBceidProxyApi
+            .idirSearch(userId)
     ).data;
 }
 
@@ -148,7 +146,8 @@ async function verifyForestClientNumber(forestClientNumber: string) {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await forestClientApi
+        await apiServiceFactory.getAppAccessControlApiService()
+            .forestClientsApi
             .search(item)
             .then((result) => {
                 if (!result.data[0]) {
@@ -277,7 +276,8 @@ const handleSubmit = async () => {
         const item = forestClientData.value.pop();
         const data = toRequestPayload(formData.value, item);
 
-        await userRoleAssignmentApi
+        await apiServiceFactory.getAppAccessControlApiService()
+            .userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
                 successForestClientIdList.push(

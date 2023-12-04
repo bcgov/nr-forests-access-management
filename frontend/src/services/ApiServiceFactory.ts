@@ -12,10 +12,12 @@ import type { BaseAPI } from 'fam-app-acsctl-api/dist/base';
 
 export class ApiServiceFactory {
     private environmentSettings: EnvironmentSettings;
-    private applicationsApi: FAMApplicationsApi;
-    private userRoleAssignmentApi: FAMUserRoleAssignmentApi;
-    private forestClientApi: FAMForestClientsApi;
-    private idirBceidProxyApi: IDIRBCeIDProxyApi;
+    private appAccessControlApiService: {
+        applicationsApi: FAMApplicationsApi,
+        userRoleAssignmentApi: FAMUserRoleAssignmentApi,
+        forestClientsApi: FAMForestClientsApi,
+        idirBceidProxyApi: IDIRBCeIDProxyApi
+    };
 
     constructor() {
         this.environmentSettings = new EnvironmentSettings();
@@ -23,26 +25,16 @@ export class ApiServiceFactory {
         const adminManagementBaseURL = this.environmentSettings.getAdminMgmtApiBaseUrl();
 
         // App Access Control API service
-        this.applicationsApi = this.createInstance(FAMApplicationsApi, appAccessControlBaseURL);
-        this.userRoleAssignmentApi = this.createInstance(FAMUserRoleAssignmentApi, appAccessControlBaseURL);
-        this.forestClientApi = this.createInstance(FAMForestClientsApi, appAccessControlBaseURL);
-        this.idirBceidProxyApi = this.createInstance(IDIRBCeIDProxyApi, appAccessControlBaseURL);
+        this.appAccessControlApiService = {
+            applicationsApi: this.createInstance(FAMApplicationsApi, appAccessControlBaseURL),
+            userRoleAssignmentApi: this.createInstance(FAMUserRoleAssignmentApi, appAccessControlBaseURL),
+            forestClientsApi: this.createInstance(FAMForestClientsApi, appAccessControlBaseURL),
+            idirBceidProxyApi: this.createInstance(IDIRBCeIDProxyApi, appAccessControlBaseURL)
+        }
     }
 
-    getApplicationApi(): FAMApplicationsApi {
-        return this.applicationsApi;
-    }
-
-    getUserRoleAssignmentApi(): FAMUserRoleAssignmentApi {
-        return this.userRoleAssignmentApi;
-    }
-
-    getForestClientApi(): FAMForestClientsApi {
-        return this.forestClientApi;
-    }
-
-    getIdirBceidProxyApi(): IDIRBCeIDProxyApi {
-        return this.idirBceidProxyApi;
+    getAppAccessControlApiService() {
+        return this.appAccessControlApiService;
     }
 
     /**
