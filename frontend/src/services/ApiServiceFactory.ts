@@ -48,8 +48,9 @@ export class ApiServiceFactory {
     /**
      * This 'private' method is to instantiate Axios API(s) for the factory.
      * @param c required, the intended API class to be instantiated.
-     * @param baseURL optional, API's base URL (domain, and path if required). Will be set to `configuration` is baseURL is passed in.
-     *                Note, for now, only the `baseURL` can be passed. Also see
+     * @param baseURL optional, API's base URL (domain, and path if required).
+     *                Will be set to `configuration` if baseURL is passed in.
+     *                Note, for now, only the `baseURL` is the intended option. Also see
      *                `why` baseURL is set here at comment from @HttpCommon:defaultAxiosConfig.
      * @returns API class instantiated.
      */
