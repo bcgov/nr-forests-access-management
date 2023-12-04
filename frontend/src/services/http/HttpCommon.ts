@@ -1,16 +1,18 @@
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import HttpReqInterceptors from '@/services/http/HttpRequestInterceptors';
 import HttpResInterceptors from '@/services/http/HttpResponseInterceptors';
 import LoadingState from '@/store/LoadingState';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
-const environmentSettings = new EnvironmentSettings();
-const apiBaseUrl = environmentSettings.getApiBaseUrl();
 const DEFAULT_CONTENT_TYPE = 'application/json';
 const DEFAULT_REQUEST_TIMEOUT = 20000;
 
+/**
+ * // `baseURL` setting is removed from default axios config.
+ * For the current vesion of axios, if this is set during the `axios.create(defaultAxiosConfig)`, it can't be overridden
+ * from the later reuqest's option passing in. FAM currently has more than one API(s) baseURL(s), leave this `baseURL`
+ * to be configured when API service(s) are instantiated.
+ */
 const defaultAxiosConfig = {
-    baseURL: apiBaseUrl,
     timeout: DEFAULT_REQUEST_TIMEOUT,
     /*
     Note! This is the default status handling from Axios. Any status other than 2xx will be rejected,
@@ -30,7 +32,7 @@ const httpInstance = axios.create(defaultAxiosConfig);
 httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
 
 /*
-  Private functions "loadingStart" "loadingStop" and "loadingStopWhenError" 
+  Private functions "loadingStart" "loadingStop" and "loadingStopWhenError"
   are auxiliary special helpers for both request/response interceptors.
 
   When http request happens => assign isLoading state with true.
