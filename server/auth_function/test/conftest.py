@@ -6,7 +6,7 @@ import sys
 import dotenv
 import psycopg2
 import pytest
-from lamda_function_test import TEST_ROLE_NAME
+from constant import TEST_ROLE_NAME
 from psycopg2 import sql
 from testcontainers.compose import DockerCompose
 
@@ -56,7 +56,6 @@ def get_local_db_string():
 # Create one database session for all the tests to use
 @pytest.fixture(scope="session")
 def db_pg_connection(db_pg_container):
-
     db_connection_string = get_local_db_string()
     db_connection = psycopg2.connect(db_connection_string, sslmode="disable")
     db_connection.autocommit = False
@@ -67,7 +66,6 @@ def db_pg_connection(db_pg_container):
 # Use this fixture in tests so that each test does a rollback at the end
 @pytest.fixture(scope="function")
 def db_pg_transaction(db_pg_connection, monkeypatch):
-
     # Override the methods that the auth function uses to handle transactions
     monkeypatch.setattr(
         lambda_function, "obtain_db_connection", lambda: db_pg_connection
@@ -80,8 +78,8 @@ def db_pg_transaction(db_pg_connection, monkeypatch):
 
 # Load a sample cognito test event if necessary
 @pytest.fixture(scope="session")
-def cognito_event():
-    event_file_path = os.path.join(os.path.dirname(__file__), "login_event.json")
+def cognito_event(request):
+    event_file_path = os.path.join(os.path.dirname(__file__), request.param)
 
     with open(event_file_path, "r") as file:
         event = json.load(file)
@@ -101,10 +99,16 @@ def test_user_properties(cognito_event):
     user_attribs = cognito_event["request"]["userAttributes"]
     test_user_properties = {}
     test_user_properties["idp_type_code"] = lambda_function.USER_TYPE_CODE_DICT[
-        user_attribs["custom:idp_name"]
+        user_attribs.get("custom:idp_name")
     ]
-    test_user_properties["idp_user_id"] = user_attribs["custom:idp_user_id"]
-    test_user_properties["idp_username"] = user_attribs["custom:idp_username"]
+    test_user_properties["idp_user_id"] = user_attribs.get("custom:idp_user_id")
+    # set "idp_username" to be "custom:idp_user_id" when "custom:idp_username" not exists for bcsc user
+    # in lambda_function, when we create user for bcsc login, we also use "custom:idp_user_id" for the "idp_username"
+    test_user_properties["idp_username"] = (
+        user_attribs.get("custom:idp_username")
+        if user_attribs.get("custom:idp_username")
+        else user_attribs.get("custom:idp_user_id")
+    )
 
     test_user_properties["cognito_user_id"] = cognito_event["userName"]
     return test_user_properties
@@ -112,7 +116,6 @@ def test_user_properties(cognito_event):
 
 @pytest.fixture(scope="function")
 def initial_user(db_pg_transaction, cognito_event, test_user_properties):
-
     cursor = db_pg_transaction.cursor()
 
     raw_query = """INSERT INTO app_fam.fam_user
@@ -122,20 +125,28 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
-    idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
+    idp_name = cognito_event["request"]["userAttributes"].get("custom:idp_name")
+    # set "username" to be "custom:idp_user_id" when "custom:idp_username" not exists for bcsc user
+    user_name = (
+        cognito_event["request"]["userAttributes"].get("custom:idp_username")
+        if cognito_event["request"]["userAttributes"].get("custom:idp_username")
+        else cognito_event["request"]["userAttributes"].get("custom:idp_user_id")
+    )
     # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, (
-        lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"],
-        cognito_event["request"]["userAttributes"]["custom:idp_user_id"]
-    ))
+    cursor.execute(
+        raw_query,
+        (
+            lambda_function.USER_TYPE_CODE_DICT[idp_name],
+            user_name,
+            cognito_event["request"]["userAttributes"].get("custom:idp_user_id"),
+        ),
+    )
 
     yield test_user_properties
 
 
 @pytest.fixture(scope="function")
 def create_test_fam_role(db_pg_transaction):
-
     # Set up expected role in DB
     cursor = db_pg_transaction.cursor()
     raw_query = """
@@ -187,7 +198,6 @@ def get_insert_role_sql(role_name, role_type, parent_role_id=None):
 
 @pytest.fixture(scope="function")
 def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
-
     client_id = cognito_event["callerContext"]["clientId"]
     cursor = db_pg_transaction.cursor()
     # Set up expected client in DB
@@ -230,16 +240,18 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
     )
     """
     # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, (
-        initial_user["idp_username"],
-        initial_user["idp_type_code"],
-        TEST_ROLE_NAME
-    ))
+    cursor.execute(
+        raw_query,
+        (
+            initial_user.get("idp_username"),
+            initial_user.get("idp_type_code"),
+            TEST_ROLE_NAME,
+        ),
+    )
 
 
 @pytest.fixture(scope="function")
 def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
-
     cursor = db_pg_transaction.cursor()
 
     # Only insert the bare minimum to simulate entering user in advance of first login
@@ -251,11 +263,17 @@ def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE);"""
     # print(f"query is\n:{raw_query}")
 
-    idp_name = cognito_event["request"]["userAttributes"]["custom:idp_name"]
-    cursor.execute(raw_query, (
-        lambda_function.USER_TYPE_CODE_DICT[idp_name],
-        cognito_event["request"]["userAttributes"]["custom:idp_username"]
-    ))
+    idp_name = cognito_event["request"]["userAttributes"].get("custom:idp_name")
+    # set "username" to be "custom:idp_user_id" when "custom:idp_username" not exists for bcsc user
+    user_name = (
+        cognito_event["request"]["userAttributes"].get("custom:idp_username")
+        if cognito_event["request"]["userAttributes"].get("custom:idp_username")
+        else cognito_event["request"]["userAttributes"].get("custom:idp_user_id")
+    )
+
+    cursor.execute(
+        raw_query, (lambda_function.USER_TYPE_CODE_DICT[idp_name], user_name)
+    )
 
 
 @pytest.fixture(scope="function")
@@ -278,9 +296,8 @@ def create_fam_child_parent_role_assignment(db_pg_transaction):
 
     query = sql.SQL(
         """select role_id from app_fam.fam_role where
-           role_name = {0}""").format(
-        sql.Literal(parent_role_name)
-    )
+           role_name = {0}"""
+    ).format(sql.Literal(parent_role_name))
 
     cur.execute(query)
     parent_role_id = cur.fetchone()[0]
