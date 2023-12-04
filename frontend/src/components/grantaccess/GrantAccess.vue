@@ -220,6 +220,8 @@ const areVerificationsPassed = () => {
 const handleSubmit = async () => {
     const successForestClientIdList: string[] = [];
     const warningForestClientIdList: string[] = [];
+
+    // msg override the default error notification message
     const errorNotification = { msg: '', errorForestClientIdList: [] as string[] };
 
     do {
@@ -312,9 +314,7 @@ const composeAndPushNotificationMessages = (
             getSelectedRole()?.role_name,
             `An error has occured. ${errorMsg.msg}`
         );
-    }
-
-    if (errorMsg.errorForestClientIdList.length > 0) {
+    } else if (errorMsg.errorForestClientIdList.length > 0) {
         setGrantAccessNotificationMsg(
             errorMsg.errorForestClientIdList,
             username,
@@ -371,10 +371,10 @@ const composeAndPushNotificationMessages = (
                                         formData.domain
                                     )
                                     " :disabled="LoadingState.isLoading.value ||
-        formData.domain !== domainOptions.IDIR ||
-        !formData.userId ||
-        errors.userId !== undefined
-        ">
+                                    formData.domain !== domainOptions.IDIR ||
+                                    !formData.userId ||
+                                    errors.userId !== undefined
+                                    ">
                                 <Icon icon="search--locate" :size="IconSize.small" />
                             </Button>
                         </div>
@@ -437,10 +437,10 @@ const composeAndPushNotificationMessages = (
                                         formData.forestClientNumbers as string
                                     )
                                     " v-bind:disabled="formData.forestClientNumbers?.length <
-        FOREST_CLIENT_INPUT_MAX_LENGTH ||
-        !!errors.forestClientNumbers ||
-        LoadingState.isLoading.value
-        ">
+                                    FOREST_CLIENT_INPUT_MAX_LENGTH ||
+                                    !!errors.forestClientNumbers ||
+                                    LoadingState.isLoading.value
+                                    ">
                                 <Icon icon="add" :size="IconSize.small" />
                             </Button>
                         </div>
