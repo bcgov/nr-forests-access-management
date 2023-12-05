@@ -50,9 +50,7 @@ const onError = (error: any, info: string) => {
             showToastTopRight(
                 'error',
                 e403_authorizationErrorMsg.title,
-                axiosResponse?.data.detail.code === 'self_grant_prohibited'
-                    ? axiosResponse?.data.detail.description
-                    : e403_authorizationErrorMsg.text
+                e403_authorizationErrorMsg.text
             );
         } else if (status == 409) {
             showToastTopRight(

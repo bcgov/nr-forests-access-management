@@ -220,31 +220,35 @@ const areVerificationsPassed = () => {
 const handleSubmit = async () => {
     const successForestClientIdList: string[] = [];
     const warningForestClientIdList: string[] = [];
-    const errorForestClientIdList: string[] = [];
 
+    // msg override the default error notification message
+    const errorNotification = {
+        msg: '',
+        errorForestClientIdList: [] as string[],
+    };
     do {
         const item = forestClientData.value.pop();
+        const itemForestClientNumber = item?.forest_client_number
+            ? item.forest_client_number
+            : '';
         const data = toRequestPayload(formData.value, item);
 
         await userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
-                successForestClientIdList.push(
-                    item?.forest_client_number ? item.forest_client_number : ''
-                );
+                successForestClientIdList.push(itemForestClientNumber);
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    warningForestClientIdList.push(
-                        item?.forest_client_number
-                            ? item?.forest_client_number
-                            : ''
-                    );
+                    warningForestClientIdList.push(itemForestClientNumber);
+                } else if (
+                    error.response.data.detail.code === 'self_grant_prohibited'
+                ) {
+                    errorNotification.msg =
+                        'Granting roles to self is not allowed.';
                 } else {
-                    errorForestClientIdList.push(
-                        item?.forest_client_number
-                            ? item.forest_client_number
-                            : ''
+                    errorNotification.errorForestClientIdList.push(
+                        itemForestClientNumber
                     );
                 }
             });
@@ -253,7 +257,7 @@ const handleSubmit = async () => {
     composeAndPushNotificationMessages(
         successForestClientIdList,
         warningForestClientIdList,
-        errorForestClientIdList
+        errorNotification
     );
 
     router.push('/dashboard');
@@ -283,7 +287,7 @@ function toRequestPayload(
 const composeAndPushNotificationMessages = (
     successIdList: string[],
     warningIdList: string[],
-    errorIdList: string[]
+    errorMsg: { msg: string; errorForestClientIdList: string[] }
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
@@ -302,9 +306,18 @@ const composeAndPushNotificationMessages = (
             getSelectedRole()?.role_name
         );
     }
-    if (errorIdList.length > 0) {
+
+    if (errorMsg.msg) {
         setGrantAccessNotificationMsg(
-            errorIdList,
+            errorMsg.errorForestClientIdList,
+            username,
+            Severity.error,
+            getSelectedRole()?.role_name,
+            `An error has occured. ${errorMsg.msg}`
+        );
+    } else if (errorMsg.errorForestClientIdList.length > 0) {
+        setGrantAccessNotificationMsg(
+            errorMsg.errorForestClientIdList,
             username,
             Severity.error,
             getSelectedRole()?.role_name
@@ -413,7 +426,8 @@ const composeAndPushNotificationMessages = (
                                     !formData.userId ||
                                     errors.userId !== undefined
                                 "
-                                ><Icon
+                            >
+                                <Icon
                                     icon="search--locate"
                                     :size="IconSize.small"
                                 />
@@ -570,8 +584,9 @@ const composeAndPushNotificationMessages = (
                             LoadingState.isLoading.value
                         "
                         @click="handleSubmit()"
-                        ><Icon icon="checkmark" :size="IconSize.small"
-                    /></Button>
+                    >
+                        <Icon icon="checkmark" :size="IconSize.small" />
+                    </Button>
                 </div>
             </form>
         </div>
@@ -596,6 +611,7 @@ const composeAndPushNotificationMessages = (
     width: 100%;
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
+
     Button {
         width: auto !important;
     }
@@ -606,6 +622,7 @@ const composeAndPushNotificationMessages = (
     display: block;
     width: 100%;
 }
+
 .no-label-column {
     margin-top: 1.5rem;
 }
@@ -630,6 +647,7 @@ const composeAndPushNotificationMessages = (
         width: 100% !important;
         grid-template-columns: 1fr 1fr;
     }
+
     .input-with-verify-field {
         display: inline-grid;
         grid-template-columns: auto min-content;
@@ -641,12 +659,14 @@ const composeAndPushNotificationMessages = (
         justify-content: start;
         grid-template-columns: auto auto;
         width: 38rem;
+
         Button {
             width: 15rem !important;
             gap: 2rem;
             white-space: nowrap;
         }
     }
+
     .input-with-verify-field {
         width: 38rem;
     }

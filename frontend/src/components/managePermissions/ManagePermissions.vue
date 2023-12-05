@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { onMounted, onUnmounted, shallowRef } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
@@ -72,17 +72,24 @@ const selectApplication = async (e: DropdownChangeEvent) => {
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    await userRoleAssignmentApi.deleteUserRoleAssignment(
-        assignment.user_role_xref_id
-    );
-    userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
-        return a.user_role_xref_id != assignment.user_role_xref_id;
-    });
+    try {
+        await userRoleAssignmentApi.deleteUserRoleAssignment(
+            assignment.user_role_xref_id
+        );
+        userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
+            return a.user_role_xref_id != assignment.user_role_xref_id;
+        });
 
-    setNotificationMsg(
-        Severity.success,
-        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
-    );
+        setNotificationMsg(
+            Severity.success,
+            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+        );
+    } catch (error: any) {
+        setNotificationMsg(
+            Severity.error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    }
 }
 </script>
 
@@ -125,6 +132,7 @@ async function deleteUserRoleAssignment(
         margin-bottom: 0.5rem;
     }
 }
+
 .application-dropdown {
     max-width: calc(100vw - 3rem);
     height: 3rem;
@@ -161,6 +169,7 @@ async function deleteUserRoleAssignment(
     .application-dropdown {
         max-width: 38rem;
     }
+
     .dashboard-background-layout {
         width: calc(100vw - 16rem) !important;
     }
