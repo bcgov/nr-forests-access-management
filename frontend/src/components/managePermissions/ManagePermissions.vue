@@ -21,7 +21,7 @@ import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
 
-const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY);
+const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY); // Inject service
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
