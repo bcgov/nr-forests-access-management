@@ -4,14 +4,12 @@
 -- -- for example, role name: FAM_ACCESS_ADMIN contains application name: FAM
 -- --              role name: FOM_DEV_ACCESS_ADMIN contains application name: FOM_DEV
 -- select the user_id and application_id the user is admin of, insert into fam_application_admin
-INSERT INTO fam_application_admin (user_id, application_id, create_user, create_date)
-SELECT  admins.user_id, admins.application_id, CURRENT_USER, CURRENT_DATE FROM (
-    SELECT user_id, application_id FROM fam_user_role_xref c JOIN (
-        SELECT role_id, application_id FROM fam_application a JOIN (
-            SELECT role_id, role_name FROM fam_role WHERE application_id=1
-        ) b ON b.role_name LIKE '%' || a.application_name || '%'
-    ) d ON c.role_id = d.role_id
-) admins;
-
-
+INSERT INTO app_fam.fam_application_admin (user_id, application_id, create_user, create_date)
+SELECT user_role_xref.user_id, application.application_id, CURRENT_USER, CURRENT_DATE
+FROM app_fam.fam_role role
+JOIN app_fam.fam_application application
+    ON role.role_name LIKE '%' || application.application_name || '%'
+JOIN app_fam.fam_user_role_xref user_role_xref
+    ON role.role_id = user_role_xref.role_id
+WHERE role.application_id=1;
 
