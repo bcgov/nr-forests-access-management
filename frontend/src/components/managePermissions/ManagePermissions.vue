@@ -89,8 +89,7 @@ async function deleteUserRoleAssignment(
             Severity.error,
             `An error has occured. ${error.response.data.detail.description}`
         );
-    };
-
+    }
 }
 </script>
 
@@ -100,17 +99,25 @@ async function deleteUserRoleAssignment(
     <div class="page-body">
         <div class="application-group">
             <label>You are modifying access in this application:</label>
-            <Dropdown v-model="selectedApplication" @change="selectApplication" :options="applicationsUserAdministers"
-                optionLabel="application_description" placeholder="Choose an application to manage permissions"
-                class="application-dropdown" />
+            <Dropdown
+                v-model="selectedApplication"
+                @change="selectApplication"
+                :options="applicationsUserAdministers"
+                optionLabel="application_description"
+                placeholder="Choose an application to manage permissions"
+                class="application-dropdown"
+            />
         </div>
 
         <div class="dashboard-background-layout">
             <NotificationStack />
-            <UserDataTable :isApplicationSelected="isApplicationSelected" :loading="LoadingState.isLoading.value"
+            <UserDataTable
+                :isApplicationSelected="isApplicationSelected"
+                :loading="LoadingState.isLoading.value"
                 :userRoleAssignments="userRoleAssignments || []"
                 :selectedApplicationDisplayText="selectedApplicationDisplayText"
-                @deleteUserRoleAssignment="deleteUserRoleAssignment" />
+                @deleteUserRoleAssignment="deleteUserRoleAssignment"
+            />
         </div>
     </div>
 </template>
