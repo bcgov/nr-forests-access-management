@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import ApiServiceFactory from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -21,15 +21,17 @@ import {
 
 import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import { requireInjection } from '@/services/utils';
 
-const apiServiceFactory = new ApiServiceFactory();
+const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY);
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
-        await apiServiceFactory.getAppAccessControlApiService().applicationsApi
-            .getApplications()
+        await apiService
+            .getAppAccessControlApiService()
+            .applicationsApi.getApplications()
     ).data;
     if (isApplicationSelected) {
         await getAppUserRoleAssignment();
@@ -44,10 +46,11 @@ async function getAppUserRoleAssignment() {
     if (!selectedApplication.value) return;
 
     const userRoleAssignmentList = (
-        await apiServiceFactory.getAppAccessControlApiService().applicationsApi
-            .getFamApplicationUserRoleAssignment(
-            selectedApplication.value.application_id
-        )
+        await apiService
+            .getAppAccessControlApiService()
+            .applicationsApi.getFamApplicationUserRoleAssignment(
+                selectedApplication.value.application_id
+            )
     ).data;
     userRoleAssignments.value = userRoleAssignmentList.sort((first, second) => {
         const nameCompare = first.user.user_name.localeCompare(
@@ -75,10 +78,11 @@ const selectApplicationOptions = computed(() => {
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    await apiServiceFactory.getAppAccessControlApiService().userRoleAssignmentApi.
-        deleteUserRoleAssignment(
-        assignment.user_role_xref_id
-    );
+    await apiService
+        .getAppAccessControlApiService()
+        .userRoleAssignmentApi.deleteUserRoleAssignment(
+            assignment.user_role_xref_id
+        );
     userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
         return a.user_role_xref_id != assignment.user_role_xref_id;
     });

@@ -7,37 +7,58 @@ import {
     FAMApplicationsApi,
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
-    IDIRBCeIDProxyApi
+    IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
+import type { InjectionKey } from 'vue';
 
-export class ApiServiceFactory {
+export default class ApiServiceFactory {
+    static readonly SERVICE_KEY: InjectionKey<ApiServiceFactory> =
+        Symbol('API_SERVICE');
+
     private environmentSettings: EnvironmentSettings;
     private appAccessControlApiService: {
-        applicationsApi: FAMApplicationsApi,
-        userRoleAssignmentApi: FAMUserRoleAssignmentApi,
-        forestClientsApi: FAMForestClientsApi,
-        idirBceidProxyApi: IDIRBCeIDProxyApi
+        applicationsApi: FAMApplicationsApi;
+        userRoleAssignmentApi: FAMUserRoleAssignmentApi;
+        forestClientsApi: FAMForestClientsApi;
+        idirBceidProxyApi: IDIRBCeIDProxyApi;
     };
     private adminManagementApiService: {
-        applicationAdminApi: FAMApplicationAdminApi
+        applicationAdminApi: FAMApplicationAdminApi;
     };
 
     constructor() {
         this.environmentSettings = new EnvironmentSettings();
-        const appAccessControlBaseURL = this.environmentSettings.getAppAcsctlApiBaseUrl();
-        const adminManagementBaseURL = this.environmentSettings.getAdminMgmtApiBaseUrl();
+        const appAccessControlBaseURL =
+            this.environmentSettings.getAppAcsctlApiBaseUrl();
+        const adminManagementBaseURL =
+            this.environmentSettings.getAdminMgmtApiBaseUrl();
 
         // App Access Control API service
         this.appAccessControlApiService = {
-            applicationsApi: this.createInstance(FAMApplicationsApi, appAccessControlBaseURL),
-            userRoleAssignmentApi: this.createInstance(FAMUserRoleAssignmentApi, appAccessControlBaseURL),
-            forestClientsApi: this.createInstance(FAMForestClientsApi, appAccessControlBaseURL),
-            idirBceidProxyApi: this.createInstance(IDIRBCeIDProxyApi, appAccessControlBaseURL)
-        }
+            applicationsApi: this.createInstance(
+                FAMApplicationsApi,
+                appAccessControlBaseURL
+            ),
+            userRoleAssignmentApi: this.createInstance(
+                FAMUserRoleAssignmentApi,
+                appAccessControlBaseURL
+            ),
+            forestClientsApi: this.createInstance(
+                FAMForestClientsApi,
+                appAccessControlBaseURL
+            ),
+            idirBceidProxyApi: this.createInstance(
+                IDIRBCeIDProxyApi,
+                appAccessControlBaseURL
+            ),
+        };
 
         this.adminManagementApiService = {
-            applicationAdminApi: this.createInstance(FAMApplicationAdminApi, adminManagementBaseURL)
-        }
+            applicationAdminApi: this.createInstance(
+                FAMApplicationAdminApi,
+                adminManagementBaseURL
+            ),
+        };
     }
 
     getAppAccessControlApiService() {
@@ -49,8 +70,8 @@ export class ApiServiceFactory {
     }
 
     /**
-     * This 'private' method is to instantiate Axios API(s) for the factory.
-     * @param c required, the intended API class to be instantiated.
+     * 'private' method using Typescript Generics, to instantiate Axios API(s) for this service provider.
+     * @param c required class Types, the intended API 'class' to be instantiated.
      * @param baseURL optional, API's base URL (domain, and path if required).
      *                Will be set to `configuration` if baseURL is passed in.
      *                Note, for now, only the `baseURL` is the intended option. Also see
@@ -60,15 +81,16 @@ export class ApiServiceFactory {
     private createInstance<C>(
         // Class Types in Generics: see Typscript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
         // Obey the constructor signiture of the BaseAPI.
-        c: new (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) => C,
-        baseURL?: string): C
-    {
-        const configuration = baseURL? {baseOptions: {baseURL}} as Configuration : undefined;
-        return new c(
-            configuration,
-            '',
-            httpInstance
-        );
+        c: new (
+            configuration?: Configuration,
+            basePath?: string,
+            axios?: AxiosInstance
+        ) => C,
+        baseURL?: string
+    ): C {
+        const configuration = baseURL
+            ? ({ baseOptions: { baseURL } } as Configuration)
+            : undefined;
+        return new c(configuration, '', httpInstance);
     }
 }
-

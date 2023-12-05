@@ -11,7 +11,7 @@ import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import ApiServiceFactory from '@/services/ApiServiceFactory';
 import {
     selectedApplication,
     selectedApplicationDisplayText,
@@ -30,7 +30,9 @@ import {
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import { requireInjection } from '@/services/utils';
 
+const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY);
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 
 const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
@@ -72,13 +74,13 @@ let applicationRoleOptions = ref<FamApplicationRole[]>([]);
 const forestClientData = ref<FamForestClient[]>([]);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 
-const apiServiceFactory = new ApiServiceFactory();
-
 onMounted(async () => {
     applicationRoleOptions.value = (
-        await apiServiceFactory.getAppAccessControlApiService().applicationsApi.getFamApplicationRoles(
-            selectedApplication.value?.application_id as number
-        )
+        await apiService
+            .getAppAccessControlApiService()
+            .applicationsApi.getFamApplicationRoles(
+                selectedApplication.value?.application_id as number
+            )
     ).data;
 });
 
@@ -131,8 +133,9 @@ async function verifyIdentity(userId: string, domain: string) {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     verifiedUserIdentity.value = (
-        await apiServiceFactory.getAppAccessControlApiService().idirBceidProxyApi
-            .idirSearch(userId)
+        await apiService
+            .getAppAccessControlApiService()
+            .idirBceidProxyApi.idirSearch(userId)
     ).data;
 }
 
@@ -146,9 +149,9 @@ async function verifyForestClientNumber(forestClientNumber: string) {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await apiServiceFactory.getAppAccessControlApiService()
-            .forestClientsApi
-            .search(item)
+        await apiService
+            .getAppAccessControlApiService()
+            .forestClientsApi.search(item)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
@@ -276,9 +279,9 @@ const handleSubmit = async () => {
         const item = forestClientData.value.pop();
         const data = toRequestPayload(formData.value, item);
 
-        await apiServiceFactory.getAppAccessControlApiService()
-            .userRoleAssignmentApi
-            .createUserRoleAssignment(data)
+        await apiService
+            .getAppAccessControlApiService()
+            .userRoleAssignmentApi.createUserRoleAssignment(data)
             .then(() => {
                 successForestClientIdList.push(
                     item?.forest_client_number ? item.forest_client_number : ''
