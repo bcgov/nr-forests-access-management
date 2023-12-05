@@ -56,7 +56,7 @@ export class EnvironmentSettings {
     }
 
     private getApiBaseUrl(useApi?: string) {
-        let apiBaseUrl
+        let apiBaseUrl;
 
         // Default to 'ADMIN_MANAGEMENT_API'
         if (!useApi || useApi == this.API.ADMIN_MANAGEMENT_API) {
