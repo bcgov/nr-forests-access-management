@@ -1,6 +1,7 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import httpInstance from '@/services/http/HttpCommon';
 import type { AxiosInstance } from 'axios';
+import { FAMApplicationAdminApi } from 'fam-admin-mgmt-api/api';
 import {
     Configuration,
     FAMApplicationsApi,
@@ -8,7 +9,6 @@ import {
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi
 } from 'fam-app-acsctl-api';
-import type { BaseAPI } from 'fam-app-acsctl-api/dist/base';
 
 export class ApiServiceFactory {
     private environmentSettings: EnvironmentSettings;
@@ -17,6 +17,9 @@ export class ApiServiceFactory {
         userRoleAssignmentApi: FAMUserRoleAssignmentApi,
         forestClientsApi: FAMForestClientsApi,
         idirBceidProxyApi: IDIRBCeIDProxyApi
+    };
+    private adminManagementApiService: {
+        applicationAdminApi: FAMApplicationAdminApi
     };
 
     constructor() {
@@ -31,10 +34,18 @@ export class ApiServiceFactory {
             forestClientsApi: this.createInstance(FAMForestClientsApi, appAccessControlBaseURL),
             idirBceidProxyApi: this.createInstance(IDIRBCeIDProxyApi, appAccessControlBaseURL)
         }
+
+        this.adminManagementApiService = {
+            applicationAdminApi: this.createInstance(FAMApplicationAdminApi, adminManagementBaseURL)
+        }
     }
 
     getAppAccessControlApiService() {
         return this.appAccessControlApiService;
+    }
+
+    getAdminManagementApiService() {
+        return this.adminManagementApiService;
     }
 
     /**
@@ -46,7 +57,7 @@ export class ApiServiceFactory {
      *                `why` baseURL is set here at comment from @HttpCommon:defaultAxiosConfig.
      * @returns API class instantiated.
      */
-    private createInstance<C extends BaseAPI>(
+    private createInstance<C>(
         // Class Types in Generics: see Typscript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
         // Obey the constructor signiture of the BaseAPI.
         c: new (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) => C,
