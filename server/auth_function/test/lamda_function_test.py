@@ -5,19 +5,27 @@ import sys
 
 import pytest
 from psycopg2 import sql
+from constant import TEST_ROLE_NAME
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
 import lambda_function  # noqa
 
 LOGGER = logging.getLogger(__name__)
-TEST_ROLE_NAME = "EXPECTED"
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_create_user_if_not_found(
     db_pg_transaction, cognito_event, cognito_context, test_user_properties
 ):
-
     cursor = db_pg_transaction.cursor()
 
     # shorter variables
@@ -29,9 +37,8 @@ def test_create_user_if_not_found(
     # make sure the user doesn't exist
     user_query = sql.SQL(
         """SELECT user_name from app_fam.fam_user where
-            user_name = {0}""").format(
-        sql.Literal(test_idp_username)
-    )
+            user_name = {0}"""
+    ).format(sql.Literal(test_idp_username))
 
     cursor.execute(user_query)
     results = cursor.fetchall()
@@ -68,6 +75,15 @@ def test_create_user_if_not_found(
     assert count == 1
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_update_user_if_already_exists(
     db_pg_transaction,
     cognito_event,
@@ -110,6 +126,15 @@ def test_update_user_if_already_exists(
     assert count == 1
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_direct_role_assignment(
     db_pg_transaction,
     cognito_event,
@@ -134,6 +159,15 @@ def test_direct_role_assignment(
     assert TEST_ROLE_NAME in override_groups
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_parent_role_assignment(
     db_pg_transaction,
     cognito_event,
@@ -156,6 +190,15 @@ def test_parent_role_assignment(
     assert groups[0] == TEST_ROLE_NAME
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context):
     """runs against a database that contains only data that has been injected
     by the migrations.  Should not contain any roles in the result
@@ -168,6 +211,15 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
     assert groups == []
 
 
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+        "login_event_bceid.json",
+        "login_event_bcsc.json",
+    ],
+    indirect=True,
+)
 def test_exception_with_wrong_cognito_event(
     db_pg_transaction, cognito_event, cognito_context
 ):
