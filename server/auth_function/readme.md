@@ -35,6 +35,7 @@ sudo dockerd
 cd server/auth_function
 pytest
 ```
+Note: We need to use master db user(postgres) to run the tests.
 
 ## Running the tests FASTER
 

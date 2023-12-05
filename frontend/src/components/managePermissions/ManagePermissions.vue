@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, shallowRef } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
@@ -13,12 +13,10 @@ import {
     setSelectedApplication,
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
-
 import {
     setNotificationMsg,
     resetNotification,
 } from '@/store/NotificationState';
-
 import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
@@ -42,7 +40,7 @@ onUnmounted(() => {
     resetNotification();
 });
 
-async function getAppUserRoleAssignment() {
+const getAppUserRoleAssignment = async () => {
     if (!selectedApplication.value) return;
 
     const userRoleAssignmentList = (
@@ -62,36 +60,42 @@ async function getAppUserRoleAssignment() {
         );
         return roleCompare;
     });
-}
+};
 
 const selectApplication = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (applicationsUserAdministers) {
+    if (
+        applicationsUserAdministers.value &&
+        applicationsUserAdministers.value.length > 0
+    ) {
         await getAppUserRoleAssignment();
     }
 };
 
-const selectApplicationOptions = computed(() => {
-    return applicationsUserAdministers.value;
-});
-
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    await apiService
-        .getAppAccessControlApiService()
-        .userRoleAssignmentApi.deleteUserRoleAssignment(
+    try {
+        await apiService
+            .getAppAccessControlApiService()
+            .userRoleAssignmentApi
+            .deleteUserRoleAssignment(
             assignment.user_role_xref_id
         );
-    userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
-        return a.user_role_xref_id != assignment.user_role_xref_id;
-    });
+        userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
+            return a.user_role_xref_id != assignment.user_role_xref_id;
+        });
 
-    setNotificationMsg(
-        Severity.success,
-        `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`,
-        ''
-    );
+        setNotificationMsg(
+            Severity.success,
+            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+        );
+    } catch (error: any) {
+        setNotificationMsg(
+            Severity.error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    }
 }
 </script>
 
@@ -104,7 +108,7 @@ async function deleteUserRoleAssignment(
             <Dropdown
                 v-model="selectedApplication"
                 @change="selectApplication"
-                :options="selectApplicationOptions"
+                :options="applicationsUserAdministers"
                 optionLabel="application_description"
                 placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
@@ -134,6 +138,7 @@ async function deleteUserRoleAssignment(
         margin-bottom: 0.5rem;
     }
 }
+
 .application-dropdown {
     max-width: calc(100vw - 3rem);
     height: 3rem;
@@ -170,6 +175,7 @@ async function deleteUserRoleAssignment(
     .application-dropdown {
         max-width: 38rem;
     }
+
     .dashboard-background-layout {
         width: calc(100vw - 16rem) !important;
     }

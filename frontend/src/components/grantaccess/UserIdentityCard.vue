@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 import Card from 'primevue/card';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
+import type { IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps<{
     userIdentity: IdimProxyIdirInfo;
