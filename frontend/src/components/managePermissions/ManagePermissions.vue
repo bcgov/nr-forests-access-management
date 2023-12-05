@@ -50,7 +50,9 @@ const getAppUserRoleAssignment = async () => {
                 selectedApplication.value.application_id
             )
     ).data;
-    userRoleAssignments.value = userRoleAssignmentList.sort((first, second) => {
+
+    // Fix Sonar Array "sort" issue
+    userRoleAssignmentList.sort((first, second) => {
         const nameCompare = first.user.user_name.localeCompare(
             second.user.user_name
         );
@@ -60,6 +62,7 @@ const getAppUserRoleAssignment = async () => {
         );
         return roleCompare;
     });
+    userRoleAssignments.value = userRoleAssignmentList;
 };
 
 const selectApplication = async (e: DropdownChangeEvent) => {
