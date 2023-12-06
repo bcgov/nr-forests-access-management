@@ -23,7 +23,11 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 // Global provided services.
-app.provide(ApiServiceFactory.SERVICE_KEY, new ApiServiceFactory());
+const apiServiceProvider = new ApiServiceFactory();
+app.provide(ApiServiceFactory.ADMIN_MANAGEMENT_API_SERVICE_KEY,
+    apiServiceProvider.getAdminManagementApiService());
+app.provide(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY,
+    apiServiceProvider.getAppAccessControlApiService());
 
 app.use(PrimeVue);
 app.use(router).mount('#app');

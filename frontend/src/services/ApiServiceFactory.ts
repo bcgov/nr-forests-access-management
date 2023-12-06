@@ -11,20 +11,26 @@ import {
 } from 'fam-app-acsctl-api';
 import type { InjectionKey } from 'vue';
 
+type AppAccessControlApiType = {
+    applicationsApi: FAMApplicationsApi;
+    userRoleAssignmentApi: FAMUserRoleAssignmentApi;
+    forestClientsApi: FAMForestClientsApi;
+    idirBceidProxyApi: IDIRBCeIDProxyApi;
+};
+
+type AdminManagementApiType = {
+    applicationAdminApi: FAMApplicationAdminApi;
+};
+
 export default class ApiServiceFactory {
-    static readonly SERVICE_KEY: InjectionKey<ApiServiceFactory> =
-        Symbol('API_SERVICE');
+    static readonly APP_ACCESS_CONTROL_API_SERVICE_KEY: InjectionKey<AppAccessControlApiType> =
+        Symbol('APP_ACCESS_CONTROL_API_SERVICE');
+    static readonly ADMIN_MANAGEMENT_API_SERVICE_KEY: InjectionKey<AdminManagementApiType> =
+        Symbol('ADMIN_MANAGEMENT_API_SERVICE');
 
     private environmentSettings: EnvironmentSettings;
-    private appAccessControlApiService: {
-        applicationsApi: FAMApplicationsApi;
-        userRoleAssignmentApi: FAMUserRoleAssignmentApi;
-        forestClientsApi: FAMForestClientsApi;
-        idirBceidProxyApi: IDIRBCeIDProxyApi;
-    };
-    private adminManagementApiService: {
-        applicationAdminApi: FAMApplicationAdminApi;
-    };
+    private appAccessControlApiService: AppAccessControlApiType;
+    private adminManagementApiService: AdminManagementApiType;
 
     constructor() {
         this.environmentSettings = new EnvironmentSettings();

@@ -29,7 +29,9 @@ import {
 } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
 
-const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY);
+// Inject App Access Control Api service
+const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
 
@@ -70,8 +72,7 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 onMounted(async () => {
     applicationRoleOptions.value = (
-        await apiService
-            .getAppAccessControlApiService()
+        await appActlApiService
             .applicationsApi.getFamApplicationRoles(
                 selectedApplication.value?.application_id as number
             )
@@ -101,7 +102,7 @@ const verifyUserId = async (userId: string, domain: string) => {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     verifiedUserIdentity.value = (
-        await apiService.getAppAccessControlApiService().idirBceidProxyApi.idirSearch(userId)
+        await appActlApiService.idirBceidProxyApi.idirSearch(userId)
     ).data;
 };
 
@@ -139,8 +140,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await apiService
-            .getAppAccessControlApiService()
+        await appActlApiService
             .forestClientsApi.search(item)
             .then((result) => {
                 if (!result.data[0]) {
@@ -233,8 +233,7 @@ const handleSubmit = async () => {
             : '';
         const data = toRequestPayload(formData.value, item);
 
-        await apiService
-            .getAppAccessControlApiService()
+        await appActlApiService
             .userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {

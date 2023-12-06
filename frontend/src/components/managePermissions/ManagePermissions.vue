@@ -21,15 +21,15 @@ import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
 
-const apiService = requireInjection(ApiServiceFactory.SERVICE_KEY); // Inject service
+// Inject App Access Control Api service
+const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
-        await apiService
-            .getAppAccessControlApiService()
-            .applicationsApi.getApplications()
+        await appActlApiService.applicationsApi.getApplications()
     ).data;
     if (isApplicationSelected) {
         await getAppUserRoleAssignment();
@@ -44,8 +44,7 @@ const getAppUserRoleAssignment = async () => {
     if (!selectedApplication.value) return;
 
     const userRoleAssignmentList = (
-        await apiService
-            .getAppAccessControlApiService()
+        await appActlApiService
             .applicationsApi.getFamApplicationUserRoleAssignment(
                 selectedApplication.value.application_id
             )
@@ -79,8 +78,7 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await apiService
-            .getAppAccessControlApiService()
+        await appActlApiService
             .userRoleAssignmentApi
             .deleteUserRoleAssignment(
             assignment.user_role_xref_id
