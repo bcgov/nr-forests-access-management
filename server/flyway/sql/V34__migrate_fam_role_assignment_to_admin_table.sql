@@ -1,3 +1,5 @@
+CREATE UNIQUE INDEX fam_usr_app_admin_uk ON app_fam.fam_application_admin(user_id, application_id);
+
 -- migrate the fam roles to fam admin management table
 -- first select all fam roles
 -- and then select role_id and application_id this role is admin of, based on if the role name contains the application_name
@@ -12,4 +14,5 @@ JOIN app_fam.fam_application application
 JOIN app_fam.fam_user_role_xref user_role_xref
     ON role.role_id = user_role_xref.role_id
 WHERE role.application_id=1;
+
 

@@ -4,6 +4,7 @@ from api.app.repositories.application_admin_repository import ApplicationAdminRe
 
 from tests.constants import (
     TEST_APPLICATION_ID_FAM,
+    TEST_APPLICATION_ADMIN_ID,
     TEST_NEW_APPLICATION_ADMIN_USER_ID,
     TEST_CREATOR,
 )
@@ -17,16 +18,16 @@ def test_create_application_admin_and_get(
 ):
     # create a new application admin
     new_application_admin = application_admin_repo.create_application_admin(
-        TEST_APPLICATION_ID_FAM,
+        TEST_APPLICATION_ADMIN_ID,
         TEST_NEW_APPLICATION_ADMIN_USER_ID,
         TEST_CREATOR,
     )
-    assert new_application_admin.application_id == TEST_APPLICATION_ID_FAM
+    assert new_application_admin.application_id == TEST_APPLICATION_ADMIN_ID
     assert new_application_admin.user_id == TEST_NEW_APPLICATION_ADMIN_USER_ID
 
     # get the new created application admin
     application_admin = application_admin_repo.get_application_admin_by_app_and_user_id(
-        TEST_APPLICATION_ID_FAM,
+        TEST_APPLICATION_ADMIN_ID,
         TEST_NEW_APPLICATION_ADMIN_USER_ID,
     )
     assert new_application_admin.user_id == application_admin.user_id
