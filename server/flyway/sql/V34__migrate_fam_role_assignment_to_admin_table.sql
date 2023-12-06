@@ -1,4 +1,4 @@
-CREATE UNIQUE INDEX fam_usr_app_admin_uk ON app_fam.fam_application_admin(user_id, application_id);
+CREATE UNIQUE INDEX fam_app_admin_usr_app_uk ON app_fam.fam_application_admin(user_id, application_id);
 
 -- migrate the fam roles to fam admin management table
 -- first select all fam roles

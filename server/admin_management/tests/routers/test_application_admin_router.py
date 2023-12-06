@@ -12,7 +12,6 @@ from api.app.routers.router_guards import (
 from tests.constants import (
     TEST_NEW_APPLICATION_ADMIN,
     TEST_INVALID_USER_TYPE,
-    TEST_NEW_APPLICATION_ADMIN,
     TEST_NOT_EXIST_APPLICATION_ID,
     TEST_APPLICATION_ADMIN_APPLICATION_ID,
     TEST_FOM_DEV_ADMIN_ROLE,
