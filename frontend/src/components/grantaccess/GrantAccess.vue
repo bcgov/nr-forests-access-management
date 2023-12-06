@@ -5,7 +5,6 @@ import { onMounted, ref } from 'vue';
 import { number, object, string } from 'yup';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
-import RadioButton from 'primevue/radiobutton';
 
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
@@ -26,6 +25,7 @@ import {
     type IdimProxyIdirInfo,
     type FamUserRoleAssignmentCreate,
 } from 'fam-app-acsctl-api';
+import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
@@ -84,9 +84,10 @@ const isIdirDomainSelected = () => {
     return formData.value.domain === domainOptions.IDIR;
 };
 
-const userDomainChange = () => {
+const userDomainChange = (selectedDomain: string) => {
     resetVerifiedUserIdentity();
     formData.value.userId = '';
+    formData.value.domain = selectedDomain;
 };
 
 const userIdChange = () => {
@@ -344,30 +345,10 @@ const composeAndPushNotificationMessages = (
                     title="User information"
                     :subtitle="`Enter the user information to add a new user to ${selectedApplicationDisplayText}`"
                 >
-                    <div class="user-radio-group">
-                        <label> Select user's domain </label>
-                        <div class="px-0">
-                            <RadioButton
-                                v-model="formData.domain"
-                                :checked="isIdirDomainSelected()"
-                                inputId="idirSelect"
-                                name="domainRadioOptions"
-                                :value="domainOptions.IDIR"
-                                @change="userDomainChange()"
-                            />
-                            <label class="mx-2" for="idirSelect">IDIR</label>
-                        </div>
-                        <div class="px-0">
-                            <RadioButton
-                                v-model="formData.domain"
-                                inputId="becidSelect"
-                                name="domainRadioOptions"
-                                :value="domainOptions.BCEID"
-                                @change="userDomainChange()"
-                            />
-                            <label class="mx-2" for="becidSelect">BCeID</label>
-                        </div>
-                    </div>
+                    <UserDomainSelect
+                        :domain="formData.domain"
+                        @change="(selectedDomain: string) => userDomainChange(selectedDomain)"
+                    />
                     <div class="input-with-verify-field">
                         <div>
                             <label for="userIdInput">Username</label>
