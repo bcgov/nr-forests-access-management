@@ -21,10 +21,10 @@ TEST_APPLICATION_ID_FAM = 1
 TEST_APPLICATION_NAME_FAM = "FAM"
 
 # -------------------- test application admin data ------------------ #
-TEST_APPLICATION_ADMIN_ID = 5
+TEST_APPLICATION_ADMIN_ID = 3
 TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
 TEST_NEW_APPLICATION_ADMIN = {
     "user_type_code": famConstants.UserType.BCEID,
     "user_name": "TEST_USER",
-    "application_id": TEST_APPLICATION_ID_FAM,
+    "application_id": TEST_APPLICATION_ADMIN_ID,
 }

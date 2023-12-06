@@ -3,7 +3,6 @@ import logging
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
 
 from tests.constants import (
-    TEST_APPLICATION_ID_FAM,
     TEST_APPLICATION_ADMIN_ID,
     TEST_NEW_APPLICATION_ADMIN_USER_ID,
     TEST_CREATOR,
@@ -43,25 +42,24 @@ def test_get_application_admin_by_application_id(
 ):
     # find application admin and get count
     application_admins = application_admin_repo.get_application_admin_by_application_id(
-        TEST_APPLICATION_ID_FAM
+        TEST_APPLICATION_ADMIN_ID
     )
     assert application_admins is not None
     application_admin_count = len(application_admins)
 
     # create a new application admin
     new_application_admin = application_admin_repo.create_application_admin(
-        TEST_APPLICATION_ID_FAM,
+        TEST_APPLICATION_ADMIN_ID,
         TEST_NEW_APPLICATION_ADMIN_USER_ID,
         TEST_CREATOR,
     )
-    assert new_application_admin.application_id == TEST_APPLICATION_ID_FAM
+    assert new_application_admin.application_id == TEST_APPLICATION_ADMIN_ID
     # get the new application admin by application id
     application_admins = application_admin_repo.get_application_admin_by_application_id(
-        TEST_APPLICATION_ID_FAM
+        TEST_APPLICATION_ADMIN_ID
     )
     assert application_admins is not None
     assert len(application_admins) == application_admin_count + 1
-
 
 
 def test_get_application_admin_by_id(
@@ -69,7 +67,7 @@ def test_get_application_admin_by_id(
 ):
     # create a new application admin
     new_application_admin = application_admin_repo.create_application_admin(
-        TEST_APPLICATION_ID_FAM,
+        TEST_APPLICATION_ADMIN_ID,
         TEST_NEW_APPLICATION_ADMIN_USER_ID,
         TEST_CREATOR,
     )
@@ -86,7 +84,7 @@ def test_get_application_admin_by_id(
 def test_delete_application_admin(application_admin_repo: ApplicationAdminRepository):
     # create a new application admin
     new_application_admin = application_admin_repo.create_application_admin(
-        TEST_APPLICATION_ID_FAM,
+        TEST_APPLICATION_ADMIN_ID,
         TEST_NEW_APPLICATION_ADMIN_USER_ID,
         TEST_CREATOR,
     )
