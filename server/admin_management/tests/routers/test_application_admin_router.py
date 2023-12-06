@@ -14,7 +14,7 @@ from tests.constants import (
     TEST_INVALID_USER_TYPE,
     TEST_NEW_APPLICATION_ADMIN,
     TEST_NOT_EXIST_APPLICATION_ID,
-    TEST_APPLICATION_ADMIN_ID,
+    TEST_APPLICATION_ADMIN_APPLICATION_ID,
     TEST_FOM_DEV_ADMIN_ROLE,
     INVALID_APPLICATION_ID,
 )
@@ -134,7 +134,7 @@ def test_get_application_admin_by_application_id(
     # test get with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ADMIN_ID}/admins", headers=jwt_utils.headers(token)
+        f"{endPoint}/{TEST_APPLICATION_ADMIN_APPLICATION_ID}/admins", headers=jwt_utils.headers(token)
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() is not None
@@ -143,7 +143,7 @@ def test_get_application_admin_by_application_id(
     # get application admin by application id, get original length
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ADMIN_ID}/admins",
+        f"{endPoint}/{TEST_APPLICATION_ADMIN_APPLICATION_ID}/admins",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -161,7 +161,7 @@ def test_get_application_admin_by_application_id(
     )
     # get the application by application id again, verify length adds one
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ADMIN_ID}/admins",
+        f"{endPoint}/{TEST_APPLICATION_ADMIN_APPLICATION_ID}/admins",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
