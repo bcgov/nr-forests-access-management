@@ -40,11 +40,12 @@ def test_create_application_admin_and_get(
 def test_get_application_admin_by_application_id(
     application_admin_repo: ApplicationAdminRepository,
 ):
-    # find application admin, no data initially
-    application_admin = application_admin_repo.get_application_admin_by_application_id(
+    # find application admin and get count
+    application_admins = application_admin_repo.get_application_admin_by_application_id(
         TEST_APPLICATION_ID_FAM
     )
-    assert len(application_admin) == 0
+    assert application_admins is not None
+    application_admin_count = len(application_admins)
 
     # create a new application admin
     new_application_admin = application_admin_repo.create_application_admin(
@@ -54,10 +55,12 @@ def test_get_application_admin_by_application_id(
     )
     assert new_application_admin.application_id == TEST_APPLICATION_ID_FAM
     # get the new application admin by application id
-    application_admin = application_admin_repo.get_application_admin_by_application_id(
+    application_admins = application_admin_repo.get_application_admin_by_application_id(
         TEST_APPLICATION_ID_FAM
     )
-    assert application_admin is not None
+    assert application_admins is not None
+    assert len(application_admins) == application_admin_count + 1
+
 
 
 def test_get_application_admin_by_id(

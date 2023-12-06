@@ -21,7 +21,7 @@ TEST_APPLICATION_ID_FAM = 1
 TEST_APPLICATION_NAME_FAM = "FAM"
 
 # -------------------- test application admin data ------------------ #
-TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
+TEST_NEW_APPLICATION_ADMIN_USER_ID = 6   # the first 5 users already are fam admin
 TEST_NEW_APPLICATION_ADMIN = {
     "user_type_code": famConstants.UserType.BCEID,
     "user_name": "TEST_USER",
