@@ -1,26 +1,36 @@
 import { computed, ref } from 'vue';
 import type { FamApplication } from 'fam-app-acsctl-api';
+import { requireInjection } from '@/services/utils';
+import ApiServiceFactory from '@/services/ApiServiceFactory';
 
 // The applications the user has access to administer
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
-export const currentSelectedApplication = 'CURRENT_SELECTED_APPLICATION';
+export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
 // The application selected by the user to admin
 export const selectedApplication = ref<FamApplication | null>(
-    localStorage.getItem(currentSelectedApplication)
-        ? JSON.parse(localStorage.getItem(currentSelectedApplication) as string)
+    localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
+        ? JSON.parse(localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string)
         : null
 );
 
+// --- Setter
+
+const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
+    applicationsUserAdministers.value = newValue;
+}
+
 export const setSelectedApplication = (newValue: string | null) => {
     selectedApplication.value = JSON.parse(newValue as string);
-    if (newValue) localStorage.setItem(currentSelectedApplication, newValue);
-    else localStorage.removeItem(currentSelectedApplication);
+    if (newValue) localStorage.setItem(CURRENT_SELECTED_APPLICATION_KEY, newValue);
+    else localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 };
 
 export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
 });
+
+// --- Getter
 
 export const selectedApplicationShortDisplayText = computed(() => {
     if (selectedApplication.value) {
@@ -37,3 +47,11 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
+
+// --- Fetching (backend)
+
+export const fetchApplications = async () => {
+    const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+    const fetchedData = (await appActlApiService.applicationsApi.getApplications()).data;
+    setApplicationsUserAdministers(fetchedData);
+}
