@@ -26,6 +26,7 @@ import {
     type FamUserRoleAssignmentCreate,
 } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
+import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
@@ -90,7 +91,8 @@ const userDomainChange = (selectedDomain: string) => {
     formData.value.domain = selectedDomain;
 };
 
-const userIdChange = () => {
+const userIdChange = (userId: string) => {
+    formData.value.userId = userId;
     resetVerifiedUserIdentity();
     removeForestClientSection();
 };
@@ -349,7 +351,12 @@ const composeAndPushNotificationMessages = (
                         :domain="formData.domain"
                         @change="(selectedDomain: string) => userDomainChange(selectedDomain)"
                     />
-                    <div class="input-with-verify-field">
+                    <UserNameInput
+                        :domain="formData.domain"
+                        :userId="formData.userId"
+                        @change="(uerId: string) => userIdChange(uerId)"
+                    />
+                    <!-- <div class="input-with-verify-field">
                         <div>
                             <label for="userIdInput">Username</label>
                             <Field
@@ -420,7 +427,7 @@ const composeAndPushNotificationMessages = (
                         <UserIdentityCard
                             :userIdentity="verifiedUserIdentity"
                         ></UserIdentityCard>
-                    </div>
+                    </div> -->
                 </StepContainer>
 
                 <StepContainer

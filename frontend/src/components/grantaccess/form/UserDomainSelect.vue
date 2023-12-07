@@ -12,7 +12,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['change']);
-
 const computedDomain = computed({
     get() {
         return props.domain;
@@ -24,7 +23,7 @@ const computedDomain = computed({
 </script>
 
 <template>
-    <div class="user-radio-group">
+    <div class="form-field">
         <label> Select user's domain </label>
         <div class="px-0">
             <RadioButton
@@ -46,4 +45,8 @@ const computedDomain = computed({
         </div>
     </div>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-field {
+    margin-bottom: 1.5rem;
+}
+</style>
