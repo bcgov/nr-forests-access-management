@@ -27,10 +27,6 @@ const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
-    // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
-    applicationsUserAdministers.value = (
-        await appActlApiService.applicationsApi.getApplications()
-    ).data;
     if (isApplicationSelected) {
         await getAppUserRoleAssignment();
     }

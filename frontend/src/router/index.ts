@@ -7,6 +7,7 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { fetchApplications } from '@/store/ApplicationState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -61,6 +62,9 @@ const routes = [
             hasBreadcrumb: false
         },
         component: ManagePermissionsView,
+        beforeEnter: async () => {
+            await fetchApplications();
+        }
     },
     {
         path: routeItems.addUserPermission.to,
