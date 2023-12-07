@@ -21,6 +21,7 @@ Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 const app = createApp(App);
 app.use(ToastService);
 app.use(ConfirmationService);
+app.use(PrimeVue);
 
 // Global provided services.
 const apiServiceProvider = new ApiServiceFactory();
@@ -29,6 +30,5 @@ app.provide(ApiServiceFactory.ADMIN_MANAGEMENT_API_SERVICE_KEY,
 app.provide(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY,
     apiServiceProvider.getAppAccessControlApiService());
 
-app.use(PrimeVue);
 app.use(router).mount('#app');
 export { app };
