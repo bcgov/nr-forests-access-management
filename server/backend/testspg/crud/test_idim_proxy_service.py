@@ -23,7 +23,7 @@ class TestIdimProxyServiceClass(object):
                 "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
                 "user_name": "IANLIU",
                 "user_type": "I",
-                "access_roles": ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
+                "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"]
             }
         )
 

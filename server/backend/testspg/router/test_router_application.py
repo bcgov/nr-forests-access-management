@@ -20,24 +20,24 @@ def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
 ):
-    # Test Accss Roles: FAM_ACCESS_ADMIN only
-    access_roles_fam_only = ["FAM_ACCESS_ADMIN"]
+    # Test Accss Roles: FAM_ADMIN only
+    access_roles_fam_only = ["FAM_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fam_only)
     response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1
     assert data[0]["application_name"] == "FAM"
 
-    # Test Accss Roles: FOM_DEV_ACCESS_ADMIN only
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    # Test Accss Roles: FOM_DEV_ADMIN only
+    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
     response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1
     assert data[0]["application_name"] == "FOM_DEV"
 
-    # Test Accss Roles: both FAM_ACCESS_ADMIN and FOM_DEV_ACCESS_ADMIN
-    access_roles_fam_fom_dev = ["FAM_ACCESS_ADMIN", "FOM_DEV_ACCESS_ADMIN"]
+    # Test Accss Roles: both FAM_ADMIN and FOM_DEV_ADMIN
+    access_roles_fam_fom_dev = ["FAM_ADMIN", "FOM_DEV_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fam_fom_dev)
     response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))
     data = response.json()
@@ -55,8 +55,8 @@ def test_get_applications(
         assert "update_date" in app
         assert "app_environment" in app
 
-    # Test Accss Roles: on NO_APP_ACCESS_ADMIN
-    access_roles_no_app = ["NO_APP_ACCESS_ADMIN"]
+    # Test Accss Roles: on NO_APP_ADMIN
+    access_roles_no_app = ["NO_APP_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_no_app)
     response = test_client_fixture.get(f"{endPoint}", headers=jwt_utils.headers(token))
     data = response.json()
@@ -69,7 +69,7 @@ def test_get_fam_application_roles(
 ):
     # create a concrete role with an abstract role as parent
     # this role won't be returned
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
 
     response = test_client_fixture.post(
@@ -134,7 +134,7 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
 
     # test no user role assignment for the application
     role_assignment_end_point = endPoint + \
@@ -150,7 +150,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
 
     role_assignment_end_point = endPoint + \
         f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"
@@ -184,7 +184,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ACCESS_ADMIN"]
+    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
 
     role_assignment_end_point = endPoint + \
         f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"

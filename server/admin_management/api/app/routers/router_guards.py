@@ -39,7 +39,7 @@ no_requester_exception = HTTPException(
 
 
 def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
-    required_role = "FAM_ACCESS_ADMIN"
+    required_role = "FAM_ADMIN"
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:

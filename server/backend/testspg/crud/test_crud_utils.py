@@ -26,14 +26,14 @@ def test_to_upper(str_list_to_test, expcted_str_list):
 
 @pytest.mark.parametrize("str_list_to_test, str_to_replace, replace_with, expcted_str_list", [
     (
-        ['FAM_ACCESS_ADMIN', 'FOM_DEV_ACCESS_ADMIN', 'FOM_TEST_ACCESS_ADMIN'],
-        "_ACCESS_ADMIN", "",
+        ['FAM_ADMIN', 'FOM_DEV_ADMIN', 'FOM_TEST_ADMIN'],
+        "_ADMIN", "",
         ['FAM', 'FOM_DEV', 'FOM_TEST']
     ),
     (
         ['FAM_ACCESS', 'FOM_DEV', 'FOM'],
-        "_ACCESS", "_ACCESS_ADMIN",
-        ['FAM_ACCESS_ADMIN', 'FOM_DEV', 'FOM']
+        "_ACCESS", "_ADMIN",
+        ['FAM_ADMIN', 'FOM_DEV', 'FOM']
     ),
     (None, "something", "some_other_thing", None)
 ])
