@@ -1,36 +1,35 @@
 <script setup lang="ts">
 import router from '@/router';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref } from 'vue';
-import { number, object, string } from 'yup';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
+import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
+import { onMounted, ref } from 'vue';
+import { number, object, string } from 'yup';
 
-import ApiServiceFactory from '@/services/ApiServiceFactory';
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
-import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import {
-    selectedApplication,
-    selectedApplicationDisplayText,
+selectedApplication,
+selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
+import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import {
-    FamForestClientStatusType,
-    type FamApplicationRole,
-    type FamForestClient,
-    type IdimProxyIdirInfo,
-    type FamUserRoleAssignmentCreate,
-    UserType,
+FamForestClientStatusType,
+UserType,
+type FamApplicationRole,
+type FamForestClient,
+type FamUserRoleAssignmentCreate,
+type IdimProxyIdirInfo,
 } from 'fam-app-acsctl-api';
-import { requireInjection } from '@/services/utils';
 
 // Inject App Access Control Api service
-const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+// const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
@@ -72,7 +71,8 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 onMounted(async () => {
     applicationRoleOptions.value = (
-        await appActlApiService
+        // await appActlApiService
+        await AppActlApiService
             .applicationsApi.getFamApplicationRoles(
                 selectedApplication.value?.application_id as number
             )
@@ -102,7 +102,8 @@ const verifyUserId = async (userId: string, domain: string) => {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
     verifiedUserIdentity.value = (
-        await appActlApiService.idirBceidProxyApi.idirSearch(userId)
+        // await appActlApiService.idirBceidProxyApi.idirSearch(userId)
+        await AppActlApiService.idirBceidProxyApi.idirSearch(userId)
     ).data;
 };
 
@@ -140,7 +141,8 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await appActlApiService
+        // await appActlApiService
+        await AppActlApiService
             .forestClientsApi.search(item)
             .then((result) => {
                 if (!result.data[0]) {
@@ -233,7 +235,8 @@ const handleSubmit = async () => {
             : '';
         const data = toRequestPayload(formData.value, item);
 
-        await appActlApiService
+        // await appActlApiService
+        await AppActlApiService
             .userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {

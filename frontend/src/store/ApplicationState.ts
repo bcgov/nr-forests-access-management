@@ -1,7 +1,6 @@
-import { computed, ref } from 'vue';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import type { FamApplication } from 'fam-app-acsctl-api';
-import { requireInjection } from '@/services/utils';
-import ApiServiceFactory from '@/services/ApiServiceFactory';
+import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
@@ -11,7 +10,9 @@ export const applicationsUserAdministers = ref<FamApplication[]>([]);
 // The application selected by the user to admin
 export const selectedApplication = ref<FamApplication | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
-        ? JSON.parse(localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string)
+        ? JSON.parse(
+              localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
+          )
         : null
 );
 
@@ -19,11 +20,12 @@ export const selectedApplication = ref<FamApplication | null>(
 
 export const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
     applicationsUserAdministers.value = newValue;
-}
+};
 
 export const setSelectedApplication = (newValue: string | null) => {
     selectedApplication.value = JSON.parse(newValue as string);
-    if (newValue) localStorage.setItem(CURRENT_SELECTED_APPLICATION_KEY, newValue);
+    if (newValue)
+        localStorage.setItem(CURRENT_SELECTED_APPLICATION_KEY, newValue);
     else localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 };
 
@@ -52,8 +54,8 @@ export const selectedApplicationDisplayText = computed(() => {
 // --- Fetching (backend)
 
 export const fetchApplications = async () => {
-    // TODO: find a way to refactor this "requireInjection" only for vue component and won't work properly here.
-    const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
-    const fetchedData = (await appActlApiService.applicationsApi.getApplications()).data;
+    const fetchedData = (
+        await AppActlApiService.applicationsApi.getApplications()
+    ).data;
     setApplicationsUserAdministers(fetchedData);
 };

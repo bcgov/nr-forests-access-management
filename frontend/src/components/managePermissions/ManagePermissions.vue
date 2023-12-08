@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import { onUnmounted } from 'vue';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import ApiServiceFactory from '@/services/ApiServiceFactory';
+import { Severity } from '@/enum/SeverityEnum';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -14,17 +15,17 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import {
-    setNotificationMsg,
     resetNotification,
+    setNotificationMsg,
 } from '@/store/NotificationState';
-import { Severity } from '@/enum/SeverityEnum';
+import {
+    fetchUserRoleAssignments,
+    userRoleAssignments,
+} from '@/store/UserAccessRoleState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { requireInjection } from '@/services/utils';
-import { fetchUserRoleAssignments } from '@/store/UserAccessRoleState';
 
 // Inject App Access Control Api service
-const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
-const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
+// const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
 
 onUnmounted(() => {
     resetNotification();
@@ -39,9 +40,8 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await appActlApiService
-            .userRoleAssignmentApi
-            .deleteUserRoleAssignment(
+        // await appActlApiService
+        await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
             assignment.user_role_xref_id
         );
         userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
