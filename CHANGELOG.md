@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.10.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.9.0...v1.10.0) (2023-12-05)
+
+
+### Features
+
+* [#1007](https://github.com/bcgov/nr-forests-access-management/issues/1007) new fam app admin model ([#1029](https://github.com/bcgov/nr-forests-access-management/issues/1029)) ([f7f341f](https://github.com/bcgov/nr-forests-access-management/commit/f7f341f414b804c50c0413e2ccd2bdbe14bab8cc))
+* [#1010](https://github.com/bcgov/nr-forests-access-management/issues/1010) admin api gateway ([#1050](https://github.com/bcgov/nr-forests-access-management/issues/1050)) ([b61aeba](https://github.com/bcgov/nr-forests-access-management/commit/b61aeba18814f967c3986a64deb56cc1e39977b3))
+* [#1018](https://github.com/bcgov/nr-forests-access-management/issues/1018) add auth test for bceid and bcsc login ([#1065](https://github.com/bcgov/nr-forests-access-management/issues/1065)) ([8c2a40d](https://github.com/bcgov/nr-forests-access-management/commit/8c2a40daaea098934d6cb24290a8db3df7223903))
+* [#1042](https://github.com/bcgov/nr-forests-access-management/issues/1042) new admin api gen ([#1054](https://github.com/bcgov/nr-forests-access-management/issues/1054)) ([477277f](https://github.com/bcgov/nr-forests-access-management/commit/477277f09f82d9242e6ff9a0cc0aa508161e0af9))
+* [#1046](https://github.com/bcgov/nr-forests-access-management/issues/1046) add test for admin management endpoints ([#1055](https://github.com/bcgov/nr-forests-access-management/issues/1055)) ([7e39737](https://github.com/bcgov/nr-forests-access-management/commit/7e397373e1165e658414d1ca2646c943e9c1105a))
+* [#884](https://github.com/bcgov/nr-forests-access-management/issues/884) add admin management lambda ([#1035](https://github.com/bcgov/nr-forests-access-management/issues/1035)) ([bdc5423](https://github.com/bcgov/nr-forests-access-management/commit/bdc54236ee072be524bbf92876540d6af51bde77))
+* [#885](https://github.com/bcgov/nr-forests-access-management/issues/885) add admin management endpoint ([#1049](https://github.com/bcgov/nr-forests-access-management/issues/1049)) ([5b69940](https://github.com/bcgov/nr-forests-access-management/commit/5b699403484e9b627ce692b4411cc6019e065238))
+
+
+### Bug Fixes
+
+* [#1014](https://github.com/bcgov/nr-forests-access-management/issues/1014) client id input field error validation issues ([#1032](https://github.com/bcgov/nr-forests-access-management/issues/1032)) ([a23acbd](https://github.com/bcgov/nr-forests-access-management/commit/a23acbd28dde91b7c20abfddb842636ae85a4884))
+* [#1015](https://github.com/bcgov/nr-forests-access-management/issues/1015) Notification issues when the text is too long ([#1034](https://github.com/bcgov/nr-forests-access-management/issues/1034)) ([a8fbad8](https://github.com/bcgov/nr-forests-access-management/commit/a8fbad8c61c6daa724e0e0f6fe52337874ab37a5))
+* [#1044](https://github.com/bcgov/nr-forests-access-management/issues/1044) Better Error Message for Self Granting User Error ([#1053](https://github.com/bcgov/nr-forests-access-management/issues/1053)) ([4c958a7](https://github.com/bcgov/nr-forests-access-management/commit/4c958a78f49a081722912ee531c80654087c37fe))
+* [#885](https://github.com/bcgov/nr-forests-access-management/issues/885) fix admin management db username in flyway ([#1051](https://github.com/bcgov/nr-forests-access-management/issues/1051)) ([bb5352c](https://github.com/bcgov/nr-forests-access-management/commit/bb5352c3adf393537e1db0fa7446d8dc0df4219f))
+* [#993](https://github.com/bcgov/nr-forests-access-management/issues/993) user name field consistency ([#1043](https://github.com/bcgov/nr-forests-access-management/issues/1043)) ([f0f573d](https://github.com/bcgov/nr-forests-access-management/commit/f0f573db302c4185df16464ca5e9683c48a38c73))
+* typing breaking build ([#1058](https://github.com/bcgov/nr-forests-access-management/issues/1058)) ([6f8d3ea](https://github.com/bcgov/nr-forests-access-management/commit/6f8d3ea55d82d61c499682442b6770c81a074205))
+
+
+### Miscellaneous
+
+* [#1022](https://github.com/bcgov/nr-forests-access-management/issues/1022) refactor frontend code to be consistent ([#1060](https://github.com/bcgov/nr-forests-access-management/issues/1060)) ([88c6796](https://github.com/bcgov/nr-forests-access-management/commit/88c6796921035f601da6ed2fb3b388418b085b4a))
+* renovate extends bcgov/renovate-config ([#1045](https://github.com/bcgov/nr-forests-access-management/issues/1045)) ([45ea082](https://github.com/bcgov/nr-forests-access-management/commit/45ea082deffdf2c6adc1884528bcf0fe9ed4dc46))
+
 ## [1.9.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.8.2...v1.9.0) (2023-11-07)
 
 
