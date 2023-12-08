@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
-import * as yup from 'yup';
 import InputText from 'primevue/inputtext';
 import ApiServiceFactory from '@/services/ApiServiceFactory';
 import { requireInjection } from '@/services/utils';
@@ -10,15 +9,10 @@ import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 
-const validationRules = yup
-    .string()
-    .required('User ID is required')
-    .min(2, 'User ID must be at least 2 characters')
-    .nullable();
-
 const props = defineProps({
     domain: { type: String, required: true },
     userId: { type: String, default: '' },
+    fieldId: { type: String, default: 'userId' },
 });
 
 const emit = defineEmits(['change', 'setVerifyResult']);
@@ -69,11 +63,10 @@ watch(
     <div class="form-field">
         <label for="userIdInput">Username</label>
         <Field
-            name="userId"
+            :name="props.fieldId"
             :validateOnChange="true"
             v-model="computedUserId"
             v-slot="{ errorMessage, field }"
-            :rules="validationRules"
         >
             <div class="input-with-verify-button">
                 <InputText
@@ -94,8 +87,8 @@ watch(
                     v-if="props.domain === UserType.I"
                     class="w-100 verify-button"
                     aria-label="Verify user IDIR"
-                    :name="'verifyIdir'"
-                    :label="'Verify'"
+                    name="verifyIdir"
+                    label="Verify"
                     @click="verifyUserId()"
                     :disabled="
                         LoadingState.isLoading.value ||
@@ -115,7 +108,7 @@ watch(
         </Field>
         <ErrorMessage
             class="invalid-feedback"
-            name="userId"
+            :name="props.fieldId"
             style="display: inline"
         />
 
