@@ -4,7 +4,7 @@ import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import ApiServiceFactory from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -19,16 +19,17 @@ import {
 } from '@/store/NotificationState';
 import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import { requireInjection } from '@/services/utils';
 
-const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
-const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
+// Inject App Access Control Api service
+const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
 
 onMounted(async () => {
     // Reload list each time we navigate to this page to avoid forcing user to refresh if their access changes.
     applicationsUserAdministers.value = (
-        await applicationsApi.getApplications()
+        await appActlApiService.applicationsApi.getApplications()
     ).data;
     if (isApplicationSelected) {
         await getAppUserRoleAssignment();
@@ -43,11 +44,14 @@ const getAppUserRoleAssignment = async () => {
     if (!selectedApplication.value) return;
 
     const userRoleAssignmentList = (
-        await applicationsApi.getFamApplicationUserRoleAssignment(
-            selectedApplication.value.application_id
-        )
+        await appActlApiService
+            .applicationsApi.getFamApplicationUserRoleAssignment(
+                selectedApplication.value.application_id
+            )
     ).data;
-    userRoleAssignments.value = userRoleAssignmentList.sort((first, second) => {
+
+    // Fix Sonar Array "sort" issue
+    userRoleAssignmentList.sort((first, second) => {
         const nameCompare = first.user.user_name.localeCompare(
             second.user.user_name
         );
@@ -57,6 +61,7 @@ const getAppUserRoleAssignment = async () => {
         );
         return roleCompare;
     });
+    userRoleAssignments.value = userRoleAssignmentList;
 };
 
 const selectApplication = async (e: DropdownChangeEvent) => {
@@ -73,7 +78,9 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await userRoleAssignmentApi.deleteUserRoleAssignment(
+        await appActlApiService
+            .userRoleAssignmentApi
+            .deleteUserRoleAssignment(
             assignment.user_role_xref_id
         );
         userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
