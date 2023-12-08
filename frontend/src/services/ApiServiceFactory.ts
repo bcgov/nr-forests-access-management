@@ -1,53 +1,102 @@
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import httpInstance from '@/services/http/HttpCommon';
+import type { AxiosInstance } from 'axios';
+import { FAMApplicationAdminApi } from 'fam-admin-mgmt-api/api';
 import {
+    Configuration,
     FAMApplicationsApi,
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
-    IDIRBCeIDProxyApi
+    IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
+import type { InjectionKey } from 'vue';
 
-export class ApiServiceFactory {
-    private applicationsApi: FAMApplicationsApi;
-    private userRoleAssignmentApi: FAMUserRoleAssignmentApi;
-    private forestClientApi: FAMForestClientsApi;
-    private idirBceidProxyApi: IDIRBCeIDProxyApi;
+type AppAccessControlApiType = {
+    applicationsApi: FAMApplicationsApi;
+    userRoleAssignmentApi: FAMUserRoleAssignmentApi;
+    forestClientsApi: FAMForestClientsApi;
+    idirBceidProxyApi: IDIRBCeIDProxyApi;
+};
+
+type AdminManagementApiType = {
+    applicationAdminApi: FAMApplicationAdminApi;
+};
+
+export default class ApiServiceFactory {
+    static readonly APP_ACCESS_CONTROL_API_SERVICE_KEY: InjectionKey<AppAccessControlApiType> =
+        Symbol('APP_ACCESS_CONTROL_API_SERVICE');
+    static readonly ADMIN_MANAGEMENT_API_SERVICE_KEY: InjectionKey<AdminManagementApiType> =
+        Symbol('ADMIN_MANAGEMENT_API_SERVICE');
+
+    private environmentSettings: EnvironmentSettings;
+    private appAccessControlApiService: AppAccessControlApiType;
+    private adminManagementApiService: AdminManagementApiType;
 
     constructor() {
-        this.applicationsApi = new FAMApplicationsApi(
-            undefined,
-            '',
-            httpInstance
-        ); // Note, Axios is strange, second parameter needs empty string, not null.
-        this.userRoleAssignmentApi = new FAMUserRoleAssignmentApi(
-            undefined,
-            '',
-            httpInstance
-        );
-        this.forestClientApi = new FAMForestClientsApi(
-            undefined,
-            '',
-            httpInstance
-        );
-        this.idirBceidProxyApi = new IDIRBCeIDProxyApi(
-            undefined,
-            '',
-            httpInstance
-        );
+        this.environmentSettings = new EnvironmentSettings();
+        const appAccessControlBaseURL =
+            this.environmentSettings.getAppAcsctlApiBaseUrl();
+        const adminManagementBaseURL =
+            this.environmentSettings.getAdminMgmtApiBaseUrl();
+
+        // App Access Control API service
+        this.appAccessControlApiService = {
+            applicationsApi: this.createInstance(
+                FAMApplicationsApi,
+                appAccessControlBaseURL
+            ),
+            userRoleAssignmentApi: this.createInstance(
+                FAMUserRoleAssignmentApi,
+                appAccessControlBaseURL
+            ),
+            forestClientsApi: this.createInstance(
+                FAMForestClientsApi,
+                appAccessControlBaseURL
+            ),
+            idirBceidProxyApi: this.createInstance(
+                IDIRBCeIDProxyApi,
+                appAccessControlBaseURL
+            ),
+        };
+
+        this.adminManagementApiService = {
+            applicationAdminApi: this.createInstance(
+                FAMApplicationAdminApi,
+                adminManagementBaseURL
+            ),
+        };
     }
 
-    getApplicationApi(): FAMApplicationsApi {
-        return this.applicationsApi;
+    getAppAccessControlApiService() {
+        return this.appAccessControlApiService;
     }
 
-    getUserRoleAssignmentApi(): FAMUserRoleAssignmentApi {
-        return this.userRoleAssignmentApi;
+    getAdminManagementApiService() {
+        return this.adminManagementApiService;
     }
 
-    getForestClientApi(): FAMForestClientsApi {
-        return this.forestClientApi;
-    }
-
-    getIdirBceidProxyApi(): IDIRBCeIDProxyApi {
-        return this.idirBceidProxyApi;
+    /**
+     * 'private' method using Typescript Generics, to instantiate Axios API(s) for this service provider.
+     * @param c required class Types, the intended API 'class' to be instantiated.
+     * @param baseURL optional, API's base URL (domain, and path if required).
+     *                Will be set to `configuration` if baseURL is passed in.
+     *                Note, for now, only the `baseURL` is the intended option. Also see
+     *                `why` baseURL is set here at comment from @HttpCommon:defaultAxiosConfig.
+     * @returns API class instantiated.
+     */
+    private createInstance<C>(
+        // Class Types in Generics: see Typscript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
+        // Obey the constructor signiture of the BaseAPI.
+        c: new (
+            configuration?: Configuration,
+            basePath?: string,
+            axios?: AxiosInstance
+        ) => C,
+        baseURL?: string
+    ): C {
+        const configuration = baseURL
+            ? ({ baseOptions: { baseURL } } as Configuration)
+            : undefined;
+        return new c(configuration, '', httpInstance);
     }
 }

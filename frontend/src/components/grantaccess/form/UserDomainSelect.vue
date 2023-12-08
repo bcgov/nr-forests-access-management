@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import RadioButton from 'primevue/radiobutton';
+import { UserType } from 'fam-app-acsctl-api';
 
-const domainOptions = { IDIR: 'I', BCEID: 'B' };
+const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
 
 const props = defineProps({
-    domain: { type: String, default: 'I' },
+    domain: { type: String, default: UserType.I },
 });
 
 const emit = defineEmits(['change']);

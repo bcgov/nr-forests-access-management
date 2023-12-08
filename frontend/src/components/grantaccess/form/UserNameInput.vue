@@ -3,11 +3,12 @@ import { computed, ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from 'primevue/inputtext';
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
+import ApiServiceFactory from '@/services/ApiServiceFactory';
+import { requireInjection } from '@/services/utils';
 import LoadingState from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
-import type { IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 
 const validationRules = yup
     .string()
@@ -31,24 +32,27 @@ const computedUserId = computed({
     },
 });
 
-const apiServiceFactory = new ApiServiceFactory();
-const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
+const appActlApiService = requireInjection(
+    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
+);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 const verifyUserId = async () => {
-    if (props.domain == 'B') {
+    if (props.domain == UserType.B) {
         emit('setVerifyResult', true);
         return;
     }
 
     verifiedUserIdentity.value = (
-        await idirBceidProxyApi.idirSearch(computedUserId.value)
+        await appActlApiService.idirBceidProxyApi.idirSearch(
+            computedUserId.value
+        )
     ).data;
 
     if (verifiedUserIdentity.value?.found) emit('setVerifyResult', true);
 };
 const resetVerifiedUserIdentity = () => {
     verifiedUserIdentity.value = null;
-    if (props.domain == 'I') emit('setVerifyResult', false);
+    if (props.domain == UserType.I) emit('setVerifyResult', false);
     else emit('setVerifyResult', true);
 };
 
@@ -75,7 +79,7 @@ watch(
                 <InputText
                     id="userIdInput"
                     :placeholder="
-                        props.domain === 'I'
+                        props.domain === UserType.I
                             ? 'Type user\'s IDIR'
                             : 'Type user\'s BCeID'
                     "
@@ -87,7 +91,7 @@ watch(
                     :class="{ 'is-invalid': errorMessage }"
                 />
                 <Button
-                    v-if="props.domain === 'I'"
+                    v-if="props.domain === UserType.I"
                     class="w-100 verify-button"
                     aria-label="Verify user IDIR"
                     :name="'verifyIdir'"

@@ -6,9 +6,9 @@ import { number, object, string } from 'yup';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 
+import ApiServiceFactory from '@/services/ApiServiceFactory';
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
-import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
@@ -22,15 +22,20 @@ import {
     type FamApplicationRole,
     type FamForestClient,
     type FamUserRoleAssignmentCreate,
+    UserType,
 } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
+import { requireInjection } from '@/services/utils';
 
+// Inject App Access Control Api service
+const appActlApiService = requireInjection(
+    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
+);
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
-const domainOptions = { IDIR: 'I', BCEID: 'B' }; // TODO, load it from backend when backend has the endpoint.
 
 const defaultFormData = {
-    domain: domainOptions.IDIR,
+    domain: UserType.I,
     userId: '',
     forestClientNumbers: '', // form field input, for multiple forest client numbers
     role_id: null as number | null,
@@ -59,18 +64,12 @@ const formValidationSchema = object({
 });
 
 const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-
 const forestClientData = ref<FamForestClient[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
-const apiServiceFactory = new ApiServiceFactory();
-const applicationsApi = apiServiceFactory.getApplicationApi();
-const forestClientApi = apiServiceFactory.getForestClientApi();
-const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
-
 onMounted(async () => {
     applicationRoleOptions.value = (
-        await applicationsApi.getFamApplicationRoles(
+        await appActlApiService.applicationsApi.getFamApplicationRoles(
             selectedApplication.value?.application_id as number
         )
     ).data;
@@ -126,7 +125,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await forestClientApi
+        await appActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
                 if (!result.data[0]) {
@@ -218,7 +217,7 @@ const handleSubmit = async () => {
             : '';
         const data = toRequestPayload(formData.value, item);
 
-        await userRoleAssignmentApi
+        await appActlApiService.userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
                 successForestClientIdList.push(itemForestClientNumber);
