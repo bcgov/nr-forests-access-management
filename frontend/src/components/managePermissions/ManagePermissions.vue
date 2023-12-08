@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, shallowRef } from 'vue';
+import { onUnmounted, shallowRef } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
@@ -20,54 +20,19 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
+import { fetchUserRoleAssignments } from '@/store/UserAccessRoleState';
 
 // Inject App Access Control Api service
 const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
-
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>();
-
-onMounted(async () => {
-    if (isApplicationSelected) {
-        await getAppUserRoleAssignment();
-    }
-});
 
 onUnmounted(() => {
     resetNotification();
 });
 
-const getAppUserRoleAssignment = async () => {
-    if (!selectedApplication.value) return;
-
-    const userRoleAssignmentList = (
-        await appActlApiService
-            .applicationsApi.getFamApplicationUserRoleAssignment(
-                selectedApplication.value.application_id
-            )
-    ).data;
-
-    // Fix Sonar Array "sort" issue
-    userRoleAssignmentList.sort((first, second) => {
-        const nameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
-        );
-        if (nameCompare != 0) return nameCompare;
-        const roleCompare = first.role.role_name.localeCompare(
-            second.role.role_name
-        );
-        return roleCompare;
-    });
-    userRoleAssignments.value = userRoleAssignmentList;
-};
-
-const selectApplication = async (e: DropdownChangeEvent) => {
+const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (
-        applicationsUserAdministers.value &&
-        applicationsUserAdministers.value.length > 0
-    ) {
-        await getAppUserRoleAssignment();
-    }
+    await fetchUserRoleAssignments(selectedApplication.value?.application_id);
 };
 
 async function deleteUserRoleAssignment(
@@ -104,7 +69,7 @@ async function deleteUserRoleAssignment(
             <label>You are modifying access in this application:</label>
             <Dropdown
                 v-model="selectedApplication"
-                @change="selectApplication"
+                @change="onApplicationSelected"
                 :options="applicationsUserAdministers"
                 optionLabel="application_description"
                 placeholder="Choose an application to manage permissions"

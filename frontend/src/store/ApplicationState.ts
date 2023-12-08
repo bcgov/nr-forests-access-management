@@ -3,9 +3,10 @@ import type { FamApplication } from 'fam-app-acsctl-api';
 import { requireInjection } from '@/services/utils';
 import ApiServiceFactory from '@/services/ApiServiceFactory';
 
+export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
+
 // The applications the user has access to administer
 export const applicationsUserAdministers = ref<FamApplication[]>([]);
-export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
 // The application selected by the user to admin
 export const selectedApplication = ref<FamApplication | null>(
@@ -16,7 +17,7 @@ export const selectedApplication = ref<FamApplication | null>(
 
 // --- Setter
 
-const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
+export const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
     applicationsUserAdministers.value = newValue;
 }
 
@@ -51,7 +52,8 @@ export const selectedApplicationDisplayText = computed(() => {
 // --- Fetching (backend)
 
 export const fetchApplications = async () => {
+    // TODO: find a way to refactor this "requireInjection" only for vue component and won't work properly here.
     const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
     const fetchedData = (await appActlApiService.applicationsApi.getApplications()).data;
     setApplicationsUserAdministers(fetchedData);
-}
+};
