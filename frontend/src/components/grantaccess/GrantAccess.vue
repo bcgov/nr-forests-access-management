@@ -8,7 +8,6 @@ import InputText from 'primevue/inputtext';
 
 import Button from '@/components/common/Button.vue';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
-import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { ApiServiceFactory } from '@/services/ApiServiceFactory';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
@@ -22,7 +21,6 @@ import {
     FamForestClientStatusType,
     type FamApplicationRole,
     type FamForestClient,
-    type IdimProxyIdirInfo,
     type FamUserRoleAssignmentCreate,
 } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
@@ -60,7 +58,6 @@ const formValidationSchema = object({
         .nullable(),
 });
 
-const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 const applicationRoleOptions = ref<FamApplicationRole[]>([]);
 
 const forestClientData = ref<FamForestClient[]>([]);
@@ -69,7 +66,6 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 const apiServiceFactory = new ApiServiceFactory();
 const applicationsApi = apiServiceFactory.getApplicationApi();
 const forestClientApi = apiServiceFactory.getForestClientApi();
-const idirBceidProxyApi = apiServiceFactory.getIdirBceidProxyApi();
 const userRoleAssignmentApi = apiServiceFactory.getUserRoleAssignmentApi();
 
 onMounted(async () => {
@@ -81,32 +77,19 @@ onMounted(async () => {
 });
 
 /* ------------------ User information method ------------------------- */
-const isIdirDomainSelected = () => {
-    return formData.value.domain === domainOptions.IDIR;
-};
-
 const userDomainChange = (selectedDomain: string) => {
-    resetVerifiedUserIdentity();
-    formData.value.userId = '';
     formData.value.domain = selectedDomain;
+    formData.value.userId = '';
 };
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
-    resetVerifiedUserIdentity();
     removeForestClientSection();
 };
 
-const resetVerifiedUserIdentity = () => {
-    verifiedUserIdentity.value = null;
-};
-
-const verifyUserId = async (userId: string, domain: string) => {
-    if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
-
-    verifiedUserIdentity.value = (
-        await idirBceidProxyApi.idirSearch(userId)
-    ).data;
+const verifyUserIdPassed = ref(false);
+const setVerifyUserIdPassed = (verifiedResult: boolean) => {
+    verifyUserIdPassed.value = verifiedResult;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -209,9 +192,8 @@ Two verifications are cunnretly in place: userId and forestClientNumber.
 */
 const areVerificationsPassed = () => {
     return (
-        // userId verification.
-        (!isIdirDomainSelected() ||
-            (isIdirDomainSelected() && verifiedUserIdentity.value?.found)) &&
+        // userId verification
+        verifyUserIdPassed.value &&
         // forestClientNumber verification
         (!isAbstractRoleSelected() ||
             (isAbstractRoleSelected() &&
@@ -355,79 +337,8 @@ const composeAndPushNotificationMessages = (
                         :domain="formData.domain"
                         :userId="formData.userId"
                         @change="(uerId: string) => userIdChange(uerId)"
+                        @setVerifyResult="(verifyResult: boolean) => setVerifyUserIdPassed(verifyResult)"
                     />
-                    <!-- <div class="input-with-verify-field">
-                        <div>
-                            <label for="userIdInput">Username</label>
-                            <Field
-                                name="userId"
-                                :validateOnChange="true"
-                                v-model="formData.userId"
-                                v-slot="{ field }"
-                            >
-                                <InputText
-                                    id="userIdInput"
-                                    :placeholder="
-                                        formData.domain === 'I'
-                                            ? 'Type user\'s IDIR'
-                                            : 'Type user\'s BCeID'
-                                    "
-                                    :validateOnChange="true"
-                                    class="w-100 custom-input"
-                                    type="text"
-                                    maxlength="20"
-                                    v-bind="field"
-                                    @input="userIdChange()"
-                                    :class="{ 'is-invalid': errors.userId }"
-                                />
-                            </Field>
-                            <ErrorMessage
-                                class="invalid-feedback"
-                                name="userId"
-                            />
-                            <small
-                                id="userIdInput-helper"
-                                class="helper-text"
-                                v-if="!errors.userId"
-                                >Enter and verify the username for this
-                                user</small
-                            >
-                        </div>
-                        <div
-                            v-if="formData.domain === 'I'"
-                            class="no-label-column"
-                        >
-                            <Button
-                                class="button w-100"
-                                aria-label="Verify user IDIR"
-                                :name="'verifyIdir'"
-                                :label="'Verify'"
-                                @click="
-                                    verifyUserId(
-                                        formData.userId,
-                                        formData.domain
-                                    )
-                                "
-                                :disabled="
-                                    LoadingState.isLoading.value ||
-                                    formData.domain !== domainOptions.IDIR ||
-                                    !formData.userId ||
-                                    errors.userId !== undefined
-                                "
-                            >
-                                <Icon
-                                    icon="search--locate"
-                                    :size="IconSize.small"
-                                />
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
-                        <UserIdentityCard
-                            :userIdentity="verifiedUserIdentity"
-                        ></UserIdentityCard>
-                    </div> -->
                 </StepContainer>
 
                 <StepContainer

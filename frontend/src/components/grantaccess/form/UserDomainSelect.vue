@@ -5,10 +5,7 @@ import RadioButton from 'primevue/radiobutton';
 const domainOptions = { IDIR: 'I', BCEID: 'B' };
 
 const props = defineProps({
-    domain: {
-        type: String,
-        default: 'I',
-    },
+    domain: { type: String, default: 'I' },
 });
 
 const emit = defineEmits(['change']);
