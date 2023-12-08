@@ -14,18 +14,18 @@ import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import {
-selectedApplication,
-selectedApplicationDisplayText,
+    selectedApplication,
+    selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import {
-FamForestClientStatusType,
-UserType,
-type FamApplicationRole,
-type FamForestClient,
-type FamUserRoleAssignmentCreate,
-type IdimProxyIdirInfo,
+    FamForestClientStatusType,
+    UserType,
+    type FamApplicationRole,
+    type FamForestClient,
+    type FamUserRoleAssignmentCreate,
+    type IdimProxyIdirInfo,
 } from 'fam-app-acsctl-api';
 
 // Inject App Access Control Api service
@@ -70,12 +70,11 @@ const forestClientData = ref<FamForestClient[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 onMounted(async () => {
-    applicationRoleOptions.value = (
-        // await appActlApiService
-        await AppActlApiService
-            .applicationsApi.getFamApplicationRoles(
-                selectedApplication.value?.application_id as number
-            )
+    applicationRoleOptions.value = // await appActlApiService
+    (
+        await AppActlApiService.applicationsApi.getFamApplicationRoles(
+            selectedApplication.value?.application_id as number
+        )
     ).data;
 });
 
@@ -101,10 +100,9 @@ const resetVerifiedUserIdentity = () => {
 const verifyUserId = async (userId: string, domain: string) => {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
-    verifiedUserIdentity.value = (
+    verifiedUserIdentity.value =
         // await appActlApiService.idirBceidProxyApi.idirSearch(userId)
-        await AppActlApiService.idirBceidProxyApi.idirSearch(userId)
-    ).data;
+        (await AppActlApiService.idirBceidProxyApi.idirSearch(userId)).data;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -142,8 +140,8 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             );
         }
         // await appActlApiService
-        await AppActlApiService
-            .forestClientsApi.search(item)
+        await AppActlApiService.forestClientsApi
+            .search(item)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
@@ -236,8 +234,7 @@ const handleSubmit = async () => {
         const data = toRequestPayload(formData.value, item);
 
         // await appActlApiService
-        await AppActlApiService
-            .userRoleAssignmentApi
+        await AppActlApiService.userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
                 successForestClientIdList.push(itemForestClientNumber);
