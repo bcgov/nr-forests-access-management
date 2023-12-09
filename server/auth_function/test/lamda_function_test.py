@@ -5,7 +5,7 @@ import sys
 
 import pytest
 from psycopg2 import sql
-from constant import TEST_ROLE_NAME
+from constant import TEST_ROLE_NAME, TEST_ADMIN_ROLE_NAME
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -143,6 +143,7 @@ def test_direct_role_assignment(
     create_test_fam_role,
     create_test_fam_cognito_client,
     create_user_role_xref_record,
+    create_fam_application_admin_record
 ):
     """role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
@@ -157,6 +158,7 @@ def test_direct_role_assignment(
     ]["groupsToOverride"]
     LOGGER.debug(f"override groups: {override_groups}")
     assert TEST_ROLE_NAME in override_groups
+    assert TEST_ADMIN_ROLE_NAME in override_groups
 
 
 @pytest.mark.parametrize(

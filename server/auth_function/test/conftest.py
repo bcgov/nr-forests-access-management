@@ -249,6 +249,34 @@ def create_user_role_xref_record(db_pg_transaction, test_user_properties):
         ),
     )
 
+@pytest.fixture(scope="function")
+def create_fam_application_admin_record(db_pg_transaction, test_user_properties):
+    initial_user = test_user_properties
+    cursor = db_pg_transaction.cursor()
+    raw_query = """
+    insert into app_fam.fam_application_admin
+        (user_id,
+        application_id,
+        create_user,
+        update_user)
+    VALUES (
+        (select user_id from app_fam.fam_user where
+            user_name = %s
+            and user_type_code = %s),
+        (select application_id from app_fam.fam_application
+            where application_name = 'FAM'),
+        CURRENT_USER,
+        CURRENT_USER
+    )
+    """
+    cursor.execute(
+        raw_query,
+        (
+            initial_user.get("idp_username"),
+            initial_user.get("idp_type_code")
+        ),
+    )
+
 
 @pytest.fixture(scope="function")
 def initial_user_without_guid_or_cognito_id(db_pg_transaction, cognito_event):
