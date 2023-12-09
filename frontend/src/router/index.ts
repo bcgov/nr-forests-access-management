@@ -7,8 +7,12 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { fetchApplications, selectedApplication } from '@/store/ApplicationState';
-import { fetchUserRoleAssignments } from '@/store/UserAccessRoleState';
+import {
+    fetchApplicationRoles,
+    fetchApplications,
+    fetchUserRoleAssignments,
+} from '@/services/fetchData';
+import { selectedApplication } from '@/store/ApplicationState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -24,12 +28,12 @@ import { fetchUserRoleAssignments } from '@/store/UserAccessRoleState';
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
 
 export interface IRouteInfo {
-    label: string,
-    to: string
-};
+    label: string;
+    to: string;
+}
 
 export type RouteItems = {
-    [key: string]: IRouteInfo
+    [key: string]: IRouteInfo;
 };
 
 const routeItems = {
@@ -39,8 +43,8 @@ const routeItems = {
     },
     addUserPermission: {
         to: '/grant',
-        label: 'Add user permission'
-    }
+        label: 'Add user permission',
+    },
 } as RouteItems;
 
 const routes = [
@@ -50,7 +54,7 @@ const routes = [
         meta: {
             title: 'Welcome to FAM',
             layout: 'SimpleLayout',
-            hasBreadcrumb: false
+            hasBreadcrumb: false,
         },
         component: LandingView,
     },
@@ -60,13 +64,17 @@ const routes = [
         meta: {
             title: routeItems.dashboard.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: false
+            hasBreadcrumb: false,
         },
         component: ManagePermissionsView,
         beforeEnter: async () => {
+            // Requires fetching applications the user administers.
             await fetchApplications();
-            await fetchUserRoleAssignments(selectedApplication.value?.application_id);
-        }
+            await fetchUserRoleAssignments(
+                selectedApplication.value?.application_id
+            );
+            return true;
+        },
     },
     {
         path: routeItems.addUserPermission.to,
@@ -74,12 +82,28 @@ const routes = [
         meta: {
             title: routeItems.addUserPermission.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: true
+            hasBreadcrumb: true,
         },
         component: GrantAccessView,
-        beforeEnter: () => {
-            populateBreadcrumb([routeItems.dashboard, routeItems.addUserPermission])
-        }
+        beforeEnter: async (to: any) => {
+            populateBreadcrumb([
+                routeItems.dashboard,
+                routeItems.addUserPermission,
+            ]);
+            // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
+            Object.assign(to.meta, {
+                applicationRoleOptions: await fetchApplicationRoles(
+                    selectedApplication.value?.application_id
+                ),
+            });
+            return true;
+        },
+        props: (route: any) => {
+            return {
+                // options is ready for the `component` as props.
+                applicationRoleOptions: route.meta.applicationRoleOptions,
+            };
+        },
     },
     {
         path: '/authCallback',
@@ -108,4 +132,3 @@ router.beforeEach(async (to, from) => {
 export { routes };
 
 export default router;
-

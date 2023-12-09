@@ -9,7 +9,6 @@ import {
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
-import type { InjectionKey } from 'vue';
 
 type AppAccessControlApiType = {
     applicationsApi: FAMApplicationsApi;
@@ -25,15 +24,13 @@ type AdminManagementApiType = {
 export default class ApiServiceFactory {
     static instance: ApiServiceFactory;
 
-    static readonly APP_ACCESS_CONTROL_API_SERVICE_KEY: InjectionKey<AppAccessControlApiType> =
-        Symbol('APP_ACCESS_CONTROL_API_SERVICE');
-    static readonly ADMIN_MANAGEMENT_API_SERVICE_KEY: InjectionKey<AdminManagementApiType> =
-        Symbol('ADMIN_MANAGEMENT_API_SERVICE');
-
     private environmentSettings: EnvironmentSettings;
     private appAccessControlApiService: AppAccessControlApiType;
     private adminManagementApiService: AdminManagementApiType;
 
+    /*
+    Note, this class is a singleton; so the constructor is private.
+    */
     private constructor() {
         this.environmentSettings = new EnvironmentSettings();
         const appAccessControlBaseURL =

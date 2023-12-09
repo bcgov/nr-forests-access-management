@@ -4,7 +4,7 @@ import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import RadioButton from 'primevue/radiobutton';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref } from 'vue';
+import { ref, type PropType } from 'vue';
 import { number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
@@ -13,10 +13,7 @@ import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import {
-    selectedApplication,
-    selectedApplicationDisplayText,
-} from '@/store/ApplicationState';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import {
@@ -28,8 +25,13 @@ import {
     type IdimProxyIdirInfo,
 } from 'fam-app-acsctl-api';
 
-// Inject App Access Control Api service
-// const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+const props = defineProps({
+    applicationRoleOptions: {
+        // options fetched from route.
+        type: Array as PropType<FamApplicationRole[]>,
+        default: [],
+    },
+});
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
@@ -64,21 +66,11 @@ const formValidationSchema = object({
 });
 
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
-const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-
 const forestClientData = ref<FamForestClient[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
-onMounted(async () => {
-    applicationRoleOptions.value = // await appActlApiService
-    (
-        await AppActlApiService.applicationsApi.getFamApplicationRoles(
-            selectedApplication.value?.application_id as number
-        )
-    ).data;
-});
-
 /* ------------------ User information method ------------------------- */
+
 const isIdirDomainSelected = () => {
     return formData.value.domain === domainOptions.IDIR;
 };
@@ -100,14 +92,15 @@ const resetVerifiedUserIdentity = () => {
 const verifyUserId = async (userId: string, domain: string) => {
     if (domain == domainOptions.BCEID) return; // IDIR search currently, no BCeID yet.
 
-    verifiedUserIdentity.value =
-        // await appActlApiService.idirBceidProxyApi.idirSearch(userId)
-        (await AppActlApiService.idirBceidProxyApi.idirSearch(userId)).data;
+    verifiedUserIdentity.value = (
+        await AppActlApiService.idirBceidProxyApi.idirSearch(userId)
+    ).data;
 };
 
 /* ------------------- Role selection method -------------------------- */
+
 const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value?.find(
+    return props.applicationRoleOptions?.find(
         (item) => item.role_id === formData.value.role_id
     );
 };
@@ -117,6 +110,7 @@ const isAbstractRoleSelected = () => {
 };
 
 /* ----------------- Forest client number method ----------------------- */
+
 const removeForestClientSection = () => {
     // cleanup the forest client number input field
     cleanupForestClientNumberInput();
@@ -139,7 +133,6 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        // await appActlApiService
         await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
@@ -233,7 +226,6 @@ const handleSubmit = async () => {
             : '';
         const data = toRequestPayload(formData.value, item);
 
-        // await appActlApiService
         await AppActlApiService.userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {

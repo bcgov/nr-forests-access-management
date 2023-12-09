@@ -22,9 +22,5 @@ app.use(ToastService);
 app.use(ConfirmationService);
 app.use(PrimeVue);
 
-// Global provided services.
-// app.provide(ApiServiceFactory.ADMIN_MANAGEMENT_API_SERVICE_KEY, AdminMgmtApiService);
-// app.provide(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY, AppActlApiService);
-
 app.use(router).mount('#app');
 export { app };

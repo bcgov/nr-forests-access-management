@@ -18,14 +18,9 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import {
-    fetchUserRoleAssignments,
-    userRoleAssignments,
-} from '@/store/UserAccessRoleState';
+import { userRoleAssignments } from '@/store/UserAccessRoleState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-
-// Inject App Access Control Api service
-// const appActlApiService = requireInjection(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY);
+import { fetchUserRoleAssignments } from '@/services/fetchData';
 
 onUnmounted(() => {
     resetNotification();
@@ -40,7 +35,6 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        // await appActlApiService
         await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
             assignment.user_role_xref_id
         );

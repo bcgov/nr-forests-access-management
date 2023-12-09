@@ -1,4 +1,3 @@
-import { AppActlApiService } from '@/services/ApiServiceFactory';
 import type { FamApplication } from 'fam-app-acsctl-api';
 import { computed, ref } from 'vue';
 
@@ -50,12 +49,3 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
-
-// --- Fetching (backend)
-
-export const fetchApplications = async () => {
-    const fetchedData = (
-        await AppActlApiService.applicationsApi.getApplications()
-    ).data;
-    setApplicationsUserAdministers(fetchedData);
-};
