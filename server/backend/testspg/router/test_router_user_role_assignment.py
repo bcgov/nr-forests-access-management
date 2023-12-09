@@ -28,8 +28,8 @@ from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
-FOM_DEV_ADMIN_ROLE = "FOM_DEV_ACCESS_ADMIN"
-FOM_TEST_ADMIN_ROLE = "FOM_TEST_ACCESS_ADMIN"
+FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
+FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 
 @pytest.fixture(scope="function")
@@ -68,7 +68,7 @@ def test_create_user_role_assignment_not_authorized(
 ):
     """
     test user has no authentication to the app
-    user without FOM_DEV_ACCESS_ADMIN role cannot grant FOM_DEV roles
+    user without FOM_DEV_ADMIN role cannot grant FOM_DEV roles
     """
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.post(

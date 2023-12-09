@@ -5,7 +5,7 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/1010-admin-api-gateway"
+      - "feat/888-transfer-to-admin-table"
 
 # When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
