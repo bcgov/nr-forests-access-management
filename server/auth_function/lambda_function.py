@@ -228,14 +228,11 @@ def handle_event(db_connection, event) -> event_type.Event:
             FROM app_fam.fam_application_admin app_admin
                 INNER JOIN app_fam.fam_application application ON
                     app_admin.application_id = application.application_id
-                JOIN app_fam.fam_application_client client ON
-                    app_admin.application_id = client.application_id
                 JOIN app_fam.fam_user fam_user ON
                     app_admin.user_id = fam_user.user_id
             WHERE
                 fam_user.user_guid = {user_guid}
-                AND fam_user.user_type_code = {user_type_code}
-                AND client.cognito_client_id = {cognito_client_id};
+                AND fam_user.user_type_code = {user_type_code};
             """
             sql_query_fam_app_admin = sql.SQL(query_fam_app_admin).format(
                 user_guid=sql.Literal(user_guid),
