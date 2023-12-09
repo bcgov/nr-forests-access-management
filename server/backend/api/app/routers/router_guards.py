@@ -61,7 +61,7 @@ def authorize_by_app_id(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    required_role = f"{application.application_name.upper()}_ACCESS_ADMIN"
+    required_role = f"{application.application_name.upper()}_ADMIN"
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:
@@ -117,7 +117,7 @@ def authorize_by_application_role(
 ):
     """
     This router validation is currently design to validate logged on "admin"
-    has authority to perform actions for application with roles in [app]_ACCESS_ADMIN.
+    has authority to perform actions for application with roles in [app]_ADMIN.
     This function basically is the same and depends on (authorize_by_app_id()) but for
     the need that some routers contains target role_id in the request (instead of application_id).
     """

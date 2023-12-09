@@ -40,7 +40,7 @@ def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> Li
     LOGGER.debug(f"Running get_applications_by_granted_app, access_roles: {access_roles}")
 
     # Filter out others and only contains Access Admin roles
-    ACCESS_ADMIN_ROLE_SUFFIX = "_ACCESS_ADMIN"
+    ACCESS_ADMIN_ROLE_SUFFIX = "_ADMIN"
     admin_access_roles = filter(
         lambda x: x.endswith(ACCESS_ADMIN_ROLE_SUFFIX), access_roles
     )

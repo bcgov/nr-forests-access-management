@@ -207,6 +207,45 @@ def handle_event(db_connection, event) -> event_type.Event:
     for record in cursor:
         role_list.append(record[0])
 
+    # check if login through FAM
+    query_application = """
+    SELECT application.application_name
+    FROM app_fam.fam_application application
+        JOIN app_fam.fam_application_client client ON
+            application.application_id = client.application_id
+    WHERE
+        client.cognito_client_id = {cognito_client_id};
+    """
+    sql_query_application = sql.SQL(query_application).format(
+        cognito_client_id=sql.Literal(cognito_client_id),
+    )
+    cursor.execute(sql_query_application)
+    # if login through FAM, check fam app admin and add to role list
+    for record in cursor:
+        if record[0] == "FAM":
+            query_fam_app_admin = """
+            SELECT application.application_name
+            FROM app_fam.fam_application_admin app_admin
+                INNER JOIN app_fam.fam_application application ON
+                    app_admin.application_id = application.application_id
+                JOIN app_fam.fam_application_client client ON
+                    app_admin.application_id = client.application_id
+                JOIN app_fam.fam_user fam_user ON
+                    app_admin.user_id = fam_user.user_id
+            WHERE
+                fam_user.user_guid = {user_guid}
+                AND fam_user.user_type_code = {user_type_code}
+                AND client.cognito_client_id = {cognito_client_id};
+            """
+            sql_query_fam_app_admin = sql.SQL(query_fam_app_admin).format(
+                user_guid=sql.Literal(user_guid),
+                user_type_code=sql.Literal(user_type_code),
+                cognito_client_id=sql.Literal(cognito_client_id),
+            )
+            cursor.execute(sql_query_fam_app_admin)
+            for record in cursor:
+                role_list.append(f"{record[0]}_ADMIN")
+
     event["response"]["claimsOverrideDetails"] = {
         "groupOverrideDetails": {
             "groupsToOverride": role_list,
