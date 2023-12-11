@@ -46,7 +46,8 @@ export const fetchUserRoleAssignments = async (
  * @param applicationId id to fetch and refresh fam_user_role_assignment records with the applicationId.
  */
 export const deletAndRefreshUserRoleAssignments = async (
-    userRoleXrefId: number, applicationId: number
+    userRoleXrefId: number,
+    applicationId: number
 ) => {
     await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
         userRoleXrefId

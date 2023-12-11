@@ -19,7 +19,10 @@ import {
 } from '@/store/NotificationState';
 import { userRoleAssignments } from '@/store/UserAccessRoleState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { deletAndRefreshUserRoleAssignments, fetchUserRoleAssignments } from '@/services/fetchData';
+import {
+    deletAndRefreshUserRoleAssignments,
+    fetchUserRoleAssignments,
+} from '@/services/fetchData';
 
 onUnmounted(() => {
     resetNotification();
@@ -34,7 +37,10 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await deletAndRefreshUserRoleAssignments(assignment.user_role_xref_id, assignment.role.application_id);
+        await deletAndRefreshUserRoleAssignments(
+            assignment.user_role_xref_id,
+            assignment.role.application_id
+        );
 
         setNotificationMsg(
             Severity.success,
