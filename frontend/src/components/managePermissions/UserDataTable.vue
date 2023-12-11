@@ -6,6 +6,8 @@ import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
@@ -19,8 +21,6 @@ type emit = (
     e: 'deleteUserRoleAssignment',
     item: FamApplicationUserRoleAssignmentGet
 ) => void;
-
-const confirm = useConfirm();
 
 const props = defineProps({
     loading: {
@@ -43,6 +43,8 @@ const props = defineProps({
         default: false,
     },
 });
+
+const confirm = useConfirm();
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -106,116 +108,138 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 The list will display here.
             </p>
         </div>
-        <div class="custom-data-table" v-else>
-            <div class="custom-data-table-header">
-                <h3>{{ selectedApplicationDisplayText }} users</h3>
-                <span>
-                    This table shows all the users in
-                    {{ selectedApplicationDisplayText }} and their permissions
-                    levels
-                </span>
-            </div>
-            <div class="search-container">
-                <Button
-                    class="btn-add-user"
-                    label="Add user permission"
-                    @click="router.push('/grant')"
-                >
-                    <Icon icon="add" :size="IconSize.small" />
-                </Button>
-                <span class="p-input-icon-left">
-                    <Icon icon="search" :size="IconSize.small" />
-                    <InputText
-                        id="dashboardSearch"
-                        class="dash-search"
-                        placeholder="Search by keyword"
-                        v-model="filters['global'].value"
-                    />
-                </span>
-            </div>
-
-            <DataTable
-                v-model:filters="filters"
-                :value="props.userRoleAssignments"
-                paginator
-                :rows="50"
-                :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
-                filterDisplay="menu"
-                :loading="props.loading"
-                :globalFilterFields="[
-                    'user.user_name',
-                    'role.parent_role.role_name',
-                    'user.user_type.description',
-                    'role.role_name',
-                    'role.client_number.forest_client_number',
-                ]"
-                paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                currentPageReportTemplate="{first} - {last} of {totalRecords} items"
-                stripedRows
-            >
-                <template #empty> No user found. </template>
-                <template #loading> Loading users data. Please wait. </template>
-                <Column header="User Name" sortable field="user.user_name">
-                    <template #body="{ data }">
-                        <span>
-                            {{ data.user.user_name }}
-                        </span>
+            <TabView v-else >
+                <TabPanel header="Users">
+                    <template #header >
+                        <Icon
+                            icon="user"
+                            :size="IconSize.small"
+                        />
                     </template>
-                </Column>
-                <Column
-                    field="user.user_type.description"
-                    header="Domain"
-                    sortable
-                ></Column>
-                <!-- Hidden until information is available
-                    <Column
-                        field="firstName"
-                        header="First Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="lastName"
-                        header="Last Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="email"
-                        header="Email"
-                        sortable
-                    ></Column>
-                     -->
-                <Column
-                    field="role.client_number.forest_client_number"
-                    header="Client ID"
-                    sortable
-                ></Column>
-                <Column field="role.role_name" header="Role" sortable>
-                    <template #body="{ data }">
-                        {{
-                            data.role.parent_role
-                                ? data.role.parent_role.role_name
-                                : data.role.role_name
-                        }}
-                    </template></Column
-                >
-                <Column header="Action">
-                    <template #body="{ data }">
-                        <!-- Hidden until functionality is available
-                            <button
-                                class="btn btn-icon"
+                    <div class="custom-data-table">
+                        <div class="custom-data-table-header">
+                            <h3>{{ selectedApplicationDisplayText }} users</h3>
+                            <span>
+                                This table shows all the users in
+                                {{ selectedApplicationDisplayText }} and their permissions
+                                levels
+                            </span>
+                        </div>
+                        <div class="search-container">
+                            <Button
+                                class="btn-add-user"
+                                label="Add user permission"
+                                @click="router.push('/grant')"
                             >
-                                <Icon icon="edit" :size="IconSize.small"/>
-                            </button> -->
-                        <button
-                            class="btn btn-icon"
-                            @click="deleteAssignment(data)"
+                                <Icon icon="add" :size="IconSize.small" />
+                            </Button>
+                            <span class="p-input-icon-left">
+                                <Icon icon="search" :size="IconSize.small" />
+                                <InputText
+                                    id="dashboardSearch"
+                                    class="dash-search"
+                                    placeholder="Search by keyword"
+                                    v-model="filters['global'].value"
+                                />
+                            </span>
+                        </div>
+
+                        <DataTable
+                            v-model:filters="filters"
+                            :value="props.userRoleAssignments"
+                            paginator
+                            :rows="50"
+                            :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+                            filterDisplay="menu"
+                            :loading="props.loading"
+                            :globalFilterFields="[
+                                'user.user_name',
+                                'role.parent_role.role_name',
+                                'user.user_type.description',
+                                'role.role_name',
+                                'role.client_number.forest_client_number',
+                            ]"
+                            paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+                            currentPageReportTemplate="{first} - {last} of {totalRecords} items"
+                            stripedRows
                         >
-                            <Icon icon="trash-can" :size="IconSize.small" />
-                        </button>
+                            <template #empty> No user found. </template>
+                            <template #loading> Loading users data. Please wait. </template>
+                            <Column header="User Name" sortable field="user.user_name">
+                                <template #body="{ data }">
+                                    <span>
+                                        {{ data.user.user_name }}
+                                    </span>
+                                </template>
+                            </Column>
+                            <Column
+                                field="user.user_type.description"
+                                header="Domain"
+                                sortable
+                            ></Column>
+                            <!-- Hidden until information is available
+                                <Column
+                                    field="firstName"
+                                    header="First Name"
+                                    sortable
+                                ></Column>
+                                <Column
+                                    field="lastName"
+                                    header="Last Name"
+                                    sortable
+                                ></Column>
+                                <Column
+                                    field="email"
+                                    header="Email"
+                                    sortable
+                                ></Column>
+                                -->
+                            <Column
+                                field="role.client_number.forest_client_number"
+                                header="Client ID"
+                                sortable
+                            ></Column>
+                            <Column field="role.role_name" header="Role" sortable>
+                                <template #body="{ data }">
+                                    {{
+                                        data.role.parent_role
+                                            ? data.role.parent_role.role_name
+                                            : data.role.role_name
+                                    }}
+                                </template></Column
+                            >
+                            <Column header="Action">
+                                <template #body="{ data }">
+                                    <!-- Hidden until functionality is available
+                                        <button
+                                            class="btn btn-icon"
+                                        >
+                                            <Icon icon="edit" :size="IconSize.small"/>
+                                        </button> -->
+                                    <button
+                                        class="btn btn-icon"
+                                        @click="deleteAssignment(data)"
+                                    >
+                                        <Icon icon="trash-can" :size="IconSize.small" />
+                                    </button>
+                                </template>
+                            </Column>
+                        </DataTable>
+                    </div>
+                </TabPanel>
+                <TabPanel
+                    header="Delegated admins"
+                    :disabled="false"
+                >
+                    <template #header >
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
                     </template>
-                </Column>
-            </DataTable>
-        </div>
+                </TabPanel>
+            </TabView>
+
     </div>
 </template>
 
@@ -223,15 +247,15 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 @import '@/assets/styles/base.scss';
 
 .data-table-container {
-    margin: 0.05rem;
+    margin: 2rem 0.05rem 0.05rem;
     z-index: -1;
 }
 
 .custom-data-table {
-    margin: 1.5rem 2.5rem;
-    background: transparent;
-    border-radius: 0.25rem 0.25rem 0 0;
-    border: 0.125rem solid $light-border-subtle-00;
+    margin: 0 2.5rem 0;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 1px solid $light-border-subtle-00;
+    margin-top: 0;
 }
 
 .custom-data-table-header {
@@ -336,7 +360,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 @media (min-width: 768px) {
     .data-table-container {
-        margin: 0;
         padding: 0;
     }
 
