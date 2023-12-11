@@ -38,7 +38,7 @@ async function deleteUserRoleAssignment(
         await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
             assignment.user_role_xref_id
         );
-        userRoleAssignments.value = userRoleAssignments.value!.filter((a) => {
+        userRoleAssignments.value = userRoleAssignments.value.filter((a) => {
             return a.user_role_xref_id != assignment.user_role_xref_id;
         });
 
