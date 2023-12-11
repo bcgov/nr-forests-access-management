@@ -9,6 +9,10 @@ import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 
+const appActlApiService = requireInjection(
+    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
+);
+
 const props = defineProps({
     domain: { type: String, required: true },
     userId: { type: String, default: '' },
@@ -16,6 +20,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['change', 'setVerifyResult']);
+
 const computedUserId = computed({
     get() {
         return props.userId;
@@ -26,9 +31,6 @@ const computedUserId = computed({
     },
 });
 
-const appActlApiService = requireInjection(
-    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
-);
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 const verifyUserId = async () => {
     if (props.domain == UserType.B) {
@@ -69,23 +71,37 @@ watch(
             v-slot="{ errorMessage, field }"
         >
             <div class="input-with-verify-button">
-                <InputText
-                    id="userIdInput"
-                    :placeholder="
-                        props.domain === UserType.I
-                            ? 'Type user\'s IDIR'
-                            : 'Type user\'s BCeID'
-                    "
-                    :validateOnChange="true"
-                    class="w-100 custom-input verify-input"
-                    type="text"
-                    maxlength="20"
-                    v-bind="field"
-                    :class="{ 'is-invalid': errorMessage }"
-                />
+                <div>
+                    <InputText
+                        id="userIdInput"
+                        :placeholder="
+                            props.domain === UserType.I
+                                ? 'Type user\'s IDIR'
+                                : 'Type user\'s BCeID'
+                        "
+                        :validateOnChange="true"
+                        class="w-100 custom-height"
+                        type="text"
+                        maxlength="20"
+                        v-bind="field"
+                        :class="{ 'is-invalid': errorMessage }"
+                    />
+                    <small
+                        id="userIdInput-helper"
+                        class="helper-text"
+                        v-if="!errorMessage"
+                        >Enter and verify the username for this user</small
+                    >
+                    <ErrorMessage
+                        class="invalid-feedback"
+                        :name="props.fieldId"
+                        style="display: inline"
+                    />
+                </div>
+
                 <Button
                     v-if="props.domain === UserType.I"
-                    class="w-100 verify-button"
+                    class="w-100 custom-height"
                     aria-label="Verify user IDIR"
                     name="verifyIdir"
                     label="Verify"
@@ -99,18 +115,7 @@ watch(
                     <Icon icon="search--locate" :size="IconSize.small" />
                 </Button>
             </div>
-            <small
-                id="userIdInput-helper"
-                class="helper-text"
-                v-if="!errorMessage"
-                >Enter and verify the username for this user</small
-            >
         </Field>
-        <ErrorMessage
-            class="invalid-feedback"
-            :name="props.fieldId"
-            style="display: inline"
-        />
 
         <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
             <UserIdentityCard
@@ -119,22 +124,4 @@ watch(
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
-.input-with-verify-button {
-    display: flex;
-    padding: 0;
-}
-.verify-input {
-    width: 80% !important;
-}
-.verify-button {
-    width: 20% !important;
-}
-.form-field {
-    margin-bottom: 1.5rem;
-}
-.custom-input {
-    max-height: 2.813rem !important;
-}
-</style>
+<style lang="scss" scoped></style>

@@ -109,6 +109,7 @@ const cleanupForestClientNumberInput = () => {
     forestClientNumberVerifyErrors.value = [];
 };
 
+// whenever user id changed or role changed, cleanup the forest client section
 watch([() => props.userId, () => props.roleId], () => {
     // cleanup the forest client number input field and verification errors
     cleanupForestClientNumberInput();
@@ -120,7 +121,7 @@ watch([() => props.userId, () => props.roleId], () => {
 </script>
 
 <template>
-    <div class="form-field">
+    <div>
         <label for="forestClientInput">User’s Client ID (8 digits) </label>
         <Field
             :name="props.fieldId"
@@ -128,21 +129,44 @@ watch([() => props.userId, () => props.roleId], () => {
             v-model="forestClientNumbersInput"
         >
             <div class="input-with-verify-button">
-                <InputText
-                    id="forestClientInput"
-                    placeholder="Enter and verify the client ID"
-                    v-bind="field"
-                    class="w-100 custom-input verify-input"
-                    @input="cleanupForestClientNumberInput()"
-                    :class="{
-                        'is-invalid':
-                            errorMessage ||
-                            forestClientNumberVerifyErrors.length > 0,
-                    }"
-                />
-
+                <div>
+                    <InputText
+                        id="forestClientInput"
+                        placeholder="Enter and verify the client ID"
+                        v-bind="field"
+                        class="w-100 custom-height"
+                        @input="cleanupForestClientNumberInput()"
+                        :class="{
+                            'is-invalid':
+                                errorMessage ||
+                                forestClientNumberVerifyErrors.length > 0,
+                        }"
+                    />
+                    <small
+                        id="forestClientInput-help"
+                        class="helper-text"
+                        v-if="
+                            !errorMessage &&
+                            forestClientNumberVerifyErrors.length === 0
+                        "
+                        >Add and verify the Client IDs. Add multiple numbers by
+                        separating them with commas</small
+                    >
+                    <ErrorMessage
+                        class="invalid-feedback"
+                        :name="props.fieldId"
+                        style="display: block"
+                    />
+                    <small
+                        class="invalid-feedback"
+                        v-for="error in forestClientNumberVerifyErrors"
+                        style="display: block"
+                    >
+                        {{ error }}
+                    </small>
+                </div>
                 <Button
-                    class="w-100 verify-button"
+                    class="w-100 custom-height"
                     aria-label="Add Client Numbers"
                     name="verifyFC"
                     label="Add Client Numbers"
@@ -157,29 +181,7 @@ watch([() => props.userId, () => props.roleId], () => {
                     <Icon icon="add" :size="IconSize.small" />
                 </Button>
             </div>
-
-            <small
-                id="forestClientInput-help"
-                class="helper-text"
-                v-if="
-                    !errorMessage && forestClientNumberVerifyErrors.length === 0
-                "
-                >Add and verify the Client IDs. Add multiple numbers by
-                separating them with commas</small
-            >
         </Field>
-        <ErrorMessage
-            class="invalid-feedback"
-            :name="props.fieldId"
-            style="display: block"
-        />
-        <small
-            class="invalid-feedback"
-            v-for="error in forestClientNumberVerifyErrors"
-            style="display: block"
-        >
-            {{ error }}
-        </small>
     </div>
 
     <ForestClientCard
@@ -189,22 +191,4 @@ watch([() => props.userId, () => props.roleId], () => {
         @remove-item="removeForestClientFromList"
     />
 </template>
-<style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
-.input-with-verify-button {
-    display: flex;
-    padding: 0;
-}
-.verify-input {
-    width: 65% !important;
-}
-.verify-button {
-    width: 35% !important;
-}
-.form-field {
-    margin-bottom: 1.5rem;
-}
-.custom-input {
-    max-height: 2.813rem !important;
-}
-</style>
+<style lang="scss" scoped></style>

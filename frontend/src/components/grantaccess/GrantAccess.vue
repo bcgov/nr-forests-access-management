@@ -272,18 +272,16 @@ const composeAndPushNotificationMessages = (
                             optionValue="role_id"
                             :modelValue="field.value"
                             placeholder="Choose an option"
-                            class="w-100 custom-input"
+                            class="w-100 custom-height"
                             style="width: 100% !important"
                             v-bind="field.value"
                             @update:modelValue="handleChange"
                             :class="{
                                 'is-invalid': errors.role_id,
                             }"
-                        >
-                        </Dropdown>
+                        />
                     </Field>
-                    <ErrorMessage class="invalid-feedback" name="role_id">
-                    </ErrorMessage>
+                    <ErrorMessage class="invalid-feedback" name="role_id" />
                 </StepContainer>
 
                 <StepContainer
@@ -307,7 +305,7 @@ const composeAndPushNotificationMessages = (
                     <Button
                         type="button"
                         id="grantAccessCancel"
-                        class="button w100"
+                        class="w100"
                         severity="secondary"
                         label="Cancel"
                         :disabled="LoadingState.isLoading.value"
@@ -317,7 +315,7 @@ const composeAndPushNotificationMessages = (
                     <Button
                         type="button"
                         id="grantAccessSubmit"
-                        class="button w100"
+                        class="w100"
                         label="Submit Application"
                         :disabled="
                             !(meta.valid && areVerificationsPassed()) ||
@@ -332,83 +330,4 @@ const composeAndPushNotificationMessages = (
         </div>
     </VeeForm>
 </template>
-<style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
-
-.text-danger {
-    font-weight: normal;
-}
-
-.button {
-    width: 7.875rem;
-}
-
-.button-stack {
-    padding: 0;
-    margin-top: 3rem;
-    margin-bottom: 2.5rem;
-    gap: 1rem;
-    width: 100%;
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
-
-    Button {
-        width: auto !important;
-    }
-}
-
-.input-with-verify-field {
-    padding: 0;
-    display: block;
-    width: 100%;
-}
-
-.no-label-column {
-    margin-top: 1.5rem;
-}
-
-.user-radio-group {
-    margin-bottom: 1.5rem;
-}
-
-.custom-input {
-    max-height: 2.813rem !important;
-}
-
-@media (min-width: 390px) {
-    .input-with-verify-field {
-        display: inline-grid;
-        grid-template-columns: auto min-content;
-    }
-}
-
-@media (min-width: 768px) {
-    .button-stack {
-        width: 100% !important;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .input-with-verify-field {
-        display: inline-grid;
-        grid-template-columns: auto min-content;
-    }
-}
-
-@media (min-width: 1024px) {
-    .button-stack {
-        justify-content: start;
-        grid-template-columns: auto auto;
-        width: 38rem;
-
-        Button {
-            width: 15rem !important;
-            gap: 2rem;
-            white-space: nowrap;
-        }
-    }
-
-    .input-with-verify-field {
-        width: 38rem;
-    }
-}
-</style>
+<style lang="scss" scoped></style>

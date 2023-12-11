@@ -43,8 +43,4 @@ const computedDomain = computed({
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
-.form-field {
-    margin-bottom: 1.5rem;
-}
-</style>
+<style lang="scss" scoped></style>
