@@ -56,6 +56,12 @@ const icons = {
         () => import('@carbon/icons-vue/es/trash-can/16')
     ),
     edit16: defineAsyncComponent(() => import('@carbon/icons-vue/es/edit/16')),
+    'user16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user/16')
+    ),
+    'enterprise16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/enterprise/16')
+    ),
     'search--locate16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/search--locate/16')
     ),

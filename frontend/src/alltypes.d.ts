@@ -2,7 +2,9 @@
 
 // small
 declare module '@carbon/icons-vue/es/close/16';
+
 declare module '@carbon/icons-vue/es/user--follow/16';
+declare module '@carbon/icons-vue/es/user/16';
 declare module '@carbon/icons-vue/es/dashboard/16';
 declare module '@carbon/icons-vue/es/virtual-column--key/16';
 declare module '@carbon/icons-vue/es/settings/16';
@@ -16,6 +18,7 @@ declare module '@carbon/icons-vue/es/trash-can/16';
 declare module '@carbon/icons-vue/es/edit/16';
 declare module '@carbon/icons-vue/es/search--locate/16';
 declare module '@carbon/icons-vue/es/group--access/16';
+declare module '@carbon/icons-vue/es/enterprise/16';
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';
