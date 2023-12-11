@@ -236,8 +236,7 @@ def handle_event(db_connection, event) -> event_type.Event:
             """
             sql_query_fam_app_admin = sql.SQL(query_fam_app_admin).format(
                 user_guid=sql.Literal(user_guid),
-                user_type_code=sql.Literal(user_type_code),
-                cognito_client_id=sql.Literal(cognito_client_id),
+                user_type_code=sql.Literal(user_type_code)
             )
             cursor.execute(sql_query_fam_app_admin)
             for record in cursor:
