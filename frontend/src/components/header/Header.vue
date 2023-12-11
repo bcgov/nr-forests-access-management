@@ -40,6 +40,11 @@ const props = defineProps({
             </Button>
             <span class="header-title">
                 {{ props.title }}
+                <span class="env-label">
+                    <strong>
+                        {{ environmentLabel }}
+                    </strong>
+                </span>
                 <strong class="subtitle"
                     >{{ props.subtitle }} {{ environmentLabel }}</strong
                 >
@@ -114,6 +119,10 @@ a > svg {
 }
 
 @media (min-width: 1024px) {
+
+    .env-label {
+        display: none;
+    }
     .navbar {
         padding: 0 1rem 0 1rem !important;
     }
