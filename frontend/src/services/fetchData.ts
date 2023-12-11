@@ -39,6 +39,23 @@ export const fetchUserRoleAssignments = async (
     setUserRoleAssignments(userRoleAssignments);
 };
 
+/**
+ * This will call api to delete userRoleXrefId record from backend and fetch again
+ * to refresh the state.
+ * @param userRoleXrefId id to delete fam_user_role_assignment record.
+ * @param applicationId id to fetch and refresh fam_user_role_assignment records with the applicationId.
+ */
+export const deletAndRefreshUserRoleAssignments = async (
+    userRoleXrefId: number, applicationId: number
+) => {
+    await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
+        userRoleXrefId
+    );
+
+    // When deletion is successful, refresh (fetrch) for frontend state.
+    fetchUserRoleAssignments(applicationId);
+};
+
 export const fetchApplicationRoles = async (
     applicationId: number | undefined
 ) => {

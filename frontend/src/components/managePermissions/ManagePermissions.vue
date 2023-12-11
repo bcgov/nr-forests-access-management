@@ -5,7 +5,6 @@ import { onUnmounted } from 'vue';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import { Severity } from '@/enum/SeverityEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -20,7 +19,7 @@ import {
 } from '@/store/NotificationState';
 import { userRoleAssignments } from '@/store/UserAccessRoleState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { fetchUserRoleAssignments } from '@/services/fetchData';
+import { deletAndRefreshUserRoleAssignments, fetchUserRoleAssignments } from '@/services/fetchData';
 
 onUnmounted(() => {
     resetNotification();
@@ -35,12 +34,7 @@ async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
-            assignment.user_role_xref_id
-        );
-        userRoleAssignments.value = userRoleAssignments.value.filter((a) => {
-            return a.user_role_xref_id != assignment.user_role_xref_id;
-        });
+        await deletAndRefreshUserRoleAssignments(assignment.user_role_xref_id, assignment.role.application_id);
 
         setNotificationMsg(
             Severity.success,
