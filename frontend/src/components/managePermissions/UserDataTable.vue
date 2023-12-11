@@ -229,7 +229,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 </TabPanel>
                 <TabPanel
                     header="Delegated admins"
-                    :disabled="false"
+                    :disabled="true"
                 >
                     <template #header >
                         <Icon
