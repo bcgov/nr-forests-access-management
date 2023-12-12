@@ -6,8 +6,6 @@ import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
@@ -108,14 +106,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 The list will display here.
             </p>
         </div>
-            <TabView v-else >
-                <TabPanel header="Users">
-                    <template #header >
-                        <Icon
-                            icon="user"
-                            :size="IconSize.small"
-                        />
-                    </template>
                     <div class="custom-data-table">
                         <div class="custom-data-table-header">
                             <h3>{{ selectedApplicationDisplayText }} users</h3>
@@ -226,19 +216,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                             </Column>
                         </DataTable>
                     </div>
-                </TabPanel>
-                <TabPanel
-                    header="Delegated admins"
-                    :disabled="true"
-                >
-                    <template #header >
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
-                    </template>
-                </TabPanel>
-            </TabView>
 
     </div>
 </template>

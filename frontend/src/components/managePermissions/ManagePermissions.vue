@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { onUnmounted, shallowRef, type PropType } from 'vue';
+import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import { Severity } from '@/enum/SeverityEnum';
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -17,6 +18,9 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
+
+import { Severity } from '@/enum/SeverityEnum';
+import { IconSize } from '@/enum/IconEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import {
     deletAndRefreshUserRoleAssignments,
@@ -83,13 +87,36 @@ async function deleteUserRoleAssignment(
 
         <div class="dashboard-background-layout">
             <NotificationStack />
-            <UserDataTable
-                :isApplicationSelected="isApplicationSelected"
-                :loading="LoadingState.isLoading.value"
-                :userRoleAssignments="userRoleAssignments || []"
-                :selectedApplicationDisplayText="selectedApplicationDisplayText"
-                @deleteUserRoleAssignment="deleteUserRoleAssignment"
-            />
+            <TabView>
+                <TabPanel
+                    header="Users"
+                >
+                    <template #header >
+                        <Icon
+                            icon="user"
+                            :size="IconSize.small"
+                        />
+                    </template>
+                    <UserDataTable
+                        :isApplicationSelected="isApplicationSelected"
+                        :loading="LoadingState.isLoading.value"
+                        :userRoleAssignments="userRoleAssignments || []"
+                        :selectedApplicationDisplayText="selectedApplicationDisplayText"
+                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
+                </TabPanel>
+                <TabPanel
+                    header="Delegated admins"
+                    :disabled="true"
+                >
+                    <template #header >
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
+                    </template>
+                </TabPanel>
+            </TabView>
         </div>
     </div>
 </template>
