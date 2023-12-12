@@ -3,7 +3,7 @@ import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { currentSelectedApplication } from '@/store/ApplicationState';
+import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -116,7 +116,7 @@ function parseToken(authToken: CognitoUserSession): FamLoginUser {
 function removeFamUser() {
     storeFamUser(undefined);
     // clean up local storage for selected application
-    localStorage.removeItem(currentSelectedApplication);
+    localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 }
 
 function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
