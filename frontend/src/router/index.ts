@@ -38,6 +38,10 @@ const routeItems = {
     addUserPermission: {
         to: '/grant',
         label: 'Add user permission'
+    },
+    accessRequest: {
+        to: '/end-user-request',
+        label: 'Access request'
     }
 } as RouteItems;
 
@@ -74,6 +78,16 @@ const routes = [
         beforeEnter: () => {
             populateBreadcrumb([routeItems.dashboard, routeItems.addUserPermission])
         }
+    },
+    {
+        path: routeItems.accessRequest.to ,
+        name: routeItems.accessRequest.label,
+        meta: {
+            title: routeItems.accessRequest.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: false
+        },
+        component: GrantAccessView,
     },
     {
         path: '/authCallback',
