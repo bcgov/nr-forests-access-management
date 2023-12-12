@@ -1,6 +1,6 @@
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
-import { setUserRoleAssignments } from '@/store/UserAccessRoleState';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 // --- Fetching data (from backend)
 
@@ -14,8 +14,8 @@ export const fetchApplications = async () => {
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined
-) => {
-    if (!applicationId) return;
+): Promise<FamApplicationUserRoleAssignmentGet[]> => {
+    if (!applicationId) return [];
 
     const userRoleAssignments = (
         await AppActlApiService.applicationsApi.getFamApplicationUserRoleAssignment(
@@ -35,8 +35,7 @@ export const fetchUserRoleAssignments = async (
         );
         return userNameCompare != 0 ? userNameCompare : roleNameCompare;
     });
-    // State change.
-    setUserRoleAssignments(userRoleAssignments);
+    return userRoleAssignments;
 };
 
 /**
@@ -48,13 +47,13 @@ export const fetchUserRoleAssignments = async (
 export const deletAndRefreshUserRoleAssignments = async (
     userRoleXrefId: number,
     applicationId: number
-) => {
+): Promise<FamApplicationUserRoleAssignmentGet[]> => {
     await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
         userRoleXrefId
     );
 
     // When deletion is successful, refresh (fetrch) for frontend state.
-    fetchUserRoleAssignments(applicationId);
+    return fetchUserRoleAssignments(applicationId);
 };
 
 export const fetchApplicationRoles = async (

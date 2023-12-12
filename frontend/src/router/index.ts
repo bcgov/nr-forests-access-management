@@ -67,13 +67,20 @@ const routes = [
             hasBreadcrumb: false,
         },
         component: ManagePermissionsView,
-        beforeEnter: async () => {
+        beforeEnter: async (to: any) => {
             // Requires fetching applications the user administers.
             await fetchApplications();
-            await fetchUserRoleAssignments(
+            const userRoleAssignments = await fetchUserRoleAssignments(
                 selectedApplication.value?.application_id
             );
+            Object.assign(to.meta, { userRoleAssignments: userRoleAssignments });
             return true;
+        },
+        props: (route: any) => {
+            return {
+                // userRoleAssignments is ready for the `component` as props.
+                userRoleAssignments: route.meta.userRoleAssignments,
+            };
         },
     },
     {

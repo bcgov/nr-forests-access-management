@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import { onUnmounted } from 'vue';
+import { onUnmounted, shallowRef, type PropType } from 'vue';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
@@ -17,12 +17,23 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { userRoleAssignments } from '@/store/UserAccessRoleState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import {
     deletAndRefreshUserRoleAssignments,
     fetchUserRoleAssignments,
 } from '@/services/fetchData';
+
+const props = defineProps({
+    userRoleAssignments: {
+        // options fetched from route.
+        type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
+        default: [],
+    },
+});
+
+const userRoleAssignments = shallowRef<
+    FamApplicationUserRoleAssignmentGet[]
+>(props.userRoleAssignments);
 
 onUnmounted(() => {
     resetNotification();
@@ -30,14 +41,14 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    await fetchUserRoleAssignments(selectedApplication.value?.application_id);
+    userRoleAssignments.value = await fetchUserRoleAssignments(selectedApplication.value?.application_id);
 };
 
 async function deleteUserRoleAssignment(
     assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
-        await deletAndRefreshUserRoleAssignments(
+        userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
             assignment.role.application_id
         );
