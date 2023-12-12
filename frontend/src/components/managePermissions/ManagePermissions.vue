@@ -25,7 +25,6 @@ import {
 
 const props = defineProps({
     userRoleAssignments: {
-        // options fetched from route.
         type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
         default: [],
     },
