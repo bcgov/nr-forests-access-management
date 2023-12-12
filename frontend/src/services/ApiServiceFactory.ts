@@ -9,7 +9,6 @@ import {
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
-import type { InjectionKey } from 'vue';
 
 type AppAccessControlApiType = {
     applicationsApi: FAMApplicationsApi;
@@ -23,16 +22,16 @@ type AdminManagementApiType = {
 };
 
 export default class ApiServiceFactory {
-    static readonly APP_ACCESS_CONTROL_API_SERVICE_KEY: InjectionKey<AppAccessControlApiType> =
-        Symbol('APP_ACCESS_CONTROL_API_SERVICE');
-    static readonly ADMIN_MANAGEMENT_API_SERVICE_KEY: InjectionKey<AdminManagementApiType> =
-        Symbol('ADMIN_MANAGEMENT_API_SERVICE');
+    static instance: ApiServiceFactory;
 
     private environmentSettings: EnvironmentSettings;
     private appAccessControlApiService: AppAccessControlApiType;
     private adminManagementApiService: AdminManagementApiType;
 
-    constructor() {
+    /*
+    Note, this class is a singleton; so the constructor is private.
+    */
+    private constructor() {
         this.environmentSettings = new EnvironmentSettings();
         const appAccessControlBaseURL =
             this.environmentSettings.getAppAcsctlApiBaseUrl();
@@ -41,30 +40,37 @@ export default class ApiServiceFactory {
 
         // App Access Control API service
         this.appAccessControlApiService = {
-            applicationsApi: this.createInstance(
+            applicationsApi: this.createApiInstance(
                 FAMApplicationsApi,
                 appAccessControlBaseURL
             ),
-            userRoleAssignmentApi: this.createInstance(
+            userRoleAssignmentApi: this.createApiInstance(
                 FAMUserRoleAssignmentApi,
                 appAccessControlBaseURL
             ),
-            forestClientsApi: this.createInstance(
+            forestClientsApi: this.createApiInstance(
                 FAMForestClientsApi,
                 appAccessControlBaseURL
             ),
-            idirBceidProxyApi: this.createInstance(
+            idirBceidProxyApi: this.createApiInstance(
                 IDIRBCeIDProxyApi,
                 appAccessControlBaseURL
             ),
         };
 
         this.adminManagementApiService = {
-            applicationAdminApi: this.createInstance(
+            applicationAdminApi: this.createApiInstance(
                 FAMApplicationAdminApi,
                 adminManagementBaseURL
             ),
         };
+    }
+
+    public static getInstance(): ApiServiceFactory {
+        if (!ApiServiceFactory.instance) {
+            ApiServiceFactory.instance = new ApiServiceFactory();
+        }
+        return ApiServiceFactory.instance;
     }
 
     getAppAccessControlApiService() {
@@ -84,7 +90,7 @@ export default class ApiServiceFactory {
      *                `why` baseURL is set here at comment from @HttpCommon:defaultAxiosConfig.
      * @returns API class instantiated.
      */
-    private createInstance<C>(
+    private createApiInstance<C>(
         // Class Types in Generics: see Typscript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
         // Obey the constructor signiture of the BaseAPI.
         c: new (
@@ -100,3 +106,9 @@ export default class ApiServiceFactory {
         return new c(configuration, '', httpInstance);
     }
 }
+
+export const apiServiceProvider = ApiServiceFactory.getInstance();
+export const AdminMgmtApiService =
+    apiServiceProvider.getAdminManagementApiService();
+export const AppActlApiService =
+    apiServiceProvider.getAppAccessControlApiService();

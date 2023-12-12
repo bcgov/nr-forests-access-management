@@ -11,7 +11,6 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
-import ApiServiceFactory from '@/services/ApiServiceFactory';
 import 'primevue/resources/primevue.min.css';
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
 import './assets/styles/styles.scss';
@@ -22,13 +21,6 @@ const app = createApp(App);
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(PrimeVue);
-
-// Global provided services.
-const apiServiceProvider = new ApiServiceFactory();
-app.provide(ApiServiceFactory.ADMIN_MANAGEMENT_API_SERVICE_KEY,
-    apiServiceProvider.getAdminManagementApiService());
-app.provide(ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY,
-    apiServiceProvider.getAppAccessControlApiService());
 
 app.use(router).mount('#app');
 export { app };

@@ -1,40 +1,39 @@
 <script setup lang="ts">
 import router from '@/router';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { onMounted, ref } from 'vue';
-import { number, object, string } from 'yup';
 import Dropdown from 'primevue/dropdown';
+import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
+import { ref, type PropType } from 'vue';
+import { number, object, string } from 'yup';
 
-import ApiServiceFactory from '@/services/ApiServiceFactory';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import LoadingState from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import {
-    selectedApplication,
-    selectedApplicationDisplayText,
-} from '@/store/ApplicationState';
-import LoadingState from '@/store/LoadingState';
-import {
     type FamApplicationRole,
-    type FamUserRoleAssignmentCreate,
     UserType,
+    type FamUserRoleAssignmentCreate,
 } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-import { requireInjection } from '@/services/utils';
 
-// Inject App Access Control Api service
-const appActlApiService = requireInjection(
-    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
-);
+const props = defineProps({
+    applicationRoleOptions: {
+        // options fetched from route.
+        type: Array as PropType<FamApplicationRole[]>,
+        default: [],
+    },
+});
 
 const defaultFormData = {
     domain: UserType.I,
     userId: '',
     verifiedForestClients: [],
-    role_id: null as number | null,
+    roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const formValidationSchema = object({
@@ -42,9 +41,9 @@ const formValidationSchema = object({
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
-    role_id: number().required('Please select a value'),
+    roleId: number().required('Please select a value'),
     forestClientNumbers: string()
-        .when('role_id', {
+        .when('roleId', {
             is: (_role_id: number) => isAbstractRoleSelected(),
             then: () =>
                 string()
@@ -57,16 +56,6 @@ const formValidationSchema = object({
                     ),
         })
         .nullable(),
-});
-
-const applicationRoleOptions = ref<FamApplicationRole[]>([]);
-
-onMounted(async () => {
-    applicationRoleOptions.value = (
-        await appActlApiService.applicationsApi.getFamApplicationRoles(
-            selectedApplication.value?.application_id as number
-        )
-    ).data;
 });
 
 /* ------------------ User information method ------------------------- */
@@ -86,8 +75,8 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 
 /* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamApplicationRole | undefined => {
-    return applicationRoleOptions.value?.find(
-        (item) => item.role_id === formData.value.role_id
+    return props.applicationRoleOptions?.find(
+        (item) => item.role_id === formData.value.roleId
     );
 };
 
@@ -109,7 +98,6 @@ const resetVerifiedForestClients = () => {
 };
 
 /* ---------------------- Form method ---------------------------------- */
-
 const cancelForm = () => {
     formData.value = defaultFormData;
     router.push('/dashboard');
@@ -139,9 +127,9 @@ const handleSubmit = async () => {
         errorForestClientIdList: [] as string[],
     };
     do {
-        const forestClientNumber = formData.value.verifiedForestClients.pop();
+        const forestClientNumber = formData.value.verifiedForestClients.pop() || '';
         const data = toRequestPayload(formData.value, forestClientNumber);
-        await appActlApiService.userRoleAssignmentApi
+        await AppActlApiService.userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
                 successForestClientIdList.push(forestClientNumber);
@@ -175,7 +163,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
     const request = {
         user_name: formData.userId,
         user_type_code: formData.domain,
-        role_id: formData.role_id,
+        role_id: formData.roleId,
         forest_client_number: forestClientNumber,
     } as FamUserRoleAssignmentCreate;
     return request;
@@ -261,10 +249,10 @@ const composeAndPushNotificationMessages = (
                     <label>Assign a role to the user</label>
 
                     <Field
-                        name="role_id"
+                        name="roleId"
                         aria-label="Role Select"
                         v-slot="{ field, handleChange }"
-                        v-model="formData.role_id"
+                        v-model="formData.roleId"
                     >
                         <Dropdown
                             :options="applicationRoleOptions"
@@ -276,12 +264,13 @@ const composeAndPushNotificationMessages = (
                             style="width: 100% !important"
                             v-bind="field.value"
                             @update:modelValue="handleChange"
+                            @change="resetVerifiedForestClients"
                             :class="{
-                                'is-invalid': errors.role_id,
+                                'is-invalid': errors.roleId,
                             }"
                         />
                     </Field>
-                    <ErrorMessage class="invalid-feedback" name="role_id" />
+                    <ErrorMessage class="invalid-feedback" name="roleId" />
                 </StepContainer>
 
                 <StepContainer

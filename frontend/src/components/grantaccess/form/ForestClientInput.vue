@@ -2,8 +2,7 @@
 import { ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
-import ApiServiceFactory from '@/services/ApiServiceFactory';
-import { requireInjection } from '@/services/utils';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import LoadingState from '@/store/LoadingState';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -13,13 +12,10 @@ import {
 } from 'fam-app-acsctl-api';
 
 const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
-const appActlApiService = requireInjection(
-    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
-);
 
 const props = defineProps({
     userId: { type: String, required: true },
-    roleId: String,
+    roleId: { type: Number, required: true },
     fieldId: { type: String, default: 'forestClientNumbers' }, // field id used in the form validation
 });
 
@@ -43,7 +39,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
-        await appActlApiService.forestClientsApi
+        await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
                 if (!result.data[0]) {
@@ -109,15 +105,24 @@ const cleanupForestClientNumberInput = () => {
     forestClientNumberVerifyErrors.value = [];
 };
 
-// whenever user id changed or role changed, cleanup the forest client section
-watch([() => props.userId, () => props.roleId], () => {
+const cleanupForestClientSection = () => {
     // cleanup the forest client number input field and verification errors
     cleanupForestClientNumberInput();
     // remove the forest client card data
     forestClientData.value = [];
     // remove the verified forest client numbers which already added to form data
     emit('resetVerifiedForestClients');
-});
+};
+
+// whenever user id or abstract role id changed, cleanup the forest client section
+watch(
+    () => props.userId,
+    () => cleanupForestClientSection()
+);
+watch(
+    () => props.roleId,
+    () => cleanupForestClientSection()
+);
 </script>
 
 <template>

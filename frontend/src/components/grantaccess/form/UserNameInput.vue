@@ -2,16 +2,11 @@
 import { computed, ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
-import ApiServiceFactory from '@/services/ApiServiceFactory';
-import { requireInjection } from '@/services/utils';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import LoadingState from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
-
-const appActlApiService = requireInjection(
-    ApiServiceFactory.APP_ACCESS_CONTROL_API_SERVICE_KEY
-);
 
 const props = defineProps({
     domain: { type: String, required: true },
@@ -39,7 +34,7 @@ const verifyUserId = async () => {
     }
 
     verifiedUserIdentity.value = (
-        await appActlApiService.idirBceidProxyApi.idirSearch(
+        await AppActlApiService.idirBceidProxyApi.idirSearch(
             computedUserId.value
         )
     ).data;
