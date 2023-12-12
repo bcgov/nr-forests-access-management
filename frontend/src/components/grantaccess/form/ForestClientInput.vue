@@ -98,9 +98,9 @@ const isForestClientNumberNotAdded = (forestClientNumber: string) => {
 };
 
 const removeForestClientFromList = (index: number) => {
-    // remove the forest client from card
+    // remove the verified forest client from card
     forestClientData.value.splice(index, 1);
-    // remove the forest client number from form data
+    // remove the verified forest client number from form data
     emit('removeVerifiedForestClients', index);
 };
 
