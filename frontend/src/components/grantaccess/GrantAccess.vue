@@ -127,16 +127,16 @@ const handleSubmit = async () => {
         errorForestClientIdList: [] as string[],
     };
     do {
-        const forestClientNumber = formData.value.verifiedForestClients.pop() || '';
+        const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
         await AppActlApiService.userRoleAssignmentApi
             .createUserRoleAssignment(data)
             .then(() => {
-                successForestClientIdList.push(forestClientNumber);
+                successForestClientIdList.push(forestClientNumber || '');
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    warningForestClientIdList.push(forestClientNumber);
+                    warningForestClientIdList.push(forestClientNumber || '');
                 } else if (
                     error.response.data.detail.code === 'self_grant_prohibited'
                 ) {
@@ -144,7 +144,7 @@ const handleSubmit = async () => {
                         'Granting roles to self is not allowed.';
                 } else {
                     errorNotification.errorForestClientIdList.push(
-                        forestClientNumber
+                        forestClientNumber || ''
                     );
                 }
             });
@@ -164,7 +164,9 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
         user_name: formData.userId,
         user_type_code: formData.domain,
         role_id: formData.roleId,
-        forest_client_number: forestClientNumber,
+        ...(forestClientNumber
+            ? { forest_client_number: forestClientNumber }
+            : {}),
     } as FamUserRoleAssignmentCreate;
     return request;
 }
