@@ -10,129 +10,128 @@ import { sideNavState } from '@/store/SideNavState';
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
-    .getEnvironmentDisplayName('[', ']')
-    .toUpperCase();
+	.getEnvironmentDisplayName('[', ']')
+	.toUpperCase();
 
 const props = defineProps({
-    title: {
-        type: String,
-        required: true,
-    },
-    subtitle: {
-        type: String,
-        required: true,
-    },
+	title: {
+		type: String,
+		required: true,
+	},
+	subtitle: {
+		type: String,
+		required: true,
+	},
 });
 </script>
 
 <template>
-    <header class="header" id="header">
-        <nav class="navbar justify-content-start">
-            <Button
-                class="btn-toggleSideNav"
-                @click="sideNavState.toggleSideNavVisible()"
-            >
-                <Icon
-                    class="custom-carbon-icon--menu"
-                    icon="menu"
-                    :size="IconSize.medium"
-                />
-            </Button>
-            <span class="header-title">
-                {{ props.title }}
-                <span class="env-label">
-                    <strong>
-                        {{ environmentLabel }}
-                    </strong>
-                </span>
-                <strong class="subtitle"
-                    >{{ props.subtitle }} {{ environmentLabel }}</strong
-                >
-            </span>
+	<header
+		class="header"
+		id="header"
+	>
+		<nav class="navbar justify-content-start">
+			<Button
+				class="btn-toggleSideNav"
+				@click="sideNavState.toggleSideNavVisible()"
+			>
+				<Icon
+					class="custom-carbon-icon--menu"
+					icon="menu"
+					:size="IconSize.medium"
+				/>
+			</Button>
+			<span class="header-title">
+				{{ props.title }}
+				<strong class="subtitle">{{ props.subtitle }}</strong>
+				<strong>{{ environmentLabel }}</strong>
+			</span>
 
-            <a
-                title="Profile"
-                v-if="authService.getters.isLoggedIn()"
-                @click="profileSidebarState.toggleVisible()"
-            >
-                <Icon icon="user--avatar" :size="IconSize.medium" />
-            </a>
-        </nav>
-        <teleport to=".modals">
-            <ProfileSidebar />
-        </teleport>
-    </header>
+			<a
+				title="Profile"
+				v-if="authService.getters.isLoggedIn()"
+				@click="profileSidebarState.toggleVisible()"
+			>
+				<Icon
+					icon="user--avatar"
+					:size="IconSize.medium"
+				/>
+			</a>
+		</nav>
+		<teleport to=".modals">
+			<ProfileSidebar />
+		</teleport>
+	</header>
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
 
 li {
-    list-style: none;
+	list-style: none;
 }
 
 .btn-toggleSideNav {
-    margin-right: 0.5rem;
-    padding: 0.88rem;
-    border: none;
-    border-radius: 0;
+	margin-right: 0.5rem;
+	padding: 0.88rem;
+	border: none;
+	border-radius: 0;
 }
 .subtitle {
-    display: none;
+	display: none;
 }
 .header {
-    @extend %heading-compact-01;
-    position: fixed;
+	@extend %heading-compact-01;
+	position: fixed;
 
-    height: $header-height;
-    width: $header-width;
-    background: $light-background-brand;
+	height: $header-height;
+	width: $header-width;
+	background: $light-background-brand;
 
-    padding: 0;
-    z-index: 1;
-    color: $dark-text-primary;
-    .header-title {
-        margin: 0 auto 0 0;
-        a i {
-            cursor: pointer;
-        }
-    }
+	padding: 0;
+	z-index: 1;
+	color: $dark-text-primary;
+	.header-title {
+		margin: 0 auto 0 0;
+		a i {
+			cursor: pointer;
+		}
+	}
 
-    i {
-        vertical-align: middle;
-    }
+	i {
+		vertical-align: middle;
+	}
 
-    .navbar {
-        margin: 0;
-        padding: 0 1rem 0 0;
-        height: 3rem;
-        vertical-align: middle;
-    }
+	.navbar {
+		margin: 0;
+		padding: 0 1rem 0 0;
+		height: 3rem;
+		vertical-align: middle;
+	}
 
-    .navbar-collapse {
-        flex-grow: 0;
-    }
+	.navbar-collapse {
+		flex-grow: 0;
+	}
 }
 
 a > svg {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 @media (min-width: 1024px) {
+	.env-label {
+		display: none;
+	}
+	.navbar {
+		padding: 0 1rem 0 1rem !important;
+	}
 
-    .env-label {
-        display: none;
-    }
-    .navbar {
-        padding: 0 1rem 0 1rem !important;
-    }
+	.subtitle {
+		display: inline;
+	}
 
-    .subtitle {
-        display: inline;
-    }
-
-    .btn-toggleSideNav {
-        display: none;
-    }
+	.btn-toggleSideNav {
+		display: none;
+	}
 }
 </style>
