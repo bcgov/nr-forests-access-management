@@ -58,7 +58,6 @@ async function deleteUserRoleAssignment(
 			assignment.user_role_xref_id,
 			assignment.role.application_id
 		);
-
 		setNotificationMsg(
 			Severity.success,
 			`You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`

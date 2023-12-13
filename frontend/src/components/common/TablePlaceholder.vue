@@ -1,21 +1,13 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 <template>
-		<div
-			class="no-app-selected"
-		>
-			<IconCapitol />
-			<p
-				class="no-app-selected-title"
-				no-app-selected
-			>
-				Nothing to show yet!
-			</p>
-			<p class="no-app-selected-text">
-				Choose an application to show a list of users with access to it.
-				The list will display here.
-			</p>
-		</div>
+	<div class="no-app-selected">
+		<IconCapitol />
+		<p class="no-app-selected-title">Nothing to show yet!</p>
+		<p class="no-app-selected-text">
+			Choose an application to show a list of users with access to it. The
+			list will display here.
+		</p>
+	</div>
 </template>
 
 <style lang="scss" scoped>
