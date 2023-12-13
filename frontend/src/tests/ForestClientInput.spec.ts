@@ -56,8 +56,9 @@ describe('ForestClientInput', () => {
 
     it('add success forest client number', async () => {
         const input = wrapper.find('#forestClientInput');
+        const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue('00000001');
-        expect(input.element.value).toBe('00000001');
+        expect(inputField.value).toBe('00000001');
 
         const verifyButton = wrapper.find("[aria-label='Add Client Numbers']");
         await verifyButton.trigger('click');
@@ -74,9 +75,11 @@ describe('ForestClientInput', () => {
         // i.e. setVerifiedForestClients = [ [ '00000001' ] ]
         // the outter array indicates how many times it has been called
         // the inner array indicates how many parameters it has
-        expect(setVerifiedForestClients[0][0]).toEqual(
-            TEST_SUCCESS_FOREST_CLIENT_NUMBER
-        );
+        expect(
+            setVerifiedForestClients
+                ? setVerifiedForestClients[0][0]
+                : undefined
+        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // the forest client information card shows and verify the information
         expect(wrapper.html().includes('Verified Client ID information')).toBe(
             true
@@ -97,6 +100,6 @@ describe('ForestClientInput', () => {
             wrapper.find('.org-status-wrapper').text().includes('Active')
         ).toBe(true);
         // the forest client input should now be empty
-        expect(input.element.value).toBe('');
+        expect(inputField.value).toBe('');
     });
 });
