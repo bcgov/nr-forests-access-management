@@ -7,11 +7,11 @@ import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import {
-    applicationsUserAdministers,
-    isApplicationSelected,
-    selectedApplication,
-    selectedApplicationDisplayText,
-    setSelectedApplication,
+	applicationsUserAdministers,
+	isApplicationSelected,
+	selectedApplication,
+	selectedApplicationDisplayText,
+	setSelectedApplication,
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import {
@@ -39,7 +39,7 @@ const userRoleAssignments = shallowRef<
 >(props.userRoleAssignments);
 
 onUnmounted(() => {
-    resetNotification();
+	resetNotification();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
@@ -48,7 +48,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 };
 
 async function deleteUserRoleAssignment(
-    assignment: FamApplicationUserRoleAssignmentGet
+	assignment: FamApplicationUserRoleAssignmentGet
 ) {
     try {
         userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
@@ -56,21 +56,21 @@ async function deleteUserRoleAssignment(
             assignment.role.application_id
         );
 
-        setNotificationMsg(
-            Severity.success,
-            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
-        );
-    } catch (error: any) {
-        setNotificationMsg(
-            Severity.error,
-            `An error has occured. ${error.response.data.detail.description}`
-        );
-    }
+		setNotificationMsg(
+			Severity.success,
+			`You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+		);
+	} catch (error: any) {
+		setNotificationMsg(
+			Severity.error,
+			`An error has occured. ${error.response.data.detail.description}`
+		);
+	}
 }
 </script>
 
 <template>
-    <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
+	<ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
     <div class="page-body">
         <div class="application-group">
@@ -85,92 +85,96 @@ async function deleteUserRoleAssignment(
             />
         </div>
 
-        <div class="dashboard-background-layout">
-            <NotificationStack />
-            <TabView>
-                <TabPanel
-                    header="Users"
-                >
-                    <template #header >
-                        <Icon
-                            icon="user"
-                            :size="IconSize.small"
-                        />
-                    </template>
-                    <UserDataTable
-                        :isApplicationSelected="isApplicationSelected"
-                        :loading="LoadingState.isLoading.value"
-                        :userRoleAssignments="userRoleAssignments || []"
-                        :selectedApplicationDisplayText="selectedApplicationDisplayText"
-                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
-                    />
-                </TabPanel>
-                <TabPanel
-                    header="Delegated admins"
-                    :disabled="true"
-                >
-                    <template #header >
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
-                    </template>
-                </TabPanel>
-            </TabView>
-        </div>
-    </div>
+		<div class="dashboard-background-layout">
+			<NotificationStack />
+			<TabView
+				:pt="{
+					nav: {
+						style: `${isApplicationSelected ? '' : 'display: none'}`,
+					},
+				}"
+			>
+				<TabPanel header="Users">
+					<template #header>
+						<Icon
+							icon="user"
+							:size="IconSize.small"
+						/>
+					</template>
+					<UserDataTable
+						:isApplicationSelected="isApplicationSelected"
+						:loading="LoadingState.isLoading.value"
+						:userRoleAssignments="userRoleAssignments || []"
+						:selectedApplicationDisplayText="selectedApplicationDisplayText"
+						@deleteUserRoleAssignment="deleteUserRoleAssignment"
+					/>
+				</TabPanel>
+				<TabPanel
+					header="Delegated admins"
+					:disabled="true"
+				>
+					<template #header>
+						<Icon
+							icon="enterprise"
+							:size="IconSize.small"
+						/>
+					</template>
+				</TabPanel>
+			</TabView>
+		</div>
+	</div>
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
 
 .application-group {
-    display: grid;
+	display: grid;
 
-    label {
-        margin-bottom: 0.5rem;
-    }
+	label {
+		margin-bottom: 0.5rem;
+	}
 }
 
 .application-dropdown {
-    max-width: calc(100vw - 3rem);
-    height: 3rem;
-    padding: 0;
+	max-width: calc(100vw - 3rem);
+	height: 3rem;
+	padding: 0;
 
-    &:deep(.p-dropdown-label) {
-        padding: 0.8375rem 1rem;
-    }
+	&:deep(.p-dropdown-label) {
+		padding: 0.8375rem 1rem;
+	}
 }
 
 .dashboard-background-layout {
-    margin-top: 3rem;
-    padding: 1rem 0rem;
-    background: $light-layer-one;
-    z-index: -1;
-    margin-left: -2.5rem !important;
-    min-height: calc(100vh - 19.125rem) !important;
-    width: calc(100vw + 3rem) !important;
+	margin-top: 3rem;
+	padding: 1rem 0rem;
+	background: $light-layer-one;
+	z-index: -1;
+	margin-left: -2.5rem !important;
+	min-height: calc(100vh - 19.125rem) !important;
+	width: calc(100vw + 3rem) !important;
 }
 
 @media (min-width: 495px) {
-    .application-dropdown {
-        max-width: 29rem;
-    }
+	.application-dropdown {
+		max-width: 29rem;
+	}
 }
 
 @media (min-width: 768px) {
-    .dashboard-background-layout {
-        width: 100vw !important;
-    }
+	.dashboard-background-layout {
+		width: 100vw !important;
+	}
 }
 
 @media (min-width: 1024px) {
-    .application-dropdown {
-        max-width: 38rem;
-    }
+	.application-dropdown {
+		max-width: 38rem;
+	}
 
-    .dashboard-background-layout {
-        width: calc(100vw - 16rem) !important;
-    }
+	.dashboard-background-layout {
+		width: calc(100vw - 16rem) !important;
+	}
 }
 </style>
