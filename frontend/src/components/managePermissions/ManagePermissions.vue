@@ -6,6 +6,7 @@ import TabPanel from 'primevue/tabpanel';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
+import TablePlaceholder from '@/components/common/TablePlaceholder.vue'
 import {
 	applicationsUserAdministers,
 	isApplicationSelected,
@@ -87,16 +88,17 @@ async function deleteUserRoleAssignment(
 
 		<div class="dashboard-background-layout">
 			<NotificationStack />
-			<TabView
+			<TablePlaceholder v-if="!isApplicationSelected"/>
+			<TabView v-else
 				:pt="{
 					root: {
-						style: `${isApplicationSelected ? 'margin-top: 1.5rem' : ''}`
+						style: 'margin-top: 1.5rem'
 					},
 					nav: {
-						style: `${isApplicationSelected ? 'margin: 0.112rem 2.55rem 0;' : 'display: none'}`,
+						style: 'margin: 0.112rem 2.55rem 0;',
 					},
 					panelContainer: {
-						style: `${isApplicationSelected ? 'margin-top: 2.62rem;' : ''}`,
+						style: 'margin-top: 2.62rem;',
 					},
 				}"
 			>

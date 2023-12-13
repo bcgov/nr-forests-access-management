@@ -96,26 +96,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 		</template>
 	</ConfirmDialog>
 	<div class="data-table-container">
-		<div
-			v-if="!props.isApplicationSelected"
-			class="no-app-selected"
-		>
-			<IconCapitol />
-			<p
-				class="no-app-selected-title"
-				no-app-selected
-			>
-				Nothing to show yet!
-			</p>
-			<p class="no-app-selected-text">
-				Choose an application to show a list of users with access to it.
-				The list will display here.
-			</p>
-		</div>
-		<div
-			v-else
-			class="custom-data-table"
-		>
+		<div class="custom-data-table">
 			<div class="custom-data-table-header">
 				<h3>{{ selectedApplicationDisplayText }} users</h3>
 				<span>
@@ -320,35 +301,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
 	display: none;
-}
-
-/// ----------- no application selected
-.no-app-selected {
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	height: calc(100vh - 21.745rem);
-	min-height: 12.5rem;
-	margin: 0 5rem;
-
-	svg {
-		width: 3rem;
-		height: 3rem;
-	}
-}
-
-.no-app-selected-title {
-	padding-top: 1rem;
-	font-size: 1rem;
-	font-weight: 700;
-}
-
-.no-app-selected-text {
-	font-size: 0.875rem;
-	color: $light-text-secondary;
-	margin-bottom: 0 !important;
 }
 
 //------ media queries
