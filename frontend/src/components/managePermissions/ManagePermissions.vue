@@ -6,7 +6,7 @@ import TabPanel from 'primevue/tabpanel';
 
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import TablePlaceholder from '@/components/common/TablePlaceholder.vue'
+import TablePlaceholder from '@/components/common/TablePlaceholder.vue';
 import {
 	applicationsUserAdministers,
 	isApplicationSelected,
@@ -16,46 +16,48 @@ import {
 } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import {
-    resetNotification,
-    setNotificationMsg,
+	resetNotification,
+	setNotificationMsg,
 } from '@/store/NotificationState';
 
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import {
-    deletAndRefreshUserRoleAssignments,
-    fetchUserRoleAssignments,
+	deletAndRefreshUserRoleAssignments,
+	fetchUserRoleAssignments,
 } from '@/services/fetchData';
 
 const props = defineProps({
-    userRoleAssignments: {
-        type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
-        default: [],
-    },
+	userRoleAssignments: {
+		type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
+		default: [],
+	},
 });
 
-const userRoleAssignments = shallowRef<
-    FamApplicationUserRoleAssignmentGet[]
->(props.userRoleAssignments);
+const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
+	props.userRoleAssignments
+);
 
 onUnmounted(() => {
 	resetNotification();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
-    setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    userRoleAssignments.value = await fetchUserRoleAssignments(selectedApplication.value?.application_id);
+	setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+	userRoleAssignments.value = await fetchUserRoleAssignments(
+		selectedApplication.value?.application_id
+	);
 };
 
 async function deleteUserRoleAssignment(
 	assignment: FamApplicationUserRoleAssignmentGet
 ) {
-    try {
-        userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
-            assignment.user_role_xref_id,
-            assignment.role.application_id
-        );
+	try {
+		userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
+			assignment.user_role_xref_id,
+			assignment.role.application_id
+		);
 
 		setNotificationMsg(
 			Severity.success,
@@ -73,26 +75,27 @@ async function deleteUserRoleAssignment(
 <template>
 	<ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
 
-    <div class="page-body">
-        <div class="application-group">
-            <label>You are modifying access in this application:</label>
-            <Dropdown
-                v-model="selectedApplication"
-                @change="onApplicationSelected"
-                :options="applicationsUserAdministers"
-                optionLabel="application_description"
-                placeholder="Choose an application to manage permissions"
-                class="application-dropdown"
-            />
-        </div>
+	<div class="page-body">
+		<div class="application-group">
+			<label>You are modifying access in this application:</label>
+			<Dropdown
+				v-model="selectedApplication"
+				@change="onApplicationSelected"
+				:options="applicationsUserAdministers"
+				optionLabel="application_description"
+				placeholder="Choose an application to manage permissions"
+				class="application-dropdown"
+			/>
+		</div>
 
 		<div class="dashboard-background-layout">
 			<NotificationStack />
-			<TablePlaceholder v-if="!isApplicationSelected"/>
-			<TabView v-else
+			<TablePlaceholder v-if="!isApplicationSelected" />
+			<TabView
+				v-else
 				:pt="{
 					root: {
-						style: 'margin-top: 1.5rem'
+						style: 'margin-top: 1.5rem',
 					},
 					nav: {
 						style: 'margin: 0.112rem 2.55rem 0;',
@@ -102,9 +105,7 @@ async function deleteUserRoleAssignment(
 					},
 				}"
 			>
-				<TabPanel
-					header="Users"
-				>
+				<TabPanel header="Users">
 					<template #header>
 						<Icon
 							icon="user"
