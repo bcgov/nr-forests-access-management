@@ -102,7 +102,6 @@ async function deleteUserRoleAssignment(
 			>
 				<TabPanel
 					header="Users"
-
 				>
 					<template #header>
 						<Icon
@@ -121,7 +120,6 @@ async function deleteUserRoleAssignment(
 				<TabPanel
 					header="Delegated admins"
 					:disabled="true"
-
 				>
 					<template #header>
 						<Icon
