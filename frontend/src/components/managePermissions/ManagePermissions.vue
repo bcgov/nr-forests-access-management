@@ -38,6 +38,10 @@ const userRoleAssignments = shallowRef<
     FamApplicationUserRoleAssignmentGet[]
 >(props.userRoleAssignments);
 
+const passThroughTabStyles = {
+
+}
+
 onUnmounted(() => {
 	resetNotification();
 });
@@ -89,12 +93,21 @@ async function deleteUserRoleAssignment(
 			<NotificationStack />
 			<TabView
 				:pt="{
+					root: {
+						style: `${isApplicationSelected ? 'margin-top: 1.5rem' : ''}`
+					},
 					nav: {
-						style: `${isApplicationSelected ? '' : 'display: none'}`,
+						style: `${isApplicationSelected ? 'margin: 0.112rem 2.55rem 0;' : 'display: none'}`,
+					},
+					panelContainer: {
+						style: `${isApplicationSelected ? 'margin-top: 2.62rem;' : ''}`,
 					},
 				}"
 			>
-				<TabPanel header="Users">
+				<TabPanel
+					header="Users"
+
+				>
 					<template #header>
 						<Icon
 							icon="user"
@@ -112,6 +125,7 @@ async function deleteUserRoleAssignment(
 				<TabPanel
 					header="Delegated admins"
 					:disabled="true"
+
 				>
 					<template #header>
 						<Icon
