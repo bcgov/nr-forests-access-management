@@ -38,10 +38,6 @@ const userRoleAssignments = shallowRef<
     FamApplicationUserRoleAssignmentGet[]
 >(props.userRoleAssignments);
 
-const passThroughTabStyles = {
-
-}
-
 onUnmounted(() => {
 	resetNotification();
 });
