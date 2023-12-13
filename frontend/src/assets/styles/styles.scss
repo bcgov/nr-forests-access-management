@@ -17,3 +17,55 @@
 body {
     font-family: map.get(typeFamily.$type-family, 'sans');
 }
+
+/* ----------------- form input styles --------------------------- */
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.input-with-verify-button {
+    padding: 0;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: auto min-content;
+}
+
+.custom-height {
+    max-height: 2.813rem !important;
+}
+
+.button-stack {
+    padding: 0;
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    gap: 1rem;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+
+    Button {
+        width: auto !important;
+    }
+}
+
+// when screen width < 390px
+@media (max-width: 390px) {
+    .input-with-verify-button {
+        display: block;
+    }
+}
+
+// when screen width > 1024px
+@media (min-width: 1024px) {
+    .button-stack {
+        justify-content: start;
+        grid-template-columns: auto auto;
+        width: 38rem;
+
+        Button {
+            width: 15rem !important;
+            gap: 2rem;
+            white-space: nowrap;
+        }
+    }
+}

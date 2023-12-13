@@ -1,0 +1,1 @@
+export const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
