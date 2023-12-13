@@ -12,6 +12,7 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import LoadingState from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
     type FamApplicationRole,
     UserType,
@@ -165,7 +166,12 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
         user_type_code: formData.domain,
         role_id: formData.roleId,
         ...(forestClientNumber
-            ? { forest_client_number: forestClientNumber }
+            ? {
+                  forest_client_number: forestClientNumber.padStart(
+                      FOREST_CLIENT_INPUT_MAX_LENGTH,
+                      '0'
+                  ),
+              }
             : {}),
     } as FamUserRoleAssignmentCreate;
     return request;

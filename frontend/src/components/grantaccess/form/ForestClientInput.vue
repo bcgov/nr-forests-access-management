@@ -4,6 +4,7 @@ import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import LoadingState from '@/store/LoadingState';
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import {
@@ -11,11 +12,9 @@ import {
     type FamForestClient,
 } from 'fam-app-acsctl-api';
 
-const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
-
 const props = defineProps({
     userId: { type: String, required: true },
-    roleId: { type: Number, required: true },
+    roleId: Number,
     fieldId: { type: String, default: 'forestClientNumbers' }, // field id used in the form validation
 });
 
@@ -39,6 +38,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                 `Client ID ${item}  is invalid and cannot be added.`
             );
         }
+
         await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
