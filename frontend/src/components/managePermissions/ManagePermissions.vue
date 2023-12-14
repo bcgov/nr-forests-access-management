@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onUnmounted, shallowRef, type PropType } from 'vue';
-import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
-import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
+import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
 
 import {
     applicationsUserAdministers,
@@ -91,13 +91,13 @@ async function deleteUserRoleAssignment(
                 v-else
                 :pt="{
                     root: {
-                    style: 'margin-top: 1.5rem',
+                        style: 'margin-top: 1.5rem',
                     },
                     nav: {
-                    style: 'margin: 0.112rem 2.5rem 0;',
+                        style: 'margin: 0.112rem 2.5rem 0;',
                     },
                     panelContainer: {
-                    style: 'margin-top: 2.62rem;',
+                        style: 'margin-top: 2.62rem;',
                     },
                 }"
             >
