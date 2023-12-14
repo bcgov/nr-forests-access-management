@@ -62,6 +62,12 @@ const icons = {
     'group--access16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/group--access/16')
     ),
+    'user16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user/16')
+    ),
+    'enterprise16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/enterprise/16')
+    ),
 
     // medium icons
     'checkmark--filled20': defineAsyncComponent(
