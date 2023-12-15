@@ -93,11 +93,8 @@ async function deleteUserRoleAssignment(
                     root: {
                         style: 'margin-top: 1.5rem',
                     },
-                    nav: {
-                        style: 'margin: 0.112rem 2.5rem 0;',
-                    },
                     panelContainer: {
-                        style: 'margin-top: 2.62rem;',
+                        style: 'margin-top: -0.0625rem;',
                     },
                 }"
             >
@@ -116,9 +113,10 @@ async function deleteUserRoleAssignment(
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
+                <!-- waiting for the Delegated admins table
                 <TabPanel
                     header="Delegated admins"
-                    :disabled="true"
+                    :disabled="false"
                 >
                     <template #header>
                         <Icon
@@ -126,7 +124,7 @@ async function deleteUserRoleAssignment(
                             :size="IconSize.small"
                         />
                     </template>
-                </TabPanel>
+                </TabPanel>  -->
             </TabView>
         </div>
     </div>
@@ -155,10 +153,10 @@ async function deleteUserRoleAssignment(
 
 .dashboard-background-layout {
     margin-top: 3rem;
-    padding: 1rem 0rem;
+    margin-left: -2.5rem !important;
+    padding: 1rem 2.5rem;
     background: $light-layer-one;
     z-index: -1;
-    margin-left: -2.5rem !important;
     min-height: calc(100vh - 19.125rem) !important;
     width: calc(100vw + 3rem) !important;
 }
