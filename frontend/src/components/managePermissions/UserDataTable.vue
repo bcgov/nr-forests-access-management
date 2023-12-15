@@ -213,12 +213,10 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 @import '@/assets/styles/base.scss';
 
 .data-table-container {
-    margin: 0 0.05rem;
     z-index: -1;
 }
 
 .custom-data-table {
-    margin: 0 2.5rem 0;
     background: transparent;
     border-radius: 0 0.25rem 0.25rem 0.25rem;
     border: 0.0625rem solid $light-border-subtle-00;
