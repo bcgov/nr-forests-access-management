@@ -40,9 +40,8 @@ const props = defineProps({
             </Button>
             <span class="header-title">
                 {{ props.title }}
-                <strong class="subtitle"
-                    >{{ props.subtitle }} {{ environmentLabel }}</strong
-                >
+                <strong class="subtitle">{{ props.subtitle }}</strong>
+                <strong>{{ environmentLabel }}</strong>
             </span>
 
             <a
