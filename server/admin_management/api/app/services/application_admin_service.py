@@ -3,7 +3,6 @@ from http import HTTPStatus
 from sqlalchemy.orm import Session
 from typing import List
 
-from api.app import constants as famConstants
 from api.app import schemas
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService

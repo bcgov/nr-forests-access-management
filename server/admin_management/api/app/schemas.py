@@ -36,38 +36,24 @@ class TargetUser(Requester):
 
 
 # -------------------------------------- FAM Application --------------------------------------- #
-class FamApplication(BaseModel):
-    application_id: int
+class FamApplicationBase(BaseModel):
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
     app_environment: Optional[famConstants.AppEnv] = None
-    create_user: Annotated[str, StringConstraints(max_length=60)] = Field(exclude=True)
-    create_date: datetime = Field(exclude=True)
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = Field(
-        default=None, exclude=True
-    )
-    update_date: Optional[datetime] = Field(default=None, exclude=True)
 
     model_config = ConfigDict(from_attributes=True)
 
 
 # -------------------------------------- FAM User --------------------------------------- #
-class FamUser(BaseModel):
-    user_id: int
+class FamUserBase(BaseModel):
     user_type_code: famConstants.UserType
-    cognito_user_id: Optional[
-        Annotated[str, StringConstraints(max_length=100)]
-    ] = Field(
-        default=None, exclude=True
-    )  # temporarily optional
     user_name: Annotated[str, StringConstraints(max_length=20)]
-    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = Field(
-        default=None, exclude=True
-    )
-    create_user: Annotated[str, StringConstraints(max_length=60)] = Field(exclude=True)
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = Field(
-        default=None, exclude=True
-    )
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamUserCreate(FamUserBase):
+    create_user: Annotated[str, StringConstraints(max_length=60)]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -80,7 +66,7 @@ class FamUserType(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-class FamUserOnlyNecessary(FamUser):
+class FamUserInfo(FamUserBase):
     user_type_relation: FamUserType = Field(alias="user_type")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
@@ -98,7 +84,9 @@ class FamAppAdminCreate(BaseModel):
 
 class FamAppAdminGet(BaseModel):
     application_admin_id: int
-    user: FamUserOnlyNecessary
-    application: FamApplication
+    user_id: int
+    application_id: int
+    user: FamUserInfo
+    application: FamApplicationBase
 
     model_config = ConfigDict(from_attributes=True)
