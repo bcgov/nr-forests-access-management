@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import { onUnmounted, shallowRef, type PropType } from 'vue';
-
+import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/UserDataTable.vue';
-import { Severity } from '@/enum/SeverityEnum';
+
 import {
     applicationsUserAdministers,
     isApplicationSelected,
@@ -22,6 +23,8 @@ import {
     deletAndRefreshUserRoleAssignments,
     fetchUserRoleAssignments,
 } from '@/services/fetchData';
+import { Severity } from '@/enum/SeverityEnum';
+import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -83,13 +86,46 @@ async function deleteUserRoleAssignment(
 
         <div class="dashboard-background-layout">
             <NotificationStack />
-            <UserDataTable
-                :isApplicationSelected="isApplicationSelected"
-                :loading="LoadingState.isLoading.value"
-                :userRoleAssignments="userRoleAssignments || []"
-                :selectedApplicationDisplayText="selectedApplicationDisplayText"
-                @deleteUserRoleAssignment="deleteUserRoleAssignment"
-            />
+            <TablePlaceholder v-if="!isApplicationSelected" />
+            <TabView
+                v-else
+                :pt="{
+                    root: {
+                        style: 'margin-top: 1.5rem',
+                    },
+                    panelContainer: {
+                        style: 'margin-top: -0.0625rem;',
+                    },
+                }"
+            >
+                <TabPanel header="Users">
+                    <template #header>
+                        <Icon
+                            icon="user"
+                            :size="IconSize.small"
+                        />
+                    </template>
+                    <UserDataTable
+                        :isApplicationSelected="isApplicationSelected"
+                        :loading="LoadingState.isLoading.value"
+                        :userRoleAssignments="userRoleAssignments || []"
+                        :selectedApplicationDisplayText="selectedApplicationDisplayText"
+                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
+                </TabPanel>
+                <!-- waiting for the Delegated admins table
+                <TabPanel
+                    header="Delegated admins"
+                    :disabled="false"
+                >
+                    <template #header>
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
+                    </template>
+                </TabPanel>  -->
+            </TabView>
         </div>
     </div>
 </template>
@@ -117,10 +153,10 @@ async function deleteUserRoleAssignment(
 
 .dashboard-background-layout {
     margin-top: 3rem;
-    padding: 1rem 0rem;
+    margin-left: -2.5rem !important;
+    padding: 1rem 2.5rem;
     background: $light-layer-one;
     z-index: -1;
-    margin-left: -2.5rem !important;
     min-height: calc(100vh - 19.125rem) !important;
     width: calc(100vw + 3rem) !important;
 }
