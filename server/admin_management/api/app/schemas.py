@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
-
-from pydantic import StringConstraints, ConfigDict, BaseModel
+from datetime import datetime
+from pydantic import StringConstraints, ConfigDict, BaseModel, Field
 
 from . import constants as famConstants
 from typing_extensions import Annotated
@@ -35,26 +35,60 @@ class TargetUser(Requester):
     pass
 
 
+# -------------------------------------- FAM Application --------------------------------------- #
+class FamApplication(BaseModel):
+    application_id: int
+    application_name: Annotated[str, StringConstraints(max_length=100)]
+    application_description: Annotated[str, StringConstraints(max_length=200)]
+    app_environment: Optional[famConstants.AppEnv] = None
+    create_user: Annotated[str, StringConstraints(max_length=60)] = Field(exclude=True)
+    create_date: datetime = Field(exclude=True)
+    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = Field(
+        default=None, exclude=True
+    )
+    update_date: Optional[datetime] = Field(default=None, exclude=True)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # -------------------------------------- FAM User --------------------------------------- #
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[
         Annotated[str, StringConstraints(max_length=100)]
-    ] = None  # temporarily optional
+    ] = Field(
+        default=None, exclude=True
+    )  # temporarily optional
     user_name: Annotated[str, StringConstraints(max_length=20)]
-    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    create_user: Annotated[str, StringConstraints(max_length=60)]
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = Field(
+        default=None, exclude=True
+    )
+    create_user: Annotated[str, StringConstraints(max_length=60)] = Field(exclude=True)
+    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = Field(
+        default=None, exclude=True
+    )
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FamUserType(BaseModel):
+    user_type_code: famConstants.UserType = Field(alias="code")
+    description: Annotated[str, StringConstraints(max_length=35)]
+
+    # required to set populate_by_name for alias fields
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class FamUserOnlyNecessary(FamUser):
+    user_type_relation: FamUserType = Field(alias="user_type")
+
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 # -------------------------------------- FAM Application Admin --------------------------------------- #
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreate(BaseModel):
-    user_name: Annotated[
-        str, StringConstraints(min_length=3, max_length=20)
-    ]
+    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     application_id: int
 
@@ -65,5 +99,7 @@ class FamAppAdminGet(BaseModel):
     application_admin_id: int
     application_id: int
     user_id: int
+    user: FamUserOnlyNecessary
+    application: FamApplication
 
     model_config = ConfigDict(from_attributes=True)
