@@ -53,6 +53,7 @@ class FamApplication(BaseModel):
 
 # -------------------------------------- FAM User --------------------------------------- #
 class FamUser(BaseModel):
+    user_id: int
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[
         Annotated[str, StringConstraints(max_length=100)]
@@ -97,8 +98,6 @@ class FamAppAdminCreate(BaseModel):
 
 class FamAppAdminGet(BaseModel):
     application_admin_id: int
-    application_id: int
-    user_id: int
     user: FamUserOnlyNecessary
     application: FamApplication
 
