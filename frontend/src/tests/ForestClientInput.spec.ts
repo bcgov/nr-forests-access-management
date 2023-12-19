@@ -303,10 +303,11 @@ describe('ForestClientInput', () => {
     });
 
     it('should test the delete forest client number case', async () => {
+        const multipleSuccessInputs = `${TEST_SUCCESS_FOREST_CLIENT_NUMBER},${TEST_SUCCESS_FOREST_CLIENT_NUMBER_2}`;
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
-        await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
-        expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        await input.setValue(multipleSuccessInputs);
+        expect(inputField.value).toBe(multipleSuccessInputs);
 
         const verifyButton = wrapper.find("[aria-label='Add Client Numbers']");
         await verifyButton.trigger('click');
@@ -317,12 +318,17 @@ describe('ForestClientInput', () => {
         );
 
         expect(wrapper.emitted()).toHaveProperty('setVerifiedForestClients');
-        expect(setVerifiedForestClients).toHaveLength(1);
+        expect(setVerifiedForestClients).toHaveLength(2);
         expect(
             setVerifiedForestClients
                 ? setVerifiedForestClients[0][0]
                 : undefined
         ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        expect(
+            setVerifiedForestClients
+                ? setVerifiedForestClients[1][0]
+                : undefined
+        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
         // the forest client information card shows and verify the information
         expect(wrapper.html().includes('Verified Client ID information')).toBe(
             true
@@ -348,7 +354,12 @@ describe('ForestClientInput', () => {
         const deleteButton = wrapper.find('.custom-carbon-icon--trash-can');
         deleteButton.trigger('click');
         await flushPromises();
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(false);
+        expect(
+            wrapper
+                .find('.client-id-wrapper')
+                .text()
+                .includes(TEST_SUCCESS_FOREST_CLIENT_NUMBER)
+        ).toBe(false);
     });
 
     it('should cleanup error when property change', async () => {
@@ -372,6 +383,28 @@ describe('ForestClientInput', () => {
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // The error message should be cleared
+        expect(wrapper.find('#forestClientInputValidationError').exists()).toBeFalsy();
+    });
+    it('should cleanup forest client card when property change', async () => {
+        const input = wrapper.find('#forestClientInput');
+        const inputField: HTMLInputElement = input.element as HTMLInputElement;
+        await input.setValue(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
+        expect(inputField.value).toBe(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
+
+        const verifyButton = wrapper.find("[aria-label='Add Client Numbers']");
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        const validationError = wrapper.get('#forestClientInputValidationError');
+        const validationErrorElement: HTMLInputElement = validationError.element as HTMLInputElement;
+        // Check if the error message has been raised
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).toBeTruthy();
+
+        // await wrapper.setData({ forestClientData: [] })
+
+        // hanging the userId prop should cleanUp Forest Client Card
+        await wrapper.setProps({ userId: 'Test' });
+        // The forest client card should be cleared
         expect(wrapper.find('#forestClientInputValidationError').exists()).toBeFalsy();
     });
 });
