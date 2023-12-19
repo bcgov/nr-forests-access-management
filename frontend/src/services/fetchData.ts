@@ -1,3 +1,4 @@
+import router from '@/router';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
@@ -59,7 +60,10 @@ export const deletAndRefreshUserRoleAssignments = async (
 export const fetchApplicationRoles = async (
     applicationId: number | undefined
 ) => {
-    if (!applicationId) return;
+    if (!applicationId) {
+        router.push('/dashboard');
+        return
+    };
 
     const applicationRoles = (
         await AppActlApiService.applicationsApi.getFamApplicationRoles(
