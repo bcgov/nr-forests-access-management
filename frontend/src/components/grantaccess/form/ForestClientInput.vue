@@ -163,6 +163,7 @@ watch(
                         style="display: block"
                     />
                     <small
+                        id="forestClientInputValidationError"
                         class="invalid-feedback"
                         v-for="error in forestClientNumberVerifyErrors"
                         style="display: block"
