@@ -15,19 +15,33 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ValidationError } from './validation-error';
+import { AppEnv } from './app-env';
 
 /**
  * 
  * @export
- * @interface HTTPValidationError
+ * @interface FamApplicationBase
  */
-export interface HTTPValidationError {
+export interface FamApplicationBase {
     /**
      * 
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
+     * @type {string}
+     * @memberof FamApplicationBase
      */
-    'detail'?: Array<ValidationError>;
+    'application_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationBase
+     */
+    'application_description': string;
+    /**
+     * 
+     * @type {AppEnv}
+     * @memberof FamApplicationBase
+     */
+    'app_environment'?: AppEnv | null;
 }
+
+
 
