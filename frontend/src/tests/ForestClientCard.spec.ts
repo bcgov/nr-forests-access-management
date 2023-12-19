@@ -38,11 +38,12 @@ describe('ForestClientCard', () => {
         wrapper.unmount();
     });
 
-    it('test the forest client card in error and successful case', async () => {
+    it('should show inactive for forest client card in error case', async () => {
         // Error case
         await wrapper.setProps({ forestClientData: testInactiveClient });
         expect(wrapper.get('.p-tag-value').element.textContent).toBe('Inactive');
-
+    });
+    it('should show active forest client card in successful case', async () => {
         // Success case
         await wrapper.setProps({ forestClientData: testActiveClient });
         expect(wrapper.get('.p-tag-value').element.textContent).toBe('Active');

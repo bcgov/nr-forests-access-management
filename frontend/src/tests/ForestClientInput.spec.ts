@@ -72,7 +72,7 @@ describe('ForestClientInput', () => {
         );
     });
 
-    it('add success forest client number', async () => {
+    it('should add active forest client number', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -121,7 +121,7 @@ describe('ForestClientInput', () => {
         expect(inputField.value).toBe('');
     });
 
-    it('forest client number is not found', async () => {
+    it('should raise error for forest client number not found', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_INVALID_FOREST_CLIENT_NUMBER);
@@ -134,7 +134,7 @@ describe('ForestClientInput', () => {
         expect(wrapper.find('#forestClientInputValidationError').element.textContent).toBeTruthy();
     });
 
-    it('forest client number is inactive', async () => {
+    it('should raise error for inactive forest client number', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
@@ -147,7 +147,7 @@ describe('ForestClientInput', () => {
         expect(wrapper.find('#forestClientInputValidationError').element.textContent).toBeTruthy();
     });
 
-    it('check for duplicate user input', async () => {
+    it('should raise error for duplicate user input', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -172,7 +172,7 @@ describe('ForestClientInput', () => {
         expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
     });
 
-    it('test the successful case for multiple forest client numbers', async () => {
+    it('should add multiple active forest client numbers', async () => {
         const multipleSuccessInputs = `${TEST_SUCCESS_FOREST_CLIENT_NUMBER},${TEST_SUCCESS_FOREST_CLIENT_NUMBER_2},${TEST_SUCCESS_FOREST_CLIENT_NUMBER_3}`
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
@@ -228,7 +228,7 @@ describe('ForestClientInput', () => {
         expect(inputField.value).toBe('');
     });
 
-    it('test adding multiple forest client number with mixed of successful and error case', async () => {
+    it('should add active forest client numbers and raise errors for inactive and invalid numbers in multiple input', async () => {
         // Mutiple inputs: two valid ones, one invalid and one inactive
         const mixedInputs = `${TEST_SUCCESS_FOREST_CLIENT_NUMBER},${TEST_INACTIVE_FOREST_CLIENT_NUMBER},${TEST_INVALID_FOREST_CLIENT_NUMBER},${TEST_SUCCESS_FOREST_CLIENT_NUMBER_2}`
 
@@ -287,7 +287,7 @@ describe('ForestClientInput', () => {
         expect(inputField.value).toContain(TEST_INVALID_FOREST_CLIENT_NUMBER);
     });
 
-    it('test the adding button in on loading while we call the api', async () => {
+    it('should test the adding button in on loading while we call the api', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -297,16 +297,12 @@ describe('ForestClientInput', () => {
         const verifyButton = wrapper.find("[aria-label='Add Client Numbers']");
         await verifyButton.trigger('click');
         // await wrapper.vm.$nextTick();
-        // expect(LoadingState.isLoading.value).toBe(true)
-        // console.log("I am here", verifyButton.attributes())
+        expect(LoadingState.isLoading.value).toBe(true)
         // expect(verifyButton.attributes().disabled).toBe(true)
-
-        const fetchSpy = vi.spyOn(global, 'fetch');
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
         await flushPromises();
     });
 
-    it('test the delete forest client number case', async () => {
+    it('should test the delete forest client number case', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -353,10 +349,9 @@ describe('ForestClientInput', () => {
         deleteButton.trigger('click');
         await flushPromises();
         expect(wrapper.html().includes('Verified Client ID information')).toBe(false);
-
     });
 
-    it('test when property change, will cleanup the errors and information card', async () => {
+    it('should cleanup error when property change', async () => {
         const input = wrapper.find('#forestClientInput');
         const inputField: HTMLInputElement = input.element as HTMLInputElement;
         await input.setValue(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
