@@ -9,8 +9,12 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+model/app-env.ts
 model/fam-app-admin-create.ts
 model/fam-app-admin-get.ts
+model/fam-application-base.ts
+model/fam-user-info.ts
+model/fam-user-type.ts
 model/httpvalidation-error.ts
 model/index.ts
 model/location-inner.ts

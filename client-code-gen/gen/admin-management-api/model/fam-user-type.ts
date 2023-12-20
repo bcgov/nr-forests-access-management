@@ -15,19 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ValidationError } from './validation-error';
+import { UserType } from './user-type';
 
 /**
  * 
  * @export
- * @interface HTTPValidationError
+ * @interface FamUserType
  */
-export interface HTTPValidationError {
+export interface FamUserType {
     /**
      * 
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
+     * @type {UserType}
+     * @memberof FamUserType
      */
-    'detail'?: Array<ValidationError>;
+    'code': UserType;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserType
+     */
+    'description': string;
 }
+
+
 

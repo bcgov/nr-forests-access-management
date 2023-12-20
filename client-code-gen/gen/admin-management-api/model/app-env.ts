@@ -13,21 +13,20 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { ValidationError } from './validation-error';
 
 /**
  * 
  * @export
- * @interface HTTPValidationError
+ * @enum {string}
  */
-export interface HTTPValidationError {
-    /**
-     * 
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
-     */
-    'detail'?: Array<ValidationError>;
-}
+
+export const AppEnv = {
+    Dev: 'DEV',
+    Test: 'TEST',
+    Prod: 'PROD'
+} as const;
+
+export type AppEnv = typeof AppEnv[keyof typeof AppEnv];
+
+
 
