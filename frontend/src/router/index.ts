@@ -10,8 +10,8 @@ import { selectedApplication } from '@/store/ApplicationState';
 import {
     toastError,
     clearToastError,
-    onError,
-    showToastErrorTopRight,
+    setToastErrorMsg,
+    useToastService,
 } from '@/store/ToastState';
 import {
     fetchApplicationRoles,
@@ -85,7 +85,7 @@ const routes = [
                     userRoleAssignments: userRoleAssignments,
                 });
             } catch (error) {
-                onError(error);
+                setToastErrorMsg(error);
             }
 
             return true;
@@ -125,7 +125,7 @@ const routes = [
                     ),
                 });
             } catch (error) {
-                onError(error);
+                setToastErrorMsg(error);
             }
             return true;
         },
@@ -163,12 +163,14 @@ router.beforeEach(async (to, from) => {
     } else if (to.meta?.layout == 'ProtectedLayout') {
         // if user tries to access the pages need permission,
         // will rediret the user back to the landing page, and pop up the error message
+        const { showToastErrorTopRight } = useToastService();
         showToastErrorTopRight('You are not logged in. Please log in.');
         router.push('/');
     }
 });
 
 router.afterEach((to, from) => {
+    const { showToastErrorTopRight } = useToastService();
     if (toastError.value !== '') showToastErrorTopRight(toastError.value);
 });
 

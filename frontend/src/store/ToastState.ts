@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 
-// we use toast just for backend api errors
+// the toastError state is just used to store the error before enter the router
 export const toastError = ref('');
 export const setToastError = (error: string) => {
     toastError.value = error;
@@ -11,16 +11,26 @@ export const clearToastError = () => {
     toastError.value = '';
 };
 
-export const showToastErrorTopRight = (text: string) => {
-    useToast().add({
-        severity: 'error',
-        summary: 'ERROR',
-        detail: text,
-        group: 'tl',
-    });
+// the primevue toast can only be injected in setup or functional component,
+// in order to reuse the toast service,
+// we have to define it in the way as below
+// https://stackoverflow.com/questions/72425297/vue-warn-inject-can-only-be-used-inside-setup-or-functional-components
+export const useToastService = () => {
+    const toast = useToast();
+
+    const showToastErrorTopRight = (text: string) => {
+        toast.add({
+            severity: 'error',
+            summary: 'ERROR',
+            detail: text,
+            group: 'tl',
+        });
+    };
+
+    return { showToastErrorTopRight };
 };
 
-export const onError = (error: any) => {
+export const getToastErrorMsg = (error: any) => {
     console.error(`Error occurred: ${error.toString()}`);
 
     const genericErrorMsg = {
@@ -44,15 +54,19 @@ export const onError = (error: any) => {
         };
 
         if (!status) {
-            setToastError(genericErrorMsg.text);
+            return genericErrorMsg.text;
         } else if (status == 401) {
-            setToastError(e401_authenticationErrorMsg.text);
+            return e401_authenticationErrorMsg.text;
         } else if (status == 403) {
-            setToastError(e403_authorizationErrorMsg.text);
+            return e403_authorizationErrorMsg.text;
         } else if (status == 409) {
-            setToastError(axiosResponse?.data.detail);
+            return axiosResponse?.data.detail;
         }
         return;
     }
-    setToastError(genericErrorMsg.text);
+    return genericErrorMsg.text;
+};
+
+export const setToastErrorMsg = (error: any) => {
+    setToastError(getToastErrorMsg(error));
 };
