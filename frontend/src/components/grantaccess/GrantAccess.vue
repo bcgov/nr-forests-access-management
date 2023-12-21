@@ -327,4 +327,3 @@ const composeAndPushNotificationMessages = (
         </div>
     </VeeForm>
 </template>
-<style lang="scss" scoped></style>
