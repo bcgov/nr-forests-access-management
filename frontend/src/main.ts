@@ -15,6 +15,8 @@ import 'primevue/resources/primevue.min.css';
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
 import './assets/styles/styles.scss';
 
+import { onError } from '@/store/ToastState';
+
 Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
 const app = createApp(App);
@@ -23,4 +25,7 @@ app.use(ConfirmationService);
 app.use(PrimeVue);
 
 app.use(router).mount('#app');
+
+app.config.errorHandler = (err) => onError(err);
+
 export { app };

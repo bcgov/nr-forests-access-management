@@ -1,5 +1,3 @@
-import router from '@/router';
-import { useToast } from 'primevue/usetoast';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
@@ -61,16 +59,7 @@ export const deletAndRefreshUserRoleAssignments = async (
 export const fetchApplicationRoles = async (
     applicationId: number | undefined
 ) => {
-    if (!applicationId) {
-        useToast().add({
-            severity: 'error',
-            summary: 'ERROR',
-            detail: 'No application is selected, redirect back',
-            group: 'tl',
-        });
-        router.push('/dashboard');
-        return;
-    }
+    if (!applicationId) return;
 
     const applicationRoles = (
         await AppActlApiService.applicationsApi.getFamApplicationRoles(

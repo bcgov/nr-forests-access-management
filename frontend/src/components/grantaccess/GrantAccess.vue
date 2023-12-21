@@ -139,7 +139,7 @@ const handleSubmit = async () => {
                 if (error.response?.status === 409) {
                     warningForestClientIdList.push(forestClientNumber || '');
                 } else if (
-                    error.response.data.detail.code === 'self_grant_prohibited'
+                    error.response?.data.detail.code === 'self_grant_prohibited'
                 ) {
                     errorNotification.msg =
                         'Granting roles to self is not allowed.';

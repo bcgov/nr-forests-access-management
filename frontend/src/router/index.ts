@@ -2,17 +2,23 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
-import AuthService from '@/services/AuthService';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { selectedApplication } from '@/store/ApplicationState';
+import {
+    toastError,
+    clearToastError,
+    onError,
+    showToastErrorTopRight,
+} from '@/store/ToastState';
 import {
     fetchApplicationRoles,
     fetchApplications,
     fetchUserRoleAssignments,
 } from '@/services/fetchData';
-import { selectedApplication } from '@/store/ApplicationState';
+import AuthService from '@/services/AuthService';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -69,11 +75,19 @@ const routes = [
         component: ManagePermissionsView,
         beforeEnter: async (to: any) => {
             // Requires fetching applications the user administers.
-            await fetchApplications();
-            const userRoleAssignments = await fetchUserRoleAssignments(
-                selectedApplication.value?.application_id
-            );
-            Object.assign(to.meta, { userRoleAssignments: userRoleAssignments });
+            try {
+                await fetchApplications();
+                // if user already selected an application in cache
+                const userRoleAssignments = await fetchUserRoleAssignments(
+                    selectedApplication.value?.application_id
+                );
+                Object.assign(to.meta, {
+                    userRoleAssignments: userRoleAssignments,
+                });
+            } catch (error) {
+                onError(error);
+            }
+
             return true;
         },
         props: (route: any) => {
@@ -93,16 +107,26 @@ const routes = [
         },
         component: GrantAccessView,
         beforeEnter: async (to: any) => {
+            // if no application is selected
+            if (!selectedApplication.value) {
+                router.push('/dashboard');
+                return false;
+            }
+
             populateBreadcrumb([
                 routeItems.dashboard,
                 routeItems.addUserPermission,
             ]);
             // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
-            Object.assign(to.meta, {
-                applicationRoleOptions: await fetchApplicationRoles(
-                    selectedApplication.value?.application_id
-                ),
-            });
+            try {
+                Object.assign(to.meta, {
+                    applicationRoleOptions: await fetchApplicationRoles(
+                        selectedApplication.value?.application_id
+                    ),
+                });
+            } catch (error) {
+                onError(error);
+            }
             return true;
         },
         props: (route: any) => {
@@ -129,11 +153,23 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+    // clear any previous error message
+    clearToastError();
+
     // Refresh token first before navigation.
     if (AuthService.state.value.famLoginUser) {
         // condition needed to prevent infinite redirect
         await AuthService.methods.refreshToken();
+    } else if (to.meta?.layout == 'ProtectedLayout') {
+        // if user tries to access the pages need permission,
+        // will rediret the user back to the landing page, and pop up the error message
+        showToastErrorTopRight('You are not logged in. Please log in.');
+        router.push('/');
     }
+});
+
+router.afterEach((to, from) => {
+    if (toastError.value !== '') showToastErrorTopRight(toastError.value);
 });
 
 export { routes };
