@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -181,7 +181,7 @@ watch(
                         forestClientNumbersInput?.length <
                             FOREST_CLIENT_INPUT_MAX_LENGTH ||
                         !!errorMessage ||
-                        LoadingState.isLoading.value
+                        isLoading()
                     "
                 >
                     <Icon icon="add" :size="IconSize.small" />

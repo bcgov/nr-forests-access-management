@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
@@ -102,7 +102,7 @@ watch(
                     label="Verify"
                     @click="verifyUserId()"
                     :disabled="
-                        LoadingState.isLoading.value ||
+                        isLoading() ||
                         !computedUserId ||
                         errorMessage !== undefined
                     "

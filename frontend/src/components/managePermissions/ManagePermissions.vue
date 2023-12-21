@@ -13,7 +13,7 @@ import {
     selectedApplicationDisplayText,
     setSelectedApplication,
 } from '@/store/ApplicationState';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 import {
     resetNotification,
     setNotificationMsg,
@@ -33,9 +33,9 @@ const props = defineProps({
     },
 });
 
-const userRoleAssignments = shallowRef<
-    FamApplicationUserRoleAssignmentGet[]
->(props.userRoleAssignments);
+const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
+    props.userRoleAssignments
+);
 
 onUnmounted(() => {
     resetNotification();
@@ -43,7 +43,9 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    userRoleAssignments.value = await fetchUserRoleAssignments(selectedApplication.value?.application_id);
+    userRoleAssignments.value = await fetchUserRoleAssignments(
+        selectedApplication.value?.application_id
+    );
 };
 
 async function deleteUserRoleAssignment(
@@ -100,16 +102,15 @@ async function deleteUserRoleAssignment(
             >
                 <TabPanel header="Users">
                     <template #header>
-                        <Icon
-                            icon="user"
-                            :size="IconSize.small"
-                        />
+                        <Icon icon="user" :size="IconSize.small" />
                     </template>
                     <UserDataTable
                         :isApplicationSelected="isApplicationSelected"
-                        :loading="LoadingState.isLoading.value"
+                        :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
-                        :selectedApplicationDisplayText="selectedApplicationDisplayText"
+                        :selectedApplicationDisplayText="
+                            selectedApplicationDisplayText
+                        "
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>

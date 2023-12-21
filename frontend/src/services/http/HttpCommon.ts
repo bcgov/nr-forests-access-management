@@ -1,6 +1,6 @@
 import HttpReqInterceptors from '@/services/http/HttpRequestInterceptors';
 import HttpResInterceptors from '@/services/http/HttpResponseInterceptors';
-import LoadingState from '@/store/LoadingState';
+import { setLoadingState } from '@/store/LoadingState';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
 const DEFAULT_CONTENT_TYPE = 'application/json';
@@ -39,17 +39,17 @@ httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
   When http response received or error happens =>  assign isLoading state with false
 */
 const loadingStart = (config: AxiosRequestConfig) => {
-    LoadingState.isLoading.value = true;
+    setLoadingState(true);
     return config;
 };
 
 const loadingStop = (res: AxiosResponse) => {
-    LoadingState.isLoading.value = false;
+    setLoadingState(false);
     return res;
 };
 
 const loadingStopWhenError = (err: any) => {
-    LoadingState.isLoading.value = false;
+    setLoadingState(false);
     return Promise.reject(err); // Based on Axios, return reject(err)
 };
 
