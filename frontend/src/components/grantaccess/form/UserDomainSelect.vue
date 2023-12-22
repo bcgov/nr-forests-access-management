@@ -29,6 +29,14 @@ const computedDomain = computed({
                 inputId="idirSelect"
                 name="domainRadioOptions"
                 :value="domainOptions.IDIR"
+                :pt="{
+                    root: {
+                        id: 'idir-test'
+                    },
+                    input: {
+                        id: 'idir-test-input'
+                    }
+                }"
             />
             <label class="mx-2" for="idirSelect">IDIR</label>
         </div>
@@ -38,6 +46,14 @@ const computedDomain = computed({
                 inputId="becidSelect"
                 name="domainRadioOptions"
                 :value="domainOptions.BCEID"
+                :pt="{
+                    root: {
+                        id: 'bceid-test'
+                    },
+                    input: {
+                        id: 'bceid-test-input'
+                    }
+                }"
             />
             <label class="mx-2" for="becidSelect">BCeID</label>
         </div>
