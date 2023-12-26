@@ -20,8 +20,8 @@ describe('UserDomainSelect', () => {
 
         idirRadioBox = wrapper.find('#idir-test');
         bceidRadioBox = wrapper.find('#bceid-test');
-        idirInput = wrapper.find('#idir-test-input');
-        bceidInput = wrapper.find('#bceid-test-input');
+        idirInput = wrapper.find("[data-test='idir-test-input']");
+        bceidInput = wrapper.find("[data-test='bceid-test-input']");
 
     });
 

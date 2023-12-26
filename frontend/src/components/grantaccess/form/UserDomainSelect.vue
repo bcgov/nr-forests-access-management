@@ -34,7 +34,7 @@ const computedDomain = computed({
                         id: 'idir-test'
                     },
                     input: {
-                        id: 'idir-test-input'
+                        'data-test': 'idir-test-input'
                     }
                 }"
             />
@@ -51,7 +51,7 @@ const computedDomain = computed({
                         id: 'bceid-test'
                     },
                     input: {
-                        id: 'bceid-test-input'
+                        'data-test': 'bceid-test-input'
                     }
                 }"
             />
