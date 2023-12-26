@@ -25,7 +25,7 @@ describe('UserDomainSelect', () => {
 
     });
 
-    it('Should check the checkbox when btn is clicked', async () => {
+    it('Should check the radioBtn box when clicked', async () => {
         await bceidInput.trigger('click');
         expect(idirRadioBox.classes('p-radiobutton-checked')).toBe(true);
 
