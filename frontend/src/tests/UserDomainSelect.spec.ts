@@ -1,41 +1,36 @@
 import { it, describe, beforeEach, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { UserType } from 'fam-app-acsctl-api';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
-import { UserType } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 
 describe('UserDomainSelect', () => {
     let wrapper: VueWrapper;
     let emitChange: unknown[][] | undefined;
-    let bceidInput: DOMWrapper<HTMLDivElement>;
-    let idirInput: DOMWrapper<HTMLDivElement>;
 
-    // primevue radio component have the check box on a div
-    let idirRadioBox: DOMWrapper<HTMLDivElement>;
-    let bceidRadioBox: DOMWrapper<HTMLDivElement>;
+    let becidRadioBtn: DOMWrapper<HTMLInputElement>;
+    let idirRadioBtn: DOMWrapper<HTMLInputElement>;
 
     beforeEach(async () => {
         wrapper = mount(UserDomainSelect);
-
-        idirRadioBox = wrapper.find('#idir-test');
-        bceidRadioBox = wrapper.find('#bceid-test');
-        idirInput = wrapper.find("[data-test='idir-test-input']");
-        bceidInput = wrapper.find("[data-test='bceid-test-input']");
+        becidRadioBtn = wrapper.find('#becidSelect');
+        idirRadioBtn = wrapper.find('#idirSelect');
 
     });
 
     it('Should check the radioBtn box when clicked', async () => {
-        await bceidInput.trigger('click');
-        expect(idirRadioBox.classes('p-radiobutton-checked')).toBe(true);
 
-        await bceidInput.trigger('click');
-        expect(idirRadioBox.classes('p-radiobutton-checked')).toBe(true);
+        await becidRadioBtn.trigger('click');
+        expect(becidRadioBtn.element.checked).toBeTruthy();
+
+        await idirRadioBtn.trigger('click');
+        expect(idirRadioBtn.element.checked).toBeTruthy();
 
     });
 
     it('Should call and emit the correct value', async () => {
-        await bceidRadioBox.trigger('click');
+        await becidRadioBtn.trigger('click');
 
         emitChange = wrapper.emitted('change');
 
@@ -46,7 +41,7 @@ describe('UserDomainSelect', () => {
         // i.e. emitChange = [ [ 'B' ] ]
         expect(emitChange![0][0]).toEqual(UserType.B);
 
-        await idirRadioBox.trigger('click');
+        await idirRadioBtn.trigger('click');
 
         expect(emitChange![1][0]).toEqual(UserType.I);
     });
@@ -62,12 +57,12 @@ describe('UserDomainSelect', () => {
     it('Should check the correct radioBtn based on the props', async () => {
 
         // start with IDIR checked
-        expect(idirRadioBox.classes('p-radiobutton-checked')).toBe(true);
+        expect(idirRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.B });
-        expect(bceidRadioBox.classes('p-radiobutton-checked')).toBe(true);
+        expect(becidRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.I });
-        expect(idirRadioBox.classes('p-radiobutton-checked')).toBe(true);
+        expect(idirRadioBtn.element.checked).toBeTruthy();
     });
 });
