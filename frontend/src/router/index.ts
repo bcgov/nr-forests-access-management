@@ -29,7 +29,7 @@ import { selectedApplication } from '@/store/ApplicationState';
 
 export interface IRouteInfo {
     label: string;
-    to: string;
+    path: string;
 }
 
 export type RouteItems = {
@@ -37,21 +37,32 @@ export type RouteItems = {
 };
 
 const routeItems = {
+    landing: {
+        path: '/',
+        label: 'Welcome to FAM',
+    },
     dashboard: {
-        to: '/dashboard',
+        path: '/dashboard',
         label: 'Manage permissions',
     },
     addUserPermission: {
-        to: '/grant',
+        path: '/grant',
         label: 'Add user permission',
     },
 } as RouteItems;
 
+/**
+ * meta:
+ * - Field: `requiresAuth`
+ *      Means "authentication (logged in)" is required. For router guard.
+ *      If not provided or `false` means it is "public" (for everyone without authentication)
+ */
 const routes = [
     {
         path: '/',
         name: 'landing',
         meta: {
+            requiresAuth: false,
             title: 'Welcome to FAM',
             layout: 'SimpleLayout',
             hasBreadcrumb: false,
@@ -59,9 +70,10 @@ const routes = [
         component: LandingView,
     },
     {
-        path: routeItems.dashboard.to,
+        path: routeItems.dashboard.path,
         name: routeItems.dashboard.label,
         meta: {
+            requiresAuth: true,
             title: routeItems.dashboard.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: false,
@@ -84,9 +96,10 @@ const routes = [
         },
     },
     {
-        path: routeItems.addUserPermission.to,
+        path: routeItems.addUserPermission.path,
         name: routeItems.addUserPermission.label,
         meta: {
+            requiresAuth: true,
             title: routeItems.addUserPermission.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
@@ -115,10 +128,16 @@ const routes = [
     {
         path: '/authCallback',
         name: 'Cognito Auth (success) Callback',
+        meta: {
+            requiresAuth: false,
+        },
         component: AuthCallback,
     },
     {
         path: '/:catchAll(.*)',
+        meta: {
+            requiresAuth: false,
+        },
         component: NotFound,
     },
 ];
@@ -129,6 +148,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+    if (to.meta.requiresAuth && !AuthService.getters.isLoggedIn()) {
+        return {path: routeItems.landing.path}
+    }
+
     // Refresh token first before navigation.
     if (AuthService.state.value.famLoginUser) {
         // condition needed to prevent infinite redirect
