@@ -12,7 +12,7 @@ import {
     fetchApplications,
     fetchUserRoleAssignments,
 } from '@/services/fetchData';
-import { selectedApplication } from '@/store/ApplicationState';
+import { isApplicationSelected, selectedApplication } from '@/store/ApplicationState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -53,9 +53,13 @@ const routeItems = {
 
 /**
  * meta:
- * - Field: `requiresAuth`
+ * - `requiresAuth`:
  *      Means "authentication (logged in)" is required. For router guard.
- *      If not provided or `false` means it is "public" (for everyone without authentication)
+ *      If not provided or `false` means it is "public" (for everyone without authentication).
+ *
+ * - `requiresAppSelected`:
+ *      Means user should have selected(or default to) an `application` as a context for business logic.
+ *      => global "selectedApplication" state is set.
  */
 const routes = [
     {
@@ -100,6 +104,7 @@ const routes = [
         name: routeItems.addUserPermission.label,
         meta: {
             requiresAuth: true,
+            requiresAppSelected: true,
             title: routeItems.addUserPermission.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
@@ -113,7 +118,7 @@ const routes = [
             // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
             Object.assign(to.meta, {
                 applicationRoleOptions: await fetchApplicationRoles(
-                    selectedApplication.value?.application_id
+                    selectedApplication.value!.application_id
                 ),
             });
             return true;
@@ -148,8 +153,15 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+
+    // Authentication guard. Always check first.
     if (to.meta.requiresAuth && !AuthService.getters.isLoggedIn()) {
         return {path: routeItems.landing.path}
+    }
+
+    // Application selected guard.
+    if (to.meta.requiresAppSelected && !isApplicationSelected.value) {
+        return {path: routeItems.dashboard.path}
     }
 
     // Refresh token first before navigation.

@@ -57,10 +57,8 @@ export const deletAndRefreshUserRoleAssignments = async (
 };
 
 export const fetchApplicationRoles = async (
-    applicationId: number | undefined
+    applicationId: number
 ) => {
-    if (!applicationId) return;
-
     const applicationRoles = (
         await AppActlApiService.applicationsApi.getFamApplicationRoles(
             applicationId
