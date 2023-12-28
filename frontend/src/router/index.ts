@@ -153,7 +153,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
-
     // Authentication guard. Always check first.
     if (to.meta.requiresAuth && !AuthService.getters.isLoggedIn()) {
         return {path: routeItems.landing.path}
@@ -164,7 +163,7 @@ router.beforeEach(async (to, from) => {
         return {path: routeItems.dashboard.path}
     }
 
-    // Refresh token first before navigation.
+    // Refresh token before navigation.
     if (AuthService.state.value.famLoginUser) {
         // condition needed to prevent infinite redirect
         await AuthService.methods.refreshToken();
