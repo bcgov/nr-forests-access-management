@@ -35,8 +35,8 @@ httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
   Private functions "loadingStart" "loadingStop" and "loadingStopWhenError"
   are auxiliary special helpers for both request/response interceptors.
 
-  When http request happens => assign isLoading state with true.
-  When http response received or error happens =>  assign isLoading state with false
+  When http request happens => assign LoadingState state with true.
+  When http response received or error happens =>  assign LoadingState state with false
 */
 const loadingStart = (config: AxiosRequestConfig) => {
     setLoadingState(true);

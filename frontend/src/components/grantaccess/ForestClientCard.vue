@@ -73,6 +73,7 @@ const props = defineProps({
                         >
                             <label class="status">Organization status: </label>
                             <Tag
+                                id="client-status"
                                 class="custom-tag"
                                 :severity="
                                     forestItem.status?.status_code == 'A'
