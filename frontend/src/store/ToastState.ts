@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
-import { RouteErrorName, FamRouteError } from '@/router/RouteError';
+import { RouteErrorName, FamRouteError } from '@/errors/FamCustomError';
 
 // the toastError state is just used to store the error before enter the router
 export const toastError = ref('');
