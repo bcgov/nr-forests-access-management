@@ -35,7 +35,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
             forestClientNumberVerifyErrors.value.push(
-                `Client ID ${item}  is invalid and cannot be added.`
+                `Client ID ${item} is invalid and cannot be added.`
             );
         }
 
@@ -44,7 +44,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${item}  is invalid and cannot be added.`
+                        `Client ID ${item} is invalid and cannot be added.`
                     );
                     return;
                 }

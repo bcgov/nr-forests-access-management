@@ -54,7 +54,7 @@ const props = defineProps({
                             v-if="props.forestClientData"
                         >
                             <label>Client ID: </label>
-                            <span>
+                            <span id="forest-client-id">
                                 {{ forestItem.forest_client_number }}
                             </span>
                         </p>
@@ -63,7 +63,7 @@ const props = defineProps({
                             v-if="props.forestClientData"
                         >
                             <label>Organization name: </label>
-                            <span class="organization-name">
+                            <span id="forest-client-name" class="organization-name">
                                 {{ forestItem.client_name }}
                             </span>
                         </p>
@@ -73,7 +73,7 @@ const props = defineProps({
                         >
                             <label class="status">Organization status: </label>
                             <Tag
-                                id="client-status"
+                                id="forest-client-status"
                                 class="custom-tag"
                                 :severity="
                                     forestItem.status?.status_code == 'A'
@@ -85,6 +85,7 @@ const props = defineProps({
                         </p>
                         <Button class="btn-trash">
                             <Icon
+                                id="btn-trash-can"
                                 class="custom-carbon-icon--trash-can"
                                 icon="trash-can"
                                 :size="IconSize.small"

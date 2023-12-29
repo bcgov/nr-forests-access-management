@@ -108,20 +108,20 @@ describe('ForestClientCard', () => {
     it('should show inactive for forest client card in error case', async () => {
         // Error case
         await wrapper.setProps({ forestClientData: testInactiveClient });
-        expect(wrapper.get('#client-status').element.textContent).toBe(STATUS_DESCRIPTION_INACTIVE);
+        expect(wrapper.get('#forest-client-status').element.textContent).toBe(STATUS_DESCRIPTION_INACTIVE);
     });
 
     it('should show active forest client card in successful case', async () => {
         // Success case
         await wrapper.setProps({ forestClientData: testActiveClient });
-        expect(wrapper.get('#client-status').element.textContent).toBe(STATUS_DESCRIPTION_ACTIVE);
+        expect(wrapper.get('#forest-client-status').element.textContent).toBe(STATUS_DESCRIPTION_ACTIVE);
 
     });
 
     it('should show multiple active forest client card in successful case', async () => {
         // Multiple success case
         await wrapper.setProps({ forestClientData: testMultipleActiveClient });
-        const clientList = wrapper.findAll('#client-status') as DOMWrapper<Element>[];
+        const clientList = wrapper.findAll('#forest-client-status') as DOMWrapper<Element>[];
         for (let index in clientList) {
             expect(clientList[index].element.textContent).toBe(STATUS_DESCRIPTION_ACTIVE);
         }
@@ -130,7 +130,7 @@ describe('ForestClientCard', () => {
     it('should show multiple inactive forest client card in error case', async () => {
         // Multiple success case
         await wrapper.setProps({ forestClientData: testMultipleInactiveClient });
-        const clientList = wrapper.findAll('#client-status') as DOMWrapper<Element>[];
+        const clientList = wrapper.findAll('#forest-client-status') as DOMWrapper<Element>[];
         for (let index in clientList) {
             expect(clientList[index].element.textContent).toBe(STATUS_DESCRIPTION_INACTIVE);
         }
