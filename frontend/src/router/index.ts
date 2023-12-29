@@ -2,16 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
-import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
-import AuthService from '@/services/AuthService';
+import { beforeEachRouteHandler } from '@/router/routeHandlers';
+import { routeItems } from '@/router/routeItem';
 import {
     fetchApplicationRoles,
     fetchApplications,
     fetchUserRoleAssignments,
 } from '@/services/fetchData';
-import { isApplicationSelected, selectedApplication } from '@/store/ApplicationState';
+import { selectedApplication } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
@@ -28,30 +27,6 @@ import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 //    There still seem to be cases where page reload is needed.
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax.
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
-
-export interface IRouteInfo {
-    label: string;
-    path: string;
-}
-
-export type RouteItems = {
-    [key: string]: IRouteInfo;
-};
-
-const routeItems = {
-    landing: {
-        path: '/',
-        label: 'Welcome to FAM',
-    },
-    dashboard: {
-        path: '/dashboard',
-        label: 'Manage permissions',
-    },
-    addUserPermission: {
-        path: '/grant',
-        label: 'Add user permission',
-    },
-} as RouteItems;
 
 /**
  * meta:
@@ -154,40 +129,7 @@ const router = createRouter({
     routes: routes,
 });
 
-router.beforeEach(async (to, from) => {
-    // Authentication guard. Always check first.
-    if (to.meta.requiresAuth && !AuthService.getters.isLoggedIn()) {
-        const routeError = new FamRouteError(
-            RouteErrorName.NOT_AUTHENTICATED_ERROR,
-            "You're not login",
-            {to, from}
-        )
-        emitRouteToastError(routeError);
-        return {path: routeItems.landing.path}
-    }
-
-    // Application selected guard.
-    if (to.meta.requiresAppSelected && !isApplicationSelected.value) {
-
-        // Only to compose this custom error, but not to throw.
-        // Due to throwing error from router cannot be caught by Primevue toast.
-        // The RouteError will be emitted to a state.
-        const routeError = new FamRouteError(
-            RouteErrorName.NO_APPLICATION_SELECTED_ERROR,
-            'No application is Selected',
-            {to, from}
-        )
-        emitRouteToastError(routeError);
-        // Back to dashboard after emit error.
-        return {path: routeItems.dashboard.path};
-    }
-
-    // Refresh token before navigation.
-    if (AuthService.state.value.famLoginUser) {
-        // condition needed to prevent infinite redirect
-        await AuthService.methods.refreshToken();
-    }
-});
+router.beforeEach(beforeEachRouteHandler);
 
 export { routes };
 
