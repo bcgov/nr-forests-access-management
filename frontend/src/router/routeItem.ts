@@ -1,6 +1,7 @@
 export interface IRouteInfo {
     label: string;
     path: string;
+    name: string;
 }
 
 export type RouteItems = {
@@ -9,14 +10,17 @@ export type RouteItems = {
 
 export const routeItems = {
     landing: {
+        name: 'landing',
         path: '/',
         label: 'Welcome to FAM',
     },
     dashboard: {
+        name: 'dashboard',
         path: '/dashboard',
         label: 'Manage permissions',
     },
-    addUserPermission: {
+    grantUserPermission: {
+        name: 'grantUserPermission',
         path: '/grant',
         label: 'Add user permission',
     },

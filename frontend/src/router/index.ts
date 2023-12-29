@@ -2,15 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
-import { beforeEachRouteHandler } from '@/router/routeHandlers';
+import { beforeEachRouteHandler, beforeEnterHandlers } from '@/router/routeHandlers';
 import { routeItems } from '@/router/routeItem';
-import {
-    fetchApplicationRoles,
-    fetchApplications,
-    fetchUserRoleAssignments,
-} from '@/services/fetchData';
-import { selectedApplication } from '@/store/ApplicationState';
-import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
@@ -41,7 +34,7 @@ import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 const routes = [
     {
         path: '/',
-        name: 'landing',
+        name: routeItems.landing.name,
         meta: {
             requiresAuth: false,
             title: 'Welcome to FAM',
@@ -52,7 +45,7 @@ const routes = [
     },
     {
         path: routeItems.dashboard.path,
-        name: routeItems.dashboard.label,
+        name: routeItems.dashboard.name,
         meta: {
             requiresAuth: true,
             title: routeItems.dashboard.label,
@@ -60,15 +53,7 @@ const routes = [
             hasBreadcrumb: false,
         },
         component: ManagePermissionsView,
-        beforeEnter: async (to: any) => {
-            // Requires fetching applications the user administers.
-            await fetchApplications();
-            const userRoleAssignments = await fetchUserRoleAssignments(
-                selectedApplication.value?.application_id
-            );
-            Object.assign(to.meta, { userRoleAssignments: userRoleAssignments });
-            return true;
-        },
+        beforeEnter: beforeEnterHandlers[routeItems.dashboard.name],
         props: (route: any) => {
             return {
                 // userRoleAssignments is ready for the `component` as props.
@@ -77,29 +62,17 @@ const routes = [
         },
     },
     {
-        path: routeItems.addUserPermission.path,
-        name: routeItems.addUserPermission.label,
+        path: routeItems.grantUserPermission.path,
+        name: routeItems.grantUserPermission.name,
         meta: {
             requiresAuth: true,
             requiresAppSelected: true,
-            title: routeItems.addUserPermission.label,
+            title: routeItems.grantUserPermission.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
         },
         component: GrantAccessView,
-        beforeEnter: async (to: any) => {
-            populateBreadcrumb([
-                routeItems.dashboard,
-                routeItems.addUserPermission,
-            ]);
-            // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
-            Object.assign(to.meta, {
-                applicationRoleOptions: await fetchApplicationRoles(
-                    selectedApplication.value!.application_id
-                ),
-            });
-            return true;
-        },
+        beforeEnter: beforeEnterHandlers[routeItems.grantUserPermission.name],
         props: (route: any) => {
             return {
                 // options is ready for the `component` as props.

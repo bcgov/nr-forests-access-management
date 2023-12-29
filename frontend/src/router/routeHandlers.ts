@@ -1,11 +1,60 @@
 import { FamRouteError, RouteErrorName } from "@/errors/FamCustomError";
 import { routeItems } from '@/router/routeItem';
 import AuthService from "@/services/AuthService";
-import { isApplicationSelected } from "@/store/ApplicationState";
+import { fetchApplicationRoles, fetchApplications, fetchUserRoleAssignments } from "@/services/fetchData";
+import { isApplicationSelected, selectedApplication } from "@/store/ApplicationState";
+import { populateBreadcrumb } from "@/store/BreadcrumbState";
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from "vue-router";
 
-// Route `beforeEach` handler.
+/**
+ * This file should contain only the Vue router handler and necessary
+ * helpers for router's life-cycle methods (beforeEach, beforeEnter etc...)
+ *
+ * Vue router does not wrap javascript error nicely.
+ * PimeVue Toast (current version) also has limitation which it cannot be used
+ * outside of Vue <setup>. This is the case in router.
+ * So, here in case of custom error (javascript error), emit the error to a
+ * state for it to be handled elsewhere.
+ */
+
+// --- beforeEnter Route Handler
+
+const beforeEnterDashboardRoute = async (
+    to: RouteLocationNormalized
+) => {
+    // Requires fetching applications the user administers.
+    await fetchApplications();
+    const userRoleAssignments = await fetchUserRoleAssignments(
+        selectedApplication.value?.application_id
+    );
+    Object.assign(to.meta, { userRoleAssignments: userRoleAssignments });
+    return true;
+}
+
+const beforeEnterGrantUserPermissionRoute = async (
+    to: RouteLocationNormalized
+) => {
+    populateBreadcrumb([
+        routeItems.dashboard,
+        routeItems.grantUserPermission,
+    ]);
+    // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
+    Object.assign(to.meta, {
+        applicationRoleOptions: await fetchApplicationRoles(
+            selectedApplication.value!.application_id
+        ),
+    });
+    return true;
+}
+
+export const beforeEnterHandlers = {
+    [routeItems.dashboard.name]: beforeEnterDashboardRoute,
+    [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute
+}
+
+// --- beforeEach Route Handler
+
 // Responsible for route guards and necessary operations before each route.
 export const beforeEachRouteHandler = async (
     to: RouteLocationNormalized,
