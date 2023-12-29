@@ -12,7 +12,6 @@ const props = defineProps({
 });
 </script>
 <template>
-    <!-- temporary condition until invalid input handling is implemented -->
     <div>
         <Card class="custom-card">
             <template #header>
@@ -63,7 +62,10 @@ const props = defineProps({
                             v-if="props.forestClientData"
                         >
                             <label>Organization name: </label>
-                            <span id="forest-client-name" class="organization-name">
+                            <span
+                                id="forest-client-name"
+                                class="organization-name"
+                            >
                                 {{ forestItem.client_name }}
                             </span>
                         </p>

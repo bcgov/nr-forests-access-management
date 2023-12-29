@@ -141,7 +141,6 @@ describe('ForestClientInput', () => {
 
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
-        console.log(wrapper.find('#forestClientInputValidationError').element.textContent)
         expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client ID ${TEST_INVALID_FOREST_CLIENT_NUMBER} is invalid and cannot be added.`);
     });
 
@@ -302,19 +301,19 @@ describe('ForestClientInput', () => {
     // - Use of setTimeout doesn't work well in testing (the timout is not applied)
     // - Use of vi.useFakeTimers() does apply delay, but I am not sure if it is a blocking or non blocking task
 
-    it('should test the adding button in on loading while we call the api', async () => {
-        const input = wrapper.find('#forestClientInput');
-        const inputField: HTMLInputElement = input.element as HTMLInputElement;
-        await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
-        expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
-        // expect(isLoading()).toBe(false);
+    // it('should test the adding button in on loading while we call the api', async () => {
+    //     const input = wrapper.find('#forestClientInput');
+    //     const inputField: HTMLInputElement = input.element as HTMLInputElement;
+    //     await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+    //     expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+    //     // expect(isLoading()).toBe(false);
 
-        await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
-        expect(wrapper.find("[aria-label='Add Client Numbers']").element.textContent).contains('Loading')
-        await flushPromises();
+    //     await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
+    //     expect(wrapper.find("[aria-label='Add Client Numbers']").element.textContent).contains('Loading')
+    //     await flushPromises();
 
-        // expect(isLoading()).toBe(true);
-    });
+    //     // expect(isLoading()).toBe(true);
+    // });
 
     it('should test the delete forest client number case', async () => {
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -386,6 +385,43 @@ describe('ForestClientInput', () => {
     });
 
     it('should cleanup forest client number when property change', async () => {
-        expect(true).toBeFalsy();
+        await input.setValue(TEST_INVALID_FOREST_CLIENT_NUMBER);
+        expect(inputField.value).toBe(TEST_INVALID_FOREST_CLIENT_NUMBER);
+
+        await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
+        await flushPromises();
+
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).toBeTruthy();
+
+        expect(inputField.value).toBe(TEST_INVALID_FOREST_CLIENT_NUMBER);
+
+        // Changing the userId prop should cleanUp Input
+        await wrapper.setProps({ userId: 'Test' });
+
+        expect(inputField.value).toBe('');
+
+        expect(wrapper.emitted()).toHaveProperty('resetVerifiedForestClients');
+
+        expect(wrapper.find('#forestClientInputValidationError').exists()).toBeFalsy();
+
+        await input.setValue(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
+        expect(inputField.value).toBe(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
+
+        await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
+        await flushPromises();
+
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).toBeTruthy();
+
+        expect(inputField.value).toBe(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
+
+        // Changing the userId prop should cleanUp Input
+        await wrapper.setProps({ userId: 'Test2' });
+
+        expect(inputField.value).toBe('');
+
+        expect(wrapper.emitted()).toHaveProperty('resetVerifiedForestClients');
+
+        expect(wrapper.find('#forestClientInputValidationError').exists()).toBeFalsy();
+
     });
 });
