@@ -1,3 +1,7 @@
+type AsyncWrapType = {
+    data: any;
+    error: any;
+};
 
 /**
  * This is for use in case if you need to warp normal async return
@@ -6,7 +10,7 @@
  * @param promise Promise()
  * @returns '{data, error}' in tuple containing 'data' (underfined when 'error' present).
  */
-const asyncWrap = async (promise: Promise<any>) => {
+export const asyncWrap = async (promise: Promise<any>): Promise<AsyncWrapType> => {
     try {
         const data = await promise;
         return {data, error: undefined};

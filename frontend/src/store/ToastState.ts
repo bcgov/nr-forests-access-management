@@ -1,7 +1,7 @@
-import { ref } from 'vue';
-import axios from 'axios';
+import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
+import axios, { type AxiosError } from 'axios';
 import { useToast } from 'primevue/usetoast';
-import { RouteErrorName, FamRouteError } from '@/errors/FamCustomError';
+import { ref } from 'vue';
 
 // the toastError state is just used to store the error before enter the router
 export const toastError = ref('');
@@ -13,12 +13,12 @@ export const clearToastError = () => {
 };
 
 // TODO: Below is similiar as above Catherine's good usage.
-// But with custom RouteError passing instead of string type.
+// But with custom route error passing instead of string type.
 
 // A RotetoastError state. Special case for handling routing error that
 // cannot be caught from Vue.
 export const routeToastError = ref();
-export const setRouteToastError = (error: FamRouteError | undefined) => {
+export const setRouteToastError = (error: FamRouteError | AxiosError | undefined) => {
     routeToastError.value = error;
 };
 
@@ -86,7 +86,7 @@ export const getToastErrorMsg = (error: any) => {
 
 const handleRouteErrorMessage = (error: FamRouteError): string => {
     if (RouteErrorName.NOT_AUTHENTICATED_ERROR == error.name ||
-        RouteErrorName.NO_APPLICATION_SELECTED_ERROR) {
+        RouteErrorName.NO_APPLICATION_SELECTED_ERROR == error.name) {
         return error.message;
     }
     return genericErrorMsg.text;

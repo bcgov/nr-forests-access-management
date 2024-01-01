@@ -2,6 +2,7 @@ import { FamRouteError, RouteErrorName } from "@/errors/FamCustomError";
 import { routeItems } from '@/router/routeItem';
 import AuthService from "@/services/AuthService";
 import { fetchApplicationRoles, fetchApplications, fetchUserRoleAssignments } from "@/services/fetchData";
+import { asyncWrap } from "@/services/utils";
 import { isApplicationSelected, selectedApplication } from "@/store/ApplicationState";
 import { populateBreadcrumb } from "@/store/BreadcrumbState";
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
@@ -24,11 +25,11 @@ const beforeEnterDashboardRoute = async (
     to: RouteLocationNormalized
 ) => {
     // Requires fetching applications the user administers.
-    await fetchApplications();
-    const userRoleAssignments = await fetchUserRoleAssignments(
+    await asyncWrap(fetchApplications());
+    const userRolesFetchResult = await asyncWrap(fetchUserRoleAssignments(
         selectedApplication.value?.application_id
-    );
-    Object.assign(to.meta, { userRoleAssignments: userRoleAssignments });
+    ));
+    Object.assign(to.meta, { userRoleAssignments: userRolesFetchResult.data });
     return true;
 }
 
@@ -39,12 +40,17 @@ const beforeEnterGrantUserPermissionRoute = async (
         routeItems.dashboard,
         routeItems.grantUserPermission,
     ]);
+
+    const appRolesFetchResult = await asyncWrap(fetchApplicationRoles(
+        selectedApplication.value!.application_id
+    ));
+    if (appRolesFetchResult.error) {
+        emitRouteToastError(appRolesFetchResult.error)
+        return false;
+    }
+
     // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
-    Object.assign(to.meta, {
-        applicationRoleOptions: await fetchApplicationRoles(
-            selectedApplication.value!.application_id
-        ),
-    });
+    Object.assign(to.meta, { applicationRoleOptions: appRolesFetchResult.data });
     return true;
 }
 
@@ -93,3 +99,5 @@ export const beforeEachRouteHandler = async (
         await AuthService.methods.refreshToken();
     }
 }
+
+// --- helpers
