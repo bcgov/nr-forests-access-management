@@ -9,28 +9,30 @@ describe('UserDomainSelect', () => {
     let wrapper: VueWrapper;
     let emitChange: unknown[][] | undefined;
 
-    let becidRadioBtn: DOMWrapper<HTMLInputElement>;
+    let bceidRadioBtn: DOMWrapper<HTMLInputElement>;
     let idirRadioBtn: DOMWrapper<HTMLInputElement>;
 
     beforeEach(async () => {
         wrapper = mount(UserDomainSelect);
-        becidRadioBtn = wrapper.find('#becidSelect');
+        bceidRadioBtn = wrapper.find('#bceidSelect');
         idirRadioBtn = wrapper.find('#idirSelect');
 
     });
 
     it('Should check the radioBtn box when clicked', async () => {
 
-        await becidRadioBtn.trigger('click');
-        expect(becidRadioBtn.element.checked).toBeTruthy();
+        await bceidRadioBtn.trigger('click');
+        expect(idirRadioBtn.element.checked).toBeFalsy();
+        expect(bceidRadioBtn.element.checked).toBeTruthy();
 
         await idirRadioBtn.trigger('click');
+        expect(bceidRadioBtn.element.checked).toBeFalsy();
         expect(idirRadioBtn.element.checked).toBeTruthy();
 
     });
 
     it('Should call and emit the correct value', async () => {
-        await becidRadioBtn.trigger('click');
+        await bceidRadioBtn.trigger('click');
 
         emitChange = wrapper.emitted('change');
 
@@ -60,7 +62,7 @@ describe('UserDomainSelect', () => {
         expect(idirRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.B });
-        expect(becidRadioBtn.element.checked).toBeTruthy();
+        expect(bceidRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.I });
         expect(idirRadioBtn.element.checked).toBeTruthy();
