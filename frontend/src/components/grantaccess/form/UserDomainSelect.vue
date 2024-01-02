@@ -35,11 +35,11 @@ const computedDomain = computed({
         <div class="px-0">
             <RadioButton
                 v-model="computedDomain"
-                inputId="becidSelect"
+                inputId="bceidSelect"
                 name="domainRadioOptions"
                 :value="domainOptions.BCEID"
             />
-            <label class="mx-2" for="becidSelect">BCeID</label>
+            <label class="mx-2" for="bceidSelect">BCeID</label>
         </div>
     </div>
 </template>
