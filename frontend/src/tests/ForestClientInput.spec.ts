@@ -107,11 +107,7 @@ describe('ForestClientInput', () => {
         // i.e. setVerifiedForestClients = [ [ '00000001' ] ]
         // the outter array indicates how many times it has been called
         // the inner array indicates how many parameters it has
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[0][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        expect(setVerifiedForestClients![0][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // the forest client information card shows and verify the information
         expect(wrapper.html().includes('Verified Client ID information')).toBe(
             true
@@ -192,23 +188,11 @@ describe('ForestClientInput', () => {
         expect(wrapper.emitted()).toHaveProperty('setVerifiedForestClients');
         expect(setVerifiedForestClients).toHaveLength(3);
         // The first entry in the forest client card should be equal to the first active input
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[0][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        expect(setVerifiedForestClients![0][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // The second entry in the forest client card should be equal to the second active input
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[1][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
+        expect(setVerifiedForestClients![1][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
         // The third entry in the forest client card should be equal to the third active input
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[2][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_3);
+        expect(setVerifiedForestClients![2][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_3);
         // the forest client information card shows and verify the information
         expect(wrapper.html().includes('Verified Client ID information')).toBe(
             true
@@ -254,17 +238,9 @@ describe('ForestClientInput', () => {
         // we need to have two error messages as well (inactive and invalid)
         expect(validationError).toHaveLength(2);
         // The first entry in the forest client card should be equal to the first active input
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[0][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        expect(setVerifiedForestClients![0][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // The second entry in the forest client card should be equal to the second active input
-        expect(
-            setVerifiedForestClients
-                ? setVerifiedForestClients[1][0]
-                : undefined
-        ).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
+        expect(setVerifiedForestClients![1][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
         // the forest client information card shows and verify the information
         expect(wrapper.html().includes('Verified Client ID information')).toBe(
             true
