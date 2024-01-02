@@ -218,6 +218,7 @@ const composeAndPushNotificationMessages = (
     }
     return '';
 };
+
 </script>
 
 <template>
