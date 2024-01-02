@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { IconSize } from '@/enum/IconEnum';
 import { app } from '@/main';
-import { getToastErrorMsg, routeToastError, setRouteToastError, useToastService } from '@/store/ToastState';
+import {
+    getToastErrorMsg,
+    routeToastError,
+    setRouteToastError,
+    useToastService,
+} from '@/store/ToastState';
 import Toast, { type ToastMessageOptions } from 'primevue/toast';
 import { watch } from 'vue';
 
@@ -20,13 +25,16 @@ watch(routeToastError, (value) => {
 
 const handleToastTimeoutEnds = (message: ToastMessageOptions) => {
     setRouteToastError(undefined); // clear routeToastError state
-}
-
+};
 </script>
 
 <template>
-    <Toast group="tl" position="top-right" #icon
-        @life-end="handleToastTimeoutEnds">
+    <Toast
+        group="tl"
+        position="top-right"
+        #icon
+        @life-end="handleToastTimeoutEnds"
+    >
         <Icon
             icon="error--filled"
             :size="IconSize.large"

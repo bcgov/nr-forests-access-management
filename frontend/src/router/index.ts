@@ -2,7 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import NotFound from '@/components/NotFound.vue';
-import { beforeEachRouteHandler, beforeEnterHandlers } from '@/router/routeHandlers';
+import {
+    beforeEachRouteHandler,
+    beforeEnterHandlers,
+} from '@/router/routeHandlers';
 import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
