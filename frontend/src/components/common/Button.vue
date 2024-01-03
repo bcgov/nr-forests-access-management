@@ -2,7 +2,7 @@
 import Button from 'primevue/button';
 import { ref, type PropType, watchEffect } from 'vue';
 import { IconPosition } from '@/enum/IconEnum';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 
 const props = defineProps({
     label: {
@@ -28,12 +28,12 @@ const props = defineProps({
 const tLabel = ref(props.label); // for this template dynamic labeling.
 let targetButtonClicked = false; // target button.
 watchEffect(() => {
-    if (targetButtonClicked && LoadingState.isLoading.value) {
+    if (targetButtonClicked && isLoading()) {
         tLabel.value = props.loadingLabel;
     }
 
     // reset when loading is done.
-    if (!LoadingState.isLoading.value) {
+    if (!isLoading()) {
         targetButtonClicked = false;
         tLabel.value = props.label;
     }

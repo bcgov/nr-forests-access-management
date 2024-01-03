@@ -10,7 +10,7 @@ import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
@@ -306,7 +306,7 @@ const composeAndPushNotificationMessages = (
                         class="w100"
                         severity="secondary"
                         label="Cancel"
-                        :disabled="LoadingState.isLoading.value"
+                        :disabled="isLoading()"
                         @click="cancelForm()"
                         >&nbsp;</Button
                     >
@@ -317,7 +317,7 @@ const composeAndPushNotificationMessages = (
                         label="Submit Application"
                         :disabled="
                             !(meta.valid && areVerificationsPassed()) ||
-                            LoadingState.isLoading.value
+                            isLoading()
                         "
                         @click="handleSubmit()"
                     >

@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import LoadingState from '@/store/LoadingState';
+import { isLoading } from '@/store/LoadingState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -35,7 +35,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
             forestClientNumberVerifyErrors.value.push(
-                `Client ID ${item}  is invalid and cannot be added.`
+                `Client ID ${item} is invalid and cannot be added.`
             );
         }
 
@@ -44,7 +44,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${item}  is invalid and cannot be added.`
+                        `Client ID ${item} is invalid and cannot be added.`
                     );
                     return;
                 }
@@ -163,6 +163,7 @@ watch(
                         style="display: block"
                     />
                     <small
+                        id="forestClientInputValidationError"
                         class="invalid-feedback"
                         v-for="error in forestClientNumberVerifyErrors"
                         style="display: block"
@@ -180,7 +181,7 @@ watch(
                         forestClientNumbersInput?.length <
                             FOREST_CLIENT_INPUT_MAX_LENGTH ||
                         !!errorMessage ||
-                        LoadingState.isLoading.value
+                        isLoading()
                     "
                 >
                     <Icon icon="add" :size="IconSize.small" />
