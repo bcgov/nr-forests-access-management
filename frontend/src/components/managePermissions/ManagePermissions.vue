@@ -122,6 +122,7 @@ async function deleteUserRoleAssignment(
                     </template>
                     <UserDataTable
                         v-if="selectedApplicationShortDisplayText == 'FOM_DEV'"
+                        :isApplicationSelected="isApplicationSelected"
                         :loading="isLoading"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"

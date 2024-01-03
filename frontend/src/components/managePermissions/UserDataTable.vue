@@ -8,12 +8,10 @@ import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
-import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
 import Button from '@/components/common/Button.vue';
 import ConfirmDialogtext from '@/components/common/ConfirmDialogText.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { confirmDeleteData , deleteAssignment } from '@/store/deleteDataState'
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -78,7 +76,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         acceptLabel: 'Remove',
         acceptClass: 'p-button-danger',
         accept: () => {
-                        emit('deleteUserRoleAssignment', assignment);
+            emit('deleteUserRoleAssignment', assignment);
         },
     });
 }
