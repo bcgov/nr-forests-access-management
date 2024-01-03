@@ -10,8 +10,8 @@ import {
     applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
-    selectedApplicationDisplayText,
     setSelectedApplication,
+    selectedApplicationShortDisplayText
 } from '@/store/ApplicationState';
 import { isLoading } from '@/store/LoadingState';
 import {
@@ -19,9 +19,11 @@ import {
     setNotificationMsg,
 } from '@/store/NotificationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
     fetchUserRoleAssignments,
+    fetchApplicationAdmin
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -31,21 +33,35 @@ const props = defineProps({
         type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
         default: [],
     },
+    applicationAdmins: {
+        type: Array as PropType<FamAppAdminGet[]>,
+        default: [],
+    },
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
 );
 
+const applicationAdmins = shallowRef<
+    FamAppAdminGet[]
+>(props.applicationAdmins);
+
 onUnmounted(() => {
     resetNotification();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
+    console.log(e.value)
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    userRoleAssignments.value = await fetchUserRoleAssignments(
-        selectedApplication.value?.application_id
-    );
+    if(e.value.application_id === 2) {
+        console.log('fom dev')
+        userRoleAssignments.value = await fetchUserRoleAssignments(selectedApplication.value?.application_id);
+    } else if (e.value.application_id === 1) {
+        console.log('fam')
+        applicationAdmins.value = await fetchApplicationAdmin(selectedApplication.value?.application_id)
+        console.log(applicationAdmins.value)
+    }
 };
 
 async function deleteUserRoleAssignment(
@@ -105,12 +121,15 @@ async function deleteUserRoleAssignment(
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
                     <UserDataTable
-                        :isApplicationSelected="isApplicationSelected"
-                        :loading="isLoading()"
+                        v-if="selectedApplicationShortDisplayText == 'FOM_DEV'"
+                        :loading="isLoading"
                         :userRoleAssignments="userRoleAssignments || []"
-                        :selectedApplicationDisplayText="
-                            selectedApplicationDisplayText
-                        "
+                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
+                    <ApplicationAdminTable
+                        v-if="selectedApplicationShortDisplayText == 'FAM'"
+                        :loading="isLoading"
+                        :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -133,7 +152,6 @@ async function deleteUserRoleAssignment(
 
 <style scoped lang="scss">
 @import '@/assets/styles/base.scss';
-
 .application-group {
     display: grid;
 

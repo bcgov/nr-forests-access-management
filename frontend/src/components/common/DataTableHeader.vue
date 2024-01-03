@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import InputText from 'primevue/inputtext';
+import router from '@/router';
+import { IconSize } from '@/enum/IconEnum';
+import { selectedApplicationDisplayText , filters } from '@/store/ApplicationState';
+
+</script>
+
+<template>
+    <div class="custom-data-table-header">
+        <h3>{{ selectedApplicationDisplayText }} users</h3>
+        <span>
+            This table shows all the users in
+            {{ selectedApplicationDisplayText }} and their permissions
+            levels
+        </span>
+    </div>
+
+    <div class="search-container">
+        <Button
+            class="btn-add-user"
+            label="Add user permission"
+            @click="router.push('/grant')"
+        >
+            <Icon icon="add" :size="IconSize.small" />
+        </Button>
+        <span class="p-input-icon-left">
+            <Icon icon="search" :size="IconSize.small" />
+            <InputText
+                id="dashboardSearch"
+                class="dash-search"
+                placeholder="Search by keyword"
+                v-model="filters['global'].value"
+            />
+        </span>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import '@/assets/styles/base.scss';
+
+.custom-data-table-header {
+    padding: 1rem 1rem 1.5rem;
+    background-color: $light-layer-two;
+    h3 {
+        @extend %heading-03;
+        margin: 0;
+        padding: 0;
+    }
+
+    span {
+        @extend %body-compact-01;
+        margin: 0;
+        padding: 0;
+        color: $light-text-secondary;
+    }
+}
+
+.search-container {
+    display: flex;
+}
+
+.btn-add-user {
+    width: 16rem;
+    z-index: 2;
+    border-radius: 0rem;
+}
+
+.dash-search {
+    border-radius: 0 0 0 0;
+}
+
+.btn-icon {
+    padding: 0.4rem !important;
+    margin-right: 0.5rem;
+}
+
+.btn-icon:disabled {
+    border: none;
+}
+
+// update primevue style but only for FAM
+.p-input-icon-left {
+    z-index: 1;
+    flex-grow: 1;
+
+    svg {
+        top: 52%;
+    }
+
+    &:deep(.p-inputtext) {
+        width: 100%;
+        border-bottom: 0.125rem solid transparent;
+    }
+
+    &:deep(.p-inputtext:hover) {
+        border-bottom: 0.125rem solid transparent;
+    }
+}
+:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
+    display: none;
+}
+
+//------ media queries
+
+@media (max-width: 390px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-app-selected {
+        margin: 0 14rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .no-app-selected {
+        margin: 0 25rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .no-app-selected {
+        margin: 0 33rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .no-app-selected {
+        margin: 0 43.3rem;
+        width: auto;
+    }
+}
+</style>

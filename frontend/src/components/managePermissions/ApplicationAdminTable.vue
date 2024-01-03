@@ -8,12 +8,10 @@ import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
-import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
 import Button from '@/components/common/Button.vue';
 import ConfirmDialogtext from '@/components/common/ConfirmDialogText.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { confirmDeleteData , deleteAssignment } from '@/store/deleteDataState'
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -36,12 +34,7 @@ const props = defineProps({
     selectedApplicationDisplayText: {
         type: String,
         requried: true,
-    },
-    isApplicationSelected: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
+    }
 });
 
 const filters = ref({
@@ -69,6 +62,7 @@ const confirmDeleteData = reactive({
 const emit = defineEmits<emit>();
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
+    console.log(assignment)
     confirmDeleteData.role = assignment.role.role_name;
     confirmDeleteData.userName = assignment.user.user_name;
     confirm.require({
@@ -78,7 +72,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         acceptLabel: 'Remove',
         acceptClass: 'p-button-danger',
         accept: () => {
-                        emit('deleteUserRoleAssignment', assignment);
+            console.log('test', assignment)
+            emit('deleteUserRoleAssignment', assignment);
         },
     });
 }
@@ -109,7 +104,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     'role.parent_role.role_name',
                     'user.user_type.description',
                     'role.role_name',
-                    'role.client_number.forest_client_number',
                 ]"
                 paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
                 currentPageReportTemplate="{first} - {last} of {totalRecords} items"
@@ -129,35 +123,19 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     header="Domain"
                     sortable
                 ></Column>
-                <!-- Hidden until information is available
-                    <Column
-                        field="firstName"
-                        header="First Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="lastName"
-                        header="Last Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="email"
-                        header="Email"
-                        sortable
-                    ></Column>
-                     -->
                 <Column
                     field="role.client_number.forest_client_number"
-                    header="Client ID"
+                    header="Application"
+                    sortable
+                ></Column>
+                <Column
+                    field="role.client_numbe.frorest_client_number"
+                    header="Environment"
                     sortable
                 ></Column>
                 <Column field="role.role_name" header="Role" sortable>
                     <template #body="{ data }">
-                        {{
-                            data.role.parent_role
-                                ? data.role.parent_role.role_name
-                                : data.role.role_name
-                        }}
+                        Admin
                     </template></Column
                 >
                 <Column header="Action">
@@ -183,4 +161,115 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+
+.data-table-container {
+    z-index: -1;
+}
+
+.custom-data-table {
+    background: transparent;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 0.0625rem solid $light-border-subtle-00;
+}
+
+.custom-data-table-header {
+    padding: 1rem 1rem 1.5rem;
+    background-color: $light-layer-two;
+    h3 {
+        @extend %heading-03;
+        margin: 0;
+        padding: 0;
+    }
+
+    span {
+        @extend %body-compact-01;
+        margin: 0;
+        padding: 0;
+        color: $light-text-secondary;
+    }
+}
+
+.search-container {
+    display: flex;
+}
+
+.btn-add-user {
+    width: 16rem;
+    z-index: 2;
+    border-radius: 0rem;
+}
+
+.dash-search {
+    border-radius: 0 0 0 0;
+}
+
+.btn-icon {
+    padding: 0.4rem !important;
+    margin-right: 0.5rem;
+}
+
+.btn-icon:disabled {
+    border: none;
+}
+
+// update primevue style but only for FAM
+.p-input-icon-left {
+    z-index: 1;
+    flex-grow: 1;
+
+    svg {
+        top: 52%;
+    }
+
+    &:deep(.p-inputtext) {
+        width: 100%;
+        border-bottom: 0.125rem solid transparent;
+    }
+
+    &:deep(.p-inputtext:hover) {
+        border-bottom: 0.125rem solid transparent;
+    }
+}
+:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
+    display: none;
+}
+
+//------ media queries
+
+@media (max-width: 390px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-app-selected {
+        margin: 0 14rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .no-app-selected {
+        margin: 0 25rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .no-app-selected {
+        margin: 0 33rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .no-app-selected {
+        margin: 0 43.3rem;
+        width: auto;
+    }
+}
 </style>

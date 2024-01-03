@@ -1,6 +1,7 @@
-import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { AppActlApiService, AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 
 // --- Fetching data (from backend)
 
@@ -36,6 +37,40 @@ export const fetchUserRoleAssignments = async (
         return userNameCompare != 0 ? userNameCompare : roleNameCompare;
     });
     return userRoleAssignments;
+};
+
+/// Admin
+export const fetchApplicationAdmin = async (
+    applicationAdminId: number | undefined
+): Promise<FamAppAdminGet[]> => {
+    console.log('1')
+    if (!applicationAdminId) return [];
+    console.log('2')
+    console.log(applicationAdminId)
+    const applicationAdmin = (
+        await AdminMgmtApiService.applicationAdminApi.getApplicationAdminByApplicationId (
+            applicationAdminId
+        )
+    ).data;
+
+
+
+    console.log(applicationAdmin)
+
+    // Default sorting
+    // applicationAdmin.sort((first, second) => {
+    //     console.log('3')
+
+    //     // By user_name
+    //     const userNameCompare = first.user.user_name.localeCompare(
+    //         second.user.user_name
+    //     );
+
+    //     return userNameCompare
+    // });
+    console.log('4')
+
+    return applicationAdmin;
 };
 
 /**

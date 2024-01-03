@@ -68,6 +68,16 @@ input[type='number'] {
     width: 100%;
 }
 
+.data-table-container {
+    z-index: -1;
+}
+
+.custom-data-table {
+    background: transparent;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 0.0625rem solid $light-border-subtle-00;
+}
+
 @media (min-width: 768px) {
     .main {
         padding: 2.5rem 2.5rem 0 2.5rem;
