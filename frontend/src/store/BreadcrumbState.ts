@@ -1,5 +1,5 @@
+import type { IRouteInfo } from '@/router/routeItem';
 import { ref } from 'vue';
-import type { IRouteInfo } from '@/router';
 
 export const breadcrumbState = ref();
 
