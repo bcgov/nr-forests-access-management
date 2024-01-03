@@ -122,6 +122,7 @@ describe('ForestClientCard', () => {
         // Multiple success case
         await wrapper.setProps({ forestClientData: testMultipleActiveClient });
         const clientList = wrapper.findAll('#forest-client-status') as DOMWrapper<Element>[];
+        expect(clientList).toHaveLength(3);
         for (let index in clientList) {
             expect(clientList[index].element.textContent).toBe(STATUS_DESCRIPTION_ACTIVE);
         }

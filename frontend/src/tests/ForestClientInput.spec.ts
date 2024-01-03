@@ -52,12 +52,7 @@ describe('ForestClientInput', () => {
             AppActlApiService.forestClientsApi,
             'search'
         ).mockImplementation(async (item) => {
-            setLoadingState(true);
-            return Promise.resolve(async () => {
-                setTimeout(() => { }, 5000);
-            }).then(() => {
-                return forestClientsApiSearchMock(item)
-            }).finally(() => setLoadingState(false));
+            return Promise.resolve(forestClientsApiSearchMock(item));
         });
         wrapper = mount(ForestClientInput, {
             props: {
@@ -272,24 +267,31 @@ describe('ForestClientInput', () => {
         expect(clientIdCardList[1].text().includes(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2)).toBe(true);
     });
 
-    //TODO - The test case below needs to adjust the mockImplementation for the api call to have a non blocking delay
-    // so the loadingState and the button label could be tested. I have tried some approaches but none seem to work:
-    // - Use of setTimeout doesn't work well in testing (the timout is not applied)
-    // - Use of vi.useFakeTimers() does apply delay, but I am not sure if it is a blocking or non blocking task
+    it('should test the adding button in on loading while we call the api', async () => {
+        vi.spyOn(
+            AppActlApiService.forestClientsApi,
+            'search'
+        ).mockImplementation(async (item) => {
+            // here we suppose while we call backend api, the loading state will be true
+            setLoadingState(true);
+            return forestClientsApiSearchMock(item);
+        });
+        const input = wrapper.find('#forestClientInput');
+        const inputField = input.element as HTMLInputElement;
+        await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
+        await wrapper
+            .find("[aria-label='Add Client Numbers']")
+            .trigger('click');
+        expect(isLoading()).toBe(true);
+        expect(
+            wrapper.find("[aria-label='Add Client Numbers']").element
+                .textContent
+        ).contains('Loading');
 
-    // it('should test the adding button in on loading while we call the api', async () => {
-    //     const input = wrapper.find('#forestClientInput');
-    //     const inputField: HTMLInputElement = input.element as HTMLInputElement;
-    //     await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
-    //     expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
-    //     // expect(isLoading()).toBe(false);
-
-    //     await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
-    //     expect(wrapper.find("[aria-label='Add Client Numbers']").element.textContent).contains('Loading')
-    //     await flushPromises();
-
-    //     // expect(isLoading()).toBe(true);
-    // });
+        // cleanup state variable
+        setLoadingState(false);
+    });
 
     it('should test the delete forest client number case', async () => {
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -352,7 +354,8 @@ describe('ForestClientInput', () => {
 
         expect(wrapper.findAll('#forest-client-id')).toHaveLength(1);
 
-        await wrapper.setProps({ userId: 'Test2' });
+        // Changing the roleId prop should cleanUp Forest Client Card
+        await wrapper.setProps({ roleId: 1 });
 
         expect(wrapper.emitted()).toHaveProperty('resetVerifiedForestClients');
 
@@ -390,8 +393,8 @@ describe('ForestClientInput', () => {
 
         expect(inputField.value).toBe(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
 
-        // Changing the userId prop should cleanUp Input
-        await wrapper.setProps({ userId: 'Test2' });
+        // Changing the roleId prop should cleanUp Input
+        await wrapper.setProps({ roleId: 1 });
 
         expect(inputField.value).toBe('');
 
