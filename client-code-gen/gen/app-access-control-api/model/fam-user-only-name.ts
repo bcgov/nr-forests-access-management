@@ -37,7 +37,7 @@ export interface FamUserOnlyName {
      * @type {string}
      * @memberof FamUserOnlyName
      */
-    'cognito_user_id'?: string;
+    'cognito_user_id'?: string | null;
     /**
      * 
      * @type {string}
@@ -49,7 +49,7 @@ export interface FamUserOnlyName {
      * @type {string}
      * @memberof FamUserOnlyName
      */
-    'user_guid'?: string;
+    'user_guid'?: string | null;
     /**
      * 
      * @type {string}
@@ -61,7 +61,7 @@ export interface FamUserOnlyName {
      * @type {string}
      * @memberof FamUserOnlyName
      */
-    'update_user'?: string;
+    'update_user'?: string | null;
     /**
      * 
      * @type {FamUserType}

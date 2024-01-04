@@ -31,12 +31,12 @@ export interface IdimProxyIdirInfo {
      * @type {string}
      * @memberof IdimProxyIdirInfo
      */
-    'userId'?: string;
+    'userId'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof IdimProxyIdirInfo
      */
-    'displayName'?: string;
+    'displayName'?: string | null;
 }
 

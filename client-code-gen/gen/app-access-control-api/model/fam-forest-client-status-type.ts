@@ -15,7 +15,7 @@
 
 
 /**
- * An enumeration.
+ * 
  * @export
  * @enum {string}
  */
