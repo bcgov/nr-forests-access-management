@@ -1,10 +1,10 @@
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-SQLAlchemy==2.0.23
+fastapi==0.108.0
+uvicorn[standard]==0.25.0
+SQLAlchemy==2.0.25
 mangum==0.17.0
 boto3==1.28.83
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.9
 python-jose==3.3.0
-httpx==0.24.1
-pydantic==2.4.2
-pydantic_core==2.10.1
+httpx==0.26.0
+pydantic==2.5.3
+pydantic_core==2.14.6
