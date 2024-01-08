@@ -28,7 +28,7 @@ export interface FamForestClient {
      * @type {string}
      * @memberof FamForestClient
      */
-    'client_name'?: string;
+    'client_name'?: string | null;
     /**
      * 
      * @type {string}
@@ -40,6 +40,6 @@ export interface FamForestClient {
      * @type {FamForestClientStatus}
      * @memberof FamForestClient
      */
-    'status'?: FamForestClientStatus;
+    'status'?: FamForestClientStatus | null;
 }
 

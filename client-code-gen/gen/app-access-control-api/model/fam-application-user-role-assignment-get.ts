@@ -49,7 +49,7 @@ export interface FamApplicationUserRoleAssignmentGet {
      * @type {number}
      * @memberof FamApplicationUserRoleAssignmentGet
      */
-    'application_id'?: number;
+    'application_id'?: number | null;
     /**
      * 
      * @type {FamUserOnlyName}

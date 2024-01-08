@@ -37,13 +37,13 @@ export interface FamApplicationRole {
      * @type {string}
      * @memberof FamApplicationRole
      */
-    'role_purpose'?: string;
+    'role_purpose'?: string | null;
     /**
      * 
      * @type {number}
      * @memberof FamApplicationRole
      */
-    'parent_role_id'?: number;
+    'parent_role_id'?: number | null;
     /**
      * 
      * @type {number}
@@ -55,7 +55,7 @@ export interface FamApplicationRole {
      * @type {string}
      * @memberof FamApplicationRole
      */
-    'forest_client_number'?: string;
+    'forest_client_number'?: string | null;
     /**
      * 
      * @type {string}
@@ -73,7 +73,7 @@ export interface FamApplicationRole {
      * @type {FamForestClientCreate}
      * @memberof FamApplicationRole
      */
-    'client_number'?: FamForestClientCreate;
+    'client_number'?: FamForestClientCreate | null;
     /**
      * 
      * @type {number}

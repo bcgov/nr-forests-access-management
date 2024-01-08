@@ -40,13 +40,13 @@ export interface FamApplication {
      * @type {number}
      * @memberof FamApplication
      */
-    'application_client_id'?: number;
+    'application_client_id'?: number | null;
     /**
      * 
      * @type {AppEnv}
      * @memberof FamApplication
      */
-    'app_environment'?: AppEnv;
+    'app_environment'?: AppEnv | null;
     /**
      * 
      * @type {number}
@@ -70,13 +70,13 @@ export interface FamApplication {
      * @type {string}
      * @memberof FamApplication
      */
-    'update_user'?: string;
+    'update_user'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof FamApplication
      */
-    'update_date'?: string;
+    'update_date'?: string | null;
 }
 
 

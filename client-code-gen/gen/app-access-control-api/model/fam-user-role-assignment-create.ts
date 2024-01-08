@@ -46,7 +46,7 @@ export interface FamUserRoleAssignmentCreate {
      * @type {string}
      * @memberof FamUserRoleAssignmentCreate
      */
-    'forest_client_number'?: string;
+    'forest_client_number'?: string | null;
 }
 
 
