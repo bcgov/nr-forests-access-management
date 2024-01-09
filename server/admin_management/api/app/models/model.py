@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    Index,
     func,
     text,
 )
@@ -104,6 +105,9 @@ class FamApplicationAdmin(Base):
             ["app_fam.fam_user.user_id"],
             name="reffam_application_admin_user",
         ),
+        UniqueConstraint(
+            "fam_app_admin_usr_app_uk", "user_id", "application_id", unique=True
+        ),
         {
             "comment": "Application Admin is a cross-reference object that "
             + "allows for the identification of who are the "
@@ -164,6 +168,76 @@ class FamApplicationAdmin(Base):
     user = relationship(
         "FamUser", back_populates="fam_application_admin", lazy="joined"
     )
+
+
+class FamAccessControlPrivilege(Base):
+    __tablename__ = "fam_access_control_privilege"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["role_id"],
+            ["app_fam.fam_role.role_id"],
+            name="reffam_access_control_privilege_role",
+        ),
+        ForeignKeyConstraint(
+            ["user_id"],
+            ["app_fam.fam_user.user_id"],
+            name="reffam_access_control_privilege_user",
+        ),
+        PrimaryKeyConstraint(
+            "access_control_privilege_id", name="fam_access_control_privilege_pk"
+        ),
+        UniqueConstraint(
+            "fam_access_control_usr_rle_uk", "user_id", "role_id", unique=True
+        ),
+        Index("ix_app_fam_fam_access_control_privilege_role_id", "role_id"),
+        Index("ix_app_fam_fam_access_control_privilege_user_id", "user_id"),
+        {
+            "comment": "Access Control Privilege is a cross-reference object that allows "
+            "for the identification of who are the delegated "
+            "administrators(User) for an Application for a particular role.",
+            "schema": "app_fam",
+        },
+    )
+    access_control_privilege_id: Column(
+        BigInteger,
+        Identity(
+            start=1,
+            increment=1,
+            minvalue=1,
+            maxvalue=9223372036854775807,
+            cycle=False,
+            cache=1,
+        ),
+        primary_key=True,
+        comment="Automatically generated key used to identify the uniqueness of a User administers the Application role.",
+    )
+    user_id: Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the user within FAM system.",
+    )
+    role_id: Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the application role within FAM system.",
+    )
+    create_user: Column(
+        String(60), comment="The user or proxy account that created the record."
+    )
+    create_date: Column(
+        TIMESTAMP(precision=6),
+        server_default=text("CURRENT_DATE"),
+        comment="The date and time the record was created.",
+    )
+    update_user: Column(
+        String(60),
+        comment="The user or proxy account that created or last updated the record.",
+    )
+    update_date: Column(
+        TIMESTAMP(precision=6),
+        server_default=text("CURRENT_DATE"),
+        comment="The date and time the record was created or last updated.",
+    )
+    role: relationship("FamRole", back_populates="fam_access_control_privilege")
+    user: relationship("FamUser", back_populates="fam_access_control_privilege")
 
 
 class FamForestClient(Base):
@@ -320,6 +394,7 @@ class FamUser(Base):
         "FamUserType", backref="user_relation", lazy="joined"
     )
     fam_application_admin = relationship("FamApplicationAdmin", back_populates="user")
+    fam_access_control_privilege = relationship('FamAccessControlPrivilege', back_populates='role')
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
@@ -531,6 +606,7 @@ class FamRole(Base):
     )
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="role")
     role_type_relation = relationship("FamRoleType", backref="role_relation")
+    fam_access_control_privilege = relationship('FamAccessControlPrivilege', back_populates='role')
     __table_args__ = (
         ForeignKeyConstraint(
             ["application_id"],
