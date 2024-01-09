@@ -6,16 +6,30 @@ import SideNav, {
     type ISideNavItem,
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
-import { isApplicationSelected } from '@/store/ApplicationState';
+import { isApplicationSelected,selectedApplicationShortDisplayText } from '@/store/ApplicationState';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
+
+const initialLabel = () => {
+    if(selectedApplicationShortDisplayText.value === 'FAM') {
+        disableSideNavOption('Add user permission', true);
+        disableSideNavOption('Add application admin', false);
+    } else {
+        disableSideNavOption('Add application admin', true);
+        disableSideNavOption('Add user permission', false);
+    }
+};
 
 onMounted(() => {
     disableSideNavOption('Add user permission', !isApplicationSelected.value);
 });
 
 watch(isApplicationSelected, (value) => {
-    disableSideNavOption('Add user permission', !value);
+    initialLabel();
+});
+
+watch(selectedApplicationShortDisplayText, () => {
+    initialLabel();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {

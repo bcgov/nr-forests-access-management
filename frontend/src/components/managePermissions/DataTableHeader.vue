@@ -7,7 +7,7 @@ import { selectedApplicationDisplayText , filters } from '@/store/ApplicationSta
 const props = defineProps({
     btnLabel: {
         type: String,
-        required: true
+        default: false,
     }
 });
 
@@ -47,7 +47,7 @@ const props = defineProps({
 @import '@/assets/styles/base.scss';
 
 .custom-data-table-header {
-    padding: 1rem 1rem 2.2rem;
+    padding: 1rem 1rem 1.5rem;
     background-color: $light-layer-two;
     h3 {
         @extend %heading-03;

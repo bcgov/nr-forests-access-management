@@ -9,6 +9,7 @@ export const fetchApplications = async () => {
     const applications = (
         await AppActlApiService.applicationsApi.getApplications()
     ).data;
+
     // State change.
     setApplicationsUserAdministers(applications);
 };
@@ -39,40 +40,6 @@ export const fetchUserRoleAssignments = async (
     return userRoleAssignments;
 };
 
-/// Admin
-export const fetchApplicationAdmin = async (
-    applicationAdminId: number | undefined
-): Promise<FamAppAdminGet[]> => {
-    console.log('1')
-    if (!applicationAdminId) return [];
-    console.log('2')
-    console.log(applicationAdminId)
-    const applicationAdmin = (
-        await AdminMgmtApiService.applicationAdminApi.getApplicationAdminByApplicationId (
-            applicationAdminId
-        )
-    ).data;
-
-
-
-    console.log(applicationAdmin)
-
-    // Default sorting
-    // applicationAdmin.sort((first, second) => {
-    //     console.log('3')
-
-    //     // By user_name
-    //     const userNameCompare = first.user.user_name.localeCompare(
-    //         second.user.user_name
-    //     );
-
-    //     return userNameCompare
-    // });
-    console.log('4')
-
-    return applicationAdmin;
-};
-
 /**
  * This will call api to delete userRoleXrefId record from backend and fetch again
  * to refresh the state.
@@ -100,4 +67,48 @@ export const fetchApplicationRoles = async (
         )
     ).data;
     return applicationRoles;
+};
+
+/// Admin
+export const fetchApplicationAdmin = async (
+    applicationAdminId: number | undefined
+): Promise<FamAppAdminGet[]> => {
+    if (!applicationAdminId) return [];
+    const applicationAdmin = (
+        await AdminMgmtApiService.applicationAdminApi.getApplicationAdminByApplicationId (
+            applicationAdminId
+        )
+    ).data;
+
+    // Default sorting
+    applicationAdmin.sort((first, second) => {
+        // By user_name
+        const userNameCompare = first.user.user_name.localeCompare(
+            second.user.user_name
+        );
+
+        return userNameCompare
+    });
+
+    return applicationAdmin;
+};
+
+
+/**
+ * This will call api to delete applicationAdminId record from backend and fetch again
+ * to refresh the state.
+ * @param applicationAdminId id to delete fam_user_role_assignment record.
+ * @param applicationId id to fetch and refresh records with the applicationId.
+ */
+
+export const deleteAndRefreshApplicationAdmin = async (
+    applicationAdminId: number,
+    applicationId: number
+): Promise<FamAppAdminGet[]> => {
+    console.log('delete admin')
+    await AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
+        applicationAdminId
+    );
+    // When deletion is successful, refresh (fetch) for frontend state.
+    return fetchApplicationAdmin(applicationId);
 };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType } from 'vue';
+import { onUnmounted, shallowRef, computed, type PropType } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -22,6 +22,7 @@ import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
+    deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmin
 } from '@/services/fetchData';
@@ -51,22 +52,28 @@ onUnmounted(() => {
     resetNotification();
 });
 
+const tabHeader = computed(() => {
+    return selectedApplicationShortDisplayText.value === 'FAM'
+            ? 'Application admins'
+            : 'Users';
+})
+
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
-    console.log(e.value)
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     if(e.value.application_id === 2) {
-        console.log('fom dev')
-        userRoleAssignments.value = await fetchUserRoleAssignments(selectedApplication.value?.application_id);
+        userRoleAssignments.value = await fetchUserRoleAssignments(
+            selectedApplication.value?.application_id
+        );
     } else if (e.value.application_id === 1) {
-        console.log('fam')
-        applicationAdmins.value = await fetchApplicationAdmin(selectedApplication.value?.application_id)
-        console.log(applicationAdmins.value)
+        applicationAdmins.value = await fetchApplicationAdmin(
+            selectedApplication.value?.application_id
+        );
     }
 };
 
-async function deleteUserRoleAssignment(
+const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
-) {
+) => {
     try {
         userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
@@ -77,6 +84,27 @@ async function deleteUserRoleAssignment(
             Severity.success,
             `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
         );
+    } catch (error: any) {
+        setNotificationMsg(
+            Severity.error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    }
+}
+
+const deleteAppAdmin = async ( admin: FamAppAdminGet) => {
+    console.log(admin)
+    try {
+        applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
+            admin.application_admin_id,
+            admin.application_id
+        );
+
+        setNotificationMsg(
+            Severity.success,
+            `You removed ${admin.user.user_name}'s admin privilege`
+        );
+
     } catch (error: any) {
         setNotificationMsg(
             Severity.error,
@@ -116,13 +144,12 @@ async function deleteUserRoleAssignment(
                     },
                 }"
             >
-                <TabPanel header="Users">
+                <TabPanel :header="tabHeader">
                     <template #header>
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
                     <UserDataTable
                         v-if="selectedApplicationShortDisplayText == 'FOM_DEV'"
-                        :isApplicationSelected="isApplicationSelected"
                         :loading="isLoading"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
@@ -130,8 +157,8 @@ async function deleteUserRoleAssignment(
                     <ApplicationAdminTable
                         v-if="selectedApplicationShortDisplayText == 'FAM'"
                         :loading="isLoading"
-                        :userRoleAssignments="userRoleAssignments || []"
-                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                        :applicationAdmins="applicationAdmins || []"
+                        @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
                 <!-- waiting for the Delegated admins table

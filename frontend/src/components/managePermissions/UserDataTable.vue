@@ -11,6 +11,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import Button from '@/components/common/Button.vue';
 import ConfirmDialogtext from '@/components/common/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/DataTableHeader.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -30,15 +31,6 @@ const props = defineProps({
             FamApplicationUserRoleAssignmentGet[] | undefined
         >,
         required: true,
-    },
-    selectedApplicationDisplayText: {
-        type: String,
-        requried: true,
-    },
-    isApplicationSelected: {
-        type: Boolean,
-        required: true,
-        default: false,
     },
 });
 
@@ -93,7 +85,9 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
-            <DataTableHeader />
+            <DataTableHeader
+                btnLabel="Add user permission"
+            />
             <DataTable
                 v-model:filters="filters"
                 :value="props.userRoleAssignments"
