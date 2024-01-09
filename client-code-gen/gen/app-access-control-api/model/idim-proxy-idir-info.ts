@@ -37,6 +37,12 @@ export interface IdimProxyIdirInfo {
      * @type {string}
      * @memberof IdimProxyIdirInfo
      */
-    'displayName'?: string | null;
+    'firstName'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyIdirInfo
+     */
+    'lastName'?: string | null;
 }
 
