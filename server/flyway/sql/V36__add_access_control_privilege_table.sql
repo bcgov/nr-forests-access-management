@@ -58,6 +58,7 @@ GRANT SELECT ON app_fam.fam_role TO ${admin_management_api_db_user}
 -- Grant SELECT privilege to Auth Lambda and Application Access Control API
 GRANT SELECT ON app_fam.fam_access_control_privilege TO ${auth_lambda_db_user}
 ;
-GRANT SELECT ON app_fam.fam_access_control_privilege TO ${api_db_username}
-;
+-- TODO: remove this, api_db_username probably won't read this?
+-- GRANT SELECT ON app_fam.fam_access_control_privilege TO ${api_db_username}
+-- ;
 
