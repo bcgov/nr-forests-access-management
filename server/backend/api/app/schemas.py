@@ -265,14 +265,16 @@ class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
     userId: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    displayName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 
     @staticmethod
     def from_api_json(json_dict):
         info = IdimProxyIdirInfo(
-            found=json_dict["found"],
-            userId=json_dict["userId"],
-            displayName=json_dict["displayName"],
+            found=json_dict.get("found"),
+            userId=json_dict.get("userId"),
+            firstName=json_dict.get("firstName"),
+            lastName=json_dict.get("lastName"),
         )
         return info
 

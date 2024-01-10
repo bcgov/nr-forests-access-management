@@ -67,6 +67,8 @@ def test_search_idir_with_valid_user_found_result(
     assert response.status_code == HTTPStatus.OK
     assert response.json()['found'] == True
     assert response.json()['userId'] == valid_user_id_param
+    assert response.json()['firstName'] is not None
+    assert response.json()['lastName'] is not None
 
 
 def test_search_idir_with_invalid_user_return_not_found(
@@ -89,6 +91,8 @@ def test_search_idir_with_invalid_user_return_not_found(
     assert response.status_code == HTTPStatus.OK
     assert response.json()['found'] == False
     assert response.json()['userId'] == invalid_user_id_param
+    assert response.json()['firstName'] == None
+    assert response.json()['lastName'] == None
 
 
 def test_none_idir_user_cannot_search_idir_user(

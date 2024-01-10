@@ -63,6 +63,8 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result['found'] == True
         assert search_result['userId'] == valid_idir_user
+        assert search_result['firstName'] is not None
+        assert search_result['lastName'] is not None
 
     def test_idir_search_user_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
@@ -72,4 +74,3 @@ class TestIdimProxyServiceClass(object):
         search_result = idim_proxy_api.search_idir(search_params)
 
         assert search_result['found'] == False
-        assert search_result['userId'] == None
