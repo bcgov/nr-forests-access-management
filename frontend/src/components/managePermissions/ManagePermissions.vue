@@ -93,7 +93,6 @@ const deleteUserRoleAssignment = async (
 }
 
 const deleteAppAdmin = async ( admin: FamAppAdminGet) => {
-    console.log(admin)
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id,
@@ -150,13 +149,13 @@ const deleteAppAdmin = async ( admin: FamAppAdminGet) => {
                     </template>
                     <UserDataTable
                         v-if="selectedApplicationShortDisplayText == 'FOM_DEV'"
-                        :loading="isLoading"
+                        :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                     <ApplicationAdminTable
                         v-if="selectedApplicationShortDisplayText == 'FAM'"
-                        :loading="isLoading"
+                        :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
