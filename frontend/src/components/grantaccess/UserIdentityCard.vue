@@ -50,8 +50,10 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-@import '@/assets/styles/card.scss';
 .col {
     margin-right: 0.5rem;
 }
+</style>
+<style lang="scss">
+@import '@/assets/styles/card.scss';
 </style>

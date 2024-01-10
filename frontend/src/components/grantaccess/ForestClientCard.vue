@@ -104,7 +104,6 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-@import '@/assets/styles/card.scss';
 
 p > label {
     margin-top: 0.25rem;
@@ -185,4 +184,7 @@ p * {
 .btn-trash:hover {
     background-color: transparent !important;
 }
+</style>
+<style lang="scss">
+@import '@/assets/styles/card.scss';
 </style>
