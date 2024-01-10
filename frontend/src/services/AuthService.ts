@@ -131,7 +131,7 @@ const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
 }
 
 const userHasRoles = (): boolean => {
-    return state.value.famLoginUser!.roles!.length > 0 ? true : false;
+    return state.value.famLoginUser!.roles!.length > 0;
 }
 
 // -----
