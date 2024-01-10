@@ -55,7 +55,7 @@ GRANT SELECT, UPDATE, DELETE, INSERT ON app_fam.fam_access_control_privilege TO 
 GRANT SELECT ON app_fam.fam_role TO ${admin_management_api_db_user}
 ;
 
--- Grant SELECT privilege to Auth Lambda and Application Access Control API
+-- Grant SELECT privilege to Auth Lambda
 GRANT SELECT ON app_fam.fam_access_control_privilege TO ${auth_lambda_db_user}
 ;
 
