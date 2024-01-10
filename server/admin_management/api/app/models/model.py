@@ -219,8 +219,9 @@ class FamAccessControlPrivilege(Base):
         String(60), comment="The user or proxy account that created the record."
     )
     create_date = Column(
-        TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -228,8 +229,8 @@ class FamAccessControlPrivilege(Base):
         comment="The user or proxy account that created or last updated the record.",
     )
     update_date = Column(
-        TIMESTAMP(precision=6),
-        server_default=text("CURRENT_DATE"),
+        TIMESTAMP(timezone=True, precision=6),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
     role = relationship("FamRole", back_populates="fam_access_control_privilege")
