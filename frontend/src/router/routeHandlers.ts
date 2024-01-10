@@ -5,6 +5,7 @@ import {
     fetchApplicationRoles,
     fetchApplications,
     fetchUserRoleAssignments,
+    fetchApplicationAdmin
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -29,14 +30,26 @@ import type { RouteLocationNormalized } from 'vue-router';
 // --- beforeEnter Route Handler
 
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
+    let applicationAdmins;
+    let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    const userRolesFetchResult = await asyncWrap(
-        fetchUserRoleAssignments(selectedApplication.value?.application_id)
-    );
-    Object.assign(to.meta, { userRoleAssignments: userRolesFetchResult.data });
+    if(selectedApplication.value?.application_id === 1) {
+        applicationAdmins = await asyncWrap(
+            fetchApplicationAdmin(selectedApplication.value?.application_id)
+        )
+    } else if(selectedApplication.value?.application_id === 2) {
+        userRolesFetchResult = await asyncWrap(
+            fetchUserRoleAssignments(selectedApplication.value?.application_id)
+        );
+    }
+    Object.assign(to.meta, {
+        userRoleAssignments: userRolesFetchResult?.data,
+        applicationAdmins: applicationAdmins?.data
+    });
     return true;
 };
+
 
 const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized

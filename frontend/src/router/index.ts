@@ -10,14 +10,6 @@ import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import {
-    fetchApplicationAdmin,
-    fetchApplicationRoles,
-    fetchApplications,
-    fetchUserRoleAssignments,
-} from '@/services/fetchData';
-import { selectedApplication } from '@/store/ApplicationState';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -64,25 +56,7 @@ const routes = [
             hasBreadcrumb: false,
         },
         component: ManagePermissionsView,
-        beforeEnter: async (to: any) => {
-            let applicationAdmins;
-            let userRoleAssignments;
-            // Requires fetching applications the user administers.
-            await fetchApplications();
-            if (selectedApplication.value?.application_id === 1) {
-                applicationAdmins = await fetchApplicationAdmin(
-                    selectedApplication.value?.application_id
-                );
-
-            } else if (selectedApplication.value?.application_id === 2) {
-                userRoleAssignments = await fetchUserRoleAssignments(
-                        selectedApplication.value?.application_id
-                );
-            }
-
-            Object.assign(to.meta, { userRoleAssignments: userRoleAssignments, applicationAdmins: applicationAdmins});
-            return true;
-        },
+        beforeEnter: beforeEnterHandlers[routeItems.dashboard.name],
         props: (route: any) => {
             return {
                 // userRoleAssignments is ready for the `component` as props.
