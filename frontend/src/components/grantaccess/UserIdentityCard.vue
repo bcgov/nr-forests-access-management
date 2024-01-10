@@ -26,20 +26,20 @@ const props = defineProps<{
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div class="col-2">
+            <div class="col" style="margin-left: 2rem">
                 <label class="row">Username</label>
                 <span class="row">{{ props.userIdentity.userId }}</span>
             </div>
-            <div class="col-2" v-if="props.userIdentity.found">
+            <div class="col" v-if="props.userIdentity.found">
                 <label class="row">First Name</label>
                 <span class="row">{{ props.userIdentity.firstName }}</span>
             </div>
-            <div class="col-2" v-if="props.userIdentity.found">
+            <div class="col" v-if="props.userIdentity.found">
                 <label class="row">Last Name</label>
                 <span class="row">{{ props.userIdentity.lastName }}</span>
             </div>
             <div
-                class="col d-flex align-items-center"
+                class="col-6 d-flex"
                 v-if="!props.userIdentity.found"
             >
                 <span class="px-0 invalid"> User does not exist </span>
@@ -50,10 +50,10 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-
-.col-2 {
-    margin-left: 2rem;
-    margin-right: 2.5rem;
-    flex-grow: 0;
+.col {
+    margin-right: 0.5rem;
 }
+</style>
+<style lang="scss">
+@import '@/assets/styles/card.scss';
 </style>
