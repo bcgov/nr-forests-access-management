@@ -7,7 +7,11 @@ import { selectedApplicationDisplayText , filters } from '@/store/ApplicationSta
 const props = defineProps({
     btnLabel: {
         type: String,
-        default: false,
+        required: true,
+    },
+    btnRoute: {
+        type: String,
+        required: true
     }
 });
 
@@ -27,7 +31,7 @@ const props = defineProps({
         <Button
             class="btn-add-user"
             :label="props.btnLabel"
-            @click="router.push('/grant')"
+            @click="router.push(props.btnRoute)"
         >
             <Icon icon="add" :size="IconSize.small" />
         </Button>

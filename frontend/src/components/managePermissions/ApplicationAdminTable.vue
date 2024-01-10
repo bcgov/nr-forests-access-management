@@ -88,6 +88,7 @@ const deleteAdmin = (admin: FamAppAdminGet) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add application admin"
+                btnRoute="#"
             />
             <DataTable
                 v-model:filters="adminFilters"

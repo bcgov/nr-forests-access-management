@@ -87,6 +87,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add user permission"
+                btnRoute="/grant"
             />
             <DataTable
                 v-model:filters="filters"
