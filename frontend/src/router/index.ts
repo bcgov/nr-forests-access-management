@@ -10,6 +10,7 @@ import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
+import AccessRequestView from '@/views/AccessRequestView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -82,6 +83,19 @@ const routes = [
                 applicationRoleOptions: route.meta.applicationRoleOptions,
             };
         },
+    },
+    {
+
+        path: routeItems.accessRequest.path,
+        name: routeItems.accessRequest.name,
+        component: AccessRequestView,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: false,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: false,
+        },
+
     },
     {
         path: '/authCallback',

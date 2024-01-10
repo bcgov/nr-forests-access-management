@@ -12,6 +12,7 @@ import {
     selectedApplication,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { setNavigationPath } from '@/store/NavigationState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -77,12 +78,23 @@ export const beforeEachRouteHandler = async (
         // The RouteError will be emitted to a state.
         const routeError = new FamRouteError(
             RouteErrorName.NOT_AUTHENTICATED_ERROR,
-            "You're not login",
+            "You're not logged in. Please login.",
             { to, from }
         );
         emitRouteToastError(routeError);
         // Back to Landing after emit error.
+        setNavigationPath(to.path);
         return { path: routeItems.landing.path };
+    }
+
+    if (AuthService.getters.isLoggedIn() && to.path != routeItems.accessRequest.path && !AuthService.getters.userHasRoles()) {
+        const routeError = new FamRouteError(
+            RouteErrorName.NO_ROLES_ERROR,
+            "You do not have any FAM roles. Please request access.",
+            { to, from }
+        );
+        emitRouteToastError(routeError);
+        return { path: routeItems.accessRequest.path };
     }
 
     // Application selected guard.

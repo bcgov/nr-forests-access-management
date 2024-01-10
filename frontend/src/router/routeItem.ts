@@ -24,4 +24,9 @@ export const routeItems = {
         path: '/grant',
         label: 'Add user permission',
     },
+    accessRequest: {
+        name: 'accessRequest',
+        path: '/access-request',
+        label: 'Access Request',
+    },
 } as RouteItems;

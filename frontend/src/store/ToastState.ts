@@ -74,7 +74,8 @@ export const getToastErrorMsg = (error: any) => {
 
 const handleRouteErrorMessage = (error: FamRouteError): string => {
     if (RouteErrorName.NOT_AUTHENTICATED_ERROR == error.name ||
-        RouteErrorName.NO_APPLICATION_SELECTED_ERROR == error.name) {
+        RouteErrorName.NO_APPLICATION_SELECTED_ERROR == error.name ||
+        RouteErrorName.NO_ROLES_ERROR == error.name) {
         return error.message;
     }
     return genericErrorMsg.text;

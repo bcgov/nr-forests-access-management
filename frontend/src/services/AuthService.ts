@@ -4,6 +4,7 @@ import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
+import { removeNavigationPath } from '@/store/NavigationState';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -19,20 +20,20 @@ export interface FamLoginUser {
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-              | FamLoginUser
-              | undefined
-              | null)
+            | FamLoginUser
+            | undefined
+            | null)
         : undefined,
 });
 
 // functions
 
-function isLoggedIn(): boolean {
+const isLoggedIn = (): boolean => {
     const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
     return loggedIn;
 }
 
-async function login() {
+const login = async () => {
     /*
         See Aws-Amplify documenation:
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
@@ -46,13 +47,13 @@ async function login() {
     });
 }
 
-async function logout() {
+const logout = async () => {
     Auth.signOut();
     removeFamUser();
     console.log('User logged out.');
 }
 
-async function handlePostLogin() {
+const handlePostLogin = async () => {
     return Auth.currentAuthenticatedUser()
         .then(async (_userData) => {
             await refreshToken();
@@ -73,7 +74,7 @@ async function handlePostLogin() {
  *
  * Automatically logout if unable to get currentSession().
  */
-async function refreshToken(): Promise<FamLoginUser | undefined> {
+const refreshToken = async (): Promise<FamLoginUser | undefined> => {
     try {
         console.log('Refreshing Token...');
         const currentAuthToken: CognitoUserSession =
@@ -99,7 +100,7 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
  * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
  * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
  */
-function parseToken(authToken: CognitoUserSession): FamLoginUser {
+const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
     const decodedIdToken = authToken.getIdToken().decodePayload();
     const decodedAccessToken = authToken.getAccessToken().decodePayload();
     const famLoginUser = {
@@ -113,19 +114,24 @@ function parseToken(authToken: CognitoUserSession): FamLoginUser {
     return famLoginUser;
 }
 
-function removeFamUser() {
+const removeFamUser = () => {
     storeFamUser(undefined);
+    removeNavigationPath();
     // clean up local storage for selected application
     localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 }
 
-function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
+const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
     state.value.famLoginUser = famLoginUser;
     if (famLoginUser) {
         localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
     } else {
         localStorage.removeItem(FAM_LOGIN_USER);
     }
+}
+
+const userHasRoles = (): boolean => {
+    return state.value.famLoginUser!.roles!.length > 0 ? true : false;
 }
 
 // -----
@@ -140,6 +146,7 @@ const methods = {
 
 const getters = {
     isLoggedIn,
+    userHasRoles,
 };
 
 export default {
