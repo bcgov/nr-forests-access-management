@@ -9,6 +9,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
 import { IconSize } from '@/enum/IconEnum';
+import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
@@ -88,7 +89,7 @@ const deleteAdmin = (admin: FamAppAdminGet) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add application admin"
-                btnRoute="#"
+                :btnRoute="routeItems.grantUserPermission.path"
             />
             <DataTable
                 v-model:filters="adminFilters"
