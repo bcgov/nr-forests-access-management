@@ -2,10 +2,10 @@
 export class FamCustomError extends Error {
     message: string;
     cause: Error | undefined; // Original error if any.
-    constructor(message: string, caues?: Error) {
+    constructor(message: string, cause?: Error) {
         super(message);
         this.message = message;
-        this.cause = caues;
+        this.cause = cause;
     }
 }
 
@@ -26,8 +26,8 @@ export class FamRouteError extends FamCustomError {
     name: RouteErrorName;
     routeInfo: RouteInfo | undefined;
 
-    constructor(name: RouteErrorName, message: string, routeInfo?: RouteInfo, caues?: Error) {
-        super(message, caues);
+    constructor(name: RouteErrorName, message: string, routeInfo?: RouteInfo, cause?: Error) {
+        super(message, cause);
         this.name = name;
         this.routeInfo = routeInfo;
     }
