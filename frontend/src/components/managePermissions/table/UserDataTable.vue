@@ -10,8 +10,8 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import { IconSize } from '@/enum/IconEnum';
 import Button from '@/components/common/Button.vue';
-import ConfirmDialogtext from '@/components/common/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/DataTableHeader.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
