@@ -19,6 +19,7 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
+import { FAM_APPLICATION_ID, FAM_APPLICATION_NAME } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 import {
@@ -54,19 +55,19 @@ onUnmounted(() => {
 });
 
 const tabHeader = computed(() => {
-    return selectedApplicationShortDisplayText.value === 'FAM'
+    return selectedApplicationShortDisplayText.value === FAM_APPLICATION_NAME
             ? 'Application admins'
             : 'Users';
 })
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if(e.value.application_id === 2) {
-        userRoleAssignments.value = await fetchUserRoleAssignments(
-            selectedApplication.value?.application_id
-        );
-    } else if (e.value.application_id === 1) {
+    if (e.value.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmin(
+            selectedApplication.value?.application_id
+            );
+    } else {
+        userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplication.value?.application_id
         );
     }
@@ -93,7 +94,7 @@ const deleteUserRoleAssignment = async (
     }
 }
 
-const deleteAppAdmin = async ( admin: FamAppAdminGet) => {
+const deleteAppAdmin = async (admin: FamAppAdminGet) => {
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id,
@@ -148,17 +149,17 @@ const deleteAppAdmin = async ( admin: FamAppAdminGet) => {
                     <template #header>
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
-                    <UserDataTable
-                        v-if="selectedApplicationShortDisplayText == 'FOM_DEV'"
-                        :loading="isLoading()"
-                        :userRoleAssignments="userRoleAssignments || []"
-                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
-                    />
                     <ApplicationAdminTable
-                        v-if="selectedApplicationShortDisplayText == 'FAM'"
+                        v-if="selectedApplicationShortDisplayText === FAM_APPLICATION_NAME"
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
                         @deleteAppAdmin="deleteAppAdmin"
+                    />
+                    <UserDataTable
+                        v-else
+                        :loading="isLoading()"
+                        :userRoleAssignments="userRoleAssignments || []"
+                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
                 <!-- waiting for the Delegated admins table
