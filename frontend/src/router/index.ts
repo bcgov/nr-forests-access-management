@@ -85,7 +85,6 @@ const routes = [
         },
     },
     {
-
         path: routeItems.accessRequest.path,
         name: routeItems.accessRequest.name,
         component: AccessRequestView,
@@ -95,7 +94,6 @@ const routes = [
             layout: 'ProtectedLayout',
             hasBreadcrumb: false,
         },
-
     },
     {
         path: '/authCallback',
