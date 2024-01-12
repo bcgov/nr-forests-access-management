@@ -185,3 +185,6 @@ p * {
     background-color: transparent !important;
 }
 </style>
+<style lang="scss">
+@import '@/assets/styles/card.scss';
+</style>
