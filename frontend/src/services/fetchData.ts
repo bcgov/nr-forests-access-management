@@ -70,7 +70,7 @@ export const fetchApplicationRoles = async (
     return applicationRoles;
 };
 
-export const fetchApplicationAdmin = async (
+export const fetchApplicationAdmins = async (
     applicationAdminId: number | undefined
 ): Promise<FamAppAdminGet[]> => {
     if (!applicationAdminId) return [];
@@ -105,5 +105,5 @@ export const deleteAndRefreshApplicationAdmin = async (
         applicationAdminId
     );
     // When deletion is successful, refresh (fetch) for frontend state.
-    return fetchApplicationAdmin(FAM_APPLICATION_ID);
+    return fetchApplicationAdmins(FAM_APPLICATION_ID);
 };
