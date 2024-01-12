@@ -17,7 +17,7 @@
             {
                 "name": "Add application admin",
                 "icon": "enterprise",
-                "link": "/grant",
+                "link": "#",
                 "disabled": true
             }
         ]
