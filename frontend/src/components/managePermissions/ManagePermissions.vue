@@ -54,12 +54,6 @@ onUnmounted(() => {
     resetNotification();
 });
 
-const tabHeader = computed(() => {
-    return selectedApplicationShortDisplayText.value === FAM_APPLICATION_NAME
-            ? 'Application admins'
-            : 'Users';
-})
-
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     if (e.value.application_id === FAM_APPLICATION_ID) {
@@ -144,23 +138,34 @@ const deleteAppAdmin = async (admin: FamAppAdminGet) => {
                     },
                 }"
             >
-                <TabPanel :header="tabHeader">
+                <TabPanel
+                    header="Application admins"
+                    v-if="selectedApplicationShortDisplayText === FAM_APPLICATION_NAME"
+                >
                     <template #header>
-                        <Icon icon="user" :size="IconSize.small" />
+                        <Icon icon="enterprise" :size="IconSize.small" />
                     </template>
                     <ApplicationAdminTable
-                        v-if="selectedApplicationShortDisplayText === FAM_APPLICATION_NAME"
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
+                </TabPanel>
+                <TabPanel
+                    header="Users"
+                    v-else
+                >
+                    <template #header>
+                        <Icon icon="user" :size="IconSize.small" />
+                    </template>
+
                     <UserDataTable
-                        v-else
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
+
                 <!-- waiting for the Delegated admins table
                 <TabPanel
                     header="Delegated admins"
