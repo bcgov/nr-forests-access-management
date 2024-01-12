@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import InputText from 'primevue/inputtext';
 import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
-import { selectedApplicationDisplayText , filters } from '@/store/ApplicationState';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
 const props = defineProps({
     btnLabel: {
@@ -12,8 +13,22 @@ const props = defineProps({
     btnRoute: {
         type: String,
         required: true
+    },
+    filter: {
+        type: String,
+        required: true
     }
 });
+const emit = defineEmits(['change']);
+
+const proxyValue = computed({
+    get() {
+        return props.filter
+    },
+    set(newValue) {
+        emit('change', newValue)
+    }
+})
 
 </script>
 
@@ -41,7 +56,8 @@ const props = defineProps({
                 id="dashboardSearch"
                 class="dash-search"
                 placeholder="Search by keyword"
-                v-model="filters['global'].value"
+                v-model="proxyValue"
+                :value="props.filter"
             />
         </span>
     </div>

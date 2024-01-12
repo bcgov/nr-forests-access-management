@@ -34,7 +34,7 @@ const props = defineProps({
 });
 
 const adminFilters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'user.user_type.description': {
         value: null,
@@ -59,6 +59,10 @@ const confirmDeleteData = reactive({
     adminName: '',
     role: 'ADMIN'
 });
+
+const adminSearchChange = (newvalue: string) => {
+    adminFilters.value.global.value = newvalue;
+};
 
 const deleteAdmin = (admin: FamAppAdminGet) => {
     confirmDeleteData.adminName = admin.user.user_name;
@@ -90,6 +94,8 @@ const deleteAdmin = (admin: FamAppAdminGet) => {
             <DataTableHeader
                 btnLabel="Add application admin"
                 :btnRoute="routeItems.grantUserPermission.path"
+                :filter="adminFilters['global'].value"
+                @change="adminSearchChange"
             />
             <DataTable
                 v-model:filters="adminFilters"

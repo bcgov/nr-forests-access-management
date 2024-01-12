@@ -1,6 +1,5 @@
 import type { FamApplication } from 'fam-app-acsctl-api';
 import { computed, ref } from 'vue';
-import { FilterMatchMode } from 'primevue/api';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
@@ -49,21 +48,4 @@ export const selectedApplicationDisplayText = computed(() => {
     } else {
         return '';
     }
-});
-
-export const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'role.parent_role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.client_number.forest_client_number': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
 });
