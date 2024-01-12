@@ -13,6 +13,7 @@ import {
     selectedApplication,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -34,11 +35,11 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    if(selectedApplication.value?.application_id === 1) {
+    if(selectedApplication.value?.application_id === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(
-            fetchApplicationAdmins(selectedApplication.value?.application_id)
+            fetchApplicationAdmins(FAM_APPLICATION_ID)
         )
-    } else if(selectedApplication.value?.application_id === 2) {
+    } else {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplication.value?.application_id)
         );

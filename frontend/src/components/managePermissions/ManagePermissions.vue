@@ -64,7 +64,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     if (e.value.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins(
-            selectedApplication.value?.application_id
+            FAM_APPLICATION_ID
             );
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
