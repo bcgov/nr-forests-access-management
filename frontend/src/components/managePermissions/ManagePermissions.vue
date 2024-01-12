@@ -26,7 +26,7 @@ import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
-    fetchApplicationAdmin
+    fetchApplicationAdmins
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -63,7 +63,7 @@ const tabHeader = computed(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     if (e.value.application_id === FAM_APPLICATION_ID) {
-        applicationAdmins.value = await fetchApplicationAdmin(
+        applicationAdmins.value = await fetchApplicationAdmins(
             selectedApplication.value?.application_id
             );
     } else {

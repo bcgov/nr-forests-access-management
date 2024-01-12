@@ -71,12 +71,12 @@ export const fetchApplicationRoles = async (
 };
 
 export const fetchApplicationAdmins = async (
-    applicationAdminId: number | undefined
+    applicationId: number | undefined
 ): Promise<FamAppAdminGet[]> => {
-    if (!applicationAdminId) return [];
+    if (!applicationId) return [];
     const applicationAdmin = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdminByApplicationId (
-            applicationAdminId
+            applicationId
         )
     ).data;
 

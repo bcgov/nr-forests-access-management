@@ -5,7 +5,7 @@ import {
     fetchApplicationRoles,
     fetchApplications,
     fetchUserRoleAssignments,
-    fetchApplicationAdmin
+    fetchApplicationAdmins
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -36,7 +36,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     await asyncWrap(fetchApplications());
     if(selectedApplication.value?.application_id === 1) {
         applicationAdmins = await asyncWrap(
-            fetchApplicationAdmin(selectedApplication.value?.application_id)
+            fetchApplicationAdmins(selectedApplication.value?.application_id)
         )
     } else if(selectedApplication.value?.application_id === 2) {
         userRolesFetchResult = await asyncWrap(
