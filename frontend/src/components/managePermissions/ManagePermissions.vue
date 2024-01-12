@@ -98,7 +98,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGet) => {
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id,
-            admin.application_id
         );
 
         setNotificationMsg(
