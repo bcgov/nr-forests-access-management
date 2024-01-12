@@ -10,7 +10,8 @@ import { isApplicationSelected,selectedApplicationShortDisplayText } from '@/sto
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
-const initialLabel = () => {
+// Show and hide the correct sideNav btn based on the application
+const sideNavAddPermissionOption = () => {
     if(selectedApplicationShortDisplayText.value === 'FAM') {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
@@ -25,12 +26,12 @@ onMounted(() => {
 });
 
 watch(isApplicationSelected, (value) => {
-    initialLabel();
+    sideNavAddPermissionOption();
 });
 
 watch(selectedApplicationShortDisplayText, () => {
-    initialLabel();
-});
+    sideNavAddPermissionOption();
+})
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
     navigationData.value.map((navItem) => {
