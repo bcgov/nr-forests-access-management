@@ -25,10 +25,6 @@ onMounted(() => {
     disableSideNavOption('Add user permission', !isApplicationSelected.value);
 });
 
-watch(isApplicationSelected, (value) => {
-    sideNavAddPermissionOption();
-});
-
 watch(selectedApplicationShortDisplayText, () => {
     sideNavAddPermissionOption();
 })
