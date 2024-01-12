@@ -70,7 +70,6 @@ export const fetchApplicationRoles = async (
     return applicationRoles;
 };
 
-/// Admin
 export const fetchApplicationAdmin = async (
     applicationAdminId: number | undefined
 ): Promise<FamAppAdminGet[]> => {
@@ -99,7 +98,6 @@ export const fetchApplicationAdmin = async (
  * to refresh the state.
  * @param applicationAdminId id to delete fam_user_role_assignment record.
  */
-
 export const deleteAndRefreshApplicationAdmin = async (
     applicationAdminId: number,
 ): Promise<FamAppAdminGet[]> => {
