@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    Index,
     func,
     text,
 )
@@ -104,6 +105,7 @@ class FamApplicationAdmin(Base):
             ["app_fam.fam_user.user_id"],
             name="reffam_application_admin_user",
         ),
+        UniqueConstraint("user_id", "application_id", name="fam_app_admin_usr_app_uk"),
         {
             "comment": "Application Admin is a cross-reference object that "
             + "allows for the identification of who are the "
@@ -164,6 +166,75 @@ class FamApplicationAdmin(Base):
     user = relationship(
         "FamUser", back_populates="fam_application_admin", lazy="joined"
     )
+
+
+class FamAccessControlPrivilege(Base):
+    __tablename__ = "fam_access_control_privilege"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["role_id"],
+            ["app_fam.fam_role.role_id"],
+            name="reffam_access_control_privilege_role",
+        ),
+        ForeignKeyConstraint(
+            ["user_id"],
+            ["app_fam.fam_user.user_id"],
+            name="reffam_access_control_privilege_user",
+        ),
+        PrimaryKeyConstraint(
+            "access_control_privilege_id", name="fam_access_control_privilege_pk"
+        ),
+        UniqueConstraint("user_id", "role_id", name="fam_access_control_usr_rle_uk"),
+        Index("ix_app_fam_fam_access_control_privilege_role_id", "role_id"),
+        Index("ix_app_fam_fam_access_control_privilege_user_id", "user_id"),
+        {
+            "comment": "Access Control Privilege is a cross-reference object that allows "
+            "for the identification of who are the delegated "
+            "administrators(User) for an Application for a particular role.",
+            "schema": "app_fam",
+        },
+    )
+    access_control_privilege_id = Column(
+        BigInteger,
+        Identity(
+            start=1,
+            increment=1,
+            minvalue=1,
+            maxvalue=9223372036854775807,
+            cycle=False,
+            cache=1,
+        ),
+        primary_key=True,
+        comment="Automatically generated key used to identify the uniqueness of a User administers the Application role.",
+    )
+    user_id = Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the user within FAM system.",
+    )
+    role_id = Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the application role within FAM system.",
+    )
+    create_user = Column(
+        String(60), comment="The user or proxy account that created the record."
+    )
+    create_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the record was created.",
+    )
+    update_user = Column(
+        String(60),
+        comment="The user or proxy account that created or last updated the record.",
+    )
+    update_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+    role = relationship("FamRole", back_populates="fam_access_control_privilege")
+    user = relationship("FamUser", back_populates="fam_access_control_privilege")
 
 
 class FamForestClient(Base):
@@ -314,12 +385,13 @@ class FamUser(Base):
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
-
-    fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
     user_type_relation = relationship(
         "FamUserType", backref="user_relation", lazy="joined"
     )
     fam_application_admin = relationship("FamApplicationAdmin", back_populates="user")
+    fam_access_control_privilege = relationship(
+        "FamAccessControlPrivilege", back_populates="user"
+    )
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
@@ -529,8 +601,10 @@ class FamRole(Base):
     parent_role_reverse = relationship(
         "FamRole", remote_side=[parent_role_id], back_populates="parent_role"
     )
-    fam_user_role_xref = relationship("FamUserRoleXref", back_populates="role")
     role_type_relation = relationship("FamRoleType", backref="role_relation")
+    fam_access_control_privilege = relationship(
+        "FamAccessControlPrivilege", back_populates="role"
+    )
     __table_args__ = (
         ForeignKeyConstraint(
             ["application_id"],
@@ -559,78 +633,6 @@ class FamRole(Base):
             "schema": "app_fam",
         },
     )
-
-
-class FamUserRoleXref(Base):
-    __tablename__ = "fam_user_role_xref"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["role_id"], ["app_fam.fam_role.role_id"], name="reffam_role12"
-        ),
-        ForeignKeyConstraint(
-            ["user_id"], ["app_fam.fam_user.user_id"], name="reffam_user10"
-        ),
-        PrimaryKeyConstraint("user_role_xref_id", name="fam_usr_rle_xrf_pk"),
-        UniqueConstraint("user_id", "role_id", name="fam_usr_rle_usr_id_rle_id_uk"),
-        {
-            "comment": "User Role Xref is a cross-reference object that allows for the identification of Roles assigned to a user, as well as the users that belong to a given Role",
-            "schema": "app_fam",
-        },  # reference: https://docs.sqlalchemy.org/en/14/orm/declarative_tables.html#orm-declarative-table-configuration
-    )
-
-    user_role_xref_id = Column(
-        BigInteger().with_variant(Integer, "sqlite"),
-        Identity(
-            always=True,
-            start=1,
-            increment=1,
-            minvalue=1,
-            maxvalue=9223372036854775807,
-            cycle=False,
-            cache=1,
-        ),
-        comment="Automatically generated key used to identify the uniqueness "
-        "of a FamUserRoleXref within the FAM Application",
-    )
-
-    user_id = Column(
-        BigInteger,
-        nullable=False,
-        index=True,
-        comment="Automatically generated key used to identify the uniqueness "
-        "of a User within the FAM Application",
-    )
-    role_id = Column(
-        BigInteger,
-        nullable=False,
-        index=True,
-        comment="Automatically generated key used to identify the uniqueness "
-        "of a Role within the FAM Application",
-    )
-    create_user = Column(
-        String(30),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(30),
-        comment="The user or proxy account that created or last updated "
-        "the record. ",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.utcnow,
-        comment="The date and time the record was created or last updated.",
-    )
-
-    role = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
-    user = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
 
 
 class FamAppEnvironment(Base):
