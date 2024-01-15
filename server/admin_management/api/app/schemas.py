@@ -72,7 +72,35 @@ class FamUserInfo(FamUserBase):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-# -------------------------------------- FAM Application Admin --------------------------------------- #
+# ----------------------------------- FAM Forest Client ------------------------------------ #
+class FamForestClientCreate(BaseModel):
+    # Note, the request may contain string(with leading '0')
+    forest_client_number: Annotated[str, StringConstraints(max_length=8)]
+    # client_name: str
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- FAM Role ------------------------------------------- #
+class FamRoleCreate(BaseModel):
+    role_name: Annotated[str, StringConstraints(max_length=100)]
+    role_purpose: Union[Annotated[str, StringConstraints(max_length=200)], None] = None
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    application_id: int = Field(title="Application this role is associated with")
+    forest_client_number: Union[Annotated[str, StringConstraints(max_length=8)], None] = Field(
+        default=None, title="Forest Client this role is associated with"
+    )
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+    role_type_code: famConstants.RoleType
+    client_number: Optional[FamForestClientCreate] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# -------------------------------- FAM Application Admin ----------------------------------- #
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreate(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
@@ -90,3 +118,16 @@ class FamAppAdminGet(BaseModel):
     application: FamApplicationBase
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# -------------------------- FAM Access Control Privilege (Delegated Admin) -------------------------- #
+class FamAccessControlPrivilegeCreate(BaseModel):
+    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
+    user_type_code: famConstants.UserType
+    role_id: int
+    forest_client_number: List[Union[
+        Annotated[str, StringConstraints(min_length=1, max_length=8)], None
+    ]] = None
+
+    model_config = ConfigDict(from_attributes=True)
+

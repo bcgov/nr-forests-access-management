@@ -12,4 +12,9 @@ class UserType(str, Enum):
     BCEID = "B"
 
 
+class RoleType(str, Enum):
+    ROLE_TYPE_ABSTRACT = "A"
+    ROLE_TYPE_CONCRETE = "C"
+
+
 COGNITO_USERNAME_KEY = "username"

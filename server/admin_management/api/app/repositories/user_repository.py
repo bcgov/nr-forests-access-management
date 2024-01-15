@@ -40,8 +40,6 @@ class UserRepository:
         return self.db.query(models.FamUser).all()
 
     def create_user(self, fam_user: schemas.FamUserCreate) -> models.FamUser:
-        LOGGER.debug(f"Creating fam user: {fam_user}")
-
         db_item = models.FamUser(**fam_user)
         self.db.add(db_item)
         self.db.flush()
