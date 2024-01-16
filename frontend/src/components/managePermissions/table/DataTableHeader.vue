@@ -118,43 +118,4 @@ const computedFilter = computed({
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
     display: none;
 }
-
-//------ media queries
-
-@media (max-width: 390px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-}
-
-@media (min-width: 768px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-app-selected {
-        margin: 0 14rem;
-    }
-}
-
-@media (min-width: 1280px) {
-    .no-app-selected {
-        margin: 0 25rem;
-    }
-}
-
-@media (min-width: 1536px) {
-    .no-app-selected {
-        margin: 0 33rem;
-    }
-}
-
-@media (min-width: 1920px) {
-    .no-app-selected {
-        margin: 0 43.3rem;
-        width: auto;
-    }
-}
 </style>

@@ -12,7 +12,6 @@ const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
 const sideNavAddPermissionOption = () => {
-    console.log('test')
     if(selectedApplicationShortDisplayText.value === 'FAM') {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
