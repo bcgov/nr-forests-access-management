@@ -97,15 +97,6 @@ const computedFilter = computed({
     border-radius: 0 0 0 0;
 }
 
-.btn-icon {
-    padding: 0.4rem !important;
-    margin-right: 0.5rem;
-}
-
-.btn-icon:disabled {
-    border: none;
-}
-
 // update primevue style but only for FAM
 .p-input-icon-left {
     z-index: 1;
