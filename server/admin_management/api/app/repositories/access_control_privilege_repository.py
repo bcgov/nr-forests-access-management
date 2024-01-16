@@ -28,7 +28,7 @@ class AccessControlPrivilegeRepository:
         self, user_id: int, role_id: int, requester: str
     ) -> models.FamAccessControlPrivilege:
         new_fam_access_control_privilege: models.FamAccessControlPrivilege = (
-            models.FamApplicationAdmin(
+            models.FamAccessControlPrivilege(
                 **{
                     "user_id": user_id,
                     "role_id": role_id,
@@ -36,7 +36,7 @@ class AccessControlPrivilegeRepository:
                 }
             )
         )
-        db_item = models.FamAccessControlPrivilege(**new_fam_access_control_privilege)
-        self.db.add(db_item)
+        self.db.add(new_fam_access_control_privilege)
         self.db.flush()
-        return db_item
+        self.db.refresh(new_fam_access_control_privilege)
+        return new_fam_access_control_privilege

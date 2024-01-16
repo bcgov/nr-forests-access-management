@@ -18,8 +18,8 @@ class RoleService:
         self.forest_client_service = ForestClientService(db)
         self.forest_client_repository = ForestClientRepository(db)
 
-    def get_role(self):
-        return self.role_repo.get_role()
+    def get_role(self, role_id: int):
+        return self.role_repo.get_role(role_id)
 
     def find_or_create_forest_client_child_role(
         self, forest_client_number: str, parent_role: models.FamRole, requester: str
@@ -108,14 +108,13 @@ class RoleService:
         fam_role_model = self.role_repo.create_role(fam_role_model)
         return fam_role_model
 
-
     def construct_forest_client_role_name(
-        parent_role_name: str, forest_client_number: str
+        self, parent_role_name: str, forest_client_number: str
     ):
         return f"{parent_role_name}_{forest_client_number}"
 
     def construct_forest_client_role_purpose(
-        parent_role_purpose: str, forest_client_number: str
+        self, parent_role_purpose: str, forest_client_number: str
     ):
         client_purpose = f"{parent_role_purpose} for {forest_client_number}"
         return client_purpose

@@ -12,11 +12,17 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
-from api.app.schemas import Requester, TargetUser, FamAppAdminCreate
+from api.app.schemas import (
+    Requester,
+    TargetUser,
+    FamAppAdminCreate,
+    FamAccessControlPrivilegeCreate,
+)
 from api.app.models.model import FamUser
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.user_service import UserService
 from api.app.services.application_service import ApplicationService
+from api.app.services.role_service import RoleService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -169,6 +175,23 @@ async def validate_param_application_id(
             detail={
                 "code": ERROR_INVALID_APPLICATION_ID,
                 "description": f"Application ID {application_admin_request.application_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+async def validate_param_role_id(
+    access_control_privilege_request: FamAccessControlPrivilegeCreate,
+    db: Session = Depends(database.get_db),
+):
+    role_service = RoleService(db)
+    role = role_service.get_role(access_control_privilege_request.role_id)
+    if not role:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_ROLE_ID,
+                "description": f"Role ID {access_control_privilege_request.role_id} not found",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )

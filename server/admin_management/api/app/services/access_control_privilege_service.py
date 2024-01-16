@@ -19,10 +19,9 @@ LOGGER = logging.getLogger(__name__)
 
 class AccessControlPrivilegeService:
     def __init__(self, db: Session):
-        self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
-        # self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
         self.role_service = RoleService(db)
+        self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
     def get_use_role_by_user_id_and_role_id(self, user_id: int, role_id: int):
         return self.access_control_privilege_repository.get_use_role_by_user_id_and_role_id(
@@ -31,7 +30,7 @@ class AccessControlPrivilegeService:
 
     def create_access_control_privilege(
         self, request: schemas.FamAccessControlPrivilegeCreate, requester: str
-    ) -> schemas.FamAppAdminGet:
+    ) -> schemas.FamAccessControlPrivilegeGet:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
         )
@@ -46,10 +45,6 @@ class AccessControlPrivilegeService:
         if not fam_role:
             error_msg = f"Role id {request.role_id} does not exist."
             utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
-        LOGGER.debug(
-            f"Role for creating delegate admin access control privilege found: {fam_role.role_name}"
-            + f"({fam_role.role_id})."
-        )
 
         # For now, delegated admin access control privilege focus on abstract role
         # Role is a 'Abstract' type, create role assignment with forst client child role.
@@ -57,10 +52,7 @@ class AccessControlPrivilegeService:
             fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
         )
 
-        # # Role Id for associating with user
-        # associate_role_id = (
-        #     [] if require_child_role else fam_role.role_id
-        # )
+        access_control_privilege_return: List[schemas.FamAccessControlPrivilegeGet] = []
 
         if require_child_role:
             LOGGER.debug(
@@ -91,25 +83,42 @@ class AccessControlPrivilegeService:
 
                 if fam_access_control_privilege:
                     LOGGER.debug(
-                        "FamUserRoleXref already exists with id: "
+                        "FamAccessControlPrivilege already exists with id: "
                         + f"{fam_access_control_privilege.access_control_privilege_id}."
                     )
 
-                    error_msg = "Role already assigned to user."
+                    error_msg = (
+                        "User already has the access control privilege for role"
+                        + f"{fam_role.role_name}"
+                        + ", role id"
+                        + f"{fam_role.role_id}"
+                    )
                     utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
                 else:
                     fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
                         fam_user.user_id, associate_role_id, requester
                     )
-
+                    fam_access_control_privilege_dict = (
+                        fam_access_control_privilege.__dict__
+                    )
+                    access_control_privilege_return.append(
+                        schemas.FamAccessControlPrivilegeGet(
+                            **fam_access_control_privilege_dict
+                        )
+                    )
         else:
             fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
                 fam_user.user_id, fam_role.role_id, requester
             )
+            fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
+            access_control_privilege_return.append(
+                schemas.FamAccessControlPrivilegeGet(
+                    **fam_access_control_privilege_dict
+                )
+            )
 
-        fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
         LOGGER.debug(
-            f"User/Role assignment executed successfully: {fam_access_control_privilege_dict}"
+            f"Creating access control privilege executed successfully: {access_control_privilege_return}"
         )
 
-        return fam_access_control_privilege_dict
+        return access_control_privilege_return

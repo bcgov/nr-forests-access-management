@@ -17,4 +17,9 @@ class RoleType(str, Enum):
     ROLE_TYPE_CONCRETE = "C"
 
 
+class FamForestClientStatusType(str, Enum):
+    ACTIVE = "A"
+    INACTIVE = "I"
+
+
 COGNITO_USERNAME_KEY = "username"

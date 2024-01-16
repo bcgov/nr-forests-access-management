@@ -11,6 +11,7 @@ LOGGER = logging.getLogger(__name__)
 class AuditEventType(str, Enum):
     CREATE_APPLICATION_ADMIN_ACCESS = "Grant User Application Admin Access"
     REMOVE_APPLICATION_ADMIN_ACCESS = "Remove User Application Admin Access"
+    CREATE_ACCESS_CONTROL_PRIVILIEGE = "Create Access Control Privilege"
 
 
 class AuditEventOutcome(str, Enum):
