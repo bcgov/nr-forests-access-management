@@ -6,13 +6,14 @@ import SideNav, {
     type ISideNavItem,
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { isApplicationSelected,selectedApplicationShortDisplayText } from '@/store/ApplicationState';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
 const sideNavAddPermissionOption = () => {
-    if(selectedApplicationShortDisplayText.value === 'FAM') {
+    if(selectedApplicationShortDisplayText.value === FAM_APPLICATION_NAME) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
     } else {
