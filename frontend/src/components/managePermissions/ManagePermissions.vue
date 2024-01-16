@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, computed, type PropType } from 'vue';
+import { onUnmounted, shallowRef, type PropType } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
-import ApplicationAdminTable from './table/ApplicationAdminTable.vue';
+import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
 
 import {
     applicationsUserAdministers,
