@@ -16,7 +16,7 @@ import {
     TEST_SUCCESS_FOREST_CLIENT_NUMBER_3
 } from './common/ForestClientData';
 import { isLoading, setLoadingState } from '@/store/LoadingState';
-import type { AxiosResponse } from 'axios';
+import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
 
 const forestClientsApiSearchMock = (forestClientNumber: string): AxiosResponse => {
     return {
@@ -37,7 +37,9 @@ const forestClientsApiSearchMock = (forestClientNumber: string): AxiosResponse =
         status: 200,
         statusText: 'Ok',
         headers: {},
-        config: {},
+        config: {
+            headers: {} as AxiosRequestHeaders
+        },
     };
 }
 
