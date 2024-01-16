@@ -21,7 +21,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['change']);
 
-const proxyValue = computed({
+const computedFilter = computed({
     get() {
         return props.filter
     },
@@ -56,7 +56,7 @@ const proxyValue = computed({
                 id="dashboardSearch"
                 class="dash-search"
                 placeholder="Search by keyword"
-                v-model="proxyValue"
+                v-model="computedFilter"
                 :value="props.filter"
             />
         </span>
