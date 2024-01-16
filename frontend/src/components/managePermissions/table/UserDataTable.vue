@@ -35,10 +35,14 @@ const props = defineProps({
     },
 });
 
-const userAssignmentsfilters = ref({
+const userRoleAssignmentsfilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'role.parent_role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'user.user_type.description': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -60,7 +64,7 @@ const confirmDeleteData = reactive({
 });
 
 const userSearchChange = (newValue: string) => {
-    userAssignmentsfilters.value.global.value = newValue;
+    userRoleAssignmentsfilters.value.global.value = newValue;
 };
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
@@ -93,11 +97,11 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             <DataTableHeader
                 btnLabel="Add user permission"
                 :btnRoute="routeItems.grantUserPermission.path"
-                :filter="userAssignmentsfilters['global'].value"
+                :filter="userRoleAssignmentsfilters['global'].value"
                 @change="userSearchChange"
             />
             <DataTable
-                v-model:filters="userAssignmentsfilters"
+                v-model:filters="userRoleAssignmentsfilters"
                 :value="props.userRoleAssignments"
                 paginator
                 :rows="50"
