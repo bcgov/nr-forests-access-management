@@ -42,21 +42,28 @@ To generate, build and compile the typescript sources to javascript use:
 ```
 With Docker (example: for `admin-management-api`):
 >> npm run dockergen-admin-management-api-bash
-or for Windows(CMD/Powershell), use script >>(npm run dockergen-admin-management-api-win)
+
+or for Windows(CMD/Powershell), use script
+>>(npm run dockergen-admin-management-api-win)
 
 With CLI:
 >> npm install
 >> npm run gen-admin-management-api
+```
 
 The generated client is located at "./gen/[xyz]-api" directory specified by the "-o" option at the script.
 
-- Make sure (and adjust) "axios" package version to be consistent with "frontend" axios version. This is important. During generation, this version could be changed by generation script.
+After api client code is generated:
+```
+>> update `axios` version in generated package to be consistent with "frontend" axios version.
+- This is important. During generation, this version could be changed by generation script. See note below.
 ```
 
 Note:
-
 ```
-Depending on the Axios version used at frontend, please be aware different axios versions used between in generatred code and frontend dependency will cause integration headache, even if it is a patch version change. So if in the future there is a need to upgrade frontend to higher version Vue, then it would probably mean it needs to bump up the OpenAPI generator (either from cli or docker) version for client code compatibility reason. Use `npm ls axios` to check dependency tree after installation if not sure.
+Depending on the Axios version used at frontend, please be aware different axios versions used between in generatred code and frontend dependency will cause integration headache, even if it is a patch version change.
+Currently for openapi-generator with `typescript-axios`, there is no option available to spcify which `axios` version to use. If there is a need to upgrade frontend axios to higher version, then the generated code will also need to use the same version of axios. Use `npm ls axios` to check dependency tree after installation if not sure.
+
 ```
 
 ```
