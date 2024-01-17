@@ -128,7 +128,6 @@ describe('UserNameInput', () => {
         emitChange = wrapper.emitted('change');
         expect(wrapper.emitted('change')).toBeTruthy();
         verifyButton = wrapper.find("[data-target-btn='verifyIdir']")
-        console.log((verifyButton.element as HTMLButtonElement).disabled)
         expect((verifyButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 
@@ -146,5 +145,4 @@ describe('UserNameInput', () => {
     //     await verifyButton.trigger('click');
     //     // expect(isLoading()).toBe(true);
     // })
-
 })
