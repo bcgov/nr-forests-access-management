@@ -30,7 +30,7 @@ class AccessControlPrivilegeService:
 
     def create_access_control_privilege(
         self, request: schemas.FamAccessControlPrivilegeCreate, requester: str
-    ) -> schemas.FamAccessControlPrivilegeGet:
+    ) -> List[schemas.FamAccessControlPrivilegeGet]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
         )
@@ -88,12 +88,21 @@ class AccessControlPrivilegeService:
                     )
 
                     error_msg = (
-                        "User already has the access control privilege for role"
-                        + f"{fam_role.role_name}"
-                        + ", role id"
-                        + f"{fam_role.role_id}"
+                        "User already has the requested access control privilege."
                     )
-                    utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+                    # utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+                    fam_access_control_privilege_dict = (
+                        fam_access_control_privilege.__dict__
+                    )
+                    access_control_privilege_return.append(
+                        {
+                            "status_code": HTTPStatus.CONFLICT,
+                            "detail": schemas.FamAccessControlPrivilegeGet(
+                                **fam_access_control_privilege_dict
+                            ),
+                            "error_message": error_msg,
+                        }
+                    )
                 else:
                     fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
                         fam_user.user_id, associate_role_id, requester
@@ -102,9 +111,12 @@ class AccessControlPrivilegeService:
                         fam_access_control_privilege.__dict__
                     )
                     access_control_privilege_return.append(
-                        schemas.FamAccessControlPrivilegeGet(
-                            **fam_access_control_privilege_dict
-                        )
+                        {
+                            "status_code": HTTPStatus.OK,
+                            "detail": schemas.FamAccessControlPrivilegeGet(
+                                **fam_access_control_privilege_dict
+                            ),
+                        }
                     )
         else:
             fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
@@ -112,9 +124,12 @@ class AccessControlPrivilegeService:
             )
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
             access_control_privilege_return.append(
-                schemas.FamAccessControlPrivilegeGet(
-                    **fam_access_control_privilege_dict
-                )
+                {
+                    "status_code": HTTPStatus.OK,
+                    "detail": schemas.FamAccessControlPrivilegeGet(
+                        **fam_access_control_privilege_dict
+                    ),
+                }
             )
 
         LOGGER.debug(

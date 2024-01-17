@@ -1,6 +1,5 @@
 import logging
 from typing import List, Optional, Union
-from datetime import datetime
 from pydantic import StringConstraints, ConfigDict, BaseModel, Field
 
 from . import constants as famConstants
@@ -154,7 +153,9 @@ class FamAccessControlPrivilegeCreate(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     role_id: int
-    forest_client_number: Union[List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None] = None
+    forest_client_number: Union[
+        List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
+    ] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -165,5 +166,13 @@ class FamAccessControlPrivilegeGet(BaseModel):
     role_id: int
     user: FamUserInfo
     role: FamRoleWithClient
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeCreateResponse(BaseModel):
+    status_code: int
+    detail: FamAccessControlPrivilegeGet
+    error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

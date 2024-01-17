@@ -26,7 +26,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=List[schemas.FamAccessControlPrivilegeGet],
+    response_model=List[schemas.FamAccessControlPrivilegeCreateResponse],
     dependencies=[
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),

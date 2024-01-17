@@ -233,8 +233,8 @@ class FamAccessControlPrivilege(Base):
         onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
-    role = relationship("FamRole", back_populates="fam_access_control_privilege")
-    user = relationship("FamUser", back_populates="fam_access_control_privilege")
+    role = relationship("FamRole", back_populates="fam_access_control_privilege", lazy="joined")
+    user = relationship("FamUser", back_populates="fam_access_control_privilege", lazy="joined")
 
 
 class FamForestClient(Base):

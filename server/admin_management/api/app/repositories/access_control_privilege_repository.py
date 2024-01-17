@@ -1,6 +1,5 @@
 import logging
 from sqlalchemy.orm import Session
-from typing import List
 
 from api.app.models import model as models
 

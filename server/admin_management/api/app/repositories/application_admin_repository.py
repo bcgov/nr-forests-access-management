@@ -40,9 +40,7 @@ class ApplicationAdminRepository:
     ) -> List[models.FamApplicationAdmin]:
         return (
             self.db.query(models.FamApplicationAdmin)
-            .filter(
-                models.FamApplicationAdmin.application_id == application_id
-            )
+            .filter(models.FamApplicationAdmin.application_id == application_id)
             .all()
         )
 
