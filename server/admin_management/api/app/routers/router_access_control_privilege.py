@@ -6,7 +6,7 @@ from typing import List
 from api.app.models import model as models
 from api.app.routers.router_guards import (
     get_current_requester,
-    authorize_by_fam_admin,
+    authorize_by_application_role,
     enforce_self_grant_guard,
     validate_param_role_id,
 )
@@ -28,7 +28,9 @@ router = APIRouter()
     "",
     response_model=List[schemas.FamAccessControlPrivilegeCreateResponse],
     dependencies=[
-        Depends(authorize_by_fam_admin),
+        Depends(
+            authorize_by_application_role
+        ),  # only app admin can do this, get application by role
         Depends(enforce_self_grant_guard),
         Depends(validate_param_role_id),
     ],

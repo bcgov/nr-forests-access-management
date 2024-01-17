@@ -23,10 +23,13 @@ class AccessControlPrivilegeService:
         self.role_service = RoleService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
-    def get_use_role_by_user_id_and_role_id(self, user_id: int, role_id: int):
-        return self.access_control_privilege_repository.get_use_role_by_user_id_and_role_id(
+    def get_by_user_id_and_role_id(self, user_id: int, role_id: int):
+        return self.access_control_privilege_repository.get_by_user_id_and_role_id(
             user_id, role_id
         )
+
+    def get_by_id(self, access_control_privilege_id: int):
+        return self.access_control_privilege_repository.get_by_id(access_control_privilege_id)
 
     def create_access_control_privilege(
         self, request: schemas.FamAccessControlPrivilegeCreate, requester: str
@@ -77,7 +80,7 @@ class AccessControlPrivilegeService:
                 associate_role_id = child_role.role_id
 
                 # Check if user privilege already exists
-                fam_access_control_privilege = self.get_use_role_by_user_id_and_role_id(
+                fam_access_control_privilege = self.get_by_user_id_and_role_id(
                     fam_user.user_id, associate_role_id
                 )
 
