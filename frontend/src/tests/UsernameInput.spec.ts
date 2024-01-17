@@ -1,13 +1,17 @@
-import { it, describe, beforeEach, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
+import { mount, flushPromises  } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { UserType } from 'fam-app-acsctl-api';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
+import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
+import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
-import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
+import type { AxiosResponse } from 'axios';
 
-//fix Could not parse CSS stylesheet with the primevue styling
+//fix "Could not parse CSS stylesheet" with the primevue styling
 //https://github.com/primefaces/primevue/issues/4512
+//https://stackoverflow.com/questions/69906136/console-error-error-could-not-parse-css-stylesheet/69958999#69958999
 const originalConsoleError = console.error;
 const jsDomCssError = "Error: Could not parse CSS stylesheet";
 console.error = (...params) => {
@@ -16,6 +20,20 @@ console.error = (...params) => {
   }
 };
 
+const userInputMock = (): AxiosResponse => {
+    return {
+        data: {
+            firstName: "Name",
+            found: true,
+            lastName: "LastName",
+            userId: "Userid"
+        },
+        status: 200,
+        statusText: 'Ok',
+        headers: {},
+        config: {},
+    };
+}
 
 describe('UserNameInput', () => {
     let wrapper: VueWrapper;
@@ -25,6 +43,7 @@ describe('UserNameInput', () => {
     let usernameInputText: DOMWrapper<HTMLElement>;
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
+    let verifyButtonEl: HTMLButtonElement;
 
     const props = {
         domain: UserType.I,
@@ -41,18 +60,32 @@ describe('UserNameInput', () => {
     const inputString = 'testIdir';
 
     beforeEach(async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'idirSearch',
+        ).mockImplementation(async () => {
+            return Promise.resolve(userInputMock());
+        });
         wrapper = mount(UserNameInput, {
             props,
             global: {
-                plugins: [PrimeVue, ],
+                plugins: [PrimeVue],
             },
         });
-        usernameInputText = wrapper.find('#userIdInput');
-        usernameInputTextEl = usernameInputText.element as HTMLInputElement;
-        verifyButton = wrapper.find("[aria-label='Verify user IDIR']");
+        // usernameInputText = wrapper.find('#userIdInput');
+        // usernameInputTextEl = usernameInputText.element as HTMLInputElement;
+        // verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
+        // verifyButtonEl = verifyButton.element as HTMLButtonElement;
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+        wrapper.unmount();
     });
 
     it('should change usernameInput value', async () => {
+        usernameInputText = wrapper.find('#userIdInput');
+        usernameInputTextEl = usernameInputText.element as HTMLInputElement;
         await usernameInputText.setValue(inputString);
         expect(usernameInputTextEl.value).toBe(inputString);
     });
@@ -67,10 +100,16 @@ describe('UserNameInput', () => {
     });
 
     it('Should call and emit value' , async () => {
+        usernameInputText = wrapper.find('#userIdInput');
+        usernameInputTextEl = usernameInputText.element as HTMLInputElement;
+        verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
+        verifyButtonEl = verifyButton.element as HTMLButtonElement;
         await usernameInputText.setValue(inputString);
 
         emitChange = wrapper.emitted('change');
         expect(wrapper.emitted('change')).toBeTruthy();
+        // test the given parameters when emitChange has been called
+        // i.e. emitChange = [ [ 'B' ] ]
         expect(emitChange![0][0]).toEqual(inputString);
 
 
@@ -78,17 +117,34 @@ describe('UserNameInput', () => {
         await wrapper.setProps(newProps);
         await verifyButton.trigger('click');
 
-        console.log(emitSetVerifyResult)
+
         expect(wrapper.emitted('setVerifyResult')).toBeTruthy();
         expect(emitSetVerifyResult![1][0]).toEqual(true);
+    });
 
-        // test the given parameters when emitChange has been called
-        // i.e. emitChange = [ [ 'B' ] ]
-        // expect(emitChange![0][0]).toEqual(UserType.B);
+    it('should enable virify btn when username is inputted', async () => {
+        usernameInputText = wrapper.find('#userIdInput');
+        await usernameInputText.setValue(inputString);
+        emitChange = wrapper.emitted('change');
+        expect(wrapper.emitted('change')).toBeTruthy();
+        verifyButton = wrapper.find("[data-target-btn='verifyIdir']")
+        console.log((verifyButton.element as HTMLButtonElement).disabled)
+        expect((verifyButton.element as HTMLButtonElement).disabled).toBe(false);
+    });
 
-        // await idirRadioBtn.trigger('click');
+    // it('should display information on card correctly based on api response ' , async () => {
+    //     vi.spyOn(
+    //         AppActlApiService.idirBceidProxyApi,
+    //         'idirSearch',
+    //     ).mockImplementation(async () => {
+    //         setLoadingState(true);
+    //         return Promise.resolve(userInputMock());
+    //     });
+    //     await usernameInputText.setValue(inputString);
+    //     expect(usernameInputTextEl.value).toBe(inputString);
 
-        // expect(emitChange![1][0]).toEqual(UserType.I);
-    })
+    //     await verifyButton.trigger('click');
+    //     // expect(isLoading()).toBe(true);
+    // })
 
 })
