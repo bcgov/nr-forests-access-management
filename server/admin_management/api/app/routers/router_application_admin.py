@@ -24,6 +24,19 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@router.get(
+    "",
+    response_model=List[schemas.FamAppAdminGet],
+    status_code=200,
+    dependencies=[Depends(authorize_by_fam_admin)],
+)
+async def get_application_admins(
+    db: Session = Depends(database.get_db),
+):
+    application_admin_service = ApplicationAdminService(db)
+    return application_admin_service.get_application_admins()
+
+
 @router.post(
     "",
     response_model=schemas.FamAppAdminGet,
