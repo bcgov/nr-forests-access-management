@@ -56,9 +56,7 @@ class AccessControlPrivilegeService:
             fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
         )
 
-        access_control_privilege_return: List[
-            schemas.FamAccessControlPrivilegeCreateResponse
-        ] = []
+        create_return_list: List[schemas.FamAccessControlPrivilegeCreateResponse] = []
 
         if require_child_role:
             LOGGER.debug(
@@ -81,64 +79,58 @@ class AccessControlPrivilegeService:
                 child_role = self.role_service.find_or_create_forest_client_child_role(
                     forest_number, fam_role, requester
                 )
-                associate_role_id = child_role.role_id
-
-                # Check if user privilege already exists
-                fam_access_control_privilege = self.get_by_user_id_and_role_id(
-                    fam_user.user_id, associate_role_id
+                handle_create_return = self.handle_access_control_privilege_create(
+                    fam_user.user_id, child_role.role_id, requester
                 )
+                create_return_list.append(handle_create_return)
 
-                if fam_access_control_privilege:
-                    LOGGER.debug(
-                        "FamAccessControlPrivilege already exists with id: "
-                        + f"{fam_access_control_privilege.access_control_privilege_id}."
-                    )
-                    error_msg = (
-                        "User already has the requested access control privilege."
-                    )
-                    fam_access_control_privilege_dict = (
-                        fam_access_control_privilege.__dict__
-                    )
-                    access_control_privilege_return.append(
-                        {
-                            "status_code": HTTPStatus.CONFLICT,
-                            "detail": schemas.FamAccessControlPrivilegeGet(
-                                **fam_access_control_privilege_dict
-                            ),
-                            "error_message": error_msg,
-                        }
-                    )
-                else:
-                    fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
-                        fam_user.user_id, associate_role_id, requester
-                    )
-                    fam_access_control_privilege_dict = (
-                        fam_access_control_privilege.__dict__
-                    )
-                    access_control_privilege_return.append(
-                        {
-                            "status_code": HTTPStatus.OK,
-                            "detail": schemas.FamAccessControlPrivilegeGet(
-                                **fam_access_control_privilege_dict
-                            ),
-                        }
-                    )
         else:
-            fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
+            handle_create_return = self.handle_access_control_privilege_create(
                 fam_user.user_id, fam_role.role_id, requester
             )
-            fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
-            access_control_privilege_return.append(
-                {
-                    "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamAccessControlPrivilegeGet(
-                        **fam_access_control_privilege_dict
-                    ),
-                }
-            )
+            create_return_list.append(handle_create_return)
 
         LOGGER.debug(
-            f"Creating access control privilege executed successfully: {access_control_privilege_return}"
+            f"Creating access control privilege executed successfully: {create_return_list}"
         )
+
+        return create_return_list
+
+    def handle_access_control_privilege_create(
+        self, user_id: int, role_id: int, requester: str
+    ) -> schemas.FamAccessControlPrivilegeCreateResponse:
+        access_control_privilege_return = None
+
+        # Check if user privilege already exists
+        fam_access_control_privilege = self.get_by_user_id_and_role_id(user_id, role_id)
+
+        if fam_access_control_privilege:
+            error_msg = "User already has the requested access control privilege."
+
+            LOGGER.debug(
+                f"{error_msg}"
+                + "with id: "
+                + f"{fam_access_control_privilege.access_control_privilege_id}."
+            )
+
+            fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
+            access_control_privilege_return = {
+                "status_code": HTTPStatus.CONFLICT,
+                "detail": schemas.FamAccessControlPrivilegeGet(
+                    **fam_access_control_privilege_dict
+                ),
+                "error_message": error_msg,
+            }
+        else:
+            fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
+                user_id, role_id, requester
+            )
+            fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
+            access_control_privilege_return = {
+                "status_code": HTTPStatus.OK,
+                "detail": schemas.FamAccessControlPrivilegeGet(
+                    **fam_access_control_privilege_dict
+                ),
+            }
 
         return access_control_privilege_return
