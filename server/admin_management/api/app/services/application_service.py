@@ -17,3 +17,4 @@ class ApplicationService:
 
     def get_application(self, application_id: int):
         return self.application_repo.get_application(application_id)
+
