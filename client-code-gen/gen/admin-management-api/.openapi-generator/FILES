@@ -1,9 +1,10 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 README.md
 api.ts
 api/famapplication-admin-api.ts
-api/famapplication-api.ts
+api/famapplications-api.ts
 api/smoke-test-api.ts
 base.ts
 common.ts

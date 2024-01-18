@@ -24,10 +24,10 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { FamApplicationGet } from '../model';
 /**
- * FAMApplicationApi - axios parameter creator
+ * FAMApplicationsApi - axios parameter creator
  * @export
  */
-export const FAMApplicationApiAxiosParamCreator = function (configuration?: Configuration) {
+export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
@@ -67,11 +67,11 @@ export const FAMApplicationApiAxiosParamCreator = function (configuration?: Conf
 };
 
 /**
- * FAMApplicationApi - functional programming interface
+ * FAMApplicationsApi - functional programming interface
  * @export
  */
-export const FAMApplicationApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = FAMApplicationApiAxiosParamCreator(configuration)
+export const FAMApplicationsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FAMApplicationsApiAxiosParamCreator(configuration)
     return {
         /**
          * 
@@ -87,11 +87,11 @@ export const FAMApplicationApiFp = function(configuration?: Configuration) {
 };
 
 /**
- * FAMApplicationApi - factory interface
+ * FAMApplicationsApi - factory interface
  * @export
  */
-export const FAMApplicationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = FAMApplicationApiFp(configuration)
+export const FAMApplicationsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FAMApplicationsApiFp(configuration)
     return {
         /**
          * 
@@ -106,38 +106,38 @@ export const FAMApplicationApiFactory = function (configuration?: Configuration,
 };
 
 /**
- * FAMApplicationApi - interface
+ * FAMApplicationsApi - interface
  * @export
- * @interface FAMApplicationApi
+ * @interface FAMApplicationsApi
  */
-export interface FAMApplicationApiInterface {
+export interface FAMApplicationsApiInterface {
     /**
      * 
      * @summary Get Applications
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof FAMApplicationApiInterface
+     * @memberof FAMApplicationsApiInterface
      */
     getApplications(options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationGet>>;
 
 }
 
 /**
- * FAMApplicationApi - object-oriented interface
+ * FAMApplicationsApi - object-oriented interface
  * @export
- * @class FAMApplicationApi
+ * @class FAMApplicationsApi
  * @extends {BaseAPI}
  */
-export class FAMApplicationApi extends BaseAPI implements FAMApplicationApiInterface {
+export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInterface {
     /**
      * 
      * @summary Get Applications
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof FAMApplicationApi
+     * @memberof FAMApplicationsApi
      */
     public getApplications(options?: AxiosRequestConfig) {
-        return FAMApplicationApiFp(this.configuration).getApplications(options).then((request) => request(this.axios, this.basePath));
+        return FAMApplicationsApiFp(this.configuration).getApplications(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

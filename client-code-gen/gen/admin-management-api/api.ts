@@ -14,7 +14,7 @@
 
 
 
-export * from './api/famapplication-api';
 export * from './api/famapplication-admin-api';
+export * from './api/famapplications-api';
 export * from './api/smoke-test-api';
 
