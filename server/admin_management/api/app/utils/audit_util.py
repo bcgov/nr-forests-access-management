@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 import json
 from fastapi import Request, HTTPException
-from typing import Optional
+from typing import List
 
 from api.app.models import model as models
 
@@ -26,10 +26,11 @@ class AuditEventLog:
     event_type: AuditEventType
     event_outcome: AuditEventOutcome
     application: models.FamApplication
+    role: models.FamRole
+    forest_client_number: str
     requesting_user: models.FamUser
     target_user: models.FamUser
     exception: Exception
-    role: models.FamRole
 
     def __init__(
         self,
@@ -37,31 +38,36 @@ class AuditEventLog:
         event_type: AuditEventType = None,
         event_outcome: AuditEventOutcome = None,
         application: models.FamApplication = None,
+        role: models.FamRole = None,
+        forest_client_number: List[str] = None,
         requesting_user: models.FamUser = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
-        role: models.FamRole = None,
     ):
         self.request = request
         self.event_type = event_type
         self.event_outcome = event_outcome
         self.application = application
+        self.role = role
+        self.forest_client_number = forest_client_number
         self.requesting_user = requesting_user
         self.target_user = target_user
         self.exception = exception
-        self.role = role
 
     def log_event(self):
         log_role = (
             {
                 "role": {
-                    "roleId": self.role.role_id if self.role else None,
-                    "roleName": self.role.role_name if self.role else None,
+                    "roleId": self.role.role_id,
+                    "roleName": self.role.role_name,
+                    "roleType": self.role.role_type_code,
+                    "forestClientNumber": self.forest_client_number,
                 }
             }
             if self.role
             else {}
-        )
+        )  # only return role information when need
+
         log_item = {
             "auditEventTypeCode": self.event_type.name if self.event_type else None,
             "auditEventResultCode": self.event_outcome.name
