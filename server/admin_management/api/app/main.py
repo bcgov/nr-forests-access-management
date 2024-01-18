@@ -72,7 +72,7 @@ app.include_router(
 app.include_router(
     router_application.router,
     prefix=apiPrefix + "/applications",
-    tags=["FAM Application"],
+    tags=["FAM Applications"],
 )
 
 
