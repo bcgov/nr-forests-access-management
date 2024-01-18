@@ -3,6 +3,7 @@
 README.md
 api.ts
 api/famapplication-admin-api.ts
+api/famapplication-api.ts
 api/smoke-test-api.ts
 base.ts
 common.ts
@@ -13,6 +14,7 @@ model/app-env.ts
 model/fam-app-admin-create.ts
 model/fam-app-admin-get.ts
 model/fam-application-base.ts
+model/fam-application-get.ts
 model/fam-user-info.ts
 model/fam-user-type.ts
 model/httpvalidation-error.ts
