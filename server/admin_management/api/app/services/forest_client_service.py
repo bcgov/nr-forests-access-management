@@ -12,11 +12,11 @@ class ForestClientService:
     def __init__(self, db: Session):
         self.forest_client_repository = ForestClientRepository(db)
 
-    def get_forest_client(self, forest_client_number: str):
-        return self.forest_client_repository.get_forest_client(forest_client_number)
+    def get_forest_client_by_number(self, forest_client_number: str):
+        return self.forest_client_repository.get_forest_client_by_number(forest_client_number)
 
     def find_or_create(self, forest_client_number: str, requester: str):
-        fam_forest_client = self.get_forest_client(forest_client_number)
+        fam_forest_client = self.get_forest_client_by_number(forest_client_number)
         if not fam_forest_client:
             LOGGER.debug(
                 f"Forest Client with forest_client_number {forest_client_number} "

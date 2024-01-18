@@ -1,8 +1,10 @@
 import logging
 from enum import Enum
 import json
-from api.app.models import model as models
 from fastapi import Request, HTTPException
+from typing import Optional
+
+from api.app.models import model as models
 
 
 LOGGER = logging.getLogger(__name__)
@@ -27,6 +29,7 @@ class AuditEventLog:
     requesting_user: models.FamUser
     target_user: models.FamUser
     exception: Exception
+    role: models.FamRole
 
     def __init__(
         self,
@@ -37,6 +40,7 @@ class AuditEventLog:
         requesting_user: models.FamUser = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
+        role: models.FamRole = None,
     ):
         self.request = request
         self.event_type = event_type
@@ -45,23 +49,36 @@ class AuditEventLog:
         self.requesting_user = requesting_user
         self.target_user = target_user
         self.exception = exception
+        self.role = role
 
     def log_event(self):
-
+        log_role = (
+            {
+                "role": {
+                    "roleId": self.role.role_id if self.role else None,
+                    "roleName": self.role.role_name if self.role else None,
+                }
+            }
+            if self.role
+            else {}
+        )
         log_item = {
             "auditEventTypeCode": self.event_type.name if self.event_type else None,
             "auditEventResultCode": self.event_outcome.name
             if self.event_outcome
             else None,
-            "applicationId": self.application.application_id
-            if self.application
-            else None,
-            "applicationName": self.application.application_name
-            if self.application
-            else None,
-            "applicationEnv": self.application.app_environment
-            if self.application
-            else None,
+            "application": {
+                "applicationId": self.application.application_id
+                if self.application
+                else None,
+                "applicationName": self.application.application_name
+                if self.application
+                else None,
+                "applicationEnv": self.application.app_environment
+                if self.application
+                else None,
+            },
+            **log_role,
             "targetUser": {
                 "userGuid": self.target_user.user_guid if self.target_user else None,
                 "userType": self.target_user.user_type_code

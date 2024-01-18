@@ -11,7 +11,7 @@ class RoleRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_role(self, role_id: str) -> models.FamRole:
+    def get_role_by_id(self, role_id: str) -> models.FamRole:
         return (
             self.db.query(models.FamRole)
             .filter(models.FamRole.role_id == role_id)

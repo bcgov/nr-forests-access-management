@@ -170,7 +170,7 @@ async def get_request_role_from_id(
             rbody = await request.json()
             role_id = rbody["role_id"]
             role_service = RoleService(db)
-            role = role_service.get_role(role_id)
+            role = role_service.get_role_by_id(role_id)
             return role  # role could be None.
 
         # When request does not contains body part.
@@ -202,7 +202,6 @@ def authorize_by_application_role(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Delegate to this for main check.
     authorize_by_app_id(application_id=role.application_id, db=db, claims=claims)
     return role
 
@@ -269,23 +268,6 @@ async def validate_param_application_id(
             detail={
                 "code": ERROR_INVALID_APPLICATION_ID,
                 "description": f"Application ID {application_admin_request.application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-
-async def validate_param_role_id(
-    access_control_privilege_request: FamAccessControlPrivilegeCreate,
-    db: Session = Depends(database.get_db),
-):
-    role_service = RoleService(db)
-    role = role_service.get_role(access_control_privilege_request.role_id)
-    if not role:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_ROLE_ID,
-                "description": f"Role ID {access_control_privilege_request.role_id} not found",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )

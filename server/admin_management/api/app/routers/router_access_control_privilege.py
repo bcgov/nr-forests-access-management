@@ -8,7 +8,6 @@ from api.app.routers.router_guards import (
     get_current_requester,
     authorize_by_application_role,
     enforce_self_grant_guard,
-    validate_param_role_id,
 )
 from api.app import database, jwt_validation, schemas
 from api.app.schemas import Requester
@@ -32,7 +31,6 @@ router = APIRouter()
             authorize_by_application_role
         ),  # only app admin can do this, get application by role
         Depends(enforce_self_grant_guard),
-        Depends(validate_param_role_id),
     ],
 )
 def create_access_control_privilege(
@@ -61,9 +59,10 @@ def create_access_control_privilege(
         audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
             requester.cognito_user_id
         )
-        audit_event_log.application = role_service.get_role(
+        audit_event_log.role = role_service.get_role_by_id(
             access_control_privilege_request.role_id
-        ).application
+        )
+        audit_event_log.application = audit_event_log.role.application
         audit_event_log.target_user = user_service.get_user_by_domain_and_name(
             access_control_privilege_request.user_type_code,
             access_control_privilege_request.user_name,

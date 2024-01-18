@@ -12,7 +12,7 @@ class ForestClientRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_forest_client(self, forest_client_number: str) -> models.FamForestClient:
+    def get_forest_client_by_number(self, forest_client_number: str) -> models.FamForestClient:
         return (
             self.db.query(models.FamForestClient)
             .filter(models.FamForestClient.forest_client_number == forest_client_number)

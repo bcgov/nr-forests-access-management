@@ -29,11 +29,13 @@ class AccessControlPrivilegeService:
         )
 
     def get_by_id(self, access_control_privilege_id: int):
-        return self.access_control_privilege_repository.get_by_id(access_control_privilege_id)
+        return self.access_control_privilege_repository.get_by_id(
+            access_control_privilege_id
+        )
 
     def create_access_control_privilege(
         self, request: schemas.FamAccessControlPrivilegeCreate, requester: str
-    ) -> List[schemas.FamAccessControlPrivilegeGet]:
+    ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
         )
@@ -43,19 +45,20 @@ class AccessControlPrivilegeService:
             request.user_type_code, request.user_name, requester
         )
 
-        # Verify if role exists.
-        fam_role = self.role_service.get_role(request.role_id)
+        # Verify if role exists
+        fam_role = self.role_service.get_role_by_id(request.role_id)
         if not fam_role:
             error_msg = f"Role id {request.role_id} does not exist."
             utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-        # For now, delegated admin access control privilege focus on abstract role
-        # Role is a 'Abstract' type, create role assignment with forst client child role.
+        # Role is a 'Abstract' type, create role assignment with forst client child role
         require_child_role = (
             fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
         )
 
-        access_control_privilege_return: List[schemas.FamAccessControlPrivilegeGet] = []
+        access_control_privilege_return: List[
+            schemas.FamAccessControlPrivilegeCreateResponse
+        ] = []
 
         if require_child_role:
             LOGGER.debug(
@@ -69,11 +72,12 @@ class AccessControlPrivilegeService:
             ):
                 error_msg = (
                     "Invalid role assignment request. Cannot assign user "
-                    + f"{request.user_name} to abstract role {fam_role.role_name}"
+                    + f"{request.user_name} to abstract role {fam_role.role_name}."
                 )
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
             for forest_number in request.forest_client_number:
+                # Check if child role exists or add a new child role
                 child_role = self.role_service.find_or_create_forest_client_child_role(
                     forest_number, fam_role, requester
                 )
@@ -89,11 +93,9 @@ class AccessControlPrivilegeService:
                         "FamAccessControlPrivilege already exists with id: "
                         + f"{fam_access_control_privilege.access_control_privilege_id}."
                     )
-
                     error_msg = (
                         "User already has the requested access control privilege."
                     )
-                    # utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
                     fam_access_control_privilege_dict = (
                         fam_access_control_privilege.__dict__
                     )
