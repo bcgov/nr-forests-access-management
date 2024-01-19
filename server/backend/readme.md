@@ -178,3 +178,35 @@ for test Output,
 
 - find the `output` tab
 - select `Python Test Log` in from the pulldown, top right of the output window
+
+
+## ----------------------------------------------------------------------------
+## -------------- Windows Configuration ----------------------------------------
+## ----------------------------------------------------------------------------
+
+Before you follow the steps below, ensure you have Python installed or updated to the latest version. Install and start your Docker desktop for Windows.
+
+```
+  - cd server/backend
+  - run docker compose up -d fam-flyway
+  - run this command in the same directory: python3 -m venv venv
+  - change your directory to:
+    - `cd server/backend/venv/Scripts`
+    - then enter(run) activate.bat to activate venv
+    - you will see: (venv) <Your base directory>\server\backend\venv\Scripts>
+  - cd back to server/backend
+  - Create a copy of `local-dev.env` and rename the file to `local-dev-window.env.bat.` Ask one of the developers for the environment properties in the local-dev.env, and copy and paste these properties into the local-dev-window.env.bat. Change and prefix each line with 'SET' e.g.
+    SET POSTGRES_USER=***
+    SET  POSTGRES_PASSWORD=***
+    SET POSTGRES_HOST=***
+  - In the same directory, enter(run) local-dev-window.env.bat
+  - To run start the backend, run python3 server start.py
+```
+
+To Start or run the frontend
+ ```
+ - cd frontend
+ - npm run install-frontend
+ - npm run dev
+ ```
+
