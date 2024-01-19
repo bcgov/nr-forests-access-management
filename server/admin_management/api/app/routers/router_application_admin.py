@@ -1,27 +1,38 @@
 import logging
-from fastapi import APIRouter, Depends, Request, Response, HTTPException
-from sqlalchemy.orm import Session
 from typing import List
 
-
-from api.app.models import model as models
-from api.app.routers.router_guards import (
-    get_current_requester,
-    authorize_by_fam_admin,
-    enforce_self_grant_guard,
-    validate_param_application_admin_id,
-    validate_param_application_id,
-)
 from api.app import database, jwt_validation, schemas
+from api.app.models import model as models
+from api.app.routers.router_guards import (authorize_by_fam_admin,
+                                           enforce_self_grant_guard,
+                                           get_current_requester,
+                                           validate_param_application_admin_id,
+                                           validate_param_application_id)
+from api.app.routers.router_utils import application_admin_service_instance
 from api.app.schemas import Requester
 from api.app.services.application_admin_service import ApplicationAdminService
-from api.app.services.user_service import UserService
 from api.app.services.application_service import ApplicationService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.services.user_service import UserService
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
+from fastapi import APIRouter, Depends, Request, Response
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+@router.get(
+    "",
+    response_model=List[schemas.FamAppAdminGet],
+    status_code=200,
+    dependencies=[Depends(authorize_by_fam_admin)],
+)
+async def get_application_admins(
+    application_admin_service: ApplicationAdminService = Depends(application_admin_service_instance),
+):
+    return application_admin_service.get_application_admins()
 
 
 @router.post(

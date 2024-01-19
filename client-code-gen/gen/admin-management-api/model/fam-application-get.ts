@@ -15,26 +15,38 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserType } from './user-type';
+import { AppEnv } from './app-env';
 
 /**
  * 
  * @export
- * @interface FamUserType
+ * @interface FamApplicationGet
  */
-export interface FamUserType {
-    /**
-     * 
-     * @type {UserType}
-     * @memberof FamUserType
-     */
-    'code': UserType;
+export interface FamApplicationGet {
     /**
      * 
      * @type {string}
-     * @memberof FamUserType
+     * @memberof FamApplicationGet
      */
-    'description': string;
+    'application_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationGet
+     */
+    'application_description': string;
+    /**
+     * 
+     * @type {AppEnv}
+     * @memberof FamApplicationGet
+     */
+    'app_environment'?: AppEnv | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof FamApplicationGet
+     */
+    'application_id': number;
 }
 
 
