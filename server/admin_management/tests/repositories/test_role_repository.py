@@ -122,18 +122,20 @@ def test_create_role(role_repo: RoleRepository):
 def test_create_child_role(role_repo: RoleRepository):
     # create child role with forest client number
     # remove the "forest_client_number" from the test data, as the role model doesn't have this field
-    fam_role_dict = {**TEST_ROLE_CREATE_CHILD}
+    # fam_role_dict = {**TEST_ROLE_CREATE_CHILD}
+    # del fam_role_dict["forest_client_number"]
+    fam_role_dict = TEST_ROLE_CREATE_CHILD.model_dump()
     del fam_role_dict["forest_client_number"]
     new_child_role = role_repo.create_role(fam_role_dict)
-    assert new_child_role.role_name == TEST_ROLE_CREATE_CHILD.get("role_name")
+    assert new_child_role.role_name == TEST_ROLE_CREATE_CHILD.role_name
     assert new_child_role.role_type_code == famConstants.RoleType.ROLE_TYPE_CONCRETE
     # verify child role created
     found_role = role_repo.get_role_by_id(new_child_role.role_id)
     assert found_role.role_id == new_child_role.role_id
-    assert found_role.role_name == TEST_ROLE_CREATE_CHILD.get("role_name")
-    assert found_role.application_id == TEST_ROLE_CREATE_CHILD.get("application_id")
-    assert found_role.parent_role_id == TEST_ROLE_CREATE_CHILD.get("parent_role_id")
-    assert found_role.role_type_code == TEST_ROLE_CREATE_CHILD.get("role_type_code")
+    assert found_role.role_name == TEST_ROLE_CREATE_CHILD.role_name
+    assert found_role.application_id == TEST_ROLE_CREATE_CHILD.application_id
+    assert found_role.parent_role_id == TEST_ROLE_CREATE_CHILD.parent_role_id
+    assert found_role.role_type_code == TEST_ROLE_CREATE_CHILD.role_type_code
 
     # create child role with invalid parent,
     # have to use a different application id to avoid duplication error and get the expect error

@@ -23,14 +23,14 @@ def test_create_role(
     # cause we already did at repository level, and there is no difference
     # test create chile role with forest client number
     new_child_role = role_service.create_role(TEST_ROLE_CREATE_CHILD)
-    assert new_child_role.role_name == TEST_ROLE_CREATE_CHILD.get("role_name")
+    assert new_child_role.role_name == TEST_ROLE_CREATE_CHILD.role_name
     # verify child role is created
     found_role = role_service.get_role_by_id(new_child_role.role_id)
     assert found_role.role_id == new_child_role.role_id
-    assert found_role.role_name == TEST_ROLE_CREATE_CHILD.get("role_name")
-    assert found_role.application_id == TEST_ROLE_CREATE_CHILD.get("application_id")
-    assert found_role.parent_role_id == TEST_ROLE_CREATE_CHILD.get("parent_role_id")
-    assert found_role.role_type_code == TEST_ROLE_CREATE_CHILD.get("role_type_code")
+    assert found_role.role_name == TEST_ROLE_CREATE_CHILD.role_name
+    assert found_role.application_id == TEST_ROLE_CREATE_CHILD.application_id
+    assert found_role.parent_role_id == TEST_ROLE_CREATE_CHILD.parent_role_id
+    assert found_role.role_type_code == TEST_ROLE_CREATE_CHILD.role_type_code
     # verify forest client number record is created
     found_forest_client = forest_client_service.get_forest_client_by_number(
         TEST_FOREST_CLIENT_NUMBER

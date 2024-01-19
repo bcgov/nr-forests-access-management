@@ -67,28 +67,30 @@ TEST_ROLE_CREATE_ABSTRACT: schemas.FamRoleCreate = {
     "role_name": TEST_NEW_ROLE_TWO,
     "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
 }
-TEST_ROLE_CREATE_CHILD: schemas.FamRoleCreate = {
-    "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "application_id": TEST_APPLICATION_ID_FOM_DEV,
-    "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
-    "role_name": utils.construct_forest_client_role_name(
-        TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER
-    ),
-    "role_purpose": utils.construct_forest_client_role_purpose(
-        "PARENT_ROLE purpose", TEST_FOREST_CLIENT_NUMBER
-    ),
-    "create_user": TEST_CREATOR,
-    "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
-}
+TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
+    **{
+        "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+        "application_id": TEST_APPLICATION_ID_FOM_DEV,
+        "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
+        "role_name": utils.construct_forest_client_role_name(
+            TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER
+        ),
+        "role_purpose": utils.construct_forest_client_role_purpose(
+            "PARENT_ROLE purpose", TEST_FOREST_CLIENT_NUMBER
+        ),
+        "create_user": TEST_CREATOR,
+        "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
+    }
+)  # this is an object variable because we use it in both service and repository test
 
 # -------------------- test access control privilege data ------------------ #
 TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID = 0
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE: schemas.FamAccessControlPrivilegeCreate = {
     "user_id": TEST_USER_ID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "create_user": TEST_CREATOR
+    "create_user": TEST_CREATOR,
 }
 
 # -------------------------- error messages ------------------------- #
 ERROR_VOLIATE_UNIQUE_CONSTRAINT = "duplicate key value violates unique constraint"
-ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT="violates foreign key constraint"
+ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT = "violates foreign key constraint"

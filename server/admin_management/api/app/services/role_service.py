@@ -65,15 +65,16 @@ class RoleService:
     def create_role(self, role: FamRoleCreate) -> FamRole:
         LOGGER.debug(f"Creating Fam role: {role}")
 
-        forest_client_number = role["forest_client_number"]
-        del role["forest_client_number"]
+        fam_role_dict = role.model_dump()
+        forest_client_number = fam_role_dict["forest_client_number"]
+        del fam_role_dict["forest_client_number"]
 
         if forest_client_number:
             # find or create forest client number in the fam forest client table
             forest_client_record = self.forest_client_service.find_or_create(
-                forest_client_number, role.get("create_user")
+                forest_client_number, fam_role_dict.get("create_user")
             )
-            role["client_number"] = forest_client_record
+            fam_role_dict["client_number"] = forest_client_record
 
-        fam_role_model = self.role_repo.create_role(role)
+        fam_role_model = self.role_repo.create_role(fam_role_dict)
         return fam_role_model
