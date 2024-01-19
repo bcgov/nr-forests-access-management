@@ -36,12 +36,13 @@ TEST_NEW_APPLICATION_ADMIN = {
 }
 
 # -------------------- test forest client data ---------------------- #
+TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
+TEST_INVALID_FOREST_CLIENT_NUMBER = "12345"
 TEST_FOREST_CLIENT_NUMBER = "00000010"
 TEST_FOERST_CLIENT_CREATE: schemas.FamForestClientCreate = {
     "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
     "create_user": TEST_CREATOR,
 }
-TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
 
 # -------------------------- test role data ------------------------- #
 TEST_NOT_EXIST_ROLE_ID = 0
@@ -69,6 +70,7 @@ TEST_ROLE_CREATE_ABSTRACT: schemas.FamRoleCreate = {
 TEST_ROLE_CREATE_CHILD: schemas.FamRoleCreate = {
     "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "application_id": TEST_APPLICATION_ID_FOM_DEV,
+    "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
     "role_name": utils.construct_forest_client_role_name(
         TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER
     ),

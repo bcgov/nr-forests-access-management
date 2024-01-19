@@ -4,7 +4,6 @@ from sqlalchemy.exc import IntegrityError
 
 from api.app import constants as famConstants
 from api.app.repositories.role_repository import RoleRepository
-from api.app.repositories.forest_client_repository import ForestClientRepository
 
 from tests.constants import (
     TEST_NOT_EXIST_ROLE_ID,
@@ -20,7 +19,7 @@ from tests.constants import (
     TEST_ROLE_CREATE_CHILD,
     TEST_ANOTHER_CREATER,
     ERROR_VOLIATE_UNIQUE_CONSTRAINT,
-    ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT
+    ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
 )
 
 
@@ -120,11 +119,12 @@ def test_create_role(role_repo: RoleRepository):
     assert str(e.value).find(ERROR_VOLIATE_UNIQUE_CONSTRAINT) != -1
 
 
-def test_create_child_role(
-    role_repo: RoleRepository, forest_client_repo: ForestClientRepository
-):
+def test_create_child_role(role_repo: RoleRepository):
     # create child role with forest client number
-    new_child_role = role_repo.create_role(TEST_ROLE_CREATE_CHILD)
+    # remove the "forest_client_number" from the test data, as the role model doesn't have this field
+    fam_role_dict = {**TEST_ROLE_CREATE_CHILD}
+    del fam_role_dict["forest_client_number"]
+    new_child_role = role_repo.create_role(fam_role_dict)
     assert new_child_role.role_name == TEST_ROLE_CREATE_CHILD.get("role_name")
     assert new_child_role.role_type_code == famConstants.RoleType.ROLE_TYPE_CONCRETE
     # verify child role created
@@ -140,7 +140,7 @@ def test_create_child_role(
     with pytest.raises(IntegrityError) as e:
         role_repo.create_role(
             {
-                **TEST_ROLE_CREATE_CHILD,
+                **fam_role_dict,
                 "application_id": TEST_APPLICATION_ID_FAM,
                 "parent_role_id": TEST_NOT_EXIST_ROLE_ID,
             }

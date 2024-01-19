@@ -2,9 +2,9 @@ import logging
 from sqlalchemy.orm import Session
 
 from api.app import constants as famConstants
-from api.app import schemas
 from api.app.utils import utils
-from api.app.models import model as models
+from api.app.schemas import FamRoleCreate
+from api.app.models.model import FamRole
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.forest_client_repository import ForestClientRepository
 from api.app.services.forest_client_service import ForestClientService
@@ -23,7 +23,7 @@ class RoleService:
         return self.role_repo.get_role_by_id(role_id)
 
     def find_or_create_forest_client_child_role(
-        self, forest_client_number: str, parent_role: models.FamRole, requester: str
+        self, forest_client_number: str, parent_role: FamRole, requester: str
     ):
         forest_client_role_name = utils.construct_forest_client_role_name(
             parent_role.role_name, forest_client_number
@@ -41,7 +41,7 @@ class RoleService:
 
         if not child_role:
             child_role = self.create_role(
-                schemas.FamRoleCreate(
+                FamRoleCreate(
                     **{
                         "parent_role_id": parent_role.role_id,
                         "application_id": parent_role.application_id,
@@ -62,19 +62,18 @@ class RoleService:
             )
         return child_role
 
-    def create_role(self, role: schemas.FamRoleCreate) -> models.FamRole:
+    def create_role(self, role: FamRoleCreate) -> FamRole:
         LOGGER.debug(f"Creating Fam role: {role}")
 
-        fam_role_dict = role.model_dump()
-        forest_client_number = fam_role_dict["forest_client_number"]
-        del fam_role_dict["forest_client_number"]
+        forest_client_number = role["forest_client_number"]
+        del role["forest_client_number"]
 
         if forest_client_number:
             # find or create forest client number in the fam forest client table
             forest_client_record = self.forest_client_service.find_or_create(
-                forest_client_number, fam_role_dict.get("create_user")
+                forest_client_number, role.get("create_user")
             )
-            fam_role_dict["client_number"] = forest_client_record
+            role["client_number"] = forest_client_record
 
-        fam_role_model = self.role_repo.create_role(fam_role_dict)
+        fam_role_model = self.role_repo.create_role(role)
         return fam_role_model

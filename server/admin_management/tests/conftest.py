@@ -16,13 +16,17 @@ import api.app.jwt_validation as jwt_validation
 from api.app.main import app
 
 from api.app.repositories.user_repository import UserRepository
+from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.forest_client_repository import ForestClientRepository
-from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
 from api.app.repositories.access_control_privilege_repository import AccessControlPrivilegeRepository
 from api.app.services.user_service import UserService
+from api.app.services.role_service import RoleService
+from api.app.services.forest_client_service import ForestClientService
 from api.app.services.application_admin_service import ApplicationAdminService
+from api.app.services.access_control_privilege_service import AccessControlPrivilegeService
+
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -143,6 +147,10 @@ def user_repo(db_pg_session: Session):
     return UserRepository(db_pg_session)
 
 @pytest.fixture(scope="function")
+def role_repo(db_pg_session: Session):
+    return RoleRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
 def application_repo(db_pg_session: Session):
     return ApplicationRepository(db_pg_session)
 
@@ -151,21 +159,29 @@ def forest_client_repo(db_pg_session: Session):
     return ForestClientRepository(db_pg_session)
 
 @pytest.fixture(scope="function")
-def role_repo(db_pg_session: Session):
-    return RoleRepository(db_pg_session)
+def application_admin_repo(db_pg_session: Session):
+    return ApplicationAdminRepository(db_pg_session)
 
 @pytest.fixture(scope="function")
 def access_control_privilege_repo(db_pg_session: Session):
     return AccessControlPrivilegeRepository(db_pg_session)
 
 @pytest.fixture(scope="function")
-def application_admin_repo(db_pg_session: Session):
-    return ApplicationAdminRepository(db_pg_session)
-
-@pytest.fixture(scope="function")
 def user_service(db_pg_session: Session):
     return UserService(db_pg_session)
 
 @pytest.fixture(scope="function")
+def role_service(db_pg_session: Session):
+    return RoleService(db_pg_session)
+
+@pytest.fixture(scope="function")
+def forest_client_service(db_pg_session: Session):
+    return ForestClientService(db_pg_session)
+
+@pytest.fixture(scope="function")
 def application_admin_service(db_pg_session: Session):
     return ApplicationAdminService(db_pg_session)
+
+@pytest.fixture(scope="function")
+def access_control_privilege(db_pg_session: Session):
+    return AccessControlPrivilegeService(db_pg_session)

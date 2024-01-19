@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app import schemas
+from api.app.schemas import FamForestClientCreate
 from api.app.repositories.forest_client_repository import ForestClientRepository
 
 
@@ -23,7 +23,7 @@ class ForestClientService:
                 "does not exist, add a new Forest Client."
             )
 
-            request_forest_client: schemas.FamForestClientCreate = {
+            request_forest_client: FamForestClientCreate = {
                 "forest_client_number": forest_client_number,
                 "create_user": requester,
             }

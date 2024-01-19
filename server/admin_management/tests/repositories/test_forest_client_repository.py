@@ -7,7 +7,8 @@ from api.app.repositories.forest_client_repository import ForestClientRepository
 from tests.constants import (
     TEST_FOERST_CLIENT_CREATE,
     TEST_NON_EXIST_FOREST_CLIENT_NUMBER,
-    ERROR_VOLIATE_UNIQUE_CONSTRAINT
+    TEST_INVALID_FOREST_CLIENT_NUMBER,
+    ERROR_VOLIATE_UNIQUE_CONSTRAINT,
 )
 
 
