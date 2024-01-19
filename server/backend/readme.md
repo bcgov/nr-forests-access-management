@@ -195,18 +195,10 @@ Before you follow the steps below, ensure you have Python installed or updated t
     - then enter(run) activate.bat to activate venv
     - you will see: (venv) <Your base directory>\server\backend\venv\Scripts>
   - cd back to server/backend
-  - Create a copy of `local-dev.env` and rename the file to `local-dev-window.env.bat.` Ask one of the developers for the environment properties in the local-dev.env, and copy and paste these properties into the local-dev-window.env.bat. Change and prefix each line with 'SET' e.g.
+  - Ask one of the developers for the environment properties in the local-dev.env, and update the properties in local-dev-window.env.bat with them
     SET POSTGRES_USER=***
     SET  POSTGRES_PASSWORD=***
     SET POSTGRES_HOST=***
   - In the same directory, enter(run) local-dev-window.env.bat
   - To run start the backend, run python3 server start.py
 ```
-
-To Start or run the frontend
- ```
- - cd frontend
- - npm run install-frontend
- - npm run dev
- ```
-
