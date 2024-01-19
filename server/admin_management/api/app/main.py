@@ -1,14 +1,13 @@
 import logging.config
 import os.path
 
+from api.app.routers import (router_application, router_application_admin,
+                             router_smoke_test)
+from api.config.config import get_allow_origins, get_root_path
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
 from mangum import Mangum
-
-from api.config.config import get_root_path, get_allow_origins
-from api.app.routers import router_smoke_test, router_application_admin
-
+from starlette.responses import RedirectResponse
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -67,8 +66,13 @@ app.include_router(
 )
 app.include_router(
     router_application_admin.router,
-    prefix=apiPrefix + "/application_admin",
+    prefix=apiPrefix + "/application_admins",
     tags=["FAM Application Admin"],
+)
+app.include_router(
+    router_application.router,
+    prefix=apiPrefix + "/applications",
+    tags=["FAM Applications"],
 )
 
 

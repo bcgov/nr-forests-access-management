@@ -19,6 +19,9 @@ class ApplicationAdminService:
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
 
+    def get_application_admins(self) -> schemas.FamAppAdminGet:
+        return self.application_admin_repo.get_application_admins()
+
     def get_application_admin_by_id(
         self, application_admin_id: int
     ) -> schemas.FamAppAdminGet:

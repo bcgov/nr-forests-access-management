@@ -21,7 +21,7 @@ import tests.jwt_utils as jwt_utils
 
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/application_admin"
+endPoint = f"{apiPrefix}/application_admins"
 
 
 def test_create_application_admin(
