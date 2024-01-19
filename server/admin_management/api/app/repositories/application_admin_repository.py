@@ -47,7 +47,7 @@ class ApplicationAdminRepository:
     def create_application_admin(
         self, application_id: int, user_id: int, requester: str
     ) -> models.FamApplicationAdmin:
-        new_fam_application_admin: models.FamApplicationAdmin = (
+        new_fam_application_admin = (
             models.FamApplicationAdmin(
                 **{
                     "user_id": user_id,

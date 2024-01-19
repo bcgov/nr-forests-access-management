@@ -16,7 +16,6 @@ from api.app.schemas import (
     Requester,
     TargetUser,
     FamAppAdminCreate,
-    FamAccessControlPrivilegeCreate,
 )
 from api.app.models.model import FamUser, FamRole
 from api.app.services.application_admin_service import ApplicationAdminService

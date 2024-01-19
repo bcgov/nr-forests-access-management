@@ -17,7 +17,10 @@ from api.app.main import app
 
 from api.app.repositories.user_repository import UserRepository
 from api.app.repositories.application_repository import ApplicationRepository
+from api.app.repositories.forest_client_repository import ForestClientRepository
+from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
+from api.app.repositories.access_control_privilege_repository import AccessControlPrivilegeRepository
 from api.app.services.user_service import UserService
 from api.app.services.application_admin_service import ApplicationAdminService
 
@@ -142,6 +145,18 @@ def user_repo(db_pg_session: Session):
 @pytest.fixture(scope="function")
 def application_repo(db_pg_session: Session):
     return ApplicationRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def forest_client_repo(db_pg_session: Session):
+    return ForestClientRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def role_repo(db_pg_session: Session):
+    return RoleRepository(db_pg_session)
+
+@pytest.fixture(scope="function")
+def access_control_privilege_repo(db_pg_session: Session):
+    return AccessControlPrivilegeRepository(db_pg_session)
 
 @pytest.fixture(scope="function")
 def application_admin_repo(db_pg_session: Session):

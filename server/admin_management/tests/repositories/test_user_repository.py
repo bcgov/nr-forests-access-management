@@ -2,12 +2,12 @@ import logging
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-import api.app.schemas as schemas
 from api.app.repositories.user_repository import UserRepository
 
 from tests.constants import (
     TEST_NEW_USER,
     TEST_NON_EXISTS_COGNITO_USER_ID,
+    ERROR_VOLIATE_UNIQUE_CONSTRAINT,
 )
 import tests.jwt_utils as jwt_utils
 
@@ -74,7 +74,4 @@ def test_create_user(user_repo: UserRepository):
     # test create duplicate user
     with pytest.raises(IntegrityError) as e:
         user_repo.create_user(TEST_NEW_USER)
-    assert (
-        str(e.value).find('duplicate key value violates unique constraint "fam_usr_uk"')
-        != -1
-    )
+    assert str(e.value).find(ERROR_VOLIATE_UNIQUE_CONSTRAINT) != -1

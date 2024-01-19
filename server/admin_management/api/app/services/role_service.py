@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from api.app import constants as famConstants
 from api.app import schemas
+from api.app.utils import utils
 from api.app.models import model as models
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.forest_client_repository import ForestClientRepository
@@ -24,7 +25,7 @@ class RoleService:
     def find_or_create_forest_client_child_role(
         self, forest_client_number: str, parent_role: models.FamRole, requester: str
     ):
-        forest_client_role_name = self.construct_forest_client_role_name(
+        forest_client_role_name = utils.construct_forest_client_role_name(
             parent_role.role_name, forest_client_number
         )
 
@@ -46,7 +47,7 @@ class RoleService:
                         "application_id": parent_role.application_id,
                         "forest_client_number": forest_client_number,
                         "role_name": forest_client_role_name,
-                        "role_purpose": self.construct_forest_client_role_purpose(
+                        "role_purpose": utils.construct_forest_client_role_purpose(
                             parent_role_purpose=parent_role.role_purpose,
                             forest_client_number=forest_client_number,
                         ),
@@ -68,25 +69,12 @@ class RoleService:
         forest_client_number = fam_role_dict["forest_client_number"]
         del fam_role_dict["forest_client_number"]
 
-        # start by creating a role record
-        fam_role_model = models.FamRole(**fam_role_dict)
         if forest_client_number:
             # find or create forest client number in the fam forest client table
             forest_client_record = self.forest_client_service.find_or_create(
-                forest_client_number, fam_role_model.create_user
+                forest_client_number, fam_role_dict.get("create_user")
             )
-            fam_role_model.client_number = forest_client_record
+            fam_role_dict["client_number"] = forest_client_record
 
-        fam_role_model = self.role_repo.create_role(fam_role_model)
+        fam_role_model = self.role_repo.create_role(fam_role_dict)
         return fam_role_model
-
-    def construct_forest_client_role_name(
-        self, parent_role_name: str, forest_client_number: str
-    ):
-        return f"{parent_role_name}_{forest_client_number}"
-
-    def construct_forest_client_role_purpose(
-        self, parent_role_purpose: str, forest_client_number: str
-    ):
-        client_purpose = f"{parent_role_purpose} for {forest_client_number}"
-        return client_purpose

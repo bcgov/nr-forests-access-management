@@ -149,13 +149,21 @@ class FamAppAdminGet(BaseModel):
 
 
 # -------------------------- FAM Access Control Privilege (Delegated Admin) -------------------------- #
-class FamAccessControlPrivilegeCreate(BaseModel):
+class FamAccessControlPrivilegeCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeCreate(BaseModel):
+    user_id: int
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+    role_id: int
 
     model_config = ConfigDict(from_attributes=True)
 

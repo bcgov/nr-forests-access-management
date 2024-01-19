@@ -34,7 +34,7 @@ router = APIRouter()
     ],
 )
 def create_access_control_privilege(
-    access_control_privilege_request: schemas.FamAccessControlPrivilegeCreate,
+    access_control_privilege_request: schemas.FamAccessControlPrivilegeCreateRequest,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),

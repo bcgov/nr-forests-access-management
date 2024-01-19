@@ -34,7 +34,7 @@ class AccessControlPrivilegeService:
         )
 
     def create_access_control_privilege(
-        self, request: schemas.FamAccessControlPrivilegeCreate, requester: str
+        self, request: schemas.FamAccessControlPrivilegeCreateRequest, requester: str
     ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
@@ -122,8 +122,13 @@ class AccessControlPrivilegeService:
                 "error_message": error_msg,
             }
         else:
+            access_control_privilege_param: schemas.FamAccessControlPrivilegeCreate = {
+                "user_id": user_id,
+                "role_id": role_id,
+                "create_user": requester,
+            }
             fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
-                user_id, role_id, requester
+                access_control_privilege_param
             )
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
             access_control_privilege_return = {
