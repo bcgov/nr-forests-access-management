@@ -18,7 +18,7 @@
         "@bcgov-nr/nr-theme": "^1.8.2",
         "@carbon/icons-vue": "^10.72.1",
         "aws-amplify": "^5.3.6",
-        "axios": "0.26.1",
+        "axios": "1.6.5",
         "bootstrap": "^5.2.3",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",

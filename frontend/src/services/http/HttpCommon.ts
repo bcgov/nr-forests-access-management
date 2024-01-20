@@ -1,7 +1,7 @@
 import HttpReqInterceptors from '@/services/http/HttpRequestInterceptors';
 import HttpResInterceptors from '@/services/http/HttpResponseInterceptors';
 import { setLoadingState } from '@/store/LoadingState';
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
 const DEFAULT_CONTENT_TYPE = 'application/json';
 const DEFAULT_REQUEST_TIMEOUT = 20000;
@@ -38,7 +38,7 @@ httpInstance.defaults.headers.get['Content-type'] = DEFAULT_CONTENT_TYPE;
   When http request happens => assign LoadingState state with true.
   When http response received or error happens =>  assign LoadingState state with false
 */
-const loadingStart = (config: AxiosRequestConfig) => {
+const loadingStart = (config: InternalAxiosRequestConfig) => {
     setLoadingState(true);
     return config;
 };

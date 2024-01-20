@@ -1,17 +1,17 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import httpInstance from '@/services/http/HttpCommon';
 import type { AxiosInstance } from 'axios';
-import { FAMApplicationAdminApi } from 'fam-admin-mgmt-api/api';
+import { FAMApplicationAdminApi, FAMApplicationsApi } from 'fam-admin-mgmt-api/api';
 import {
     Configuration,
-    FAMApplicationsApi,
+    FAMApplicationsApi as FAMAppsApi, // give alias so name does not clash with fam-admin-mgmt-api's FAMApplicationsApi
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
 
 type AppAccessControlApiType = {
-    applicationsApi: FAMApplicationsApi;
+    applicationsApi: FAMAppsApi;
     userRoleAssignmentApi: FAMUserRoleAssignmentApi;
     forestClientsApi: FAMForestClientsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
@@ -19,6 +19,7 @@ type AppAccessControlApiType = {
 
 type AdminManagementApiType = {
     applicationAdminApi: FAMApplicationAdminApi;
+    applicationsApi: FAMApplicationsApi;
 };
 
 export default class ApiServiceFactory {
@@ -41,7 +42,7 @@ export default class ApiServiceFactory {
         // App Access Control API service
         this.appAccessControlApiService = {
             applicationsApi: this.createApiInstance(
-                FAMApplicationsApi,
+                FAMAppsApi,
                 appAccessControlBaseURL
             ),
             userRoleAssignmentApi: this.createApiInstance(
@@ -63,6 +64,10 @@ export default class ApiServiceFactory {
                 FAMApplicationAdminApi,
                 adminManagementBaseURL
             ),
+            applicationsApi: this.createApiInstance(
+                FAMApplicationsApi,
+                adminManagementBaseURL
+            )
         };
     }
 
