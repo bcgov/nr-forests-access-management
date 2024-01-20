@@ -47,7 +47,7 @@ def test_handle_access_control_privilege_create(
     assert return_response.detail.role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
 
     # verify the access control is created
-    new_record = access_control_privilege_service.get_by_user_id_and_role_id(
+    new_record = access_control_privilege_service.get_acp_by_user_id_and_role_id(
         TEST_USER_ID, TEST_FOM_DEV_SUBMITTER_ROLE_ID
     )
     assert new_record.user_id == TEST_USER_ID
@@ -104,7 +104,7 @@ def test_create_access_control_privilege(
     NEW_USER_ID = new_user.user_id
     assert return_result[0].detail.user_id == NEW_USER_ID
     # verify the access control privilege is created
-    new_record = access_control_privilege_service.get_by_user_id_and_role_id(
+    new_record = access_control_privilege_service.get_acp_by_user_id_and_role_id(
         NEW_USER_ID, TEST_FOM_DEV_REVIEWER_ROLE_ID
     )
     assert new_record.user_id == NEW_USER_ID
@@ -141,7 +141,7 @@ def test_create_access_control_privilege(
     NEW_ROLE_ID = new_child_role.role_id
     assert return_result[0].detail.role_id == NEW_ROLE_ID
     # verify the access control privilege is created
-    new_record = access_control_privilege_service.get_by_user_id_and_role_id(
+    new_record = access_control_privilege_service.get_acp_by_user_id_and_role_id(
         NEW_USER_ID, NEW_ROLE_ID
     )
     assert new_record.user_id == NEW_USER_ID
@@ -185,7 +185,7 @@ def test_create_access_control_privilege(
     NEW_ROLE_ID_TWO = new_child_role_two.role_id
     assert return_result[1].detail.role_id == new_child_role_two.role_id
     # verify new access control privilege is created
-    new_record = access_control_privilege_service.get_by_user_id_and_role_id(
+    new_record = access_control_privilege_service.get_acp_by_user_id_and_role_id(
         NEW_USER_ID, NEW_ROLE_ID_TWO
     )
     assert new_record.user_id == NEW_USER_ID

@@ -12,7 +12,7 @@ class AccessControlPrivilegeRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_user_id_and_role_id(
+    def get_acp_by_user_id_and_role_id(
         self, user_id: int, role_id: int
     ) -> FamAccessControlPrivilege:
         return (
@@ -24,7 +24,7 @@ class AccessControlPrivilegeRepository:
             .one_or_none()
         )
 
-    def get_by_id(self, access_control_privilege_id: int) -> FamAccessControlPrivilege:
+    def get_acp_by_id(self, access_control_privilege_id: int) -> FamAccessControlPrivilege:
         return (
             self.db.query(FamAccessControlPrivilege)
             .filter(

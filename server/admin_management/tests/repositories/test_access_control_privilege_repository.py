@@ -20,9 +20,9 @@ from tests.constants import (
 LOGGER = logging.getLogger(__name__)
 
 
-def test_get_by_id(access_control_privilege_repo: AccessControlPrivilegeRepository):
+def test_get_acp_by_id(access_control_privilege_repo: AccessControlPrivilegeRepository):
     # get non exist access control privilege id
-    found_record = access_control_privilege_repo.get_by_id(
+    found_record = access_control_privilege_repo.get_acp_by_id(
         TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID
     )
     assert found_record is None
@@ -34,7 +34,7 @@ def test_get_by_id(access_control_privilege_repo: AccessControlPrivilegeReposito
     assert new_record.user_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("user_id")
     assert new_record.role_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("role_id")
     # get the new created access control privilege
-    found_record = access_control_privilege_repo.get_by_id(
+    found_record = access_control_privilege_repo.get_acp_by_id(
         new_record.access_control_privilege_id
     )
     assert (
@@ -45,17 +45,17 @@ def test_get_by_id(access_control_privilege_repo: AccessControlPrivilegeReposito
     assert found_record.role_id == new_record.role_id
 
 
-def test_get_by_user_id_and_role_id(
+def test_get_acp_by_user_id_and_role_id(
     access_control_privilege_repo: AccessControlPrivilegeRepository,
 ):
     # get with non exist user id
-    found_record = access_control_privilege_repo.get_by_user_id_and_role_id(
+    found_record = access_control_privilege_repo.get_acp_by_user_id_and_role_id(
         TEST_NON_EXIST_USER_ID, TEST_FOM_DEV_SUBMITTER_ROLE_ID
     )
     assert found_record is None
 
     # get with non exist role id
-    found_record = access_control_privilege_repo.get_by_user_id_and_role_id(
+    found_record = access_control_privilege_repo.get_acp_by_user_id_and_role_id(
         TEST_USER_ID, TEST_NOT_EXIST_ROLE_ID
     )
     assert found_record is None
@@ -67,7 +67,7 @@ def test_get_by_user_id_and_role_id(
     assert new_record.user_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("user_id")
     assert new_record.role_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("role_id")
     # get the new access control privilege by user id and role id
-    found_record = access_control_privilege_repo.get_by_user_id_and_role_id(
+    found_record = access_control_privilege_repo.get_acp_by_user_id_and_role_id(
         TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("user_id"),
         TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.get("role_id"),
     )

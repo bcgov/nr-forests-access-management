@@ -22,8 +22,6 @@ class ForestClientRepository:
     def create_forest_client(
         self, fam_forest_client: schemas.FamForestClientCreate
     ) -> FamForestClient:
-        LOGGER.debug(f"Creating Fam_Forest_Client with: {fam_forest_client}")
-
         db_item = FamForestClient(**fam_forest_client)
         self.db.add(db_item)
         self.db.flush()

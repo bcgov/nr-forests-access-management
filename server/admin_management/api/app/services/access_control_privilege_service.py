@@ -23,13 +23,13 @@ class AccessControlPrivilegeService:
         self.role_service = RoleService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
-    def get_by_user_id_and_role_id(self, user_id: int, role_id: int):
-        return self.access_control_privilege_repository.get_by_user_id_and_role_id(
+    def get_acp_by_user_id_and_role_id(self, user_id: int, role_id: int):
+        return self.access_control_privilege_repository.get_acp_by_user_id_and_role_id(
             user_id, role_id
         )
 
-    def get_by_id(self, access_control_privilege_id: int):
-        return self.access_control_privilege_repository.get_by_id(
+    def get_acp_by_id(self, access_control_privilege_id: int):
+        return self.access_control_privilege_repository.get_acp_by_id(
             access_control_privilege_id
         )
 
@@ -51,7 +51,7 @@ class AccessControlPrivilegeService:
             error_msg = f"Role id {request.role_id} does not exist."
             utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-        # Role is a 'Abstract' type, create role assignment with forst client child role
+        # Role is a 'Abstract' type, create access control privilege with forst client child role
         require_child_role = (
             fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
         )
@@ -101,7 +101,9 @@ class AccessControlPrivilegeService:
         access_control_privilege_return = None
 
         # Check if user privilege already exists
-        fam_access_control_privilege = self.get_by_user_id_and_role_id(user_id, role_id)
+        fam_access_control_privilege = self.get_acp_by_user_id_and_role_id(
+            user_id, role_id
+        )
 
         if fam_access_control_privilege:
             error_msg = "User already has the requested access control privilege."

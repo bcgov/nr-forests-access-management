@@ -160,7 +160,7 @@ async def get_request_role_from_id(
 
     if access_control_privilege_id:
         access_control_privilege_service = AccessControlPrivilegeService(db)
-        access_control_privilege = access_control_privilege_service.get_by_id(
+        access_control_privilege = access_control_privilege_service.get_acp_by_id(
             access_control_privilege_id
         )
         return access_control_privilege.role

@@ -51,7 +51,7 @@ class ApplicationAdminRepository:
     def create_application_admin(
         self, application_id: int, user_id: int, requester: str
     ) -> FamApplicationAdmin:
-        new_fam_application_admin: FamApplicationAdmin = FamApplicationAdmin(
+        new_fam_application_admin = FamApplicationAdmin(
             **{
                 "user_id": user_id,
                 "application_id": application_id,
