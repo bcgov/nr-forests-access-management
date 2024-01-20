@@ -1,22 +1,21 @@
+import json
 import logging
 from http import HTTPStatus
-from fastapi import Depends, HTTPException, Request
-from sqlalchemy.orm import Session
 from typing import Union
-import json
 
 from api.app import database
-from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED,
-    get_access_roles,
-    get_request_cognito_user_id,
-    validate_token,
-)
-from api.app.schemas import Requester, TargetUser, FamAppAdminCreate
+from api.app.constants import AdminRoleGroup
+from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
+                                    get_access_roles,
+                                    get_request_cognito_user_id,
+                                    validate_token)
 from api.app.models.model import FamUser
+from api.app.schemas import FamAppAdminCreate, Requester, TargetUser
 from api.app.services.application_admin_service import ApplicationAdminService
-from api.app.services.user_service import UserService
 from api.app.services.application_service import ApplicationService
+from api.app.services.user_service import UserService
+from fastapi import Depends, HTTPException, Request
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ no_requester_exception = HTTPException(
 
 
 def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
-    required_role = "FAM_ADMIN"
+    required_role = AdminRoleGroup.FAM_ADMIN
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:

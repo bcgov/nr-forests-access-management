@@ -12,4 +12,11 @@ class UserType(str, Enum):
     BCEID = "B"
 
 
+# For differentiating admins (FAM_ADMIN, [APP]_ADMIN, DELEGATED_ADMIN)
+class AdminRoleGroup(str, Enum):
+    FAM_ADMIN = "FAM_ADMIN"
+    APP_ADMIN = "APP_ADMIN"
+    DELEGATED_ADMIN = "DELEGATED_ADMIN"
+
+
 COGNITO_USERNAME_KEY = "username"
