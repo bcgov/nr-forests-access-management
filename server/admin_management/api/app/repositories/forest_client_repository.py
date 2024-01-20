@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app import schemas
+from api.app.schemas import FamForestClientCreate
 from api.app.models.model import FamForestClient
 
 
@@ -20,7 +20,7 @@ class ForestClientRepository:
         )
 
     def create_forest_client(
-        self, fam_forest_client: schemas.FamForestClientCreate
+        self, fam_forest_client: FamForestClientCreate
     ) -> FamForestClient:
         db_item = FamForestClient(**fam_forest_client)
         self.db.add(db_item)

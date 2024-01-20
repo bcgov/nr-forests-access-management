@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
 from api.config.config import get_allow_origins, get_root_path
-from api.config.config import get_root_path, get_allow_origins
 from api.app.routers import (
     router_smoke_test,
     router_application,

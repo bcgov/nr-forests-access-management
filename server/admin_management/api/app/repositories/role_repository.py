@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app import schemas
+from api.app.schemas import FamRoleCreate
 from api.app.models.model import FamRole
 
 
@@ -31,7 +31,7 @@ class RoleRepository:
             .one_or_none()
         )
 
-    def create_role(self, fam_role: schemas.FamRoleCreate) -> FamRole:
+    def create_role(self, fam_role: FamRoleCreate) -> FamRole:
         db_item = FamRole(**fam_role)
         self.db.add(db_item)
         self.db.flush()
