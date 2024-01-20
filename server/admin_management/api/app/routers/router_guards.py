@@ -193,7 +193,7 @@ def authorize_by_application_role(
     """
     if not role:
         raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
                 "description": f"Requester has no appropriate role",

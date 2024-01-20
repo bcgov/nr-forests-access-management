@@ -1,7 +1,6 @@
 import logging
 
 from api.app.services.user_service import UserService
-
 from tests.constants import TEST_NEW_USER
 
 

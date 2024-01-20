@@ -3,7 +3,6 @@ import logging
 from api.app.utils import utils
 from api.app.services.forest_client_service import ForestClientService
 from api.app.services.role_service import RoleService
-
 from tests.constants import (
     TEST_ROLE_CREATE_CHILD,
     TEST_FOREST_CLIENT_NUMBER,

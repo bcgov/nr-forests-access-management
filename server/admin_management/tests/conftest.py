@@ -183,5 +183,5 @@ def application_admin_service(db_pg_session: Session):
     return ApplicationAdminService(db_pg_session)
 
 @pytest.fixture(scope="function")
-def access_control_privilege(db_pg_session: Session):
+def access_control_privilege_service(db_pg_session: Session):
     return AccessControlPrivilegeService(db_pg_session)

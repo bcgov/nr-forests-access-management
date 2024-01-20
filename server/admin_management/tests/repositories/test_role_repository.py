@@ -4,7 +4,6 @@ from sqlalchemy.exc import IntegrityError
 
 from api.app import constants as famConstants
 from api.app.repositories.role_repository import RoleRepository
-
 from tests.constants import (
     TEST_NOT_EXIST_ROLE_ID,
     TEST_FOM_DEV_SUBMITTER_ROLE_ID,

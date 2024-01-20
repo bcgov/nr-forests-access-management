@@ -6,6 +6,7 @@ from api.app.utils import utils
 TEST_CREATOR = "TESTER"
 TEST_ANOTHER_CREATER = "TESTERTWO"
 TEST_FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
+TEST_FAM_ADMIN_ROLE = "FAM_ADMIN"
 INVALID_APPLICATION_ID = "invalid_application_id"
 
 # ---------------------- test user data ----------------------------- #
@@ -13,10 +14,11 @@ TEST_NON_EXIST_USER_ID = 0
 TEST_USER_ID = 1
 TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
+TEST_USER_NAME = "TEST_USER"
 
 TEST_NEW_USER = {
     "user_type_code": famConstants.UserType.IDIR,
-    "user_name": "TEST_USER",
+    "user_name": TEST_USER_NAME,
     "create_user": TEST_CREATOR,
 }
 
@@ -31,7 +33,7 @@ TEST_APPLICATION_ADMIN_APPLICATION_ID = 3
 TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
 TEST_NEW_APPLICATION_ADMIN = {
     "user_type_code": famConstants.UserType.BCEID,
-    "user_name": "TEST_USER",
+    "user_name": TEST_USER_NAME,
     "application_id": TEST_APPLICATION_ADMIN_APPLICATION_ID,
 }
 
@@ -39,6 +41,7 @@ TEST_NEW_APPLICATION_ADMIN = {
 TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
 TEST_INVALID_FOREST_CLIENT_NUMBER = "12345"
 TEST_FOREST_CLIENT_NUMBER = "00000010"
+TEST_FOREST_CLIENT_NUMBER_TWO = "00000001"
 TEST_FOERST_CLIENT_CREATE: schemas.FamForestClientCreate = {
     "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
     "create_user": TEST_CREATOR,
@@ -89,6 +92,18 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE: schemas.FamAccessControlPrivilegeCreate = 
     "user_id": TEST_USER_ID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "create_user": TEST_CREATOR,
+}
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST: schemas.FamAccessControlPrivilegeCreateRequest = {
+    "user_name": TEST_USER_NAME,
+    "user_type_code": famConstants.UserType.IDIR,
+    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": [TEST_FOREST_CLIENT_NUMBER],
+}
+
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE: schemas.FamAccessControlPrivilegeCreateRequest = {
+    "user_name": TEST_USER_NAME,
+    "user_type_code": famConstants.UserType.IDIR,
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 
 # -------------------------- error messages ------------------------- #

@@ -5,7 +5,6 @@ from sqlalchemy.exc import IntegrityError
 from api.app.repositories.access_control_privilege_repository import (
     AccessControlPrivilegeRepository,
 )
-
 from tests.constants import (
     TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID,
     TEST_ACCESS_CONTROL_PRIVILEGE_CREATE,

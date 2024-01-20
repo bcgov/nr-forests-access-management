@@ -3,7 +3,6 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from api.app.repositories.user_repository import UserRepository
-
 from tests.constants import (
     TEST_NEW_USER,
     TEST_NON_EXISTS_COGNITO_USER_ID,

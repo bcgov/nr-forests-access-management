@@ -69,8 +69,7 @@ class AccessControlPrivilegeService:
                 or request.forest_client_number is None
             ):
                 error_msg = (
-                    "Invalid role assignment request. Cannot assign user "
-                    + f"{request.user_name} to abstract role {fam_role.role_name}."
+                    "Invalid access control privilege request, missing forest client number."
                 )
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
@@ -114,13 +113,17 @@ class AccessControlPrivilegeService:
             )
 
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
-            access_control_privilege_return = {
-                "status_code": HTTPStatus.CONFLICT,
-                "detail": schemas.FamAccessControlPrivilegeGet(
-                    **fam_access_control_privilege_dict
-                ),
-                "error_message": error_msg,
-            }
+            access_control_privilege_return = (
+                schemas.FamAccessControlPrivilegeCreateResponse(
+                    **{
+                        "status_code": HTTPStatus.CONFLICT,
+                        "detail": schemas.FamAccessControlPrivilegeGet(
+                            **fam_access_control_privilege_dict
+                        ),
+                        "error_message": error_msg,
+                    }
+                )
+            )
         else:
             access_control_privilege_param: schemas.FamAccessControlPrivilegeCreate = {
                 "user_id": user_id,
@@ -131,11 +134,15 @@ class AccessControlPrivilegeService:
                 access_control_privilege_param
             )
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
-            access_control_privilege_return = {
-                "status_code": HTTPStatus.OK,
-                "detail": schemas.FamAccessControlPrivilegeGet(
-                    **fam_access_control_privilege_dict
-                ),
-            }
+            access_control_privilege_return = (
+                schemas.FamAccessControlPrivilegeCreateResponse(
+                    **{
+                        "status_code": HTTPStatus.OK,
+                        "detail": schemas.FamAccessControlPrivilegeGet(
+                            **fam_access_control_privilege_dict
+                        ),
+                    }
+                )
+            )
 
         return access_control_privilege_return
