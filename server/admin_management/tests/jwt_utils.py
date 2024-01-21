@@ -2,7 +2,7 @@ import json
 import os
 import time
 
-from api.app.constants import AdminRoleGroup
+from api.app.constants import AdminRoleAuthGroup
 from jose import jws
 
 COGNITO_REGION = os.environ.get("COGNITO_REGION")
@@ -35,7 +35,7 @@ def create_jwt_claims():
 
 def create_jwt_token(
     test_rsa_key,
-    roles=[AdminRoleGroup.FAM_ADMIN],
+    roles=[AdminRoleAuthGroup.FAM_ADMIN],
     claims=create_jwt_claims(),
     test_algorithm="RS256",
     test_headers={"kid": "12345"},

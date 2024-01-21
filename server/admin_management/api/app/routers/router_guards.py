@@ -4,7 +4,7 @@ from http import HTTPStatus
 from typing import Union
 
 from api.app import database
-from api.app.constants import AdminRoleGroup
+from api.app.constants import AdminRoleAuthGroup
 from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
                                     get_access_roles,
                                     get_request_cognito_user_id,
@@ -38,7 +38,7 @@ no_requester_exception = HTTPException(
 
 
 def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
-    required_role = AdminRoleGroup.FAM_ADMIN
+    required_role = AdminRoleAuthGroup.FAM_ADMIN
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:

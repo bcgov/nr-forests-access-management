@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
-from api.app.constants import AdminRoleGroup
+from api.app.constants import AdminRoleAuthGroup
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from tests.constants import TEST_APPLICATION_NAME_FAM, TEST_FOM_DEV_ADMIN_ROLE
@@ -31,7 +31,7 @@ def test_get_applications(
     assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
 
     # Test valid role (FAM_ADMIN) can get applications
-    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleGroup.FAM_ADMIN])
+    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleAuthGroup.FAM_ADMIN])
     response = test_client_fixture.get(
         f"{endPoint}",
         headers=jwt_utils.headers(token)
