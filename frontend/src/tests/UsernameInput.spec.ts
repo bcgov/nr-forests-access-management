@@ -1,4 +1,5 @@
 import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { mount, flushPromises  } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { UserType } from 'fam-app-acsctl-api';
@@ -57,7 +58,7 @@ describe('UserNameInput', () => {
         fieldId: 'newFieldId',
     };
 
-    const inputString = 'testIdir';
+    const newValue = 'testIdir';
 
     beforeEach(async () => {
         vi.spyOn(
@@ -86,8 +87,8 @@ describe('UserNameInput', () => {
     it('should change usernameInput value', async () => {
         usernameInputText = wrapper.find('#userIdInput');
         usernameInputTextEl = usernameInputText.element as HTMLInputElement;
-        await usernameInputText.setValue(inputString);
-        expect(usernameInputTextEl.value).toBe(inputString);
+        await usernameInputText.setValue(newValue);
+        expect(usernameInputTextEl.value).toBe(newValue);
     });
 
     it('Should receive the correct prop', async () => {
@@ -104,13 +105,13 @@ describe('UserNameInput', () => {
         usernameInputTextEl = usernameInputText.element as HTMLInputElement;
         verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
         verifyButtonEl = verifyButton.element as HTMLButtonElement;
-        await usernameInputText.setValue(inputString);
+        await usernameInputText.setValue(newValue);
 
         emitChange = wrapper.emitted('change');
         expect(wrapper.emitted('change')).toBeTruthy();
         // test the given parameters when emitChange has been called
         // i.e. emitChange = [ [ 'B' ] ]
-        expect(emitChange![0][0]).toEqual(inputString);
+        expect(emitChange![0][0]).toEqual(newValue);
 
 
         emitSetVerifyResult = wrapper.emitted('setVerifyResult')
@@ -124,11 +125,14 @@ describe('UserNameInput', () => {
 
     it('should enable virify btn when username is inputted', async () => {
         usernameInputText = wrapper.find('#userIdInput');
-        await usernameInputText.setValue(inputString);
-        emitChange = wrapper.emitted('change');
-        expect(wrapper.emitted('change')).toBeTruthy();
         verifyButton = wrapper.find("[data-target-btn='verifyIdir']")
-        expect((verifyButton.element as HTMLButtonElement).disabled).toBe(false);
+        await usernameInputText.setValue(newValue);
+        await usernameInputText.trigger('change')
+        expect(wrapper.emitted('change')).toBeTruthy();
+
+        console.log(verifyButton.html())
+        expect((verifyButton.element as HTMLButtonElement).disabled).toBe(false)
+        expect(verifyButton.classes('p-disabled')).toBe(false);
     });
 
     // it('should display information on card correctly based on api response ' , async () => {
@@ -139,8 +143,8 @@ describe('UserNameInput', () => {
     //         setLoadingState(true);
     //         return Promise.resolve(userInputMock());
     //     });
-    //     await usernameInputText.setValue(inputString);
-    //     expect(usernameInputTextEl.value).toBe(inputString);
+    //     await usernameInputText.setValue(newValue);
+    //     expect(usernameInputTextEl.value).toBe(newValue);
 
     //     await verifyButton.trigger('click');
     //     // expect(isLoading()).toBe(true);
