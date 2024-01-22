@@ -74,14 +74,12 @@ export const fetchApplicationAdmins = async (
     applicationId: number | undefined
 ): Promise<FamAppAdminGet[]> => {
     if (!applicationId) return [];
-    const applicationAdmin = (
-        await AdminMgmtApiService.applicationAdminApi.getApplicationAdminByApplicationId (
-            applicationId
-        )
+    const applicationAdmins = (
+        await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
     // Default sorting
-    applicationAdmin.sort((first, second) => {
+    applicationAdmins.sort((first, second) => {
         // By user_name
         const userNameCompare = first.user.user_name.localeCompare(
             second.user.user_name
@@ -90,7 +88,7 @@ export const fetchApplicationAdmins = async (
         return userNameCompare
     });
 
-    return applicationAdmin;
+    return applicationAdmins;
 };
 
 /**
