@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import type { PropType } from 'vue';
-
+import { reactive, ref, type PropType  } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
