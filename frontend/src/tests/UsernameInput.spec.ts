@@ -133,7 +133,7 @@ describe('UserNameInput', () => {
         expect(emitSetVerifyResult![1][0]).toEqual(true);
     });
 
-    it('Should enable virify btn when username is inputted', async () => {
+    it('Should enable verify btn when username is inputted', async () => {
         // button starts as disabled
         expect((verifyButtonEl).disabled).toBe(true)
         expect(verifyButton.classes('p-disabled')).toBe(true);
