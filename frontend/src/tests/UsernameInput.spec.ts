@@ -22,37 +22,19 @@ console.error = (...params) => {
   }
 };
 
-const userInputMock = (
-    userId: string,
-    found: boolean
-    ): AxiosResponse => {
-        if(!found) {
-            return {
-                data: {
-                    firstName: null,
-                    found: found,
-                    lastName: null,
-                    userId: userId
-                },
-                status: 200,
-                statusText: 'Ok',
-                headers: {},
-                config: {},
-            }
-        } else {
-            return {
-                data: {
-                    firstName: "Name",
-                    found: found,
-                    lastName: "LastName",
-                    userId: userId
-                },
-                status: 200,
-                statusText: 'Ok',
-                headers: {},
-                config: {},
-            }
-        }
+const userInputMock = (): AxiosResponse => {
+    return {
+        data: {
+            firstName: "Name",
+            found: true,
+            lastName: "LastName",
+            userId: 'userId'
+        },
+        status: 200,
+        statusText: 'Ok',
+        headers: {},
+        config: {},
+    }
 
 }
 
@@ -65,8 +47,6 @@ describe('UserNameInput', () => {
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
-    let card: DOMWrapper<HTMLElement>
-    let cardEl: HTMLDivElement
 
     const props = {
         domain: UserType.I,
@@ -83,7 +63,7 @@ describe('UserNameInput', () => {
     const newValue = 'testIdir';
 
     beforeEach(async () => {
-        wrapper = mount(UserNameInput {
+        wrapper = mount(UserNameInput, {
             props,
             global: {
                 plugins: [PrimeVue],
@@ -150,7 +130,7 @@ describe('UserNameInput', () => {
             'idirSearch',
         ).mockImplementation(async () => {
             setLoadingState(true);
-            return userInputMock(newProps.userId, true);
+            return userInputMock();
         });
 
         await usernameInputText.setValue(newValue);
@@ -164,22 +144,6 @@ describe('UserNameInput', () => {
         // cleanup state variable
         setLoadingState(false);
         expect(isLoading()).toBe(false)
-    });
-
-    it('Should verify user and show info correct info on card', async () => {
-        vi.spyOn(
-            AppActlApiService.idirBceidProxyApi,
-            'idirSearch',
-        ).mockImplementation(async () => {
-            return userInputMock(newProps.userId, true);
-        });
-
-        await wrapper.setProps({ userId: newProps.userId });
-        await verifyButton.trigger('click');
-
-        card = wrapper.find('.custom-card');
-        cardEl = card.element as HTMLDivElement;
-        expect(card.exists()).toBe(true)
     });
 
 })

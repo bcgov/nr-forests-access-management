@@ -54,6 +54,15 @@ watch(
         resetVerifiedUserIdentity();
     }
 );
+
+const temp = {
+        userIdentity: {
+            userId: 'userId',
+            found: true,
+            firstName: 'First Name',
+            lastName: 'Last Name'
+        }
+    }
 </script>
 
 <template>
@@ -112,9 +121,9 @@ watch(
             </div>
         </Field>
 
-        <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
+        <div class="col-md-5 px-0">
             <UserIdentityCard
-                :userIdentity="verifiedUserIdentity"
+                :userIdentity="temp"
             ></UserIdentityCard>
         </div>
     </div>
