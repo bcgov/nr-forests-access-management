@@ -1,12 +1,11 @@
 
 import logging
-from fastapi import Depends
-
-from requests import Session
 
 from api.app import database
-from api.app.services.application_service import ApplicationService
 from api.app.services.application_admin_service import ApplicationAdminService
+from api.app.services.application_service import ApplicationService
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
