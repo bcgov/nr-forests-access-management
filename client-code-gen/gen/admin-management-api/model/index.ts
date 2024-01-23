@@ -2,6 +2,7 @@ export * from './app-env';
 export * from './fam-app-admin-create';
 export * from './fam-app-admin-get';
 export * from './fam-application-base';
+export * from './fam-application-get';
 export * from './fam-user-info';
 export * from './fam-user-type';
 export * from './httpvalidation-error';

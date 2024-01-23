@@ -44,6 +44,12 @@ class FamApplicationBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FamApplicationGet(FamApplicationBase):
+    application_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # -------------------------------------- FAM User --------------------------------------- #
 class FamUserBase(BaseModel):
     user_type_code: famConstants.UserType
