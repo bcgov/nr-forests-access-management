@@ -16,14 +16,14 @@ const props = defineProps<{
                 id="checkmark-Icon"
                 icon="checkmark--filled"
                 :size="IconSize.small"
-v-if="props.userIdentity.found"
+                v-if="props.userIdentity.found"
             />
             <Icon
                 id="error-Icon"
                 class="custom-carbon-icon-error--filled"
                 icon="error--filled"
                 :size="IconSize.small"
-v-else
+                v-else
             />
             <p>Verified user information</p>
         </template>
