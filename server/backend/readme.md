@@ -180,9 +180,7 @@ for test Output,
 - select `Python Test Log` in from the pulldown, top right of the output window
 
 
-## ----------------------------------------------------------------------------
 ## -------------- Windows Configuration ----------------------------------------
-## ----------------------------------------------------------------------------
 
 Before you follow the steps below, ensure you have Python installed or updated to the latest version. Install and start your Docker desktop for Windows.
 
@@ -190,15 +188,9 @@ Before you follow the steps below, ensure you have Python installed or updated t
   - cd server/backend
   - run docker compose up -d fam-flyway
   - run this command in the same directory: python3 -m venv venv
-  - change your directory to:
-    - `cd server/backend/venv/Scripts`
-    - then enter(run) activate.bat to activate venv
-    - you will see: (venv) <Your base directory>\server\backend\venv\Scripts>
-  - cd back to server/backend
+  - activate the venv environment by running this bat file: .\venv\Scripts\activate
   - Ask one of the developers for the environment properties in the local-dev.env, and update the properties in local-dev-window.env.bat with them
-    SET POSTGRES_USER=***
-    SET  POSTGRES_PASSWORD=***
-    SET POSTGRES_HOST=***
+  - To install the required packages run: pip install -r requirements-dev.txt
   - In the same directory, enter(run) local-dev-window.env.bat
-  - To run start the backend, run python3 server start.py
+  - To run start the backend, run python serverstart.py
 ```
