@@ -71,9 +71,21 @@ const beforeEnterGrantUserPermissionRoute = async (
     return true;
 };
 
+const beforeEnterGrantApplicationAdminRoute = async (
+    to: RouteLocationNormalized
+) => {
+    populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
+    const appRolesFetchResult = await asyncWrap(fetchApplications());
+    // Object.assign(to.meta, {
+    //     applicationRoleOptions: appRolesFetchResult.data,
+    // });
+    return true;
+}
+
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
 };
 
 // --- beforeEach Route Handler

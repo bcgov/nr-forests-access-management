@@ -8,6 +8,7 @@ import {
 } from '@/router/routeHandlers';
 import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
+import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 
@@ -77,6 +78,25 @@ const routes = [
         },
         component: GrantAccessView,
         beforeEnter: beforeEnterHandlers[routeItems.grantUserPermission.name],
+        props: (route: any) => {
+            return {
+                // options is ready for the `component` as props.
+                applicationRoleOptions: route.meta.applicationRoleOptions,
+            };
+        },
+    },
+    {
+        path: routeItems.grantAppAdmin.path,
+        name: routeItems.grantAppAdmin.name,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: false,
+            title: routeItems.grantAppAdmin.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true,
+        },
+        component: GrantApplicationAdminView,
+        beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
         props: (route: any) => {
             return {
                 // options is ready for the `component` as props.
