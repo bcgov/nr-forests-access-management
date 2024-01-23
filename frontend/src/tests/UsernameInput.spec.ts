@@ -1,6 +1,5 @@
 import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
-import { nextTick } from 'vue';
-import { mount, flushPromises  } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
@@ -9,7 +8,6 @@ import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosResponse } from 'axios';
-import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 
 //fix "Could not parse CSS stylesheet" with the primevue styling
 //https://github.com/primefaces/primevue/issues/4512
@@ -82,8 +80,6 @@ describe('UserNameInput', () => {
     });
 
     it('Should change usernameInput value', async () => {
-        // usernameInputText = wrapper.find('#userIdInput');
-        // usernameInputTextEl = usernameInputText.element as HTMLInputElement;
         await usernameInputText.setValue(newValue);
         expect(usernameInputTextEl.value).toBe(newValue);
     });

@@ -1,4 +1,4 @@
-import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
+import { it, describe, beforeEach, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
@@ -82,13 +82,10 @@ describe('UserNameInput', () => {
 
     it('Should show the User does not exist when receive not found prop', async () => {
         await wrapper.setProps(propsNotFound);
-        console.log(wrapper.props());
         userNotExist = wrapper.find('#userNotExist');
         userNotExistEl = userNotExist.element as HTMLSpanElement;
 
-        expect(usernameEl.textContent).toContain(
-            propsNotFound.userIdentity.userId
-        );
+        expect(usernameEl.textContent).toContain(propsNotFound.userIdentity.userId);
         expect(userNotExistEl.textContent).toContain('User does not exist');
         expect(errorIcon).toBeTruthy();
     });
