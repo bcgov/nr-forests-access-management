@@ -19,6 +19,7 @@ const props = defineProps<{
 v-if="props.userIdentity.found"
             />
             <Icon
+                id="error-Icon"
                 class="custom-carbon-icon-error--filled"
                 icon="error--filled"
                 :size="IconSize.small"
@@ -43,7 +44,7 @@ v-else
                 class="col-6 d-flex"
                 v-if="!props.userIdentity.found"
             >
-                <span class="px-0 invalid"> User does not exist </span>
+                <span class="px-0 invalid" id="userNotExist"> User does not exist </span>
             </div>
         </template>
     </Card>
