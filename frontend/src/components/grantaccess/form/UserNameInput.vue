@@ -55,14 +55,6 @@ watch(
     }
 );
 
-const temp = {
-        userIdentity: {
-            userId: 'userId',
-            found: true,
-            firstName: 'First Name',
-            lastName: 'Last Name'
-        }
-    }
 </script>
 
 <template>
@@ -123,7 +115,7 @@ const temp = {
 
         <div class="col-md-5 px-0">
             <UserIdentityCard
-                :userIdentity="temp"
+                :userIdentity="verifiedUserIdentity"
             ></UserIdentityCard>
         </div>
     </div>
