@@ -31,7 +31,7 @@ Before you follow the steps below, ensure you have Python installed or updated t
   - run this command in the same directory: python3 -m venv venv
   - activate the venv environment by running this bat file: .\venv\Scripts\activate
   - Ask one of the developers for the environment properties in the local-dev.env, and update the properties in local-dev-window.env.bat with them
-  - To install the required packages run: pip install -r requirements-dev.txt
+  - To install the required packages run: pip install -r requirements.txt
   - In the same directory, enter(run) local-dev-window.env.bat
   - To run start the backend, run python serverstart.py
 ```
