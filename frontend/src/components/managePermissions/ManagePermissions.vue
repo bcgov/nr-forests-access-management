@@ -138,7 +138,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGet) => {
             >
                 <TabPanel
                     header="Application admins"
-                    v-if="selectedApplicationShortDisplayText === FAM_APPLICATION_NAME"
+                    v-if="selectedApplication?.application_id === FAM_APPLICATION_ID"
                 >
                     <template #header>
                         <Icon icon="enterprise" :size="IconSize.small" />
