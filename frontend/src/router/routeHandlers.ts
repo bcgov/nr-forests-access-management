@@ -36,9 +36,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
     if(selectedApplication.value?.application_id === FAM_APPLICATION_ID) {
-        applicationAdmins = await asyncWrap(
-            fetchApplicationAdmins(FAM_APPLICATION_ID)
-        )
+        applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplication.value?.application_id)
