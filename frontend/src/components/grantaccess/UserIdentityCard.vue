@@ -30,7 +30,7 @@ const props = defineProps<{
         <template #content>
             <div class="col" style="margin-left: 2rem">
                 <label class="row">Username</label>
-                <span class="row" id="username">{{ props.userIdentity.userId }}</span>
+                <span class="row" id="userId">{{ props.userIdentity.userId }}</span>
             </div>
             <div class="col" v-if="props.userIdentity.found">
                 <label class="row">First Name</label>

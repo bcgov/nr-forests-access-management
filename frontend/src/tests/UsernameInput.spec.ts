@@ -1,5 +1,5 @@
 import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
@@ -8,17 +8,10 @@ import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosResponse } from 'axios';
+import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
 
-//fix "Could not parse CSS stylesheet" with the primevue styling
-//https://github.com/primefaces/primevue/issues/4512
-//https://stackoverflow.com/questions/69906136/console-error-error-could-not-parse-css-stylesheet/69958999#69958999
-const originalConsoleError = console.error;
-const jsDomCssError = "Error: Could not parse CSS stylesheet";
-console.error = (...params) => {
-  if (!params.find((p) => p.toString().includes(jsDomCssError))) {
-    originalConsoleError(...params);
-  }
-};
+fixPrimevueCssError()
+
 
 const userInputMock = (): AxiosResponse => {
     return {
@@ -45,6 +38,9 @@ describe('UserNameInput', () => {
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
+
+    let cardUsernameEl: HTMLSpanElement;
+    let verifiedUserIdentity
 
     const props = {
         domain: UserType.I,
@@ -142,4 +138,34 @@ describe('UserNameInput', () => {
         expect(isLoading()).toBe(false)
     });
 
+    it('Should remove card and emit different value when domain changes', async () => {
+        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        // default props
+        expect(wrapper.props()).toEqual(props);
+
+        await usernameInputText.setValue(newValue);
+        expect(usernameInputTextEl.value).toEqual(newValue);
+
+        await wrapper.setProps(userInputMock().data);
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        verifiedUserIdentity = wrapper.findComponent({ name: 'UserIdentityCard'}).vm;
+        verifiedUserIdentity = userInputMock().data
+        cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
+        expect(cardUsernameEl).toBeTruthy();
+        expect(cardUsernameEl.textContent).toContain('userId');
+
+        await wrapper.setProps({
+            domain: UserType.B,
+        });
+
+        expect(wrapper.emitted()).toHaveProperty('setVerifyResult');
+
+        // for BCeID should emit true
+        expect(wrapper.emitted().setVerifyResult[1][0]).toEqual(true);
+
+        //UserIdentityCard not em page anymore
+        expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
+    });
 })

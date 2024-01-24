@@ -4,19 +4,11 @@ import PrimeVue from 'primevue/config';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
+import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
 
-//fix "Could not parse CSS stylesheet" with the primevue styling
-//https://github.com/primefaces/primevue/issues/4512
-//https://stackoverflow.com/questions/69906136/console-error-error-could-not-parse-css-stylesheet/69958999#69958999
-const originalConsoleError = console.error;
-const jsDomCssError = 'Error: Could not parse CSS stylesheet';
-console.error = (...params) => {
-    if (!params.find((p) => p.toString().includes(jsDomCssError))) {
-        originalConsoleError(...params);
-    }
-};
+fixPrimevueCssError()
 
-describe('UserNameInput', () => {
+describe('UserIdentityCard', () => {
     let wrapper: VueWrapper;
 
     let card: DOMWrapper<HTMLElement>;
@@ -60,7 +52,7 @@ describe('UserNameInput', () => {
 
         card = wrapper.find('.custom-card');
         cardEl = card.element as HTMLInputElement;
-        username = wrapper.find('#username');
+        username = wrapper.find('#userId');
         usernameEl = username.element as HTMLSpanElement;
         firstName = wrapper.find('#firstName');
         firstNameEl = firstName.element as HTMLSpanElement;

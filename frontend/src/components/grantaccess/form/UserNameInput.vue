@@ -113,7 +113,11 @@ watch(
             </div>
         </Field>
 
-        <div class="col-md-5 px-0">
+        <div
+            v-if="verifiedUserIdentity"
+            id="UserIdentityCard"
+            class="col-md-5 px-0"
+        >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
             ></UserIdentityCard>
