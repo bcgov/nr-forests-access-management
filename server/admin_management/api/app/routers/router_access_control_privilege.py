@@ -32,23 +32,34 @@ router = APIRouter()
         ),  # only app admin can do this, get application by role
         Depends(enforce_self_grant_guard),
     ],
+    description="Grant Delegated Admin Privileges",
 )
-def create_access_control_privilege(
+def create_access_control_privilege_many(
     access_control_privilege_request: schemas.FamAccessControlPrivilegeCreateRequest,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
 ):
+    """
+    If grant delegated admin access privilege to a concrete role, no need to provide the forest client number.
+    If grant delegated admin access privilege to an abstract role, need to provide a list of forest client numbers,
+    and this post method will create the access control privileges for each of them.
+
+    param: the request parameter includes user name, user type code, role id and a list of ofrest client numbers
+
+    return: a list of creation results for each forest client number
+    """
+
     LOGGER.debug(
-        f"Executing 'create_access_control_privilege' "
+        f"Executing 'create_access_control_privilege_many' "
         f"with request: {access_control_privilege_request}, requestor: {token_claims}"
     )
 
     audit_event_log = AuditEventLog(
         request=request,
         event_type=AuditEventType.CREATE_ACCESS_CONTROL_PRIVILIEGE,
-        forest_client_number=access_control_privilege_request.forest_client_number,
+        forest_client_number=access_control_privilege_request.forest_client_numbers,
         event_outcome=AuditEventOutcome.SUCCESS,
     )
 
@@ -69,7 +80,7 @@ def create_access_control_privilege(
             access_control_privilege_request.user_name,
         )
 
-        return access_control_privilege_service.create_access_control_privilege(
+        return access_control_privilege_service.create_access_control_privilege_many(
             access_control_privilege_request, requester.cognito_user_id
         )
 

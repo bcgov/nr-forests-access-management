@@ -81,7 +81,6 @@ class FamUserInfo(FamUserBase):
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
-    # client_name: str
     create_user: Annotated[str, StringConstraints(max_length=60)]
 
     model_config = ConfigDict(from_attributes=True)
@@ -112,12 +111,12 @@ class FamRoleMin(BaseModel):
 
 
 class FamRoleCreate(FamRoleMin):
-    role_purpose: Union[Annotated[str, StringConstraints(max_length=200)], None] = None
+    role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    forest_client_number: Union[
-        Annotated[str, StringConstraints(max_length=8)], None
+    forest_client_number: Optional[
+        Annotated[str, StringConstraints(max_length=8)]
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=60)]
     client_number: Optional[FamForestClientCreate] = None
@@ -128,7 +127,7 @@ class FamRoleCreate(FamRoleMin):
 class FamRoleWithClient(BaseModel):
     role_id: int
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    client_number: Optional[FamForestClient] = None
+    forest_client: Optional[FamForestClient] = None
     parent_role: Optional[FamRoleMin] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -159,7 +158,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     role_id: int
-    forest_client_number: Union[
+    forest_client_numbers: Union[
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
 

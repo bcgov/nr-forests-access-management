@@ -2,11 +2,9 @@ import logging
 from sqlalchemy.orm import Session
 
 from api.app import constants as famConstants
-from api.app.utils import utils
 from api.app.schemas import FamRoleCreate
 from api.app.models.model import FamRole
 from api.app.repositories.role_repository import RoleRepository
-from api.app.repositories.forest_client_repository import ForestClientRepository
 from api.app.services.forest_client_service import ForestClientService
 
 
@@ -17,7 +15,6 @@ class RoleService:
     def __init__(self, db: Session):
         self.role_repo = RoleRepository(db)
         self.forest_client_service = ForestClientService(db)
-        self.forest_client_repository = ForestClientRepository(db)
 
     def get_role_by_id(self, role_id: int):
         return self.role_repo.get_role_by_id(role_id)
@@ -25,7 +22,7 @@ class RoleService:
     def find_or_create_forest_client_child_role(
         self, forest_client_number: str, parent_role: FamRole, requester: str
     ):
-        forest_client_role_name = utils.construct_forest_client_role_name(
+        forest_client_role_name = self.construct_forest_client_role_name(
             parent_role.role_name, forest_client_number
         )
 
@@ -47,7 +44,7 @@ class RoleService:
                         "application_id": parent_role.application_id,
                         "forest_client_number": forest_client_number,
                         "role_name": forest_client_role_name,
-                        "role_purpose": utils.construct_forest_client_role_purpose(
+                        "role_purpose": self.construct_forest_client_role_purpose(
                             parent_role_purpose=parent_role.role_purpose,
                             forest_client_number=forest_client_number,
                         ),
@@ -78,3 +75,16 @@ class RoleService:
 
         fam_role_model = self.role_repo.create_role(fam_role_dict)
         return fam_role_model
+
+    @staticmethod
+    def construct_forest_client_role_name(
+        parent_role_name: str, forest_client_number: str
+    ):
+        return f"{parent_role_name}_{forest_client_number}"
+
+    @staticmethod
+    def construct_forest_client_role_purpose(
+        parent_role_purpose: str, forest_client_number: str
+    ):
+        client_purpose = f"{parent_role_purpose} for {forest_client_number}"
+        return client_purpose

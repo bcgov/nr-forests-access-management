@@ -33,7 +33,7 @@ class AccessControlPrivilegeService:
             access_control_privilege_id
         )
 
-    def create_access_control_privilege(
+    def create_access_control_privilege_many(
         self, request: schemas.FamAccessControlPrivilegeCreateRequest, requester: str
     ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
@@ -65,26 +65,26 @@ class AccessControlPrivilegeService:
             )
 
             if (
-                not hasattr(request, "forest_client_number")
-                or request.forest_client_number is None
+                not hasattr(request, "forest_client_numbers")
+                or request.forest_client_numbers is None
+                or len(request.forest_client_numbers) < 1
             ):
-                error_msg = (
-                    "Invalid access control privilege request, missing forest client number."
-                )
+                error_msg = "Invalid access control privilege request, missing forest client number."
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-            for forest_number in request.forest_client_number:
+            for forest_client_number in request.forest_client_numbers:
                 # Check if child role exists or add a new child role
+                # NOSONAR TODO: validate the forest client number
                 child_role = self.role_service.find_or_create_forest_client_child_role(
-                    forest_number, fam_role, requester
+                    forest_client_number, fam_role, requester
                 )
-                handle_create_return = self.handle_access_control_privilege_create(
+                handle_create_return = self.grant_privilege(
                     fam_user.user_id, child_role.role_id, requester
                 )
                 create_return_list.append(handle_create_return)
 
         else:
-            handle_create_return = self.handle_access_control_privilege_create(
+            handle_create_return = self.grant_privilege(
                 fam_user.user_id, fam_role.role_id, requester
             )
             create_return_list.append(handle_create_return)
@@ -95,7 +95,7 @@ class AccessControlPrivilegeService:
 
         return create_return_list
 
-    def handle_access_control_privilege_create(
+    def grant_privilege(
         self, user_id: int, role_id: int, requester: str
     ) -> schemas.FamAccessControlPrivilegeCreateResponse:
         access_control_privilege_return = None
@@ -106,7 +106,10 @@ class AccessControlPrivilegeService:
         )
 
         if fam_access_control_privilege:
-            error_msg = "User already has the requested access control privilege."
+            error_msg = (
+                "User already has the requested access control privilege for "
+                + f"{fam_access_control_privilege.role.role_name}"
+            )
 
             LOGGER.debug(
                 f"{error_msg}"

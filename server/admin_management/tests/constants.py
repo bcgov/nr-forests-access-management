@@ -1,6 +1,6 @@
 from api.app import constants as famConstants
 import api.app.schemas as schemas
-from api.app.utils import utils
+from api.app.services.role_service import RoleService
 
 
 TEST_CREATOR = "TESTER"
@@ -75,10 +75,10 @@ TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
         "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
         "application_id": TEST_APPLICATION_ID_FOM_DEV,
         "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
-        "role_name": utils.construct_forest_client_role_name(
+        "role_name": RoleService.construct_forest_client_role_name(
             TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER
         ),
-        "role_purpose": utils.construct_forest_client_role_purpose(
+        "role_purpose": RoleService.construct_forest_client_role_purpose(
             "PARENT_ROLE purpose", TEST_FOREST_CLIENT_NUMBER
         ),
         "create_user": TEST_CREATOR,
@@ -97,7 +97,7 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST: schemas.FamAccessControlPrivilegeC
     "user_name": TEST_USER_NAME,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": [TEST_FOREST_CLIENT_NUMBER],
+    "forest_client_numbers": [TEST_FOREST_CLIENT_NUMBER],
 }
 
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE: schemas.FamAccessControlPrivilegeCreateRequest = {

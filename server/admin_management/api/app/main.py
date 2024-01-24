@@ -81,7 +81,7 @@ app.include_router(
 )
 app.include_router(
     router_access_control_privilege.router,
-    prefix=apiPrefix + "/access_control_privilege",
+    prefix=apiPrefix + "/access_control_privileges",
     tags=["FAM Access Control Privilege"],
 )
 

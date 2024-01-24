@@ -17,10 +17,10 @@ import tests.jwt_utils as jwt_utils
 
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/access_control_privilege"
+endPoint = f"{apiPrefix}/access_control_privileges"
 
 
-def test_access_control_privilege(
+def test_create_access_control_privilege_many(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     # test create with invalid role
@@ -68,7 +68,7 @@ def test_access_control_privilege(
         f"{endPoint}",
         json={
             **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-            "forest_client_number": [
+            "forest_client_numbers": [
                 TEST_FOREST_CLIENT_NUMBER,
                 TEST_FOREST_CLIENT_NUMBER_TWO,
             ],

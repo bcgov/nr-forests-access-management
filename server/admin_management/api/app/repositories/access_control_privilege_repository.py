@@ -25,14 +25,7 @@ class AccessControlPrivilegeRepository:
         )
 
     def get_acp_by_id(self, access_control_privilege_id: int) -> FamAccessControlPrivilege:
-        return (
-            self.db.query(FamAccessControlPrivilege)
-            .filter(
-                FamAccessControlPrivilege.access_control_privilege_id
-                == access_control_privilege_id
-            )
-            .one_or_none()
-        )
+        return self.db.get(FamAccessControlPrivilege, access_control_privilege_id)
 
     def create_access_control_privilege(
         self, fam_access_control_priviliege: FamAccessControlPrivilegeCreate

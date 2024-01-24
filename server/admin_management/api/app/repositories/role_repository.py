@@ -13,11 +13,7 @@ class RoleRepository:
         self.db = db
 
     def get_role_by_id(self, role_id: str) -> FamRole:
-        return (
-            self.db.query(FamRole)
-            .filter(FamRole.role_id == role_id)
-            .one_or_none()
-        )
+        return self.db.get(FamRole, role_id)
 
     def get_role_by_role_name_and_app_id(
         self, role_name: str, application_id: int

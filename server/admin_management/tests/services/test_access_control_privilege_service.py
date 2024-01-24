@@ -5,9 +5,9 @@ import pytest
 from pydantic import ValidationError
 from fastapi import HTTPException
 
-from api.app.utils import utils
 from api.app import schemas
 from api.app.models.model import FamRole
+from api.app.services.role_service import RoleService
 from api.app.services.access_control_privilege_service import (
     AccessControlPrivilegeService,
 )
@@ -31,16 +31,14 @@ from tests.constants import (
 LOGGER = logging.getLogger(__name__)
 
 
-def test_handle_access_control_privilege_create(
+def test_grant_privilege(
     access_control_privilege_service: AccessControlPrivilegeService,
 ):
     # test handle a new access control privilege
-    return_response = (
-        access_control_privilege_service.handle_access_control_privilege_create(
-            TEST_USER_ID,
-            TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-            TEST_CREATOR,
-        )
+    return_response = access_control_privilege_service.grant_privilege(
+        TEST_USER_ID,
+        TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+        TEST_CREATOR,
     )
     assert return_response.status_code == HTTPStatus.OK
     assert return_response.detail.user_id == TEST_USER_ID
@@ -54,23 +52,23 @@ def test_handle_access_control_privilege_create(
     assert new_record.role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
 
     # test create duplication access control privilege
-    return_response = (
-        access_control_privilege_service.handle_access_control_privilege_create(
-            TEST_USER_ID,
-            TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-            TEST_CREATOR,
-        )
+    return_response = access_control_privilege_service.grant_privilege(
+        TEST_USER_ID,
+        TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+        TEST_CREATOR,
     )
     assert return_response.status_code == HTTPStatus.CONFLICT
     assert return_response.detail.user_id == TEST_USER_ID
     assert return_response.detail.role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
     assert (
-        return_response.error_message
-        == "User already has the requested access control privilege."
+        str(return_response.error_message).find(
+            "User already has the requested access control privilege"
+        )
+        != -1
     )
 
 
-def test_create_access_control_privilege(
+def test_create_access_control_privilege_many(
     access_control_privilege_service: AccessControlPrivilegeService,
     user_service: UserService,
     forest_client_service: ForestClientService,
@@ -83,11 +81,13 @@ def test_create_access_control_privilege(
     )
     assert found_user is None
     # test create access control privilege for concrete role without forest client number
-    return_result = access_control_privilege_service.create_access_control_privilege(
-        schemas.FamAccessControlPrivilegeCreateRequest(
-            **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
-        ),
-        TEST_CREATOR,
+    return_result = (
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
+            ),
+            TEST_CREATOR,
+        )
     )
     assert len(return_result) == 1
     assert return_result[0].status_code == HTTPStatus.OK
@@ -111,22 +111,24 @@ def test_create_access_control_privilege(
     assert new_record.role_id == TEST_FOM_DEV_REVIEWER_ROLE_ID
 
     # test create access control privilege for abstract parent role with single forest client number
-    return_result = access_control_privilege_service.create_access_control_privilege(
-        schemas.FamAccessControlPrivilegeCreateRequest(
-            **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
-        ),
-        TEST_CREATOR,
+    return_result = (
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            ),
+            TEST_CREATOR,
+        )
     )
     assert len(return_result) == 1
     assert return_result[0].status_code == HTTPStatus.OK
     assert return_result[0].detail.user_id == NEW_USER_ID
     # verify the new forest client number is created
     new_forest_client = forest_client_service.get_forest_client_by_number(
-        TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_number")[0]
+        TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_numbers")[0]
     )
     assert (
         new_forest_client.forest_client_number
-        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_number")[0]
+        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_numbers")[0]
     )
     # verify the new child role is created
     new_child_role: FamRole = (
@@ -134,9 +136,9 @@ def test_create_access_control_privilege(
         .filter(FamRole.client_number_id == new_forest_client.client_number_id)
         .one_or_none()
     )
-    assert new_child_role.role_name == utils.construct_forest_client_role_name(
+    assert new_child_role.role_name == RoleService.construct_forest_client_role_name(
         TEST_FOM_SUBMITTER_ROLE_NAME,
-        TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_number")[0],
+        TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST.get("forest_client_numbers")[0],
     )
     NEW_ROLE_ID = new_child_role.role_id
     assert return_result[0].detail.role_id == NEW_ROLE_ID
@@ -149,25 +151,29 @@ def test_create_access_control_privilege(
 
     # test create access control privilege for abstract parent role with 2 forest client numbers,
     # one already created in the above step, one is new
-    return_result = access_control_privilege_service.create_access_control_privilege(
-        schemas.FamAccessControlPrivilegeCreateRequest(
-            **{
-                **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-                "forest_client_number": [
-                    TEST_FOREST_CLIENT_NUMBER,
-                    TEST_FOREST_CLIENT_NUMBER_TWO,
-                ],
-            }
-        ),
-        TEST_CREATOR,
+    return_result = (
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **{
+                    **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                    "forest_client_numbers": [
+                        TEST_FOREST_CLIENT_NUMBER,
+                        TEST_FOREST_CLIENT_NUMBER_TWO,
+                    ],
+                }
+            ),
+            TEST_CREATOR,
+        )
     )
     assert len(return_result) == 2
     assert return_result[0].status_code == HTTPStatus.CONFLICT
     assert return_result[0].detail.user_id == NEW_USER_ID
     assert return_result[0].detail.role_id == NEW_ROLE_ID
     assert (
-        return_result[0].error_message
-        == "User already has the requested access control privilege."
+        str(return_result[0].error_message).find(
+            "User already has the requested access control privilege"
+        )
+        != -1
     )
     assert return_result[1].status_code == HTTPStatus.OK
     assert return_result[1].detail.user_id == NEW_USER_ID
@@ -175,7 +181,7 @@ def test_create_access_control_privilege(
         db_pg_session.query(FamRole)
         .filter(
             FamRole.role_name
-            == utils.construct_forest_client_role_name(
+            == RoleService.construct_forest_client_role_name(
                 TEST_FOM_SUBMITTER_ROLE_NAME,
                 TEST_FOREST_CLIENT_NUMBER_TWO,
             )
@@ -194,8 +200,8 @@ def test_create_access_control_privilege(
     # test create access control privilege for abstract parent role without forest client number
     with pytest.raises(HTTPException) as e:
         copy_data = {**TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST}
-        del copy_data["forest_client_number"]
-        access_control_privilege_service.create_access_control_privilege(
+        del copy_data["forest_client_numbers"]
+        access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(**copy_data),
             TEST_CREATOR,
         )
@@ -207,12 +213,12 @@ def test_create_access_control_privilege(
     )
 
 
-def test_create_access_control_privilege_invalid_user_type(
+def test_create_access_control_privilege_many_invalid_user_type(
     access_control_privilege_service: AccessControlPrivilegeService,
 ):
     # test create access control privilege with invalid user type
     with pytest.raises(ValidationError) as e:
-        access_control_privilege_service.create_access_control_privilege(
+        access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(
                 **{
                     **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
@@ -224,12 +230,12 @@ def test_create_access_control_privilege_invalid_user_type(
     assert str(e.value).find("Input should be 'I' or 'B'") != -1
 
 
-def test_create_access_control_privilege_invalid_role_id(
+def test_create_access_control_privilege_many_invalid_role_id(
     access_control_privilege_service: AccessControlPrivilegeService,
 ):
     # test create access control privilege with non exists role id
     with pytest.raises(HTTPException) as e:
-        access_control_privilege_service.create_access_control_privilege(
+        access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(
                 **{
                     **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,

@@ -1,6 +1,5 @@
 import logging
 
-from api.app.utils import utils
 from api.app.services.forest_client_service import ForestClientService
 from api.app.services.role_service import RoleService
 from tests.constants import (
@@ -48,6 +47,6 @@ def test_find_or_create_forest_client_child_role(role_service: RoleService):
     # verify child role created
     child_role_one = role_service.get_role_by_id(result.role_id)
     assert child_role_one.role_id == result.role_id
-    assert child_role_one.role_name == utils.construct_forest_client_role_name(
+    assert child_role_one.role_name == RoleService.construct_forest_client_role_name(
         TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER
     )
