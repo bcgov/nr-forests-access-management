@@ -13,13 +13,13 @@ const props = defineProps<{
     <Card class="custom-card">
         <template #header>
             <Icon
-                id="checkmark-Icon"
+                id="checkmarkIcon"
                 icon="checkmark--filled"
                 :size="IconSize.small"
                 v-if="props.userIdentity.found"
             />
             <Icon
-                id="error-Icon"
+                id="errorIcon"
                 class="custom-carbon-icon-error--filled"
                 icon="error--filled"
                 :size="IconSize.small"

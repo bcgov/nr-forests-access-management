@@ -58,8 +58,8 @@ describe('UserIdentityCard', () => {
         firstNameEl = firstName.element as HTMLSpanElement;
         lastName = wrapper.find('#lastName');
         lastNameEl = lastName.element as HTMLSpanElement;
-        checkmarkIcon = wrapper.find('#checkmark-Icon');
-        errorIcon = wrapper.find('#error-icon');
+        checkmarkIcon = wrapper.find('#checkmarkIcon');
+        errorIcon = wrapper.find('#errorIcon');
     });
 
     it('Should show correct info on card based on props', () => {
