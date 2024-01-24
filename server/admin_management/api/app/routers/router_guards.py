@@ -1,9 +1,9 @@
+import json
 import logging
 from http import HTTPStatus
+from typing import Union
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from typing import Union
-import json
 
 from api.app import database
 from api.app.jwt_validation import (
@@ -17,14 +17,16 @@ from api.app.schemas import (
     TargetUser,
     FamAppAdminCreate,
 )
+from api.app.constants import AdminRoleAuthGroup
 from api.app.models.model import FamUser, FamRole
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.access_control_privilege_service import (
     AccessControlPrivilegeService,
 )
 from api.app.services.user_service import UserService
-from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
+from api.app.services.application_service import ApplicationService
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ no_requester_exception = HTTPException(
 
 
 def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
-    required_role = "FAM_ADMIN"
+    required_role = AdminRoleAuthGroup.FAM_ADMIN
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:
