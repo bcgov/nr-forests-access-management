@@ -119,7 +119,7 @@ class FamRoleCreate(FamRoleMin):
         Annotated[str, StringConstraints(max_length=8)]
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=60)]
-    client_number: Optional[FamForestClientCreate] = None
+    client_number: Optional[FamForestClientCreate] = None  # this is matched with the model
 
     model_config = ConfigDict(from_attributes=True)
 

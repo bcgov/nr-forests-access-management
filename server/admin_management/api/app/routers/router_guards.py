@@ -148,7 +148,7 @@ async def enforce_self_grant_guard(
 
 async def get_request_role_from_id(
     request: Request, db: Session = Depends(database.get_db)
-) -> FamRole:
+) -> FamRole | None:
     """
     To get role from request
     For deleting access control privilege method, get the role by access_control_privilege_id
