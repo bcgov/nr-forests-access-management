@@ -14,8 +14,18 @@
 
 
 
-export * from './api/famaccess-control-privilege-api';
-export * from './api/famapplication-admin-api';
-export * from './api/famapplications-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const RoleType = {
+    A: 'A',
+    C: 'C'
+} as const;
+
+export type RoleType = typeof RoleType[keyof typeof RoleType];
+
+
 
