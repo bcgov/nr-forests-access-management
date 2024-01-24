@@ -26,15 +26,15 @@ def test_get_forest_client_by_mumber(forest_client_repo: ForestClientRepository)
     )
     assert (
         new_forest_client.forest_client_number
-        == TEST_FOERST_CLIENT_CREATE["forest_client_number"]
+        == TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     # get the new created forest client
     found_forest_client = forest_client_repo.get_forest_client_by_number(
-        TEST_FOERST_CLIENT_CREATE["forest_client_number"]
+        TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     assert (
         found_forest_client.forest_client_number
-        == TEST_FOERST_CLIENT_CREATE["forest_client_number"]
+        == TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
 
 
@@ -45,11 +45,11 @@ def test_create_forest_client(forest_client_repo: ForestClientRepository):
     )
     assert (
         new_forest_client.forest_client_number
-        == TEST_FOERST_CLIENT_CREATE["forest_client_number"]
+        == TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     # verify the new created forest client
     found_forest_client = forest_client_repo.get_forest_client_by_number(
-        TEST_FOERST_CLIENT_CREATE["forest_client_number"]
+        TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     assert found_forest_client.client_number_id == new_forest_client.client_number_id
     assert (

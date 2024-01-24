@@ -17,14 +17,14 @@ LOGGER = logging.getLogger(__name__)
 def test_get_user_by_domain_and_name(user_repo: UserRepository):
     # test not found
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_USER["user_type_code"], TEST_NEW_USER["user_name"]
+        TEST_NEW_USER.user_type_code, TEST_NEW_USER.user_name
     )
     assert fam_user is None
 
     # create a new user and find it and verify found
     new_user = user_repo.create_user(TEST_NEW_USER)
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_USER["user_type_code"], TEST_NEW_USER["user_name"]
+        TEST_NEW_USER.user_type_code, TEST_NEW_USER.user_name
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name
@@ -32,7 +32,7 @@ def test_get_user_by_domain_and_name(user_repo: UserRepository):
 
     # get user with username lower case
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_USER["user_type_code"], "test_user"
+        TEST_NEW_USER.user_type_code, "test_user"
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name
@@ -61,10 +61,10 @@ def test_get_users(user_repo: UserRepository):
 
 def test_create_user(user_repo: UserRepository):
     new_user = user_repo.create_user(TEST_NEW_USER)
-    assert new_user.user_name == TEST_NEW_USER.get("user_name")
-    assert new_user.user_type_code == TEST_NEW_USER.get("user_type_code")
+    assert new_user.user_name == TEST_NEW_USER.user_name
+    assert new_user.user_type_code == TEST_NEW_USER.user_type_code
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_USER["user_type_code"], TEST_NEW_USER["user_name"]
+        TEST_NEW_USER.user_type_code, TEST_NEW_USER.user_name
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name

@@ -40,7 +40,8 @@ class UserRepository:
         return self.db.query(models.FamUser).all()
 
     def create_user(self, fam_user: schemas.FamUserCreate) -> models.FamUser:
-        db_item = models.FamUser(**fam_user)
+        user_dict = fam_user.model_dump()
+        db_item = models.FamUser(**user_dict)
         self.db.add(db_item)
         self.db.flush()
         return db_item

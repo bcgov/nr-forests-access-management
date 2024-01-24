@@ -13,7 +13,9 @@ class ForestClientService:
         self.forest_client_repository = ForestClientRepository(db)
 
     def get_forest_client_by_number(self, forest_client_number: str):
-        return self.forest_client_repository.get_forest_client_by_number(forest_client_number)
+        return self.forest_client_repository.get_forest_client_by_number(
+            forest_client_number
+        )
 
     def find_or_create(self, forest_client_number: str, requester: str):
         fam_forest_client = self.get_forest_client_by_number(forest_client_number)
@@ -23,10 +25,12 @@ class ForestClientService:
                 "does not exist, add a new Forest Client."
             )
 
-            request_forest_client: FamForestClientCreate = {
-                "forest_client_number": forest_client_number,
-                "create_user": requester,
-            }
+            request_forest_client = FamForestClientCreate(
+                **{
+                    "forest_client_number": forest_client_number,
+                    "create_user": requester,
+                }
+            )
 
             fam_forest_client = self.forest_client_repository.create_forest_client(
                 request_forest_client

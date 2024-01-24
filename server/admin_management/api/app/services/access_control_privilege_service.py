@@ -130,11 +130,13 @@ class AccessControlPrivilegeService:
                 )
             )
         else:
-            access_control_privilege_param: schemas.FamAccessControlPrivilegeCreate = {
-                "user_id": user_id,
-                "role_id": role_id,
-                "create_user": requester,
-            }
+            access_control_privilege_param = schemas.FamAccessControlPrivilegeCreate(
+                **{
+                    "user_id": user_id,
+                    "role_id": role_id,
+                    "create_user": requester,
+                }
+            )
             fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
                 access_control_privilege_param
             )

@@ -24,13 +24,16 @@ class AccessControlPrivilegeRepository:
             .one_or_none()
         )
 
-    def get_acp_by_id(self, access_control_privilege_id: int) -> FamAccessControlPrivilege:
+    def get_acp_by_id(
+        self, access_control_privilege_id: int
+    ) -> FamAccessControlPrivilege:
         return self.db.get(FamAccessControlPrivilege, access_control_privilege_id)
 
     def create_access_control_privilege(
         self, fam_access_control_priviliege: FamAccessControlPrivilegeCreate
     ) -> FamAccessControlPrivilege:
-        db_item = FamAccessControlPrivilege(**fam_access_control_priviliege)
+        access_control_priviliege_dict = fam_access_control_priviliege.model_dump()
+        db_item = FamAccessControlPrivilege(**access_control_priviliege_dict)
         self.db.add(db_item)
         self.db.flush()
         self.db.refresh(db_item)

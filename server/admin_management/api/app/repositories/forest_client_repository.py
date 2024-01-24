@@ -22,7 +22,8 @@ class ForestClientRepository:
     def create_forest_client(
         self, fam_forest_client: FamForestClientCreate
     ) -> FamForestClient:
-        db_item = FamForestClient(**fam_forest_client)
+        forest_client_dict = fam_forest_client.model_dump()
+        db_item = FamForestClient(**forest_client_dict)
         self.db.add(db_item)
         self.db.flush()
         return db_item

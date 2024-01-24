@@ -16,11 +16,13 @@ TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
 TEST_USER_NAME = "TEST_USER"
 
-TEST_NEW_USER = {
-    "user_type_code": famConstants.UserType.IDIR,
-    "user_name": TEST_USER_NAME,
-    "create_user": TEST_CREATOR,
-}
+TEST_NEW_USER = schemas.FamUserCreate(
+    **{
+        "user_type_code": famConstants.UserType.IDIR,
+        "user_name": TEST_USER_NAME,
+        "create_user": TEST_CREATOR,
+    }
+)
 
 # ---------------------- test application data ---------------------- #
 TEST_NOT_EXIST_APPLICATION_ID = 0
@@ -42,10 +44,12 @@ TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
 TEST_INVALID_FOREST_CLIENT_NUMBER = "12345"
 TEST_FOREST_CLIENT_NUMBER = "00000010"
 TEST_FOREST_CLIENT_NUMBER_TWO = "00000001"
-TEST_FOERST_CLIENT_CREATE: schemas.FamForestClientCreate = {
-    "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
-    "create_user": TEST_CREATOR,
-}
+TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreate(
+    **{
+        "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
+        "create_user": TEST_CREATOR,
+    }
+)
 
 # -------------------------- test role data ------------------------- #
 TEST_NOT_EXIST_ROLE_ID = 0
@@ -58,18 +62,18 @@ TEST_FOM_REVIEWER_ROLE_NAME = "FOM_REVIEWER"
 TEST_NEW_ROLE = "TEST_READ"
 TEST_NEW_ROLE_TWO = "TEST_WRITE"
 TEST_ROLE_PURPOSE = "test role"
-TEST_ROLE_CREATE_CONCRETE: schemas.FamRoleCreate = {
+TEST_ROLE_CREATE_CONCRETE = {
     "application_id": TEST_APPLICATION_ID_FOM_DEV,
     "role_name": TEST_NEW_ROLE,
     "role_purpose": TEST_ROLE_PURPOSE,
     "create_user": TEST_CREATOR,
     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
-}
-TEST_ROLE_CREATE_ABSTRACT: schemas.FamRoleCreate = {
+}  # this is used for repository level test
+TEST_ROLE_CREATE_ABSTRACT = {
     **TEST_ROLE_CREATE_CONCRETE,
     "role_name": TEST_NEW_ROLE_TWO,
     "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
-}
+}  # this is used for repository level test
 TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
     **{
         "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
@@ -88,19 +92,21 @@ TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
 
 # -------------------- test access control privilege data ------------------ #
 TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID = 0
-TEST_ACCESS_CONTROL_PRIVILEGE_CREATE: schemas.FamAccessControlPrivilegeCreate = {
-    "user_id": TEST_USER_ID,
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "create_user": TEST_CREATOR,
-}
-TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST: schemas.FamAccessControlPrivilegeCreateRequest = {
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE = schemas.FamAccessControlPrivilegeCreate(
+    **{
+        "user_id": TEST_USER_ID,
+        "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+        "create_user": TEST_CREATOR,
+    }
+)
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST = {
     "user_name": TEST_USER_NAME,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_numbers": [TEST_FOREST_CLIENT_NUMBER],
 }
 
-TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE: schemas.FamAccessControlPrivilegeCreateRequest = {
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE = {
     "user_name": TEST_USER_NAME,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,

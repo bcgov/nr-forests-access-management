@@ -196,7 +196,7 @@ def authorize_by_application_role(
             status_code=HTTPStatus.BAD_REQUEST,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
-                "description": f"Requester has no appropriate role",
+                "description": "Requester has no appropriate role",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )

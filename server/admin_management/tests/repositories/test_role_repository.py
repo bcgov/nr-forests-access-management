@@ -121,8 +121,6 @@ def test_create_role(role_repo: RoleRepository):
 def test_create_child_role(role_repo: RoleRepository):
     # create child role with forest client number
     # remove the "forest_client_number" from the test data, as the role model doesn't have this field
-    # fam_role_dict = {**TEST_ROLE_CREATE_CHILD}
-    # del fam_role_dict["forest_client_number"]
     fam_role_dict = TEST_ROLE_CREATE_CHILD.model_dump()
     del fam_role_dict["forest_client_number"]
     new_child_role = role_repo.create_role(fam_role_dict)

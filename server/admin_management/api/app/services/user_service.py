@@ -29,11 +29,13 @@ class UserService:
 
         fam_user = self.get_user_by_domain_and_name(user_type_code, user_name)
         if not fam_user:
-            request_user: FamUserCreate = {
-                "user_type_code": user_type_code,
-                "user_name": user_name,
-                "create_user": requester,
-            }
+            request_user = FamUserCreate(
+                **{
+                    "user_type_code": user_type_code,
+                    "user_name": user_name,
+                    "create_user": requester,
+                }
+            )
 
             fam_user = self.user_repo.create_user(request_user)
             LOGGER.debug(f"User created: {fam_user.user_id}.")

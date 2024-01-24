@@ -15,19 +15,19 @@ def test_find_or_create(
 ):
     # verify the new forest client not exists
     found_forest_client = forest_client_service.get_forest_client_by_number(
-        TEST_FOERST_CLIENT_CREATE.get("forest_client_number")
+        TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     assert found_forest_client is None
     initial_all = db_pg_session.query(FamForestClient).all()
 
     # create the newe forest client
     forest_client_service.find_or_create(
-        TEST_FOERST_CLIENT_CREATE.get("forest_client_number"),
-        TEST_FOERST_CLIENT_CREATE.get("create_user"),
+        TEST_FOERST_CLIENT_CREATE.forest_client_number,
+        TEST_FOERST_CLIENT_CREATE.create_user,
     )
     # verify the forest client number can be found now
     found_forest_client = forest_client_service.get_forest_client_by_number(
-        TEST_FOERST_CLIENT_CREATE.get("forest_client_number")
+        TEST_FOERST_CLIENT_CREATE.forest_client_number
     )
     assert found_forest_client is not None
     after_add_all = db_pg_session.query(FamForestClient).all()
@@ -35,8 +35,8 @@ def test_find_or_create(
 
     # find or create with an existing forest client
     forest_client_service.find_or_create(
-        TEST_FOERST_CLIENT_CREATE.get("forest_client_number"),
-        TEST_FOERST_CLIENT_CREATE.get("create_user"),
+        TEST_FOERST_CLIENT_CREATE.forest_client_number,
+        TEST_FOERST_CLIENT_CREATE.create_user,
     )
     all_forest_clients = db_pg_session.query(FamForestClient).all()
     # verify no new forest client add
