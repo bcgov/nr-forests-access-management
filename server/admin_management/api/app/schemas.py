@@ -155,6 +155,14 @@ class FamAppAdminGet(BaseModel):
 
 # -------------------------- FAM Access Control Privilege (Delegated Admin) -------------------------- #
 class FamAccessControlPrivilegeCreateRequest(BaseModel):
+    """
+    This is used at router level, the data we receive from frontend.
+    Use username and user_type_code to get user_id,
+    and for concrete role, can use its role_id directly,
+    but for abstract role, need to create/get child role_id based on the forest client number,
+    and then use schema FamAccessControlPrivilegeCreateDto to insert into the database
+    """
+
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     role_id: int
@@ -165,7 +173,11 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamAccessControlPrivilegeCreate(BaseModel):
+class FamAccessControlPrivilegeCreateDto(BaseModel):
+    """
+    This is used at repository level, pass to the database to create the record
+    """
+
     user_id: int
     create_user: Annotated[str, StringConstraints(max_length=60)]
     role_id: int

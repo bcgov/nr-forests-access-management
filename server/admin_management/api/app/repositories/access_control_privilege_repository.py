@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app.schemas import FamAccessControlPrivilegeCreate
+from api.app.schemas import FamAccessControlPrivilegeCreateDto
 from api.app.models.model import FamAccessControlPrivilege
 
 
@@ -30,7 +30,7 @@ class AccessControlPrivilegeRepository:
         return self.db.get(FamAccessControlPrivilege, access_control_privilege_id)
 
     def create_access_control_privilege(
-        self, fam_access_control_priviliege: FamAccessControlPrivilegeCreate
+        self, fam_access_control_priviliege: FamAccessControlPrivilegeCreateDto
     ) -> FamAccessControlPrivilege:
         access_control_priviliege_dict = fam_access_control_priviliege.model_dump()
         db_item = FamAccessControlPrivilege(**access_control_priviliege_dict)

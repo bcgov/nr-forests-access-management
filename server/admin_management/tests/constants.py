@@ -92,7 +92,7 @@ TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
 
 # -------------------- test access control privilege data ------------------ #
 TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID = 0
-TEST_ACCESS_CONTROL_PRIVILEGE_CREATE = schemas.FamAccessControlPrivilegeCreate(
+TEST_ACCESS_CONTROL_PRIVILEGE_CREATE = schemas.FamAccessControlPrivilegeCreateDto(
     **{
         "user_id": TEST_USER_ID,
         "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,

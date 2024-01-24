@@ -130,7 +130,7 @@ class AccessControlPrivilegeService:
                 )
             )
         else:
-            access_control_privilege_param = schemas.FamAccessControlPrivilegeCreate(
+            access_control_privilege_param = schemas.FamAccessControlPrivilegeCreateDto(
                 **{
                     "user_id": user_id,
                     "role_id": role_id,

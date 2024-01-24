@@ -2,7 +2,7 @@ import logging
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from api.app.schemas import FamAccessControlPrivilegeCreate
+from api.app.schemas import FamAccessControlPrivilegeCreateDto
 from api.app.repositories.access_control_privilege_repository import (
     AccessControlPrivilegeRepository,
 )
@@ -101,7 +101,7 @@ def test_create_access_control_privilege_invalid_user_id(
     test_data_dict = TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.model_dump()
     with pytest.raises(IntegrityError) as e:
         access_control_privilege_repo.create_access_control_privilege(
-            FamAccessControlPrivilegeCreate(
+            FamAccessControlPrivilegeCreateDto(
                 **{**test_data_dict, "user_id": TEST_NON_EXIST_USER_ID}
             )
         )
@@ -115,7 +115,7 @@ def test_create_access_control_privilege_invalid_role_id(
     test_data_dict = TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.model_dump()
     with pytest.raises(IntegrityError) as e:
         access_control_privilege_repo.create_access_control_privilege(
-            FamAccessControlPrivilegeCreate(
+            FamAccessControlPrivilegeCreateDto(
                 **{**test_data_dict, "role_id": TEST_NOT_EXIST_ROLE_ID}
             )
         )
