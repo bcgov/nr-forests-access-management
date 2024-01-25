@@ -12,14 +12,14 @@ import {
     isApplicationSelected,
     selectedApplication,
     setSelectedApplication,
-    selectedApplicationShortDisplayText
+    selectedApplicationId
 } from '@/store/ApplicationState';
 import { isLoading } from '@/store/LoadingState';
 import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { FAM_APPLICATION_ID, FAM_APPLICATION_NAME } from '@/store/Constants';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 import {
@@ -60,7 +60,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
-            selectedApplication.value?.application_id
+            selectedApplicationId.value
         );
     }
 };

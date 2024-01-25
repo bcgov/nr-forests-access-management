@@ -11,6 +11,7 @@ import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
     selectedApplication,
+    selectedApplicationId
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
@@ -35,11 +36,11 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    if(selectedApplication.value?.application_id === FAM_APPLICATION_ID) {
+    if(selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
         userRolesFetchResult = await asyncWrap(
-            fetchUserRoleAssignments(selectedApplication.value?.application_id)
+            fetchUserRoleAssignments(selectedApplicationId.value)
         );
     }
     Object.assign(to.meta, {
