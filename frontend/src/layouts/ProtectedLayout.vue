@@ -13,7 +13,7 @@ import { isApplicationSelected, selectedApplication } from '@/store/ApplicationS
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
-const sideNavAddPermissionOption = () => {
+const setSideNavAddPermissionOption = () => {
     if(selectedApplication.value?.application_id === FAM_APPLICATION_ID) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
@@ -25,12 +25,12 @@ const sideNavAddPermissionOption = () => {
 
 onMounted(() => {
     if(isApplicationSelected.value) {
-        sideNavAddPermissionOption()
+        setSideNavAddPermissionOption()
     }
 });
 
 watch(selectedApplication , () => {
-    sideNavAddPermissionOption();
+    setSideNavAddPermissionOption();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
