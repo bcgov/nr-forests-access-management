@@ -2,20 +2,31 @@ import json
 import logging
 from http import HTTPStatus
 from typing import Union
-
-from api.app import database
-from api.app.constants import AdminRoleAuthGroup
-from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
-                                    get_access_roles,
-                                    get_request_cognito_user_id,
-                                    validate_token)
-from api.app.models.model import FamUser
-from api.app.schemas import FamAppAdminCreate, Requester, TargetUser
-from api.app.services.application_admin_service import ApplicationAdminService
-from api.app.services.application_service import ApplicationService
-from api.app.services.user_service import UserService
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.orm import Session
+
+from api.app import database
+from api.app.jwt_validation import (
+    ERROR_PERMISSION_REQUIRED,
+    get_access_roles,
+    get_request_cognito_user_id,
+    validate_token,
+)
+from api.app.schemas import (
+    Requester,
+    TargetUser,
+    FamAppAdminCreate,
+)
+from api.app.constants import AdminRoleAuthGroup
+from api.app.models.model import FamUser, FamRole
+from api.app.services.application_admin_service import ApplicationAdminService
+from api.app.services.access_control_privilege_service import (
+    AccessControlPrivilegeService,
+)
+from api.app.services.user_service import UserService
+from api.app.services.role_service import RoleService
+from api.app.services.application_service import ApplicationService
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -135,6 +146,96 @@ async def enforce_self_grant_guard(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+
+async def get_request_role_from_id(
+    request: Request, db: Session = Depends(database.get_db)
+) -> Union[FamRole, None]:
+    """
+    To get role from request
+    For deleting access control privilege method, get the role by access_control_privilege_id
+    For adding access control privilege method, get role through request data
+    """
+    access_control_privilege_id = None
+    if "access_control_privilege_id" in request.path_params:
+        access_control_privilege_id = request.path_params["access_control_privilege_id"]
+
+    if access_control_privilege_id:
+        access_control_privilege_service = AccessControlPrivilegeService(db)
+        access_control_privilege = access_control_privilege_service.get_acp_by_id(
+            access_control_privilege_id
+        )
+        return access_control_privilege.role
+    else:
+        try:
+            rbody = await request.json()
+            role_id = rbody["role_id"]
+            role_service = RoleService(db)
+            role = role_service.get_role_by_id(role_id)
+            return role  # role could be None.
+
+        # When request does not contains body part.
+        except json.JSONDecodeError:
+            return None
+
+
+def authorize_by_application_role(
+    # Depends on "get_request_role_from_id()" to figure out
+    # what id to use to get role from endpoint.
+    role: FamRole = Depends(get_request_role_from_id),
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token),
+):
+    """
+    This router validation is currently design to validate logged on "admin"
+    has authority to perform actions for application with roles in [app]_ADMIN.
+    This function basically is the same and depends on (authorize_by_app_id()) but for
+    the need that some routers contains target role_id in the request (instead of application_id).
+    Check if role exists or not
+    """
+    if not role:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_ROLE_ID,
+                "description": "Requester has no appropriate role",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    authorize_by_app_id(application_id=role.application_id, db=db, claims=claims)
+    return role
+
+
+def authorize_by_app_id(
+    application_id: int,
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token),
+):
+    application_service = ApplicationService(db)
+    application = application_service.get_application(application_id)
+    if not application:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_INVALID_APPLICATION_ID,
+                "description": f"Application ID {application_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    required_role = f"{application.application_name.upper()}_ADMIN"
+    access_roles = get_access_roles(claims)
+
+    if required_role not in access_roles:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_PERMISSION_REQUIRED,
+                "description": f"Operation requires role {required_role}",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def validate_param_application_admin_id(
