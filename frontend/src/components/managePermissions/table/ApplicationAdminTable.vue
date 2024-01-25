@@ -1,0 +1,169 @@
+<script setup lang="ts">
+import { reactive, ref, type PropType  } from 'vue';
+import { FilterMatchMode } from 'primevue/api';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import { useConfirm } from 'primevue/useconfirm';
+import ConfirmDialog from 'primevue/confirmdialog';
+
+import { IconSize } from '@/enum/IconEnum';
+import { routeItems } from '@/router/routeItem';
+import Button from '@/components/common/Button.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
+
+type emit = (
+    e: 'deleteAppAdmin',
+    item: FamAppAdminGet
+) => void;
+
+const props = defineProps({
+    loading: {
+        type: Boolean,
+        default: false,
+    },
+    applicationAdmins: {
+        type: [Array] as PropType<
+            FamAppAdminGet[] | undefined
+        >,
+        required: true,
+    }
+});
+
+const adminFilters = ref({
+    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    'user.user_type.description': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'application.app_environment': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+
+    },
+});
+
+const confirm = useConfirm();
+
+const emit = defineEmits<emit>();
+
+const confirmDeleteData = reactive({
+    adminName: '',
+    role: 'ADMIN'
+});
+
+const adminSearchChange = (newvalue: string) => {
+    adminFilters.value.global.value = newvalue;
+};
+
+const deleteAdmin = (admin: FamAppAdminGet) => {
+    confirmDeleteData.adminName = admin.user.user_name;
+    confirm.require({
+        group: 'deleteAdmin',
+        header: 'Remove Access',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Remove',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            emit('deleteAppAdmin', admin);
+        },
+    });
+}
+
+</script>
+
+<template>
+    <ConfirmDialog group="deleteAdmin">
+        <template #message>
+            <ConfirmDialogtext
+                :userName="confirmDeleteData.adminName"
+                :role="confirmDeleteData.role"
+            />
+        </template>
+    </ConfirmDialog>
+    <div class="data-table-container">
+        <div class="custom-data-table">
+            <DataTableHeader
+                btnLabel="Add application admin"
+                :btnRoute="routeItems.grantUserPermission.path"
+                :filter="adminFilters['global'].value"
+                @change="adminSearchChange"
+            />
+            <DataTable
+                v-model:filters="adminFilters"
+                :value="props.applicationAdmins"
+                paginator
+                :rows="50"
+                :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+                filterDisplay="menu"
+                :loading="props.loading"
+                :globalFilterFields="[
+                    'user.user_name',
+                    'application.application_name',
+                    'user.user_type.description',
+                    'role.role_name',
+                    'application.app_environment'
+                ]"
+                paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+                currentPageReportTemplate="{first} - {last} of {totalRecords} items"
+                stripedRows
+            >
+                <template #empty> No user found. </template>
+                <template #loading> Loading users data. Please wait. </template>
+                <Column header="User Name" sortable field="user.user_name">
+                    <template #body="{ data }">
+                        <span>
+                            {{ data.user.user_name }}
+                        </span>
+                    </template>
+                </Column>
+                <Column
+                    field="user.user_type.description"
+                    header="Domain"
+                    sortable
+                ></Column>
+                <Column
+                    field="application.application_name"
+                    header="Application"
+                    sortable
+                ></Column>
+                <Column
+                    field="application.app_environment"
+                    header="Environment"
+                    sortable
+                ></Column>
+                <Column field="role.role_name" header="Role" sortable>
+                    <template #body="{ data }">
+                        Admin
+                    </template></Column
+                >
+                <Column header="Action">
+                    <template #body="{ data }">
+                        <!-- Hidden until functionality is available
+                            <button
+                                class="btn btn-icon"
+                            >
+                                <Icon icon="edit" :size="IconSize.small"/>
+                            </button> -->
+                        <button
+                            class="btn btn-icon"
+                            @click="deleteAdmin(data)"
+                        >
+                            <Icon icon="trash-can" :size="IconSize.small" />
+                        </button>
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import '@/assets/styles/base.scss';
+</style>

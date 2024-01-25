@@ -5,14 +5,14 @@ import type { PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
-import router from '@/router';
 import { IconSize } from '@/enum/IconEnum';
-import IconCapitol from '@/components/common/IconCapitol.vue';
+import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -33,21 +33,16 @@ const props = defineProps({
         >,
         required: true,
     },
-    selectedApplicationDisplayText: {
-        type: String,
-        requried: true,
-    },
-    isApplicationSelected: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
 });
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const userRoleAssignmentsFilters = ref({
+    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'role.parent_role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'user.user_type.description': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -61,12 +56,16 @@ const filters = ref({
     },
 });
 
+const emit = defineEmits<emit>();
+
 const confirmDeleteData = reactive({
     userName: '',
     role: '',
 });
 
-const emit = defineEmits<emit>();
+const userSearchChange = (newValue: string) => {
+    userRoleAssignmentsFilters.value.global.value = newValue;
+};
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
@@ -87,45 +86,22 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 <template>
     <ConfirmDialog group="deleteAssignment">
         <template #message>
-            <p>
-                Are you sure you want to remove
-                <strong>{{ confirmDeleteData.role }}</strong> access to
-                <strong>{{ confirmDeleteData.userName }}</strong> in
-                <strong>{{ selectedApplicationDisplayText }}</strong>
-            </p>
+            <ConfirmDialogtext
+                :role="confirmDeleteData.role"
+                :userName="confirmDeleteData.userName"
+            />
         </template>
     </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
-            <div class="custom-data-table-header">
-                <h3>{{ selectedApplicationDisplayText }} users</h3>
-                <span>
-                    This table shows all the users in
-                    {{ selectedApplicationDisplayText }} and their permissions
-                    levels
-                </span>
-            </div>
-            <div class="search-container">
-                <Button
-                    class="btn-add-user"
-                    label="Add user permission"
-                    @click="router.push('/grant')"
-                >
-                    <Icon icon="add" :size="IconSize.small" />
-                </Button>
-                <span class="p-input-icon-left">
-                    <Icon icon="search" :size="IconSize.small" />
-                    <InputText
-                        id="dashboardSearch"
-                        class="dash-search"
-                        placeholder="Search by keyword"
-                        v-model="filters['global'].value"
-                    />
-                </span>
-            </div>
-
+            <DataTableHeader
+                btnLabel="Add user permission"
+                :btnRoute="routeItems.grantUserPermission.path"
+                :filter="userRoleAssignmentsFilters['global'].value"
+                @change="userSearchChange"
+            />
             <DataTable
-                v-model:filters="filters"
+                v-model:filters="userRoleAssignmentsFilters"
                 :value="props.userRoleAssignments"
                 paginator
                 :rows="50"
@@ -211,115 +187,4 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-
-.data-table-container {
-    z-index: -1;
-}
-
-.custom-data-table {
-    background: transparent;
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
-    border: 0.0625rem solid $light-border-subtle-00;
-}
-
-.custom-data-table-header {
-    padding: 1rem 1rem 1.5rem;
-    background-color: $light-layer-two;
-    h3 {
-        @extend %heading-03;
-        margin: 0;
-        padding: 0;
-    }
-
-    span {
-        @extend %body-compact-01;
-        margin: 0;
-        padding: 0;
-        color: $light-text-secondary;
-    }
-}
-
-.search-container {
-    display: flex;
-}
-
-.btn-add-user {
-    width: 16rem;
-    z-index: 2;
-    border-radius: 0rem;
-}
-
-.dash-search {
-    border-radius: 0 0 0 0;
-}
-
-.btn-icon {
-    padding: 0.4rem !important;
-    margin-right: 0.5rem;
-}
-
-.btn-icon:disabled {
-    border: none;
-}
-
-// update primevue style but only for FAM
-.p-input-icon-left {
-    z-index: 1;
-    flex-grow: 1;
-
-    svg {
-        top: 52%;
-    }
-
-    &:deep(.p-inputtext) {
-        width: 100%;
-        border-bottom: 0.125rem solid transparent;
-    }
-
-    &:deep(.p-inputtext:hover) {
-        border-bottom: 0.125rem solid transparent;
-    }
-}
-:deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
-    display: none;
-}
-
-//------ media queries
-
-@media (max-width: 390px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-}
-
-@media (min-width: 768px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-app-selected {
-        margin: 0 14rem;
-    }
-}
-
-@media (min-width: 1280px) {
-    .no-app-selected {
-        margin: 0 25rem;
-    }
-}
-
-@media (min-width: 1536px) {
-    .no-app-selected {
-        margin: 0 33rem;
-    }
-}
-
-@media (min-width: 1920px) {
-    .no-app-selected {
-        margin: 0 43.3rem;
-        width: auto;
-    }
-}
 </style>

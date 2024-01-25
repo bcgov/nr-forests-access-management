@@ -32,6 +32,10 @@ export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
 });
 
+export const selectedApplicationId = computed(() => {
+    return selectedApplication.value?.application_id
+})
+
 // --- Getter
 
 export const selectedApplicationShortDisplayText = computed(() => {

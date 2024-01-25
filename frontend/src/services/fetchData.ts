@@ -1,6 +1,7 @@
-import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { AppActlApiService, AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 
 // --- Fetching data (from backend)
 
@@ -8,6 +9,7 @@ export const fetchApplications = async () => {
     const applications = (
         await AppActlApiService.applicationsApi.getApplications()
     ).data;
+
     // State change.
     setApplicationsUserAdministers(applications);
 };
@@ -65,4 +67,37 @@ export const fetchApplicationRoles = async (
         )
     ).data;
     return applicationRoles;
+};
+
+export const fetchApplicationAdmins = async (): Promise<FamAppAdminGet[]> => {
+    const applicationAdmins = (
+        await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
+    ).data;
+
+    // Default sorting
+    applicationAdmins.sort((first, second) => {
+        // By user_name
+        const userNameCompare = first.user.user_name.localeCompare(
+            second.user.user_name
+        );
+
+        return userNameCompare
+    });
+
+    return applicationAdmins;
+};
+
+/**
+ * This will call api to delete applicationAdminId record from backend and fetch again
+ * to refresh the state.
+ * @param applicationAdminId id to delete fam_user_role_assignment record.
+ */
+export const deleteAndRefreshApplicationAdmin = async (
+    applicationAdminId: number,
+): Promise<FamAppAdminGet[]> => {
+    await AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
+        applicationAdminId
+    );
+    // When deletion is successful, refresh (fetch) for frontend state.
+    return fetchApplicationAdmins();
 };
