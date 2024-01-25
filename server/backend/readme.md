@@ -178,3 +178,19 @@ for test Output,
 
 - find the `output` tab
 - select `Python Test Log` in from the pulldown, top right of the output window
+
+
+## -------------- Windows Configuration ----------------------------------------
+
+Before you follow the steps below, ensure you have Python installed or updated to the latest version. Install and start your Docker desktop for Windows.
+
+```
+  - cd server/backend
+  - run docker compose up -d fam-flyway
+  - run this command in the same directory: python3 -m venv venv
+  - activate the venv environment by running this bat file: .\venv\Scripts\activate
+  - Ask one of the developers for the environment properties in the local-dev.env, and update the properties in local-dev-window.env.bat with them
+  - To install the required packages run: pip install -r requirements.txt
+  - In the same directory, enter(run) local-dev-window.env.bat
+  - To run start the backend, run python serverstart.py
+```
