@@ -13,9 +13,35 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleType } from './role-type';
 
-export * from './api/famaccess-control-privilege-api';
-export * from './api/famapplication-admin-api';
-export * from './api/famapplications-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface FamRoleMin
+ */
+export interface FamRoleMin {
+    /**
+     * 
+     * @type {string}
+     * @memberof FamRoleMin
+     */
+    'role_name': string;
+    /**
+     * 
+     * @type {RoleType}
+     * @memberof FamRoleMin
+     */
+    'role_type_code': RoleType;
+    /**
+     * 
+     * @type {number}
+     * @memberof FamRoleMin
+     */
+    'application_id': number;
+}
+
+
 

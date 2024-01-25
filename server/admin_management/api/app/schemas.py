@@ -1,6 +1,5 @@
 import logging
 from typing import List, Optional, Union
-from datetime import datetime
 from pydantic import StringConstraints, ConfigDict, BaseModel, Field
 
 from . import constants as famConstants
@@ -78,7 +77,63 @@ class FamUserInfo(FamUserBase):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-# -------------------------------------- FAM Application Admin --------------------------------------- #
+# ----------------------------------- FAM Forest Client ------------------------------------ #
+class FamForestClientCreate(BaseModel):
+    # Note, the request may contain string(with leading '0')
+    forest_client_number: Annotated[str, StringConstraints(max_length=8)]
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamForestClientStatus(BaseModel):
+    status_code: famConstants.FamForestClientStatusType
+    description: Annotated[str, StringConstraints(max_length=10)]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamForestClient(BaseModel):
+    client_name: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    forest_client_number: Annotated[str, StringConstraints(max_length=8)]
+    status: Optional[FamForestClientStatus] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- FAM Role ------------------------------------------- #
+class FamRoleMin(BaseModel):
+    role_name: Annotated[str, StringConstraints(max_length=100)]
+    role_type_code: famConstants.RoleType
+    application_id: int = Field(title="Application this role is associated with")
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamRoleCreate(FamRoleMin):
+    role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    forest_client_number: Optional[
+        Annotated[str, StringConstraints(max_length=8)]
+    ] = Field(default=None, title="Forest Client this role is associated with")
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+    client_number: Optional[FamForestClientCreate] = None  # this is matched with the model
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamRoleWithClient(BaseModel):
+    role_id: int
+    role_name: Annotated[str, StringConstraints(max_length=100)]
+    forest_client: Optional[FamForestClient] = None
+    parent_role: Optional[FamRoleMin] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# -------------------------------- FAM Application Admin ----------------------------------- #
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreate(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
@@ -94,5 +149,55 @@ class FamAppAdminGet(BaseModel):
     application_id: int
     user: FamUserInfo
     application: FamApplicationBase
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# -------------------------- FAM Access Control Privilege (Delegated Admin) -------------------------- #
+class FamAccessControlPrivilegeCreateRequest(BaseModel):
+    """
+    This is used at router level, the data we receive from frontend.
+    Use username and user_type_code to get user_id,
+    and for concrete role, can use its role_id directly,
+    but for abstract role, need to create/get child role_id based on the forest client number,
+    and then use schema FamAccessControlPrivilegeCreateDto to insert into the database
+    """
+
+    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
+    user_type_code: famConstants.UserType
+    role_id: int
+    forest_client_numbers: Union[
+        List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
+    ] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeCreateDto(BaseModel):
+    """
+    This is used at repository level, pass to the database to create the record
+    """
+
+    user_id: int
+    create_user: Annotated[str, StringConstraints(max_length=60)]
+    role_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeGet(BaseModel):
+    access_control_privilege_id: int
+    user_id: int
+    role_id: int
+    user: FamUserInfo
+    role: FamRoleWithClient
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeCreateResponse(BaseModel):
+    status_code: int
+    detail: FamAccessControlPrivilegeGet
+    error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -13,12 +13,8 @@ class ApplicationAdminRepository:
 
     def get_application_admins(self) -> List[FamApplicationAdmin]:
         return (
-            self.db
-            .query(FamApplicationAdmin)
-            .order_by(
-                FamApplicationAdmin.user_id,
-                FamApplicationAdmin.application_id
-            )
+            self.db.query(FamApplicationAdmin)
+            .order_by(FamApplicationAdmin.user_id, FamApplicationAdmin.application_id)
             .all()
         )
 
@@ -39,9 +35,7 @@ class ApplicationAdminRepository:
     ) -> FamApplicationAdmin:
         return (
             self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_admin_id == application_admin_id
-            )
+            .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
             .one_or_none()
         )
 
@@ -50,23 +44,19 @@ class ApplicationAdminRepository:
     ) -> List[FamApplicationAdmin]:
         return (
             self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_id == application_id
-            )
+            .filter(FamApplicationAdmin.application_id == application_id)
             .all()
         )
 
     def create_application_admin(
         self, application_id: int, user_id: int, requester: str
     ) -> FamApplicationAdmin:
-        new_fam_application_admin: FamApplicationAdmin = (
-            FamApplicationAdmin(
-                **{
-                    "user_id": user_id,
-                    "application_id": application_id,
-                    "create_user": requester,
-                }
-            )
+        new_fam_application_admin = FamApplicationAdmin(
+            **{
+                "user_id": user_id,
+                "application_id": application_id,
+                "create_user": requester,
+            }
         )
         self.db.add(new_fam_application_admin)
         self.db.flush()
@@ -79,9 +69,7 @@ class ApplicationAdminRepository:
     def delete_application_admin(self, application_admin_id: int):
         record = (
             self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_admin_id == application_admin_id
-            )
+            .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
             .one()
         )
         self.db.delete(record)

@@ -12,6 +12,16 @@ class UserType(str, Enum):
     BCEID = "B"
 
 
+class RoleType(str, Enum):
+    ROLE_TYPE_ABSTRACT = "A"
+    ROLE_TYPE_CONCRETE = "C"
+
+
+class FamForestClientStatusType(str, Enum):
+    ACTIVE = "A"
+    INACTIVE = "I"
+
+
 class AdminRoleAuthGroup(str, Enum):
     """
     FAM data model does not explicitly have these role group of admins.
@@ -20,6 +30,7 @@ class AdminRoleAuthGroup(str, Enum):
     # Referencing to FAM confluence for design:
       https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Delegated+Access+Administration+Design (Auth Function)
     """
+
     FAM_ADMIN = "FAM_ADMIN"
     APP_ADMIN = "APP_ADMIN"
     DELEGATED_ADMIN = "DELEGATED_ADMIN"

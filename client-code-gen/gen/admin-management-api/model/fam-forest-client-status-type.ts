@@ -14,8 +14,18 @@
 
 
 
-export * from './api/famaccess-control-privilege-api';
-export * from './api/famapplication-admin-api';
-export * from './api/famapplications-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const FamForestClientStatusType = {
+    A: 'A',
+    I: 'I'
+} as const;
+
+export type FamForestClientStatusType = typeof FamForestClientStatusType[keyof typeof FamForestClientStatusType];
+
+
 

@@ -13,9 +13,29 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { FamForestClientStatusType } from './fam-forest-client-status-type';
 
-export * from './api/famaccess-control-privilege-api';
-export * from './api/famapplication-admin-api';
-export * from './api/famapplications-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface FamForestClientStatus
+ */
+export interface FamForestClientStatus {
+    /**
+     * 
+     * @type {FamForestClientStatusType}
+     * @memberof FamForestClientStatus
+     */
+    'status_code': FamForestClientStatusType;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamForestClientStatus
+     */
+    'description': string;
+}
+
+
 

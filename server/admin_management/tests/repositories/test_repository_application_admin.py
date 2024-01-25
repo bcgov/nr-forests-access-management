@@ -1,4 +1,6 @@
 import logging
+import pytest
+from sqlalchemy.exc import IntegrityError
 
 from api.app.repositories.application_admin_repository import ApplicationAdminRepository
 
@@ -6,6 +8,8 @@ from tests.constants import (
     TEST_APPLICATION_ADMIN_APPLICATION_ID,
     TEST_NEW_APPLICATION_ADMIN_USER_ID,
     TEST_CREATOR,
+    TEST_ANOTHER_CREATER,
+    ERROR_VOLIATE_UNIQUE_CONSTRAINT
 )
 
 
@@ -35,6 +39,15 @@ def test_create_application_admin_and_get(
         new_application_admin.application_admin_id
         == application_admin.application_admin_id
     )
+
+    # create duplicate application admin
+    with pytest.raises(IntegrityError) as e:
+        application_admin_repo.create_application_admin(
+            TEST_APPLICATION_ADMIN_APPLICATION_ID,
+            TEST_NEW_APPLICATION_ADMIN_USER_ID,
+            TEST_ANOTHER_CREATER,
+        )
+    assert str(e.value).find(ERROR_VOLIATE_UNIQUE_CONSTRAINT) != -1
 
 
 def test_get_application_admin_by_application_id(
