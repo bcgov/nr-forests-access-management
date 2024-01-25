@@ -7,7 +7,7 @@ import SideNav, {
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
-import { isApplicationSelected,selectedApplicationShortDisplayText, selectedApplication } from '@/store/ApplicationState';
+import { isApplicationSelected, selectedApplication } from '@/store/ApplicationState';
 
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
@@ -29,7 +29,7 @@ onMounted(() => {
     }
 });
 
-watch(selectedApplicationShortDisplayText, () => {
+watch(selectedApplication , () => {
     sideNavAddPermissionOption();
 });
 
