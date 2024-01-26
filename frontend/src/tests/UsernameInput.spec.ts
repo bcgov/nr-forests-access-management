@@ -7,7 +7,7 @@ import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
-import type { AxiosResponse } from 'axios';
+import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
 fixJsdomCssErr()
@@ -24,7 +24,9 @@ const userInputMock = (): AxiosResponse => {
         status: 200,
         statusText: 'Ok',
         headers: {},
-        config: {},
+        config: {
+            headers: {} as AxiosRequestHeaders
+        },
     }
 
 }
