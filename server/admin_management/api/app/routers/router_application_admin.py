@@ -8,7 +8,9 @@ from api.app.routers.router_guards import (authorize_by_fam_admin,
                                            get_current_requester,
                                            validate_param_application_admin_id,
                                            validate_param_application_id)
-from api.app.routers.router_utils import application_admin_service_instance
+from api.app.routers.router_utils import (application_admin_service_instance,
+                                          application_service_instance,
+                                          user_service_instance)
 from api.app.schemas import Requester
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
@@ -50,6 +52,9 @@ def create_application_admin(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    application_admin_service: ApplicationAdminService = Depends(application_admin_service_instance),
+    application_service: ApplicationService = Depends(application_service_instance),
+    user_service: UserService = Depends(user_service_instance)
 ):
 
     LOGGER.debug(
@@ -64,10 +69,6 @@ def create_application_admin(
     )
 
     try:
-        application_admin_service = ApplicationAdminService(db)
-        application_service = ApplicationService(db)
-        user_service = UserService(db)
-
         audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
             requester.cognito_user_id
         )
