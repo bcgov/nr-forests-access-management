@@ -1,22 +1,23 @@
 import logging
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
 from typing import List
 
-from api.app.models import model as models
-from api.app.routers.router_guards import (
-    get_current_requester,
-    authorize_by_application_role,
-    enforce_self_grant_guard,
-)
 from api.app import database, jwt_validation, schemas
+from api.app.models import model as models
+from api.app.routers.router_guards import (authorize_by_application_role,
+                                           enforce_self_grant_guard,
+                                           get_current_requester)
+from api.app.routers.router_utils import (
+    access_control_privilege_service_instance, role_service_instance,
+    user_service_instance)
 from api.app.schemas import Requester
-from api.app.services.access_control_privilege_service import (
-    AccessControlPrivilegeService,
-)
-from api.app.services.user_service import UserService
+from api.app.services.access_control_privilege_service import \
+    AccessControlPrivilegeService
 from api.app.services.role_service import RoleService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.services.user_service import UserService
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +41,9 @@ def create_access_control_privilege_many(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    user_service: UserService = Depends(user_service_instance),
+    role_service: UserService = Depends(role_service_instance),
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(access_control_privilege_service_instance),
 ):
     """
     If grant delegated admin access privilege to a concrete role, no need to provide the forest client number.
@@ -64,10 +68,6 @@ def create_access_control_privilege_many(
     )
 
     try:
-        access_control_privilege_service = AccessControlPrivilegeService(db)
-        user_service = UserService(db)
-        role_service = RoleService(db)
-
         audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
             requester.cognito_user_id
         )

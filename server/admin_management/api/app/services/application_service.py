@@ -12,7 +12,7 @@ class ApplicationService:
     def __init__(self, db: Session):
         self.application_repo = ApplicationRepository(db)
 
-    def get_applications(self) -> schemas.FamApplicationGet:
+    def get_applications(self) -> schemas.FamApplicationGetResponse:
         return self.application_repo.get_applications()
 
     def get_application(self, application_id: int):

@@ -1,7 +1,7 @@
-import { AppActlApiService, AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFactory';
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
+import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
 
 // --- Fetching data (from backend)
 
@@ -69,7 +69,7 @@ export const fetchApplicationRoles = async (
     return applicationRoles;
 };
 
-export const fetchApplicationAdmins = async (): Promise<FamAppAdminGet[]> => {
+export const fetchApplicationAdmins = async (): Promise<FamAppAdminGetResponse[]> => {
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
@@ -94,7 +94,7 @@ export const fetchApplicationAdmins = async (): Promise<FamAppAdminGet[]> => {
  */
 export const deleteAndRefreshApplicationAdmin = async (
     applicationAdminId: number,
-): Promise<FamAppAdminGet[]> => {
+): Promise<FamAppAdminGetResponse[]> => {
     await AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
         applicationAdminId
     );
