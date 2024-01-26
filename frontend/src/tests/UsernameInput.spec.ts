@@ -86,11 +86,9 @@ describe('UserNameInput', () => {
     });
 
     it('Should call and emit correct value', async () => {
-        let emitChange: unknown[][] | undefined;
-
         await usernameInputText.setValue(newValue);
-        emitChange = wrapper.emitted('change');
-        expect(wrapper.emitted('change')).toBeTruthy();
+        const emitChange = wrapper.emitted('change');
+        expect(emitChange).toBeTruthy();
         // test the given parameters when emitChange has been called
         // i.e. emitChange = [ [ 'B' ] ]
         expect(emitChange![0][0]).toEqual(newValue);
@@ -99,7 +97,7 @@ describe('UserNameInput', () => {
         await wrapper.setProps(newProps);
         await verifyButton.trigger('click');
 
-        expect(wrapper.emitted('setVerifyResult')).toBeTruthy();
+        expect(emitSetVerifyResult).toBeTruthy();
         expect(emitSetVerifyResult![1][0]).toEqual(true);
     });
 
@@ -138,7 +136,6 @@ describe('UserNameInput', () => {
 
     it('Should remove card and emit different value when domain changes', async () => {
         let cardUsernameEl: HTMLSpanElement;
-        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         // default props
         expect(wrapper.props()).toEqual(props);
 
