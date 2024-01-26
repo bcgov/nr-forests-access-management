@@ -135,7 +135,8 @@ class FamRoleCreateDto(FamRoleMinDto):
 class FamRoleWithClientDto(BaseModel):
     role_id: int
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    forest_client: Optional[FamForestClientDto] = None
+    role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
+    client_number: Optional[FamForestClientDto] = None
     parent_role: Optional[FamRoleMinDto] = None
 
     model_config = ConfigDict(from_attributes=True)
