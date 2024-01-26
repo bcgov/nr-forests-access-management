@@ -33,7 +33,6 @@ const userInputMock = (): AxiosResponse => {
 
 describe('UserNameInput', () => {
     let wrapper: VueWrapper;
-    let emitChange: unknown[][] | undefined;
     let emitSetVerifyResult: unknown[][] | undefined;
 
     let usernameInputText: DOMWrapper<HTMLElement>;
@@ -41,7 +40,6 @@ describe('UserNameInput', () => {
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
 
-    let cardUsernameEl: HTMLSpanElement;
     let verifiedUserIdentity
 
     const props = {
@@ -92,6 +90,8 @@ describe('UserNameInput', () => {
     });
 
     it('Should call and emit correct value' , async () => {
+        let emitChange: unknown[][] | undefined;
+
         await usernameInputText.setValue(newValue);
         emitChange = wrapper.emitted('change');
         expect(wrapper.emitted('change')).toBeTruthy();
@@ -141,6 +141,7 @@ describe('UserNameInput', () => {
     });
 
     it('Should remove card and emit different value when domain changes', async () => {
+        let cardUsernameEl: HTMLSpanElement;
         emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         // default props
         expect(wrapper.props()).toEqual(props);
