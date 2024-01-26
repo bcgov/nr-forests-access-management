@@ -20,7 +20,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
     # test invalid user type
     with pytest.raises(ValidationError) as e:
         application_admin_service.create_application_admin(
-            schemas.FamAppAdminCreate(
+            schemas.FamAppAdminCreateRequest(
                 **{
                     "user_type_code": TEST_INVALID_USER_TYPE,
                     "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
@@ -33,7 +33,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
 
     # test create application admin
     new_application_admin = application_admin_service.create_application_admin(
-        schemas.FamAppAdminCreate(**TEST_NEW_APPLICATION_ADMIN),
+        schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
         TEST_CREATOR,
     )
     assert new_application_admin.application_id == TEST_NEW_APPLICATION_ADMIN.get(
@@ -53,7 +53,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
     # test create duplication application admin
     with pytest.raises(HTTPException) as e:
         application_admin_service.create_application_admin(
-            schemas.FamAppAdminCreate(**TEST_NEW_APPLICATION_ADMIN),
+            schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
             TEST_CREATOR,
         )
     assert str(e._excinfo).find("User is admin already") != -1

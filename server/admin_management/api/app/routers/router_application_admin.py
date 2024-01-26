@@ -25,7 +25,7 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=List[schemas.FamAppAdminGet],
+    response_model=List[schemas.FamAppAdminGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )
@@ -37,7 +37,7 @@ async def get_application_admins(
 
 @router.post(
     "",
-    response_model=schemas.FamAppAdminGet,
+    response_model=schemas.FamAppAdminGetResponse,
     dependencies=[
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),
@@ -45,7 +45,7 @@ async def get_application_admins(
     ],
 )
 def create_application_admin(
-    application_admin_request: schemas.FamAppAdminCreate,
+    application_admin_request: schemas.FamAppAdminCreateRequest,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
@@ -151,7 +151,7 @@ def delete_application_admin(
 
 @router.get(
     "/{application_id}/admins",
-    response_model=List[schemas.FamAppAdminGet],
+    response_model=List[schemas.FamAppAdminGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )

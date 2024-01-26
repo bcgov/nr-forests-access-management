@@ -43,7 +43,7 @@ class FamApplicationBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamApplicationGet(FamApplicationBase):
+class FamApplicationGetResponse(FamApplicationBase):
     application_id: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -57,13 +57,13 @@ class FamUserBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamUserCreate(FamUserBase):
+class FamUserDto(FamUserBase):
     create_user: Annotated[str, StringConstraints(max_length=60)]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamUserType(BaseModel):
+class FamUserTypeDto(BaseModel):
     user_type_code: famConstants.UserType = Field(alias="code")
     description: Annotated[str, StringConstraints(max_length=35)]
 
@@ -71,14 +71,14 @@ class FamUserType(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-class FamUserInfo(FamUserBase):
-    user_type_relation: FamUserType = Field(alias="user_type")
+class FamUserInfoDto(FamUserBase):
+    user_type_relation: FamUserTypeDto = Field(alias="user_type")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 # ----------------------------------- FAM Forest Client ------------------------------------ #
-class FamForestClientCreate(BaseModel):
+class FamForestClientCreateDto(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
     create_user: Annotated[str, StringConstraints(max_length=60)]
@@ -86,23 +86,23 @@ class FamForestClientCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamForestClientStatus(BaseModel):
+class FamForestClientStatusDto(BaseModel):
     status_code: famConstants.FamForestClientStatusType
     description: Annotated[str, StringConstraints(max_length=10)]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamForestClient(BaseModel):
+class FamForestClientDto(BaseModel):
     client_name: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
-    status: Optional[FamForestClientStatus] = None
+    status: Optional[FamForestClientStatusDto] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 # ------------------------------------- FAM Role ------------------------------------------- #
-class FamRoleMin(BaseModel):
+class FamRoleMinDto(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     role_type_code: famConstants.RoleType
     application_id: int = Field(title="Application this role is associated with")
@@ -110,7 +110,7 @@ class FamRoleMin(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleCreate(FamRoleMin):
+class FamRoleCreateDto(FamRoleMinDto):
     role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
@@ -119,23 +119,23 @@ class FamRoleCreate(FamRoleMin):
         Annotated[str, StringConstraints(max_length=8)]
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=60)]
-    client_number: Optional[FamForestClientCreate] = None  # this is matched with the model
+    client_number: Optional[FamForestClientCreateDto] = None  # this is matched with the model
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleWithClient(BaseModel):
+class FamRoleWithClientDto(BaseModel):
     role_id: int
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    forest_client: Optional[FamForestClient] = None
-    parent_role: Optional[FamRoleMin] = None
+    forest_client: Optional[FamForestClientDto] = None
+    parent_role: Optional[FamRoleMinDto] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 # -------------------------------- FAM Application Admin ----------------------------------- #
 # Application Admin assignment with one application at a time for the user.
-class FamAppAdminCreate(BaseModel):
+class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_type_code: famConstants.UserType
     application_id: int
@@ -143,11 +143,11 @@ class FamAppAdminCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamAppAdminGet(BaseModel):
+class FamAppAdminGetResponse(BaseModel):
     application_admin_id: int
     user_id: int
     application_id: int
-    user: FamUserInfo
+    user: FamUserInfoDto
     application: FamApplicationBase
 
     model_config = ConfigDict(from_attributes=True)
@@ -185,19 +185,19 @@ class FamAccessControlPrivilegeCreateDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamAccessControlPrivilegeGet(BaseModel):
+class FamAccessControlPrivilegeDto(BaseModel):
     access_control_privilege_id: int
     user_id: int
     role_id: int
-    user: FamUserInfo
-    role: FamRoleWithClient
+    user: FamUserInfoDto
+    role: FamRoleWithClientDto
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class FamAccessControlPrivilegeCreateResponse(BaseModel):
     status_code: int
-    detail: FamAccessControlPrivilegeGet
+    detail: FamAccessControlPrivilegeDto
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

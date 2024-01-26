@@ -16,7 +16,7 @@ TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
 TEST_USER_NAME = "TEST_USER"
 
-TEST_NEW_USER = schemas.FamUserCreate(
+TEST_NEW_USER = schemas.FamUserDto(
     **{
         "user_type_code": famConstants.UserType.IDIR,
         "user_name": TEST_USER_NAME,
@@ -44,7 +44,7 @@ TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
 TEST_INVALID_FOREST_CLIENT_NUMBER = "12345"
 TEST_FOREST_CLIENT_NUMBER = "00000010"
 TEST_FOREST_CLIENT_NUMBER_TWO = "00000001"
-TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreate(
+TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreateDto(
     **{
         "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
         "create_user": TEST_CREATOR,
@@ -74,7 +74,7 @@ TEST_ROLE_CREATE_ABSTRACT = {
     "role_name": TEST_NEW_ROLE_TWO,
     "role_type_code": famConstants.RoleType.ROLE_TYPE_ABSTRACT,
 }  # this is used for repository level test
-TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreate(
+TEST_ROLE_CREATE_CHILD = schemas.FamRoleCreateDto(
     **{
         "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
         "application_id": TEST_APPLICATION_ID_FOM_DEV,

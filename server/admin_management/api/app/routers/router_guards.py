@@ -15,7 +15,7 @@ from api.app.jwt_validation import (
 from api.app.schemas import (
     Requester,
     TargetUser,
-    FamAppAdminCreate,
+    FamAppAdminCreateRequest,
 )
 from api.app.constants import AdminRoleAuthGroup
 from api.app.models.model import FamUser, FamRole
@@ -257,7 +257,7 @@ async def validate_param_application_admin_id(
 
 
 async def validate_param_application_id(
-    application_admin_request: FamAppAdminCreate, db: Session = Depends(database.get_db)
+    application_admin_request: FamAppAdminCreateRequest, db: Session = Depends(database.get_db)
 ):
     application_service = ApplicationService(db)
     application = application_service.get_application(

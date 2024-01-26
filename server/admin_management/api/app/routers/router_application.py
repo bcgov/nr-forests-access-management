@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=List[schemas.FamApplicationGet],
+    response_model=List[schemas.FamApplicationGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )

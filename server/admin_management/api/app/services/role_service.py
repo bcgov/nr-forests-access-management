@@ -2,7 +2,7 @@ import logging
 from sqlalchemy.orm import Session
 
 from api.app import constants as famConstants
-from api.app.schemas import FamRoleCreate
+from api.app.schemas import FamRoleCreateDto
 from api.app.models.model import FamRole
 from api.app.repositories.role_repository import RoleRepository
 from api.app.services.forest_client_service import ForestClientService
@@ -38,7 +38,7 @@ class RoleService:
 
         if not child_role:
             child_role = self.create_role(
-                FamRoleCreate(
+                FamRoleCreateDto(
                     **{
                         "parent_role_id": parent_role.role_id,
                         "application_id": parent_role.application_id,
@@ -59,7 +59,7 @@ class RoleService:
             )
         return child_role
 
-    def create_role(self, role: FamRoleCreate) -> FamRole:
+    def create_role(self, role: FamRoleCreateDto) -> FamRole:
         LOGGER.debug(f"Creating Fam role: {role}")
 
         fam_role_dict = role.model_dump()

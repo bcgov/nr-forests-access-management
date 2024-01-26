@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app.schemas import FamUserCreate
+from api.app.schemas import FamUserDto
 from api.app.repositories.user_repository import UserRepository
 
 
@@ -29,7 +29,7 @@ class UserService:
 
         fam_user = self.get_user_by_domain_and_name(user_type_code, user_name)
         if not fam_user:
-            request_user = FamUserCreate(
+            request_user = FamUserDto(
                 **{
                     "user_type_code": user_type_code,
                     "user_name": user_name,
