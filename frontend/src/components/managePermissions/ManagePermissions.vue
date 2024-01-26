@@ -21,7 +21,7 @@ import {
 } from '@/store/NotificationState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
+import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
@@ -37,7 +37,7 @@ const props = defineProps({
         default: [],
     },
     applicationAdmins: {
-        type: Array as PropType<FamAppAdminGet[]>,
+        type: Array as PropType<FamAppAdminGetResponse[]>,
         default: [],
     },
 });
@@ -47,7 +47,7 @@ const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
 );
 
 const applicationAdmins = shallowRef<
-    FamAppAdminGet[]
+    FamAppAdminGetResponse[]
 >(props.applicationAdmins);
 
 onUnmounted(() => {
@@ -86,7 +86,7 @@ const deleteUserRoleAssignment = async (
     }
 }
 
-const deleteAppAdmin = async (admin: FamAppAdminGet) => {
+const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id,

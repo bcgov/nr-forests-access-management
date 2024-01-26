@@ -11,11 +11,11 @@ import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import type { FamAppAdminGet } from 'fam-admin-mgmt-api/model';
+import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (
     e: 'deleteAppAdmin',
-    item: FamAppAdminGet
+    item: FamAppAdminGetResponse
 ) => void;
 
 const props = defineProps({
@@ -25,7 +25,7 @@ const props = defineProps({
     },
     applicationAdmins: {
         type: [Array] as PropType<
-            FamAppAdminGet[] | undefined
+            FamAppAdminGetResponse[] | undefined
         >,
         required: true,
     }
@@ -62,7 +62,7 @@ const adminSearchChange = (newvalue: string) => {
     adminFilters.value.global.value = newvalue;
 };
 
-const deleteAdmin = (admin: FamAppAdminGet) => {
+const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     confirmDeleteData.adminName = admin.user.user_name;
     confirm.require({
         group: 'deleteAdmin',
