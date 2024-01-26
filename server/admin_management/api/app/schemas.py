@@ -7,6 +7,14 @@ from typing_extensions import Annotated
 
 LOGGER = logging.getLogger(__name__)
 
+# This schema file uses the following convention on sechema objects:
+# - If the object is used for router's request/response BODY, then the class name would be:
+#      [SomeClassName]Request or [SomeClassName]Response
+# - If the object does not involve with router's request/response BODY, then the class name would be:
+#      [SomeClassName]Dto (DTO object, some cases naming as "CreateDto" but not necessarily)
+# - Exception (some cases are flexible):
+#   Requester, TargetUser and some "Base" class, such as "FamApplicationBase"
+
 
 # -------------------------------------- Requester --------------------------------------- #
 # Schema classes Requester and TargetUser are for backend system used and
