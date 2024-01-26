@@ -1,6 +1,5 @@
 import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
 import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
@@ -10,26 +9,24 @@ import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixJsdomCssErr()
-
+fixJsdomCssErr();
 
 const userInputMock = (): AxiosResponse => {
     return {
         data: {
-            firstName: "Name",
+            firstName: 'Name',
             found: true,
-            lastName: "LastName",
-            userId: 'userId'
+            lastName: 'LastName',
+            userId: 'userId',
         },
         status: 200,
         statusText: 'Ok',
         headers: {},
         config: {
-            headers: {} as AxiosRequestHeaders
+            headers: {} as AxiosRequestHeaders,
         },
-    }
-
-}
+    };
+};
 
 describe('UserNameInput', () => {
     let wrapper: VueWrapper;
@@ -40,13 +37,13 @@ describe('UserNameInput', () => {
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
 
-    let verifiedUserIdentity
+    let verifiedUserIdentity;
 
     const props = {
         domain: UserType.I,
         userId: '',
         fieldId: 'userId',
-    }
+    };
 
     const newProps = {
         domain: UserType.B,
@@ -59,9 +56,6 @@ describe('UserNameInput', () => {
     beforeEach(async () => {
         wrapper = mount(UserNameInput, {
             props,
-            global: {
-                plugins: [PrimeVue],
-            },
         });
 
         usernameInputText = wrapper.find('#userIdInput');
@@ -84,12 +78,12 @@ describe('UserNameInput', () => {
         //default props
         expect(wrapper.props()).toEqual(props);
 
-         await wrapper.setProps(newProps);
-         expect(wrapper.props()).toEqual(newProps);
-         expect(wrapper.props()).not.toEqual(props)
+        await wrapper.setProps(newProps);
+        expect(wrapper.props()).toEqual(newProps);
+        expect(wrapper.props()).not.toEqual(props);
     });
 
-    it('Should call and emit correct value' , async () => {
+    it('Should call and emit correct value', async () => {
         let emitChange: unknown[][] | undefined;
 
         await usernameInputText.setValue(newValue);
@@ -99,7 +93,7 @@ describe('UserNameInput', () => {
         // i.e. emitChange = [ [ 'B' ] ]
         expect(emitChange![0][0]).toEqual(newValue);
 
-        emitSetVerifyResult = wrapper.emitted('setVerifyResult')
+        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         await wrapper.setProps(newProps);
         await verifyButton.trigger('click');
 
@@ -109,19 +103,19 @@ describe('UserNameInput', () => {
 
     it('Should enable verify btn when username is inputted', async () => {
         // button starts as disabled
-        expect((verifyButtonEl).disabled).toBe(true)
+        expect(verifyButtonEl.disabled).toBe(true);
         expect(verifyButton.classes('p-disabled')).toBe(true);
 
-        await wrapper.setProps({userId: newProps.userId })
+        await wrapper.setProps({ userId: newProps.userId });
 
-        expect((verifyButtonEl).disabled).toBe(false)
+        expect(verifyButtonEl.disabled).toBe(false);
         expect(verifyButton.classes('p-disabled')).toBe(false);
     });
 
-    it('Should show loading on the verify btn while we call the api' , async () => {
+    it('Should show loading on the verify btn while we call the api', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
-            'idirSearch',
+            'idirSearch'
         ).mockImplementation(async () => {
             setLoadingState(true);
             return userInputMock();
@@ -137,7 +131,7 @@ describe('UserNameInput', () => {
 
         // cleanup state variable
         setLoadingState(false);
-        expect(isLoading()).toBe(false)
+        expect(isLoading()).toBe(false);
     });
 
     it('Should remove card and emit different value when domain changes', async () => {
@@ -153,8 +147,10 @@ describe('UserNameInput', () => {
         await verifyButton.trigger('click');
         await flushPromises();
 
-        verifiedUserIdentity = wrapper.findComponent({ name: 'UserIdentityCard'}).vm;
-        verifiedUserIdentity = userInputMock().data
+        verifiedUserIdentity = wrapper.findComponent({
+            name: 'UserIdentityCard',
+        }).vm;
+        verifiedUserIdentity = userInputMock().data;
         cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
         expect(cardUsernameEl).toBeTruthy();
         expect(cardUsernameEl.textContent).toContain('userId');
@@ -171,4 +167,4 @@ describe('UserNameInput', () => {
         //UserIdentityCard not em page anymore
         expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
     });
-})
+});
