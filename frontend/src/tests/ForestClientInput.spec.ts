@@ -17,9 +17,9 @@ import {
 } from './common/ForestClientData';
 import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
-import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixPrimevueCssError()
+fixJsdomCssErr()
 
 const forestClientsApiSearchMock = (forestClientNumber: string): AxiosResponse => {
     return {

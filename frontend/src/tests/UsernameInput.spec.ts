@@ -8,9 +8,9 @@ import { isLoading, setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosResponse } from 'axios';
-import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixPrimevueCssError()
+fixJsdomCssErr()
 
 
 const userInputMock = (): AxiosResponse => {

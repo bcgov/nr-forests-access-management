@@ -16,9 +16,9 @@ import {
     TEST_SUCCESS_FOREST_CLIENT_NUMBER_3,
 } from './common/ForestClientData';
 import type { FamForestClient } from 'fam-app-acsctl-api';
-import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixPrimevueCssError()
+fixJsdomCssErr()
 
 const testActiveClient: FamForestClient[] = [
     {

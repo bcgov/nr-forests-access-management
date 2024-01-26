@@ -4,9 +4,9 @@ import PrimeVue from 'primevue/config';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
-import { fixPrimevueCssError } from '@/tests/common/fixPrimevueCssErr';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixPrimevueCssError()
+fixJsdomCssErr()
 
 describe('UserIdentityCard', () => {
     let wrapper: VueWrapper;
