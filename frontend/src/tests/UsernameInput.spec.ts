@@ -70,11 +70,13 @@ describe('UserNameInput', () => {
     });
 
     it('Should change usernameInput value', async () => {
+        expect(usernameInputTextEl.value).toBe('');
         await usernameInputText.setValue(newValue);
         expect(usernameInputTextEl.value).toBe(newValue);
     });
 
     it('Should receive the correct prop', async () => {
+
         //default props
         expect(wrapper.props()).toEqual(props);
 
@@ -164,7 +166,7 @@ describe('UserNameInput', () => {
         // for BCeID should emit true
         expect(wrapper.emitted().setVerifyResult[1][0]).toEqual(true);
 
-        //UserIdentityCard not em page anymore
+        //UserIdentityCard not on page anymore
         expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
     });
 });
