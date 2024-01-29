@@ -28,6 +28,7 @@ class Requester(BaseModel):
 
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
+    user_id: Optional[int] = None
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
