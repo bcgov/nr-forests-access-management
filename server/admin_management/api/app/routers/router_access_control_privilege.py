@@ -12,7 +12,6 @@ from api.app.routers.router_utils import (
 from api.app.schemas import Requester
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
-from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)

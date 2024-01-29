@@ -1,18 +1,14 @@
 import logging.config
 import os.path
-from mangum import Mangum
+
+from api.app.routers import (router_access_control_privilege,
+                             router_application, router_application_admin,
+                             router_fam_admin_user_access, router_smoke_test)
+from api.config.config import get_allow_origins, get_root_path
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from starlette.responses import RedirectResponse
-
-from api.config.config import get_allow_origins, get_root_path
-from api.app.routers import (
-    router_smoke_test,
-    router_application,
-    router_application_admin,
-    router_access_control_privilege,
-)
-
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -83,6 +79,11 @@ app.include_router(
     router_access_control_privilege.router,
     prefix=apiPrefix + "/access_control_privileges",
     tags=["FAM Access Control Privilege"],
+)
+app.include_router(
+    router_fam_admin_user_access.router,
+    prefix=apiPrefix + "/fam-admin-user-access",
+    tags=["FAM Admin User Access"],
 )
 
 
