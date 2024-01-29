@@ -121,8 +121,8 @@ describe('UserNameInput', () => {
             return userInputMock();
         });
 
-        await usernameInputText.setValue(newValue);
-        expect(usernameInputTextEl.value).toBe(newValue);
+        setLoadingState(false);
+        expect(verifyButtonEl.textContent).not.toContain('Loading');
 
         await wrapper.setProps({ userId: newProps.userId });
         await verifyButton.trigger('click');
