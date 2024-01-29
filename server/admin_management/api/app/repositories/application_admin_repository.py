@@ -1,7 +1,8 @@
 import logging
 from typing import List
 
-from api.app.models.model import FamApplicationAdmin
+from api.app.constants import UserType
+from api.app.models.model import FamApplication, FamApplicationAdmin, FamUser
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -74,3 +75,26 @@ class ApplicationAdminRepository:
         )
         self.db.delete(record)
         self.db.flush()
+
+    def get_user_app_admin_grants(self, user_id: int) -> List[FamApplication]:
+        """
+        Find out from `app_fam.fam_application_admin` the applications
+            being granted for the user; including "FAM" application.
+
+        Filter on: Only 'IDIR' type user can be an Application Admin.
+
+        :param user_id: primary id that is associated with the user.
+        :return: List of "applications" granted for the user or None.
+        """
+        return (
+            self.db.query(FamApplication)
+                .select_from(FamApplicationAdmin)
+                .join(FamApplicationAdmin.application)
+                .join(FamApplicationAdmin.user)
+                .filter(
+                    FamApplicationAdmin.user_id == user_id,
+                    FamUser.user_type_code == UserType.IDIR)
+                .order_by(FamApplication.application_id)
+                .all()
+        )
+
