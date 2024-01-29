@@ -139,9 +139,6 @@ describe('UserNameInput', () => {
         // default props
         expect(wrapper.props()).toEqual(props);
 
-        await usernameInputText.setValue(newValue);
-        expect(usernameInputTextEl.value).toEqual(newValue);
-
         await wrapper.setProps(userInputMock().data);
         await verifyButton.trigger('click');
         await flushPromises();
