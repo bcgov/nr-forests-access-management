@@ -24,7 +24,7 @@ const props = defineProps({
 const emit = defineEmits(['onApplicationSelected']);
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
-    emit('onApplicationSelected', e.value);
+    emit('onApplicationSelected', e);
 };
 </script>
 <template>

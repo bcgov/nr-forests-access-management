@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, shallowRef, type PropType } from 'vue';
+import type { DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
@@ -112,7 +113,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
     <div class="page-body">
         <div class="application-group">
-            <!-- <label>You are modifying access in this application:</label>
+            <!--<label>You are modifying access in this application:</label>
             <Dropdown
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
