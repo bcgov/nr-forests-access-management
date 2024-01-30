@@ -108,7 +108,7 @@ def create_access_control_privilege_many(
 
 
 @router.get(
-    "/{application_id}",
+    "/{application_id}/access_control_privileges",
     response_model=List[schemas.FamAccessControlPrivilegeDto],
     dependencies=[Depends(authorize_by_app_id)],  # only app admin can do this
     description="Get Delegated Admin Privileges For an Application",
