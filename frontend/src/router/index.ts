@@ -97,12 +97,6 @@ const routes = [
         },
         component: GrantApplicationAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
-        props: (route: any) => {
-            return {
-                // options is ready for the `component` as props.
-                applicationRoleOptions: route.meta.applicationRoleOptions,
-            };
-        },
     },
     {
         path: '/authCallback',

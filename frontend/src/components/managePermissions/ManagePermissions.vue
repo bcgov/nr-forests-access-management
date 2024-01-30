@@ -6,6 +6,7 @@ import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
+import ApplicationSelect from '@/components/common/form/ApplicationSelect.vue';
 
 import {
     applicationsUserAdministers,
@@ -19,7 +20,10 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
+
 import { FAM_APPLICATION_ID } from '@/store/Constants';
+import { Severity } from '@/enum/SeverityEnum';
+import { IconSize } from '@/enum/IconEnum';
 import type {
     FamApplication,
     FamApplicationUserRoleAssignmentGet,
@@ -31,8 +35,6 @@ import {
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
 } from '@/services/fetchData';
-import { Severity } from '@/enum/SeverityEnum';
-import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -113,15 +115,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
     <div class="page-body">
         <div class="application-group">
-            <!--<label>You are modifying access in this application:</label>
-            <Dropdown
-                v-model="selectedApplication"
-                @change="onApplicationSelected"
-                :options="applicationsUserAdministers"
-                optionLabel="application_description"
-                placeholder="Choose an application to manage permissions"
-                class="application-dropdown"
-            /> -->
             <ApplicationSelect
                 :model="(selectedApplication as FamApplication)"
                 :options="applicationsUserAdministers"

@@ -36,7 +36,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    if(selectedApplicationId.value === FAM_APPLICATION_ID) {
+    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
         userRolesFetchResult = await asyncWrap(
@@ -75,10 +75,6 @@ const beforeEnterGrantApplicationAdminRoute = async (
     to: RouteLocationNormalized
 ) => {
     populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
-    const appRolesFetchResult = await asyncWrap(fetchApplications());
-    // Object.assign(to.meta, {
-    //     applicationRoleOptions: appRolesFetchResult.data,
-    // });
     return true;
 }
 

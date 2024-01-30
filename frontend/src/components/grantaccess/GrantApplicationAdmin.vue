@@ -1,21 +1,19 @@
-git s<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { number, object, string } from 'yup';
-import type { FamApplication } from 'fam-app-acsctl-api';
-import ApplicationSelect from '@/components/grantaccess/form/ApplicationSelect.vue';
+import { object, string } from 'yup';
+import router from '@/router';
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { UserType, type FamApplication } from 'fam-app-acsctl-api';
+import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
+import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
+import ApplicationSelect from '@/components/common/form/ApplicationSelect.vue';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { Severity } from '@/enum/SeverityEnum';
 
 import { isLoading } from '@/store/LoadingState';
-
-import {
-    applicationsUserAdministers,
-    selectedApplication,
-    setSelectedApplication,
-} from '@/store/ApplicationState';
-import router from '@/router';
-import { fetchUserRoleAssignments } from '@/services/fetchData';
+import { setNotificationMsg } from '@/store/NotificationState';
 
 const defaultFormData = {
     userId: '',
@@ -27,9 +25,18 @@ const formValidationSchema = object({
         .required('User ID is required')
         .min(2, 'User ID must be at least 2 characters')
         .nullable(),
-    application: number().required('Application is required'),
+    application: object().required('Application is required'),
 });
-onMounted(() => {});
+
+const selectedApplication = ref<FamApplication>();
+const applications = ref<FamApplicationGetResponse[]>(); // clone default input
+
+onMounted(async () => {
+    applications.value = (
+        await AdminMgmtApiService.applicationsApi.getApplications()
+    ).data;
+});
+
 /* ------------------ User information method ------------------------- */
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
@@ -45,65 +52,54 @@ const cancelForm = () => {
     router.push('/dashboard');
 };
 
-/*
-Two verifications are currently in place: userId and application.
-*/
-const areVerificationsPassed = () => {
-    // return (
-    //     // userId verification
-    //     verifyUserIdPassed.value &&
-    //     // forestClientNumber verification
-    //     (!isAbstractRoleSelected() ||
-    //         (isAbstractRoleSelected() &&
-    //             formData.value.verifiedForestClients.length > 0))
-    // );
-    return true;
+const toRequestPayload = (formData: any) => {
+    const request = {
+        user_name: formData.userId,
+        application_id: formData.application.application_id,
+        user_type_code: UserType.I,
+    } as FamAppAdminCreateRequest;
+    return request;
 };
 
 const handleSubmit = async () => {
-    // const successForestClientIdList: string[] = [];
-    // const warningForestClientIdList: string[] = [];
-
-    // // msg override the default error notification message
-    // const errorNotification = {
-    //     msg: '',
-    //     errorForestClientIdList: [] as string[],
-    // };
-    // do {
-    //     const forestClientNumber = formData.value.verifiedForestClients.pop();
-    //     const data = toRequestPayload(formData.value, forestClientNumber);
-    //     await AppActlApiService.userRoleAssignmentApi
-    //         .createUserRoleAssignment(data)
-    //         .then(() => {
-    //             successForestClientIdList.push(forestClientNumber || '');
-    //         })
-    //         .catch((error) => {
-    //             if (error.response?.status === 409) {
-    //                 warningForestClientIdList.push(forestClientNumber || '');
-    //             } else if (
-    //                 error.response.data.detail.code === 'self_grant_prohibited'
-    //             ) {
-    //                 errorNotification.msg =
-    //                     'Granting roles to self is not allowed.';
-    //             } else {
-    //                 errorNotification.errorForestClientIdList.push(
-    //                     forestClientNumber || ''
-    //                 );
-    //             }
-    //         });
-    // } while (formData.value.verifiedForestClients.length > 0);
-
-    // composeAndPushNotificationMessages(
-    //     successForestClientIdList,
-    //     warningForestClientIdList,
-    //     errorNotification
-    // );
-
-    router.push('/dashboard');
+    const data = toRequestPayload(formData.value);
+    await AdminMgmtApiService.applicationAdminApi
+        .createApplicationAdmin(data)
+        .then(() => {
+            setNotificationMsg(
+                Severity.success,
+                `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
+                    formData.value.application.application_name
+                }`
+            );
+        })
+        .catch((error) => {
+            if (error.response?.status === 409) {
+                setNotificationMsg(
+                    Severity.warning,
+                    error.response.data.detail
+                );
+            } else if (
+                error.response.data.detail.code === 'self_grant_prohibited'
+            ) {
+                setNotificationMsg(
+                    Severity.error,
+                    'Granting admin privilege to self is not allowed.'
+                );
+            } else {
+                setNotificationMsg(
+                    Severity.success,
+                    `An error has occured. ${error.response.data.detail.description}`
+                );
+            }
+        })
+        .finally(() => {
+            router.push('/dashboard');
+        });
 };
 
 const onApplicationSelected = async (e: any) => {
-    setSelectedApplication(e ? JSON.stringify(e) : null);
+    formData.value.application = e.value;
 };
 </script>
 <template>
@@ -132,7 +128,7 @@ const onApplicationSelected = async (e: any) => {
                     />
                 </StepContainer>
                 <StepContainer
-                    title="Add application "
+                    title="Add application"
                     subtitle="Select an application this user will be able to manage"
                     :divider="false"
                 >
@@ -143,7 +139,7 @@ const onApplicationSelected = async (e: any) => {
                     >
                         <ApplicationSelect
                             :model="(selectedApplication as FamApplication)"
-                            :options="applicationsUserAdministers"
+                            :options="(applications as FamApplication[])"
                             @onApplicationSelected="
                                 onApplicationSelected($event)
                             "
@@ -172,7 +168,7 @@ const onApplicationSelected = async (e: any) => {
                         class="w100"
                         label="Submit Application"
                         :disabled="
-                            !(meta.valid && areVerificationsPassed()) ||
+                            !(meta.valid && verifyUserIdPassed) ||
                             isLoading()
                         "
                         @click="handleSubmit()"
