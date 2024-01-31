@@ -11,21 +11,36 @@ import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
 fixJsdomCssErr();
 
-const userInputMock = (): AxiosResponse => {
-    return {
-        data: {
-            firstName: 'Name',
-            found: true,
-            lastName: 'LastName',
-            userId: 'userId',
-        },
-        status: 200,
-        statusText: 'Ok',
-        headers: {},
-        config: {
-            headers: {} as AxiosRequestHeaders,
-        },
-    };
+const userInputMock = (isUserFound: boolean): AxiosResponse => {
+    if (isUserFound) {
+        return {
+            data: {
+                firstName: 'Name',
+                found: true,
+                lastName: 'LastName',
+                userId: 'userId',
+            },
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {
+                headers: {} as AxiosRequestHeaders,
+            },
+        };
+    } else {
+        return {
+            data: {
+                found: false,
+                userId: 'userId',
+            },
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {
+                headers: {} as AxiosRequestHeaders,
+            },
+        };
+    }
 };
 
 describe('UserNameInput', () => {
@@ -36,8 +51,7 @@ describe('UserNameInput', () => {
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
-
-    let verifiedUserIdentity;
+    let userIdentity;
 
     const props = {
         domain: UserType.I,
@@ -76,7 +90,6 @@ describe('UserNameInput', () => {
     });
 
     it('Should receive the correct prop', async () => {
-
         //default props
         expect(wrapper.props()).toEqual(props);
 
@@ -118,7 +131,7 @@ describe('UserNameInput', () => {
             'idirSearch'
         ).mockImplementation(async () => {
             setLoadingState(true);
-            return userInputMock();
+            return userInputMock(true);
         });
 
         setLoadingState(false);
@@ -134,19 +147,36 @@ describe('UserNameInput', () => {
         expect(isLoading()).toBe(false);
     });
 
+    it('Should show not found on card when user is not verified', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'idirSearch'
+        ).mockImplementation(async () => {
+            return userInputMock(false);
+        });
+
+        await wrapper.setProps({ userId: newProps.userId });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        userIdentity = wrapper.findComponent({
+            name: 'UserIdentityCard',
+        }).vm;
+
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(cardEl).toBeTruthy();
+        expect(cardEl.textContent).toContain('User does not exist');
+    });
+
     it('Should remove card and emit different value when domain changes', async () => {
         let cardUsernameEl: HTMLSpanElement;
         // default props
         expect(wrapper.props()).toEqual(props);
 
-        await wrapper.setProps(userInputMock().data);
+        await wrapper.setProps(userInputMock(true).data);
         await verifyButton.trigger('click');
         await flushPromises();
 
-        verifiedUserIdentity = wrapper.findComponent({
-            name: 'UserIdentityCard',
-        }).vm;
-        verifiedUserIdentity = userInputMock().data;
         cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
         expect(cardUsernameEl).toBeTruthy();
         expect(cardUsernameEl.textContent).toContain('userId');
@@ -155,10 +185,8 @@ describe('UserNameInput', () => {
             domain: UserType.B,
         });
 
-        expect(wrapper.emitted()).toHaveProperty('setVerifyResult');
-
         // for BCeID should emit true
-        expect(wrapper.emitted().setVerifyResult[1][0]).toEqual(true);
+        expect(emitSetVerifyResult![1][0]).toEqual(true);
 
         //UserIdentityCard not on page anymore
         expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);

@@ -1,6 +1,5 @@
 import { it, describe, beforeEach, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
@@ -29,17 +28,12 @@ describe('UserIdentityCard', () => {
         userIdentity: {
             userId: 'userId',
             found: false,
-            firstName: null,
-            lastName: null,
         },
     };
 
     beforeEach(async () => {
         wrapper = mount(UserIdentityCard, {
-            props,
-            global: {
-                plugins: [PrimeVue],
-            },
+            props
         });
 
         card = wrapper.find('.custom-card');
