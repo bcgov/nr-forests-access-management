@@ -90,7 +90,7 @@ const routes = [
         name: routeItems.grantAppAdmin.name,
         meta: {
             requiresAuth: true,
-            requiresAppSelected: false,
+            requiresAppSelected: true,
             title: routeItems.grantAppAdmin.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
