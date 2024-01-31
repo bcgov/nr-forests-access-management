@@ -44,8 +44,7 @@ class FamAdminUserAccessService:
 
         # FamRole(s) granted for user as DELEGATED_ADMIN
         user_delegated_admin_privilege = self.access_control_privilege_repo \
-            .get_user_delegated_admin_grants(8)
-        # .get_user_delegated_admin_grants(user_id)
+            .get_user_delegated_admin_grants(user_id)
 
         user_access_grants = []
         is_user_fam_admin = len(list(filter(
@@ -109,17 +108,34 @@ class FamAdminUserAccessService:
     ):
         delegated_admin_grants_details = []
         app_grouped_granted_roles = \
-            itertools.groupby(
-                granted_roles,
-                lambda x: x.application_id)
+            itertools.groupby(granted_roles, lambda x: x.application_id)
+
         for _key, group in app_grouped_granted_roles:
             fam_roles = list(group)
             fam_application = fam_roles[0].application
-            # TODO: group fam_roles for forest_client with the same parent_role_id
+
+            roles_details = []
+            parent_id_grouped_roles = itertools.groupby(fam_roles, lambda x: x.parent_role_id)
+            for key, group in parent_id_grouped_roles:
+                if (key is None):  # Abstract role case.
+                    roles_details.extend(list(
+                        map(lambda fam_role: FamRoleDto(**fam_role.__dict__),
+                            group)))
+
+                else:  # Concrete role case.
+                    child_roles_group = list(group)
+                    parent_role = child_roles_group[0].parent_role
+                    # role_dto is an abstract role with child roles of forest_clients associated.
+                    role_dto = FamRoleDto(**parent_role.__dict__)
+                    forest_client_numbers = list(
+                        map(lambda fam_role: fam_role.client_number.forest_client_number,
+                            child_roles_group))
+                    role_dto.forest_clients = forest_client_numbers
+                    roles_details.append(role_dto)
+
             delegated_admin_grants_details.append(FamGrantDetail(**{
                 "application": FamApplicationDto(**fam_application.__dict__),
-                "roles": list(map(
-                    lambda role: FamRoleDto(**role.__dict__), fam_roles))
+                "roles": roles_details
             }))
 
         delegated_admin_auth_grant = FamAuthGrant(**{
