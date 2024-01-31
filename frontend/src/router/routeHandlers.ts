@@ -5,13 +5,16 @@ import {
     fetchApplicationRoles,
     fetchApplications,
     fetchUserRoleAssignments,
+    fetchApplicationAdmins
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
     selectedApplication,
+    selectedApplicationId
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -29,14 +32,24 @@ import type { RouteLocationNormalized } from 'vue-router';
 // --- beforeEnter Route Handler
 
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
+    let applicationAdmins;
+    let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    const userRolesFetchResult = await asyncWrap(
-        fetchUserRoleAssignments(selectedApplication.value?.application_id)
-    );
-    Object.assign(to.meta, { userRoleAssignments: userRolesFetchResult.data });
+    if(selectedApplicationId.value === FAM_APPLICATION_ID) {
+        applicationAdmins = await asyncWrap(fetchApplicationAdmins())
+    } else {
+        userRolesFetchResult = await asyncWrap(
+            fetchUserRoleAssignments(selectedApplicationId.value)
+        );
+    }
+    Object.assign(to.meta, {
+        userRoleAssignments: userRolesFetchResult?.data,
+        applicationAdmins: applicationAdmins?.data
+    });
     return true;
 };
+
 
 const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized

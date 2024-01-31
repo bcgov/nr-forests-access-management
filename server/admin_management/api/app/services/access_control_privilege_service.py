@@ -122,7 +122,7 @@ class AccessControlPrivilegeService:
                 schemas.FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.CONFLICT,
-                        "detail": schemas.FamAccessControlPrivilegeGet(
+                        "detail": schemas.FamAccessControlPrivilegeDto(
                             **fam_access_control_privilege_dict
                         ),
                         "error_message": error_msg,
@@ -145,7 +145,7 @@ class AccessControlPrivilegeService:
                 schemas.FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.OK,
-                        "detail": schemas.FamAccessControlPrivilegeGet(
+                        "detail": schemas.FamAccessControlPrivilegeDto(
                             **fam_access_control_privilege_dict
                         ),
                     }

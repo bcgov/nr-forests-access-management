@@ -155,8 +155,7 @@ const props = defineProps({
 }
 
 .sidenav-disabled {
-    pointer-events: none;
-    opacity: 0.6;
+    display: none;
 }
 
 .sidenav-selected {

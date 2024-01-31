@@ -49,7 +49,8 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   ]
   logout_urls = [
     "http://localhost:3000/",
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/",
+    "${var.cognito_app_client_logout_chain_url.test}https://www2.qa.gov.bc.ca/gov/content/industry/natural-resource-use/client-number"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
