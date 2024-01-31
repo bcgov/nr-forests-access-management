@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get(
     "",
-    # response_model=List[FamApplicationGetResponse], ## TODO: schema to be decided.
+    # response_model=List[FamApplicationGetResponse], ## TODO: schema to be decided.TODO and security checks
     status_code=200,
     dependencies=[Depends(authorize)],
     description="FAM admin user access privilege",
