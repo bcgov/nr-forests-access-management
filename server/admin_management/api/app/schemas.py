@@ -210,3 +210,33 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- FAM Admin User Access ---------------------------------------- #
+class FamApplicationDto(BaseModel):
+    id: int = Field(validation_alias="application_id")
+    name: str = Field(validation_alias="application_name")
+    description: Optional[str] = \
+        Field(default=None, validation_alias="application_description")
+    env: Optional[famConstants.AppEnv] = \
+        Field(validation_alias="app_environment", default=None)
+
+
+class FamRoleDto(BaseModel):
+    id: int = Field(validation_alias="role_id")
+    name: str = Field(validation_alias="role_name")
+    type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
+
+
+class FamGrantDetail(BaseModel):
+    application: FamApplicationDto
+    roles: Optional[List[FamRoleDto]] = Field(default=None)
+
+
+class FamAuthGrant(BaseModel):
+    auth_key: famConstants.AdminRoleAuthGroup
+    grants: List[FamGrantDetail]
+
+
+class FamAdminUserAccessResponse(BaseModel):
+    access: List[FamAuthGrant]
