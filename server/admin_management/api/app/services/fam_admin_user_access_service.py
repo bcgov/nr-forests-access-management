@@ -26,8 +26,8 @@ class FamAdminUserAccessService:
 
     def get_access_grants(self, user_id: int) -> FamAdminUserAccessResponse:
         """
-        Find out access (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN) granted
-        for the user.
+        Find out access privilege granted for the user
+        (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN) .
 
         :param user_id: primary id that is associated with the user.
         :return: List of admin grants for the user or None.
@@ -36,7 +36,7 @@ class FamAdminUserAccessService:
         user_admin_privilege = self.application_admin_repo \
             .get_user_app_admin_grants(user_id)
 
-        # FamApplication(s) granted for APP_ADMIN (apps filtered)
+        # FamApplication(s) granted for APP_ADMIN (apps filtered out FAM)
         user_apps_admin_privilege = [
             granted_app for granted_app in user_admin_privilege
             if granted_app.application_name != APPLICATION_FAM
@@ -46,7 +46,7 @@ class FamAdminUserAccessService:
         user_delegated_admin_privilege = self.access_control_privilege_repo \
             .get_user_delegated_admin_grants(user_id)
 
-        user_access_grants = []
+        user_access_grants: List[FamAuthGrantDto] = []
         is_user_fam_admin = len(list(filter(
             lambda grant: grant.application_name == APPLICATION_FAM,
             user_admin_privilege))) != 0
@@ -66,13 +66,19 @@ class FamAdminUserAccessService:
                     user_delegated_admin_privilege)
             )
 
+        # final response constructed for list of access grants.
         admin_user_access_response = FamAdminUserAccessResponse(**{
             "access": user_access_grants
         })
 
         return admin_user_access_response
 
+    # -- Private methods
+
     def __construct_fam_admin_auth_grant(self):
+        """
+        Constract (auth_key = FAM_ADMIN) access grants.
+        """
         fam_applications = self.application_repo.get_applications()
         fam_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.FAM_ADMIN,
@@ -90,6 +96,9 @@ class FamAdminUserAccessService:
         self,
         granted_applications: List[FamApplication]
     ):
+        """
+        Constract (auth_key = APP_ADMIN) access grants.
+        """
         app_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.APP_ADMIN,
             "grants": self.__preprocess_grant_details(list(map(
@@ -112,18 +121,23 @@ class FamAdminUserAccessService:
         self,
         granted_roles: List[FamRole]
     ):
+        """
+        Constract (auth_key = DELEGATED_ADMIN) access grants.
+        """
         delegated_admin_grants_details = []
         app_grouped_granted_roles = \
-            itertools.groupby(granted_roles, lambda x: x.application_id)
+            itertools.groupby(granted_roles, (
+                lambda fam_role: fam_role.application_id))
 
         for _key, group in app_grouped_granted_roles:
             fam_roles = list(group)
             fam_application = fam_roles[0].application
 
-            roles_details = []
-            parent_id_grouped_roles = itertools.groupby(fam_roles, lambda x: x.parent_role_id)
+            roles_details: List[FamGrantDetailDto] = []
+            parent_id_grouped_roles = itertools.groupby(fam_roles, (
+                lambda fam_role: fam_role.parent_role_id))
             for key, group in parent_id_grouped_roles:
-                if (key is None):  # Abstract role case.
+                if (key is None):  # Abstract role case (role without parent_role_id).
                     roles_details.extend(list(
                         map(lambda fam_role: FamRoleDto(**fam_role.__dict__),
                             group)))
@@ -131,7 +145,9 @@ class FamAdminUserAccessService:
                 else:  # Concrete role case.
                     child_roles_group = list(group)
                     parent_role = child_roles_group[0].parent_role
-                    # role_dto is an abstract role with child roles of forest_clients associated.
+
+                    # role_dto is an dto for abstract(parent) role with child
+                    # roles of forest_clients associated.
                     role_dto = FamRoleDto(**parent_role.__dict__)
                     forest_client_numbers = list(
                         map(lambda fam_role: fam_role.client_number.forest_client_number,
@@ -153,6 +169,10 @@ class FamAdminUserAccessService:
         return delegated_admin_auth_grant
 
     def __preprocess_grant_details(self, grant_details: List[FamGrantDetailDto]):
+        """
+        Some data might need to be processed before return; such as
+        "application.name" currently in db has "_DEV","_TEST","_PROD" suffix.
+        """
         for grant_detail in grant_details:
             grant_detail.application = self.__remove_app_env_suffix(
                 grant_detail.application)
