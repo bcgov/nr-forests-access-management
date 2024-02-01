@@ -224,22 +224,22 @@ class FamApplicationDto(BaseModel):
 
 class FamRoleDto(BaseModel):
     # Note, this "id" for role can either be concrete role's or abstract role's id.
-    # In abstract role, forest_clients should be present.
+    # In abstract role with this id, forest_clients should be present.
     id: int = Field(validation_alias="role_id")
     name: str = Field(validation_alias="role_name")
     type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
     forest_clients: Optional[List[str]] = Field(default=None)
 
 
-class FamGrantDetail(BaseModel):
+class FamGrantDetailDto(BaseModel):
     application: FamApplicationDto
     roles: Optional[List[FamRoleDto]] = Field(default=None)
 
 
-class FamAuthGrant(BaseModel):
+class FamAuthGrantDto(BaseModel):
     auth_key: famConstants.AdminRoleAuthGroup
-    grants: List[FamGrantDetail]
+    grants: List[FamGrantDetailDto]
 
 
 class FamAdminUserAccessResponse(BaseModel):
-    access: List[FamAuthGrant]
+    access: List[FamAuthGrantDto]

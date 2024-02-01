@@ -10,8 +10,8 @@ from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
-from api.app.schemas import (FamApplicationDto, FamAuthGrant, FamGrantDetail,
-                             FamRoleDto)
+from api.app.schemas import (FamAdminUserAccessResponse, FamApplicationDto,
+                             FamAuthGrantDto, FamGrantDetailDto, FamRoleDto)
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class FamAdminUserAccessService:
         self.application_repo = ApplicationRepository(db)
         self.role_repo = RoleRepository(db)
 
-    def get_access_grants(self, user_id: int):
+    def get_access_grants(self, user_id: int) -> FamAdminUserAccessResponse:
         """
         Find out access (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN) granted
         for the user.
@@ -66,14 +66,16 @@ class FamAdminUserAccessService:
                     user_delegated_admin_privilege)
             )
 
-        return user_access_grants
+        return FamAdminUserAccessResponse(**{
+            "access": user_access_grants
+        })
 
     def __construct_fam_admin_auth_grant(self):
         fam_applications = self.application_repo.get_applications()
-        fam_admin_auth_grant = FamAuthGrant(**{
+        fam_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.FAM_ADMIN,
             "grants": list(map(
-                lambda fam_application: FamGrantDetail(**{
+                lambda fam_application: FamGrantDetailDto(**{
                     "application": FamApplicationDto(
                         **fam_application.__dict__
                     )
@@ -85,10 +87,10 @@ class FamAdminUserAccessService:
         self,
         granted_applications: List[FamApplication]
     ):
-        app_admin_auth_grant = FamAuthGrant(**{
+        app_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.APP_ADMIN,
             "grants": list(map(
-                lambda fam_application: FamGrantDetail(**{
+                lambda fam_application: FamGrantDetailDto(**{
                     "application": FamApplicationDto(
                         **fam_application.__dict__
                     ),
@@ -133,12 +135,12 @@ class FamAdminUserAccessService:
                     role_dto.forest_clients = forest_client_numbers
                     roles_details.append(role_dto)
 
-            delegated_admin_grants_details.append(FamGrantDetail(**{
+            delegated_admin_grants_details.append(FamGrantDetailDto(**{
                 "application": FamApplicationDto(**fam_application.__dict__),
                 "roles": roles_details
             }))
 
-        delegated_admin_auth_grant = FamAuthGrant(**{
+        delegated_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.DELEGATED_ADMIN,
             "grants": delegated_admin_grants_details
         })
