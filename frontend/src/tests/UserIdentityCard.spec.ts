@@ -1,19 +1,14 @@
-import { it, describe, beforeEach, expect} from 'vitest';
+import { it, describe, beforeEach, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
-fixJsdomCssErr()
+fixJsdomCssErr();
 
 describe('UserIdentityCard', () => {
     let wrapper: VueWrapper;
-
-    let card: DOMWrapper<HTMLElement>;
-    let cardEl: HTMLDivElement;
-    let username: DOMWrapper<HTMLElement>;
-    let usernameEl: HTMLSpanElement;
 
     const props = {
         userIdentity: {
@@ -32,31 +27,37 @@ describe('UserIdentityCard', () => {
     };
 
     beforeEach(async () => {
-        wrapper = mount(UserIdentityCard, {
-            props
-        });
-
-        card = wrapper.find('.custom-card');
-        cardEl = card.element as HTMLInputElement;
-        username = wrapper.find('#userId');
-        usernameEl = username.element as HTMLSpanElement;
+        wrapper = mount(UserIdentityCard, { props });
     });
 
-    it('Should show correct info on card based on props', () => {
-        //it renders
+    it('Should show correct user info on card when receive identity in prop', () => {
         expect(wrapper.find('.custom-card').element).toBeTruthy();
-
-        expect(usernameEl.textContent).toContain(props.userIdentity.userId);
-        expect(wrapper.find('#firstName').element.textContent).toContain(props.userIdentity.firstName);
-        expect(wrapper.find('#lastName').element.textContent).toContain(props.userIdentity.lastName);
+        expect(wrapper.find('.custom-card').element.textContent).toContain(
+            'Verified user information'
+        );
+        expect(wrapper.find('#userId').element.textContent).toContain(
+            props.userIdentity.userId
+        );
+        expect(wrapper.find('#firstName').element.textContent).toContain(
+            props.userIdentity.firstName
+        );
+        expect(wrapper.find('#lastName').element.textContent).toContain(
+            props.userIdentity.lastName
+        );
         expect(wrapper.find('#checkmarkIcon')).toBeTruthy();
     });
 
-    it('Should show the User does not exist when receive not found prop', async () => {
+    it('Should show the user does not exist when receive not found in prop', async () => {
         await wrapper.setProps(propsNotFound);
-
-        expect(usernameEl.textContent).toContain(propsNotFound.userIdentity.userId);
-        expect(wrapper.find('#userNotExist').element.textContent).toContain('User does not exist');
+        expect(wrapper.find('.custom-card').element.textContent).toContain(
+            'Verified user information'
+        );
+        expect(wrapper.find('#userId').element.textContent).toContain(
+            propsNotFound.userIdentity.userId
+        );
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(
+            'User does not exist'
+        );
         expect(wrapper.find('#errorIcon')).toBeTruthy();
     });
 });

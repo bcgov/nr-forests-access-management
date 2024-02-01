@@ -3,7 +3,8 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
-import { isLoading, setLoadingState } from '@/store/LoadingState';
+import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
+import { setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
@@ -11,14 +12,18 @@ import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
 fixJsdomCssErr();
 
-const userInputMock = (isUserFound: boolean): AxiosResponse => {
+const USERID = 'TestUser';
+const FIRSTNAME = 'TestUserFirstName';
+const LASTNAME = 'TestUserLastName';
+
+const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
     if (isUserFound) {
         return {
             data: {
-                firstName: 'Name',
+                firstName: FIRSTNAME,
                 found: true,
-                lastName: 'LastName',
-                userId: 'UserId',
+                lastName: LASTNAME,
+                userId: USERID,
             },
             status: 200,
             statusText: 'Ok',
@@ -31,7 +36,7 @@ const userInputMock = (isUserFound: boolean): AxiosResponse => {
         return {
             data: {
                 found: false,
-                userId: 'userId',
+                userId: USERID,
             },
             status: 200,
             statusText: 'Ok',
@@ -50,7 +55,6 @@ describe('UserNameInput', () => {
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
-    let cardEl: HTMLSpanElement
 
     const props = {
         domain: UserType.I,
@@ -60,11 +64,9 @@ describe('UserNameInput', () => {
 
     const newProps = {
         domain: UserType.B,
-        userId: 'newUserId',
-        fieldId: 'newFieldId',
+        userId: USERID,
+        fieldId: 'testNewFiledId',
     };
-
-    const newValue = 'testIdir';
 
     beforeEach(async () => {
         wrapper = mount(UserNameInput, {
@@ -82,14 +84,14 @@ describe('UserNameInput', () => {
         wrapper.unmount();
     });
 
-    it('Should change usernameInput value', async () => {
+    it('Should change username input get correct value', async () => {
         expect(usernameInputTextEl.value).toBe('');
-        await usernameInputText.setValue(newValue);
-        expect(usernameInputTextEl.value).toBe(newValue);
+        await usernameInputText.setValue(USERID);
+        expect(usernameInputTextEl.value).toBe(USERID);
     });
 
-    it('Should receive the correct prop', async () => {
-        //default props
+    it('Should receive the correct props', async () => {
+        // default props
         expect(wrapper.props()).toEqual(props);
 
         await wrapper.setProps(newProps);
@@ -97,45 +99,89 @@ describe('UserNameInput', () => {
         expect(wrapper.props()).not.toEqual(props);
     });
 
-    it('Should call and emit correct value', async () => {
-        await usernameInputText.setValue(newValue);
+    it('Should call emit change and setVerifyResult when input change', async () => {
+        // when username input value change, emit change with new value
+        await usernameInputText.setValue(USERID);
         const emitChange = wrapper.emitted('change');
         expect(emitChange).toBeTruthy();
-        // test the given parameters when emitChange has been called
-        // i.e. emitChange = [ [ 'B' ] ]
-        expect(emitChange![0][0]).toEqual(newValue);
+        expect(emitChange![0][0]).toEqual(USERID);
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeTruthy();
+        // default prop domain is I, emit setVerifyResult with false
+        expect(emitSetVerifyResult![0][0]).toEqual(false);
     });
 
     it('Should enable verify btn when username is inputted', async () => {
-        expect(usernameInputTextEl.value).toBe('')
-        // button starts as disabled
+        // input is empty, button starts as disabled
+        expect(usernameInputTextEl.value).toBe('');
         expect(verifyButtonEl.disabled).toBe(true);
         expect(verifyButton.classes('p-disabled')).toBe(true);
 
-        await wrapper.setProps({ userId: newProps.userId });
-
+        // triggers username input change
+        await wrapper.setProps({ userId: USERID });
+        // verify button is enabled
         expect(verifyButtonEl.disabled).toBe(false);
         expect(verifyButton.classes('p-disabled')).toBe(false);
     });
 
-    it('Should show loading on the verify btn while we call the api', async () => {
+    it('Should show loading on the verify btn while calling the api', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
             'idirSearch'
         ).mockImplementation(async () => {
             setLoadingState(true);
-            return userInputMock(true);
+            return idimIdirSearchMock(true);
         });
-        expect(verifyButtonEl.textContent).not.toContain('Loading');
 
-        await wrapper.setProps({ userId: newProps.userId });
+        // by default, the button text is "Verify"
+        expect(verifyButtonEl.textContent).toBe('Verify');
+
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({ userId: USERID });
         await verifyButton.trigger('click');
-        expect(isLoading()).toBe(true);
+        await flushPromises();
         expect(verifyButtonEl.textContent).toContain('Loading');
 
-        // cleanup state variable
+        // reset loading state variable
         setLoadingState(false);
-        expect(isLoading()).toBe(false);
+    });
+
+    it('Should show the user identity card with correct info when user is found', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'idirSearch'
+        ).mockImplementation(async () => {
+            return idimIdirSearchMock(true);
+        });
+
+        // by default no identity card display
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
+
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({ userId: USERID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // call emit setVerifyResult with true, when prop domain is I, mock api returns user found
+        // currently when domain is B, the verify button will be hidden
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeTruthy();
+        expect(emitSetVerifyResult![0][0]).toEqual(true);
+
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        // verify identity card title
+        expect(cardEl.textContent).toContain('Username');
+        expect(cardEl.textContent).toContain('First Name');
+        expect(cardEl.textContent).toContain('Last Name');
+        // verify identity card user info
+        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
+        expect(wrapper.find('#firstName').element.textContent).toContain(
+            FIRSTNAME
+        );
+        expect(wrapper.find('#lastName').element.textContent).toContain(
+            LASTNAME
+        );
     });
 
     it('Should show not found on card when user is not found', async () => {
@@ -143,63 +189,46 @@ describe('UserNameInput', () => {
             AppActlApiService.idirBceidProxyApi,
             'idirSearch'
         ).mockImplementation(async () => {
-            return userInputMock(false);
+            return idimIdirSearchMock(false);
         });
 
-        //enable verifyButton
-        await wrapper.setProps({ userId: newProps.userId });
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({ userId: USERID });
         await verifyButton.trigger('click');
         await flushPromises();
 
-        wrapper.findComponent({name: 'UserIdentityCard'}).vm;
+        // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).not.toBeTruthy();
 
-        cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
-        expect(cardEl).toBeTruthy();
-        expect(cardEl.textContent).toContain('User does not exist');
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(cardEl.textContent).toContain('Username');
+        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(
+            'User does not exist'
+        );
     });
 
     it('Should remove card and emit different value when domain changes', async () => {
         // show user identity card to prepare for the test
-        await wrapper.setProps({ userId: newProps.userId });
+        await wrapper.setProps({ userId: USERID });
         await verifyButton.trigger('click');
         await flushPromises();
-        const cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
+        const cardUsernameEl = wrapper.find('.custom-card')
+            .element as HTMLSpanElement;
         expect(cardUsernameEl).toBeTruthy();
 
         // change the domain to be B
-        await wrapper.setProps({domain: UserType.B});
+        await wrapper.setProps({ domain: UserType.B });
         // for BCeID should emit true
         const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         expect(emitSetVerifyResult![0][0]).toEqual(true);
-        //UserIdentityCard not on page anymore
+        // UserIdentityCard not on page anymore
         expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
 
         // change the domain to be I
-        await wrapper.setProps({domain: UserType.I});
+        await wrapper.setProps({ domain: UserType.I });
         // for IDIR should emit false
         expect(emitSetVerifyResult![1][0]).toEqual(false);
     });
-
-    it('Should show the card with correct info when user is found', async () => {
-        vi.spyOn(
-            AppActlApiService.idirBceidProxyApi,
-            'idirSearch'
-        ).mockImplementation(async () => {
-            return userInputMock(true);
-        });
-
-        //enable verifyButton
-        await wrapper.setProps({ userId: newProps.userId });
-        await verifyButton.trigger('click');
-        await flushPromises();
-
-        wrapper.findComponent({name: 'UserIdentityCard'}).vm;
-
-        cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
-        expect(cardEl).toBeTruthy();
-        expect(cardEl.textContent).toContain('Name');
-        expect(cardEl.textContent).toContain('LastName');
-        expect(cardEl.textContent).toContain('UserId');
-    })
-
 });

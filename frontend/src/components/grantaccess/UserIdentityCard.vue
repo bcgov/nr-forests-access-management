@@ -30,21 +30,26 @@ const props = defineProps<{
         <template #content>
             <div class="col" style="margin-left: 2rem">
                 <label class="row">Username</label>
-                <span class="row" id="userId">{{ props.userIdentity.userId }}</span>
+                <span class="row" id="userId">{{
+                    props.userIdentity.userId
+                }}</span>
             </div>
             <div class="col" v-if="props.userIdentity.found">
                 <label class="row">First Name</label>
-                <span class="row" id="firstName">{{ props.userIdentity.firstName }}</span>
+                <span class="row" id="firstName">{{
+                    props.userIdentity.firstName
+                }}</span>
             </div>
             <div class="col-2" v-if="props.userIdentity.found">
-                <label class="row" id="lastName">Last Name</label>
-                <span class="row">{{ props.userIdentity.lastName }}</span>
+                <label class="row">Last Name</label>
+                <span class="row" id="lastName">{{
+                    props.userIdentity.lastName
+                }}</span>
             </div>
-            <div
-                class="col-6 d-flex"
-                v-if="!props.userIdentity.found"
-            >
-                <span class="px-0 invalid" id="userNotExist"> User does not exist </span>
+            <div class="col-6 d-flex" v-if="!props.userIdentity.found">
+                <span class="px-0 invalid" id="userNotExist">
+                    User does not exist
+                </span>
             </div>
         </template>
     </Card>
