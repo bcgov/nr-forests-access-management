@@ -16,7 +16,7 @@ from tests.constants import (
     ERROR_VOLIATE_UNIQUE_CONSTRAINT,
     ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
     TEST_APPLICATION_ID_FOM_DEV,
-    TEST_NOT_EXIST_APPLICATION_ID
+    TEST_NOT_EXIST_APPLICATION_ID,
 )
 
 
@@ -124,8 +124,12 @@ def test_create_access_control_privilege_invalid_role_id(
     assert str(e.value).find(ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT) != -1
 
 
-def test_get_acp_by_application_id(access_control_privilege_repo: AccessControlPrivilegeRepository,):
-    init_records = access_control_privilege_repo.get_acp_by_application_id(TEST_APPLICATION_ID_FOM_DEV)
+def test_get_acp_by_application_id(
+    access_control_privilege_repo: AccessControlPrivilegeRepository,
+):
+    init_records = access_control_privilege_repo.get_acp_by_application_id(
+        TEST_APPLICATION_ID_FOM_DEV
+    )
     # create a new access control privilege
     new_record = access_control_privilege_repo.create_access_control_privilege(
         TEST_ACCESS_CONTROL_PRIVILEGE_CREATE
@@ -133,9 +137,13 @@ def test_get_acp_by_application_id(access_control_privilege_repo: AccessControlP
     assert new_record.user_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.user_id
     assert new_record.role_id == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.role_id
     # check the number of records increased
-    current_records = access_control_privilege_repo.get_acp_by_application_id(TEST_APPLICATION_ID_FOM_DEV)
+    current_records = access_control_privilege_repo.get_acp_by_application_id(
+        TEST_APPLICATION_ID_FOM_DEV
+    )
     assert len(current_records) == len(init_records) + 1
 
     # test get with non exist application id
-    found_acp = access_control_privilege_repo.get_acp_by_application_id(TEST_NOT_EXIST_APPLICATION_ID)
+    found_acp = access_control_privilege_repo.get_acp_by_application_id(
+        TEST_NOT_EXIST_APPLICATION_ID
+    )
     assert len(found_acp) == 0

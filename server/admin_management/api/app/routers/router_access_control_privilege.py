@@ -109,19 +109,15 @@ def create_access_control_privilege_many(
 
 @router.get(
     "/{application_id}/access_control_privileges",
-    response_model=List[schemas.FamAccessControlPrivilegeDto],
+    response_model=List[schemas.FamAccessControlPrivilegeGetResponse],
+    status_code=200,
     dependencies=[Depends(authorize_by_app_id)],  # only app admin can do this
     description="Get Delegated Admin Privileges For an Application",
 )
 def get_access_control_privileges_by_application_id(
     application_id: int,
-    token_claims: dict = Depends(jwt_validation.authorize),
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
         access_control_privilege_service_instance
     ),
 ):
-    LOGGER.debug(
-        f"Get access control privileges for application: {application_id}, requestor: {token_claims}"
-    )
-
     return access_control_privilege_service.get_acp_by_application_id(application_id)

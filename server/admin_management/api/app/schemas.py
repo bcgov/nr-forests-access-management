@@ -86,14 +86,14 @@ class FamUserInfoDto(FamUserBase):
 
 
 # ----------------------------------- FAM Forest Client ------------------------------------ #
-class FamForestClientBaseDto(BaseModel):
+class FamForestClientBase(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamForestClientCreateDto(FamForestClientBaseDto):
+class FamForestClientCreateDto(FamForestClientBase):
     create_user: Annotated[str, StringConstraints(max_length=60)]
 
     model_config = ConfigDict(from_attributes=True)
@@ -106,7 +106,7 @@ class FamForestClientStatusDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamForestClientDto(FamForestClientBaseDto):
+class FamForestClientDto(FamForestClientBase):
     client_name: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
     status: Optional[FamForestClientStatusDto] = None
 
@@ -114,14 +114,14 @@ class FamForestClientDto(FamForestClientBaseDto):
 
 
 # ------------------------------------- FAM Role ------------------------------------------- #
-class FamRoleBaseDto(BaseModel):
+class FamRoleBase(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     role_type_code: famConstants.RoleType
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleCreateDto(FamRoleBaseDto):
+class FamRoleCreateDto(FamRoleBase):
     application_id: int = Field(title="Application this role is associated with")
     role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
     parent_role_id: Union[int, None] = Field(
@@ -141,8 +141,8 @@ class FamRoleCreateDto(FamRoleBaseDto):
 class FamRoleWithClientDto(BaseModel):
     role_id: int
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    client_number: Optional[FamForestClientBaseDto] = None
-    parent_role: Optional[FamRoleBaseDto] = None
+    client_number: Optional[FamForestClientBase] = None
+    parent_role: Optional[FamRoleBase] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -199,7 +199,7 @@ class FamAccessControlPrivilegeCreateDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamAccessControlPrivilegeDto(BaseModel):
+class FamAccessControlPrivilegeGetResponse(BaseModel):
     access_control_privilege_id: int
     user_id: int
     role_id: int
@@ -211,7 +211,7 @@ class FamAccessControlPrivilegeDto(BaseModel):
 
 class FamAccessControlPrivilegeCreateResponse(BaseModel):
     status_code: int
-    detail: FamAccessControlPrivilegeDto
+    detail: FamAccessControlPrivilegeGetResponse
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

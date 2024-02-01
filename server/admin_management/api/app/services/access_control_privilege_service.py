@@ -35,7 +35,7 @@ class AccessControlPrivilegeService:
 
     def get_acp_by_application_id(
         self, application_id: int
-    ) -> List[schemas.FamAccessControlPrivilegeDto]:
+    ) -> List[schemas.FamAccessControlPrivilegeGetResponse]:
         return self.access_control_privilege_repository.get_acp_by_application_id(
             application_id
         )
@@ -129,7 +129,7 @@ class AccessControlPrivilegeService:
                 schemas.FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.CONFLICT,
-                        "detail": schemas.FamAccessControlPrivilegeDto(
+                        "detail": schemas.FamAccessControlPrivilegeGetResponse(
                             **fam_access_control_privilege_dict
                         ),
                         "error_message": error_msg,
@@ -152,7 +152,7 @@ class AccessControlPrivilegeService:
                 schemas.FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.OK,
-                        "detail": schemas.FamAccessControlPrivilegeDto(
+                        "detail": schemas.FamAccessControlPrivilegeGetResponse(
                             **fam_access_control_privilege_dict
                         ),
                     }
