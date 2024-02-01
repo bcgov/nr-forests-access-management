@@ -29,16 +29,16 @@ const props = defineProps({
 <template>
     <Sidebar v-model:visible="sideNavState.isVisible">
         <template #header>
-            <a
+            <div
                 class="sidenav-logo"
                 title="Forests Access Management"
-                href="https://www2.gov.bc.ca"
+                @click="router.push('/dashboard')"
             >
                 <img
                     src="@/assets/images/17_gov3_bc_logo_transparent.svg"
                     alt="B.C. Government Logo"
                 />
-            </a>
+            </div>
         </template>
         <nav class="sidenav">
             <div class="content">
@@ -95,6 +95,7 @@ const props = defineProps({
 @import '@/assets/styles/styles.scss';
 
 .sidenav-logo {
+    cursor: pointer;
     img {
         margin: 0px 0px 1rem 0.188rem;
         width: 8.75rem;
