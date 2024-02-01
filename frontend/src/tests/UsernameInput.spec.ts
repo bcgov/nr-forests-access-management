@@ -18,7 +18,7 @@ const userInputMock = (isUserFound: boolean): AxiosResponse => {
                 firstName: 'Name',
                 found: true,
                 lastName: 'LastName',
-                userId: 'userId',
+                userId: 'UserId',
             },
             status: 200,
             statusText: 'Ok',
@@ -45,13 +45,12 @@ const userInputMock = (isUserFound: boolean): AxiosResponse => {
 
 describe('UserNameInput', () => {
     let wrapper: VueWrapper;
-    let emitSetVerifyResult: unknown[][] | undefined;
 
     let usernameInputText: DOMWrapper<HTMLElement>;
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
-    let userIdentity;
+    let cardEl: HTMLSpanElement
 
     const props = {
         domain: UserType.I,
@@ -105,16 +104,10 @@ describe('UserNameInput', () => {
         // test the given parameters when emitChange has been called
         // i.e. emitChange = [ [ 'B' ] ]
         expect(emitChange![0][0]).toEqual(newValue);
-
-        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
-        await wrapper.setProps(newProps);
-        await verifyButton.trigger('click');
-
-        expect(emitSetVerifyResult).toBeTruthy();
-        expect(emitSetVerifyResult![1][0]).toEqual(true);
     });
 
     it('Should enable verify btn when username is inputted', async () => {
+        expect(usernameInputTextEl.value).toBe('')
         // button starts as disabled
         expect(verifyButtonEl.disabled).toBe(true);
         expect(verifyButton.classes('p-disabled')).toBe(true);
@@ -133,8 +126,6 @@ describe('UserNameInput', () => {
             setLoadingState(true);
             return userInputMock(true);
         });
-
-        setLoadingState(false);
         expect(verifyButtonEl.textContent).not.toContain('Loading');
 
         await wrapper.setProps({ userId: newProps.userId });
@@ -147,7 +138,7 @@ describe('UserNameInput', () => {
         expect(isLoading()).toBe(false);
     });
 
-    it('Should show not found on card when user is not verified', async () => {
+    it('Should show not found on card when user is not found', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
             'idirSearch'
@@ -155,40 +146,60 @@ describe('UserNameInput', () => {
             return userInputMock(false);
         });
 
+        //enable verifyButton
         await wrapper.setProps({ userId: newProps.userId });
         await verifyButton.trigger('click');
         await flushPromises();
 
-        userIdentity = wrapper.findComponent({
-            name: 'UserIdentityCard',
-        }).vm;
+        wrapper.findComponent({name: 'UserIdentityCard'}).vm;
 
-        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
         expect(cardEl).toBeTruthy();
         expect(cardEl.textContent).toContain('User does not exist');
     });
 
     it('Should remove card and emit different value when domain changes', async () => {
-        let cardUsernameEl: HTMLSpanElement;
-        // default props
-        expect(wrapper.props()).toEqual(props);
+        // show user identity card to prepare for the test
+        await wrapper.setProps({ userId: newProps.userId });
+        await verifyButton.trigger('click');
+        await flushPromises();
+        const cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
+        expect(cardUsernameEl).toBeTruthy();
 
-        await wrapper.setProps(userInputMock(true).data);
+        // change the domain to be B
+        await wrapper.setProps({domain: UserType.B});
+        // for BCeID should emit true
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult![0][0]).toEqual(true);
+        //UserIdentityCard not on page anymore
+        expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
+
+        // change the domain to be I
+        await wrapper.setProps({domain: UserType.I});
+        // for IDIR should emit false
+        expect(emitSetVerifyResult![1][0]).toEqual(false);
+    });
+
+    it('Should show the card with correct info when user is found', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'idirSearch'
+        ).mockImplementation(async () => {
+            return userInputMock(true);
+        });
+
+        //enable verifyButton
+        await wrapper.setProps({ userId: newProps.userId });
         await verifyButton.trigger('click');
         await flushPromises();
 
-        cardUsernameEl = wrapper.find('#userId').element as HTMLSpanElement;
-        expect(cardUsernameEl).toBeTruthy();
-        expect(cardUsernameEl.textContent).toContain('userId');
+        wrapper.findComponent({name: 'UserIdentityCard'}).vm;
 
-        await wrapper.setProps({
-            domain: UserType.B,
-        });
+        cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(cardEl).toBeTruthy();
+        expect(cardEl.textContent).toContain('Name');
+        expect(cardEl.textContent).toContain('LastName');
+        expect(cardEl.textContent).toContain('UserId');
+    })
 
-        // for BCeID should emit true
-        expect(emitSetVerifyResult![1][0]).toEqual(true);
-
-        //UserIdentityCard not on page anymore
-        expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
-    });
 });
