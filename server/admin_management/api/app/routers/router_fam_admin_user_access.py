@@ -16,13 +16,14 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=FamAdminUserAccessResponse,  # TODO and security checks
+    response_model=FamAdminUserAccessResponse,
     status_code=200,
     dependencies=[Depends(authorize)],
-    description="FAM admin user access privilege",
+    name="FAM admin user access privilege",
+    description="FAM admin access privilege/grants for logged on user.",
 )
 async def get_fam_admin_user_access(
-    requester: Requester = Depends(get_current_requester),
+    requester: Requester = Depends(get_current_requester),  # Internally Requester already has basic token claim validated.
     fam_admin_user_access_service: FamAdminUserAccessService = Depends(
         fam_admin_user_access_service_instance),
 ):
