@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from api.app.jwt_validation import authorize
 from api.app.routers.router_guards import get_current_requester
