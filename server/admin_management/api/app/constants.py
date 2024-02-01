@@ -37,3 +37,8 @@ class AdminRoleAuthGroup(str, Enum):
 
 
 COGNITO_USERNAME_KEY = "username"
+
+FOREST_CLIENT_STATUS = {
+    "KEY": "clientStatusCode",
+    "CODE_ACTIVE": "ACT"
+}

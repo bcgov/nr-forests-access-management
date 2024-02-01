@@ -6,6 +6,7 @@ from typing import List
 from api.app import constants as famConstants
 from api.app import schemas
 
+from api.app.integration.forest_client import ForestClientService
 from api.app.services.user_service import UserService
 from api.app.services.role_service import RoleService
 from api.app.repositories.access_control_privilege_repository import (
@@ -73,8 +74,21 @@ class AccessControlPrivilegeService:
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
             for forest_client_number in request.forest_client_numbers:
+                # validate the forest client number
+                validator = ForestClientValidator(forest_client_number)
+                if (not validator.forest_client_number_exists()):
+                    error_msg = (
+                        "Invalid access control privilege request. " +
+                        f"Forest Client Number {forest_client_number} does not exist.")
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+                if (not validator.forest_client_active()):
+                    error_msg = (
+                        "Invalid access control privilege request. Forest Client is not in Active status: " +
+                        f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
                 # Check if child role exists or add a new child role
-                # NOSONAR TODO: validate the forest client number
                 child_role = self.role_service.find_or_create_forest_client_child_role(
                     forest_client_number, fam_role, requester
                 )
@@ -153,3 +167,40 @@ class AccessControlPrivilegeService:
             )
 
         return access_control_privilege_return
+
+
+class ForestClientValidator:
+    """
+    Purpose: More validations on inputs (other than basic validations) and
+             business rules validations (if any).
+    Cautious: Do not instantiate the class for more than one time per request.
+              It calls Forest Client API remotely if needs to.
+    """
+    LOGGER = logging.getLogger(__name__)
+
+    def __init__(self, forest_client_number: str):
+        LOGGER.debug(f"Validator '{self.__class__.__name__}' with input '{forest_client_number}'.")
+
+        # Note - this value should already be validated from schema input validation.
+        if forest_client_number is not None:
+            fc_api = ForestClientService()
+
+            # Locally stored (if any) for later use to prevent api calls again.
+            # Exact client number search - should only contain 1 result.
+            self.fc = fc_api.find_by_client_number(forest_client_number)
+            LOGGER.debug(f"Forest Client(s) retrieved: {self.fc}")
+
+    def forest_client_number_exists(self) -> bool:
+        # Exact client number search - should only contain 1 result.
+        return len(self.fc) == 1
+
+    def forest_client_active(self) -> bool:
+        return (
+            (self.get_forest_client()[famConstants.FOREST_CLIENT_STATUS["KEY"]]
+                == famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"])
+            if self.forest_client_number_exists()
+            else False
+        )
+
+    def get_forest_client(self):
+        return self.fc[0] if self.forest_client_number_exists() else None
