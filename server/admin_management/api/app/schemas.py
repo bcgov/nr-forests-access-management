@@ -221,6 +221,8 @@ class FamApplicationDto(BaseModel):
     env: Optional[famConstants.AppEnv] = \
         Field(validation_alias="app_environment", default=None)
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class FamRoleDto(BaseModel):
     # Note, this "id" for role can either be concrete role's or abstract role's id.
@@ -230,16 +232,24 @@ class FamRoleDto(BaseModel):
     type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
     forest_clients: Optional[List[str]] = Field(default=None)
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class FamGrantDetailDto(BaseModel):
     application: FamApplicationDto
     roles: Optional[List[FamRoleDto]] = Field(default=None)
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FamAuthGrantDto(BaseModel):
     auth_key: famConstants.AdminRoleAuthGroup
     grants: List[FamGrantDetailDto]
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class FamAdminUserAccessResponse(BaseModel):
     access: List[FamAuthGrantDto]
+
+    model_config = ConfigDict(from_attributes=True)

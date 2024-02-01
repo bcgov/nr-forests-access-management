@@ -53,7 +53,6 @@ class AccessControlPrivilegeRepository:
                 .select_from(FamAccessControlPrivilege)
                 .join(FamAccessControlPrivilege.role)
                 .join(FamAccessControlPrivilege.user)
-                .join(FamApplication)
                 .filter(FamAccessControlPrivilege.user_id == user_id)
                 .order_by(FamRole.application_id, FamRole.role_id)
                 .all()

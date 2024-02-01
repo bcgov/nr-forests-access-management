@@ -66,21 +66,24 @@ class FamAdminUserAccessService:
                     user_delegated_admin_privilege)
             )
 
-        return FamAdminUserAccessResponse(**{
+        admin_user_access_response = FamAdminUserAccessResponse(**{
             "access": user_access_grants
         })
+
+        return admin_user_access_response
 
     def __construct_fam_admin_auth_grant(self):
         fam_applications = self.application_repo.get_applications()
         fam_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.FAM_ADMIN,
-            "grants": list(map(
+            "grants": self.__preprocess_grant_details(list(map(
                 lambda fam_application: FamGrantDetailDto(**{
                     "application": FamApplicationDto(
                         **fam_application.__dict__
                     )
-                }), fam_applications))
+                }), fam_applications)))
         })
+
         return fam_admin_auth_grant
 
     def __construct_app_admin_auth_grant(
@@ -89,7 +92,7 @@ class FamAdminUserAccessService:
     ):
         app_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.APP_ADMIN,
-            "grants": list(map(
+            "grants": self.__preprocess_grant_details(list(map(
                 lambda fam_application: FamGrantDetailDto(**{
                     "application": FamApplicationDto(
                         **fam_application.__dict__
@@ -100,8 +103,9 @@ class FamAdminUserAccessService:
                             fam_application.application_id
                         )
                     ))
-                }), granted_applications))
+                }), granted_applications)))
         })
+
         return app_admin_auth_grant
 
     def __construct_deldgated_admin_auth_grant(
@@ -142,7 +146,26 @@ class FamAdminUserAccessService:
 
         delegated_admin_auth_grant = FamAuthGrantDto(**{
             "auth_key": AdminRoleAuthGroup.DELEGATED_ADMIN,
-            "grants": delegated_admin_grants_details
+            "grants": self.__preprocess_grant_details(
+                delegated_admin_grants_details)
         })
 
         return delegated_admin_auth_grant
+
+    def __preprocess_grant_details(self, grant_details: List[FamGrantDetailDto]):
+        for grant_detail in grant_details:
+            grant_detail.application = self.__remove_app_env_suffix(
+                grant_detail.application)
+
+        return grant_details
+
+    # remove suffix from application.name (e.g., FOM_DEV to FOM)
+    def __remove_app_env_suffix(self, application: FamApplicationDto):
+        suffix_list = ["_DEV", "_TEST", "_PROD"]
+        application_name = application.name
+
+        for suffix in suffix_list:
+            if application_name.endswith(suffix):
+                application.name = application_name.rstrip(suffix)
+
+        return application
