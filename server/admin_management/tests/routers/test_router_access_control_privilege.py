@@ -86,13 +86,13 @@ def test_create_access_control_privilege_many(
     assert data[1].get("status_code") == HTTPStatus.OK
 
 
-def test_get_application_admin_by_application_id(
+def test_get_access_control_privileges_by_application_id(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     # test get with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ID_FOM_DEV}/access_control_privileges",
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -102,7 +102,7 @@ def test_get_application_admin_by_application_id(
     # get access control privileges by application id, get original length
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ID_FOM_DEV}/access_control_privileges",
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -118,7 +118,7 @@ def test_get_application_admin_by_application_id(
     assert response.json() is not None
     # get the application by application id again, verify length adds one
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_APPLICATION_ID_FOM_DEV}/access_control_privileges",
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -128,7 +128,7 @@ def test_get_application_admin_by_application_id(
 
     # test get with non exists application id
     response = test_client_fixture.get(
-        f"{endPoint}/{TEST_NOT_EXIST_APPLICATION_ID}/access_control_privileges",
+        f"{endPoint}?application_id={TEST_NOT_EXIST_APPLICATION_ID}",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -137,7 +137,7 @@ def test_get_application_admin_by_application_id(
 
     # test get with invalid application id
     response = test_client_fixture.get(
-        f"{endPoint}/{INVALID_APPLICATION_ID}/access_control_privileges",
+        f"{endPoint}?application_id=/{INVALID_APPLICATION_ID}",
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
