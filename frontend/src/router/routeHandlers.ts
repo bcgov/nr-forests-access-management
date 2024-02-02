@@ -50,7 +50,6 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     return true;
 };
 
-
 const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized
 ) => {
@@ -72,8 +71,18 @@ const beforeEnterGrantUserPermissionRoute = async (
 };
 
 const beforeEnterGrantApplicationAdminRoute = async (
-    to: RouteLocationNormalized
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
 ) => {
+    if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
+        const routeError = new FamRouteError(
+            RouteErrorName.NOT_FAM_ADMIN,
+            "This access is restricted",
+            { to, from }
+        );
+        emitRouteToastError(routeError);
+        return { path: routeItems.dashboard.path };
+    }
     populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
     return true;
 }

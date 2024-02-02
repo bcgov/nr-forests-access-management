@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType } from 'vue';
-import type { DropdownChangeEvent } from 'primevue/dropdown';
+import { onUnmounted, shallowRef, type PropType, watch } from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-import ApplicationSelect from '@/components/common/form/ApplicationSelect.vue';
+import ApplicationSelect from '@/components/common/ApplicationSelect.vue';
 
 import {
     applicationsUserAdministers,
@@ -55,20 +54,28 @@ const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
 );
 
+const manageApplicationSelected = shallowRef<FamApplication>(
+    selectedApplication.value as FamApplication
+);
+
 onUnmounted(() => {
     resetNotification();
 });
 
-const onApplicationSelected = async (e: DropdownChangeEvent) => {
-    setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (e.value.application_id === FAM_APPLICATION_ID) {
+watch(manageApplicationSelected, async (newManageApplicationSelected) => {
+    setSelectedApplication(
+        newManageApplicationSelected
+            ? JSON.stringify(newManageApplicationSelected)
+            : null
+    );
+    if (newManageApplicationSelected?.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
     }
-};
+});
 
 const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
@@ -116,9 +123,8 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
     <div class="page-body">
         <div class="application-group">
             <ApplicationSelect
-                :model="(selectedApplication as FamApplication)"
+                v-model="manageApplicationSelected"
                 :options="applicationsUserAdministers"
-                @onApplicationSelected="onApplicationSelected($event)"
                 label="You are modifying access in this application:"
                 placeholder="Choose an application to manage permissions"
             />

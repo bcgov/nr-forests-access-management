@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { ref, type PropType, onMounted } from 'vue';
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import Dropdown from 'primevue/dropdown';
 import type { FamApplication } from 'fam-app-acsctl-api';
 
 const props = defineProps({
-    label: { type: String, required: false, default: 'Select application:' },
-    model: {
-        type: (Object as PropType<FamApplication>) || null,
-        required: true,
-    },
+    label: { type: String, required: false, default: 'Select application' },
     options: {
         type: Array<FamApplication>,
         default: [],
@@ -21,23 +16,13 @@ const props = defineProps({
     },
 });
 
-const model = ref<FamApplication>();
-
-const emit = defineEmits(['onApplicationSelected']);
-
-onMounted(() => {
-    model.value = props.model;
-});
-
-const onApplicationSelected = async (e: DropdownChangeEvent) => {
-    emit('onApplicationSelected', e);
-};
+const modelValue = defineModel<FamApplication>();
 </script>
+
 <template>
     <label>{{ label }}</label>
     <Dropdown
-        v-model="model"
-        @change="onApplicationSelected"
+        v-model="modelValue"
         :options="props.options"
         optionLabel="application_description"
         :placeholder="props.placeholder"

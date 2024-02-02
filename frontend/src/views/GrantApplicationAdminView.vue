@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GrantApplicationAdmin from '../components/grantaccess/GrantApplicationAdmin.vue';
+import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
 </script>
 
 <template>

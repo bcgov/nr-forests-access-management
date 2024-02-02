@@ -7,7 +7,7 @@ import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { UserType, type FamApplication } from 'fam-app-acsctl-api';
 import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
-import ApplicationSelect from '@/components/common/form/ApplicationSelect.vue';
+import ApplicationSelect from '@/components/common/ApplicationSelect.vue';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
@@ -17,7 +17,7 @@ import { setNotificationMsg } from '@/store/NotificationState';
 
 const defaultFormData = {
     userId: '',
-    application: null as number | null,
+    application: Number,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const formValidationSchema = object({
@@ -28,9 +28,9 @@ const formValidationSchema = object({
     application: object().required('Application is required'),
 });
 
-const selectedApplication = ref<FamApplication>();
-const applications = ref<FamApplicationGetResponse[]>(); // clone default input
+const applications = ref<FamApplicationGetResponse[]>();
 
+// This is going to be changed when the new backend API is ready
 onMounted(async () => {
     applications.value = (
         await AdminMgmtApiService.applicationsApi.getApplications()
@@ -97,10 +97,6 @@ const handleSubmit = async () => {
             router.push('/dashboard');
         });
 };
-
-const onApplicationSelected = async (e: any) => {
-    formData.value.application = e.value;
-};
 </script>
 <template>
     <PageTitle
@@ -117,10 +113,14 @@ const onApplicationSelected = async (e: any) => {
             <form id="grantAccessForm" class="form-container">
                 <StepContainer
                     title="User information"
-                    subtitle="Enter the user information to add a new admin to [Application name]"
+                    :subtitle="`Enter the user information to add a new admin ${
+                        formData.application
+                            ? 'to ' + formData.application.application_name
+                            : ''
+                    }`"
                 >
                     <UserNameInput
-                        domain="I"
+                        :domain="UserType.I"
                         :userId="formData.userId"
                         helper-text="Only IDIR usernames are allowed"
                         @change="userIdChange"
@@ -138,11 +138,8 @@ const onApplicationSelected = async (e: any) => {
                         v-model="formData.application"
                     >
                         <ApplicationSelect
-                            :model="(selectedApplication as FamApplication)"
+                            v-model="formData.application"
                             :options="(applications as FamApplication[])"
-                            @onApplicationSelected="
-                                onApplicationSelected($event)
-                            "
                         />
                         <ErrorMessage
                             class="invalid-feedback"
@@ -168,8 +165,7 @@ const onApplicationSelected = async (e: any) => {
                         class="w100"
                         label="Submit Application"
                         :disabled="
-                            !(meta.valid && verifyUserIdPassed) ||
-                            isLoading()
+                            !(meta.valid && verifyUserIdPassed) || isLoading()
                         "
                         @click="handleSubmit()"
                     >

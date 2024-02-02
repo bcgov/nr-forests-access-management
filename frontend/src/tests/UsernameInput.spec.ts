@@ -60,12 +60,14 @@ describe('UserNameInput', () => {
         domain: UserType.I,
         userId: '',
         fieldId: 'userId',
+        helperText: 'Text helper',
     };
 
     const newProps = {
         domain: UserType.B,
         userId: USERID,
         fieldId: 'testNewFiledId',
+        helperText: 'New text helper',
     };
 
     beforeEach(async () => {
