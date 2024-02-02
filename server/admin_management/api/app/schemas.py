@@ -127,13 +127,13 @@ class FamRoleCreateDto(FamRoleBase):
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    forest_client_number: Optional[
-        Annotated[str, StringConstraints(max_length=8)]
-    ] = Field(default=None, title="Forest Client this role is associated with")
+    forest_client_number: Optional[Annotated[str, StringConstraints(max_length=8)]] = (
+        Field(default=None, title="Forest Client this role is associated with")
+    )
     create_user: Annotated[str, StringConstraints(max_length=60)]
-    client_number: Optional[
-        FamForestClientCreateDto
-    ] = None  # this is matched with the model
+    client_number: Optional[FamForestClientCreateDto] = (
+        None  # this is matched with the model
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -199,6 +199,15 @@ class FamAccessControlPrivilegeCreateDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FamAccessControlPrivilegeCreateErrorDto(BaseModel):
+    user_id: int
+    user: FamUserInfoDto
+    forest_client_number: Annotated[str, StringConstraints(max_length=8)]
+    parent_role: FamRoleBase
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class FamAccessControlPrivilegeGetResponse(BaseModel):
     access_control_privilege_id: int
     user_id: int
@@ -211,7 +220,9 @@ class FamAccessControlPrivilegeGetResponse(BaseModel):
 
 class FamAccessControlPrivilegeCreateResponse(BaseModel):
     status_code: int
-    detail: FamAccessControlPrivilegeGetResponse
+    detail: Union[
+        FamAccessControlPrivilegeGetResponse, FamAccessControlPrivilegeCreateErrorDto
+    ] = None
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
