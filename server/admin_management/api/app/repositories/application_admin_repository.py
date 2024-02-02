@@ -75,7 +75,7 @@ class ApplicationAdminRepository:
         Filter on: Only 'IDIR' type user can be an Application Admin.
 
         :param user_id: primary id that is associated with the user.
-        :return: List of "applications" granted for the user or None.
+        :return: List of "applications" the user is admin of or None.
         """
         return (
             self.db.query(FamApplication)

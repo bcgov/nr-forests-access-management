@@ -51,11 +51,11 @@ class AccessControlPrivilegeRepository:
 
     def get_user_delegated_admin_grants(self, user_id: int) -> List[FamRole]:
         """
-        Find out from `app_fam.fam_access_control_privilege` the applications
-            and roles being granted for the user.
+        Find out from `app_fam.fam_access_control_privilege` the applications' roles
+            the user is allow to grant.
 
         :param user_id: primary id that is associated with the user.
-        :return: List of "roles" granted for the user or None.
+        :return: List of "roles" the user is allowed to grant or None.
         """
         return (
             self.db.query(FamRole)
