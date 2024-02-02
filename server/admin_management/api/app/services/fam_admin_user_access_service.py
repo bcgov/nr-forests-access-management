@@ -125,6 +125,12 @@ class FamAdminUserAccessService:
         Constract (auth_key = DELEGATED_ADMIN) access grants.
         """
         delegated_admin_grants_details = []
+
+        # The return type structure is (itertools._grouper object).
+        # However, it is similar like a list of grouped roles in iterator,
+        # like below with "list(group)" for each iteraction:
+        # 1 iteration: [(application_id=2, FamRole(role_id=1)), (application_id=2, FamRole(role_id=2))]
+        # 2 iteration: [(application_id=3, FamRole(role_id=5)), (application_id=3, FamRole(role_id=6))]
         app_grouped_granted_roles = \
             itertools.groupby(granted_roles, (
                 lambda fam_role: fam_role.application_id))
