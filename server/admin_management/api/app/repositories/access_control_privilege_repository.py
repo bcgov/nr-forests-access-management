@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from api.app.models.model import FamAccessControlPrivilege, FamApplication, FamRole
+from api.app.models.model import FamAccessControlPrivilege, FamRole
 from api.app.schemas import FamAccessControlPrivilegeCreateDto
 from sqlalchemy.orm import Session, joinedload
 
@@ -28,6 +28,16 @@ class AccessControlPrivilegeRepository:
         self, access_control_privilege_id: int
     ) -> FamAccessControlPrivilege:
         return self.db.get(FamAccessControlPrivilege, access_control_privilege_id)
+
+    def get_acp_by_application_id(
+        self, application_id: int
+    ) -> List[FamAccessControlPrivilege]:
+        return (
+            self.db.query(FamAccessControlPrivilege)
+            .join(FamRole)
+            .filter(FamRole.application_id == application_id)
+            .all()
+        )
 
     def create_access_control_privilege(
         self, fam_access_control_priviliege: FamAccessControlPrivilegeCreateDto

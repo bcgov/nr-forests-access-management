@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamApplicationBase } from './fam-application-base';
+import { FamRoleWithClientDto } from './fam-role-with-client-dto';
 // May contain unused imports in some cases
 // @ts-ignore
 import { FamUserInfoDto } from './fam-user-info-dto';
@@ -23,38 +23,38 @@ import { FamUserInfoDto } from './fam-user-info-dto';
 /**
  * 
  * @export
- * @interface FamAppAdminGetResponse
+ * @interface FamAccessControlPrivilegeGetResponse
  */
-export interface FamAppAdminGetResponse {
+export interface FamAccessControlPrivilegeGetResponse {
     /**
      * 
      * @type {number}
-     * @memberof FamAppAdminGetResponse
+     * @memberof FamAccessControlPrivilegeGetResponse
      */
-    'application_admin_id': number;
+    'access_control_privilege_id': number;
     /**
      * 
      * @type {number}
-     * @memberof FamAppAdminGetResponse
+     * @memberof FamAccessControlPrivilegeGetResponse
      */
     'user_id': number;
     /**
      * 
      * @type {number}
-     * @memberof FamAppAdminGetResponse
+     * @memberof FamAccessControlPrivilegeGetResponse
      */
-    'application_id': number;
+    'role_id': number;
     /**
      * 
      * @type {FamUserInfoDto}
-     * @memberof FamAppAdminGetResponse
+     * @memberof FamAccessControlPrivilegeGetResponse
      */
     'user': FamUserInfoDto;
     /**
      * 
-     * @type {FamApplicationBase}
-     * @memberof FamAppAdminGetResponse
+     * @type {FamRoleWithClientDto}
+     * @memberof FamAccessControlPrivilegeGetResponse
      */
-    'application': FamApplicationBase;
+    'role': FamRoleWithClientDto;
 }
 

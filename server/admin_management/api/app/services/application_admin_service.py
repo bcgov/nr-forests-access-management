@@ -29,13 +29,6 @@ class ApplicationAdminService:
             application_admin_id
         )
 
-    def get_application_admin_by_application_id(
-        self, application_id: int
-    ) -> List[schemas.FamAppAdminGetResponse]:
-        return self.application_admin_repo.get_application_admin_by_application_id(
-            application_id
-        )
-
     def create_application_admin(
         self, request: schemas.FamAppAdminCreateRequest, requester: str
     ) -> schemas.FamAppAdminGetResponse:
