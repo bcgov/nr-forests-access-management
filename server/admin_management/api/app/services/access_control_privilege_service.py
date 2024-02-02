@@ -6,7 +6,7 @@ from typing import List
 from api.app import constants as famConstants
 from api.app import schemas
 
-from api.app.integration.forest_client import ForestClientService
+from api.app.integration.forest_client_integration import ForestClientService
 from api.app.services.user_service import UserService
 from api.app.services.role_service import RoleService
 from api.app.repositories.access_control_privilege_repository import (
