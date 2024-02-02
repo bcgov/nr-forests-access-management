@@ -58,6 +58,7 @@ watch(
         resetVerifiedUserIdentity();
     }
 );
+
 </script>
 
 <template>
@@ -116,7 +117,11 @@ watch(
             </div>
         </Field>
 
-        <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
+        <div
+            v-if="verifiedUserIdentity"
+            id="UserIdentityCard"
+            class="col-md-5 px-0"
+        >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
             ></UserIdentityCard>
