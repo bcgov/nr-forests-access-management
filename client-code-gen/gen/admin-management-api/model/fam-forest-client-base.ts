@@ -13,21 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { ValidationError } from './validation-error';
 
 /**
  * 
  * @export
- * @interface HTTPValidationError
+ * @interface FamForestClientBase
  */
-export interface HTTPValidationError {
+export interface FamForestClientBase {
     /**
      * 
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
+     * @type {string}
+     * @memberof FamForestClientBase
      */
-    'detail'?: Array<ValidationError>;
+    'forest_client_number': string;
 }
 
