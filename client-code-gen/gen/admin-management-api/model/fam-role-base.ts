@@ -15,19 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ValidationError } from './validation-error';
+import { RoleType } from './role-type';
 
 /**
  * 
  * @export
- * @interface HTTPValidationError
+ * @interface FamRoleBase
  */
-export interface HTTPValidationError {
+export interface FamRoleBase {
     /**
      * 
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
+     * @type {string}
+     * @memberof FamRoleBase
      */
-    'detail'?: Array<ValidationError>;
+    'role_name': string;
+    /**
+     * 
+     * @type {RoleType}
+     * @memberof FamRoleBase
+     */
+    'role_type_code': RoleType;
 }
+
+
 

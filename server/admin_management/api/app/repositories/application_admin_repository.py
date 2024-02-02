@@ -39,15 +39,6 @@ class ApplicationAdminRepository:
             .one_or_none()
         )
 
-    def get_application_admin_by_application_id(
-        self, application_id: int
-    ) -> List[FamApplicationAdmin]:
-        return (
-            self.db.query(FamApplicationAdmin)
-            .filter(FamApplicationAdmin.application_id == application_id)
-            .all()
-        )
-
     def create_application_admin(
         self, application_id: int, user_id: int, requester: str
     ) -> FamApplicationAdmin:

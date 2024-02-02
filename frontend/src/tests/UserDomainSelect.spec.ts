@@ -4,6 +4,9 @@ import { UserType } from 'fam-app-acsctl-api';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
+
+fixJsdomCssErr()
 
 describe('UserDomainSelect', () => {
     let wrapper: VueWrapper;
