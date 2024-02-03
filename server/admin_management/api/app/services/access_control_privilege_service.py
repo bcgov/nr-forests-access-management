@@ -87,12 +87,12 @@ class AccessControlPrivilegeService:
                 if not validator.forest_client_number_exists():
                     error_msg = (
                         "Invalid access control privilege request. "
-                        + f"Forest Client Number {forest_client_number} does not exist."
+                        + f"Forest client number {forest_client_number} does not exist."
                     )
                 elif not validator.forest_client_active():
                     error_msg = (
                         "Invalid access control privilege request. "
-                        + f"Forest Client {forest_client_number} is not in Active status: "
+                        + f"Forest client number {forest_client_number} is not in active status: "
                         + f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}"
                     )
 
