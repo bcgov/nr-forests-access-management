@@ -216,7 +216,7 @@ def authorize_by_app_id(
     application = application_service.get_application(application_id)
     if not application:
         raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={
                 "code": ERROR_INVALID_APPLICATION_ID,
                 "description": f"Application ID {application_id} not found",
