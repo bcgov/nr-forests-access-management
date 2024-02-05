@@ -18,7 +18,7 @@ router = APIRouter()
     status_code=200,
     dependencies=[Depends(authorize)],
     name="Admin user access privilege",
-    description="Admin access privilege/grants for logged on user.",
+    description="Access privilege for logged on admin user for what applications/roles(scoped) the user can grant.",
 )
 async def get_admin_user_access(
     requester: Requester = Depends(get_current_requester),  # Internally Requester already has basic token claim validated.
