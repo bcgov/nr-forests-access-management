@@ -28,6 +28,11 @@ class Requester(BaseModel):
 
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
+
+    # This is the fam_user.user_id (primary key in fam_user table). When JWT token is validated based on above
+    # "cognito_user_id" (external linking piece for logged on user to AWS Cognito) This "Requester" is retrieved
+    # from datbase and the user record will contain this user_id; and also is the reference-id from other database
+    # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
     user_id: Optional[int] = None
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
