@@ -257,7 +257,7 @@ class FamAuthGrantDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamAdminUserAccessResponse(BaseModel):
+class AdminUserAccessResponse(BaseModel):
     access: List[FamAuthGrantDto]
 
     model_config = ConfigDict(from_attributes=True)

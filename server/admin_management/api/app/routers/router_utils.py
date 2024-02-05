@@ -4,10 +4,9 @@ import logging
 from api.app import database
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
+from api.app.services.admin_user_access_service import AdminUserAccessService
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
-from api.app.services.fam_admin_user_access_service import \
-    FamAdminUserAccessService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from fastapi import Depends
@@ -53,8 +52,8 @@ async def access_control_privilege_service_instance(
     return access_control_privilege_service
 
 
-async def fam_admin_user_access_service_instance(
+async def admin_user_access_service_instance(
     db: Session = Depends(database.get_db),
-) -> FamAdminUserAccessService:
-    fam_admin_user_access_service = FamAdminUserAccessService(db)
-    return fam_admin_user_access_service
+) -> AdminUserAccessService:
+    admin_user_access_service = AdminUserAccessService(db)
+    return admin_user_access_service

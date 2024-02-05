@@ -10,21 +10,21 @@ from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
-from api.app.schemas import (FamAdminUserAccessResponse, FamApplicationDto,
+from api.app.schemas import (AdminUserAccessResponse, FamApplicationDto,
                              FamAuthGrantDto, FamGrantDetailDto, FamRoleDto)
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
 
-class FamAdminUserAccessService:
+class AdminUserAccessService:
     def __init__(self, db: Session):
         self.application_admin_repo = ApplicationAdminRepository(db)
         self.access_control_privilege_repo = AccessControlPrivilegeRepository(db)
         self.application_repo = ApplicationRepository(db)
         self.role_repo = RoleRepository(db)
 
-    def get_access_grants(self, user_id: int) -> FamAdminUserAccessResponse:
+    def get_access_grants(self, user_id: int) -> AdminUserAccessResponse:
         """
         Find out access privilege granted for the user
         (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN) .
@@ -67,7 +67,7 @@ class FamAdminUserAccessService:
             )
 
         # final response constructed for list of access grants.
-        admin_user_access_response = FamAdminUserAccessResponse(**{
+        admin_user_access_response = AdminUserAccessResponse(**{
             "access": user_access_grants
         })
 

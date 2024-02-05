@@ -2,8 +2,8 @@ import logging.config
 import os.path
 
 from api.app.routers import (router_access_control_privilege,
-                             router_application, router_application_admin,
-                             router_fam_admin_user_access, router_smoke_test)
+                             router_admin_user_accesses, router_application,
+                             router_application_admin, router_smoke_test)
 from api.config.config import get_allow_origins, get_root_path
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -81,9 +81,9 @@ app.include_router(
     tags=["FAM Access Control Privileges"],
 )
 app.include_router(
-    router_fam_admin_user_access.router,
-    prefix=apiPrefix + "/fam-admin-user-accesses",
-    tags=["FAM Admin User Accesses"],
+    router_admin_user_accesses.router,
+    prefix=apiPrefix + "/admin-user-accesses",
+    tags=["Admin User Accesses"],
 )
 
 
