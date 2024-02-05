@@ -1,7 +1,12 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import httpInstance from '@/services/http/HttpCommon';
 import type { AxiosInstance } from 'axios';
-import { FAMAccessControlPrivilegeApi, FAMApplicationAdminApi, FAMApplicationsApi } from 'fam-admin-mgmt-api/api';
+import {
+    AdminUserAccessesApi,
+    FAMAccessControlPrivilegesApi,
+    FAMApplicationAdminApi,
+    FAMApplicationsApi
+} from 'fam-admin-mgmt-api/api';
 import {
     Configuration,
     FAMApplicationsApi as FAMAppsApi, // give alias so name does not clash with fam-admin-mgmt-api's FAMApplicationsApi
@@ -20,7 +25,8 @@ type AppAccessControlApiType = {
 type AdminManagementApiType = {
     applicationAdminApi: FAMApplicationAdminApi;
     applicationsApi: FAMApplicationsApi;
-    delegatedAdminApi: FAMAccessControlPrivilegeApi
+    delegatedAdminApi: FAMAccessControlPrivilegesApi;
+    adminUserAccessesApi: AdminUserAccessesApi;
 };
 
 export default class ApiServiceFactory {
@@ -70,9 +76,13 @@ export default class ApiServiceFactory {
                 adminManagementBaseURL
             ),
             delegatedAdminApi: this.createApiInstance(
-                FAMAccessControlPrivilegeApi,
+                FAMAccessControlPrivilegesApi,
                 adminManagementBaseURL
             ),
+            adminUserAccessesApi: this.createApiInstance(
+                AdminUserAccessesApi,
+                adminManagementBaseURL
+            )
         };
     }
 
