@@ -30,7 +30,7 @@ type AdminManagementApiType = {
 };
 
 export default class ApiServiceFactory {
-    static instance: ApiServiceFactory;
+    private static instance: ApiServiceFactory;
 
     private environmentSettings: EnvironmentSettings;
     private appAccessControlApiService: AppAccessControlApiType;
