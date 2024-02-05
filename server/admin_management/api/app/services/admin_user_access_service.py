@@ -27,10 +27,11 @@ class AdminUserAccessService:
     def get_access_grants(self, user_id: int) -> AdminUserAccessResponse:
         """
         Find out access privilege granted for the user
-        (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN) .
+        (FAM_ADMIN, APP_ADMIN, DELEGATED_ADMIN).
 
         :param user_id: primary id that is associated with the user.
-        :return: List of admin grants for the user or None.
+        :return: List of admin access privilege for the user for what
+                 applications/roles(scoped) the user can grant or None.
         """
         # FamApplication(s) granted for Admin user (FAM and others).
         user_admin_privilege = self.application_admin_repo \
