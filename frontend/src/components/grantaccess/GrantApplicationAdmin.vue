@@ -3,11 +3,11 @@ import { onMounted, ref } from 'vue';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { object, string } from 'yup';
 import router from '@/router';
+import Dropdown from 'primevue/dropdown';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { UserType, type FamApplication } from 'fam-app-acsctl-api';
 import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
-import ApplicationSelect from '@/components/common/ApplicationSelect.vue';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity } from '@/enum/SeverityEnum';
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
         as="div"
     >
         <div class="page-body">
-            <form id="grantAccessForm" class="form-container">
+            <form id="grantAdminForm" class="form-container">
                 <StepContainer
                     title="User information"
                     :subtitle="`Enter the user information to add a new admin ${
@@ -137,10 +137,15 @@ const handleSubmit = async () => {
                         aria-label="Application Select"
                         v-model="formData.application"
                     >
-                        <ApplicationSelect
-                            v-model="formData.application"
-                            :options="(applications as FamApplication[])"
-                        />
+                        <div class="application-admin-group">
+                            <label>Select application</label>
+                            <Dropdown
+                                v-model="formData.application"
+                                :options="(applications as FamApplication[])"
+                                optionLabel="application_description"
+                                placeholder="Choose an application"
+                            />
+                        </div>
                         <ErrorMessage
                             class="invalid-feedback"
                             name="application"
@@ -176,3 +181,8 @@ const handleSubmit = async () => {
         </div>
     </VeeForm>
 </template>
+<style scoped lang="scss">
+.application-admin-group {
+    display: grid;
+}
+</style>

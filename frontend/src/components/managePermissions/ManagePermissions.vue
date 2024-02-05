@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType, watch } from 'vue';
+import { onUnmounted, shallowRef, type PropType } from 'vue';
+import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-import ApplicationSelect from '@/components/common/ApplicationSelect.vue';
 
 import {
     applicationsUserAdministers,
@@ -19,14 +19,8 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-
 import { FAM_APPLICATION_ID } from '@/store/Constants';
-import { Severity } from '@/enum/SeverityEnum';
-import { IconSize } from '@/enum/IconEnum';
-import type {
-    FamApplication,
-    FamApplicationUserRoleAssignmentGet,
-} from 'fam-app-acsctl-api';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
@@ -34,6 +28,8 @@ import {
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
 } from '@/services/fetchData';
+import { Severity } from '@/enum/SeverityEnum';
+import { IconSize } from '@/enum/IconEnum';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -54,28 +50,20 @@ const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
 );
 
-const manageApplicationSelected = shallowRef<FamApplication>(
-    selectedApplication.value as FamApplication
-);
-
 onUnmounted(() => {
     resetNotification();
 });
 
-watch(manageApplicationSelected, async (newManageApplicationSelected) => {
-    setSelectedApplication(
-        newManageApplicationSelected
-            ? JSON.stringify(newManageApplicationSelected)
-            : null
-    );
-    if (newManageApplicationSelected?.application_id === FAM_APPLICATION_ID) {
+const onApplicationSelected = async (e: DropdownChangeEvent) => {
+    setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+    if (e.value.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
     }
-});
+};
 
 const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
@@ -122,11 +110,14 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
     <div class="page-body">
         <div class="application-group">
-            <ApplicationSelect
-                v-model="manageApplicationSelected"
+            <label>You are modifying access in this application:</label>
+            <Dropdown
+                v-model="selectedApplication"
+                @change="onApplicationSelected"
                 :options="applicationsUserAdministers"
-                label="You are modifying access in this application:"
+                optionLabel="application_description"
                 placeholder="Choose an application to manage permissions"
+                class="application-dropdown"
             />
         </div>
 
@@ -190,9 +181,15 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 @import '@/assets/styles/base.scss';
 .application-group {
     display: grid;
+}
 
-    label {
-        margin-bottom: 0.5rem;
+.application-dropdown {
+    max-width: calc(100vw - 3rem);
+    height: 3rem;
+    padding: 0;
+
+    &:deep(.p-dropdown-label) {
+        padding: 0.8375rem 1rem;
     }
 }
 
@@ -206,6 +203,12 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
     width: calc(100vw + 3rem) !important;
 }
 
+@media (min-width: 495px) {
+    .application-dropdown {
+        max-width: 29rem;
+    }
+}
+
 @media (min-width: 768px) {
     .dashboard-background-layout {
         width: 100vw !important;
@@ -213,6 +216,10 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 }
 
 @media (min-width: 1024px) {
+    .application-dropdown {
+        max-width: 38rem;
+    }
+
     .dashboard-background-layout {
         width: calc(100vw - 16rem) !important;
     }
