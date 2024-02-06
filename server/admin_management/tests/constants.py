@@ -38,6 +38,13 @@ TEST_NEW_APPLICATION_ADMIN = {
     "user_name": TEST_USER_NAME,
     "application_id": TEST_APPLICATION_ADMIN_APPLICATION_ID,
 }
+TEST_FAM_ADMIN_USER = schemas.FamUserDto(
+    **{
+        "user_type_code": famConstants.UserType.IDIR,
+        "user_name": f"ADMIN_{TEST_USER_NAME}",
+        "create_user": TEST_CREATOR,
+    }
+)
 
 # -------------------- test forest client data ---------------------- #
 TEST_NON_EXIST_FOREST_CLIENT_NUMBER = "99999999"
