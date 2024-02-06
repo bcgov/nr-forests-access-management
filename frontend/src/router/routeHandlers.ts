@@ -36,7 +36,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let userRolesFetchResult;
     // Requires fetching applications the user administers.
     await asyncWrap(fetchApplications());
-    if(selectedApplicationId.value === FAM_APPLICATION_ID) {
+    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
         userRolesFetchResult = await asyncWrap(
@@ -49,7 +49,6 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     });
     return true;
 };
-
 
 const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized
@@ -71,9 +70,27 @@ const beforeEnterGrantUserPermissionRoute = async (
     return true;
 };
 
+const beforeEnterGrantApplicationAdminRoute = async (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+) => {
+    if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
+        const routeError = new FamRouteError(
+            RouteErrorName.NOT_FAM_ADMIN,
+            "This access is restricted",
+            { to, from }
+        );
+        emitRouteToastError(routeError);
+        return { path: routeItems.dashboard.path };
+    }
+    populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
+    return true;
+}
+
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
 };
 
 // --- beforeEach Route Handler

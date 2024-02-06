@@ -1,5 +1,8 @@
 from enum import Enum
 
+APPLICATION_FAM = "FAM"
+COGNITO_USERNAME_KEY = "username"
+
 
 class AppEnv(str, Enum):
     APP_ENV_TYPE_DEV = "DEV"
@@ -35,8 +38,6 @@ class AdminRoleAuthGroup(str, Enum):
     APP_ADMIN = "APP_ADMIN"
     DELEGATED_ADMIN = "DELEGATED_ADMIN"
 
-
-COGNITO_USERNAME_KEY = "username"
 
 FOREST_CLIENT_STATUS = {
     "KEY": "clientStatusCode",

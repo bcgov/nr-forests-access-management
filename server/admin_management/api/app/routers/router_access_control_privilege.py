@@ -3,26 +3,21 @@ from typing import List
 
 from api.app import jwt_validation, schemas
 from api.app.models import model as models
-from api.app.routers.router_guards import (
-    authorize_by_application_role,
-    authorize_by_app_id,
-    enforce_self_grant_guard,
-    get_current_requester,
-)
+from api.app.routers.router_guards import (authorize_by_app_id,
+                                           authorize_by_application_role,
+                                           enforce_self_grant_guard,
+                                           get_current_requester)
 from api.app.routers.router_utils import (
-    access_control_privilege_service_instance,
-    role_service_instance,
-    user_service_instance,
-)
+    access_control_privilege_service_instance, role_service_instance,
+    user_service_instance)
 from api.app.schemas import Requester
-from api.app.services.access_control_privilege_service import (
-    AccessControlPrivilegeService,
-)
+from api.app.services.access_control_privilege_service import \
+    AccessControlPrivilegeService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
 from fastapi import APIRouter, Depends, Request
-
 
 LOGGER = logging.getLogger(__name__)
 

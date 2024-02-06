@@ -1,10 +1,9 @@
 import logging
-from sqlalchemy.orm import Session
 from typing import List
 
-from api.app.schemas import FamAccessControlPrivilegeCreateDto
 from api.app.models.model import FamAccessControlPrivilege, FamRole
-
+from api.app.schemas import FamAccessControlPrivilegeCreateDto
+from sqlalchemy.orm import Session, joinedload
 
 LOGGER = logging.getLogger(__name__)
 
@@ -49,3 +48,22 @@ class AccessControlPrivilegeRepository:
         self.db.flush()
         self.db.refresh(db_item)
         return db_item
+
+    def get_user_delegated_admin_grants(self, user_id: int) -> List[FamRole]:
+        """
+        Find out from `app_fam.fam_access_control_privilege` the applications' roles
+            the user is allow to grant.
+
+        :param user_id: primary id that is associated with the user.
+        :return: List of "roles" the user is allowed to grant or None.
+        """
+        return (
+            self.db.query(FamRole)
+                .options(joinedload(FamRole.application))  # also loads relationship
+                .select_from(FamAccessControlPrivilege)
+                .join(FamAccessControlPrivilege.role)
+                .join(FamAccessControlPrivilege.user)
+                .filter(FamAccessControlPrivilege.user_id == user_id)
+                .order_by(FamRole.application_id, FamRole.role_id)
+                .all()
+        )

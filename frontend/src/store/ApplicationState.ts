@@ -10,8 +10,8 @@ export const applicationsUserAdministers = ref<FamApplication[]>([]);
 export const selectedApplication = ref<FamApplication | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
-              localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
-          )
+            localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
+        )
         : null
 );
 

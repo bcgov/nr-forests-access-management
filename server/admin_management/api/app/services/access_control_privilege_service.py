@@ -1,19 +1,17 @@
 import logging
 from http import HTTPStatus
-from sqlalchemy.orm import Session
 from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
 
 from api.app.integration.forest_client_integration import ForestClientService
-from api.app.services.user_service import UserService
+from api.app.repositories.access_control_privilege_repository import \
+    AccessControlPrivilegeRepository
 from api.app.services.role_service import RoleService
-from api.app.repositories.access_control_privilege_repository import (
-    AccessControlPrivilegeRepository,
-)
-
+from api.app.services.user_service import UserService
 from api.app.utils import utils
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 

@@ -28,6 +28,12 @@ class Requester(BaseModel):
 
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
+
+    # This is the fam_user.user_id (primary key in fam_user table). When JWT token is validated based on above
+    # "cognito_user_id" (external linking piece for logged on user to AWS Cognito) This "Requester" is retrieved
+    # from datbase and the user record will contain this user_id; and also is the reference-id from other database
+    # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
+    user_id: Optional[int] = None
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
@@ -224,5 +230,50 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
         FamAccessControlPrivilegeGetResponse, FamAccessControlPrivilegeCreateErrorDto
     ] = None
     error_message: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- FAM Admin User Access ---------------------------------------- #
+class FamApplicationDto(BaseModel):
+    id: int = Field(validation_alias="application_id")
+    name: Annotated[str, StringConstraints(max_length=100)] = \
+        Field(validation_alias="application_name")
+    description: Annotated[Optional[str], StringConstraints(max_length=200)] = \
+        Field(default=None, validation_alias="application_description")
+    env: Optional[famConstants.AppEnv] = \
+        Field(validation_alias="app_environment", default=None)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamRoleDto(BaseModel):
+    # Note, this "id" for role can either be concrete role's or abstract role's id.
+    # In abstract role with this id, forest_clients should be present.
+    id: int = Field(validation_alias="role_id")
+    name: Annotated[str, StringConstraints(max_length=100)] = \
+        Field(validation_alias="role_name")
+    type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
+    forest_clients: Optional[List[str]] = Field(default=None)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamGrantDetailDto(BaseModel):
+    application: FamApplicationDto
+    roles: Optional[List[FamRoleDto]] = Field(default=None)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FamAuthGrantDto(BaseModel):
+    auth_key: famConstants.AdminRoleAuthGroup
+    grants: List[FamGrantDetailDto]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminUserAccessResponse(BaseModel):
+    access: List[FamAuthGrantDto]
 
     model_config = ConfigDict(from_attributes=True)
