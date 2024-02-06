@@ -6,8 +6,9 @@ from api.app import constants as famConstants
 from api.app import schemas
 
 from api.app.integration.forest_client_integration import ForestClientService
-from api.app.repositories.access_control_privilege_repository import \
-    AccessControlPrivilegeRepository
+from api.app.repositories.access_control_privilege_repository import (
+    AccessControlPrivilegeRepository,
+)
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.utils import utils
@@ -81,51 +82,29 @@ class AccessControlPrivilegeService:
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
                 validator = ForestClientValidator(forest_client_number)
-                error_msg = ""
                 if not validator.forest_client_number_exists():
                     error_msg = (
-                        "Invalid access control privilege request. "
+                        "Invalid role assignment request. "
                         + f"Forest client number {forest_client_number} does not exist."
                     )
-                elif not validator.forest_client_active():
-                    error_msg = (
-                        "Invalid access control privilege request. "
-                        + f"Forest client number {forest_client_number} is not in active status: "
-                        + f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}"
-                    )
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-                if error_msg != "":
-                    # raise error when adding privilege for only one forest client number
-                    if len(request.forest_client_numbers) == 1:
-                        utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
-                    else:
-                        create_return_list.append(
-                            schemas.FamAccessControlPrivilegeCreateResponse(
-                                **{
-                                    "status_code": HTTPStatus.BAD_REQUEST,
-                                    "detail": schemas.FamAccessControlPrivilegeCreateErrorDto(
-                                        **{
-                                            "user_id": fam_user.user_id,
-                                            "user": fam_user,
-                                            "forest_client_number": forest_client_number,
-                                            "parent_role": fam_role,
-                                        }
-                                    ),
-                                    "error_message": error_msg,
-                                }
-                            )
-                        )
-                else:
-                    # Check if child role exists or add a new child role
-                    child_role = (
-                        self.role_service.find_or_create_forest_client_child_role(
-                            forest_client_number, fam_role, requester
-                        )
+                if not validator.forest_client_active():
+                    error_msg = (
+                        "Invalid role assignment request. "
+                        + f"Forest client number {forest_client_number} is not in active status: "
+                        + f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}."
                     )
-                    handle_create_return = self.grant_privilege(
-                        fam_user.user_id, child_role.role_id, requester
-                    )
-                    create_return_list.append(handle_create_return)
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+                # Check if child role exists or add a new child role
+                child_role = self.role_service.find_or_create_forest_client_child_role(
+                    forest_client_number, fam_role, requester
+                )
+                handle_create_return = self.grant_privilege(
+                    fam_user.user_id, child_role.role_id, requester
+                )
+                create_return_list.append(handle_create_return)
 
         else:
             handle_create_return = self.grant_privilege(

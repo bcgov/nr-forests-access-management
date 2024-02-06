@@ -4,17 +4,21 @@ import starlette.testclient
 
 from api.app.main import apiPrefix
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.routers.router_guards import ERROR_INVALID_ROLE_ID, ERROR_INVALID_APPLICATION_ID
+from api.app.routers.router_guards import (
+    ERROR_INVALID_ROLE_ID,
+    ERROR_INVALID_APPLICATION_ID,
+)
 from tests.constants import (
     TEST_FOREST_CLIENT_NUMBER,
     TEST_FOREST_CLIENT_NUMBER_TWO,
+    TEST_INACTIVE_FOREST_CLIENT_NUMBER,
     TEST_FOM_DEV_ADMIN_ROLE,
     TEST_NOT_EXIST_ROLE_ID,
     TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
     TEST_FAM_ADMIN_ROLE,
     TEST_NOT_EXIST_APPLICATION_ID,
     INVALID_APPLICATION_ID,
-    TEST_APPLICATION_ID_FOM_DEV
+    TEST_APPLICATION_ID_FOM_DEV,
 )
 import tests.jwt_utils as jwt_utils
 
@@ -84,6 +88,22 @@ def test_create_access_control_privilege_many(
     assert len(data) == 2
     assert data[0].get("status_code") == HTTPStatus.CONFLICT
     assert data[1].get("status_code") == HTTPStatus.OK
+
+    # test create access control privilege with invalid forest client numbers
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+            "forest_client_numbers": [
+                TEST_FOREST_CLIENT_NUMBER,
+                TEST_INACTIVE_FOREST_CLIENT_NUMBER,
+            ],
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find("is not in active status") != -1
 
 
 def test_get_access_control_privileges_by_application_id(
