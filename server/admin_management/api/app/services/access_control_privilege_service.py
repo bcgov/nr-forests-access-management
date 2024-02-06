@@ -84,14 +84,14 @@ class AccessControlPrivilegeService:
                 validator = ForestClientValidator(forest_client_number)
                 if not validator.forest_client_number_exists():
                     error_msg = (
-                        "Invalid role assignment request. "
+                        "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} does not exist."
                     )
                     utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
                 if not validator.forest_client_active():
                     error_msg = (
-                        "Invalid role assignment request. "
+                        "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} is not in active status: "
                         + f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}."
                     )
