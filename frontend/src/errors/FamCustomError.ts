@@ -13,7 +13,8 @@ export class FamCustomError extends Error {
 
 export enum RouteErrorName {
     NOT_AUTHENTICATED_ERROR = 'NOT_AUTHENTICATED_ERROR',
-    NO_APPLICATION_SELECTED_ERROR = 'NO_APPLICATION_SELECTED_ERROR'
+    NO_APPLICATION_SELECTED_ERROR = 'NO_APPLICATION_SELECTED_ERROR',
+    NOT_FAM_ADMIN = "NOT_FAM_ADMIN"
 }
 
 type RouteInfo = {to: any, from: any};

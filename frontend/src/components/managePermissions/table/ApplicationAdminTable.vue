@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType  } from 'vue';
+import { reactive, ref, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -13,10 +13,7 @@ import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
-type emit = (
-    e: 'deleteAppAdmin',
-    item: FamAppAdminGetResponse
-) => void;
+type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 
 const props = defineProps({
     loading: {
@@ -24,11 +21,9 @@ const props = defineProps({
         default: false,
     },
     applicationAdmins: {
-        type: [Array] as PropType<
-            FamAppAdminGetResponse[] | undefined
-        >,
+        type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
-    }
+    },
 });
 
 const adminFilters = ref({
@@ -45,7 +40,6 @@ const adminFilters = ref({
     'application.app_environment': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
-
     },
 });
 
@@ -55,7 +49,7 @@ const emit = defineEmits<emit>();
 
 const confirmDeleteData = reactive({
     adminName: '',
-    role: 'ADMIN'
+    role: 'ADMIN',
 });
 
 const adminSearchChange = (newvalue: string) => {
@@ -74,8 +68,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
             emit('deleteAppAdmin', admin);
         },
     });
-}
-
+};
 </script>
 
 <template>
@@ -91,7 +84,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add application admin"
-                :btnRoute="routeItems.grantUserPermission.path"
+                :btnRoute="routeItems.grantAppAdmin.path"
                 :filter="adminFilters['global'].value"
                 @change="adminSearchChange"
             />
@@ -108,7 +101,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     'application.application_name',
                     'user.user_type.description',
                     'role.role_name',
-                    'application.app_environment'
+                    'application.app_environment',
                 ]"
                 paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
                 currentPageReportTemplate="{first} - {last} of {totalRecords} items"
@@ -139,9 +132,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     sortable
                 ></Column>
                 <Column field="role.role_name" header="Role" sortable>
-                    <template #body="{ data }">
-                        Admin
-                    </template></Column
+                    <template #body="{ data }"> Admin </template></Column
                 >
                 <Column header="Action">
                     <template #body="{ data }">
@@ -151,10 +142,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                             >
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
-                        <button
-                            class="btn btn-icon"
-                            @click="deleteAdmin(data)"
-                        >
+                        <button class="btn btn-icon" @click="deleteAdmin(data)">
                             <Icon icon="trash-can" :size="IconSize.small" />
                         </button>
                     </template>

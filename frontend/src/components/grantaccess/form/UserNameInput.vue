@@ -12,6 +12,10 @@ const props = defineProps({
     domain: { type: String, required: true },
     userId: { type: String, default: '' },
     fieldId: { type: String, default: 'userId' },
+    helperText: {
+        type: String,
+        default: 'Enter and verify the username for this user',
+    },
 });
 
 const emit = defineEmits(['change', 'setVerifyResult']);
@@ -86,7 +90,7 @@ watch(
                         id="userIdInput-helper"
                         class="helper-text"
                         v-if="!errorMessage"
-                        >Enter and verify the username for this user</small
+                        >{{ helperText }}</small
                     >
                     <ErrorMessage
                         class="invalid-feedback"
