@@ -13,10 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { FamAuthGrantDto } from './fam-auth-grant-dto';
 
-export * from './api/admin-user-accesses-api';
-export * from './api/famaccess-control-privileges-api';
-export * from './api/famapplication-admin-api';
-export * from './api/famapplications-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface AdminUserAccessResponse
+ */
+export interface AdminUserAccessResponse {
+    /**
+     * 
+     * @type {Array<FamAuthGrantDto>}
+     * @memberof AdminUserAccessResponse
+     */
+    'access': Array<FamAuthGrantDto>;
+}
 

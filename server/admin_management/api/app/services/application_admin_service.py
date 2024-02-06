@@ -1,14 +1,14 @@
 import logging
 from http import HTTPStatus
-from sqlalchemy.orm import Session
 from typing import List
 
 from api.app import schemas
+from api.app.repositories.application_admin_repository import \
+    ApplicationAdminRepository
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
-from api.app.repositories.application_admin_repository import ApplicationAdminRepository
-
 from api.app.utils import utils
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
