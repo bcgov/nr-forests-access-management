@@ -5,12 +5,12 @@ from typing import List
 from api.app import constants as famConstants
 from api.app import schemas
 
-from api.app.integration.forest_client_integration import ForestClientService
 from api.app.repositories.access_control_privilege_repository import (
     AccessControlPrivilegeRepository,
 )
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
+from api.app.services.validator_service import ForestClientValidator
 from api.app.utils import utils
 from sqlalchemy.orm import Session
 
@@ -79,21 +79,30 @@ class AccessControlPrivilegeService:
                 error_msg = "Invalid access control privilege request, missing forest client number."
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
+            forest_client_validator = ForestClientValidator()
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
-                validator = ForestClientValidator(forest_client_number)
-                if not validator.forest_client_number_exists():
+                forest_client_validator_return = (
+                    forest_client_validator.find_forest_client_number(
+                        forest_client_number
+                    )
+                )
+                if not forest_client_validator.forest_client_number_exists(
+                    forest_client_validator_return
+                ):
                     error_msg = (
                         "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} does not exist."
                     )
                     utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
-                if not validator.forest_client_active():
+                if not forest_client_validator.forest_client_active(
+                    forest_client_validator_return
+                ):
                     error_msg = (
                         "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} is not in active status: "
-                        + f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}."
+                        + f"{forest_client_validator.get_forest_client(forest_client_validator_return)[famConstants.FOREST_CLIENT_STATUS['KEY']]}."
                     )
                     utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
@@ -176,45 +185,3 @@ class AccessControlPrivilegeService:
             )
 
         return access_control_privilege_return
-
-
-class ForestClientValidator:
-    """
-    Purpose: More validations on inputs (other than basic validations) and
-             business rules validations (if any).
-    Cautious: Do not instantiate the class for more than one time per request.
-              It calls Forest Client API remotely if needs to.
-    """
-
-    LOGGER = logging.getLogger(__name__)
-
-    def __init__(self, forest_client_number: str):
-        LOGGER.debug(
-            f"Validator '{self.__class__.__name__}' with input '{forest_client_number}'."
-        )
-
-        # Note - this value should already be validated from schema input validation.
-        if forest_client_number is not None:
-            fc_api = ForestClientService()
-
-            # Locally stored (if any) for later use to prevent api calls again.
-            # Exact client number search - should only contain 1 result.
-            self.fc = fc_api.find_by_client_number(forest_client_number)
-            LOGGER.debug(f"Forest Client(s) retrieved: {self.fc}")
-
-    def forest_client_number_exists(self) -> bool:
-        # Exact client number search - should only contain 1 result.
-        return len(self.fc) == 1
-
-    def forest_client_active(self) -> bool:
-        return (
-            (
-                self.get_forest_client()[famConstants.FOREST_CLIENT_STATUS["KEY"]]
-                == famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"]
-            )
-            if self.forest_client_number_exists()
-            else False
-        )
-
-    def get_forest_client(self):
-        return self.fc[0] if self.forest_client_number_exists() else None

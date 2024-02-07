@@ -270,3 +270,11 @@ class AdminUserAccessResponse(BaseModel):
     access: List[FamAuthGrantDto]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- Forest Client Validator ---------------------------------------- #
+class ForestClientValidatorResponse(BaseModel):
+    clientNumber: str
+    clientName: str
+    clientStatusCode: str
+    clientTypeCode: str
