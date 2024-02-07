@@ -9,6 +9,7 @@ from api.app.routers.router_guards import (
     get_current_requester,
     validate_param_application_admin_id,
     validate_param_application_id,
+    validate_param_user_type,
 )
 from api.app.routers.router_utils import (
     application_admin_service_instance,
@@ -49,12 +50,12 @@ async def get_application_admins(
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),
         Depends(validate_param_application_id),
+        Depends(validate_param_user_type),
     ],
 )
 def create_application_admin(
     application_admin_request: schemas.FamAppAdminCreateRequest,
     request: Request,
-    db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
     application_admin_service: ApplicationAdminService = Depends(

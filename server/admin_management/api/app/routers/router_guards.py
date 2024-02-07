@@ -12,12 +12,8 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
-from api.app.schemas import (
-    Requester,
-    TargetUser,
-    FamAppAdminCreateRequest,
-)
-from api.app.constants import AdminRoleAuthGroup
+from api.app.schemas import Requester, TargetUser, FamAppAdminCreateRequest
+from api.app.constants import AdminRoleAuthGroup, UserType
 from api.app.models.model import FamUser, FamRole
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.access_control_privilege_service import (
@@ -37,6 +33,7 @@ ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_INVALID_APPLICATION_ADMIN_ID = "invalid_application_admin_id"
+ERROR_INVALID_USER_TYPE = "invalid_user_type"
 
 
 no_requester_exception = HTTPException(
@@ -257,7 +254,8 @@ async def validate_param_application_admin_id(
 
 
 async def validate_param_application_id(
-    application_admin_request: FamAppAdminCreateRequest, db: Session = Depends(database.get_db)
+    application_admin_request: FamAppAdminCreateRequest,
+    db: Session = Depends(database.get_db),
 ):
     application_service = ApplicationService(db)
     application = application_service.get_application(
@@ -269,6 +267,21 @@ async def validate_param_application_id(
             detail={
                 "code": ERROR_INVALID_APPLICATION_ID,
                 "description": f"Application ID {application_admin_request.application_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+async def validate_param_user_type(application_admin_request: FamAppAdminCreateRequest):
+    if (
+        not application_admin_request.user_type_code
+        or application_admin_request.user_type_code != UserType.IDIR
+    ):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_USER_TYPE,
+                "description": f"User type {application_admin_request.user_type_code} is not allowed",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
