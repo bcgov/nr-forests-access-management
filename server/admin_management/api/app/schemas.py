@@ -272,8 +272,8 @@ class AdminUserAccessResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ------------------------------------- Forest Client Validator ---------------------------------------- #
-class ForestClientValidationResponse(BaseModel):
+# ------------------------------------- Forest Client API Integraion ---------------------------------------- #
+class ForestClientIntegrationFindResponse(BaseModel):
     clientNumber: str
     clientName: str
     clientStatusCode: str

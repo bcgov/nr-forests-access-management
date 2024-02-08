@@ -1,8 +1,10 @@
 import logging
 from http import HTTPStatus
+from typing import List
 
 import requests
 from api.config import config
+from api.app.schemas import ForestClientIntegrationFindResponse
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ class ForestClientIntegrationService():
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def find_by_client_number(self, p_client_number: str):
+    def find_by_client_number(self, p_client_number: str) -> List[ForestClientIntegrationFindResponse]:
         """
         Find Forest Client(s) information based on p_client_number search query field.
 
