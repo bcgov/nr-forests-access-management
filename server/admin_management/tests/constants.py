@@ -34,7 +34,7 @@ TEST_APPLICATION_NAME_FAM = "FAM"
 TEST_APPLICATION_ADMIN_APPLICATION_ID = 3
 TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
 TEST_NEW_APPLICATION_ADMIN = {
-    "user_type_code": famConstants.UserType.BCEID,
+    "user_type_code": famConstants.UserType.IDIR,
     "user_name": TEST_USER_NAME,
     "application_id": TEST_APPLICATION_ADMIN_APPLICATION_ID,
 }
