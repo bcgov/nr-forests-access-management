@@ -49,6 +49,18 @@ class AccessControlPrivilegeRepository:
         self.db.refresh(db_item)
         return db_item
 
+    def delete_access_control_privilege(self, access_control_privilege_id: int):
+        record = (
+            self.db.query(FamAccessControlPrivilege)
+            .filter(
+                FamAccessControlPrivilege.access_control_privilege_id
+                == access_control_privilege_id
+            )
+            .one()
+        )
+        self.db.delete(record)
+        self.db.flush()
+
     def get_user_delegated_admin_grants(self, user_id: int) -> List[FamRole]:
         """
         Find out from `app_fam.fam_access_control_privilege` the applications' roles
@@ -59,11 +71,11 @@ class AccessControlPrivilegeRepository:
         """
         return (
             self.db.query(FamRole)
-                .options(joinedload(FamRole.application))  # also loads relationship
-                .select_from(FamAccessControlPrivilege)
-                .join(FamAccessControlPrivilege.role)
-                .join(FamAccessControlPrivilege.user)
-                .filter(FamAccessControlPrivilege.user_id == user_id)
-                .order_by(FamRole.application_id, FamRole.role_id)
-                .all()
+            .options(joinedload(FamRole.application))  # also loads relationship
+            .select_from(FamAccessControlPrivilege)
+            .join(FamAccessControlPrivilege.role)
+            .join(FamAccessControlPrivilege.user)
+            .filter(FamAccessControlPrivilege.user_id == user_id)
+            .order_by(FamRole.application_id, FamRole.role_id)
+            .all()
         )

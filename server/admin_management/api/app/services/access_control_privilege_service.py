@@ -4,8 +4,9 @@ from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
-from api.app.repositories.access_control_privilege_repository import \
-    AccessControlPrivilegeRepository
+from api.app.repositories.access_control_privilege_repository import (
+    AccessControlPrivilegeRepository,
+)
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.utils import utils
@@ -35,6 +36,11 @@ class AccessControlPrivilegeService:
     ) -> List[schemas.FamAccessControlPrivilegeGetResponse]:
         return self.access_control_privilege_repository.get_acp_by_application_id(
             application_id
+        )
+
+    def delete_access_control_privilege(self, access_control_privilege_id: int):
+        return self.access_control_privilege_repository.delete_access_control_privilege(
+            access_control_privilege_id
         )
 
     def create_access_control_privilege_many(
