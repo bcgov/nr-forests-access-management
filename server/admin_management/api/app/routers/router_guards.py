@@ -33,7 +33,7 @@ ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_INVALID_APPLICATION_ADMIN_ID = "invalid_application_admin_id"
-ERROR_INVALID_USER_TYPE = "invalid_user_type"
+ERROR_NOT_ALLOWED_USER_TYPE = "user_type_not_allowed"
 
 
 no_requester_exception = HTTPException(
@@ -280,7 +280,7 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail={
-                "code": ERROR_INVALID_USER_TYPE,
+                "code": ERROR_NOT_ALLOWED_USER_TYPE,
                 "description": f"User type {application_admin_request.user_type_code} is not allowed",
             },
             headers={"WWW-Authenticate": "Bearer"},

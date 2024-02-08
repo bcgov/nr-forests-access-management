@@ -9,7 +9,7 @@ from api.app.main import apiPrefix
 from api.app.routers.router_guards import (
     ERROR_INVALID_APPLICATION_ADMIN_ID,
     ERROR_INVALID_APPLICATION_ID,
-    ERROR_INVALID_USER_TYPE,
+    ERROR_NOT_ALLOWED_USER_TYPE,
 )
 from tests.constants import (
     TEST_APPLICATION_NAME_FAM,
@@ -83,7 +83,7 @@ def test_create_application_admin(
     )
     assert response.status_code == 400
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(ERROR_INVALID_USER_TYPE) != -1
+    assert str(response.json()["detail"]).find(ERROR_NOT_ALLOWED_USER_TYPE) != -1
 
     # test create with non exists application id
     response = test_client_fixture.post(
