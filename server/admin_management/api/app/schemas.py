@@ -133,13 +133,13 @@ class FamRoleCreateDto(FamRoleBase):
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
-    forest_client_number: Optional[
-        Annotated[str, StringConstraints(max_length=8)]
-    ] = Field(default=None, title="Forest Client this role is associated with")
+    forest_client_number: Optional[Annotated[str, StringConstraints(max_length=8)]] = (
+        Field(default=None, title="Forest Client this role is associated with")
+    )
     create_user: Annotated[str, StringConstraints(max_length=60)]
-    client_number: Optional[
-        FamForestClientCreateDto
-    ] = None  # this is matched with the model
+    client_number: Optional[FamForestClientCreateDto] = (
+        None  # this is matched with the model
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -226,12 +226,15 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
 # ------------------------------------- FAM Admin User Access ---------------------------------------- #
 class FamApplicationDto(BaseModel):
     id: int = Field(validation_alias="application_id")
-    name: Annotated[str, StringConstraints(max_length=100)] = \
-        Field(validation_alias="application_name")
-    description: Annotated[Optional[str], StringConstraints(max_length=200)] = \
-        Field(default=None, validation_alias="application_description")
-    env: Optional[famConstants.AppEnv] = \
-        Field(validation_alias="app_environment", default=None)
+    name: Annotated[str, StringConstraints(max_length=100)] = Field(
+        validation_alias="application_name"
+    )
+    description: Annotated[Optional[str], StringConstraints(max_length=200)] = Field(
+        default=None, validation_alias="application_description"
+    )
+    env: Optional[famConstants.AppEnv] = Field(
+        validation_alias="app_environment", default=None
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -240,8 +243,9 @@ class FamRoleDto(BaseModel):
     # Note, this "id" for role can either be concrete role's or abstract role's id.
     # In abstract role with this id, forest_clients should be present.
     id: int = Field(validation_alias="role_id")
-    name: Annotated[str, StringConstraints(max_length=100)] = \
-        Field(validation_alias="role_name")
+    name: Annotated[str, StringConstraints(max_length=100)] = Field(
+        validation_alias="role_name"
+    )
     type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
     forest_clients: Optional[List[str]] = Field(default=None)
 
@@ -266,3 +270,11 @@ class AdminUserAccessResponse(BaseModel):
     access: List[FamAuthGrantDto]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ------------------------------------- Forest Client API Integraion ---------------------------------------- #
+class ForestClientIntegrationFindResponse(BaseModel):
+    clientNumber: str
+    clientName: str
+    clientStatusCode: str
+    clientTypeCode: str

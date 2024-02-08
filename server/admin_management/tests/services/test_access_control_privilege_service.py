@@ -25,6 +25,8 @@ from tests.constants import (
     TEST_FOREST_CLIENT_NUMBER,
     TEST_FOREST_CLIENT_NUMBER_TWO,
     TEST_NOT_EXIST_ROLE_ID,
+    TEST_NON_EXIST_FOREST_CLIENT_NUMBER,
+    TEST_INACTIVE_FOREST_CLIENT_NUMBER,
 )
 
 
@@ -246,3 +248,72 @@ def test_create_access_control_privilege_many_invalid_role_id(
         )
     error_msg = f"Role id {TEST_NOT_EXIST_ROLE_ID} does not exist."
     assert str(e._excinfo).find(error_msg) != -1
+
+
+def test_create_access_control_privilege_many_invalid_forest_client(
+    access_control_privilege_service: AccessControlPrivilegeService,
+):
+    with pytest.raises(HTTPException) as e:
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **{
+                    **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                    "forest_client_numbers": [TEST_NON_EXIST_FOREST_CLIENT_NUMBER],
+                }
+            ),
+            TEST_CREATOR,
+        )
+    assert (
+        str(e._excinfo).find(
+            f"Forest client number {TEST_NON_EXIST_FOREST_CLIENT_NUMBER} does not exist"
+        )
+        != -1
+    )
+
+
+def test_create_access_control_privilege_many_inactive_forest_client(
+    access_control_privilege_service: AccessControlPrivilegeService,
+):
+    with pytest.raises(HTTPException) as e:
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **{
+                    **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                    "forest_client_numbers": [TEST_INACTIVE_FOREST_CLIENT_NUMBER],
+                }
+            ),
+            TEST_CREATOR,
+        )
+    assert (
+        str(e._excinfo).find(
+            f"Forest client number {TEST_INACTIVE_FOREST_CLIENT_NUMBER} is not in active status"
+        )
+        != -1
+    )
+
+
+def test_create_access_control_privilege_many_active_and_inactive_forest_client(
+    access_control_privilege_service: AccessControlPrivilegeService,
+):
+    # test create access control privilege for abstract parent role with 3 forest client numbers,
+    # one is inactive, one is active, one is invalid
+    with pytest.raises(HTTPException) as e:
+        access_control_privilege_service.create_access_control_privilege_many(
+            schemas.FamAccessControlPrivilegeCreateRequest(
+                **{
+                    **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                    "forest_client_numbers": [
+                        TEST_FOREST_CLIENT_NUMBER,
+                        TEST_INACTIVE_FOREST_CLIENT_NUMBER,
+                        TEST_NON_EXIST_FOREST_CLIENT_NUMBER,
+                    ],
+                }
+            ),
+            TEST_CREATOR,
+        )
+    assert (
+        str(e._excinfo).find(
+            f"Forest client number {TEST_INACTIVE_FOREST_CLIENT_NUMBER} is not in active status"
+        )
+        != -1
+    )
