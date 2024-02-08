@@ -21,17 +21,15 @@ const route = useRoute();
     <Breadcrumb
         v-if="route.meta.hasBreadcrumb"
         :model="breadcrumbState"
-        :pt="{
-            menuitem: { class: 'custom-menuitem' },
-        }"
     >
         <template #item="{ item }">
             <RouterLink
                 v-if="item.path"
                 :to="item.path"
-                class="custom-menuitem-link"
             >
-                <span class="custom-menutitem-text">{{ item.label }}</span>
+                <span>
+                    {{ item.label }}
+                </span>
             </RouterLink>
         </template>
     </Breadcrumb>
@@ -53,36 +51,5 @@ const route = useRoute();
     line-height: 1.125rem;
     letter-spacing: 0.01rem;
     color: $light-text-secondary;
-}
-
-.custom-menuitem:focus-visible,
-.custom-menuitem-link:focus-visible {
-    outline: none;
-}
-
-.custom-menuitem-link {
-    padding: 0.2rem;
-    text-decoration: none;
-}
-
-.custom-menuitem-link:focus {
-    box-shadow: inset 0 0px 0px 0.063rem $light-focus;
-}
-
-.custom-menuitem:last-child .custom-menuitem-link {
-    pointer-events: none;
-}
-
-.custom-menutitem-text {
-    color: $light-link-primary;
-}
-
-.custom-menutitem-text:hover {
-    color: $light-link-primary-hover;
-}
-
-.custom-menuitem:last-child .custom-menutitem-text {
-    color: $light-text-primary;
-    display: contents;
 }
 </style>
