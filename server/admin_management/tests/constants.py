@@ -24,10 +24,19 @@ TEST_NEW_IDIR_USER = schemas.FamUserDto(
     }
 )
 
+TEST_NEW_BCEID_USER = schemas.FamUserDto(
+    **{
+        "user_type_code": famConstants.UserType.BCEID,
+        "user_name": TEST_USER_NAME,
+        "create_user": TEST_CREATOR,
+    }
+)
+
 # ---------------------- test application data ---------------------- #
 TEST_NOT_EXIST_APPLICATION_ID = 0
 TEST_APPLICATION_ID_FAM = 1
 TEST_APPLICATION_ID_FOM_DEV = 2
+TEST_APPLICATION_ID_FOM_TEST = 3
 TEST_APPLICATION_NAME_FAM = "FAM"
 
 # -------------------- test application admin data ------------------ #

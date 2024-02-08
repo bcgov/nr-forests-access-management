@@ -167,7 +167,7 @@ def setup_new_app_admin(
 
     return __setup_new_app_admin
 
-
+# fixture uses FOM as defined application and roles in db
 @pytest.fixture(scope="function")
 def setup_new_fom_delegated_admin(
     access_control_privilege_repo: AccessControlPrivilegeRepository,
