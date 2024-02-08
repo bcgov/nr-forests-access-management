@@ -30,7 +30,7 @@ from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.access_control_privilege_service import (
     AccessControlPrivilegeService,
 )
-from api.app.services.validator_service import ForestClientValidator
+from api.app.integration.forest_client_integration import ForestClientIntegrationService
 
 
 LOGGER = logging.getLogger(__name__)
@@ -203,5 +203,6 @@ def access_control_privilege_service(db_pg_session: Session):
 
 
 @pytest.fixture(scope="function")
-def forest_client_validator():
-    return ForestClientValidator()
+def forest_client_integration_service():
+    return ForestClientIntegrationService()
+

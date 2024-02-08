@@ -273,7 +273,7 @@ class AdminUserAccessResponse(BaseModel):
 
 
 # ------------------------------------- Forest Client Validator ---------------------------------------- #
-class ForestClientValidatorResponse(BaseModel):
+class ForestClientValidationResponse(BaseModel):
     clientNumber: str
     clientName: str
     clientStatusCode: str
