@@ -17,7 +17,7 @@ import { setNotificationMsg } from '@/store/NotificationState';
 
 const defaultFormData = {
     userId: '',
-    application: Number,
+    application: null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const formValidationSchema = object({
@@ -75,10 +75,22 @@ const handleSubmit = async () => {
         })
         .catch((error) => {
             if (error.response?.status === 409) {
-                setNotificationMsg(
-                    Severity.warning,
-                    error.response.data.detail
-                );
+                // This is not a good way to check and replace a message error.
+                // Maybe we could implement a detail code in the backend's response,
+                // similar to what we have for 'self_grant_prohibited'
+                if (error.response.data.detail === 'User is admin already.') {
+                    setNotificationMsg(
+                        Severity.error,
+                        `User ${formData.value.userId.toUpperCase()} is already a ${
+                            formData.value.application.application_name
+                        } admin`
+                    );
+                } else {
+                    setNotificationMsg(
+                        Severity.error,
+                        error.response.data.detail
+                    );
+                }
             } else if (
                 error.response.data.detail.code === 'self_grant_prohibited'
             ) {
@@ -101,7 +113,7 @@ const handleSubmit = async () => {
 <template>
     <PageTitle
         title="Add application admin"
-        subtitle="Add a new application admin. All fields are mandatory unless noted"
+        subtitle="All fields are mandatory"
     />
     <VeeForm
         ref="form"
@@ -113,16 +125,12 @@ const handleSubmit = async () => {
             <form id="grantAdminForm" class="form-container">
                 <StepContainer
                     title="User information"
-                    :subtitle="`Enter the user information to add a new admin ${
-                        formData.application
-                            ? 'to ' + formData.application.application_name
-                            : ''
-                    }`"
+                    subtitle="Enter the user information to add a new application admin"
                 >
                     <UserNameInput
                         :domain="UserType.I"
                         :userId="formData.userId"
-                        helper-text="Only IDIR usernames are allowed"
+                        helper-text="Only IDIR users are allowed to be added as application admins"
                         @change="userIdChange"
                         @setVerifyResult="setVerifyUserIdPassed"
                     />

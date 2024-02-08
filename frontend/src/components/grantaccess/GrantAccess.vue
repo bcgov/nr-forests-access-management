@@ -218,13 +218,12 @@ const composeAndPushNotificationMessages = (
     }
     return '';
 };
-
 </script>
 
 <template>
     <PageTitle
         title="Add user permission"
-        subtitle="Add a new permission to a user. All fields are mandatory unless noted"
+        subtitle="All fields are mandatory"
     />
     <VeeForm
         ref="form"
@@ -234,10 +233,7 @@ const composeAndPushNotificationMessages = (
     >
         <div class="page-body">
             <form id="grantAccessForm" class="form-container">
-                <StepContainer
-                    title="User information"
-                    :subtitle="`Enter the user information to add a new user to ${selectedApplicationDisplayText}`"
-                >
+                <StepContainer title="User information">
                     <UserDomainSelect
                         :domain="formData.domain"
                         @change="userDomainChange"

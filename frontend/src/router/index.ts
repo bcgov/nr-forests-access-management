@@ -91,6 +91,7 @@ const routes = [
         meta: {
             requiresAuth: true,
             requiresAppSelected: true,
+            requiredPrivileges: ["FAM_ADMIN"],
             title: routeItems.grantAppAdmin.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
