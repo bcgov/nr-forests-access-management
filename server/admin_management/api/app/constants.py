@@ -38,3 +38,8 @@ class AdminRoleAuthGroup(str, Enum):
     APP_ADMIN = "APP_ADMIN"
     DELEGATED_ADMIN = "DELEGATED_ADMIN"
 
+
+FOREST_CLIENT_STATUS = {
+    "KEY": "clientStatusCode",
+    "CODE_ACTIVE": "ACT"
+}

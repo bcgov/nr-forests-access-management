@@ -4,11 +4,18 @@ from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
+
+from api.app.integration.forest_client_integration import ForestClientIntegrationService
 from api.app.repositories.access_control_privilege_repository import (
     AccessControlPrivilegeRepository,
 )
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
+from api.app.services.validator.forest_client_validator import (
+    forest_client_number_exists,
+    forest_client_active,
+    get_forest_client_status,
+)
 from api.app.utils import utils
 from sqlalchemy.orm import Session
 
@@ -82,9 +89,28 @@ class AccessControlPrivilegeService:
                 error_msg = "Invalid access control privilege request, missing forest client number."
                 utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
+            forest_client_integration_service = ForestClientIntegrationService()
             for forest_client_number in request.forest_client_numbers:
+                # validate the forest client number
+                forest_client_validator_return = (
+                    forest_client_integration_service.find_by_client_number(forest_client_number)
+                )
+                if not forest_client_number_exists(forest_client_validator_return):
+                    error_msg = (
+                        "Invalid access control privilege request. "
+                        + f"Forest client number {forest_client_number} does not exist."
+                    )
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+                if not forest_client_active(forest_client_validator_return):
+                    error_msg = (
+                        "Invalid access control privilege request. "
+                        + f"Forest client number {forest_client_number} is not in active status: "
+                        + f"{get_forest_client_status(forest_client_validator_return)}."
+                    )
+                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
                 # Check if child role exists or add a new child role
-                # NOSONAR TODO: validate the forest client number
                 child_role = self.role_service.find_or_create_forest_client_child_role(
                     forest_client_number, fam_role, requester
                 )

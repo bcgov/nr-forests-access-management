@@ -3,16 +3,15 @@ from http import HTTPStatus
 
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
-from api.app.constants import AdminRoleAuthGroup
+from api.app.constants import AdminRoleAuthGroup, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import (
     ERROR_INVALID_APPLICATION_ADMIN_ID,
     ERROR_INVALID_APPLICATION_ID,
+    ERROR_NOT_ALLOWED_USER_TYPE,
 )
 from tests.constants import (
-    INVALID_APPLICATION_ID,
-    TEST_APPLICATION_ADMIN_APPLICATION_ID,
     TEST_APPLICATION_NAME_FAM,
     TEST_FOM_DEV_ADMIN_ROLE,
     TEST_INVALID_USER_TYPE,
@@ -71,6 +70,20 @@ def test_create_application_admin(
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     assert response.json() is not None
     assert str(response.json()["detail"]).find("Input should be 'I' or 'B'") != -1
+
+    # test not allowed user type, only allow IDIR
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            "user_type_code": UserType.BCEID,
+            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
+            "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == 400
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(ERROR_NOT_ALLOWED_USER_TYPE) != -1
 
     # test create with non exists application id
     response = test_client_fixture.post(

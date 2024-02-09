@@ -79,13 +79,10 @@ class ApplicationAdminRepository:
         """
         return (
             self.db.query(FamApplication)
-                .select_from(FamApplicationAdmin)
-                .join(FamApplicationAdmin.application)
-                .join(FamApplicationAdmin.user)
-                .filter(
-                    FamApplicationAdmin.user_id == user_id,
-                    FamUser.user_type_code == UserType.IDIR)
-                .order_by(FamApplication.application_id)
-                .all()
+            .select_from(FamApplicationAdmin)
+            .join(FamApplicationAdmin.application)
+            .join(FamApplicationAdmin.user)
+            .filter(FamApplicationAdmin.user_id == user_id)
+            .order_by(FamApplication.application_id)
+            .all()
         )
-
