@@ -3,11 +3,21 @@ from http import HTTPStatus
 
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
-from api.app.constants import AdminRoleAuthGroup
+from api.app.constants import AdminRoleAuthGroup, AppEnv, RoleType
 from api.app.main import apiPrefix
-from tests.constants import (TEST_APPLICATION_ID_FAM,
+from tests.constants import (TEST_APP_FOM_NAME,
+                             TEST_APP_ROLE_NAME_FOM_REVIEWER,
+                             TEST_APP_ROLE_NAME_FOM_SUBMITTER,
+                             TEST_APPLICATION_ID_FAM,
+                             TEST_APPLICATION_ID_FOM_DEV,
+                             TEST_APPLICATION_ID_FOM_TEST,
                              TEST_APPLICATION_NAME_FAM,
-                             TEST_DUMMY_COGNITO_USER_ID, TEST_NEW_IDIR_USER)
+                             TEST_DUMMY_COGNITO_USER_ID,
+                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                             TEST_FOM_TEST_REVIEWER_ROLE_ID,
+                             TEST_FOM_TEST_SUBMITTER_ROLE_ID,
+                             TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 test_end_point = f"{apiPrefix}/admin-user-accesses"
@@ -49,13 +59,22 @@ def test_get_admin_user_access__user_with_FAM_ADMIN_privilege(
     new_user = setup_new_user(TEST_NEW_IDIR_USER.user_type_code,
                               TEST_NEW_IDIR_USER.user_name,
                               TEST_DUMMY_COGNITO_USER_ID)
-    # assign new_user for FAM_ADMIN
-    setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FAM)
 
     claims = jwt_utils.create_jwt_claims()
     claims["username"] = new_user.cognito_user_id
     token = jwt_utils.create_jwt_token(test_rsa_key, roles=[], claims=claims)
 
+    # verify new_user initially does not have any privilege
+    response = test_client_fixture.get(
+       f"{test_end_point}", headers=jwt_utils.headers(token))
+    assert response.status_code == HTTPStatus.OK
+    result = response.json().get("access")
+    assert len(result) == 0
+
+    # assign new_user for FAM_ADMIN
+    setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FAM)
+
+    # verify new_user now contains FAM_ADMIN privilege
     response = test_client_fixture.get(
        f"{test_end_point}", headers=jwt_utils.headers(token))
     assert response.status_code == HTTPStatus.OK
@@ -88,10 +107,87 @@ def test_get_admin_user_access__user_with_FAM_ADMIN_privilege(
     assert set(auth_grant_applications) == set(db_application_list)
 
 
+def test_get_admin_user_access__user_with_multiple_APP_ADMIN_privilege(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    setup_new_user,
+    setup_new_app_admin,
+    role_repo,
+):
+    # prepare new IDIR user (with dummy cognito id)
+    new_user = setup_new_user(TEST_NEW_IDIR_USER.user_type_code,
+                              TEST_NEW_IDIR_USER.user_name,
+                              TEST_DUMMY_COGNITO_USER_ID)
 
+    # assign new_user for FOM_DEV and FOM_TEST admin
+    setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FOM_DEV)
+    setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FOM_TEST)
 
-    # LOGGER.info(f"access~~: {response.json()}")
-# user with FAM_ADMIN privilege
-# user with multiple APP_ADMIN
-# user with delegated admin
-# user with APP_ADMIN and delegated admin
+    claims = jwt_utils.create_jwt_claims()
+    claims["username"] = new_user.cognito_user_id
+    token = jwt_utils.create_jwt_token(test_rsa_key, roles=[], claims=claims)
+
+    response = test_client_fixture.get(
+       f"{test_end_point}", headers=jwt_utils.headers(token))
+    assert response.status_code == HTTPStatus.OK
+    result = response.json().get("access")
+    assert len(result) == 1
+    access = result[0]
+    assert access["auth_key"] == AdminRoleAuthGroup.APP_ADMIN  # APP_ADMIN grants
+    grants = access["grants"]
+    assert len(grants) == 2  # APP_AdMIN for: FOM_DEV and FOM_TEST
+    # FOM DEV grants
+    fom_dev_grant = list(filter(
+        lambda x: x["application"]["id"] == TEST_APPLICATION_ID_FOM_DEV, grants
+        ))[0]
+    # FOM DEV grant for "application" the admin can manage
+    assert fom_dev_grant["application"]["id"] == TEST_APPLICATION_ID_FOM_DEV
+    assert fom_dev_grant["application"]["name"] == TEST_APP_FOM_NAME
+    assert fom_dev_grant["application"]["env"] == AppEnv.APP_ENV_TYPE_DEV.value
+    # FOM DEV grant for "role" the admin can manage
+    fom_dev_roles_grants = fom_dev_grant["roles"]
+    fom_dev_base_roles = role_repo.get_base_roles_by_app_id(TEST_APPLICATION_ID_FOM_DEV)
+    assert len(fom_dev_roles_grants) == len(fom_dev_base_roles)
+    fom_dev_roles_grants_id_list = list(map(lambda x: x["id"], fom_dev_roles_grants))
+    fom_dev_base_role_id_list = list(map(lambda x: x.role_id, fom_dev_base_roles))
+    assert set(fom_dev_roles_grants_id_list) == set(fom_dev_base_role_id_list)
+    fom_dev_role_grants_reviewer = list(filter(
+        lambda x: x["id"] == TEST_FOM_DEV_REVIEWER_ROLE_ID, fom_dev_roles_grants
+    ))[0]
+    assert fom_dev_role_grants_reviewer["id"] == TEST_FOM_DEV_REVIEWER_ROLE_ID
+    assert fom_dev_role_grants_reviewer["name"] == TEST_APP_ROLE_NAME_FOM_REVIEWER
+    assert fom_dev_role_grants_reviewer["type_code"] == RoleType.ROLE_TYPE_CONCRETE.value
+    fom_dev_roles_grants_submitter = list(filter(
+        lambda x: x["id"] == TEST_FOM_DEV_SUBMITTER_ROLE_ID, fom_dev_roles_grants
+    ))[0]
+    assert fom_dev_roles_grants_submitter["id"] == TEST_FOM_DEV_SUBMITTER_ROLE_ID
+    assert fom_dev_roles_grants_submitter["name"] == TEST_APP_ROLE_NAME_FOM_SUBMITTER
+    assert fom_dev_roles_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
+    assert fom_dev_roles_grants_submitter["forest_clients"] is None
+
+    # FOM TEST grants
+    fom_test_grant = list(filter(
+        lambda x: x["application"]["id"] == TEST_APPLICATION_ID_FOM_TEST, grants
+        ))[0]
+    assert fom_test_grant["application"]["id"] == TEST_APPLICATION_ID_FOM_TEST
+    assert fom_test_grant["application"]["name"] == TEST_APP_FOM_NAME
+    assert fom_test_grant["application"]["env"] == AppEnv.APP_ENV_TYPE_TEST.value
+    fom_test_roles_grants = fom_test_grant["roles"]
+    fom_test_base_roles = role_repo.get_base_roles_by_app_id(TEST_APPLICATION_ID_FOM_TEST)
+    assert len(fom_test_roles_grants) == len(fom_test_base_roles)
+    fom_test_roles_grants_id_list = list(map(lambda x: x["id"], fom_test_roles_grants))
+    fom_test_base_role_id_list = list(map(lambda x: x.role_id, fom_test_base_roles))
+    assert set(fom_test_roles_grants_id_list) == set(fom_test_base_role_id_list)
+    fom_test_role_grants_reviewer = list(filter(
+        lambda x: x["id"] == TEST_FOM_TEST_REVIEWER_ROLE_ID, fom_test_roles_grants
+    ))[0]
+    assert fom_test_role_grants_reviewer["id"] == TEST_FOM_TEST_REVIEWER_ROLE_ID
+    assert fom_test_role_grants_reviewer["name"] == TEST_APP_ROLE_NAME_FOM_REVIEWER
+    assert fom_test_role_grants_reviewer["type_code"] == RoleType.ROLE_TYPE_CONCRETE.value
+    fom_test_roles_grants_submitter = list(filter(
+        lambda x: x["id"] == TEST_FOM_TEST_SUBMITTER_ROLE_ID, fom_test_roles_grants
+    ))[0]
+    assert fom_test_roles_grants_submitter["id"] == TEST_FOM_TEST_SUBMITTER_ROLE_ID
+    assert fom_test_roles_grants_submitter["name"] == TEST_APP_ROLE_NAME_FOM_SUBMITTER
+    assert fom_test_roles_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
+    assert fom_dev_roles_grants_submitter["forest_clients"] is None
