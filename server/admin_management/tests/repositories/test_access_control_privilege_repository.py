@@ -147,3 +147,37 @@ def test_get_acp_by_application_id(
         TEST_NOT_EXIST_APPLICATION_ID
     )
     assert len(found_acp) == 0
+
+
+def test_delete_access_control_privileg(
+    access_control_privilege_repo: AccessControlPrivilegeRepository,
+):
+    # create a new access control privilege
+    new_access_control_privilege = (
+        access_control_privilege_repo.create_access_control_privilege(
+            TEST_ACCESS_CONTROL_PRIVILEGE_CREATE
+        )
+    )
+    assert (
+        new_access_control_privilege.user_id
+        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.user_id
+    )
+    assert (
+        new_access_control_privilege.role_id
+        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.role_id
+    )
+    # verify the new access control privilege is created
+    access_control_privilege = access_control_privilege_repo.get_acp_by_id(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    assert access_control_privilege is not None
+
+    # remove the access control privilege
+    access_control_privilege_repo.delete_access_control_privilege(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    # verify the access control privilege cannot be found anymore
+    access_control_privilege = access_control_privilege_repo.get_acp_by_id(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    assert access_control_privilege is None

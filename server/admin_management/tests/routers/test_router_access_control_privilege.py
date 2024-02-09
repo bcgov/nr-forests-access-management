@@ -7,6 +7,7 @@ from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.routers.router_guards import (
     ERROR_INVALID_ROLE_ID,
     ERROR_INVALID_APPLICATION_ID,
+    ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
 )
 from tests.constants import (
     TEST_FOREST_CLIENT_NUMBER,
@@ -166,5 +167,50 @@ def test_get_access_control_privileges_by_application_id(
         str(response.json()["detail"]).find(
             "Input should be a valid integer, unable to parse string as an integer"
         )
+        != -1
+    )
+
+
+def test_delete_application_admin(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    # create an access control privilege with abstract role and one forest client number
+    token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() is not None
+    data = response.json()[0]["detail"]
+
+    # test delete with invalid role
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.delete(
+        f"{endPoint}/{data.get('access_control_privilege_id')}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
+
+    # test delete access control privilege
+    token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
+    response = test_client_fixture.delete(
+        f"{endPoint}/{data.get('access_control_privilege_id')}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+
+    # test delete non exists access control privilege
+    response = test_client_fixture.delete(
+        f"{endPoint}/{data.get('access_control_privilege_id')}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert (
+        str(response.json()["detail"]).find(ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID)
         != -1
     )
