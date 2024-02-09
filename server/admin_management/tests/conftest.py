@@ -139,16 +139,33 @@ def test_rsa_key_missing():
 
 
 @pytest.fixture(scope="function")
-def setup_new_user(user_repo: UserRepository):
-    def _setup_new_user(user_type: UserType, user_name) -> FamUser:
+def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
+    def _setup_new_user(user_type: UserType, user_name, cognito_user_id: Optional[str] = None) -> FamUser:
         new_user_create = FamUserDto(
             **{
+
                 "user_type_code": user_type,
                 "user_name": user_name,
                 "create_user": TEST_CREATOR,
             }
         )
-        return user_repo.create_user(new_user_create)
+
+        fam_user = user_repo.create_user(new_user_create)
+        if (cognito_user_id is not None):
+            # SqlAlchemy is a bit strange, need to use `.query()` to do the
+            # update() and query() again in order to get correct updated entity
+            # from session.
+            db_pg_session.query(FamUser).filter(
+                FamUser.user_id == fam_user.user_id
+            ).update({
+                FamUser.cognito_user_id: cognito_user_id
+            })
+
+            fam_user = db_pg_session.query(FamUser).filter(
+                FamUser.user_id == fam_user.user_id
+            ).one()
+
+        return fam_user
 
     return _setup_new_user
 
