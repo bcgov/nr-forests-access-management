@@ -10,11 +10,10 @@ import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
+import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
 
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
-import { ErrorDescription } from '@/store/Constants';
 
 const defaultFormData = {
     userId: '',

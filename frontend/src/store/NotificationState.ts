@@ -4,8 +4,7 @@
     It is intended to be used in conjunction with the NotificationStack component.
 */
 import { ref } from 'vue';
-import type { Severity } from '@/enum/SeverityEnum';
-import { ErrorDescription } from './Constants';
+import { ErrorDescription, type Severity } from '@/enum/SeverityEnum';
 
 const defaultNotification = {
     success: { msg: '', fullMsg: '' },
@@ -78,15 +77,17 @@ export const setGrantAccessNotificationMsg = (
 
     const clientIdList = forestClientNumberList.slice(0, 2);
     if (forestClientNumberList.length > 2) {
-        notificationFullMsg = `${msgByType[severity][code]
-            } ${forestClientNumberList.join(', ')}`;
+        notificationFullMsg = `${
+            msgByType[severity][code]
+        } ${forestClientNumberList.join(', ')}`;
     }
 
     const notificationMsg = `
         ${msgByType[severity][code]} ${clientIdList.join(', ')}
-        ${isPlural === 'IDs' && forestClientNumberList.length > 2
-            ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
-            : ''
+        ${
+            isPlural === 'IDs' && forestClientNumberList.length > 2
+                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+                : ''
         }
     `;
 

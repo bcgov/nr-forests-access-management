@@ -123,7 +123,7 @@ const handleSubmit = async () => {
 
     // msg override the default error notification message
     const errorNotification = {
-        code: 'default',
+        code: ErrorCode.Default,
         errorForestClientIdList: [] as string[],
     };
     do {
