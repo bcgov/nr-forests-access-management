@@ -6,6 +6,9 @@ import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 // --- Fetching data (from backend)
 
 export const fetchApplications = async () => {
+
+    console.log((await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()).data.access)
+    // console.log((await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(1)).data)
     const applications = (
         await AppActlApiService.applicationsApi.getApplications()
     ).data;
