@@ -4,7 +4,7 @@
     It is intended to be used in conjunction with the NotificationStack component.
 */
 import { ref } from 'vue';
-import { ErrorDescription, type Severity } from '@/enum/SeverityEnum';
+import { ErrorDescription, ErrorCode, Severity } from '@/enum/SeverityEnum';
 
 const defaultNotification = {
     success: { msg: '', fullMsg: '' },
@@ -47,28 +47,29 @@ export const setGrantAccessNotificationMsg = (
     userId: string,
     severity: Severity,
     role = '',
-    code: string = 'default'
+    code: string = ErrorCode.Default
 ) => {
     let notificationFullMsg = '';
 
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
+
     const msgByType: CommonObjectType = {
-        success: {
-            default:
+        [Severity.Success]: {
+            [ErrorCode.Default]:
                 forestClientNumberList[0] === ''
                     ? `${userId} was successfully added with the role ${role}`
                     : `${userId} was successfully added with Client ${isPlural}:`,
         },
-        error: {
-            conflict:
+        [Severity.Error]: {
+            [ErrorCode.Conflict]:
                 forestClientNumberList[0] === ''
                     ? `${userId} already exists with the role ${role}`
                     : `${userId} already exists with Client ${isPlural}:`,
-            selfGrantProhibited:
+            [ErrorCode.SelfGrantProhibited]:
                 forestClientNumberList[0] === ''
                     ? `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with the role: ${role}`
                     : `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
-            default:
+            [ErrorCode.Default]:
                 forestClientNumberList[0] === ''
                     ? `${ErrorDescription.Default} ${userId} was not added with the role: ${role}`
                     : `${ErrorDescription.Default} ${userId} was not added with Client ${isPlural}:`,
