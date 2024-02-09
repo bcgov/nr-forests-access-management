@@ -8,8 +8,10 @@ import {
 } from '@/router/routeHandlers';
 import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
+import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
+import { FAM_ADMIN_ROLE } from '@/store/Constants';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -83,6 +85,20 @@ const routes = [
                 applicationRoleOptions: route.meta.applicationRoleOptions,
             };
         },
+    },
+    {
+        path: routeItems.grantAppAdmin.path,
+        name: routeItems.grantAppAdmin.name,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: true,
+            requiredPrivileges: [FAM_ADMIN_ROLE],
+            title: routeItems.grantAppAdmin.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true,
+        },
+        component: GrantApplicationAdminView,
+        beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
     },
     {
         path: '/authCallback',

@@ -12,7 +12,7 @@ import {
     isApplicationSelected,
     selectedApplication,
     setSelectedApplication,
-    selectedApplicationId
+    selectedApplicationId,
 } from '@/store/ApplicationState';
 import { isLoading } from '@/store/LoadingState';
 import {
@@ -26,7 +26,7 @@ import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
-    fetchApplicationAdmins
+    fetchApplicationAdmins,
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -46,9 +46,9 @@ const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
 );
 
-const applicationAdmins = shallowRef<
-    FamAppAdminGetResponse[]
->(props.applicationAdmins);
+const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
+    props.applicationAdmins
+);
 
 onUnmounted(() => {
     resetNotification();
@@ -75,35 +75,34 @@ const deleteUserRoleAssignment = async (
         );
 
         setNotificationMsg(
-            Severity.success,
+            Severity.Success,
             `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
-            Severity.error,
+            Severity.Error,
             `An error has occured. ${error.response.data.detail.description}`
         );
     }
-}
+};
 
 const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
-            admin.application_admin_id,
+            admin.application_admin_id
         );
 
         setNotificationMsg(
-            Severity.success,
+            Severity.Success,
             `You removed ${admin.user.user_name}'s admin privilege`
         );
-
     } catch (error: any) {
         setNotificationMsg(
-            Severity.error,
+            Severity.Error,
             `An error has occured. ${error.response.data.detail.description}`
         );
     }
-}
+};
 </script>
 
 <template>
@@ -149,10 +148,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
-                <TabPanel
-                    header="Users"
-                    v-else
-                >
+                <TabPanel header="Users" v-else>
                     <template #header>
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
@@ -185,10 +181,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 @import '@/assets/styles/base.scss';
 .application-group {
     display: grid;
-
-    label {
-        margin-bottom: 0.5rem;
-    }
 }
 
 .application-dropdown {

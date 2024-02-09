@@ -40,6 +40,8 @@ from tests.constants import (TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
                              TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                              TEST_FOM_TEST_REVIEWER_ROLE_ID,
                              TEST_FOM_TEST_SUBMITTER_ROLE_ID)
+from api.app.integration.forest_client_integration import ForestClientIntegrationService
+
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -117,9 +119,9 @@ def test_rsa_key():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[
-        jwt_validation.get_rsa_key_method
-    ] = override_get_rsa_key_method
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = (
+        override_get_rsa_key_method
+    )
 
     return new_key.exportKey("PEM")
 
@@ -131,9 +133,9 @@ def test_rsa_key_missing():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[
-        jwt_validation.get_rsa_key_method
-    ] = override_get_rsa_key_method_none
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = (
+        override_get_rsa_key_method_none
+    )
 
     return new_key.exportKey("PEM")
 
@@ -259,41 +261,51 @@ def override_get_rsa_key_none(kid):
 def user_repo(db_pg_session: Session):
     return UserRepository(db_pg_session)
 
+
 @pytest.fixture(scope="function")
 def role_repo(db_pg_session: Session):
     return RoleRepository(db_pg_session)
+
 
 @pytest.fixture(scope="function")
 def application_repo(db_pg_session: Session):
     return ApplicationRepository(db_pg_session)
 
+
 @pytest.fixture(scope="function")
 def forest_client_repo(db_pg_session: Session):
     return ForestClientRepository(db_pg_session)
+
 
 @pytest.fixture(scope="function")
 def application_admin_repo(db_pg_session: Session):
     return ApplicationAdminRepository(db_pg_session)
 
+
 @pytest.fixture(scope="function")
 def access_control_privilege_repo(db_pg_session: Session):
     return AccessControlPrivilegeRepository(db_pg_session)
+
 
 @pytest.fixture(scope="function")
 def user_service(db_pg_session: Session):
     return UserService(db_pg_session)
 
+
 @pytest.fixture(scope="function")
 def role_service(db_pg_session: Session):
     return RoleService(db_pg_session)
+
 
 @pytest.fixture(scope="function")
 def forest_client_service(db_pg_session: Session):
     return ForestClientService(db_pg_session)
 
+
 @pytest.fixture(scope="function")
 def application_admin_service(db_pg_session: Session):
     return ApplicationAdminService(db_pg_session)
+
 
 @pytest.fixture(scope="function")
 def access_control_privilege_service(db_pg_session: Session):
@@ -302,3 +314,8 @@ def access_control_privilege_service(db_pg_session: Session):
 @pytest.fixture(scope="function")
 def admin_user_access_service(db_pg_session: Session):
     return AdminUserAccessService(db_pg_session)
+
+@pytest.fixture(scope="function")
+def forest_client_integration_service():
+    return ForestClientIntegrationService()
+
