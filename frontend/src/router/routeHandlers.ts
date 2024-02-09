@@ -31,7 +31,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 
 const ACCESS_RESTRICTED_ERROR = new FamRouteError(
     RouteErrorName.ACCESS_RESTRICTED,
-    "This access is restricted"
+    "Access restricted"
 );
 
 // --- beforeEnter Route Handler
@@ -137,7 +137,7 @@ export const beforeEachRouteHandler = async (
     // Access privilege guard. This logic might need to be adjusted soon.
     if (to.meta.requiredPrivileges) {
         for (let role of (to.meta.requiredPrivileges as Array<string>)) {
-            if (!AuthService.methods.userHasAccessByRole(role)) {
+            if (!AuthService.methods.hasAccessRole(role)) {
                 emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };
             }

@@ -1,3 +1,4 @@
 export const FOREST_CLIENT_INPUT_MAX_LENGTH = 8;
 export const FAM_APPLICATION_NAME = 'FAM';
 export const FAM_APPLICATION_ID = 1;
+export const FAM_ADMIN_ROLE = 'FAM_ADMIN';
