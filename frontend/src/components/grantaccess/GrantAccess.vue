@@ -7,9 +7,8 @@ import { number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
+import { Severity, ErrorCode } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import { isLoading } from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
@@ -120,11 +119,10 @@ const areVerificationsPassed = () => {
 
 const handleSubmit = async () => {
     const successForestClientIdList: string[] = [];
-    const warningForestClientIdList: string[] = [];
 
     // msg override the default error notification message
     const errorNotification = {
-        msg: '',
+        code: 'default',
         errorForestClientIdList: [] as string[],
     };
     do {
@@ -137,23 +135,20 @@ const handleSubmit = async () => {
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    warningForestClientIdList.push(forestClientNumber || '');
+                    errorNotification.code = ErrorCode.conflict;
                 } else if (
                     error.response.data.detail.code === 'self_grant_prohibited'
                 ) {
-                    errorNotification.msg =
-                        'Granting roles to self is not allowed.';
-                } else {
-                    errorNotification.errorForestClientIdList.push(
-                        forestClientNumber || ''
-                    );
+                    errorNotification.code = ErrorCode.selfGrantProhibited;
                 }
+                errorNotification.errorForestClientIdList.push(
+                    forestClientNumber || ''
+                );
             });
     } while (formData.value.verifiedForestClients.length > 0);
 
     composeAndPushNotificationMessages(
         successForestClientIdList,
-        warningForestClientIdList,
         errorNotification
     );
 
@@ -179,8 +174,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
 
 const composeAndPushNotificationMessages = (
     successIdList: string[],
-    warningIdList: string[],
-    errorMsg: { msg: string; errorForestClientIdList: string[] }
+    errorMsg: { code: string; errorForestClientIdList: string[] }
 ) => {
     const username = formData.value.userId.toUpperCase();
     if (successIdList.length > 0) {
@@ -191,29 +185,13 @@ const composeAndPushNotificationMessages = (
             getSelectedRole()?.role_name
         );
     }
-    if (warningIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            warningIdList,
-            username,
-            Severity.warning,
-            getSelectedRole()?.role_name
-        );
-    }
-
-    if (errorMsg.msg) {
+    if (errorMsg.errorForestClientIdList.length > 0) {
         setGrantAccessNotificationMsg(
             errorMsg.errorForestClientIdList,
             username,
             Severity.error,
             getSelectedRole()?.role_name,
-            `An error has occured. ${errorMsg.msg}`
-        );
-    } else if (errorMsg.errorForestClientIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            errorMsg.errorForestClientIdList,
-            username,
-            Severity.error,
-            getSelectedRole()?.role_name
+            errorMsg.code
         );
     }
     return '';
@@ -324,4 +302,3 @@ const composeAndPushNotificationMessages = (
         </div>
     </VeeForm>
 </template>
-<style lang="scss" scoped></style>

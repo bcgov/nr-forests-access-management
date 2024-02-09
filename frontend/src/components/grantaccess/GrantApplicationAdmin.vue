@@ -10,7 +10,7 @@ import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
+import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
 
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
@@ -75,33 +75,23 @@ const handleSubmit = async () => {
         })
         .catch((error) => {
             if (error.response?.status === 409) {
-                // This is not a good way to check and replace a message error.
-                // Maybe we could implement a detail code in the backend's response,
-                // similar to what we have for 'self_grant_prohibited'
-                if (error.response.data.detail === 'User is admin already.') {
-                    setNotificationMsg(
-                        Severity.error,
-                        `User ${formData.value.userId.toUpperCase()} is already a ${
-                            formData.value.application.application_name
-                        } admin`
-                    );
-                } else {
-                    setNotificationMsg(
-                        Severity.error,
-                        error.response.data.detail
-                    );
-                }
+                setNotificationMsg(
+                    Severity.error,
+                    `User ${formData.value.userId.toUpperCase()} is already a ${
+                        formData.value.application.application_name
+                    } admin`
+                );
             } else if (
                 error.response.data.detail.code === 'self_grant_prohibited'
             ) {
                 setNotificationMsg(
                     Severity.error,
-                    'Granting admin privilege to self is not allowed.'
+                    ErrorDescription.selfGrantProhibited
                 );
             } else {
                 setNotificationMsg(
-                    Severity.success,
-                    `An error has occured. ${error.response.data.detail.description}`
+                    Severity.error,
+                    `${ErrorDescription.default} ${error.response.data.detail.description}`
                 );
             }
         })
@@ -123,10 +113,7 @@ const handleSubmit = async () => {
     >
         <div class="page-body">
             <form id="grantAdminForm" class="form-container">
-                <StepContainer
-                    title="User information"
-                    subtitle="Enter the user information to add a new application admin"
-                >
+                <StepContainer title="User information">
                     <UserNameInput
                         :domain="UserType.I"
                         :userId="formData.userId"
