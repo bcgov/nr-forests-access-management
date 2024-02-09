@@ -20,6 +20,7 @@ import {
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
 const props = defineProps({
     applicationRoleOptions: {
@@ -135,11 +136,11 @@ const handleSubmit = async () => {
             })
             .catch((error) => {
                 if (error.response?.status === 409) {
-                    errorNotification.code = ErrorCode.conflict;
+                    errorNotification.code = ErrorCode.Conflict;
                 } else if (
                     error.response.data.detail.code === 'self_grant_prohibited'
                 ) {
-                    errorNotification.code = ErrorCode.selfGrantProhibited;
+                    errorNotification.code = ErrorCode.SelfGrantProhibited;
                 }
                 errorNotification.errorForestClientIdList.push(
                     forestClientNumber || ''
@@ -181,7 +182,7 @@ const composeAndPushNotificationMessages = (
         setGrantAccessNotificationMsg(
             successIdList,
             username,
-            Severity.success,
+            Severity.Success,
             getSelectedRole()?.role_name
         );
     }
@@ -189,7 +190,7 @@ const composeAndPushNotificationMessages = (
         setGrantAccessNotificationMsg(
             errorMsg.errorForestClientIdList,
             username,
-            Severity.error,
+            Severity.Error,
             getSelectedRole()?.role_name,
             errorMsg.code
         );
@@ -201,7 +202,7 @@ const composeAndPushNotificationMessages = (
 <template>
     <PageTitle
         title="Add user permission"
-        subtitle="All fields are mandatory"
+        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
     <VeeForm
         ref="form"
@@ -226,7 +227,6 @@ const composeAndPushNotificationMessages = (
 
                 <StepContainer
                     title="Add user roles"
-                    subtitle="Enter a specific role for this user"
                     :divider="isAbstractRoleSelected()"
                 >
                     <label>Assign a role to the user</label>

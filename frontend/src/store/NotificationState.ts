@@ -4,7 +4,8 @@
     It is intended to be used in conjunction with the NotificationStack component.
 */
 import { ref } from 'vue';
-import { ErrorDescription, type Severity } from '@/enum/SeverityEnum';
+import type { Severity } from '@/enum/SeverityEnum';
+import { ErrorDescription } from './Constants';
 
 const defaultNotification = {
     success: { msg: '', fullMsg: '' },
@@ -66,28 +67,26 @@ export const setGrantAccessNotificationMsg = (
                     : `${userId} already exists with Client ${isPlural}:`,
             selfGrantProhibited:
                 forestClientNumberList[0] === ''
-                    ? `${ErrorDescription.selfGrantProhibited} ${userId} was not added with the role: ${role}`
-                    : `${ErrorDescription.selfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
+                    ? `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with the role: ${role}`
+                    : `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
             default:
                 forestClientNumberList[0] === ''
-                    ? `${ErrorDescription.default} ${userId} was not added with the role: ${role}`
-                    : `${ErrorDescription.default} ${userId} was not added with Client ${isPlural}:`,
+                    ? `${ErrorDescription.Default} ${userId} was not added with the role: ${role}`
+                    : `${ErrorDescription.Default} ${userId} was not added with Client ${isPlural}:`,
         },
     };
 
     const clientIdList = forestClientNumberList.slice(0, 2);
     if (forestClientNumberList.length > 2) {
-        notificationFullMsg = `${
-            msgByType[severity][code]
-        } ${forestClientNumberList.join(', ')}`;
+        notificationFullMsg = `${msgByType[severity][code]
+            } ${forestClientNumberList.join(', ')}`;
     }
 
     const notificationMsg = `
         ${msgByType[severity][code]} ${clientIdList.join(', ')}
-        ${
-            isPlural === 'IDs' && forestClientNumberList.length > 2
-                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
-                : ''
+        ${isPlural === 'IDs' && forestClientNumberList.length > 2
+            ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+            : ''
         }
     `;
 

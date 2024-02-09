@@ -1,16 +1,11 @@
 export enum Severity {
-    success = 'success',
-    warning = 'warn',
-    error = 'error',
+    Success = 'success',
+    Warning = 'warn',
+    Error = 'error',
 }
 
 export enum ErrorCode {
-    conflict = 'conflict',
-    selfGrantProhibited = 'selfGrantProhibited',
-    default = 'default',
-}
-
-export enum ErrorDescription{
-    selfGrantProhibited = 'Granting admin privilege to self is not allowed.',
-    default = 'An error has occured.',
+    Conflict = 'Conflict',
+    SelfGrantProhibited = 'SelfGrantProhibited',
+    Default = 'Default',
 }

@@ -10,10 +10,11 @@ import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
+import { Severity } from '@/enum/SeverityEnum';
 
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
+import { ErrorDescription } from '@/store/Constants';
 
 const defaultFormData = {
     userId: '',
@@ -67,7 +68,7 @@ const handleSubmit = async () => {
         .createApplicationAdmin(data)
         .then(() => {
             setNotificationMsg(
-                Severity.success,
+                Severity.Success,
                 `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
                     formData.value.application.application_name
                 }`
@@ -76,7 +77,7 @@ const handleSubmit = async () => {
         .catch((error) => {
             if (error.response?.status === 409) {
                 setNotificationMsg(
-                    Severity.error,
+                    Severity.Error,
                     `User ${formData.value.userId.toUpperCase()} is already a ${
                         formData.value.application.application_name
                     } admin`
@@ -85,13 +86,13 @@ const handleSubmit = async () => {
                 error.response.data.detail.code === 'self_grant_prohibited'
             ) {
                 setNotificationMsg(
-                    Severity.error,
-                    ErrorDescription.selfGrantProhibited
+                    Severity.Error,
+                    ErrorDescription.SelfGrantProhibited
                 );
             } else {
                 setNotificationMsg(
-                    Severity.error,
-                    `${ErrorDescription.default} ${error.response.data.detail.description}`
+                    Severity.Error,
+                    `${ErrorDescription.Default} ${error.response.data.detail.description}`
                 );
             }
         })
