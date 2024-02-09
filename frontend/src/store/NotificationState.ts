@@ -4,7 +4,7 @@
     It is intended to be used in conjunction with the NotificationStack component.
 */
 import { ref } from 'vue';
-import type { Severity } from '@/enum/SeverityEnum';
+import { ErrorDescription, ErrorCode, Severity } from '@/enum/SeverityEnum';
 
 const defaultNotification = {
     success: { msg: '', fullMsg: '' },
@@ -38,49 +38,59 @@ export const showFullNotificationMsg = (severity: Severity) => {
     notifications.value[severity].msg = notifications.value[severity].fullMsg;
 };
 
+export interface CommonObjectType {
+    [key: string]: any;
+}
+
 export const setGrantAccessNotificationMsg = (
     forestClientNumberList: string[],
     userId: string,
     severity: Severity,
     role = '',
-    specificMsg = ''
+    code: string = ErrorCode.Default
 ) => {
     let notificationFullMsg = '';
-    let notificationMsg = specificMsg;
 
-    if (specificMsg == '') {
-        const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
-        const msgByType = {
-            success:
-                forestClientNumberList[0] === ''
-                    ? `was successfully added with the role ${role}`
-                    : `was successfully added with Client ${isPlural}:`,
-            warn:
-                forestClientNumberList[0] === ''
-                    ? `already exists with the role ${role}`
-                    : `already exists with Client ${isPlural}:`,
-            error:
-                forestClientNumberList[0] === ''
-                    ? `was not added with Client IDs: ${role}`
-                    : `was not added with Client ${isPlural}:`,
-        };
+    const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
 
-        const clientIdList = forestClientNumberList.slice(0, 2);
-        if (forestClientNumberList.length > 2) {
-            notificationFullMsg = `${userId} ${
-                msgByType[severity]
-            } ${forestClientNumberList.join(', ')}`;
-        }
+    const msgByType: CommonObjectType = {
+        [Severity.Success]: {
+            [ErrorCode.Default]:
+                forestClientNumberList[0] === ''
+                    ? `${userId} was successfully added with the role ${role}`
+                    : `${userId} was successfully added with Client ${isPlural}:`,
+        },
+        [Severity.Error]: {
+            [ErrorCode.Conflict]:
+                forestClientNumberList[0] === ''
+                    ? `${userId} already exists with the role ${role}`
+                    : `${userId} already exists with Client ${isPlural}:`,
+            [ErrorCode.SelfGrantProhibited]:
+                forestClientNumberList[0] === ''
+                    ? `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with the role: ${role}`
+                    : `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
+            [ErrorCode.Default]:
+                forestClientNumberList[0] === ''
+                    ? `${ErrorDescription.Default} ${userId} was not added with the role: ${role}`
+                    : `${ErrorDescription.Default} ${userId} was not added with Client ${isPlural}:`,
+        },
+    };
 
-        notificationMsg = `
-            ${userId} ${msgByType[severity]} ${clientIdList.join(', ')}
-            ${
-                isPlural === 'IDs' && forestClientNumberList.length > 2
-                    ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
-                    : ''
-            }
-        `;
+    const clientIdList = forestClientNumberList.slice(0, 2);
+    if (forestClientNumberList.length > 2) {
+        notificationFullMsg = `${
+            msgByType[severity][code]
+        } ${forestClientNumberList.join(', ')}`;
     }
+
+    const notificationMsg = `
+        ${msgByType[severity][code]} ${clientIdList.join(', ')}
+        ${
+            isPlural === 'IDs' && forestClientNumberList.length > 2
+                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+                : ''
+        }
+    `;
 
     setNotificationMsg(severity, notificationMsg, notificationFullMsg);
 };

@@ -10,14 +10,14 @@ import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-
 import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
+import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
 
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
 
 const defaultFormData = {
     userId: '',
-    application: Number,
+    application: null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const formValidationSchema = object({
@@ -67,7 +67,7 @@ const handleSubmit = async () => {
         .createApplicationAdmin(data)
         .then(() => {
             setNotificationMsg(
-                Severity.success,
+                Severity.Success,
                 `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
                     formData.value.application.application_name
                 }`
@@ -76,20 +76,22 @@ const handleSubmit = async () => {
         .catch((error) => {
             if (error.response?.status === 409) {
                 setNotificationMsg(
-                    Severity.warning,
-                    error.response.data.detail
+                    Severity.Error,
+                    `User ${formData.value.userId.toUpperCase()} is already a ${
+                        formData.value.application.application_name
+                    } admin`
                 );
             } else if (
                 error.response.data.detail.code === 'self_grant_prohibited'
             ) {
                 setNotificationMsg(
-                    Severity.error,
-                    'Granting admin privilege to self is not allowed.'
+                    Severity.Error,
+                    ErrorDescription.SelfGrantProhibited
                 );
             } else {
                 setNotificationMsg(
-                    Severity.success,
-                    `An error has occured. ${error.response.data.detail.description}`
+                    Severity.Error,
+                    `${ErrorDescription.Default} ${error.response.data.detail.description}`
                 );
             }
         })
@@ -101,7 +103,7 @@ const handleSubmit = async () => {
 <template>
     <PageTitle
         title="Add application admin"
-        subtitle="Add a new application admin. All fields are mandatory unless noted"
+        subtitle="All fields are mandatory"
     />
     <VeeForm
         ref="form"
@@ -111,18 +113,11 @@ const handleSubmit = async () => {
     >
         <div class="page-body">
             <form id="grantAdminForm" class="form-container">
-                <StepContainer
-                    title="User information"
-                    :subtitle="`Enter the user information to add a new admin ${
-                        formData.application
-                            ? 'to ' + formData.application.application_name
-                            : ''
-                    }`"
-                >
+                <StepContainer title="User information">
                     <UserNameInput
                         :domain="UserType.I"
                         :userId="formData.userId"
-                        helper-text="Only IDIR usernames are allowed"
+                        helper-text="Only IDIR users are allowed to be added as application admins"
                         @change="userIdChange"
                         @setVerifyResult="setVerifyUserIdPassed"
                     />

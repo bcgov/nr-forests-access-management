@@ -75,12 +75,12 @@ const deleteUserRoleAssignment = async (
         );
 
         setNotificationMsg(
-            Severity.success,
+            Severity.Success,
             `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
-            Severity.error,
+            Severity.Error,
             `An error has occured. ${error.response.data.detail.description}`
         );
     }
@@ -93,12 +93,12 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
         );
 
         setNotificationMsg(
-            Severity.success,
+            Severity.Success,
             `You removed ${admin.user.user_name}'s admin privilege`
         );
     } catch (error: any) {
         setNotificationMsg(
-            Severity.error,
+            Severity.Error,
             `An error has occured. ${error.response.data.detail.description}`
         );
     }

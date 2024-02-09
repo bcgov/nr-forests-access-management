@@ -6,7 +6,7 @@ const props = defineProps({
     },
     subtitle: {
         type: String,
-        required: true,
+        required: false,
     },
     divider: {
         type: Boolean,
@@ -18,8 +18,8 @@ const props = defineProps({
 <template>
     <div>
         <h1 class="title">{{ props.title }}</h1>
-        <h2 class="subtitle">{{ props.subtitle }}</h2>
-        <div class="step-content">
+        <h2 v-if="subtitle" class="subtitle">{{ props.subtitle }}</h2>
+        <div :class="subtitle ? 'step-content' : ''">
             <slot />
         </div>
         <Divider v-if="props.divider" />
