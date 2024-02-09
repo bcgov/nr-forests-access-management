@@ -17,7 +17,9 @@ from tests.constants import (TEST_APP_FOM_NAME,
                              TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                              TEST_FOM_TEST_REVIEWER_ROLE_ID,
                              TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-                             TEST_NEW_IDIR_USER)
+                             TEST_FOREST_CLIENT_NUMBER,
+                             TEST_FOREST_CLIENT_NUMBER_TWO,
+                             TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 test_end_point = f"{apiPrefix}/admin-user-accesses"
@@ -191,3 +193,80 @@ def test_get_admin_user_access__user_with_multiple_APP_ADMIN_privilege(
     assert fom_test_roles_grants_submitter["name"] == TEST_APP_ROLE_NAME_FOM_SUBMITTER
     assert fom_test_roles_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
     assert fom_dev_roles_grants_submitter["forest_clients"] is None
+
+
+# test on delegated admin using specific FOM app.
+def test_get_admin_user_access__user_with_multiple_delegated_ADMIN_privilege(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    setup_new_user,
+    setup_new_fom_delegated_admin
+):
+    # prepare new BCEID user (with dummy cognito id)
+    new_user = setup_new_user(TEST_NEW_BCEID_USER.user_type_code,
+                              TEST_NEW_BCEID_USER.user_name,
+                              TEST_DUMMY_COGNITO_USER_ID)
+
+    # assign new_user FOM_REVIEWER delegated admin to FOM_DEV
+    setup_new_fom_delegated_admin(
+        new_user.user_id,
+        RoleType.ROLE_TYPE_CONCRETE,
+        AppEnv.APP_ENV_TYPE_DEV)
+    # assign new_user FOM_SUBMITTER delegated admin role to FOM_TEST
+    dga_submitter_forest_clients = [TEST_FOREST_CLIENT_NUMBER, TEST_FOREST_CLIENT_NUMBER_TWO]
+    setup_new_fom_delegated_admin(
+        new_user.user_id,
+        RoleType.ROLE_TYPE_ABSTRACT,
+        AppEnv.APP_ENV_TYPE_TEST,
+        dga_submitter_forest_clients)
+
+    claims = jwt_utils.create_jwt_claims()
+    claims["username"] = new_user.cognito_user_id
+    token = jwt_utils.create_jwt_token(test_rsa_key, roles=[], claims=claims)
+
+    response = test_client_fixture.get(
+       f"{test_end_point}", headers=jwt_utils.headers(token))
+    assert response.status_code == HTTPStatus.OK
+    result = response.json().get("access")
+    assert len(result) == 1
+    access = result[0]
+    assert access["auth_key"] == AdminRoleAuthGroup.DELEGATED_ADMIN  # DELEGATED_ADMIN grants
+    grants = access["grants"]
+    assert len(grants) == 2  # DELEGATED_ADMIN for: FOM_DEV and FOM_TEST
+
+    # FOM DEV DELEGATED_ADMIN grants
+    fom_dev_grant = list(filter(
+        lambda x: x["application"]["id"] == TEST_APPLICATION_ID_FOM_DEV, grants
+        ))[0]
+    # FOM DEV DELEGATED_ADMIN grant for "application" the admin can manage
+    assert fom_dev_grant["application"]["id"] == TEST_APPLICATION_ID_FOM_DEV
+    assert fom_dev_grant["application"]["name"] == TEST_APP_FOM_NAME
+    assert fom_dev_grant["application"]["env"] == AppEnv.APP_ENV_TYPE_DEV.value
+    # FOM DEV grant for "role" the admin can manage
+    fom_dev_roles_grants = fom_dev_grant["roles"]
+    # was setup for ROLE_TYPE_CONCRETE (FOM_REVIEWER), so should only have 1
+    assert len(fom_dev_roles_grants) == 1
+    fom_dev_role_grants_reviewer = fom_dev_roles_grants[0]
+    assert fom_dev_role_grants_reviewer["id"] == TEST_FOM_DEV_REVIEWER_ROLE_ID
+    assert fom_dev_role_grants_reviewer["name"] == TEST_APP_ROLE_NAME_FOM_REVIEWER
+    assert fom_dev_role_grants_reviewer["type_code"] == RoleType.ROLE_TYPE_CONCRETE.value
+    assert fom_dev_role_grants_reviewer["forest_clients"] is None
+
+    # FOM TEST DELEGATED_ADMIN grants
+    fom_test_grant = list(filter(
+        lambda x: x["application"]["id"] == TEST_APPLICATION_ID_FOM_TEST, grants
+        ))[0]
+    # FOM DEV DELEGATED_ADMIN grant for "application" the admin can manage
+    assert fom_test_grant["application"]["id"] == TEST_APPLICATION_ID_FOM_TEST
+    assert fom_test_grant["application"]["name"] == TEST_APP_FOM_NAME
+    assert fom_test_grant["application"]["env"] == AppEnv.APP_ENV_TYPE_TEST.value
+    # FOM TEST grant for "role" the admin can manage
+    fom_test_roles_grants = fom_test_grant["roles"]
+    # was setup for ROLE_TYPE_ABSTRACT (FOM_SUBMITTER), so should only have 1
+    assert len(fom_dev_roles_grants) == 1
+    fom_test_role_grants_submitter = fom_test_roles_grants[0]
+    assert fom_test_role_grants_submitter["id"] == TEST_FOM_TEST_SUBMITTER_ROLE_ID
+    assert fom_test_role_grants_submitter["name"] == TEST_APP_ROLE_NAME_FOM_SUBMITTER
+    assert fom_test_role_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
+    assert set(fom_test_role_grants_submitter["forest_clients"]) == \
+        set([TEST_FOREST_CLIENT_NUMBER, TEST_FOREST_CLIENT_NUMBER_TWO])
