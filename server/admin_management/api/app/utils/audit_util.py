@@ -14,6 +14,7 @@ class AuditEventType(str, Enum):
     CREATE_APPLICATION_ADMIN_ACCESS = "Grant User Application Admin Access"
     REMOVE_APPLICATION_ADMIN_ACCESS = "Remove User Application Admin Access"
     CREATE_ACCESS_CONTROL_PRIVILIEGE = "Grant Delegated Admin Privilege"
+    REMOVE_ACCESS_CONTROL_PRIVILIEGE = "Remove Delegated Admin Privilege"
 
 
 class AuditEventOutcome(str, Enum):

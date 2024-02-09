@@ -33,6 +33,7 @@ ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_INVALID_APPLICATION_ADMIN_ID = "invalid_application_admin_id"
+ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID = "invalid_access_control_privilege_id"
 ERROR_NOT_ALLOWED_USER_TYPE = "user_type_not_allowed"
 
 
@@ -101,6 +102,16 @@ async def get_target_user_from_id(
         return (
             TargetUser.model_validate(application_admin.user)
             if application_admin is not None
+            else None
+        )
+    elif "access_control_privilege_id" in request.path_params:
+        access_control_privilege_service = AccessControlPrivilegeService(db)
+        access_control_privilege = access_control_privilege_service.get_acp_by_id(
+            request.path_params["access_control_privilege_id"]
+        )
+        return (
+            TargetUser.model_validate(access_control_privilege.user)
+            if access_control_privilege is not None
             else None
         )
     else:
@@ -282,6 +293,24 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
             detail={
                 "code": ERROR_NOT_ALLOWED_USER_TYPE,
                 "description": f"User type {application_admin_request.user_type_code} is not allowed",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+async def validate_param_access_control_privilege_id(
+    access_control_privilege_id: int, db: Session = Depends(database.get_db)
+):
+    access_control_privilege_service = AccessControlPrivilegeService(db)
+    access_control_privilege = access_control_privilege_service.get_acp_by_id(
+        access_control_privilege_id
+    )
+    if not access_control_privilege:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
+                "description": f"Access control privilege ID {access_control_privilege_id} not found",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
