@@ -67,7 +67,7 @@ export const setGrantAccessNotificationMsg = (
             selfGrantProhibited:
                 forestClientNumberList[0] === ''
                     ? `${ErrorDescription.selfGrantProhibited} ${userId} was not added with the role: ${role}`
-                    : `Granting admin privilege to self is not allowed. ${userId} was not added with Client ${isPlural}:`,
+                    : `${ErrorDescription.selfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
             default:
                 forestClientNumberList[0] === ''
                     ? `${ErrorDescription.default} ${userId} was not added with the role: ${role}`
