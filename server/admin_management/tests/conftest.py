@@ -36,11 +36,11 @@ from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.forest_client_service import ForestClientService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
+from api.app.integration.forest_client_integration import ForestClientIntegrationService
 from tests.constants import (TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
                              TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                              TEST_FOM_TEST_REVIEWER_ROLE_ID,
                              TEST_FOM_TEST_SUBMITTER_ROLE_ID)
-from api.app.integration.forest_client_integration import ForestClientIntegrationService
 
 
 LOGGER = logging.getLogger(__name__)
@@ -142,7 +142,15 @@ def test_rsa_key_missing():
 
 @pytest.fixture(scope="function")
 def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
-    def _setup_new_user(user_type: UserType, user_name, cognito_user_id: Optional[str] = None) -> FamUser:
+    """
+    New user setup for testing using repository.
+    The fixture returns a function to be called with new user created based on
+        user_type, user_name and optionally if need to add cognito_user_id.
+    """
+    def _setup_new_user(
+            user_type: UserType,
+            user_name,
+            cognito_user_id: Optional[str] = None) -> FamUser:
         new_user_create = FamUserDto(
             **{
 
@@ -176,6 +184,11 @@ def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
 def setup_new_app_admin(
     application_admin_repo: ApplicationAdminRepository
 ) -> FamApplicationAdmin:
+    """
+    Conveniently setup new APP_ADMIN user for testing using repository.
+    The fixture returns a function to be called with new app admin created
+        based on application_id the user (user_id) is intended to administer.
+    """
     def __setup_new_app_admin(user_id: int, application_id: int) -> FamApplicationAdmin:
         new_fam_admin = application_admin_repo.create_application_admin(
             application_id,
@@ -186,12 +199,19 @@ def setup_new_app_admin(
 
     return __setup_new_app_admin
 
-# fixture uses FOM as defined application and roles in db
+
 @pytest.fixture(scope="function")
 def setup_new_fom_delegated_admin(
     access_control_privilege_repo: AccessControlPrivilegeRepository,
     role_service: RoleService
 ):
+    """
+    Conveniently setup new "FOM" DELEGATED_ADMIN user for testing.
+    The fixture returns a function to be called with new FOM (evn) delegated
+        admin created based on environment and role the user (user_id) is
+        intended to administer. Note, this is only for FOM application with
+        known roles.
+    """
     def __setup_new_fom_delegated_admin(
         user_id: int,
         role_type: RoleType,

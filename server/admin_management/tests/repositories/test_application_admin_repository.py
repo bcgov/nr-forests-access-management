@@ -10,8 +10,8 @@ from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_APPLICATION_ADMIN_APPLICATION_ID,
                              TEST_APPLICATION_ID_FAM,
                              TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR,
-                             TEST_FAM_ADMIN_USER,
-                             TEST_NEW_APPLICATION_ADMIN_USER_ID)
+                             TEST_NEW_APPLICATION_ADMIN_USER_ID,
+                             TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,17 +99,17 @@ def test_get_user_app_admin_grants(
 ):
     # no existing user.
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_FAM_ADMIN_USER.user_type_code, TEST_FAM_ADMIN_USER.user_name
+        TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_name
     )
     assert fam_user is None
 
     # prepare a new user
-    user_repo.create_user(TEST_FAM_ADMIN_USER)
+    user_repo.create_user(TEST_NEW_IDIR_USER)
     new_user = user_repo.get_user_by_domain_and_name(
-        TEST_FAM_ADMIN_USER.user_type_code, TEST_FAM_ADMIN_USER.user_name
+        TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_name
     )
-    assert new_user.user_name == TEST_FAM_ADMIN_USER.user_name
-    assert new_user.user_type_code == TEST_FAM_ADMIN_USER.user_type_code
+    assert new_user.user_name == TEST_NEW_IDIR_USER.user_name
+    assert new_user.user_type_code == TEST_NEW_IDIR_USER.user_type_code
 
     # add new_user as a new FAM admin
     new_fam_admin = application_admin_repo.create_application_admin(
