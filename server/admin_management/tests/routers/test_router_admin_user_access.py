@@ -73,7 +73,7 @@ def test_get_admin_user_access__user_with_fam_admin_privilege(
     result = response.json().get("access")
     assert len(result) == 0
 
-    # assign new_user for FAM_ADMIN
+    # assign IDIR new_user for FAM_ADMIN privilege
     setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FAM)
 
     # verify new_user now contains FAM_ADMIN privilege
@@ -121,7 +121,7 @@ def test_get_admin_user_access__user_with_multiple_app_admin_privilege(
                               TEST_NEW_IDIR_USER.user_name,
                               TEST_DUMMY_COGNITO_USER_ID)
 
-    # assign new_user for FOM_DEV and FOM_TEST admin
+    # assign IDIR new_user for FOM_DEV and FOM_TEST admin privilege
     setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FOM_DEV)
     setup_new_app_admin(new_user.user_id, TEST_APPLICATION_ID_FOM_TEST)
 
@@ -146,7 +146,7 @@ def test_get_admin_user_access__user_with_multiple_app_admin_privilege(
     assert fom_dev_grant["application"]["id"] == TEST_APPLICATION_ID_FOM_DEV
     assert fom_dev_grant["application"]["name"] == TEST_APP_FOM_NAME
     assert fom_dev_grant["application"]["env"] == AppEnv.APP_ENV_TYPE_DEV.value
-    # FOM DEV grant for "role" the admin can manage
+    # FOM DEV grant for "roles" the admin can manage
     fom_dev_roles_grants = fom_dev_grant["roles"]
     fom_dev_base_roles = role_repo.get_base_roles_by_app_id(TEST_APPLICATION_ID_FOM_DEV)
     assert len(fom_dev_roles_grants) == len(fom_dev_base_roles)
