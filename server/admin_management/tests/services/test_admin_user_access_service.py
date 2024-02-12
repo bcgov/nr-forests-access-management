@@ -26,6 +26,7 @@ def test_get_access_grants_user_with_fam_admin_privilege(
     admin_user_access_service: AdminUserAccessService,
     application_repo: ApplicationRepository,
 ):
+    # setup new IDIR user
     new_user = setup_new_user(TEST_NEW_IDIR_USER.user_type_code,
                               TEST_NEW_IDIR_USER.user_name)
 
@@ -46,6 +47,7 @@ def test_get_access_grants_user_with_fam_admin_privilege(
     assert access.grants[0].roles is None
     assert access.grants[0].application is not None
 
+    # FAM_ADMIN can administer all FAM applications
     fam_applications = application_repo.get_applications()
     application_list = list(map(lambda x: x.application_id, fam_applications))
     auth_grant_applications = list(map(lambda x: x.application.id, access.grants))
@@ -59,6 +61,7 @@ def test_get_access_grants_user_with_app_admin_privilege(
     admin_user_access_service: AdminUserAccessService,
     role_repo: RoleRepository,
 ):
+    # setup new IDIR user
     new_user = setup_new_user(TEST_NEW_IDIR_USER.user_type_code,
                               TEST_NEW_IDIR_USER.user_name)
 
@@ -66,7 +69,7 @@ def test_get_access_grants_user_with_app_admin_privilege(
     user_privilege = admin_user_access_service.get_access_grants(new_user.user_id)
     assert user_privilege.access == []
 
-    # add new_user to FOM_DEV admin
+    # add new_user to FOM_DEV (APP) admin
     new_fom_dev_admin = setup_new_app_admin(new_user.user_id,
                                             TEST_APPLICATION_ID_FOM_DEV)
     assert new_fom_dev_admin.user_id == new_user.user_id
@@ -83,10 +86,12 @@ def test_get_access_grants_user_with_app_admin_privilege(
     assert grant.roles is not None
     assert grant.application is not None
 
+    # verify user is granted for FOM DEV
     granted_application = grant.application
     assert granted_application.id == TEST_APPLICATION_ID_FOM_DEV
     assert granted_application.env == AppEnv.APP_ENV_TYPE_DEV
 
+    # verify FOM DEV app admin can administer on specific roles
     granted_roles = grant.roles
     fom_base_roles = role_repo.get_base_roles_by_app_id(TEST_APPLICATION_ID_FOM_DEV)
     assert len(granted_roles) == len(fom_base_roles)
@@ -107,7 +112,7 @@ def test_get_access_grants_user_with_app_admin_privilege(
     assert access.auth_key == AdminRoleAuthGroup.APP_ADMIN
     assert len(access.grants) == 2
 
-    # grant for FOM_DEV
+    # FOM DEV app admin privilege
     fom_dev_app_admin_grant = (list(filter(
         lambda x: x.application.id == TEST_APPLICATION_ID_FOM_DEV, access.grants
     )))[0]
@@ -117,7 +122,7 @@ def test_get_access_grants_user_with_app_admin_privilege(
     dev_auth_grant_roles = list(map(lambda x: x.id, fom_dev_app_admin_grant.roles))
     assert set(dev_auth_grant_roles) == set(fom_dev_base_role_list)
 
-    # grant for FOM_TEST
+    # FOM TEST app admin privilege
     fom_test_app_admin_grant = (list(filter(
         lambda x: x.application.id == TEST_APPLICATION_ID_FOM_TEST, access.grants
     )))[0]
@@ -133,14 +138,15 @@ def test_get_access_grants_user_with_delegated_admin_privilege(
     setup_new_fom_delegated_admin,
     admin_user_access_service: AdminUserAccessService
 ):
+    # setup new BCEID user
     new_user = setup_new_user(TEST_NEW_BCEID_USER.user_type_code,
                               TEST_NEW_BCEID_USER.user_name)
 
-    # verify new_user initially does not have any privilege
+    # verify BCEID new_user initially does not have any privilege
     user_privilege = admin_user_access_service.get_access_grants(new_user.user_id)
     assert user_privilege.access == []
 
-    # assign new_user FOM_REVIEWER delegated admin to FOM_DEV
+    # assign new_user FOM_REVIEWER delegated admin to FOM DEV
     dga_user_roles = setup_new_fom_delegated_admin(
         new_user.user_id,
         RoleType.ROLE_TYPE_CONCRETE,
