@@ -149,8 +149,8 @@ def test_get_acp_by_application_id(
 
 
 def test_get_user_delegated_admin_grants(
-        access_control_privilege_repo: AccessControlPrivilegeRepository,
-        user_repo: UserRepository
+    access_control_privilege_repo: AccessControlPrivilegeRepository,
+    user_repo: UserRepository
 ):
     new_user = user_repo.create_user(TEST_NEW_IDIR_USER)
 
@@ -191,8 +191,6 @@ def test_get_user_delegated_admin_grants(
     user_grants = access_control_privilege_repo. \
         get_user_delegated_admin_grants(new_user.user_id)
     assert len(user_grants) == 2
-    granted_role_list = list(
-        map(lambda x: x.role_id, user_grants)
-    )
+    granted_role_list = list(map(lambda x: x.role_id, user_grants))
     assert set(granted_role_list) == set(
         [TEST_FOM_DEV_REVIEWER_ROLE_ID, TEST_FOM_TEST_REVIEWER_ROLE_ID])
