@@ -183,7 +183,7 @@ def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
 @pytest.fixture(scope="function")
 def setup_new_app_admin(
     application_admin_repo: ApplicationAdminRepository
-) -> FamApplicationAdmin:
+):
     """
     Conveniently setup new APP_ADMIN user for testing using repository.
     The fixture returns a function to be called with new app admin created
