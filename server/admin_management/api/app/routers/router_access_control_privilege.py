@@ -69,7 +69,7 @@ def create_access_control_privilege_many(
     audit_event_log = AuditEventLog(
         request=request,
         event_type=AuditEventType.CREATE_ACCESS_CONTROL_PRIVILIEGE,
-        forest_client_number=access_control_privilege_request.forest_client_numbers,
+        forest_client_numbers=access_control_privilege_request.forest_client_numbers,
         event_outcome=AuditEventOutcome.SUCCESS,
     )
 
