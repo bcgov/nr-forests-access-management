@@ -2,6 +2,7 @@ import itertools
 import logging
 from typing import List
 
+from api.app.utils import utils
 from api.app.constants import APPLICATION_FAM, AdminRoleAuthGroup
 from api.app.models.model import FamApplication, FamRole
 from api.app.repositories.access_control_privilege_repository import \
@@ -188,11 +189,5 @@ class AdminUserAccessService:
 
     # remove suffix from application.name (e.g., FOM_DEV to FOM)
     def __remove_app_env_suffix(self, application: FamApplicationDto):
-        suffix_list = ["_DEV", "_TEST", "_PROD"]
-        application_name = application.name
-
-        for suffix in suffix_list:
-            if application_name.endswith(suffix):
-                application.name = application_name.rstrip(suffix)
-
+        application.name = utils.remove_app_env_suffix(application.name)
         return application

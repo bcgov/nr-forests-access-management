@@ -236,6 +236,9 @@ class FamAccessControlPrivilege(Base):
     role = relationship("FamRole", back_populates="fam_access_control_privilege", lazy="joined")
     user = relationship("FamUser", back_populates="fam_access_control_privilege", lazy="joined")
 
+    def __repr__(self):
+        return f"FamAccessControlPrivilege(user_id={self.user_id}, role_id={self.role_id})"
+
 
 class FamForestClient(Base):
     __tablename__ = "fam_forest_client"
