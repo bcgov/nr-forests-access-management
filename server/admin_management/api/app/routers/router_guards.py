@@ -3,9 +3,7 @@ import logging
 from http import HTTPStatus
 from typing import Union
 from fastapi import Depends, HTTPException, Request
-from sqlalchemy.orm import Session
 
-from api.app import database
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     get_access_roles,
