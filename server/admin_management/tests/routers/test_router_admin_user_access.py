@@ -88,7 +88,7 @@ def test_get_admin_user_access__user_with_fam_admin_privilege(
     fam_app_grant = list(filter(lambda x: x["application"]["id"] == TEST_APPLICATION_ID_FAM, grants))[0]
     assert fam_app_grant["application"] is not None
     assert fam_app_grant["application"]["id"] == TEST_APPLICATION_ID_FAM
-    assert fam_app_grant["application"]["name"] == TEST_APPLICATION_NAME_FAM  # verify grante app is "FAM", not "FAM_DEV/FAM_TEST"
+    assert fam_app_grant["application"]["name"] == TEST_APPLICATION_NAME_FAM  # verify granted app is "FAM", not "FAM_DEV/FAM_TEST"
     assert fam_app_grant["application"]["env"] is None
     assert fam_app_grant["roles"] is None
 
