@@ -1,6 +1,5 @@
 import logging
 
-import pytest
 from api.app.constants import AdminRoleAuthGroup, AppEnv, RoleType
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
