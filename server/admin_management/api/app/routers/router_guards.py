@@ -22,6 +22,11 @@ from api.app.services.access_control_privilege_service import (
 from api.app.services.user_service import UserService
 from api.app.services.role_service import RoleService
 from api.app.services.application_service import ApplicationService
+from api.app.routers.router_utils import (
+    access_control_privilege_service_instance,
+    application_service_instance,
+    application_admin_service_instance,
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -247,9 +252,11 @@ def authorize_by_app_id(
 
 
 async def validate_param_application_admin_id(
-    application_admin_id: int, db: Session = Depends(database.get_db)
+    application_admin_id: int,
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
 ):
-    application_admin_service = ApplicationAdminService(db)
     application_admin = application_admin_service.get_application_admin_by_id(
         application_admin_id
     )
@@ -266,9 +273,8 @@ async def validate_param_application_admin_id(
 
 async def validate_param_application_id(
     application_admin_request: FamAppAdminCreateRequest,
-    db: Session = Depends(database.get_db),
+    application_service: ApplicationService = Depends(application_service_instance),
 ):
-    application_service = ApplicationService(db)
     application = application_service.get_application(
         application_admin_request.application_id
     )
@@ -299,9 +305,11 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
 
 
 async def validate_param_access_control_privilege_id(
-    access_control_privilege_id: int, db: Session = Depends(database.get_db)
+    access_control_privilege_id: int,
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    ),
 ):
-    access_control_privilege_service = AccessControlPrivilegeService(db)
     access_control_privilege = access_control_privilege_service.get_acp_by_id(
         access_control_privilege_id
     )
