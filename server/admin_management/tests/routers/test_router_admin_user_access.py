@@ -271,7 +271,7 @@ def test_get_admin_user_access__user_with_multiple_delegated_admin_privilege(
     assert fom_test_role_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
     # should contains exact 2 forest_clients the new_user can administer
     assert set(fom_test_role_grants_submitter["forest_clients"]) == \
-        set([TEST_FOREST_CLIENT_NUMBER, TEST_FOREST_CLIENT_NUMBER_TWO])
+        set(dga_submitter_forest_clients)
 
 
 def test_get_admin_user_access__user_with_app_admin_and_delegated_admin_privilege(
