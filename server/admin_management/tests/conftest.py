@@ -207,7 +207,7 @@ def setup_new_fom_delegated_admin(
 ):
     """
     Conveniently setup new "FOM" DELEGATED_ADMIN user for testing.
-    The fixture returns a function to be called with new FOM (evn) delegated
+    The fixture returns a function to be called with new FOM (env) delegated
         admin created based on environment and role the user (user_id) is
         intended to administer. Note, this is only for FOM application with
         known roles.
