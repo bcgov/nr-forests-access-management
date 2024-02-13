@@ -8,17 +8,29 @@ TEST_ANOTHER_CREATER = "TESTERTWO"
 TEST_FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
 TEST_FAM_ADMIN_ROLE = "FAM_ADMIN"
 INVALID_APPLICATION_ID = "invalid_application_id"
+TEST_APP_FOM_NAME = "FOM"
+TEST_APP_ROLE_NAME_FOM_REVIEWER = "FOM_REVIEWER"
+TEST_APP_ROLE_NAME_FOM_SUBMITTER = "FOM_SUBMITTER"
 
 # ---------------------- test user data ----------------------------- #
 TEST_NON_EXIST_USER_ID = 0
 TEST_USER_ID = 1
 TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
+TEST_DUMMY_COGNITO_USER_ID = f"dev-idir_dummyid@idir"
 TEST_USER_NAME = "TEST_USER"
 
-TEST_NEW_USER = schemas.FamUserDto(
+TEST_NEW_IDIR_USER = schemas.FamUserDto(
     **{
         "user_type_code": famConstants.UserType.IDIR,
+        "user_name": TEST_USER_NAME,
+        "create_user": TEST_CREATOR,
+    }
+)
+
+TEST_NEW_BCEID_USER = schemas.FamUserDto(
+    **{
+        "user_type_code": famConstants.UserType.BCEID,
         "user_name": TEST_USER_NAME,
         "create_user": TEST_CREATOR,
     }
@@ -28,6 +40,7 @@ TEST_NEW_USER = schemas.FamUserDto(
 TEST_NOT_EXIST_APPLICATION_ID = 0
 TEST_APPLICATION_ID_FAM = 1
 TEST_APPLICATION_ID_FOM_DEV = 2
+TEST_APPLICATION_ID_FOM_TEST = 3
 TEST_APPLICATION_NAME_FAM = "FAM"
 
 # -------------------- test application admin data ------------------ #
@@ -56,6 +69,8 @@ TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreateDto(
 TEST_NOT_EXIST_ROLE_ID = 0
 TEST_FOM_DEV_SUBMITTER_ROLE_ID = 3
 TEST_FOM_DEV_REVIEWER_ROLE_ID = 4
+TEST_FOM_TEST_SUBMITTER_ROLE_ID = 7
+TEST_FOM_TEST_REVIEWER_ROLE_ID = 8
 TEST_NON_EXIST_ROLE_NAME = "TEST_NON_EXIST_ROLE"
 TEST_FOM_SUBMITTER_ROLE_NAME = "FOM_SUBMITTER"
 TEST_FOM_REVIEWER_ROLE_NAME = "FOM_REVIEWER"
