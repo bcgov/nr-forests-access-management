@@ -76,6 +76,44 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
             };
         },
         /**
+         * 
+         * @summary Delete Access Control Privilege
+         * @param {number} accessControlPrivilegeId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAccessControlPrivilege: async (accessControlPrivilegeId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'accessControlPrivilegeId' is not null or undefined
+            assertParamExists('deleteAccessControlPrivilege', 'accessControlPrivilegeId', accessControlPrivilegeId)
+            const localVarPath = `/access_control_privileges/{access_control_privilege_id}`
+                .replace(`{${"access_control_privilege_id"}}`, encodeURIComponent(String(accessControlPrivilegeId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 6jfveou69mgford233or30hmta required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get Delegated Admin Privileges For an Application
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -138,6 +176,17 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary Delete Access Control Privilege
+         * @param {number} accessControlPrivilegeId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAccessControlPrivilege(accessControlPrivilegeId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Get Delegated Admin Privileges For an Application
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -169,6 +218,16 @@ export const FAMAccessControlPrivilegesApiFactory = function (configuration?: Co
             return localVarFp.createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary Delete Access Control Privilege
+         * @param {number} accessControlPrivilegeId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get Delegated Admin Privileges For an Application
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -196,6 +255,16 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
     createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: AxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>;
+
+    /**
+     * 
+     * @summary Delete Access Control Privilege
+     * @param {number} accessControlPrivilegeId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMAccessControlPrivilegesApiInterface
+     */
+    deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * Get Delegated Admin Privileges For an Application
@@ -226,6 +295,18 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
      */
     public createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: AxiosRequestConfig) {
         return FAMAccessControlPrivilegesApiFp(this.configuration).createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete Access Control Privilege
+     * @param {number} accessControlPrivilegeId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMAccessControlPrivilegesApi
+     */
+    public deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig) {
+        return FAMAccessControlPrivilegesApiFp(this.configuration).deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

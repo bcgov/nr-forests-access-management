@@ -45,6 +45,11 @@ class AccessControlPrivilegeService:
             application_id
         )
 
+    def delete_access_control_privilege(self, access_control_privilege_id: int):
+        return self.access_control_privilege_repository.delete_access_control_privilege(
+            access_control_privilege_id
+        )
+
     def create_access_control_privilege_many(
         self, request: schemas.FamAccessControlPrivilegeCreateRequest, requester: str
     ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:

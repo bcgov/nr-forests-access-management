@@ -1,23 +1,28 @@
 import logging
 
 import pytest
-from api.app.repositories.access_control_privilege_repository import \
-    AccessControlPrivilegeRepository
+from api.app.repositories.access_control_privilege_repository import (
+    AccessControlPrivilegeRepository,
+)
 from api.app.repositories.user_repository import UserRepository
 from api.app.schemas import FamAccessControlPrivilegeCreateDto
 from sqlalchemy.exc import IntegrityError
-from tests.constants import (ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
-                             ERROR_VOLIATE_UNIQUE_CONSTRAINT,
-                             TEST_ACCESS_CONTROL_PRIVILEGE_CREATE,
-                             TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR,
-                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
-                             TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                             TEST_FOM_TEST_REVIEWER_ROLE_ID,
-                             TEST_NEW_IDIR_USER,
-                             TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID,
-                             TEST_NON_EXIST_USER_ID,
-                             TEST_NOT_EXIST_APPLICATION_ID,
-                             TEST_NOT_EXIST_ROLE_ID, TEST_USER_ID)
+from tests.constants import (
+    ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
+    ERROR_VOLIATE_UNIQUE_CONSTRAINT,
+    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE,
+    TEST_APPLICATION_ID_FOM_DEV,
+    TEST_CREATOR,
+    TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    TEST_FOM_TEST_REVIEWER_ROLE_ID,
+    TEST_NEW_IDIR_USER,
+    TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID,
+    TEST_NON_EXIST_USER_ID,
+    TEST_NOT_EXIST_APPLICATION_ID,
+    TEST_NOT_EXIST_ROLE_ID,
+    TEST_USER_ID,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -148,15 +153,50 @@ def test_get_acp_by_application_id(
     assert len(found_acp) == 0
 
 
+def test_delete_access_control_privileg(
+    access_control_privilege_repo: AccessControlPrivilegeRepository,
+):
+    # create a new access control privilege
+    new_access_control_privilege = (
+        access_control_privilege_repo.create_access_control_privilege(
+            TEST_ACCESS_CONTROL_PRIVILEGE_CREATE
+        )
+    )
+    assert (
+        new_access_control_privilege.user_id
+        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.user_id
+    )
+    assert (
+        new_access_control_privilege.role_id
+        == TEST_ACCESS_CONTROL_PRIVILEGE_CREATE.role_id
+    )
+    # verify the new access control privilege is created
+    access_control_privilege = access_control_privilege_repo.get_acp_by_id(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    assert access_control_privilege is not None
+
+    # remove the access control privilege
+    access_control_privilege_repo.delete_access_control_privilege(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    # verify the access control privilege cannot be found anymore
+    access_control_privilege = access_control_privilege_repo.get_acp_by_id(
+        new_access_control_privilege.access_control_privilege_id
+    )
+    assert access_control_privilege is None
+
+
 def test_get_user_delegated_admin_grants(
     access_control_privilege_repo: AccessControlPrivilegeRepository,
-    user_repo: UserRepository
+    user_repo: UserRepository,
 ):
     new_user = user_repo.create_user(TEST_NEW_IDIR_USER)
 
     # user does not have delegated admin privilege initially.
-    initial_granted_role = access_control_privilege_repo. \
-        get_user_delegated_admin_grants(new_user.user_id)
+    initial_granted_role = (
+        access_control_privilege_repo.get_user_delegated_admin_grants(new_user.user_id)
+    )
     assert initial_granted_role == []
 
     # granted new user delegated admin a role
@@ -171,8 +211,9 @@ def test_get_user_delegated_admin_grants(
         fom_dev_reviewer_delegated_request
     )
 
-    user_grants = access_control_privilege_repo. \
-        get_user_delegated_admin_grants(new_user.user_id)
+    user_grants = access_control_privilege_repo.get_user_delegated_admin_grants(
+        new_user.user_id
+    )
     assert len(user_grants) == 1
     granted_fom_reviewer_role = user_grants[0]
     assert granted_fom_reviewer_role.role_id == TEST_FOM_DEV_REVIEWER_ROLE_ID
@@ -188,9 +229,11 @@ def test_get_user_delegated_admin_grants(
     access_control_privilege_repo.create_access_control_privilege(
         fom_test_reviewer_delegated_request
     )
-    user_grants = access_control_privilege_repo. \
-        get_user_delegated_admin_grants(new_user.user_id)
+    user_grants = access_control_privilege_repo.get_user_delegated_admin_grants(
+        new_user.user_id
+    )
     assert len(user_grants) == 2
     granted_role_list = list(map(lambda x: x.role_id, user_grants))
     assert set(granted_role_list) == set(
-        [TEST_FOM_DEV_REVIEWER_ROLE_ID, TEST_FOM_TEST_REVIEWER_ROLE_ID])
+        [TEST_FOM_DEV_REVIEWER_ROLE_ID, TEST_FOM_TEST_REVIEWER_ROLE_ID]
+    )
