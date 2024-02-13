@@ -26,6 +26,8 @@ from api.app.routers.router_utils import (
     access_control_privilege_service_instance,
     application_service_instance,
     application_admin_service_instance,
+    user_service_instance,
+    role_service_instance,
 )
 
 
@@ -69,9 +71,8 @@ def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
 async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles=Depends(get_access_roles),
-    db: Session = Depends(database.get_db),
+    user_service: UserService = Depends(user_service_instance),
 ):
-    user_service = UserService(db)
     fam_user: FamUser = user_service.get_user_by_cognito_user_id(
         request_cognito_user_id
     )
@@ -91,16 +92,22 @@ async def get_current_requester(
 # Specifically: "user_role_xref_id" and "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
-    request: Request, db: Session = Depends(database.get_db)
+    request: Request,
+    user_service: UserService = Depends(user_service_instance),
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    ),
 ) -> Union[TargetUser, None]:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
     For requester, use "get_current_requester()" above.
     """
     # from path_param - application_admin_id, when remove admin access for a user
-    user_service = UserService(db)
+
     if "application_admin_id" in request.path_params:
-        application_admin_service = ApplicationAdminService(db)
         application_admin = application_admin_service.get_application_admin_by_id(
             request.path_params["application_admin_id"]
         )
@@ -110,7 +117,6 @@ async def get_target_user_from_id(
             else None
         )
     elif "access_control_privilege_id" in request.path_params:
-        access_control_privilege_service = AccessControlPrivilegeService(db)
         access_control_privilege = access_control_privilege_service.get_acp_by_id(
             request.path_params["access_control_privilege_id"]
         )
@@ -162,7 +168,11 @@ async def enforce_self_grant_guard(
 
 
 async def get_request_role_from_id(
-    request: Request, db: Session = Depends(database.get_db)
+    request: Request,
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    ),
+    role_service: RoleService = Depends(role_service_instance),
 ) -> Union[FamRole, None]:
     """
     To get role from request
@@ -174,7 +184,6 @@ async def get_request_role_from_id(
         access_control_privilege_id = request.path_params["access_control_privilege_id"]
 
     if access_control_privilege_id:
-        access_control_privilege_service = AccessControlPrivilegeService(db)
         access_control_privilege = access_control_privilege_service.get_acp_by_id(
             access_control_privilege_id
         )
@@ -183,7 +192,6 @@ async def get_request_role_from_id(
         try:
             rbody = await request.json()
             role_id = rbody["role_id"]
-            role_service = RoleService(db)
             role = role_service.get_role_by_id(role_id)
             return role  # role could be None.
 
@@ -196,8 +204,8 @@ def authorize_by_application_role(
     # Depends on "get_request_role_from_id()" to figure out
     # what id to use to get role from endpoint.
     role: FamRole = Depends(get_request_role_from_id),
-    db: Session = Depends(database.get_db),
     claims: dict = Depends(validate_token),
+    application_service: ApplicationService = Depends(application_service_instance),
 ):
     """
     This router validation is currently design to validate logged on "admin"
@@ -216,16 +224,15 @@ def authorize_by_application_role(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    authorize_by_app_id(application_id=role.application_id, db=db, claims=claims)
+    authorize_by_app_id(role.application_id, claims, application_service)
     return role
 
 
 def authorize_by_app_id(
     application_id: int,
-    db: Session = Depends(database.get_db),
     claims: dict = Depends(validate_token),
+    application_service: ApplicationService = Depends(application_service_instance),
 ):
-    application_service = ApplicationService(db)
     application = application_service.get_application(application_id)
     if not application:
         raise HTTPException(
