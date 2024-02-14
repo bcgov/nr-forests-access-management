@@ -4,6 +4,7 @@ import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
+import type { FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -14,9 +15,10 @@ export interface FamLoginUser {
     idpProvider?: string;
     roles?: string[];
     authToken?: CognitoUserSession;
+    acesses?: FamAuthGrantDto[];
 }
 
-const state = ref({
+export const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
             | FamLoginUser
