@@ -18,7 +18,7 @@ export interface FamLoginUser {
     acesses?: FamAuthGrantDto[];
 }
 
-export const state = ref({
+const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
             | FamLoginUser
