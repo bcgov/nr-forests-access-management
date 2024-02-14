@@ -2,19 +2,26 @@ import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFac
 import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import { state } from './AuthService';
 
 // --- Fetching data (from backend)
 
 export const fetchApplications = async () => {
 
-    console.log((await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()).data.access)
-    // console.log((await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(1)).data)
+    fetchUserPrivileges();
     const applications = (
         await AppActlApiService.applicationsApi.getApplications()
     ).data;
 
     // State change.
     setApplicationsUserAdministers(applications);
+    console.log(state.value)
+};
+
+export const fetchUserPrivileges = async () => {
+    state.value.famLoginUser.acesses = (
+        await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()
+    ).data.access;
 };
 
 export const fetchUserRoleAssignments = async (
