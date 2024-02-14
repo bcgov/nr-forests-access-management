@@ -1,10 +1,10 @@
-import router from '@/router';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import { readonly, ref } from 'vue';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
 import type { FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
+import { AdminMgmtApiService } from './ApiServiceFactory';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -121,8 +121,11 @@ function removeFamUser() {
     localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 }
 
-function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
+async function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
     state.value.famLoginUser = famLoginUser;
+    state.value.famLoginUser!.acesses = (
+        await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()
+    ).data.access;
     if (famLoginUser) {
         localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
     } else {

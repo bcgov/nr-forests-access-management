@@ -8,7 +8,6 @@ import { state } from './AuthService';
 
 export const fetchApplications = async () => {
 
-    fetchUserPrivileges();
     const applications = (
         await AppActlApiService.applicationsApi.getApplications()
     ).data;
@@ -16,12 +15,6 @@ export const fetchApplications = async () => {
     // State change.
     setApplicationsUserAdministers(applications);
     console.log(state.value)
-};
-
-export const fetchUserPrivileges = async () => {
-    state.value.famLoginUser.acesses = (
-        await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()
-    ).data.access;
 };
 
 export const fetchUserRoleAssignments = async (
