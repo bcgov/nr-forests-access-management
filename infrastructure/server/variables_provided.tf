@@ -132,6 +132,73 @@ variable "prod_oidc_bcsc_idp_client_id" {
   default = "not.yet.implemented"
 }
 
+# OIDC authorization endpoint at Pathfinder SSO (Keycloak)
+
+variable "dev_oidc_idp_authorization_endpoint" {
+  type    = string
+  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/auth"
+}
+
+variable "test_oidc_idp_authorization_endpoint" {
+  type    = string
+  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/auth"
+}
+
+variable "prod_oidc_idp_authorization_endpoint" {
+  type    = string
+  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/auth"
+}
+
+# OIDC token endpoint at Pathfinder SSO (Keycloak)
+
+variable "dev_oidc_idp_token_endpoint" {
+  type    = string
+  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/token"
+}
+
+variable "test_oidc_idp_token_endpoint" {
+  type    = string
+  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/token"
+}
+
+variable "prod_oidc_idp_token_endpoint" {
+  type    = string
+  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/token"
+}
+
+# OIDC userinfo endpoint at Pathfinder SSO (Keycloak)
+
+variable "dev_oidc_idp_userinfo_endpoint" {
+  type    = string
+  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+}
+
+variable "test_oidc_idp_userinfo_endpoint" {
+  type    = string
+  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+}
+
+variable "prod_oidc_idp_userinfo_endpoint" {
+  type    = string
+  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+}
+
+# OIDC jwk endpoint at Pathfinder SSO (Keycloak)
+
+variable "dev_oidc_idp_jwk_endpoint" {
+  type    = string
+  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/certs"
+}
+
+variable "test_oidc_idp_jwk_endpoint" {
+  type    = string
+  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/certs"
+}
+
+variable "prod_oidc_idp_jwk_endpoint" {
+  type    = string
+  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/certs"
+}
 
 # Networking Variables
 variable "subnet_data_a" {
