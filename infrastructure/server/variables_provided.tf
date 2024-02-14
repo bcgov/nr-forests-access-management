@@ -134,9 +134,9 @@ variable "prod_oidc_bcsc_idp_client_id" {
 
 
 locals {
-  dev_oidc_idp_endpoint_base = "${var.dev_oidc_idp_issuer}/protocol/openid-connect"
-  test_oidc_idp_endpoint_base = "${var.test_oidc_idp_issuer}/protocol/openid-connect"
-  prod_oidc_idp_endpoint_base = "${var.prod_oidc_idp_issuer}/protocol/openid-connect"
+  dev_oidc_idp_endpoint_base = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect"
+  test_oidc_idp_endpoint_base = "https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect"
+  prod_oidc_idp_endpoint_base = "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect"
 }
 
 # OIDC authorization endpoint at Pathfinder SSO (Keycloak)
