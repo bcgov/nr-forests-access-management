@@ -132,72 +132,79 @@ variable "prod_oidc_bcsc_idp_client_id" {
   default = "not.yet.implemented"
 }
 
+
+locals {
+  dev_oidc_idp_endpoint_base = "${var.dev_oidc_idp_issuer}/protocol/openid-connect"
+  test_oidc_idp_endpoint_base = "${var.test_oidc_idp_issuer}/protocol/openid-connect"
+  prod_oidc_idp_endpoint_base = "${var.prod_oidc_idp_issuer}/protocol/openid-connect"
+}
+
 # OIDC authorization endpoint at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_authorization_endpoint" {
   type    = string
-  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/auth"
+  default = "${local.dev_oidc_idp_endpoint_base}/auth"
 }
 
 variable "test_oidc_idp_authorization_endpoint" {
   type    = string
-  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/auth"
+  default = "${local.test_oidc_idp_endpoint_base}/auth"
 }
 
 variable "prod_oidc_idp_authorization_endpoint" {
   type    = string
-  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/auth"
+  default = "${local.prod_oidc_idp_endpoint_base}/auth"
 }
 
 # OIDC token endpoint at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_token_endpoint" {
   type    = string
-  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/token"
+  default = "${local.dev_oidc_idp_endpoint_base}/token"
 }
 
 variable "test_oidc_idp_token_endpoint" {
   type    = string
-  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/token"
+  default = "${local.test_oidc_idp_endpoint_base}/token"
 }
 
 variable "prod_oidc_idp_token_endpoint" {
   type    = string
-  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/token"
+  default = "${local.prod_oidc_idp_endpoint_base}/token"
 }
 
 # OIDC userinfo endpoint at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_userinfo_endpoint" {
   type    = string
-  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+  default = "${local.dev_oidc_idp_endpoint_base}/userinfo"
 }
 
 variable "test_oidc_idp_userinfo_endpoint" {
   type    = string
-  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+  default = "${local.test_oidc_idp_endpoint_base}/userinfo"
 }
 
 variable "prod_oidc_idp_userinfo_endpoint" {
   type    = string
-  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+  default = "${local.prod_oidc_idp_endpoint_base}/userinfo"
 }
 
 # OIDC jwk endpoint at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_jwk_endpoint" {
   type    = string
-  default = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/certs"
+  default = "${local.dev_oidc_idp_endpoint_base}/certs"
 }
 
 variable "test_oidc_idp_jwk_endpoint" {
   type    = string
-  default = "${var.test_oidc_idp_issuer}/protocol/openid-connect/certs"
+  default = "${local.test_oidc_idp_endpoint_base}/certs"
 }
 
 variable "prod_oidc_idp_jwk_endpoint" {
   type    = string
-  default = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/certs"
+  default = "${local.prod_oidc_idp_endpoint_base}/certs"
 }
 
 # Networking Variables
