@@ -2,7 +2,7 @@
 -- we can remove fam admin association for the users from fam_user_role_xref table and remove FAM roles
 -- from fam_role table.
 
--- Just to be safe before deletion records, migrating admin user_role_xref again,
+-- Just to be safe before deletion records, migrating remaining admin user_role_xref again,
 -- if conflict do nothing.
 WITH selected_admin_xrefs AS (
     SELECT user_role_xref.user_id, application.application_id, CURRENT_USER, CURRENT_DATE
