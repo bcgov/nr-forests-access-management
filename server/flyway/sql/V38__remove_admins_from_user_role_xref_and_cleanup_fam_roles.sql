@@ -8,10 +8,11 @@ WITH selected_admin_xrefs AS (
     SELECT user_role_xref.user_id, application.application_id, CURRENT_USER, CURRENT_DATE
     FROM app_fam.fam_role role
     JOIN app_fam.fam_application application
-        ON role.application_id = application.application_id
+        ON role.role_name LIKE '%' || application.application_name || '%'
     JOIN app_fam.fam_user_role_xref user_role_xref
         ON role.role_id = user_role_xref.role_id
-    WHERE application.application_name = 'FAM'
+    WHERE role.application_id = (SELECT application_id FROM app_fam.fam_application
+        WHERE application_name = 'FAM')
 )
 INSERT INTO app_fam.fam_application_admin (user_id, application_id, create_user, create_date)
 SELECT user_id, application_id, CURRENT_USER, CURRENT_DATE
@@ -19,20 +20,14 @@ FROM selected_admin_xrefs
 ON CONFLICT (user_id, application_id) DO NOTHING;
 
 -- Remove admin user role association from fam_user_role_xref
-WITH selected_admin_xrefs_ids AS (
-    SELECT user_role_xref.user_role_xref_id
-    FROM app_fam.fam_role frole
-    JOIN app_fam.fam_application application
-        ON frole.application_id = application.application_id
-    JOIN app_fam.fam_user_role_xref user_role_xref
-        ON frole.role_id = user_role_xref.role_id
-    JOIN app_fam.fam_user fu
-        ON fu.user_id = user_role_xref.user_id
-    WHERE application.application_name = 'FAM'
-)
 DELETE FROM app_fam.fam_user_role_xref urx
-WHERE urx.user_role_xref_id in (
-    select user_role_xref_id from selected_admin_xrefs_ids
+WHERE urx.role_id in
+    (select role_id
+     from app_fam.fam_role
+     where application_id = (
+        SELECT application_id
+        FROM app_fam.fam_application
+        WHERE application_name = 'FAM')
 );
 
 -- Delete FAM roles
