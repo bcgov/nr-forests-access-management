@@ -11,7 +11,6 @@ import type {
     AdminUserAccessResponse,
 } from 'fam-admin-mgmt-api/model';
 
-
 const FAM_LOGIN_USER = 'famLoginUser';
 
 export interface FamLoginUser {
@@ -143,15 +142,14 @@ const storeFamUserAccess = async () => {
         .adminUserAccessPrivilege()
         .then((returnResult: AxiosResponse<AdminUserAccessResponse, any>) => {
             state.value.famLoginUser!.accesses = returnResult.data.access;
+            localStorage.setItem(
+                FAM_LOGIN_USER,
+                JSON.stringify(state.value.famLoginUser)
+            );
         })
         .catch((error: AxiosError) => {
             setRouteToastError(error);
         });
-
-    localStorage.setItem(
-        FAM_LOGIN_USER,
-        JSON.stringify(state.value.famLoginUser)
-    );
 };
 
 const hasAccessRole = (role: string): boolean => {
