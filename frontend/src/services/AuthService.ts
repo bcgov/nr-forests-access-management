@@ -15,7 +15,7 @@ export interface FamLoginUser {
     idpProvider?: string;
     roles?: string[];
     authToken?: CognitoUserSession;
-    acesses?: FamAuthGrantDto[];
+    accesses?: FamAuthGrantDto[];
 }
 
 const state = ref({
@@ -123,7 +123,7 @@ const removeFamUser = () => {
 
 async function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
     state.value.famLoginUser = famLoginUser;
-    state.value.famLoginUser!.acesses = (
+    state.value.famLoginUser!.accesses = (
         await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege()
     ).data.access;
     if (famLoginUser) {
