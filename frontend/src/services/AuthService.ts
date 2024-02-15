@@ -89,8 +89,6 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
 
         const famLoginUser = parseToken(currentAuthToken);
         storeFamUser(famLoginUser);
-        // we need to call storeFamUser first to set the auth token, so we can make api call to get access
-        storeFamUserAccess();
         return famLoginUser;
     } catch (error) {
         console.error(
@@ -131,25 +129,25 @@ const removeFamUser = () => {
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
     state.value.famLoginUser = famLoginUser;
     if (famLoginUser) {
-        localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
+        // this call need auth token, so only call it when famLoginUser is not undefined
+        AdminMgmtApiService.adminUserAccessesApi
+            .adminUserAccessPrivilege()
+            .then(
+                (returnResult: AxiosResponse<AdminUserAccessResponse, any>) => {
+                    state.value.famLoginUser!.accesses =
+                        returnResult.data.access;
+                }
+            )
+            .catch((error: AxiosError) => {
+                setRouteToastError(error);
+            });
+        localStorage.setItem(
+            FAM_LOGIN_USER,
+            JSON.stringify(state.value.famLoginUser)
+        );
     } else {
         localStorage.removeItem(FAM_LOGIN_USER);
     }
-};
-
-const storeFamUserAccess = async () => {
-    AdminMgmtApiService.adminUserAccessesApi
-        .adminUserAccessPrivilege()
-        .then((returnResult: AxiosResponse<AdminUserAccessResponse, any>) => {
-            state.value.famLoginUser!.accesses = returnResult.data.access;
-            localStorage.setItem(
-                FAM_LOGIN_USER,
-                JSON.stringify(state.value.famLoginUser)
-            );
-        })
-        .catch((error: AxiosError) => {
-            setRouteToastError(error);
-        });
 };
 
 const hasAccessRole = (role: string): boolean => {
