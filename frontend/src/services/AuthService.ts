@@ -1,15 +1,11 @@
 import { readonly, ref } from 'vue';
 import { Auth } from 'aws-amplify';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import type { AxiosResponse, AxiosError } from 'axios';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
 import { setRouteToastError } from '@/store/ToastState';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import type {
-    FamAuthGrantDto,
-    AdminUserAccessResponse,
-} from 'fam-admin-mgmt-api/model';
+import type { FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -60,15 +56,27 @@ const logout = async () => {
 };
 
 const handlePostLogin = async () => {
-    return Auth.currentAuthenticatedUser()
-        .then(async (_userData) => {
-            await refreshToken();
-        })
-        .catch((error) => {
-            console.log('Not signed in');
-            console.log('Authentication Error:', error);
-            return logout();
-        });
+    try {
+        await Auth.currentAuthenticatedUser();
+        await refreshToken();
+        await getUserAccess();
+    } catch (error) {
+        console.log('Not signed in');
+        console.log('Authentication Error:', error);
+        logout();
+    }
+};
+
+const getUserAccess = async () => {
+    try {
+        const userAccessData =
+            await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
+        state.value.famLoginUser!.accesses = userAccessData.data.access;
+        storeFamUser(state.value.famLoginUser);
+    } catch (error: any) {
+        console.log("Unable to get user's access in FAM", error);
+        setRouteToastError(error);
+    }
 };
 
 /**
@@ -129,18 +137,6 @@ const removeFamUser = () => {
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
     state.value.famLoginUser = famLoginUser;
     if (famLoginUser) {
-        // this call need auth token, so only call it when famLoginUser is not undefined
-        AdminMgmtApiService.adminUserAccessesApi
-            .adminUserAccessPrivilege()
-            .then(
-                (returnResult: AxiosResponse<AdminUserAccessResponse, any>) => {
-                    state.value.famLoginUser!.accesses =
-                        returnResult.data.access;
-                }
-            )
-            .catch((error: AxiosError) => {
-                setRouteToastError(error);
-            });
         localStorage.setItem(
             FAM_LOGIN_USER,
             JSON.stringify(state.value.famLoginUser)
@@ -166,6 +162,7 @@ const methods = {
     refreshToken,
     removeFamUser,
     hasAccessRole,
+    getUserAccess
 };
 
 const getters = {
