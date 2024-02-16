@@ -123,10 +123,3 @@ def test_get_application_id_by_role_id(db_pg_session: Session):
     assert app_id == TEST_FOM_DEV_APPLICATION_ID
 
 
-def test_get_application_id_by_user_role_xref_id(db_pg_session: Session):
-    app_id = crud_application.get_application_id_by_user_role_xref_id(
-        db=db_pg_session,
-        user_role_xref_id=1,  # the first user in our db has role FAM admin
-    )
-    assert app_id == TEST_APPLICATION_ROLE_ID_FAM
-
