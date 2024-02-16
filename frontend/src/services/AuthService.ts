@@ -67,7 +67,12 @@ const handlePostLogin = async () => {
     }
 };
 
-const getUserAccess = async () => {
+/**
+ * To refresh User granted privileges when neccssary.
+ * FamLoginUser contains a property "accesses" that sometimes needs to be
+ * refreshed and stored into localStorage at FamLoginUser object.
+ */
+const refreshCachedUserAccess = async () => {
     try {
         const userAccessData =
             await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
@@ -77,6 +82,10 @@ const getUserAccess = async () => {
         console.log("Unable to get user's access in FAM", error);
         setRouteToastError(error);
     }
+};
+
+const getUserAccess = () => {
+    return state.value.famLoginUser?.accesses;
 };
 
 /**
@@ -160,6 +169,7 @@ const methods = {
     handlePostLogin,
     logout,
     refreshToken,
+    refreshCachedUserAccess,
     removeFamUser,
     hasAccessRole,
     getUserAccess
