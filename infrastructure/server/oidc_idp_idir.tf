@@ -11,6 +11,10 @@ resource "aws_cognito_identity_provider" "dev_idir_oidc_provider" {
     client_secret             = var.dev_oidc_idir_idp_client_secret
     oidc_issuer               = var.dev_oidc_idp_issuer
     attributes_request_method = "GET"
+    authorize_url             = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/auth"
+    token_url                 = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/token"
+    attributes_url            = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+    jwks_uri                  = "${var.dev_oidc_idp_issuer}/protocol/openid-connect/certs"
   }
 
   attribute_mapping = {
@@ -34,6 +38,10 @@ resource "aws_cognito_identity_provider" "test_idir_oidc_provider" {
     client_secret             = var.test_oidc_idir_idp_client_secret
     oidc_issuer               = var.test_oidc_idp_issuer
     attributes_request_method = "GET"
+    authorize_url             = "${var.test_oidc_idp_issuer}/protocol/openid-connect/auth"
+    token_url                 = "${var.test_oidc_idp_issuer}/protocol/openid-connect/token"
+    attributes_url            = "${var.test_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+    jwks_uri                  = "${var.test_oidc_idp_issuer}/protocol/openid-connect/certs"
   }
 
   attribute_mapping = {
@@ -58,6 +66,10 @@ resource "aws_cognito_identity_provider" "prod_idir_oidc_provider" {
     client_secret             = var.prod_oidc_idir_idp_client_secret
     oidc_issuer               = var.prod_oidc_idp_issuer
     attributes_request_method = "GET"
+    authorize_url             = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/auth"
+    token_url                 = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/token"
+    attributes_url            = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/userinfo"
+    jwks_uri                  = "${var.prod_oidc_idp_issuer}/protocol/openid-connect/certs"
   }
 
   attribute_mapping = {

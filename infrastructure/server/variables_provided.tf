@@ -132,7 +132,6 @@ variable "prod_oidc_bcsc_idp_client_id" {
   default = "not.yet.implemented"
 }
 
-
 # Networking Variables
 variable "subnet_data_a" {
   description = "Value of the name tag for a subnet in the DATA security group"
