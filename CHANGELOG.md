@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.12.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.11.0...v1.12.0) (2024-02-16)
+
+
+### Features
+
+* [#1090](https://github.com/bcgov/nr-forests-access-management/issues/1090) delete delegated admin ([#1196](https://github.com/bcgov/nr-forests-access-management/issues/1196)) ([c5dbbee](https://github.com/bcgov/nr-forests-access-management/commit/c5dbbee8e4d57659399053f9e23fa7202499711f))
+* [#1174](https://github.com/bcgov/nr-forests-access-management/issues/1174) add tests for get my fam access api ([#1195](https://github.com/bcgov/nr-forests-access-management/issues/1195)) ([914ae89](https://github.com/bcgov/nr-forests-access-management/commit/914ae896ed86c6263bd4ce10c23cbb74b36abc04))
+
+
+### Bug Fixes
+
+* [#1066](https://github.com/bcgov/nr-forests-access-management/issues/1066) admin segregation cleanup ([#1203](https://github.com/bcgov/nr-forests-access-management/issues/1203)) ([ee9f3e4](https://github.com/bcgov/nr-forests-access-management/commit/ee9f3e4d94e2c32fd93bfde436428d7d51e8e16f))
+* [#1197](https://github.com/bcgov/nr-forests-access-management/issues/1197) update terraform IDP config to manual enter endpoints ([#1202](https://github.com/bcgov/nr-forests-access-management/issues/1202)) ([a2ea756](https://github.com/bcgov/nr-forests-access-management/commit/a2ea756e759bfb10a73f748f3f01eee051df483c))
+
+
+### Miscellaneous
+
+* **deps:** [Snyk] Security upgrade cryptography from 42.0.0 to 42.0.2 ([#1171](https://github.com/bcgov/nr-forests-access-management/issues/1171)) ([9af8e16](https://github.com/bcgov/nr-forests-access-management/commit/9af8e16efe9bf66f36da4a670c82d2a25cd0b1ee))
+* **deps:** update dependency fastapi to v0.109.1 [security] ([#1177](https://github.com/bcgov/nr-forests-access-management/issues/1177)) ([02ac2bd](https://github.com/bcgov/nr-forests-access-management/commit/02ac2bd96eb47603ee62e6ee9b62169eaa5044ed))
+
 ## [1.11.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.10.0...v1.11.0) (2024-02-09)
 
 
