@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
+import loginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
+import Avatar from 'primevue/avatar';
+import { computed, ref } from 'vue';
 
-const userName = authService.state.value.famLoginUser!.username;
+const userName = loginUserState.state.value.famLoginUser!.username;
 const initals = userName ? userName.slice(0, 2) : '';
-const displayName = authService.state.value.famLoginUser!.displayName;
-const email = authService.state.value.famLoginUser!.email;
+const displayName = loginUserState.state.value.famLoginUser!.displayName;
+const email = loginUserState.state.value.famLoginUser!.email;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
 const loading = ref(false);
 
 const logout = () => {
-    authService.methods.logout();
+    authService.logout();
     loading.value = true;
 };
 
