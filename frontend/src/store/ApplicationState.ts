@@ -1,15 +1,11 @@
 import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import type { FamApplication } from 'fam-app-acsctl-api';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
-// The applications the user has access to administer
-// export const applicationsUserAdministers = ref<FamApplication[]>([]);
 export const applicationsUserAdministers = ref<FamApplicationDto[]|undefined>([]);
 
-// The application selected by the user to admin
-export const selectedApplication = ref<FamApplication | null>(
+export const selectedApplication = ref<FamApplicationDto | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
             localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
@@ -19,9 +15,6 @@ export const selectedApplication = ref<FamApplication | null>(
 
 // --- Setter
 
-// export const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
-//     applicationsUserAdministers.value = newValue;
-// };
 export const setApplicationsUserAdministers = (newValue: FamApplicationDto[] | undefined) => {
     applicationsUserAdministers.value = newValue;
 };
@@ -38,14 +31,14 @@ export const isApplicationSelected = computed(() => {
 });
 
 export const selectedApplicationId = computed(() => {
-    return selectedApplication.value?.application_id
+    return selectedApplication.value?.id
 })
 
 // --- Getter
 
 export const selectedApplicationShortDisplayText = computed(() => {
     if (selectedApplication.value) {
-        return `${selectedApplication.value.application_name.toUpperCase()}`;
+        return `${selectedApplication.value.name.toUpperCase()}`;
     } else {
         return '';
     }
@@ -53,7 +46,7 @@ export const selectedApplicationShortDisplayText = computed(() => {
 
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {
-        return `${selectedApplication.value.application_description}`;
+        return `${selectedApplication.value.description}`;
     } else {
         return '';
     }

@@ -66,7 +66,7 @@ const beforeEnterGrantUserPermissionRoute = async (
     }
 
     const appRolesFetchResult = await asyncWrap(
-        fetchApplicationRoles(selectedApplication.value!.application_id)
+        fetchApplicationRoles(selectedApplication.value!.id)
     );
     if (appRolesFetchResult.error) {
         emitRouteToastError(appRolesFetchResult.error);

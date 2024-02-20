@@ -67,28 +67,33 @@ const getApplicationsAdministeredByAdminRole = (
 
 /**
  * Note!! this is to combine all applications the user has been granted
- * and can administer on with different admin level privileges only for
+ * and can administer on with different admin level privileges, only for
  * special usage at dashboard page (ManagePermissions) since the user when
- * it lands on the first page needs to select "application" first.
+ * it lands on the first page it needs to select "application" first.
  *
- * If the way our forntend works is based on admin level instead of selecting
- * "applicatoin" first, probably won't need this particular function.
+ * If the way our forntend works is based on admin level to display
+ * management table instead of selecting "applicatoin" first, it won't need
+ * this particular function.
  */
 const getApplicationsUserAdministers = () => {
     const userAdminRoleGroups = getUserAdminRoleGroups();
+    let famApp;
     let applicationSet = new Set<FamApplicationDto>();
     if (userAdminRoleGroups) {
         userAdminRoleGroups.forEach(adminRoleGroup => {
             const apps = getApplicationsAdministeredByAdminRole(adminRoleGroup)
             if (adminRoleGroup == AdminRoleAuthGroup.FamAdmin) {
-                applicationSet.add(apps!.filter((app) => app.name == FAM_APPLICATION_NAME)[0])
+                famApp = apps!.filter((app) => app.name == FAM_APPLICATION_NAME)[0];
             }
             else {
                 applicationSet = new Set([...applicationSet, ...apps!])
             }
         });
-        // TODO, add FAM on top of array, the rest, do sorting.
-        return new Array(...applicationSet);
+
+        const applications = new Array(...applicationSet);
+        applications.sort((first, second) => first.id - second.id);
+        famApp? applications.unshift(famApp): ''; // add FAM to the first if FAM Admin.
+        return applications;
     }
 }
 
