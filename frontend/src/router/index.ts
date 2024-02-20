@@ -12,6 +12,7 @@ import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { FAM_ADMIN_ROLE } from '@/store/Constants';
+import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -99,6 +100,20 @@ const routes = [
         },
         component: GrantApplicationAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
+    },
+    {
+        path: routeItems.grantDelegatedAdmin.path,
+        name: routeItems.grantDelegatedAdmin.name,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: true,
+            requiredPrivileges: [FAM_ADMIN_ROLE],
+            title: routeItems.grantDelegatedAdmin.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true,
+        },
+        component: GrantDelegatedAdminView,
+        beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
     },
     {
         path: '/authCallback',

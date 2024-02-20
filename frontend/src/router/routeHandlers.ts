@@ -91,10 +91,24 @@ const beforeEnterGrantApplicationAdminRoute = async (
     return true;
 }
 
+const beforeEnterGrantDelegationAdminRoute = async (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+) => {
+
+    if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
+        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        return { path: routeItems.dashboard.path };
+    }
+    populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
+    return true;
+}
+
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
-    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute,
+    [routeItems.grantDelegatedAdmin.name]: beforeEnterGrantDelegationAdminRoute
 };
 
 // --- beforeEach Route Handler
