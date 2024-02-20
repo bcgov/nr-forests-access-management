@@ -2,19 +2,20 @@ import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import type { FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
+import type { AdminRoleAuthGroup, FamApplicationDto, FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
 import { readonly, ref } from "vue";
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
+// For some of the values of the FAMLoginUser properties, see AuthService.parseToken().
 export interface FamLoginUser {
     username?: string;
     displayName?: string;
     email?: string;
-    idpProvider?: string;
-    roles?: string[];
-    authToken?: CognitoUserSession;
-    accesses?: FamAuthGrantDto[];
+    idpProvider?: string; // from ID Token's ['identities']['providerName'] attribute.
+    roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
+    authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
+    accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
 }
 
 const state = ref({
@@ -35,6 +36,23 @@ const getAuthToken = () => {
 const getUserAccess = () => {
     return state.value.famLoginUser?.accesses;
 };
+
+/**
+ * @param adminRole three admin levels: 'FAM_ADMIN', 'APP_ADMIN', 'DELEGATED_ADMIN'
+ * @returns array of applications the login user has been granted for
+ *          administering on based on adimn level.
+ */
+const getApplicationsAdministeredByAdminRole = (
+    adminRole: AdminRoleAuthGroup
+): FamApplicationDto[] | undefined => {
+    const accesses = getUserAccess();
+    if (accesses && accesses.length > 0) {
+        const access = accesses.filter(
+            (access) => access.auth_key == adminRole
+        )[0]
+        return access.grants.map((grant) => grant.application)
+    }
+}
 
 const hasAccessRole = (role: string): boolean => {
     if (state.value.famLoginUser?.roles?.includes(role)) {
