@@ -35,7 +35,6 @@ const handlePostLogin = async () => {
     try {
         await Auth.currentAuthenticatedUser();
         await refreshToken();
-        await loginUserState.getUserAccess();
     } catch (error) {
         console.log('Not signed in');
         console.log('Authentication Error:', error);
