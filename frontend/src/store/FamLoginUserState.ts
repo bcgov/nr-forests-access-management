@@ -1,8 +1,9 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import type { AdminRoleAuthGroup, FamApplicationDto, FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
+import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
 import { readonly, ref } from "vue";
 
 const FAM_LOGIN_USER = 'famLoginUser';
@@ -37,6 +38,16 @@ const getUserAccess = () => {
     return state.value.famLoginUser?.accesses;
 };
 
+// admin levels: 'FAM_ADMIN', 'APP_ADMIN', 'DELEGATED_ADMIN'
+const getUserAdminRoleGroups = () => {
+    const accesses = getUserAccess();
+    if (accesses && accesses.length > 0) {
+        return accesses.map(
+            (access) => access.auth_key
+        )
+    }
+}
+
 /**
  * @param adminRole three admin levels: 'FAM_ADMIN', 'APP_ADMIN', 'DELEGATED_ADMIN'
  * @returns array of applications the login user has been granted for
@@ -51,6 +62,33 @@ const getApplicationsAdministeredByAdminRole = (
             (access) => access.auth_key == adminRole
         )[0]
         return access.grants.map((grant) => grant.application)
+    }
+}
+
+/**
+ * Note!! this is to combine all applications the user has been granted
+ * and can administer on with different admin level privileges only for
+ * special usage at dashboard page (ManagePermissions) since the user when
+ * it lands on the first page needs to select "application" first.
+ *
+ * If the way our forntend works is based on admin level instead of selecting
+ * "applicatoin" first, probably won't need this particular function.
+ */
+const getApplicationsUserAdministers = () => {
+    const userAdminRoleGroups = getUserAdminRoleGroups();
+    let applicationSet = new Set<FamApplicationDto>();
+    if (userAdminRoleGroups) {
+        userAdminRoleGroups.forEach(adminRoleGroup => {
+            const apps = getApplicationsAdministeredByAdminRole(adminRoleGroup)
+            if (adminRoleGroup == AdminRoleAuthGroup.FamAdmin) {
+                applicationSet.add(apps!.filter((app) => app.name == FAM_APPLICATION_NAME)[0])
+            }
+            else {
+                applicationSet = new Set([...applicationSet, ...apps!])
+            }
+        });
+        // TODO, add FAM on top of array, the rest, do sorting.
+        return new Array(...applicationSet);
     }
 }
 
@@ -104,6 +142,7 @@ export default {
     state: readonly(state), // readonly to prevent direct state change; force it through functions if needed to.
     getAuthToken,
     getUserAccess,
+    getApplicationsUserAdministers,
     hasAccessRole,
     storeFamUser,
     removeFamUser,

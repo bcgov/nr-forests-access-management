@@ -4,14 +4,15 @@ import AuthService from '@/services/AuthService';
 import {
     fetchApplicationAdmins,
     fetchApplicationRoles,
-    fetchApplications,
+    // fetchApplications,
     fetchUserRoleAssignments
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
     selectedApplication,
-    selectedApplicationId
+    selectedApplicationId,
+    setApplicationsUserAdministers
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
@@ -39,8 +40,7 @@ const ACCESS_RESTRICTED_ERROR = new FamRouteError(
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let applicationAdmins;
     let userRolesFetchResult;
-    // Requires fetching applications the user administers.
-    await asyncWrap(fetchApplications());
+    setApplicationsUserAdministers(LoginUserState.getApplicationsUserAdministers());
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {

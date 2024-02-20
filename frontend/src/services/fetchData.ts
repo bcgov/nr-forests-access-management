@@ -5,14 +5,14 @@ import { setApplicationsUserAdministers } from '@/store/ApplicationState';
 
 // --- Fetching data (from backend)
 
-export const fetchApplications = async () => {
-    const applications = (
-        await AppActlApiService.applicationsApi.getApplications()
-    ).data;
+// export const fetchApplications = async () => {
+//     const applications = (
+//         await AppActlApiService.applicationsApi.getApplications()
+//     ).data;
 
-    // State change.
-    setApplicationsUserAdministers(applications);
-};
+//     // State change.
+//     setApplicationsUserAdministers(applications);
+// };
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined

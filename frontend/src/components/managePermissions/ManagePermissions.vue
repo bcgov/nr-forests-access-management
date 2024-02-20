@@ -115,7 +115,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
                 :options="applicationsUserAdministers"
-                optionLabel="application_description"
+                optionLabel="description"
                 placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
             />
