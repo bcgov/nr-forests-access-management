@@ -147,6 +147,7 @@ export default {
     state: readonly(state), // readonly to prevent direct state change; force it through functions if needed to.
     getAuthToken,
     getUserAccess,
+    getUserAdminRoleGroups,
     getApplicationsUserAdministers,
     hasAccessRole,
     storeFamUser,
