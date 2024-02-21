@@ -6,7 +6,7 @@ import { Auth } from 'aws-amplify';
 // functions
 
 const isLoggedIn = (): boolean => {
-    const loggedIn = !!loginUserState.getAuthToken(); // TODO check if token expired later?
+    const loggedIn = !!loginUserState.getAuthToken();
     return loggedIn;
 };
 
@@ -30,7 +30,6 @@ const logout = async () => {
     console.log('User logged out.');
 };
 
-// TODO: probably don't need this anymore, the intermediate route can now forward to dashboard route directly.
 const handlePostLogin = async () => {
     try {
         await Auth.currentAuthenticatedUser();

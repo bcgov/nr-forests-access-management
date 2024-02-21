@@ -4,7 +4,6 @@ import AuthService from '@/services/AuthService';
 import {
     fetchApplicationAdmins,
     fetchApplicationRoles,
-    // fetchApplications,
     fetchUserRoleAssignments
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
