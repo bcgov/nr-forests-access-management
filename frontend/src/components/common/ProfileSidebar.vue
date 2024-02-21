@@ -2,15 +2,16 @@
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
-import loginUserState from '@/store/FamLoginUserState';
+import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 import Avatar from 'primevue/avatar';
 import { computed, ref } from 'vue';
 
-const userName = loginUserState.state.value.famLoginUser!.username;
+const userName = LoginUserState.state.value.famLoginUser!.username;
 const initals = userName ? userName.slice(0, 2) : '';
-const displayName = loginUserState.state.value.famLoginUser!.displayName;
-const email = loginUserState.state.value.famLoginUser!.email;
+const displayName = LoginUserState.state.value.famLoginUser!.displayName;
+const email = LoginUserState.state.value.famLoginUser!.email;
+const adminRoles = LoginUserState.getUserAdminRoleGroups()?.join(", ")
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -54,6 +55,7 @@ const buttonLabel = computed(() => {
                     <p class="profile-name">{{ displayName }}</p>
                     <p class="profile-idir">IDIR: {{ userName }}</p>
                     <p class="profile-email">{{ email }}</p>
+                    <p class="profile-admin-level">Granted: <strong>{{ adminRoles }}</strong></p>
                 </div>
             </div>
             <hr class="profile-divider" />
@@ -133,7 +135,8 @@ const buttonLabel = computed(() => {
     }
 
     .profile-name,
-    .profile-idir {
+    .profile-idir,
+    .profile-email {
         margin-bottom: 0.375rem;
     }
 }
@@ -168,6 +171,7 @@ const buttonLabel = computed(() => {
 
 .profile-idir,
 .profile-email,
+.profile-admin-level,
 .options {
     font-size: 0.75rem;
     font-weight: 400;
