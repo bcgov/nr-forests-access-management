@@ -11,7 +11,6 @@ const userName = LoginUserState.state.value.famLoginUser!.username;
 const initals = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
-const adminRoles = LoginUserState.getUserAdminRoleGroups()?.join(", ")
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -25,6 +24,15 @@ const logout = () => {
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
 });
+
+const adminRoles = computed(() => {
+    const userAdminRoles = LoginUserState.getUserAdminRoleGroups()
+    if (userAdminRoles) {
+        return userAdminRoles.map((adminRole) => {
+            return adminRole.replace("_", " ")
+        }).join(", ")
+    }
+})
 </script>
 
 <template>
