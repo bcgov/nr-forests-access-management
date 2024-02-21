@@ -7,6 +7,7 @@ import ManagePermissionsTitle from '@/components/managePermissions/ManagePermiss
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
 import LoginUserState from '@/store/FamLoginUserState';
+import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue'
 import {
     isApplicationSelected,
     selectedApplication,
@@ -20,12 +21,13 @@ import {
 } from '@/store/NotificationState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import type { FamAccessControlPrivilegeGetResponse, FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
+    fetchDelegatedAdmins
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -37,6 +39,10 @@ const props = defineProps({
     },
     applicationAdmins: {
         type: Array as PropType<FamAppAdminGetResponse[]>,
+        default: [],
+    },
+    delegatedAdmins: {
+        type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
 });
@@ -52,6 +58,9 @@ const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
 const applicationsUserAdministers = computed(() => {
     return LoginUserState.getApplicationsUserAdministers();
 });
+const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
+    props.delegatedAdmins
+);
 
 onUnmounted(() => {
     resetNotification();
@@ -59,7 +68,8 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (e.value.id === FAM_APPLICATION_ID) {
+     delegatedAdmins.value = await fetchDelegatedAdmins(selectedApplicationId.value)
+    if (e.value.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
@@ -160,6 +170,22 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
+                </TabPanel>
+
+                <TabPanel
+                    header="Delegated admins"
+                >
+                    <template #header>
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
+                    </template>
+
+                    <DelegatedAdminTable
+                        :loading="isLoading()"
+                        :delegatedAdmins="delegatedAdmins || []"
                     />
                 </TabPanel>
             </TabView>

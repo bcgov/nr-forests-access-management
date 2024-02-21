@@ -2,9 +2,10 @@ import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
 import {
-    fetchApplicationAdmins,
+    fetchDelegatedAdmins,
     fetchApplicationRoles,
-    fetchUserRoleAssignments
+    fetchApplicationAdmins,
+    fetchUserRoleAssignments,
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -38,6 +39,9 @@ const ACCESS_RESTRICTED_ERROR = new FamRouteError(
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let applicationAdmins;
     let userRolesFetchResult;
+    let delegatedAdmins;
+
+    delegatedAdmins = await asyncWrap(fetchDelegatedAdmins(selectedApplicationId.value))
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
@@ -47,7 +51,8 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     }
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
-        applicationAdmins: applicationAdmins?.data
+        applicationAdmins: applicationAdmins?.data,
+        delegatedAdmins: delegatedAdmins?.data,
     });
     return true;
 };
