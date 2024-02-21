@@ -8,7 +8,7 @@ import Avatar from 'primevue/avatar';
 import { computed, ref } from 'vue';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
-const initals = userName ? userName.slice(0, 2) : '';
+const initials = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
 
@@ -54,7 +54,7 @@ const adminRoles = computed(() => {
             </div>
             <div class="sidebar-body">
                 <Avatar
-                    :label="initals"
+                    :label="initials"
                     class="mr-2 profile-avatar"
                     size="xlarge"
                     shape="circle"
