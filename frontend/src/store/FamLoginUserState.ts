@@ -61,7 +61,10 @@ const getApplicationsAdministeredByAdminRole = (
         const access = accesses.filter(
             (access) => access.auth_key == adminRole
         )[0]
-        return access.grants.map((grant) => grant.application)
+        return access
+            .grants
+            .map((grant) => grant.application)
+            .sort((first, second) => first.id - second.id);
     }
 }
 

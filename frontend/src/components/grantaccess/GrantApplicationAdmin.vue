@@ -13,7 +13,7 @@ import { setNotificationMsg } from '@/store/NotificationState';
 import LoginUserState from '@/store/FamLoginUserState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import { computed, ref } from 'vue';
-import { UserType } from 'fam-app-acsctl-api/dist/model';
+import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultFormData = {
     userId: '',
