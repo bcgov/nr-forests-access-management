@@ -148,6 +148,7 @@ export default {
     getAuthToken,
     getUserAccess,
     getUserAdminRoleGroups,
+    getApplicationsAdministeredByAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
     storeFamUser,
