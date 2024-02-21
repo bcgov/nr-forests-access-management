@@ -159,19 +159,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
-
-                <!-- waiting for the Delegated admins table
-                <TabPanel
-                    header="Delegated admins"
-                    :disabled="false"
-                >
-                    <template #header>
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
-                    </template>
-                </TabPanel>  -->
             </TabView>
         </div>
     </div>

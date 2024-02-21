@@ -92,7 +92,7 @@ const getApplicationsUserAdministers = () => {
 
         const applications = new Array(...applicationSet);
         applications.sort((first, second) => first.id - second.id);
-        famApp? applications.unshift(famApp): ''; // add FAM to the first if FAM Admin.
+        if (famApp) applications.unshift(famApp); // add FAM to the first if FAM Admin.
         return applications;
     }
 }
