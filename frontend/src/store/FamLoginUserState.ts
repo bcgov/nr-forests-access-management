@@ -17,7 +17,7 @@ export interface FamLoginUser {
     roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
-}
+};
 
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
@@ -32,7 +32,7 @@ const state = ref({
 
 const getAuthToken = () => {
     return state.value.famLoginUser?.authToken;
-}
+};
 
 const getUserAccess = () => {
     return state.value.famLoginUser?.accesses;
@@ -46,7 +46,7 @@ const getUserAdminRoleGroups = () => {
             (access) => access.auth_key
         )
     }
-}
+};
 
 /**
  * @param adminRole three admin levels: 'FAM_ADMIN', 'APP_ADMIN', 'DELEGATED_ADMIN'
@@ -66,7 +66,7 @@ const getApplicationsAdministeredByAdminRole = (
             .map((grant) => grant.application)
             .sort((first, second) => first.id - second.id);
     }
-}
+};
 
 /**
  * Note!! this is to combine all applications the user has been granted
@@ -98,7 +98,7 @@ const getApplicationsUserAdministers = () => {
         if (famApp) applications.unshift(famApp); // add FAM to the first if FAM Admin.
         return applications;
     }
-}
+};
 
 const hasAccessRole = (role: string): boolean => {
     if (state.value.famLoginUser?.roles?.includes(role)) {

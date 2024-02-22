@@ -11,7 +11,6 @@ import {
     isApplicationSelected,
     selectedApplication,
     selectedApplicationId,
-    setApplicationsUserAdministers
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
@@ -39,7 +38,6 @@ const ACCESS_RESTRICTED_ERROR = new FamRouteError(
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let applicationAdmins;
     let userRolesFetchResult;
-    setApplicationsUserAdministers(LoginUserState.getApplicationsUserAdministers());
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {

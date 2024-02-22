@@ -3,8 +3,6 @@ import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
-export const applicationsUserAdministers = ref<FamApplicationDto[]|undefined>([]);
-
 export const selectedApplication = ref<FamApplicationDto | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
@@ -14,10 +12,6 @@ export const selectedApplication = ref<FamApplicationDto | null>(
 );
 
 // --- Setter
-
-export const setApplicationsUserAdministers = (newValue: FamApplicationDto[] | undefined) => {
-    applicationsUserAdministers.value = newValue;
-};
 
 export const setSelectedApplication = (newValue: string | null) => {
     selectedApplication.value = JSON.parse(newValue as string);

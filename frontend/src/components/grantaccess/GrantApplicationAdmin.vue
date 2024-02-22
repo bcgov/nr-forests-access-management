@@ -32,7 +32,7 @@ const applications = computed(() => {
     return LoginUserState.getApplicationsAdministeredByAdminRole(
         AdminRoleAuthGroup.FamAdmin
     );
-})
+});
 
 /* ------------------ User information method ------------------------- */
 const userIdChange = (userId: string) => {
