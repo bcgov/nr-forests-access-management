@@ -81,7 +81,7 @@ const getApplicationsAdministeredByAdminRole = (
 const getApplicationsUserAdministers = () => {
     const userAdminRoleGroups = getUserAdminRoleGroups();
     let famApp;
-    let applicationSet = new Set<FamApplicationDto>();
+    const applicationList: Array<FamApplicationDto> = [];
     if (userAdminRoleGroups) {
         userAdminRoleGroups.forEach(adminRoleGroup => {
             const apps = getApplicationsAdministeredByAdminRole(adminRoleGroup)
@@ -89,15 +89,23 @@ const getApplicationsUserAdministers = () => {
                 famApp = apps!.filter((app) => app.name == FAM_APPLICATION_NAME)[0];
             }
             else {
-                applicationSet = new Set([...applicationSet, ...apps!])
+                apps?.forEach((app) => {
+                    let isNewItem = true
+                    for (let item of applicationList) {
+                        if (item.id == app.id) {
+                            isNewItem = false;
+                            break;
+                        }
+                    }
+                    if (isNewItem) applicationList.push(app);
+                });
             }
         });
 
-        const applications = new Array(...applicationSet);
-        applications.sort((first, second) => first.id - second.id);
-        if (famApp) applications.unshift(famApp); // add FAM to the first if FAM Admin.
-        return applications;
+        applicationList.sort((first, second) => first.id - second.id);
+        if (famApp) applicationList.unshift(famApp); // add FAM to the first if FAM Admin.
     }
+    return applicationList;
 };
 
 const hasAccessRole = (role: string): boolean => {
