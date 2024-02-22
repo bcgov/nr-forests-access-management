@@ -4,11 +4,7 @@ import router from '@/router';
 import { number, object, string } from 'yup';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 
-import {
-    type FamApplicationRole,
-    UserType,
-    type FamUserRoleAssignmentCreate,
-} from 'fam-app-acsctl-api';
+import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 
 import Dropdown from 'primevue/dropdown';
 import Button from '@/components/common/Button.vue';
@@ -19,12 +15,12 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import { isLoading } from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 
 const props = defineProps({
-    applicationRoleOptions: {
+    delegatedRoleOptions: {
         // options fetched from route.
-        type: Array as PropType<FamApplicationRole[]>,
-        default: [],
+        type: Array as PropType<FamRoleDto[]>,
     },
 });
 
@@ -73,15 +69,15 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 };
 
 /* ------------------- Role selection method -------------------------- */
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    // return props.applicationRoleOptions?.find(
-    //     (item) => item.role_id === formData.value.roleId
-    // );
+const getSelectedRole = (): FamRoleDto | undefined => {
+    return props.delegatedRoleOptions?.find(
+        (item) => item.id === formData.value.roleId
+    );
     return undefined;
 };
 
 const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.role_type_code == 'A';
+    return getSelectedRole()?.type_code == 'A';
 };
 
 /* ----------------- Forest client number method ----------------------- */
@@ -155,7 +151,7 @@ const handleSubmit = async () => {
     router.push('/dashboard');
 };
 
-function toRequestPayload(formData: any, forestClientNumber: string) {
+const toRequestPayload = (formData: any, forestClientNumber: string) => {
     const request = {
         user_name: formData.userId,
         user_type_code: formData.domain,
@@ -170,7 +166,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
             : {}),
     } as FamUserRoleAssignmentCreate;
     return request;
-}
+};
 
 const composeAndPushNotificationMessages = (
     successIdList: string[],
@@ -182,7 +178,7 @@ const composeAndPushNotificationMessages = (
             successIdList,
             username,
             Severity.Success,
-            getSelectedRole()?.role_name
+            getSelectedRole()?.name
         );
     }
     if (errorMsg.errorForestClientIdList.length > 0) {
@@ -190,7 +186,7 @@ const composeAndPushNotificationMessages = (
             errorMsg.errorForestClientIdList,
             username,
             Severity.Error,
-            getSelectedRole()?.role_name,
+            getSelectedRole()?.name,
             errorMsg.code
         );
     }
@@ -203,6 +199,8 @@ const composeAndPushNotificationMessages = (
         title="Add a delegated admin"
         subtitle="All fields are mandatory"
     />
+
+    {{ delegatedRoleOptions }}
     <VeeForm
         ref="form"
         v-slot="{ errors, meta }"
@@ -237,7 +235,7 @@ const composeAndPushNotificationMessages = (
                         v-model="formData.roleId"
                     >
                         <Dropdown
-                            :options="applicationRoleOptions"
+                            :options="delegatedRoleOptions"
                             optionLabel="role_name"
                             optionValue="role_id"
                             :modelValue="field.value"
