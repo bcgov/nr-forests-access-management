@@ -1,12 +1,12 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import loginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
+import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 
 // functions
 
 const isLoggedIn = (): boolean => {
-    const loggedIn = !!loginUserState.getAuthToken();
+    const loggedIn = !!LoginUserState.getAuthToken();
     return loggedIn;
 };
 
@@ -26,7 +26,7 @@ const login = async () => {
 
 const logout = async () => {
     Auth.signOut();
-    loginUserState.removeFamUser();
+    LoginUserState.removeFamUser();
     console.log('User logged out.');
 };
 
@@ -58,8 +58,13 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
         console.log('currentAuthToken: ', currentAuthToken);
 
         const famLoginUser = parseToken(currentAuthToken);
-        loginUserState.storeFamUser(famLoginUser);
+
+        // if there is and existing "accesses" for user, add it to FamLoginUser object.
+        const accesses = LoginUserState.getUserAccess();
+        if (accesses) famLoginUser.accesses = accesses;
+        LoginUserState.storeFamUser(famLoginUser);
         return famLoginUser;
+
     } catch (error) {
         console.error(
             'Problem refreshing token or token is invalidated:',
