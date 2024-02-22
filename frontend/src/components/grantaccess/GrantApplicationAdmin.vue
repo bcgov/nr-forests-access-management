@@ -28,7 +28,7 @@ const formValidationSchema = object({
     application: object().required('Application is required'),
 });
 
-const applications = computed(() => {
+const applicationOptions = computed(() => {
     return LoginUserState.getApplicationsAdministeredByAdminRole(
         AdminRoleAuthGroup.FamAdmin
     );
@@ -133,7 +133,7 @@ const handleSubmit = async () => {
                             <label>Select application</label>
                             <Dropdown
                                 v-model="formData.application"
-                                :options="applications"
+                                :options="applicationOptions"
                                 optionLabel="description"
                                 placeholder="Choose an application"
                             />
