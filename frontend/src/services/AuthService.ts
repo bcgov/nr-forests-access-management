@@ -35,7 +35,7 @@ const handlePostLogin = async () => {
         await Auth.currentAuthenticatedUser();
         await refreshToken();
 
-        // This is to update the  for FamLoginUser.accesses.
+        // This is to update the FamLoginUser for FamLoginUser.accesses.
         // For now team decided to grab user's access only when user login and may change later.
         await LoginUserState.refreshCachedUserAccess();
 
