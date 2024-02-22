@@ -8,12 +8,19 @@ import SideNav, {
 import sideNavData from '@/static/sideNav.json';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import { isApplicationSelected, selectedApplicationId } from '@/store/ApplicationState';
-
+import authService from '@/services/AuthService';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
-const setSideNavAddPermissionOption = () => {
+const setSideNavOptions = () => {
+    // if user is app admin
+    if(authService.hasAdminAccess('FAM_ADMIN')) {
+        disableSideNavOption('Add delegated admin', false);
+    } else {
+        disableSideNavOption('Add delegated admin', true);
+    }
+
     if(selectedApplicationId.value === FAM_APPLICATION_ID) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
@@ -25,12 +32,12 @@ const setSideNavAddPermissionOption = () => {
 
 onMounted(() => {
     if(isApplicationSelected.value) {
-        setSideNavAddPermissionOption()
+        setSideNavOptions()
     }
 });
 
 watch(selectedApplicationId , () => {
-    setSideNavAddPermissionOption();
+    setSideNavOptions();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
