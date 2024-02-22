@@ -145,6 +145,5 @@ export const beforeEachRouteHandler = async (
     if (LoginUserState.state.value.famLoginUser) {
         // condition needed to prevent infinite redirect
         await AuthService.refreshToken();
-        await LoginUserState.refreshCachedUserAccess();
     }
 };

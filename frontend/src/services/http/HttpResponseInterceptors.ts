@@ -40,7 +40,6 @@ async function refreshTokenAndReTry(
 ) {
     // Refresh token.
     await AuthService.refreshToken();
-    await LoginUserState.refreshCachedUserAccess();
 
     // Try original request again.
     retryCount.value++;
