@@ -114,6 +114,12 @@ const routes = [
         },
         component: GrantDelegatedAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
+        props: (route: any) => {
+            return {
+                // options is ready for the `component` as props.
+                delegatedRoleOptions: route.meta.delegatedRoleOptions,
+            };
+        },
     },
     {
         path: '/authCallback',
