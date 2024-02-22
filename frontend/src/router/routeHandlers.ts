@@ -102,11 +102,21 @@ const beforeEnterGrantDelegationAdminRoute = async (
     from: RouteLocationNormalized
 ) => {
 
-    if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
+    if (!AuthService.methods.hasDelegatedGrant()) {
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
+
+
+    const delegatedRoleList = await asyncWrap(AuthService.methods.delegatedCachedData(selectedApplicationId.value));
+
+    console.log("Before enter route", delegatedRoleList.data)
+
     populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
+    // Passing data to router.meta (so it is available for assigning to 'props' later)
+    Object.assign(to.meta, {
+        delegatedRoleOptions: delegatedRoleList.data,
+    });
     return true;
 }
 
