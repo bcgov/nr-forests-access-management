@@ -14,10 +14,12 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
+import { FAM_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
+import authService from '@/services/AuthService';
 import type { RouteLocationNormalized } from 'vue-router';
+
 /**
  * This file should contain only the Vue router handler and necessary
  * helpers for router's life-cycle methods (beforeEach, beforeEnter etc...)
@@ -43,9 +45,12 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
 
     delegatedAdmins = await asyncWrap(fetchDelegatedAdmins(selectedApplicationId.value))
     // Requires fetching applications the user administers.
-    delegatedAdmins = await asyncWrap(
-        fetchDelegatedAdmins(selectedApplicationId.value)
-    );
+
+    if (authService.hasAccess(FAM_ADMIN_ROLE)) {
+        delegatedAdmins = await asyncWrap(
+            fetchDelegatedAdmins(selectedApplicationId.value)
+        );
+    }
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins());
     } else {

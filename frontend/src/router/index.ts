@@ -63,7 +63,8 @@ const routes = [
             return {
                 // userRoleAssignments is ready for the `component` as props.
                 userRoleAssignments: route.meta.userRoleAssignments,
-                applicationAdmins: route.meta.applicationAdmins
+                applicationAdmins: route.meta.applicationAdmins,
+                delegatedAdmins: route.meta.delegatedAdmins
             };
         },
     },

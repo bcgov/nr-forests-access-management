@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType } from 'vue';
+import { ref, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import ConfirmDialog from 'primevue/confirmdialog';
 
-import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
-import Button from '@/components/common/Button.vue';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
 
@@ -34,38 +30,34 @@ const delegatedAdminFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'application.app_environment': {
+    'role.parent_role.role_name': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
 });
 
-const confirmDeleteData = reactive({
-    adminName: '',
-    role: ''
-});
-
-const adminSearchChange = (newvalue: string) => {
+const delegatedAdminSearchChange = (newvalue: string) => {
     delegatedAdminFilters.value.global.value = newvalue;
 };
 </script>
 
 <template>
+    <!-- Hidden until functionality is available
     <ConfirmDialog group="deleteAdmin">
         <template #message>
             <ConfirmDialogtext
-                :userName="confirmDeleteData.adminName"
-                :role="confirmDeleteData.role"
+                :userName=""
+                :role=""
             />
         </template>
-    </ConfirmDialog>
+    </ConfirmDialog> -->
     <div class="data-table-container">
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Create delegated admin"
                 :btnRoute="routeItems.grantAppAdmin.path"
                 :filter="delegatedAdminFilters['global'].value"
-                @change="adminSearchChange"
+                @change="delegatedAdminSearchChange"
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
@@ -77,10 +69,9 @@ const adminSearchChange = (newvalue: string) => {
                 :loading="props.loading"
                 :globalFilterFields="[
                     'user.user_name',
-                    'application.application_name',
                     'user.user_type.description',
                     'role.role_name.role_name',
-                    'application.app_environment',
+                    'role.parent_role.role_name',
                 ]"
                 paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
                 currentPageReportTemplate="{first} - {last} of {totalRecords} items"
@@ -88,7 +79,11 @@ const adminSearchChange = (newvalue: string) => {
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column header="User Name" sortable field="user.user_name">
+                <Column
+                    header="User Name"
+                    field="user.user_name"
+                    sortable
+                >
                     <template #body="{ data }">
                         <span>
                             {{ data.user.user_name }}
@@ -101,19 +96,16 @@ const adminSearchChange = (newvalue: string) => {
                     sortable
                 ></Column>
                 <Column
-                    field="application.app_environment"
+                    field="role.client_number.forest_client_number"
                     header="Client ID"
                     sortable
                 >
-                    <template #body="{ data }"> - </template>
                 </Column>
                 <Column
-                    field="role.role_name"
+                    field="role.parent_role.role_name"
                     header="Role Enabled To Assign"
                     sortable
-                >
-                    <template #body="{ data }"> reviewer </template>
-                </Column>
+                ></Column>
                 <Column header="Action">
                     <template #body="{ data }">
                         <!-- Hidden until functionality is available
@@ -122,9 +114,6 @@ const adminSearchChange = (newvalue: string) => {
                             >
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
-                        <button class="btn btn-icon">
-                            <Icon icon="trash-can" :size="IconSize.small" />
-                        </button>
                     </template>
                 </Column>
             </DataTable>
