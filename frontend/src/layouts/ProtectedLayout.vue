@@ -6,7 +6,7 @@ import SideNav, {
     type ISideNavItem,
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
+import { FAM_APPLICATION_ID, APP_ADMIN_ROLE } from '@/store/Constants';
 import { isApplicationSelected, selectedApplicationId } from '@/store/ApplicationState';
 import authService from '@/services/AuthService';
 
@@ -15,10 +15,8 @@ const navigationData = ref<[ISideNavData]>(sideNavData as any);
 // Show and hide the correct sideNav btn based on the application
 const setSideNavOptions = () => {
     // if user is app admin
-    if(authService.hasAdminAccess('FAM_ADMIN')) {
+    if(authService.hasAdminAccess(APP_ADMIN_ROLE)) {
         disableSideNavOption('Add delegated admin', false);
-    } else {
-        disableSideNavOption('Add delegated admin', true);
     }
 
     if(selectedApplicationId.value === FAM_APPLICATION_ID) {

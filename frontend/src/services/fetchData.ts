@@ -63,7 +63,9 @@ export const fetchApplicationRoles = async (applicationId: number) => {
     return applicationRoles;
 };
 
-export const fetchApplicationAdmins = async (): Promise<FamAppAdminGetResponse[]> => {
+export const fetchApplicationAdmins = async (): Promise<
+    FamAppAdminGetResponse[]
+> => {
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;

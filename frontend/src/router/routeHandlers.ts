@@ -2,10 +2,10 @@ import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
 import {
-    fetchDelegatedAdmins,
     fetchApplicationRoles,
     fetchApplicationAdmins,
     fetchUserRoleAssignments,
+    fetchDelegatedAdmins,
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -31,7 +31,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 
 const ACCESS_RESTRICTED_ERROR = new FamRouteError(
     RouteErrorName.ACCESS_RESTRICTED,
-    "Access restricted"
+    'Access restricted'
 );
 
 // --- beforeEnter Route Handler
@@ -42,8 +42,12 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let delegatedAdmins;
 
     delegatedAdmins = await asyncWrap(fetchDelegatedAdmins(selectedApplicationId.value))
+    // Requires fetching applications the user administers.
+    delegatedAdmins = await asyncWrap(
+        fetchDelegatedAdmins(selectedApplicationId.value)
+    );
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        applicationAdmins = await asyncWrap(fetchApplicationAdmins())
+        applicationAdmins = await asyncWrap(fetchApplicationAdmins());
     } else {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplicationId.value)
@@ -61,7 +65,6 @@ const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
-
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
@@ -87,19 +90,18 @@ const beforeEnterGrantApplicationAdminRoute = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
-
     if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
     populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
     return true;
-}
+};
 
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
-    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute,
 };
 
 // --- beforeEach Route Handler

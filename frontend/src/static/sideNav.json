@@ -24,7 +24,7 @@
                 "name": "Add delegated admin",
                 "icon": "enterprise",
                 "link": "#",
-                "disabled": false
+                "disabled": true
             }
         ]
     }

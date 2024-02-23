@@ -19,7 +19,7 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
+import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamAccessControlPrivilegeGetResponse, FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import {
@@ -31,6 +31,7 @@ import {
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
+import authService from '@/services/AuthService';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -174,6 +175,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 </TabPanel>
 
                 <TabPanel
+                    v-if="authService.methods.hasAdminAccess(APP_ADMIN_ROLE)"
                     header="Delegated admins"
                 >
                     <template #header>
