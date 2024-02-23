@@ -49,17 +49,13 @@ const getUserAdminRoleGroups = () => {
 };
 
 /**
- * @param adminRole three admin levels: 'FAM_ADMIN', 'APP_ADMIN', 'DELEGATED_ADMIN'
- * @returns array of applications the login user has been granted for
- *          administering on based on adimn level.
+ * @returns array of applications for 'FAM_ADMIN' to be administered.
  */
-const getApplicationsAdministeredByAdminRole = (
-    adminRole: AdminRoleAuthGroup
-): FamApplicationDto[] | undefined => {
+const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
     const accesses = getUserAccess();
     if (accesses && accesses.length > 0) {
         const access = accesses.filter(
-            (access) => access.auth_key == adminRole
+            (access) => access.auth_key == AdminRoleAuthGroup.FamAdmin
         )[0]
         return access
             .grants
@@ -79,17 +75,19 @@ const getApplicationsAdministeredByAdminRole = (
  * this particular function.
  */
 const getApplicationsUserAdministers = () => {
-    const userAdminRoleGroups = getUserAdminRoleGroups();
+    const accesses = getUserAccess();
     let famApp;
     const applicationList: Array<FamApplicationDto> = [];
-    if (userAdminRoleGroups) {
-        userAdminRoleGroups.forEach(adminRoleGroup => {
-            const apps = getApplicationsAdministeredByAdminRole(adminRoleGroup)
-            if (adminRoleGroup == AdminRoleAuthGroup.FamAdmin) {
-                famApp = apps!.filter((app) => app.name == FAM_APPLICATION_NAME)[0];
-            }
-            else {
-                apps?.forEach((app) => {
+    if (accesses && accesses.length > 0) {
+        accesses.forEach((access) => {
+            const accessGrants = access.grants;
+            if (access.auth_key == AdminRoleAuthGroup.FamAdmin) {
+                famApp = accessGrants.filter(
+                    (grant) => grant.application.name == FAM_APPLICATION_NAME
+                )[0].application;
+            } else {
+                accessGrants.forEach((grant) => {
+                    const app = grant.application
                     let isNewItem = true
                     for (let item of applicationList) {
                         if (item.id == app.id) {
@@ -101,10 +99,10 @@ const getApplicationsUserAdministers = () => {
                 });
             }
         });
-
         applicationList.sort((first, second) => first.id - second.id);
         if (famApp) applicationList.unshift(famApp); // add FAM to the first if FAM Admin.
     }
+
     return applicationList;
 };
 
@@ -136,11 +134,11 @@ const removeFamUser = () => {
 };
 
 /**
- * To refresh User granted privileges when neccssary.
+ * To cache User granted privileges when neccssary.
  * FamLoginUser contains a property "accesses" that sometimes needs to be
  * refreshed and stored into localStorage at FamLoginUser object.
  */
-const refreshCachedUserAccess = async () => {
+const cacheUserAccess = async () => {
     try {
         const userAccessData =
             await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
@@ -159,10 +157,10 @@ export default {
     getAuthToken,
     getUserAccess,
     getUserAdminRoleGroups,
-    getApplicationsAdministeredByAdminRole,
+    getAppsForFamAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
     storeFamUser,
     removeFamUser,
-    refreshCachedUserAccess
+    cacheUserAccess
 };

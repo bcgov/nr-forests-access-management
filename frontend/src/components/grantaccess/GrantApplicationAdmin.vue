@@ -29,9 +29,7 @@ const formValidationSchema = object({
 });
 
 const applicationOptions = computed(() => {
-    return LoginUserState.getApplicationsAdministeredByAdminRole(
-        AdminRoleAuthGroup.FamAdmin
-    );
+    return LoginUserState.getAppsForFamAdminRole();
 });
 
 /* ------------------ User information method ------------------------- */

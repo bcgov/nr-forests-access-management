@@ -37,7 +37,7 @@ const handlePostLogin = async () => {
 
         // This is to update the FamLoginUser for FamLoginUser.accesses.
         // For now team decided to grab user's access only when user login and may change later.
-        await LoginUserState.refreshCachedUserAccess();
+        await LoginUserState.cacheUserAccess();
 
     } catch (error) {
         console.log('Not signed in');
