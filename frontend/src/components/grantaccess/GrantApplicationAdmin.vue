@@ -11,7 +11,6 @@ import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
 import LoginUserState from '@/store/FamLoginUserState';
-import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import { computed, ref } from 'vue';
 import { UserType } from 'fam-app-acsctl-api/model';
 
