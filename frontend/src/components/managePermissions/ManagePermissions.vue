@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType } from 'vue';
+import { onUnmounted, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-
+import LoginUserState from '@/store/FamLoginUserState';
 import {
-    applicationsUserAdministers,
     isApplicationSelected,
     selectedApplication,
     setSelectedApplication,
@@ -50,13 +49,17 @@ const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
 );
 
+const applicationsUserAdministers = computed(() => {
+    return LoginUserState.getApplicationsUserAdministers();
+});
+
 onUnmounted(() => {
     resetNotification();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    if (e.value.application_id === FAM_APPLICATION_ID) {
+    if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
@@ -115,7 +118,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
                 :options="applicationsUserAdministers"
-                optionLabel="application_description"
+                optionLabel="description"
                 placeholder="Choose an application to manage permissions"
                 class="application-dropdown"
             />
@@ -159,19 +162,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
-
-                <!-- waiting for the Delegated admins table
-                <TabPanel
-                    header="Delegated admins"
-                    :disabled="false"
-                >
-                    <template #header>
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
-                    </template>
-                </TabPanel>  -->
             </TabView>
         </div>
     </div>

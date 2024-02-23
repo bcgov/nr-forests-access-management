@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { object, string } from 'yup';
 import router from '@/router';
 import Dropdown from 'primevue/dropdown';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { UserType, type FamApplication } from 'fam-app-acsctl-api';
 import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
-import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
-
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
+import LoginUserState from '@/store/FamLoginUserState';
+import { computed, ref } from 'vue';
+import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultFormData = {
     userId: '',
@@ -28,13 +27,8 @@ const formValidationSchema = object({
     application: object().required('Application is required'),
 });
 
-const applications = ref<FamApplicationGetResponse[]>();
-
-// This is going to be changed when the new backend API is ready
-onMounted(async () => {
-    applications.value = (
-        await AdminMgmtApiService.applicationsApi.getApplications()
-    ).data;
+const applicationOptions = computed(() => {
+    return LoginUserState.getAppsForFamAdminRole();
 });
 
 /* ------------------ User information method ------------------------- */
@@ -55,8 +49,8 @@ const cancelForm = () => {
 const toRequestPayload = (formData: any) => {
     const request = {
         user_name: formData.userId,
-        application_id: formData.application.application_id,
-        user_type_code: UserType.I,
+        application_id: formData.application.id,
+        user_type_code: UserType.I
     } as FamAppAdminCreateRequest;
     return request;
 };
@@ -69,7 +63,7 @@ const handleSubmit = async () => {
             setNotificationMsg(
                 Severity.Success,
                 `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
-                    formData.value.application.application_name
+                    formData.value.application.name
                 }`
             );
         })
@@ -78,7 +72,7 @@ const handleSubmit = async () => {
                 setNotificationMsg(
                     Severity.Error,
                     `User ${formData.value.userId.toUpperCase()} is already a ${
-                        formData.value.application.application_name
+                        formData.value.application.name
                     } admin`
                 );
             } else if (
@@ -136,8 +130,8 @@ const handleSubmit = async () => {
                             <label>Select application</label>
                             <Dropdown
                                 v-model="formData.application"
-                                :options="(applications as FamApplication[])"
-                                optionLabel="application_description"
+                                :options="applicationOptions"
+                                optionLabel="description"
                                 placeholder="Choose an application"
                             />
                         </div>

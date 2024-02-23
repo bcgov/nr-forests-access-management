@@ -2,22 +2,21 @@ import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
 import {
+    fetchApplicationAdmins,
     fetchApplicationRoles,
-    fetchApplications,
-    fetchUserRoleAssignments,
-    fetchApplicationAdmins
+    fetchUserRoleAssignments
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
     selectedApplication,
-    selectedApplicationId
+    selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
+import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
-
 /**
  * This file should contain only the Vue router handler and necessary
  * helpers for router's life-cycle methods (beforeEach, beforeEnter etc...)
@@ -39,8 +38,6 @@ const ACCESS_RESTRICTED_ERROR = new FamRouteError(
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let applicationAdmins;
     let userRolesFetchResult;
-    // Requires fetching applications the user administers.
-    await asyncWrap(fetchApplications());
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins())
     } else {
@@ -66,7 +63,7 @@ const beforeEnterGrantUserPermissionRoute = async (
     }
 
     const appRolesFetchResult = await asyncWrap(
-        fetchApplicationRoles(selectedApplication.value!.application_id)
+        fetchApplicationRoles(selectedApplication.value!.id)
     );
     if (appRolesFetchResult.error) {
         emitRouteToastError(appRolesFetchResult.error);
@@ -108,7 +105,7 @@ export const beforeEachRouteHandler = async (
     from: RouteLocationNormalized
 ) => {
     // Authentication guard. Always check first.
-    if (to.meta.requiresAuth && !AuthService.getters.isLoggedIn()) {
+    if (to.meta.requiresAuth && !AuthService.isLoggedIn()) {
         // Only to compose this custom error, but not to throw.
         // Due to throwing error from router cannot be caught by Primevue toast.
         // The RouteError will be emitted to a state.
@@ -137,7 +134,7 @@ export const beforeEachRouteHandler = async (
     // Access privilege guard. This logic might need to be adjusted soon.
     if (to.meta.requiredPrivileges) {
         for (let role of (to.meta.requiredPrivileges as Array<string>)) {
-            if (!AuthService.methods.hasAccessRole(role)) {
+            if (!LoginUserState.hasAccessRole(role)) {
                 emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };
             }
@@ -145,9 +142,8 @@ export const beforeEachRouteHandler = async (
     }
 
     // Refresh token before navigation.
-    if (AuthService.state.value.famLoginUser) {
+    if (LoginUserState.state.value.famLoginUser) {
         // condition needed to prevent infinite redirect
-        await AuthService.methods.refreshToken();
-        await AuthService.methods.getUserAccess();
+        await AuthService.refreshToken();
     }
 };

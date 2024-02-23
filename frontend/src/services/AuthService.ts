@@ -1,37 +1,12 @@
-import { readonly, ref } from 'vue';
-import { Auth } from 'aws-amplify';
-import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
-import { setRouteToastError } from '@/store/ToastState';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import type { FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
-
-const FAM_LOGIN_USER = 'famLoginUser';
-
-export interface FamLoginUser {
-    username?: string;
-    displayName?: string;
-    email?: string;
-    idpProvider?: string;
-    roles?: string[];
-    authToken?: CognitoUserSession;
-    accesses?: FamAuthGrantDto[];
-}
-
-const state = ref({
-    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
-        ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-              | FamLoginUser
-              | undefined
-              | null)
-        : undefined,
-});
+import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
+import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { Auth } from 'aws-amplify';
 
 // functions
 
 const isLoggedIn = (): boolean => {
-    const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
+    const loggedIn = !!LoginUserState.getAuthToken();
     return loggedIn;
 };
 
@@ -51,7 +26,7 @@ const login = async () => {
 
 const logout = async () => {
     Auth.signOut();
-    removeFamUser();
+    LoginUserState.removeFamUser();
     console.log('User logged out.');
 };
 
@@ -59,23 +34,15 @@ const handlePostLogin = async () => {
     try {
         await Auth.currentAuthenticatedUser();
         await refreshToken();
-        await getUserAccess();
+
+        // This is to update the FamLoginUser for FamLoginUser.accesses.
+        // For now team decided to grab user's access only when user login and may change later.
+        await LoginUserState.cacheUserAccess();
+
     } catch (error) {
         console.log('Not signed in');
         console.log('Authentication Error:', error);
         logout();
-    }
-};
-
-const getUserAccess = async () => {
-    try {
-        const userAccessData =
-            await AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
-        state.value.famLoginUser!.accesses = userAccessData.data.access;
-        storeFamUser(state.value.famLoginUser);
-    } catch (error: any) {
-        console.log("Unable to get user's access in FAM", error);
-        setRouteToastError(error);
     }
 };
 
@@ -96,8 +63,13 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
         console.log('currentAuthToken: ', currentAuthToken);
 
         const famLoginUser = parseToken(currentAuthToken);
-        storeFamUser(famLoginUser);
+
+        // if there is and existing "accesses" for user, add it to FamLoginUser object.
+        const accesses = LoginUserState.getUserAccess();
+        if (accesses) famLoginUser.accesses = accesses;
+        LoginUserState.storeFamUser(famLoginUser);
         return famLoginUser;
+
     } catch (error) {
         console.error(
             'Problem refreshing token or token is invalidated:',
@@ -128,49 +100,12 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
     return famLoginUser;
 };
 
-const removeFamUser = () => {
-    storeFamUser(undefined);
-    // clean up local storage for selected application
-    localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
-};
-
-const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
-    state.value.famLoginUser = famLoginUser;
-    if (famLoginUser) {
-        localStorage.setItem(
-            FAM_LOGIN_USER,
-            JSON.stringify(state.value.famLoginUser)
-        );
-    } else {
-        localStorage.removeItem(FAM_LOGIN_USER);
-    }
-};
-
-const hasAccessRole = (role: string): boolean => {
-    if (state.value.famLoginUser?.roles?.includes(role)) {
-        return true;
-    }
-    return false;
-};
-
 // -----
 
-const methods = {
+export default {
     login,
+    isLoggedIn,
     handlePostLogin,
     logout,
-    refreshToken,
-    removeFamUser,
-    hasAccessRole,
-    getUserAccess
-};
-
-const getters = {
-    isLoggedIn,
-};
-
-export default {
-    state: readonly(state), // readonly to prevent direct state change; force it through methods if needed to.
-    methods,
-    getters,
+    refreshToken
 };
