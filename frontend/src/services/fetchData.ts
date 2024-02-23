@@ -99,7 +99,7 @@ export const deleteAndRefreshApplicationAdmin = async (
 };
 
 export const fetchDelegatedAdmins = async (
-    applicationId: number
+    applicationId: number | undefined
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(

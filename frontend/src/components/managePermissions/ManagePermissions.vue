@@ -27,7 +27,7 @@ import {
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
-    fetchDelegatedAdmins
+    fetchDelegatedAdmins,
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -69,7 +69,13 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-     delegatedAdmins.value = await fetchDelegatedAdmins(selectedApplicationId.value)
+
+    if (authService.hasAdminAccess(APP_ADMIN_ROLE)) {
+        delegatedAdmins.value = await fetchDelegatedAdmins(
+            selectedApplicationId.value
+        );
+    }
+
     if (e.value.application_id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
@@ -175,7 +181,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 </TabPanel>
 
                 <TabPanel
-                    v-if="authService.methods.hasAdminAccess(APP_ADMIN_ROLE)"
+                    v-if="authService.hasAdminAccess(APP_ADMIN_ROLE)"
                     header="Delegated admins"
                 >
                     <template #header>
