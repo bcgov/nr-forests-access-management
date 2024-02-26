@@ -113,6 +113,18 @@ const hasAccessRole = (role: string): boolean => {
     return false;
 };
 
+const hasAccess = (role: any): boolean => {
+    const hasAccess = state.value.famLoginUser?.accesses?.find(
+        (access) => access.auth_key === role
+    );
+
+    if (hasAccess) {
+        return true;
+    }
+
+    return false;
+};
+
 // --- setters
 
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
@@ -151,12 +163,11 @@ const cacheUserAccess = async () => {
 };
 
 const delegatedCachedData = (application_id: number): FamRoleDto[] => {
-
     const delegatedCachedData = state.value.famLoginUser?.accesses?.find(key => key.auth_key === DELEGATED_ADMIN_ROLE)?.grants.find((item) => {
         return item.application.id === application_id
     })
 
-    return delegatedCachedData!.roles!;
+    return delegatedCachedData?.roles!;
 };
 
 // --- export
@@ -169,6 +180,7 @@ export default {
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
+    hasAccess,
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
