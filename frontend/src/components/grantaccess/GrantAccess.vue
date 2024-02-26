@@ -7,10 +7,10 @@ import { number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity, ErrorCode } from '@/enum/SeverityEnum';
+import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { isLoading } from '@/store/LoadingState';
-import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
     type FamApplicationRole,
@@ -119,40 +119,45 @@ const areVerificationsPassed = () => {
 };
 
 const handleSubmit = async () => {
-    const successForestClientIdList: string[] = [];
+    const username = formData.value.userId.toUpperCase();
+    const role = getSelectedRole()?.role_name;
+    const successList: string[] = [];
+    const errorList: string[] = [];
+    let errorCode = ErrorCode.Default;
 
-    // msg override the default error notification message
-    const errorNotification = {
-        code: ErrorCode.Default,
-        errorForestClientIdList: [] as string[],
-    };
+    // when we assign a concrete a role to the user, there is no forest client number,
+    // we add an empty string to the success or error list,
+    // so the successList or errorList will be [''] for granting concrete role,
+    // or ["00001011", "00001012", ...] for granting abstract role,
+    // the composeAndPushGrantPermissionNotification method will handle both cases
     do {
         const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
-        await AppActlApiService.userRoleAssignmentApi
-            .createUserRoleAssignment(data)
-            .then(() => {
-                successForestClientIdList.push(forestClientNumber || '');
-            })
-            .catch((error) => {
-                if (error.response?.status === 409) {
-                    errorNotification.code = ErrorCode.Conflict;
-                } else if (
-                    error.response.data.detail.code === 'self_grant_prohibited'
-                ) {
-                    errorNotification.code = ErrorCode.SelfGrantProhibited;
-                }
-                errorNotification.errorForestClientIdList.push(
-                    forestClientNumber || ''
-                );
-            });
+        try {
+            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+                data
+            );
+            successList.push(forestClientNumber || '');
+        } catch (error: any) {
+            if (error.response?.status === 409) {
+                errorCode = ErrorCode.Conflict;
+            } else if (
+                error.response.data.detail.code === 'self_grant_prohibited'
+            ) {
+                errorCode = ErrorCode.SelfGrantProhibited;
+            }
+            errorList.push(forestClientNumber || '');
+        }
     } while (formData.value.verifiedForestClients.length > 0);
 
-    composeAndPushNotificationMessages(
-        successForestClientIdList,
-        errorNotification
+    composeAndPushGrantPermissionNotification(
+        GrantPermissionType.Regular,
+        username,
+        role,
+        successList,
+        errorList,
+        errorCode
     );
-
     router.push('/dashboard');
 };
 
@@ -172,31 +177,6 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
     } as FamUserRoleAssignmentCreate;
     return request;
 }
-
-const composeAndPushNotificationMessages = (
-    successIdList: string[],
-    errorMsg: { code: string; errorForestClientIdList: string[] }
-) => {
-    const username = formData.value.userId.toUpperCase();
-    if (successIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            successIdList,
-            username,
-            Severity.Success,
-            getSelectedRole()?.role_name
-        );
-    }
-    if (errorMsg.errorForestClientIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            errorMsg.errorForestClientIdList,
-            username,
-            Severity.Error,
-            getSelectedRole()?.role_name,
-            errorMsg.code
-        );
-    }
-    return '';
-};
 </script>
 
 <template>
