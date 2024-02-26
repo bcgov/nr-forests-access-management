@@ -115,6 +115,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
         <div class="application-group">
             <label>You are modifying access in this application:</label>
             <Dropdown
+                input-id="applications-dropdown-id"
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
                 :options="applicationsUserAdministers"
