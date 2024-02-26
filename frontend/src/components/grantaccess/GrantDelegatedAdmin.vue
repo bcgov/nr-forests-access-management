@@ -69,7 +69,6 @@ const getSelectedRole = (): FamRoleDto | undefined => {
     return props.delegatedRoleOptions?.find(
         (item) => item.id === formData.value.roleId
     );
-    return undefined;
 };
 
 const isAbstractRoleSelected = () => {
@@ -110,7 +109,7 @@ const areVerificationsPassed = () => {
 };
 
 const handleSubmit = async () => {
-    // TODO: This will be implemented in task #1160
+    // This will be implemented in task #1160
 
     router.push('/dashboard');
 };
@@ -147,9 +146,10 @@ const handleSubmit = async () => {
                     title="Add the role a delegated admin can assign"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <label>Assign a role to the user</label>
+                    <label htmlFor="roleId">Assign a role to the user</label>
 
                     <Field
+                        id="roleId"
                         name="roleId"
                         aria-label="Role Select"
                         v-slot="{ field, handleChange }"
