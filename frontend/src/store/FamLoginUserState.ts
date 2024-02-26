@@ -106,6 +106,18 @@ const getApplicationsUserAdministers = () => {
     return applicationList;
 };
 
+const hasAccess = (role: any): boolean => {
+    const hasAccess = state.value.famLoginUser?.accesses?.find(
+        (access) => access.auth_key === role
+    );
+
+    if (hasAccess) {
+        return true;
+    }
+
+    return false;
+};
+
 const hasAccessRole = (role: string): boolean => {
     if (state.value.famLoginUser?.roles?.includes(role)) {
         return true;
@@ -159,6 +171,7 @@ export default {
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
+    hasAccess,
     hasAccessRole,
     storeFamUser,
     removeFamUser,

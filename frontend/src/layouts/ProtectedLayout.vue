@@ -8,14 +8,14 @@ import SideNav, {
 import sideNavData from '@/static/sideNav.json';
 import { FAM_APPLICATION_ID, APP_ADMIN_ROLE } from '@/store/Constants';
 import { isApplicationSelected, selectedApplicationId } from '@/store/ApplicationState';
-import authService from '@/services/AuthService';
+import LoginUserState from '@/store/FamLoginUserState';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
 const setSideNavOptions = () => {
     // if user is app admin
-    if(authService.hasAdminAccess(APP_ADMIN_ROLE)) {
+    if(LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
         disableSideNavOption('Add delegated admin', false);
     }
 

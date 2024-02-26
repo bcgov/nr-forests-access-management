@@ -17,7 +17,6 @@ import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import LoginUserState from '@/store/FamLoginUserState';
 import { FAM_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
-import authService from '@/services/AuthService';
 import type { RouteLocationNormalized } from 'vue-router';
 
 /**
@@ -46,7 +45,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     delegatedAdmins = await asyncWrap(fetchDelegatedAdmins(selectedApplicationId.value))
     // Requires fetching applications the user administers.
 
-    if (authService.hasAccess(FAM_ADMIN_ROLE)) {
+    if (LoginUserState.hasAccess(FAM_ADMIN_ROLE)) {
         delegatedAdmins = await asyncWrap(
             fetchDelegatedAdmins(selectedApplicationId.value)
         );

@@ -100,20 +100,6 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
     return famLoginUser;
 };
 
-
-
-const hasAccess = (role: any): boolean => {
-    const hasAccess = state.value.famLoginUser?.accesses?.find(
-        (access) => access.auth_key === role
-    );
-
-    if (hasAccess) {
-        return true;
-    }
-
-    return false;
-};
-
 // -----
 
 export default {
@@ -122,5 +108,4 @@ export default {
     handlePostLogin,
     logout,
     refreshToken,
-    hasAccess,
 };

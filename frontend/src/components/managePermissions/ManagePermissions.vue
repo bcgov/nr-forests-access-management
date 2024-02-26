@@ -31,7 +31,6 @@ import {
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
-import authService from '@/services/AuthService';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -70,7 +69,7 @@ onUnmounted(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
 
-    if (authService.hasAdminAccess(APP_ADMIN_ROLE)) {
+    if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
         delegatedAdmins.value = await fetchDelegatedAdmins(
             selectedApplicationId.value
         );
@@ -181,7 +180,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 </TabPanel>
 
                 <TabPanel
-                    v-if="authService.hasAdminAccess(APP_ADMIN_ROLE)"
+                    v-if="LoginUserState.hasAccess(APP_ADMIN_ROLE)"
                     header="Delegated admins"
                 >
                     <template #header>
