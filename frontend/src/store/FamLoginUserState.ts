@@ -1,9 +1,9 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import { DELEGATED_ADMIN_ROLE, FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
+import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { readonly, ref } from "vue";
 
 const FAM_LOGIN_USER = 'famLoginUser';
@@ -22,9 +22,9 @@ export interface FamLoginUser {
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-              | FamLoginUser
-              | undefined
-              | null)
+            | FamLoginUser
+            | undefined
+            | null)
         : undefined,
 });
 
@@ -113,6 +113,18 @@ const hasAccessRole = (role: string): boolean => {
     return false;
 };
 
+const hasAccess = (role: any): boolean => {
+    const hasAccess = state.value.famLoginUser?.accesses?.find(
+        (access) => access.auth_key === role
+    );
+
+    if (hasAccess) {
+        return true;
+    }
+
+    return false;
+};
+
 // --- setters
 
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
@@ -150,6 +162,17 @@ const cacheUserAccess = async () => {
     }
 };
 
+const delegatedCachedData = (application_id: number | undefined): FamRoleDto[] | void[] | undefined | null => {
+
+    const delegatedCachedData = state.value.famLoginUser?.accesses?.find(key => key.auth_key === DELEGATED_ADMIN_ROLE)?.grants.find((item) => {
+        return item.application.id === application_id
+    })
+
+    console.log("hasDelegatedGrant", delegatedCachedData)
+
+    return delegatedCachedData?.roles
+};
+
 // --- export
 
 export default {
@@ -160,7 +183,9 @@ export default {
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
+    hasAccess,
     storeFamUser,
     removeFamUser,
-    cacheUserAccess
+    cacheUserAccess,
+    delegatedCachedData
 };
