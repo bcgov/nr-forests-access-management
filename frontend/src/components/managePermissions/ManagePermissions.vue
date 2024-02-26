@@ -75,7 +75,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
         );
     }
 
-    if (e.value.application_id === FAM_APPLICATION_ID) {
+    if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
