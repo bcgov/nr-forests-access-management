@@ -113,18 +113,6 @@ const hasAccessRole = (role: string): boolean => {
     return false;
 };
 
-const hasAccess = (role: any): boolean => {
-    const hasAccess = state.value.famLoginUser?.accesses?.find(
-        (access) => access.auth_key === role
-    );
-
-    if (hasAccess) {
-        return true;
-    }
-
-    return false;
-};
-
 // --- setters
 
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
@@ -181,7 +169,6 @@ export default {
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
-    hasAccess,
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
