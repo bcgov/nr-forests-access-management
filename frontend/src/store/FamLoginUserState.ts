@@ -168,8 +168,6 @@ const delegatedCachedData = (application_id: number | undefined): FamRoleDto[] |
         return item.application.id === application_id
     })
 
-    console.log("hasDelegatedGrant", delegatedCachedData)
-
     return delegatedCachedData?.roles
 };
 
