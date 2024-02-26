@@ -200,7 +200,6 @@ const composeAndPushNotificationMessages = (
         subtitle="All fields are mandatory"
     />
 
-    {{ delegatedRoleOptions }}
     <VeeForm
         ref="form"
         v-slot="{ errors, meta }"
@@ -236,8 +235,8 @@ const composeAndPushNotificationMessages = (
                     >
                         <Dropdown
                             :options="delegatedRoleOptions"
-                            optionLabel="role_name"
-                            optionValue="role_id"
+                            optionLabel="name"
+                            optionValue="id"
                             :modelValue="field.value"
                             placeholder="Choose an option"
                             class="w-100 custom-height"
