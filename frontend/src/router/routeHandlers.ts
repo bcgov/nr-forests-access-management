@@ -14,7 +14,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { FAM_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
+import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -100,6 +100,11 @@ const beforeEnterGrantApplicationAdminRoute = async (
 const beforeEnterGrantDelegationAdminRoute = async (
     to: RouteLocationNormalized
 ) => {
+
+    if (!LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
+        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        return { path: routeItems.dashboard.path };
+    }
 
     const delegatedAppRoleList = LoginUserState.delegatedCachedData(selectedApplicationId.value!);
 
