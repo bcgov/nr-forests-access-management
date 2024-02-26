@@ -98,16 +98,10 @@ const beforeEnterGrantApplicationAdminRoute = async (
 };
 
 const beforeEnterGrantDelegationAdminRoute = async (
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized
+    to: RouteLocationNormalized
 ) => {
 
-    if (!LoginUserState.hasAccess(FAM_ADMIN_ROLE)) {
-        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
-        return { path: routeItems.dashboard.path };
-    }
-
-    const delegatedAppRoleList = LoginUserState.delegatedCachedData(selectedApplicationId.value);
+    const delegatedAppRoleList = LoginUserState.delegatedCachedData(selectedApplicationId.value!);
 
     populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
     // Passing data to router.meta (so it is available for assigning to 'props' later)
