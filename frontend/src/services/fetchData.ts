@@ -103,7 +103,7 @@ export const fetchDelegatedAdmins = async (
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
-            applicationId
+            applicationId!
         )
     ).data;
 
