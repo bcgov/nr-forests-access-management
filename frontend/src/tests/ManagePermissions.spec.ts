@@ -45,8 +45,8 @@ describe('ManagePermissions', () => {
 
         });
 
-        it("should be empty when user access state is empty", async () => {
-            // No available options
+        it("should be empty when user has no admin privilege is empty", async () => {
+            // No available options mock: for user who has no privilege.
             getUserAccessSpy.mockImplementation(() => []);
 
             expect(wrapper.text()).contains("Choose an application to manage permissions");
@@ -54,8 +54,8 @@ describe('ManagePermissions', () => {
             expect(appDropdownButtonDiv.exists()).toBe(true);
             expect(wrapper.text()).not.contains("No available options");
 
-            // await appDropdownButtonDiv.trigger('click');
-            // await nextTick();
+            await appDropdownButtonDiv.trigger('click');
+            await nextTick();
         });
 
         afterEach(async () => {
