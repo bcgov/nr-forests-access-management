@@ -107,7 +107,7 @@ const handleSubmit = async () => {
         as="div"
     >
         <div class="page-body">
-            <form id="grantAdminForm" class="form-container">
+            <form id="grantDelegatedForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
                         :domain="formData.domain"
@@ -154,7 +154,7 @@ const handleSubmit = async () => {
                 <div class="button-stack">
                     <Button
                         type="button"
-                        id="grantAccessCancel"
+                        id="grantDelegatedCancel"
                         class="w100"
                         severity="secondary"
                         label="Cancel"
@@ -164,7 +164,7 @@ const handleSubmit = async () => {
                     >
                     <Button
                         type="button"
-                        id="grantAccessSubmit"
+                        id="grantDelegatedSubmit"
                         class="w100"
                         label="Submit Application"
                         :disabled="
