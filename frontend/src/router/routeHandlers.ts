@@ -13,7 +13,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
+import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -91,10 +91,30 @@ const beforeEnterGrantApplicationAdminRoute = async (
     return true;
 }
 
+const beforeEnterGrantDelegationAdminRoute = async (
+    to: RouteLocationNormalized
+) => {
+
+    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
+        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        return { path: routeItems.dashboard.path };
+    }
+
+    const delegatedAppRoleList = LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+
+    populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
+    // Passing data to router.meta (so it is available for assigning to 'props' later)
+    Object.assign(to.meta, {
+        delegatedRoleOptions: delegatedAppRoleList,
+    });
+    return true;
+}
+
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
-    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute,
+    [routeItems.grantDelegatedAdmin.name]: beforeEnterGrantDelegationAdminRoute
 };
 
 // --- beforeEach Route Handler

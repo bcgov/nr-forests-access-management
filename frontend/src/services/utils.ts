@@ -1,3 +1,5 @@
+import { number, object, string } from 'yup';
+
 type AsyncWrapType = {
     data: any;
     error: any;
@@ -10,11 +12,37 @@ type AsyncWrapType = {
  * @param promise Promise()
  * @returns '{data, error}' in tuple containing 'data' (underfined when 'error' present).
  */
-export const asyncWrap = async (promise: Promise<any>): Promise<AsyncWrapType> => {
+export const asyncWrap = async (
+    promise: Promise<any>
+): Promise<AsyncWrapType> => {
     try {
         const data = await promise;
-        return {data, error: undefined};
+        return { data, error: undefined };
     } catch (error) {
-        return {data: undefined, error}
+        return { data: undefined, error };
     }
-}
+};
+
+export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
+    return object({
+        userId: string()
+            .required('User ID is required')
+            .min(2, 'User ID must be at least 2 characters')
+            .nullable(),
+        roleId: number().required('Please select a value'),
+        forestClientNumbers: string()
+            .when('roleId', {
+                is: (_role_id: number) => isAbstractRoleSelected,
+                then: () =>
+                    string()
+                        .nullable()
+                        .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
+                        .matches(/^[0-9,\b]+$/, 'Please enter a digit or comma')
+                        .matches(
+                            /^\d{8}(,?\d{8})*$/,
+                            'Please enter a Forest Client ID with 8 digits long'
+                        ),
+            })
+            .nullable(),
+    });
+};

@@ -29,4 +29,9 @@ export const routeItems = {
         path: '/grant-app-admin',
         label: 'Add application admin',
     },
+    grantDelegatedAdmin: {
+        name: 'grantDelegatedAdmin',
+        path: '/grant-delegated-admin',
+        label: 'Add a delegated admin',
+    },
 } as RouteItems;
