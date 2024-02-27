@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import router from '@/router';
-import Dropdown from 'primevue/dropdown';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
+import { Form as VeeForm } from 'vee-validate';
 import { ref, type PropType } from 'vue';
 
 import Button from '@/components/common/Button.vue';
@@ -62,6 +61,10 @@ const getSelectedRole = (): FamApplicationRole | undefined => {
 
 const isAbstractRoleSelected = () => {
     return getSelectedRole()?.role_type_code == 'A';
+};
+
+const roleSelectChange = (roleId: number) => {
+    formData.value.roleId = roleId;
 };
 
 /* ----------------- Forest client number method ----------------------- */
@@ -185,7 +188,7 @@ const composeAndPushNotificationMessages = (
     />
     <VeeForm
         ref="form"
-        v-slot="{ errors, meta }"
+        v-slot="{ meta }"
         :validation-schema="formValidationSchema(isAbstractRoleSelected())"
         as="div"
     >
@@ -208,31 +211,12 @@ const composeAndPushNotificationMessages = (
                     title="Add user roles"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <label>Assign a role to the user</label>
-
-                    <Field
-                        name="roleId"
-                        aria-label="Role Select"
-                        v-slot="{ field, handleChange }"
-                        v-model="formData.roleId"
-                    >
-                        <Dropdown
-                            :options="applicationRoleOptions"
-                            optionLabel="role_name"
-                            optionValue="role_id"
-                            :modelValue="field.value"
-                            placeholder="Choose an option"
-                            class="w-100 custom-height"
-                            style="width: 100% !important"
-                            v-bind="field.value"
-                            @update:modelValue="handleChange"
-                            @change="resetVerifiedForestClients"
-                            :class="{
-                                'is-invalid': errors.roleId,
-                            }"
-                        />
-                    </Field>
-                    <ErrorMessage class="invalid-feedback" name="roleId" />
+                    <RoleSelect
+                        :roleId="formData.roleId"
+                        :roleOptions="applicationRoleOptions"
+                        @change="roleSelectChange"
+                        @resetVerifiedForestClients="resetVerifiedForestClients"
+                    />
                 </StepContainer>
 
                 <StepContainer
