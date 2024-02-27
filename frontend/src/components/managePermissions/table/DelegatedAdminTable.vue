@@ -14,7 +14,9 @@ const props = defineProps({
         default: false,
     },
     delegatedAdmins: {
-        type: [Array] as PropType<FamAccessControlPrivilegeGetResponse[] | undefined>,
+        type: [Array] as PropType<
+            FamAccessControlPrivilegeGetResponse[] | undefined
+        >,
         required: true,
     },
 });
@@ -31,6 +33,10 @@ const delegatedAdminFilters = ref({
         matchMode: FilterMatchMode.CONTAINS,
     },
     'role.parent_role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'role.client_number.forest_client_number': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -55,7 +61,7 @@ const delegatedAdminSearchChange = (newvalue: string) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Create delegated admin"
-                :btnRoute="routeItems.grantAppAdmin.path"
+                :btnRoute="'#'"
                 :filter="delegatedAdminFilters['global'].value"
                 @change="delegatedAdminSearchChange"
             />
@@ -72,6 +78,7 @@ const delegatedAdminSearchChange = (newvalue: string) => {
                     'user.user_type.description',
                     'role.role_name.role_name',
                     'role.parent_role.role_name',
+                    'role.client_number.forest_client_number',
                 ]"
                 paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
                 currentPageReportTemplate="{first} - {last} of {totalRecords} items"
