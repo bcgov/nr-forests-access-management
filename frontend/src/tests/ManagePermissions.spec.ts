@@ -5,6 +5,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
+import PrimeVue from 'primevue/config';
 import { afterEach, beforeEach, describe, expect, it, vi, type SpyInstance } from 'vitest';
 import { nextTick } from 'vue';
 
@@ -34,7 +35,11 @@ describe('ManagePermissions', () => {
 
         beforeEach(async () => {
             getUserAccessSpy = vi.spyOn(FamLoginUserState,'getUserAccess');
-            wrapper = mount(ManagePermissions);
+            wrapper = mount(ManagePermissions, {
+                global: {
+                    plugins: [PrimeVue]
+                }
+            });
             appDropdownInput = wrapper.find(appDropdownIdSelector);
             appDropdownButtonDiv = wrapper.find(appDropdownIdSelector + " + div");
 
