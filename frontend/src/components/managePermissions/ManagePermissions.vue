@@ -69,18 +69,18 @@ onUnmounted(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
 
-    if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
-        delegatedAdmins.value = await fetchDelegatedAdmins(
-            selectedApplicationId.value
-        );
-    }
-
     if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
+
+        if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
+            delegatedAdmins.value = await fetchDelegatedAdmins(
+                selectedApplicationId.value
+        );
+    }
     }
 };
 
@@ -180,7 +180,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 </TabPanel>
 
                 <TabPanel
-                    v-if="LoginUserState.hasAccess(APP_ADMIN_ROLE)"
+                    v-if="LoginUserState.hasAccess(APP_ADMIN_ROLE) && selectedApplicationId !== FAM_APPLICATION_ID"
                     header="Delegated admins"
                 >
                     <template #header>
