@@ -6,6 +6,7 @@ import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import { afterEach, beforeEach, describe, expect, it, vi, type SpyInstance } from 'vitest';
+import { nextTick } from 'vue';
 
 fixJsdomCssErr();
 
@@ -27,24 +28,29 @@ describe('ManagePermissions', () => {
 
     describe('Application dropdown selection', () => {
         const appDropdownIdSelector = "#applications-dropdown-id";
-        let getuserAccessSpy: SpyInstance;
+        let getUserAccessSpy: SpyInstance;
         let appDropdownInput: DOMWrapper<HTMLInputElement>;
         let appDropdownButtonDiv: DOMWrapper<HTMLInputElement>;
 
         beforeEach(async () => {
-            getuserAccessSpy = vi.spyOn(FamLoginUserState,'getUserAccess');
+            getUserAccessSpy = vi.spyOn(FamLoginUserState,'getUserAccess');
             wrapper = mount(ManagePermissions);
             appDropdownInput = wrapper.find(appDropdownIdSelector);
             appDropdownButtonDiv = wrapper.find(appDropdownIdSelector + " + div");
+
         });
 
         it("should be empty when user access state is empty", async () => {
             // No available options
-            getuserAccessSpy.mockImplementation(() => []);
+            getUserAccessSpy.mockImplementation(() => []);
+
             expect(wrapper.text()).contains("Choose an application to manage permissions");
             expect(appDropdownInput.exists()).toBe(true);
             expect(appDropdownButtonDiv.exists()).toBe(true);
             expect(wrapper.text()).not.contains("No available options");
+
+            // await appDropdownButtonDiv.trigger('click');
+            // await nextTick();
         });
 
         afterEach(async () => {
@@ -52,3 +58,128 @@ describe('ManagePermissions', () => {
         })
     });
 });
+
+const famAccessMock = [
+    {
+       "auth_key": "FAM_ADMIN",
+       "grants": [
+          {
+             "application": {
+                "id": 1,
+                "name": "FAM",
+                "description": "Forests Access Management",
+                "env": null
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 2,
+                "name": "FOM",
+                "description": "Forest Operations Map (DEV)",
+                "env": "DEV"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 3,
+                "name": "FOM",
+                "description": "Forest Operations Map (TEST)",
+                "env": "TEST"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 4,
+                "name": "FOM",
+                "description": "Forest Operations Map (PROD)",
+                "env": "PROD"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 5,
+                "name": "SPAR",
+                "description": "Seed Planning and Registry Application (DEV)",
+                "env": "DEV"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 6,
+                "name": "SPAR",
+                "description": "Seed Planning and Registry Application (TEST)",
+                "env": "TEST"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 7,
+                "name": "SPA",
+                "description": "Seed Planning and Registry Application (PROD)",
+                "env": "PROD"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 8,
+                "name": "CLIENT",
+                "description": "Forest Client (DEV)",
+                "env": "DEV"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 9,
+                "name": "CLIEN",
+                "description": "Forest Client (TEST)",
+                "env": "TEST"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 10,
+                "name": "CLIENT",
+                "description": "Forest Client (PROD)",
+                "env": "PROD"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 11,
+                "name": "SILVA",
+                "description": "SILVA (DEV)",
+                "env": "DEV"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 12,
+                "name": "SILVA",
+                "description": "SILVA (TEST)",
+                "env": "TEST"
+             },
+             "roles": null
+          },
+          {
+             "application": {
+                "id": 13,
+                "name": "SILVA",
+                "description": "SILVA (PROD)",
+                "env": "PROD"
+             },
+             "roles": null
+          }
+       ]
+    }
+ ];
