@@ -37,18 +37,20 @@ describe('ManagePermissions', () => {
             getUserAccessSpy = vi.spyOn(FamLoginUserState,'getUserAccess');
             wrapper = mount(ManagePermissions, {
                 global: {
-                    plugins: [PrimeVue]
+                    plugins: [PrimeVue] // need this from PrimeVue to prevent config error.
                 }
             });
             appDropdownInput = wrapper.find(appDropdownIdSelector);
+            // select direct sibling <div> to be trigger
             appDropdownButtonDiv = wrapper.find(appDropdownIdSelector + " + div");
 
         });
 
-        it("should be empty when user has no admin privilege is empty", async () => {
+        it("should be empty when user has no admin privilege", async () => {
             // No available options mock: for user who has no privilege.
             getUserAccessSpy.mockImplementation(() => []);
 
+            // Initial apps dropdown verify.
             expect(wrapper.text()).contains("Choose an application to manage permissions");
             expect(appDropdownInput.exists()).toBe(true);
             expect(appDropdownButtonDiv.exists()).toBe(true);
