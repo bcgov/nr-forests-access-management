@@ -50,7 +50,7 @@ const toRequestPayload = (formData: any) => {
     const request = {
         user_name: formData.userId,
         application_id: formData.application.id,
-        user_type_code: UserType.I
+        user_type_code: UserType.I,
     } as FamAppAdminCreateRequest;
     return request;
 };
@@ -145,7 +145,7 @@ const handleSubmit = async () => {
                 <div class="button-stack">
                     <Button
                         type="button"
-                        id="grantAccessCancel"
+                        id="grantAdminCancel"
                         class="w100"
                         severity="secondary"
                         label="Cancel"
@@ -155,7 +155,7 @@ const handleSubmit = async () => {
                     >
                     <Button
                         type="button"
-                        id="grantAccessSubmit"
+                        id="grantAdminSubmit"
                         class="w100"
                         label="Submit Application"
                         :disabled="
