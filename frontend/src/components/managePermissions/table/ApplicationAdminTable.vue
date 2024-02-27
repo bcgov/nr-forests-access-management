@@ -9,6 +9,11 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import {
+    CURRENT_PAGE_REPORT_TEMPLATE,
+    PAGINATOR_TEMPLATE,
+    ROWS_PER_PAGE,
+} from '@/store/Constants';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
@@ -93,7 +98,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 :value="props.applicationAdmins"
                 paginator
                 :rows="50"
-                :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+                :rowsPerPageOptions="ROWS_PER_PAGE"
                 filterDisplay="menu"
                 :loading="props.loading"
                 :globalFilterFields="[
@@ -103,13 +108,17 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     'role.role_name',
                     'application.app_environment',
                 ]"
-                paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                currentPageReportTemplate="{first} - {last} of {totalRecords} items"
+                :paginatorTemplate="PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column header="User Name" sortable field="user.user_name">
+                <Column
+                    header="User Name"
+                    sortable
+                    field="user.user_name"
+                >
                     <template #body="{ data }">
                         <span>
                             {{ data.user.user_name }}
@@ -131,7 +140,11 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     header="Environment"
                     sortable
                 ></Column>
-                <Column field="role.role_name" header="Role" sortable>
+                <Column
+                    field="role.role_name"
+                    header="Role"
+                    sortable
+                >
                     <template #body="{ data }"> Admin </template></Column
                 >
                 <Column header="Action">
@@ -142,8 +155,14 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                             >
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
-                        <button class="btn btn-icon" @click="deleteAdmin(data)">
-                            <Icon icon="trash-can" :size="IconSize.small" />
+                        <button
+                            class="btn btn-icon"
+                            @click="deleteAdmin(data)"
+                        >
+                            <Icon
+                                icon="trash-can"
+                                :size="IconSize.small"
+                            />
                         </button>
                     </template>
                 </Column>
