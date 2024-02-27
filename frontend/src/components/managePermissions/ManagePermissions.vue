@@ -79,7 +79,9 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
             selectedApplicationId.value
         );
 
-        if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
+        LoginUserState.isApplicationAdmin();
+
+        if (LoginUserState.isApplicationAdmin()) {
             delegatedAdmins.value = await fetchDelegatedAdmins(
                 selectedApplicationId.value
             );
@@ -193,7 +195,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
                 <TabPanel
                     v-if="
-                        LoginUserState.hasAccess(APP_ADMIN_ROLE) &&
+                        LoginUserState.isApplicationAdmin() &&
                         selectedApplicationId !== FAM_APPLICATION_ID
                     "
                     header="Delegated admins"

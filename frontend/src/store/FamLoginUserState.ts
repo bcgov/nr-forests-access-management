@@ -1,9 +1,12 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
-    selectedApplicationId,
 } from '@/store/ApplicationState';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import {
+    APP_ADMIN_ROLE,
+    FAM_APPLICATION_ID,
+    FAM_APPLICATION_NAME,
+} from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import {
@@ -110,16 +113,15 @@ const getApplicationsUserAdministers = () => {
     return applicationList;
 };
 
-const isApplicationAdmin = () =>
-    getApplicationsUserAdministers().some(
-        (application) => application.id === selectedApplicationId.value
+const isApplicationAdmin = () => {
+    const appsUserIsAdmin = getUserAccess().filter(
+        (access) => access.auth_key == APP_ADMIN_ROLE
     );
 
-const hasAdminAccess = (role: AdminRoleAuthGroup) =>
-    getUserAdminRoleGroups().some((access) => access === role);
-
-const hasAccess = (role: AdminRoleAuthGroup) => {
-    if (isApplicationAdmin() && hasAdminAccess(role)) {
+    if (appsUserIsAdmin.length > 0) {
+        appsUserIsAdmin[0].grants.filter(
+            (grant) => grant.application.id == FAM_APPLICATION_ID
+        );
         return true;
     }
     return false;
@@ -182,6 +184,5 @@ export default {
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
-    hasAccess,
     isApplicationAdmin,
 };

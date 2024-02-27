@@ -49,7 +49,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
             fetchUserRoleAssignments(selectedApplicationId.value)
         );
 
-        if (LoginUserState.hasAccess(FAM_ADMIN_ROLE)) {
+        if (LoginUserState.isApplicationAdmin()) {
             delegatedAdmins = await asyncWrap(
                 fetchDelegatedAdmins(selectedApplicationId.value)
             );
@@ -142,7 +142,7 @@ export const beforeEachRouteHandler = async (
 
     // Access privilege guard. This logic might need to be adjusted soon.
     if (to.meta.requiredPrivileges) {
-        for (let role of (to.meta.requiredPrivileges as Array<string>)) {
+        for (let role of to.meta.requiredPrivileges as Array<string>) {
             if (!LoginUserState.hasAccessRole(role)) {
                 emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };

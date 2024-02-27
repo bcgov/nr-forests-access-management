@@ -17,16 +17,15 @@ const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
 const setSideNavOptions = () => {
-    // if user is app admin
-
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
+        disableSideNavOption('Add delegated admin', true);
     } else {
         disableSideNavOption('Add application admin', true);
         disableSideNavOption('Add user permission', false);
 
-        if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
+        if (LoginUserState.isApplicationAdmin()) {
             disableSideNavOption('Add delegated admin', false);
         }
     }
