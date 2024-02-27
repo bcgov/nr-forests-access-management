@@ -3,15 +3,16 @@ import router from '@/router';
 import Dropdown from 'primevue/dropdown';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { ref, type PropType } from 'vue';
-import { number, object, string } from 'yup';
 
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity, ErrorCode } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
 import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
+import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import {
     type FamApplicationRole,
     UserType,
@@ -20,7 +21,6 @@ import {
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
 const props = defineProps({
     applicationRoleOptions: {
@@ -37,27 +37,6 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
-const formValidationSchema = object({
-    userId: string()
-        .required('User ID is required')
-        .min(2, 'User ID must be at least 2 characters')
-        .nullable(),
-    roleId: number().required('Please select a value'),
-    forestClientNumbers: string()
-        .when('roleId', {
-            is: (_role_id: number) => isAbstractRoleSelected(),
-            then: () =>
-                string()
-                    .nullable()
-                    .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
-                    .matches(/^[0-9,\b]+$/, 'Please enter a digit or comma')
-                    .matches(
-                        /^\d{8}(,?\d{8})*$/,
-                        'Please enter a Forest Client ID with 8 digits long'
-                    ),
-        })
-        .nullable(),
-});
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
@@ -207,7 +186,7 @@ const composeAndPushNotificationMessages = (
     <VeeForm
         ref="form"
         v-slot="{ errors, meta }"
-        :validation-schema="formValidationSchema"
+        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
         as="div"
     >
         <div class="page-body">
