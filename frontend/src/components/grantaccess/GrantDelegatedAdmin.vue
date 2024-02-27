@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, type PropType } from 'vue';
 import router from '@/router';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import Dropdown from 'primevue/dropdown';
+import { Form as VeeForm } from 'vee-validate';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { isLoading } from '@/store/LoadingState';
@@ -49,6 +48,10 @@ const getSelectedRole = (): FamRoleDto | undefined => {
 
 const isAbstractRoleSelected = () => {
     return getSelectedRole()?.type_code == 'A';
+};
+
+const roleSelectChange = (roleId: number) => {
+    formData.value.roleId = roleId;
 };
 
 /* ----------------- Forest client number method ----------------------- */
@@ -99,7 +102,7 @@ const handleSubmit = async () => {
 
     <VeeForm
         ref="form"
-        v-slot="{ errors, meta }"
+        v-slot="{ meta }"
         :validation-schema="formValidationSchema(isAbstractRoleSelected())"
         as="div"
     >
@@ -122,32 +125,13 @@ const handleSubmit = async () => {
                     title="Add the role a delegated admin can assign"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <label htmlFor="roleId">Assign a role to the user</label>
-
-                    <Field
-                        id="roleId"
-                        name="roleId"
-                        aria-label="Role Select"
-                        v-slot="{ field, handleChange }"
-                        v-model="formData.roleId"
-                    >
-                        <Dropdown
-                            :options="delegatedRoleOptions"
-                            optionLabel="name"
-                            optionValue="id"
-                            :modelValue="field.value"
-                            placeholder="Choose an option"
-                            class="w-100 custom-height"
-                            style="width: 100% !important"
-                            v-bind="field.value"
-                            @update:modelValue="handleChange"
-                            @change="resetVerifiedForestClients"
-                            :class="{
-                                'is-invalid': errors.roleId,
-                            }"
-                        />
-                    </Field>
-                    <ErrorMessage class="invalid-feedback" name="roleId" />
+                    <RoleSelect
+                        :roleId="formData.roleId"
+                        :roleOptions="delegatedRoleOptions"
+                        label="Assign a role the delgated admin can manage"
+                        @change="roleSelectChange"
+                        @resetVerifiedForestClients="resetVerifiedForestClients"
+                    />
                 </StepContainer>
 
                 <StepContainer
