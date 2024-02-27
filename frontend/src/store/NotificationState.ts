@@ -101,7 +101,7 @@ export const setGrantPermissionNotificationMsg = (
     // replace the message after ':' to be the whole forest client number list
     const notificationFullMsg =
         forestClientNumberList.length > 2
-            ? `${notificationMsg.split(':')[0]} ${forestClientNumberList.join(
+            ? `${notificationMsg.split(':')[0]}: ${forestClientNumberList.join(
                   ', '
               )}`
             : '';

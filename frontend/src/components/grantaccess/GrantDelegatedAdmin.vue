@@ -4,9 +4,13 @@ import router from '@/router';
 import { Form as VeeForm } from 'vee-validate';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { isLoading } from '@/store/LoadingState';
+import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
 import { UserType } from 'fam-app-acsctl-api';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import type { FamAccessControlPrivilegeCreateRequest } from 'fam-admin-mgmt-api/model/fam-access-control-privilege-create-request';
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { formValidationSchema } from '@/services/utils';
 
 const props = defineProps({
@@ -88,10 +92,60 @@ const areVerificationsPassed = () => {
 };
 
 const handleSubmit = async () => {
-    // This will be implemented in task #1160
+    const username = formData.value.userId.toUpperCase();
+    const role = getSelectedRole()?.name;
+    const successList: string[] = [];
+    let errorList: string[] = [];
+    let errorCode = ErrorCode.Default;
 
+    const data = toRequestPayload(formData.value);
+
+    try {
+        const returnResponse =
+            await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
+                data
+            );
+        returnResponse.data.forEach((response) => {
+            const forestClientNumber =
+                response.detail.role.client_number?.forest_client_number;
+            if (response.status_code == 200) {
+                successList.push(forestClientNumber || '');
+            } else {
+                if (response.status_code == 409) errorCode = ErrorCode.Conflict;
+                errorList.push(forestClientNumber || '');
+            }
+        });
+    } catch (error: any) {
+        // error happens here will fail adding all forest client numbers
+        if (error.response.data.detail.code === 'self_grant_prohibited') {
+            errorCode = ErrorCode.SelfGrantProhibited;
+        }
+        errorList = formData.value.verifiedForestClients;
+    }
+    composeAndPushGrantPermissionNotification(
+        GrantPermissionType.DelegatedAdmin,
+        username,
+        role,
+        successList,
+        errorList,
+        errorCode
+    );
     router.push('/dashboard');
 };
+
+function toRequestPayload(formData: any) {
+    const request = {
+        user_name: formData.userId,
+        user_type_code: formData.domain,
+        role_id: formData.roleId,
+        ...(formData.verifiedForestClients.length > 0
+            ? {
+                  forest_client_numbers: formData.verifiedForestClients,
+              }
+            : {}),
+    } as FamAccessControlPrivilegeCreateRequest;
+    return request;
+}
 </script>
 
 <template>
