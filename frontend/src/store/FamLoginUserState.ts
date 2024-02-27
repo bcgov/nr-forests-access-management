@@ -183,4 +183,5 @@ export default {
     removeFamUser,
     cacheUserAccess,
     hasAccess,
+    isApplicationAdmin,
 };
