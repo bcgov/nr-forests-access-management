@@ -7,7 +7,7 @@ import ManagePermissionsTitle from '@/components/managePermissions/ManagePermiss
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
 import LoginUserState from '@/store/FamLoginUserState';
-import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue'
+import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
 import {
     isApplicationSelected,
     selectedApplication,
@@ -21,7 +21,10 @@ import {
 } from '@/store/NotificationState';
 import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamAccessControlPrivilegeGetResponse, FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import type {
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
+} from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
@@ -79,8 +82,8 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
         if (LoginUserState.hasAccess(APP_ADMIN_ROLE)) {
             delegatedAdmins.value = await fetchDelegatedAdmins(
                 selectedApplicationId.value
-        );
-    }
+            );
+        }
     }
 };
 
@@ -159,7 +162,10 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                     v-if="selectedApplicationId === FAM_APPLICATION_ID"
                 >
                     <template #header>
-                        <Icon icon="enterprise" :size="IconSize.small" />
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
                     </template>
                     <ApplicationAdminTable
                         :loading="isLoading()"
@@ -167,9 +173,15 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
-                <TabPanel header="Users" v-else>
+                <TabPanel
+                    header="Users"
+                    v-else
+                >
                     <template #header>
-                        <Icon icon="user" :size="IconSize.small" />
+                        <Icon
+                            icon="user"
+                            :size="IconSize.small"
+                        />
                     </template>
 
                     <UserDataTable
@@ -180,7 +192,10 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                 </TabPanel>
 
                 <TabPanel
-                    v-if="LoginUserState.hasAccess(APP_ADMIN_ROLE) && selectedApplicationId !== FAM_APPLICATION_ID"
+                    v-if="
+                        LoginUserState.hasAccess(APP_ADMIN_ROLE) &&
+                        selectedApplicationId !== FAM_APPLICATION_ID
+                    "
                     header="Delegated admins"
                 >
                     <template #header>
