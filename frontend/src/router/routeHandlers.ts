@@ -15,7 +15,7 @@ import {
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import LoginUserState from '@/store/FamLoginUserState';
-import { FAM_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
 

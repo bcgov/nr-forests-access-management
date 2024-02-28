@@ -1,9 +1,6 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { CURRENT_SELECTED_APPLICATION_KEY, selectedApplicationId } from '@/store/ApplicationState';
-import {
-    APP_ADMIN_ROLE,
-    FAM_APPLICATION_NAME,
-} from '@/store/Constants';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import {
@@ -112,7 +109,7 @@ const getApplicationsUserAdministers = () => {
 
 const isAdminOfSelectedApplication = () => {
     const userAdminAccess = getUserAccess().find(
-        (access) => access.auth_key == APP_ADMIN_ROLE
+        (access) => access.auth_key == AdminRoleAuthGroup.AppAdmin
     );
 
     if(userAdminAccess) {
