@@ -75,10 +75,10 @@ onUnmounted(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
 
+    // make the first tab active
+    resetActiveTab.value = 0;
     if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
-        // make the first tab active
-        resetActiveTab.value = 0;
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value

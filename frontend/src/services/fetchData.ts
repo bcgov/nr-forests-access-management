@@ -101,29 +101,27 @@ export const deleteAndRefreshApplicationAdmin = async (
 
 export const fetchDelegatedAdmins = async (
     applicationId: number | undefined
-): Promise<FamAccessControlPrivilegeGetResponse[] | undefined> => {
-    if (!applicationId) {
+): Promise<FamAccessControlPrivilegeGetResponse[]> => {
+    if (!applicationId && !FamLoginUserState.isAdminOfSelectedApplication()) {
         return [];
     }
 
-    if (FamLoginUserState.isAdminOfSelectedApplication()) {
-        const delegatedAdmins = (
-            await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
-                applicationId!
-            )
-        ).data;
+    const delegatedAdmins = (
+        await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
+            applicationId!
+        )
+    ).data;
 
-        // Default sorting
-        delegatedAdmins.sort((first, second) => {
-            // By user_name
-            const userNameCompare = first.user.user_name.localeCompare(
-                second.user.user_name
-            );
+    // Default sorting
+    delegatedAdmins.sort((first, second) => {
+        // By user_name
+        const userNameCompare = first.user.user_name.localeCompare(
+            second.user.user_name
+        );
 
-            return userNameCompare;
-        });
+        return userNameCompare;
+    });
 
-        return delegatedAdmins;
-    }
+    return delegatedAdmins;
 
 };
