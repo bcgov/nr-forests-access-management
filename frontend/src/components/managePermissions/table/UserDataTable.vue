@@ -75,7 +75,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         header: 'Remove Access',
         rejectLabel: 'Cancel',
         acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
         accept: () => {
             emit('deleteUserRoleAssignment', assignment);
         },

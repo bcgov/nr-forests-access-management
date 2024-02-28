@@ -2,6 +2,8 @@
 import { ref, type PropType } from 'vue';
 import router from '@/router';
 import { Form as VeeForm } from 'vee-validate';
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from 'primevue/useconfirm';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
@@ -19,6 +21,8 @@ const props = defineProps({
         type: Array as PropType<FamRoleDto[]>,
     },
 });
+
+const confirm = useConfirm();
 
 const defaultFormData = {
     domain: UserType.I,
@@ -91,7 +95,7 @@ const areVerificationsPassed = () => {
     );
 };
 
-const handleSubmit = async () => {
+const confirmSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
@@ -146,9 +150,34 @@ function toRequestPayload(formData: any) {
     } as FamAccessControlPrivilegeCreateRequest;
     return request;
 }
+
+function handleSubmit() {
+    confirm.require({
+        group: 'addDelegatedAdmin',
+        header: 'Add a delegated admin',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Submit delegated admin',
+        acceptClass: 'dialog-accept-button',
+        accept: () => {
+            confirmSubmit();
+        },
+    });
+}
 </script>
 
 <template>
+    <ConfirmDialog group="addDelegatedAdmin">
+        <template #message>
+            <p>
+                Are you sure you want to add
+                <strong>{{ formData.userId.toUpperCase() }}</strong> as a
+                delegated admin? As a delegated admin <br />
+                <strong>{{ formData.userId.toUpperCase() }}</strong> will be
+                able to add, edit or delete users
+            </p>
+        </template>
+    </ConfirmDialog>
+
     <PageTitle
         title="Add a delegated admin"
         subtitle="All fields are mandatory"
@@ -234,3 +263,27 @@ function toRequestPayload(formData: any) {
         </div>
     </VeeForm>
 </template>
+<style lang="scss">
+@use '@bcgov-nr/nr-theme/design-tokens/light-buttons.scss' as lightButton;
+@use 'sass:map';
+.dialog-accept-button {
+    border: 0.0625rem solid
+        map.get(lightButton.$light-button-token-overrides, 'button-primary') !important;
+    background-color: map.get(
+        lightButton.$light-button-token-overrides,
+        'button-primary'
+    ) !important;
+}
+
+.dialog-accept-button:hover {
+    border: 0.0625rem solid
+        map.get(
+            lightButton.$light-button-token-overrides,
+            'button-primary-hover'
+        ) !important;
+    background-color: map.get(
+        lightButton.$light-button-token-overrides,
+        'button-primary-hover'
+    ) !important;
+}
+</style>
