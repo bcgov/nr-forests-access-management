@@ -48,7 +48,9 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplicationId.value)
         );
-        fetchDelegatedAdmins(selectedApplicationId.value);
+        delegatedAdmins = await asyncWrap(
+            fetchDelegatedAdmins(selectedApplicationId.value)
+        );
     }
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
