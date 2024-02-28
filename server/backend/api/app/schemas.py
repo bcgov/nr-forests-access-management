@@ -60,7 +60,9 @@ class FamApplication(FamApplicationCreate):
 
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
-    cognito_user_id: Optional[Annotated[str, StringConstraints(max_length=100)]] = None  # temporarily optional
+    cognito_user_id: Optional[Annotated[str, StringConstraints(max_length=100)]] = (
+        None  # temporarily optional
+    )
     user_name: Annotated[str, StringConstraints(max_length=20)]
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     create_user: Annotated[str, StringConstraints(max_length=60)]
@@ -81,7 +83,9 @@ class FamRoleTypeGet(BaseModel):
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreate(BaseModel):
-    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)] # IDIM search max length
+    user_name: Annotated[
+        str, StringConstraints(min_length=3, max_length=20)
+    ]  # IDIM search max length
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[
@@ -116,9 +120,9 @@ class FamRoleCreate(BaseModel):
         default=None, title="Reference role_id to higher role"
     )
     application_id: int = Field(title="Application this role is associated with")
-    forest_client_number: Union[Annotated[str, StringConstraints(max_length=8)], None] = Field(
-        default=None, title="Forest Client this role is associated with"
-    )
+    forest_client_number: Union[
+        Annotated[str, StringConstraints(max_length=8)], None
+    ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=60)]
     role_type_code: famConstants.RoleType
     client_number: Optional[FamForestClientCreate] = None
@@ -151,7 +155,9 @@ class FamApplicationRole(FamRoleCreate):
     role_id: int
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(from_attributes=True, fields={"create_user": {"exclude": True}})
+    model_config = ConfigDict(
+        from_attributes=True, fields={"create_user": {"exclude": True}}
+    )
 
 
 # This is not an object from FAM model. It is an helper class to map Forest Client API
@@ -214,15 +220,18 @@ class FamRoleWithClient(FamRoleCreate):
     parent_role: Optional[FamRoleMin] = None
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(from_attributes=True, fields={
-        "update_user": {"exclude": True},
-        "role_purpose": {"exclude": True},
-        "parent_role_id": {"exclude": True},
-        "application_id": {"exclude": True},
-        "forest_client_number": {"exclude": True},
-        "role_id": {"exclude": True},
-        "create_user": {"exclude": True},
-    })
+    model_config = ConfigDict(
+        from_attributes=True,
+        fields={
+            "update_user": {"exclude": True},
+            "role_purpose": {"exclude": True},
+            "parent_role_id": {"exclude": True},
+            "application_id": {"exclude": True},
+            "forest_client_number": {"exclude": True},
+            "role_id": {"exclude": True},
+            "create_user": {"exclude": True},
+        },
+    )
 
 
 class FamUserType(BaseModel):
@@ -237,11 +246,15 @@ class FamUserOnlyName(FamUser):
     user_type_relation: FamUserType = Field(alias="user_type")
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(from_attributes=True, fields={
-        "user_guid": {"exclude": True},
-        "create_user": {"exclude": True},
-        "update_user": {"exclude": True},
-    }, populate_by_name=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        fields={
+            "user_guid": {"exclude": True},
+            "create_user": {"exclude": True},
+            "update_user": {"exclude": True},
+        },
+        populate_by_name=True,
+    )
 
 
 class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
@@ -250,21 +263,26 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
     application_id: Optional[Union[int, None]] = None
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(from_attributes=True, fields={
-        "application_id": {"exclude": True},
-        "user_id": {"exclude": True},
-        "role_id": {"exclude": True},
-    })
+    model_config = ConfigDict(
+        from_attributes=True,
+        fields={
+            "application_id": {"exclude": True},
+            "user_id": {"exclude": True},
+            "role_id": {"exclude": True},
+        },
+    )
 
 
-class IdimProxySearchParamIdir(BaseModel):
-    userId: Annotated[str, StringConstraints(max_length=20)]  # param for Idim-Proxy search of this form (not snake case)
+class IdimProxySearchParam(BaseModel):
+    userId: Annotated[
+        str, StringConstraints(max_length=20)
+    ]  # param for Idim-Proxy search of this form (not snake case)
 
 
 class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
-    userId: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    userId: Annotated[str, StringConstraints(max_length=20)]
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 
@@ -273,6 +291,29 @@ class IdimProxyIdirInfo(BaseModel):
         info = IdimProxyIdirInfo(
             found=json_dict.get("found"),
             userId=json_dict.get("userId"),
+            firstName=json_dict.get("firstName"),
+            lastName=json_dict.get("lastName"),
+        )
+        return info
+
+
+class IdimProxyBceidInfo(BaseModel):
+    found: bool
+    userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessGuid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+
+    @staticmethod
+    def from_api_json(json_dict):
+        info = IdimProxyIdirInfo(
+            found=json_dict.get("found"),
+            userId=json_dict.get("userId"),
+            guid=json_dict.get("guid"),
+            businessGuid=json_dict.get("businessGuid"),
+            businessLegalName=json_dict.get("businessLegalName"),
             firstName=json_dict.get("firstName"),
             lastName=json_dict.get("lastName"),
         )
@@ -293,12 +334,16 @@ class Requester(BaseModel):
     """
     Class holding information for user who access FAM system after authenticated.
     """
+
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
-    access_roles: Union[List[Annotated[str, StringConstraints(max_length=50)]], None] = None
+    access_roles: Union[
+        List[Annotated[str, StringConstraints(max_length=50)]], None
+    ] = None
+    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
 
     model_config = ConfigDict(from_attributes=True)
 

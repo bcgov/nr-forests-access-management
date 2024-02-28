@@ -18,6 +18,11 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
+class IDIMProxyAccountType(str, Enum):
+    IDIR = "Internal"
+    BUSINESS_BCEID = "Business"
+
+
 # Internal defined enum client status constants for FAM 'router_forest_client'.
 # ACTIVE/INACTIVE are mapped from Forest Client API spce.
 # See schemas.py/FamForestClientStatus class.
@@ -31,11 +36,10 @@ DESCRIPTION_INACTIVE = "Inactive"
 
 # Constans for FAM to coneniently refer to Forest Client API return json object
 # keys/values.
-FOREST_CLIENT_STATUS = {
-    "KEY": "clientStatusCode",
-    "CODE_ACTIVE": "ACT"
-}
+FOREST_CLIENT_STATUS = {"KEY": "clientStatusCode", "CODE_ACTIVE": "ACT"}
 
 FAM_PROXY_API_USER = "fam_proxy_api"
 
 COGNITO_USERNAME_KEY = "username"
+
+IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
