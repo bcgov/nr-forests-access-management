@@ -5,4 +5,4 @@ export const PAGINATOR_TEMPLATE =
     'RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink';
 export const CURRENT_PAGE_REPORT_TEMPLATE =
     '{first} - {last} of {totalRecords} items';
-export const ROWS_PER_PAGE = [5, 10, 15, 20, 50, 100]
+export const ROWS_PER_PAGE = [5, 10, 15, 20, 50, 100];
