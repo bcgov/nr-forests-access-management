@@ -1,10 +1,7 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import {
-    CURRENT_SELECTED_APPLICATION_KEY,
-} from '@/store/ApplicationState';
+import { CURRENT_SELECTED_APPLICATION_KEY, selectedApplicationId } from '@/store/ApplicationState';
 import {
     APP_ADMIN_ROLE,
-    FAM_APPLICATION_ID,
     FAM_APPLICATION_NAME,
 } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
@@ -113,16 +110,17 @@ const getApplicationsUserAdministers = () => {
     return applicationList;
 };
 
-const isApplicationAdmin = () => {
-    const appsUserIsAdmin = getUserAccess().filter(
+const isAdminOfSelectedApplication = () => {
+    const userAdminAccess = getUserAccess().find(
         (access) => access.auth_key == APP_ADMIN_ROLE
     );
 
-    if (appsUserIsAdmin.length > 0) {
-        appsUserIsAdmin[0].grants.filter(
-            (grant) => grant.application.id == FAM_APPLICATION_ID
+    if(userAdminAccess) {
+        const appsUserIsAdmin = userAdminAccess.grants.filter(
+            (grant) => grant.application.id == selectedApplicationId.value
         );
-        return true;
+
+        if (appsUserIsAdmin.length > 0) return true;
     }
     return false;
 };
@@ -184,5 +182,5 @@ export default {
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
-    isApplicationAdmin,
+    isAdminOfSelectedApplication,
 };

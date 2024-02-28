@@ -7,6 +7,7 @@ import {
     AppActlApiService,
     AdminMgmtApiService,
 } from '@/services/ApiServiceFactory';
+import FamLoginUserState from '@/store/FamLoginUserState';
 
 // --- Fetching data (from backend)
 
@@ -105,21 +106,24 @@ export const fetchDelegatedAdmins = async (
         return [];
     }
 
-    const delegatedAdmins = (
-        await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
-            applicationId!
-        )
-    ).data;
+    if (FamLoginUserState.isAdminOfSelectedApplication()) {
+        const delegatedAdmins = (
+            await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
+                applicationId!
+            )
+        ).data;
 
-    // Default sorting
-    delegatedAdmins.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
-        );
+        // Default sorting
+        delegatedAdmins.sort((first, second) => {
+            // By user_name
+            const userNameCompare = first.user.user_name.localeCompare(
+                second.user.user_name
+            );
 
-        return userNameCompare;
-    });
+            return userNameCompare;
+        });
 
-    return delegatedAdmins;
+        return delegatedAdmins;
+    }
+
 };

@@ -6,7 +6,7 @@ import SideNav, {
     type ISideNavItem,
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
-import { FAM_APPLICATION_ID, APP_ADMIN_ROLE } from '@/store/Constants';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import {
     isApplicationSelected,
     selectedApplicationId,
@@ -25,7 +25,7 @@ const setSideNavOptions = () => {
         disableSideNavOption('Add application admin', true);
         disableSideNavOption('Add user permission', false);
 
-        if (LoginUserState.isApplicationAdmin()) {
+        if (LoginUserState.isAdminOfSelectedApplication()) {
             disableSideNavOption('Add delegated admin', false);
         }
     }

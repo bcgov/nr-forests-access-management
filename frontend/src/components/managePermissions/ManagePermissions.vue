@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType, computed } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -19,7 +19,7 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type {
     FamAccessControlPrivilegeGetResponse,
@@ -58,12 +58,15 @@ const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
 );
 
-const applicationsUserAdministers = computed(() => {
-    return LoginUserState.getApplicationsUserAdministers();
-});
 const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
     props.delegatedAdmins
 );
+
+const resetActiveTab = ref(0);
+
+const applicationsUserAdministers = computed(() => {
+    return LoginUserState.getApplicationsUserAdministers();
+});
 
 onUnmounted(() => {
     resetNotification();
@@ -74,18 +77,16 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 
     if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
+        // make the first tab active
+        resetActiveTab.value = 0;
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
 
-        LoginUserState.isApplicationAdmin();
-
-        if (LoginUserState.isApplicationAdmin()) {
-            delegatedAdmins.value = await fetchDelegatedAdmins(
-                selectedApplicationId.value
-            );
-        }
+        delegatedAdmins.value = await fetchDelegatedAdmins(
+            selectedApplicationId.value
+        );
     }
 };
 
@@ -150,6 +151,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
             <TablePlaceholder v-if="!isApplicationSelected" />
             <TabView
                 v-else
+                v-model:active-index="resetActiveTab"
                 :pt="{
                     root: {
                         style: 'margin-top: 1.5rem',
@@ -195,7 +197,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
                 <TabPanel
                     v-if="
-                        LoginUserState.isApplicationAdmin() &&
+                        LoginUserState.isAdminOfSelectedApplication() &&
                         selectedApplicationId !== FAM_APPLICATION_ID
                     "
                     header="Delegated admins"
