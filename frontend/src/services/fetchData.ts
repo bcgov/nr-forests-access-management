@@ -101,7 +101,7 @@ export const deleteAndRefreshApplicationAdmin = async (
 
 export const fetchDelegatedAdmins = async (
     applicationId: number | undefined
-): Promise<FamAccessControlPrivilegeGetResponse[]> => {
+): Promise<FamAccessControlPrivilegeGetResponse[] | undefined> => {
     if (!applicationId) {
         return [];
     }

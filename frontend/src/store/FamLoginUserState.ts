@@ -111,7 +111,7 @@ const getApplicationsUserAdministers = () => {
 };
 
 const isAdminOfSelectedApplication = () => {
-    const userAdminAccess = getUserAccess().find(
+    const userAdminAccess = getUserAccess()?.find(
         (access) => access.auth_key == AdminRoleAuthGroup.AppAdmin
     );
 

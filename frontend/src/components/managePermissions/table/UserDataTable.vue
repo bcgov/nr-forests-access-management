@@ -12,9 +12,9 @@ import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
 import {
-    CURRENT_PAGE_REPORT_TEMPLATE,
-    PAGINATOR_TEMPLATE,
-    ROWS_PER_PAGE,
+    TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
+    TABLE_PAGINATOR_TEMPLATE,
+    TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
@@ -110,7 +110,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :value="props.userRoleAssignments"
                 paginator
                 :rows="50"
-                :rowsPerPageOptions="ROWS_PER_PAGE"
+                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
                 filterDisplay="menu"
                 :loading="props.loading"
                 :globalFilterFields="[
@@ -120,8 +120,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     'role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
-                :paginatorTemplate="PAGINATOR_TEMPLATE"
-                :currentPageReportTemplate="CURRENT_PAGE_REPORT_TEMPLATE"
+                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
             >
                 <template #empty> No user found. </template>

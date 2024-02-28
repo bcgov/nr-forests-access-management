@@ -5,9 +5,9 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 
 import {
-    CURRENT_PAGE_REPORT_TEMPLATE,
-    PAGINATOR_TEMPLATE,
-    ROWS_PER_PAGE,
+    TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
+    TABLE_PAGINATOR_TEMPLATE,
+    TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
@@ -74,7 +74,7 @@ const delegatedAdminSearchChange = (newvalue: string) => {
                 :value="props.delegatedAdmins"
                 paginator
                 :rows="50"
-                :rowsPerPageOptions="ROWS_PER_PAGE"
+                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
                 filterDisplay="menu"
                 :loading="props.loading"
                 :globalFilterFields="[
@@ -84,8 +84,8 @@ const delegatedAdminSearchChange = (newvalue: string) => {
                     'role.parent_role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
-                :paginatorTemplate="PAGINATOR_TEMPLATE"
-                :currentPageReportTemplate="CURRENT_PAGE_REPORT_TEMPLATE"
+                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
             >
                 <template #empty> No user found. </template>
