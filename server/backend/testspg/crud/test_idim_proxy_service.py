@@ -1,10 +1,10 @@
-
 import copy
 import logging
+import os
 
 import pytest
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.schemas import IdimProxySearchParamIdir, Requester
+from api.app.schemas import IdimProxySearchParam, Requester
 from requests import HTTPError
 
 LOGGER = logging.getLogger(__name__)
@@ -14,16 +14,24 @@ class TestIdimProxyServiceClass(object):
     """
     Testing IdimProxyService class with real remote API calls (TEST environment).
     """
-    search_params = IdimProxySearchParamIdir(**{"userId": "ianliu"}) # Valid test IDIR user.
+
+    TEST_BUSINESS_BCEID_USERNAME = "LOAD-2-TEST"
+    search_params = IdimProxySearchParam(
+        **{"userId": "ianliu"}
+    )  # Valid test IDIR user.
+    search_params_business_bceid = IdimProxySearchParam(
+        **{"userId": TEST_BUSINESS_BCEID_USERNAME}
+    )  # Valid test Business Bceid user.
 
     def setup_class(self):
         # local valid mock requester
         self.requester = Requester(
-            ** {
+            **{
                 "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
                 "user_name": "IANLIU",
-                "user_type": "I",
-                "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"]
+                "user_type_code": "I",
+                "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"],
+                "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
             }
         )
 
@@ -61,10 +69,10 @@ class TestIdimProxyServiceClass(object):
         search_params.userId = valid_idir_user
         search_result = idim_proxy_api.search_idir(search_params)
 
-        assert search_result['found'] == True
-        assert search_result['userId'] == valid_idir_user
-        assert search_result['firstName'] is not None
-        assert search_result['lastName'] is not None
+        assert search_result["found"] == True
+        assert search_result["userId"] == valid_idir_user
+        assert search_result["firstName"] is not None
+        assert search_result["lastName"] is not None
 
     def test_idir_search_user_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
@@ -73,4 +81,32 @@ class TestIdimProxyServiceClass(object):
         search_params.userId = not_exists_idir_user
         search_result = idim_proxy_api.search_idir(search_params)
 
-        assert search_result['found'] == False
+        assert search_result["found"] == False
+
+    @pytest.mark.skip(
+        reason="need idir user guid to run this test, switch to use bceid search bceid later"
+    )
+    def test_bceid_search_not_exist_no_user_found(self):
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
+        search_params = copy.deepcopy(self.search_params_business_bceid)
+        not_exists_idir_user = "USERNOTEXISTS"
+        search_params.userId = not_exists_idir_user
+        search_result = idim_proxy_api.search_business_bceid(search_params)
+
+        assert search_result["found"] == False
+
+    @pytest.mark.skip(
+        reason="need idir user guid to run this test, switch to use bceid search bceid later"
+    )
+    def test_valid_bceid_search_pass(self):
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
+        search_params = copy.deepcopy(self.search_params_business_bceid)
+        search_result = idim_proxy_api.search_business_bceid(search_params)
+
+        assert search_result["found"] == True
+        assert search_result["userId"] == self.TEST_BUSINESS_BCEID_USERNAME
+        assert search_result["guid"] is not None
+        assert search_result["businessGuid"] is not None
+        assert search_result["businessLegalName"] is not None
+        assert search_result["firstName"] is not None
+        assert search_result["lastName"] is not None
