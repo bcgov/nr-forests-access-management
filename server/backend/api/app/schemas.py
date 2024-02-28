@@ -286,16 +286,6 @@ class IdimProxyIdirInfo(BaseModel):
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 
-    @staticmethod
-    def from_api_json(json_dict):
-        info = IdimProxyIdirInfo(
-            found=json_dict.get("found"),
-            userId=json_dict.get("userId"),
-            firstName=json_dict.get("firstName"),
-            lastName=json_dict.get("lastName"),
-        )
-        return info
-
 
 class IdimProxyBceidInfo(BaseModel):
     found: bool
@@ -305,19 +295,6 @@ class IdimProxyBceidInfo(BaseModel):
     businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-
-    @staticmethod
-    def from_api_json(json_dict):
-        info = IdimProxyIdirInfo(
-            found=json_dict.get("found"),
-            userId=json_dict.get("userId"),
-            guid=json_dict.get("guid"),
-            businessGuid=json_dict.get("businessGuid"),
-            businessLegalName=json_dict.get("businessLegalName"),
-            firstName=json_dict.get("firstName"),
-            lastName=json_dict.get("lastName"),
-        )
-        return info
 
 
 class GCNotifyGrantAccessEmailParam(BaseModel):

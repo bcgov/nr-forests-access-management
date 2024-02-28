@@ -30,18 +30,16 @@ def idir_search(
     search_result = idim_proxy_api.search_idir(
         IdimProxySearchParam(**{"userId": user_id})
     )
-    idir_info = IdimProxyIdirInfo.from_api_json(search_result)
-    return idir_info
+    return search_result
 
 
 @router.get("/bceid", response_model=IdimProxyBceidInfo)
-def idir_search(
+def bceid_search(
     user_id: str = Query(max_length=20), requester=Depends(get_current_requester)
 ):
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
-    idim_proxy_api = IdimProxyBceidInfo(requester)
-    search_result = idim_proxy_api.search_idir(
+    idim_proxy_api = IdimProxyService(requester)
+    search_result = idim_proxy_api.search_business_bceid(
         IdimProxySearchParam(**{"userId": user_id})
     )
-    bceid_info = IdimProxyBceidInfo.from_api_json(search_result)
-    return bceid_info
+    return search_result
