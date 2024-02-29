@@ -55,7 +55,7 @@ class IdimProxyService:
         """
         Search on Business BCEID user.
         """
-        # query_params to request to idim-proxy, vars(search_params) returns a dict for the search_params
+        # query_params to request to idim-proxy, vars(search_params) returns a dict of the search_params
         query_params = vars(search_params)
         query_params.update({"requesterUserGuid": self.requester.user_guid})
         query_params.update(

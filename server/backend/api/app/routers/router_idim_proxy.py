@@ -5,7 +5,6 @@ from api.app.routers.router_guards import get_current_requester, internal_only_a
 from api.app.schemas import IdimProxyIdirInfo, IdimProxySearchParam, IdimProxyBceidInfo
 from fastapi import APIRouter, Depends, Query
 
-ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 
 LOGGER = logging.getLogger(__name__)
 
