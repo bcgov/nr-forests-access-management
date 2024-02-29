@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref, computed } from 'vue';
 import router from '@/router';
 import { Form as VeeForm } from 'vee-validate';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { isLoading } from '@/store/LoadingState';
+import LoginUserState from '@/store/FamLoginUserState';
+import { selectedApplicationId } from '@/store/ApplicationState';
 import { UserType } from 'fam-app-acsctl-api';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { formValidationSchema } from '@/services/utils';
-
-const props = defineProps({
-    delegatedRoleOptions: {
-        // options fetched from route.
-        type: Array as PropType<FamRoleDto[]>,
-    },
-});
 
 const defaultFormData = {
     domain: UserType.I,
@@ -23,6 +18,10 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
+const delegatedRoleOptions = computed(() => {
+    return LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+});
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
@@ -41,7 +40,7 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 
 /* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamRoleDto | undefined => {
-    return props.delegatedRoleOptions?.find(
+    return delegatedRoleOptions?.value.find(
         (item) => item.id === formData.value.roleId
     );
 };
@@ -89,6 +88,7 @@ const areVerificationsPassed = () => {
 
 const handleSubmit = async () => {
     // This will be implemented in task #1160
+    console.log('Data to send to backend', formData.value);
 
     router.push('/dashboard');
 };

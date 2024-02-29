@@ -6,7 +6,3 @@ export const TABLE_PAGINATOR_TEMPLATE =
 export const TABLE_CURRENT_PAGE_REPORT_TEMPLATE =
     '{first} - {last} of {totalRecords} items';
 export const TABLE_ROWS_PER_PAGE = [5, 10, 15, 20, 50, 100];
-export const FAM_ADMIN_ROLE = 'FAM_ADMIN';
-
-export const APP_ADMIN_ROLE = 'APP_ADMIN';
-export const DELEGATED_ADMIN_ROLE = 'DELEGATED_ADMIN';

@@ -12,7 +12,6 @@ import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
-import { APP_ADMIN_ROLE, FAM_ADMIN_ROLE } from '@/store/Constants';
 import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
@@ -109,18 +108,13 @@ const routes = [
         meta: {
             requiresAuth: true,
             requiresAppSelected: true,
-            requiredPrivileges: [APP_ADMIN_ROLE],
+            requiredPrivileges: [AdminRoleAuthGroup.AppAdmin],
             title: routeItems.grantDelegatedAdmin.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
         },
         component: GrantDelegatedAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
-        props: (route: any) => {
-            return {
-                delegatedRoleOptions: route.meta.delegatedRoleOptions,
-            };
-        },
     },
     {
         path: '/authCallback',

@@ -4,8 +4,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { readonly, ref } from 'vue';
-
-import { DELEGATED_ADMIN_ROLE, FAM_APPLICATION_NAME } from '@/store/Constants';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
@@ -129,6 +128,18 @@ const hasAccessRole = (role: string): boolean => {
     return false;
 };
 
+const hasAccess = (role: string): boolean => {
+    const hasAccess = state.value.famLoginUser?.accesses?.find(
+        (access) => access.auth_key === role
+    );
+
+    if (hasAccess) {
+        return true;
+    }
+
+    return false;
+};
+
 // --- setters
 
 const storeFamUser = (famLoginUser: FamLoginUser | null | undefined) => {
@@ -167,11 +178,11 @@ const cacheUserAccess = async () => {
 };
 
 const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
-    const delegatedCachedData = getUserAccess()!.find(key => key.auth_key === DELEGATED_ADMIN_ROLE)?.grants.find((item) => {
+    const grantAppData = getUserAccess()!.find(key => key.auth_key === AdminRoleAuthGroup.AppAdmin)?.grants.find((item) => {
         return item.application.id === application_id
     })
 
-    return delegatedCachedData?.roles!;
+    return grantAppData?.roles!;
 };
 
 // --- export
@@ -184,6 +195,7 @@ export default {
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
     hasAccessRole,
+    hasAccess,
     storeFamUser,
     removeFamUser,
     cacheUserAccess,

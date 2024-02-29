@@ -14,7 +14,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { APP_ADMIN_ROLE, FAM_APPLICATION_ID } from '@/store/Constants';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -106,13 +106,12 @@ const beforeEnterGrantDelegationAdminRoute = async (
         return { path: routeItems.dashboard.path };
     }
 
-    const delegatedAppRoleList = LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+    if (!LoginUserState.isAdminOfSelectedApplication()) {
+        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        return { path: routeItems.dashboard.path };
+    }
 
     populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
-    // Passing data to router.meta (so it is available for assigning to 'props' later)
-    Object.assign(to.meta, {
-        delegatedRoleOptions: delegatedAppRoleList,
-    });
     return true;
 }
 
@@ -159,8 +158,8 @@ export const beforeEachRouteHandler = async (
 
     // Access privilege guard. This logic might need to be adjusted soon.
     if (to.meta.requiredPrivileges) {
-        for (let role of to.meta.requiredPrivileges as Array<string>) {
-            if (!LoginUserState.hasAccessRole(role)) {
+        for (let role of (to.meta.requiredPrivileges as Array<string>)) {
+            if (!LoginUserState.hasAccess(role)) {
                 emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };
             }
