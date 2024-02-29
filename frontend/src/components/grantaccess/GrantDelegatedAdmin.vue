@@ -6,7 +6,10 @@ import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { isLoading } from '@/store/LoadingState';
 import LoginUserState from '@/store/FamLoginUserState';
-import { selectedApplicationId } from '@/store/ApplicationState';
+import {
+    selectedApplicationId,
+    selectedApplicationDisplayText,
+} from '@/store/ApplicationState';
 import { UserType } from 'fam-app-acsctl-api';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { formValidationSchema } from '@/services/utils';
@@ -97,7 +100,7 @@ const handleSubmit = async () => {
 <template>
     <PageTitle
         title="Add a delegated admin"
-        subtitle="All fields are mandatory"
+        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
 
     <VeeForm
