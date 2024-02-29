@@ -113,10 +113,17 @@ const delegatedAdminSearchChange = (newvalue: string) => {
                 >
                 </Column>
                 <Column
-                    field="role.parent_role.role_name"
                     header="Role Enabled To Assign"
                     sortable
-                ></Column>
+                >
+                    <template #body="{ data }">
+                        {{
+                            data.role.parent_role
+                                ? data.role.parent_role.role_name
+                                : data.role.role_name
+                        }}
+                    </template>
+                </Column>
                 <Column header="Action">
                     <template #body="{ data }">
                         <!-- Hidden until functionality is available
