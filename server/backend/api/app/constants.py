@@ -18,11 +18,6 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
-class IDIMProxyAccountType(str, Enum):
-    IDIR = "Internal"
-    BUSINESS_BCEID = "Business"
-
-
 # Internal defined enum client status constants for FAM 'router_forest_client'.
 # ACTIVE/INACTIVE are mapped from Forest Client API spce.
 # See schemas.py/FamForestClientStatus class.
