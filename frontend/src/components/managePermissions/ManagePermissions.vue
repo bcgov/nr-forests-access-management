@@ -132,7 +132,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
 <template>
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
-
+    {{ LoginUserState.state.value.famLoginUser?.accesses }}
     <div class="page-body">
         <div class="application-group">
             <label>You are modifying access in this application:</label>
