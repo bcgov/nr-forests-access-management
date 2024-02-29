@@ -1,10 +1,17 @@
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
+import {
+    CURRENT_SELECTED_APPLICATION_KEY,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto } from 'fam-admin-mgmt-api/model';
-import { readonly, ref } from "vue";
+import {
+    AdminRoleAuthGroup,
+    type FamApplicationDto,
+    type FamAuthGrantDto,
+} from 'fam-admin-mgmt-api/model';
+import { readonly, ref } from 'vue';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -17,7 +24,7 @@ export interface FamLoginUser {
     roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
-};
+}
 
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
@@ -42,9 +49,7 @@ const getUserAccess = () => {
 const getUserAdminRoleGroups = () => {
     const accesses = getUserAccess();
     if (accesses && accesses.length > 0) {
-        return accesses.map(
-            (access) => access.auth_key
-        )
+        return accesses.map((access) => access.auth_key);
     }
 };
 
@@ -56,9 +61,8 @@ const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
     if (accesses && accesses.length > 0) {
         const access = accesses.filter(
             (access) => access.auth_key == AdminRoleAuthGroup.FamAdmin
-        )[0]
-        return access
-            .grants
+        )[0];
+        return access.grants
             .map((grant) => grant.application)
             .sort((first, second) => first.id - second.id);
     }
@@ -87,8 +91,8 @@ const getApplicationsUserAdministers = () => {
                 )[0].application;
             } else {
                 accessGrants.forEach((grant) => {
-                    const app = grant.application
-                    let isNewItem = true
+                    const app = grant.application;
+                    let isNewItem = true;
                     for (let item of applicationList) {
                         if (item.id == app.id) {
                             isNewItem = false;
@@ -104,6 +108,21 @@ const getApplicationsUserAdministers = () => {
     }
 
     return applicationList;
+};
+
+const isAdminOfSelectedApplication = () => {
+    const userAdminAccess = getUserAccess()?.find(
+        (access) => access.auth_key == AdminRoleAuthGroup.AppAdmin
+    );
+
+    if (userAdminAccess) {
+        const appsUserIsAdmin = userAdminAccess.grants.filter(
+            (grant) => grant.application.id == selectedApplicationId.value
+        );
+
+        if (appsUserIsAdmin.length > 0) return true;
+    }
+    return false;
 };
 
 const hasAccessRole = (role: string): boolean => {
@@ -162,5 +181,6 @@ export default {
     hasAccessRole,
     storeFamUser,
     removeFamUser,
-    cacheUserAccess
+    cacheUserAccess,
+    isAdminOfSelectedApplication,
 };

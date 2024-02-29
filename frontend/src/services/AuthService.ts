@@ -107,5 +107,5 @@ export default {
     isLoggedIn,
     handlePostLogin,
     logout,
-    refreshToken
+    refreshToken,
 };

@@ -2,9 +2,10 @@ import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
 import {
-    fetchApplicationAdmins,
     fetchApplicationRoles,
-    fetchUserRoleAssignments
+    fetchApplicationAdmins,
+    fetchUserRoleAssignments,
+    fetchDelegatedAdmins,
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -13,10 +14,11 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import type { RouteLocationNormalized } from 'vue-router';
+
 /**
  * This file should contain only the Vue router handler and necessary
  * helpers for router's life-cycle methods (beforeEach, beforeEnter etc...)
@@ -30,7 +32,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 
 const ACCESS_RESTRICTED_ERROR = new FamRouteError(
     RouteErrorName.ACCESS_RESTRICTED,
-    "Access restricted"
+    'Access restricted'
 );
 
 // --- beforeEnter Route Handler
@@ -38,16 +40,22 @@ const ACCESS_RESTRICTED_ERROR = new FamRouteError(
 const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let applicationAdmins;
     let userRolesFetchResult;
+    let delegatedAdmins;
+
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        applicationAdmins = await asyncWrap(fetchApplicationAdmins())
+        applicationAdmins = await asyncWrap(fetchApplicationAdmins());
     } else {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplicationId.value)
         );
+        delegatedAdmins = await asyncWrap(
+            fetchDelegatedAdmins(selectedApplicationId.value)
+        );
     }
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
-        applicationAdmins: applicationAdmins?.data
+        applicationAdmins: applicationAdmins?.data,
+        delegatedAdmins: delegatedAdmins?.data,
     });
     return true;
 };
@@ -56,7 +64,6 @@ const beforeEnterGrantUserPermissionRoute = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
-
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
@@ -82,19 +89,18 @@ const beforeEnterGrantApplicationAdminRoute = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
-
     if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
     populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
     return true;
-}
+};
 
 export const beforeEnterHandlers = {
     [routeItems.dashboard.name]: beforeEnterDashboardRoute,
     [routeItems.grantUserPermission.name]: beforeEnterGrantUserPermissionRoute,
-    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute
+    [routeItems.grantAppAdmin.name]: beforeEnterGrantApplicationAdminRoute,
 };
 
 // --- beforeEach Route Handler
@@ -133,7 +139,7 @@ export const beforeEachRouteHandler = async (
 
     // Access privilege guard. This logic might need to be adjusted soon.
     if (to.meta.requiredPrivileges) {
-        for (let role of (to.meta.requiredPrivileges as Array<string>)) {
+        for (let role of to.meta.requiredPrivileges as Array<string>) {
             if (!LoginUserState.hasAccessRole(role)) {
                 emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };

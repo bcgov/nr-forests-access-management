@@ -7,30 +7,38 @@ import SideNav, {
 } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
-import { isApplicationSelected, selectedApplicationId } from '@/store/ApplicationState';
-
+import {
+    isApplicationSelected,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
+import LoginUserState from '@/store/FamLoginUserState';
 
 const navigationData = ref<[ISideNavData]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
-const setSideNavAddPermissionOption = () => {
-    if(selectedApplicationId.value === FAM_APPLICATION_ID) {
+const setSideNavOptions = () => {
+    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
+        disableSideNavOption('Add delegated admin', true);
     } else {
         disableSideNavOption('Add application admin', true);
         disableSideNavOption('Add user permission', false);
+
+        if (LoginUserState.isAdminOfSelectedApplication()) {
+            disableSideNavOption('Add delegated admin', false);
+        }
     }
 };
 
 onMounted(() => {
-    if(isApplicationSelected.value) {
-        setSideNavAddPermissionOption()
+    if (isApplicationSelected.value) {
+        setSideNavOptions();
     }
 });
 
-watch(selectedApplicationId , () => {
-    setSideNavAddPermissionOption();
+watch(selectedApplicationId, () => {
+    setSideNavOptions();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
@@ -44,7 +52,10 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
 };
 </script>
 <template>
-    <Header title="FAM" subtitle="Forests Access Management" />
+    <Header
+        title="FAM"
+        subtitle="Forests Access Management"
+    />
 
     <SideNav :data="navigationData" />
     <div class="main">

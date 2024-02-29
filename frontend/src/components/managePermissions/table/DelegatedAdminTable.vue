@@ -1,57 +1,42 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import type { PropType } from 'vue';
-
+import { ref, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
-import ConfirmDialog from 'primevue/confirmdialog';
 
-import { IconSize } from '@/enum/IconEnum';
-import { routeItems } from '@/router/routeItem';
-import Button from '@/components/common/Button.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-
-type emit = (
-    e: 'deleteUserRoleAssignment',
-    item: FamApplicationUserRoleAssignmentGet
-) => void;
-
-const confirm = useConfirm();
+import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
 
 const props = defineProps({
     loading: {
         type: Boolean,
         default: false,
     },
-    userRoleAssignments: {
+    delegatedAdmins: {
         type: [Array] as PropType<
-            FamApplicationUserRoleAssignmentGet[] | undefined
+            FamAccessControlPrivilegeGetResponse[] | undefined
         >,
         required: true,
     },
 });
 
-const userRoleAssignmentsFilters = ref({
+const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'role.parent_role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
     'user.user_type.description': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
     'role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'role.parent_role.role_name': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -61,53 +46,32 @@ const userRoleAssignmentsFilters = ref({
     },
 });
 
-const emit = defineEmits<emit>();
-
-const confirmDeleteData = reactive({
-    userName: '',
-    role: '',
-});
-
-const userSearchChange = (newValue: string) => {
-    userRoleAssignmentsFilters.value.global.value = newValue;
+const delegatedAdminSearchChange = (newvalue: string) => {
+    delegatedAdminFilters.value.global.value = newvalue;
 };
-
-function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
-    confirmDeleteData.role = assignment.role.role_name;
-    confirmDeleteData.userName = assignment.user.user_name;
-    confirm.require({
-        group: 'deleteAssignment',
-        header: 'Remove Access',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
-        accept: () => {
-            emit('deleteUserRoleAssignment', assignment);
-        },
-    });
-}
 </script>
 
 <template>
-    <ConfirmDialog group="deleteAssignment">
+    <!-- Hidden until functionality is available
+    <ConfirmDialog group="deleteAdmin">
         <template #message>
             <ConfirmDialogtext
-                :role="confirmDeleteData.role"
-                :userName="confirmDeleteData.userName"
+                :userName=""
+                :role=""
             />
         </template>
-    </ConfirmDialog>
+    </ConfirmDialog> -->
     <div class="data-table-container">
         <div class="custom-data-table">
             <DataTableHeader
-                btnLabel="Add user permission"
-                :btnRoute="routeItems.grantUserPermission.path"
-                :filter="userRoleAssignmentsFilters['global'].value"
-                @change="userSearchChange"
+                btnLabel="Create delegated admin"
+                :btnRoute="'#'"
+                :filter="delegatedAdminFilters['global'].value"
+                @change="delegatedAdminSearchChange"
             />
             <DataTable
-                v-model:filters="userRoleAssignmentsFilters"
-                :value="props.userRoleAssignments"
+                v-model:filters="delegatedAdminFilters"
+                :value="props.delegatedAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -115,9 +79,9 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :loading="props.loading"
                 :globalFilterFields="[
                     'user.user_name',
-                    'role.parent_role.role_name',
                     'user.user_type.description',
-                    'role.role_name',
+                    'role.role_name.role_name',
+                    'role.parent_role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
@@ -128,8 +92,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column
                     header="User Name"
-                    sortable
                     field="user.user_name"
+                    sortable
                 >
                     <template #body="{ data }">
                         <span>
@@ -142,31 +106,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     header="Domain"
                     sortable
                 ></Column>
-                <!-- Hidden until information is available
-                    <Column
-                        field="firstName"
-                        header="First Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="lastName"
-                        header="Last Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="email"
-                        header="Email"
-                        sortable
-                    ></Column>
-                     -->
                 <Column
                     field="role.client_number.forest_client_number"
                     header="Client ID"
                     sortable
-                ></Column>
+                >
+                </Column>
                 <Column
-                    field="role.role_name"
-                    header="Role"
+                    header="Role Enabled To Assign"
                     sortable
                 >
                     <template #body="{ data }">
@@ -175,8 +122,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                                 ? data.role.parent_role.role_name
                                 : data.role.role_name
                         }}
-                    </template></Column
-                >
+                    </template>
+                </Column>
                 <Column header="Action">
                     <template #body="{ data }">
                         <!-- Hidden until functionality is available
@@ -185,15 +132,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                             >
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
-                        <button
-                            class="btn btn-icon"
-                            @click="deleteAssignment(data)"
-                        >
-                            <Icon
-                                icon="trash-can"
-                                :size="IconSize.small"
-                            />
-                        </button>
                     </template>
                 </Column>
             </DataTable>
