@@ -121,23 +121,10 @@ const isAdminOfSelectedApplication = () => {
     return false;
 };
 
-const hasAccessRole = (role: string): boolean => {
-    if (state.value.famLoginUser?.roles?.includes(role)) {
-        return true;
-    }
-    return false;
-};
-
 const hasAccess = (role: string): boolean => {
-    const hasAccess = state.value.famLoginUser?.accesses?.find(
+    return !!getUserAccess()?.find(
         (access) => access.auth_key === role
     );
-
-    if (hasAccess) {
-        return true;
-    }
-
-    return false;
 };
 
 // --- setters
