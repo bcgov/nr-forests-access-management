@@ -181,7 +181,6 @@ export default {
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
-    hasAccessRole,
     hasAccess,
     storeFamUser,
     removeFamUser,
