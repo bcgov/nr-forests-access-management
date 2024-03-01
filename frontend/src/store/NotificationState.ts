@@ -50,18 +50,18 @@ export interface CommonObjectType {
 export const composeAndPushGrantPermissionNotification = (
     type: GrantPermissionType,
     userId: string,
-    role: string = '',
     successList: string[],
     errorList: string[],
-    errorCode: string
+    errorCode: string,
+    role: string = ''
 ) => {
     if (successList.length > 0) {
         setGrantPermissionNotificationMsg(
             type,
             Severity.Success,
             userId,
-            role,
-            successList
+            successList,
+            role
         );
     }
 
@@ -70,8 +70,8 @@ export const composeAndPushGrantPermissionNotification = (
             type,
             Severity.Error,
             userId,
-            role,
             errorList,
+            role,
             errorCode
         );
     }
@@ -81,8 +81,8 @@ export const setGrantPermissionNotificationMsg = (
     type: GrantPermissionType,
     severity: Severity,
     userId: string,
-    role: string = '',
     forestClientNumberList: string[],
+    role: string = '',
     errorCode: string = ErrorCode.Default
 ) => {
     const msgByType: CommonObjectType = formataAndGetMsgByGrantType(

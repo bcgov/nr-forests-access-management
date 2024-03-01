@@ -119,7 +119,7 @@ const handleSubmit = async () => {
             await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
                 data
             );
-            successList.push(forestClientNumber || '');
+            successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
                 errorCode = ErrorCode.Conflict;
@@ -128,17 +128,17 @@ const handleSubmit = async () => {
             ) {
                 errorCode = ErrorCode.SelfGrantProhibited;
             }
-            errorList.push(forestClientNumber || '');
+            errorList.push(forestClientNumber ?? '');
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.Regular,
         username,
-        role,
         successList,
         errorList,
-        errorCode
+        errorCode,
+        role
     );
 
     router.push('/dashboard');

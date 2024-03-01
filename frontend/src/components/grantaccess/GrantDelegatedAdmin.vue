@@ -116,10 +116,10 @@ const confirmSubmit = async () => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
-                successList.push(forestClientNumber || '');
+                successList.push(forestClientNumber ?? '');
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
-                errorList.push(forestClientNumber || '');
+                errorList.push(forestClientNumber ?? '');
             }
         });
     } catch (error: any) {
@@ -137,10 +137,10 @@ const confirmSubmit = async () => {
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.DelegatedAdmin,
         username,
-        role,
         successList,
         errorList,
-        errorCode
+        errorCode,
+        role,
     );
     router.push('/dashboard');
 };
