@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, shallowRef, type PropType, computed } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -7,6 +7,7 @@ import ManagePermissionsTitle from '@/components/managePermissions/ManagePermiss
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
 import LoginUserState from '@/store/FamLoginUserState';
+import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
 import {
     isApplicationSelected,
     selectedApplication,
@@ -20,12 +21,16 @@ import {
 } from '@/store/NotificationState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import type {
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
+} from 'fam-admin-mgmt-api/model';
 import {
     deletAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
+    fetchDelegatedAdmins,
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -39,6 +44,10 @@ const props = defineProps({
         type: Array as PropType<FamAppAdminGetResponse[]>,
         default: [],
     },
+    delegatedAdmins: {
+        type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
+        default: [],
+    },
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
@@ -48,6 +57,12 @@ const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
 );
+
+const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
+    props.delegatedAdmins
+);
+
+const resetActiveTab = ref(0);
 
 const applicationsUserAdministers = computed(() => {
     return LoginUserState.getApplicationsUserAdministers();
@@ -59,10 +74,17 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+
+    // make the first tab active
+    resetActiveTab.value = 0;
     if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
         userRoleAssignments.value = await fetchUserRoleAssignments(
+            selectedApplicationId.value
+        );
+
+        delegatedAdmins.value = await fetchDelegatedAdmins(
             selectedApplicationId.value
         );
     }
@@ -110,7 +132,6 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 
 <template>
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
-
     <div class="page-body">
         <div class="application-group">
             <label>You are modifying access in this application:</label>
@@ -129,6 +150,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
             <TablePlaceholder v-if="!isApplicationSelected" />
             <TabView
                 v-else
+                v-model:active-index="resetActiveTab"
                 :pt="{
                     root: {
                         style: 'margin-top: 1.5rem',
@@ -143,7 +165,10 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                     v-if="selectedApplicationId === FAM_APPLICATION_ID"
                 >
                     <template #header>
-                        <Icon icon="enterprise" :size="IconSize.small" />
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
                     </template>
                     <ApplicationAdminTable
                         :loading="isLoading()"
@@ -151,15 +176,41 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
-                <TabPanel header="Users" v-else>
+                <TabPanel
+                    header="Users"
+                    v-else
+                >
                     <template #header>
-                        <Icon icon="user" :size="IconSize.small" />
+                        <Icon
+                            icon="user"
+                            :size="IconSize.small"
+                        />
                     </template>
 
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
+                </TabPanel>
+
+                <TabPanel
+                    v-if="
+                        LoginUserState.isAdminOfSelectedApplication() &&
+                        selectedApplicationId !== FAM_APPLICATION_ID
+                    "
+                    header="Delegated admins"
+                >
+                    <template #header>
+                        <Icon
+                            icon="enterprise"
+                            :size="IconSize.small"
+                        />
+                    </template>
+
+                    <DelegatedAdminTable
+                        :loading="isLoading()"
+                        :delegatedAdmins="delegatedAdmins || []"
                     />
                 </TabPanel>
             </TabView>

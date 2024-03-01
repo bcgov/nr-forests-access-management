@@ -8,7 +8,7 @@ import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 const props = defineProps({
     roleId: { type: Number, default: 0 },
     roleOptions: {
-        type: [Array<FamApplicationRole[]>, Array<FamRoleDto[]>],
+        type: [Array<FamApplicationRole>, Array<FamRoleDto>],
         default: [],
     },
     label: { type: String, default: 'Assign a role to the user' },
@@ -25,6 +25,15 @@ const computedRoleId = computed({
         emit('change', newRoleId);
     },
 });
+
+// TODO: This method isFamApplicationRoleType is not going to be needed anymore
+// when completing task #1147 and the roleOptions is accepting only FamRoleDto as type.
+// Please remember to remove both ternary checks for 'optionLabel' and 'optionValue'
+const isFamApplicationRoleType = (): boolean => {
+    return (
+        (props.roleOptions.at(0) as FamApplicationRole).role_name !== undefined
+    );
+};
 </script>
 
 <template>
@@ -38,8 +47,8 @@ const computedRoleId = computed({
         >
             <Dropdown
                 :options="roleOptions"
-                optionLabel="role_name"
-                optionValue="role_id"
+                :optionLabel="isFamApplicationRoleType() ? 'role_name' : 'name'"
+                :optionValue="isFamApplicationRoleType() ? 'role_id' : 'id'"
                 :modelValue="field.value"
                 placeholder="Choose an option"
                 class="w-100 custom-height"

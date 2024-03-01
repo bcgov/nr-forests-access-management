@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import router from '@/router';
+import { ref, computed } from 'vue';
 import { Form as VeeForm } from 'vee-validate';
-import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from 'primevue/useconfirm';
+import ConfirmDialog from 'primevue/confirmdialog';
+import router from '@/router';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { isLoading } from '@/store/LoadingState';
+import LoginUserState from '@/store/FamLoginUserState';
 import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import { UserType } from 'fam-app-acsctl-api';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import type { FamAccessControlPrivilegeCreateRequest } from 'fam-admin-mgmt-api/model/fam-access-control-privilege-create-request';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import {
+    selectedApplicationId,
+    selectedApplicationDisplayText,
+} from '@/store/ApplicationState';
 import { formValidationSchema } from '@/services/utils';
-
-const props = defineProps({
-    delegatedRoleOptions: {
-        // options fetched from route.
-        type: Array as PropType<FamRoleDto[]>,
-    },
-});
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { UserType } from 'fam-app-acsctl-api';
+import type { FamRoleDto, FamAccessControlPrivilegeCreateRequest } from 'fam-admin-mgmt-api/model';
 
 const confirm = useConfirm();
 
@@ -31,6 +28,10 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
+const delegatedRoleOptions = computed(() => {
+    return LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+});
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
@@ -49,7 +50,7 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 
 /* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamRoleDto | undefined => {
-    return props.delegatedRoleOptions?.find(
+    return delegatedRoleOptions?.value.find(
         (item) => item.id === formData.value.roleId
     );
 };
@@ -180,7 +181,7 @@ function handleSubmit() {
 
     <PageTitle
         title="Add a delegated admin"
-        subtitle="All fields are mandatory"
+        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
 
     <VeeForm
@@ -266,6 +267,7 @@ function handleSubmit() {
 <style lang="scss">
 @use '@bcgov-nr/nr-theme/design-tokens/light-buttons.scss' as lightButton;
 @use 'sass:map';
+
 .dialog-accept-button {
     border: 0.0625rem solid
         map.get(lightButton.$light-button-token-overrides, 'button-primary') !important;

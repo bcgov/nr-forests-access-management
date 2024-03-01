@@ -1,10 +1,13 @@
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
-import { DELEGATED_ADMIN_ROLE, FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
-import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { readonly, ref } from "vue";
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import { setRouteToastError } from '@/store/ToastState';
+import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
+import {
+    CURRENT_SELECTED_APPLICATION_KEY,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
+import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -17,7 +20,7 @@ export interface FamLoginUser {
     roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
-};
+}
 
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
@@ -42,9 +45,7 @@ const getUserAccess = () => {
 const getUserAdminRoleGroups = () => {
     const accesses = getUserAccess();
     if (accesses && accesses.length > 0) {
-        return accesses.map(
-            (access) => access.auth_key
-        )
+        return accesses.map((access) => access.auth_key);
     }
 };
 
@@ -56,9 +57,8 @@ const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
     if (accesses && accesses.length > 0) {
         const access = accesses.filter(
             (access) => access.auth_key == AdminRoleAuthGroup.FamAdmin
-        )[0]
-        return access
-            .grants
+        )[0];
+        return access.grants
             .map((grant) => grant.application)
             .sort((first, second) => first.id - second.id);
     }
@@ -87,8 +87,8 @@ const getApplicationsUserAdministers = () => {
                 )[0].application;
             } else {
                 accessGrants.forEach((grant) => {
-                    const app = grant.application
-                    let isNewItem = true
+                    const app = grant.application;
+                    let isNewItem = true;
                     for (let item of applicationList) {
                         if (item.id == app.id) {
                             isNewItem = false;
@@ -106,11 +106,25 @@ const getApplicationsUserAdministers = () => {
     return applicationList;
 };
 
-const hasAccessRole = (role: string): boolean => {
-    if (state.value.famLoginUser?.roles?.includes(role)) {
-        return true;
+const isAdminOfSelectedApplication = () => {
+    const userAdminAccess = getUserAccess()?.find(
+        (access) => access.auth_key == AdminRoleAuthGroup.AppAdmin
+    );
+
+    if (userAdminAccess) {
+        const appsUserIsAdmin = userAdminAccess.grants.filter(
+            (grant) => grant.application.id == selectedApplicationId.value
+        );
+
+        if (appsUserIsAdmin.length > 0) return true;
     }
     return false;
+};
+
+const hasAccess = (role: string): boolean => {
+    return !!getUserAccess()?.find(
+        (access) => access.auth_key === role
+    );
 };
 
 // --- setters
@@ -151,11 +165,11 @@ const cacheUserAccess = async () => {
 };
 
 const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
-    const delegatedCachedData = getUserAccess()!.find(key => key.auth_key === DELEGATED_ADMIN_ROLE)?.grants.find((item) => {
+    const grantAppData = getUserAccess()!.find(key => key.auth_key === AdminRoleAuthGroup.AppAdmin)?.grants.find((item) => {
         return item.application.id === application_id
     })
 
-    return delegatedCachedData?.roles!;
+    return grantAppData?.roles!;
 };
 
 // --- export
@@ -167,9 +181,10 @@ export default {
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
     getApplicationsUserAdministers,
-    hasAccessRole,
+    hasAccess,
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
+    isAdminOfSelectedApplication,
     getCachedAppRoles
 };
