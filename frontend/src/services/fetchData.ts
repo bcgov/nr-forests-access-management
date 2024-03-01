@@ -8,6 +8,7 @@ import {
     AdminMgmtApiService,
 } from '@/services/ApiServiceFactory';
 import FamLoginUserState from '@/store/FamLoginUserState';
+import { selectedApplicationId } from '@/store/ApplicationState';
 
 // --- Fetching data (from backend)
 
@@ -125,3 +126,20 @@ export const fetchDelegatedAdmins = async (
     return delegatedAdmins;
 
 };
+
+/**
+ * This will call api to delete applicationAdminId record from backend and fetch again
+ * to refresh the state.
+ * @param applicationAdminId id to delete fam_user_role_assignment record.
+ */
+export const deleteAndRefreshDelegatedAdmin = async (
+    accessPrivilegId: number
+// ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
+    ) => {
+    const t = await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
+        accessPrivilegId
+    );
+    // When deletion is successful, refresh (fetch) for frontend state.
+    return fetchDelegatedAdmins(selectedApplicationId.value);
+};
+

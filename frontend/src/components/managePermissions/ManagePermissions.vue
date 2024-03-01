@@ -31,6 +31,7 @@ import {
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
     fetchDelegatedAdmins,
+    deleteAndRefreshDelegatedAdmin,
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -128,6 +129,26 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
         );
     }
 };
+
+const deleteDelegatedAdminAssignment = async (
+    delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
+) => {
+    try {
+        delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
+            delegatedAdminAssignment.access_control_privilege_id
+        );
+
+        setNotificationMsg(
+            Severity.Success,
+            `You removed ${delegatedAdminAssignment.role.role_name} access to ${delegatedAdminAssignment.user.user_name}`
+        );
+    } catch (error: any) {
+        setNotificationMsg(
+            Severity.Error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    }
+};
 </script>
 
 <template>
@@ -211,6 +232,9 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
+                        @deleteDelegatedAdminAssignment="
+                            deleteDelegatedAdminAssignment
+                        "
                     />
                 </TabPanel>
             </TabView>
