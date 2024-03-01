@@ -44,7 +44,7 @@ export const fetchUserRoleAssignments = async (
  * @param userRoleXrefId id to delete fam_user_role_assignment record.
  * @param applicationId id to fetch and refresh fam_user_role_assignment records with the applicationId.
  */
-export const deletAndRefreshUserRoleAssignments = async (
+export const deleteAndRefreshUserRoleAssignments = async (
     userRoleXrefId: number,
     applicationId: number
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {

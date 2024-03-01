@@ -26,7 +26,7 @@ import type {
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
 import {
-    deletAndRefreshUserRoleAssignments,
+    deleteAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
@@ -95,7 +95,7 @@ const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
     try {
-        userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
+        userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
             assignment.role.application_id
         );
