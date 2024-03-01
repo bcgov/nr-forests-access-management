@@ -1,33 +1,18 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import router from '@/router';
 import { Form as VeeForm } from 'vee-validate';
-import { ref, type PropType } from 'vue';
-
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity, ErrorCode } from '@/enum/SeverityEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
-import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import LoginUserState from '@/store/FamLoginUserState';
 import {
-    type FamApplicationRole,
-    UserType,
-    type FamUserRoleAssignmentCreate,
-} from 'fam-app-acsctl-api';
-import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
-import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
-import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-
-const props = defineProps({
-    applicationRoleOptions: {
-        // options fetched from route.
-        type: Array as PropType<FamApplicationRole[]>,
-        default: [],
-    },
-});
+    selectedApplicationId,
+    selectedApplicationDisplayText,
+} from '@/store/ApplicationState';
+import { UserType } from 'fam-app-acsctl-api';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { formValidationSchema } from '@/services/utils';
 
 const defaultFormData = {
     domain: UserType.I,
@@ -36,6 +21,10 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+
+const delegatedRoleOptions = computed(() => {
+    return LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+});
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
@@ -53,14 +42,14 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 };
 
 /* ------------------- Role selection method -------------------------- */
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    return props.applicationRoleOptions?.find(
-        (item) => item.role_id === formData.value.roleId
+const getSelectedRole = (): FamRoleDto | undefined => {
+    return delegatedRoleOptions?.value.find(
+        (item) => item.id === formData.value.roleId
     );
 };
 
 const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.role_type_code == 'A';
+    return getSelectedRole()?.type_code == 'A';
 };
 
 const roleSelectChange = (roleId: number) => {
@@ -101,91 +90,19 @@ const areVerificationsPassed = () => {
 };
 
 const handleSubmit = async () => {
-    const successForestClientIdList: string[] = [];
-
-    // msg override the default error notification message
-    const errorNotification = {
-        code: ErrorCode.Default,
-        errorForestClientIdList: [] as string[],
-    };
-    do {
-        const forestClientNumber = formData.value.verifiedForestClients.pop();
-        const data = toRequestPayload(formData.value, forestClientNumber);
-        await AppActlApiService.userRoleAssignmentApi
-            .createUserRoleAssignment(data)
-            .then(() => {
-                successForestClientIdList.push(forestClientNumber || '');
-            })
-            .catch((error) => {
-                if (error.response?.status === 409) {
-                    errorNotification.code = ErrorCode.Conflict;
-                } else if (
-                    error.response.data.detail.code === 'self_grant_prohibited'
-                ) {
-                    errorNotification.code = ErrorCode.SelfGrantProhibited;
-                }
-                errorNotification.errorForestClientIdList.push(
-                    forestClientNumber || ''
-                );
-            });
-    } while (formData.value.verifiedForestClients.length > 0);
-
-    composeAndPushNotificationMessages(
-        successForestClientIdList,
-        errorNotification
-    );
+    // This will be implemented in task #1160
+    console.log('Data to send to backend', formData.value);
 
     router.push('/dashboard');
-};
-
-function toRequestPayload(formData: any, forestClientNumber: string) {
-    const request = {
-        user_name: formData.userId,
-        user_type_code: formData.domain,
-        role_id: formData.roleId,
-        ...(forestClientNumber
-            ? {
-                  forest_client_number: forestClientNumber.padStart(
-                      FOREST_CLIENT_INPUT_MAX_LENGTH,
-                      '0'
-                  ),
-              }
-            : {}),
-    } as FamUserRoleAssignmentCreate;
-    return request;
-}
-
-const composeAndPushNotificationMessages = (
-    successIdList: string[],
-    errorMsg: { code: string; errorForestClientIdList: string[] }
-) => {
-    const username = formData.value.userId.toUpperCase();
-    if (successIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            successIdList,
-            username,
-            Severity.Success,
-            getSelectedRole()?.role_name
-        );
-    }
-    if (errorMsg.errorForestClientIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            errorMsg.errorForestClientIdList,
-            username,
-            Severity.Error,
-            getSelectedRole()?.role_name,
-            errorMsg.code
-        );
-    }
-    return '';
 };
 </script>
 
 <template>
     <PageTitle
-        title="Add user permission"
-        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
+        title="Add a delegated admin"
+        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
+
     <VeeForm
         ref="form"
         v-slot="{ meta }"
@@ -193,7 +110,7 @@ const composeAndPushNotificationMessages = (
         as="div"
     >
         <div class="page-body">
-            <form id="grantAccessForm" class="form-container">
+            <form id="grantDelegatedForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
                         :domain="formData.domain"
@@ -208,12 +125,13 @@ const composeAndPushNotificationMessages = (
                 </StepContainer>
 
                 <StepContainer
-                    title="Add user roles"
+                    title="Add the role a delegated admin can assign"
                     :divider="isAbstractRoleSelected()"
                 >
                     <RoleSelect
                         :roleId="formData.roleId"
-                        :roleOptions="applicationRoleOptions"
+                        :roleOptions="delegatedRoleOptions"
+                        label="Assign a role the delgated admin can manage"
                         @change="roleSelectChange"
                         @resetVerifiedForestClients="resetVerifiedForestClients"
                     />
@@ -239,7 +157,7 @@ const composeAndPushNotificationMessages = (
                 <div class="button-stack">
                     <Button
                         type="button"
-                        id="grantAccessCancel"
+                        id="grantDelegatedCancel"
                         class="w100"
                         severity="secondary"
                         label="Cancel"
@@ -249,7 +167,7 @@ const composeAndPushNotificationMessages = (
                     >
                     <Button
                         type="button"
-                        id="grantAccessSubmit"
+                        id="grantDelegatedSubmit"
                         class="w100"
                         label="Submit Application"
                         :disabled="

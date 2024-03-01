@@ -4,6 +4,7 @@ import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 
+import { routeItems } from '@/router/routeItem';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -65,7 +66,7 @@ const delegatedAdminSearchChange = (newvalue: string) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Create delegated admin"
-                :btnRoute="'#'"
+                :btnRoute="routeItems.grantDelegatedAdmin.path"
                 :filter="delegatedAdminFilters['global'].value"
                 @change="delegatedAdminSearchChange"
             />
