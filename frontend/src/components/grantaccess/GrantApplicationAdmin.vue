@@ -60,6 +60,7 @@ const handleSubmit = async () => {
     const appEnv = formData.value.application.env
         ? ` ${formData.value.application.env}`
         : '';
+
     try {
         await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
             data
@@ -74,21 +75,28 @@ const handleSubmit = async () => {
         if (error.response?.status === 409) {
             setNotificationMsg(
                 Severity.Error,
-                `User ${formData.value.userId.toUpperCase()} is already a ${
+                `${formData.value.userId.toUpperCase()} is already a ${
                     formData.value.application.name
                 }${appEnv} admin`
             );
         } else if (
-            error.response.data.detail.code === 'self_grant_prohibited'
+            error.response?.data.detail.code === 'self_grant_prohibited'
         ) {
             setNotificationMsg(
                 Severity.Error,
                 ErrorDescription.SelfGrantProhibited
             );
         } else {
+            const errorMsg = error.response?.data.detail.description
+                ? ` ${error.response?.data.detail.description}`
+                : ' ';
             setNotificationMsg(
                 Severity.Error,
-                `${ErrorDescription.Default} ${error.response.data.detail.description}`
+                `${
+                    ErrorDescription.Default
+                }${errorMsg} ${formData.value.userId.toUpperCase()} was not added as ${
+                    formData.value.application.name
+                }${appEnv} admin`
             );
         }
     }

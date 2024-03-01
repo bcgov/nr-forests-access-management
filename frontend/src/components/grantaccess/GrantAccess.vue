@@ -124,7 +124,7 @@ const handleSubmit = async () => {
             if (error.response?.status === 409) {
                 errorCode = ErrorCode.Conflict;
             } else if (
-                error.response.data.detail.code === 'self_grant_prohibited'
+                error.response?.data.detail.code === 'self_grant_prohibited'
             ) {
                 errorCode = ErrorCode.SelfGrantProhibited;
             }
@@ -140,6 +140,7 @@ const handleSubmit = async () => {
         errorList,
         errorCode
     );
+
     router.push('/dashboard');
 };
 

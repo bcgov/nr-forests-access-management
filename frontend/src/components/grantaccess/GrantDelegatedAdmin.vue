@@ -17,7 +17,10 @@ import {
 import { formValidationSchema } from '@/services/utils';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { UserType } from 'fam-app-acsctl-api';
-import type { FamRoleDto, FamAccessControlPrivilegeCreateRequest } from 'fam-admin-mgmt-api/model';
+import type {
+    FamRoleDto,
+    FamAccessControlPrivilegeCreateRequest,
+} from 'fam-admin-mgmt-api/model';
 
 const confirm = useConfirm();
 
@@ -102,7 +105,6 @@ const confirmSubmit = async () => {
     const successList: string[] = [];
     let errorList: string[] = [];
     let errorCode = ErrorCode.Default;
-
     const data = toRequestPayload(formData.value);
 
     try {
@@ -122,10 +124,15 @@ const confirmSubmit = async () => {
         });
     } catch (error: any) {
         // error happens here will fail adding all forest client numbers
-        if (error.response.data.detail.code === 'self_grant_prohibited') {
+        if (error.response?.data.detail.code === 'self_grant_prohibited') {
             errorCode = ErrorCode.SelfGrantProhibited;
         }
-        errorList = formData.value.verifiedForestClients;
+        // if has forest clientn number, set errorList to be the verifiedForestClients list
+        // if not, set to be [''] for concrete role, the composeAndPushGrantPermissionNotification will handle both cases
+        errorList =
+            formData.value.verifiedForestClients.length > 0
+                ? formData.value.verifiedForestClients
+                : [''];
     }
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.DelegatedAdmin,
