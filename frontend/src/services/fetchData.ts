@@ -128,16 +128,16 @@ export const fetchDelegatedAdmins = async (
 };
 
 /**
- * This will call api to delete applicationAdminId record from backend and fetch again
+ * This will call api to delete delegatedAdminPrivilege record from backend and fetch again
  * to refresh the state.
- * @param applicationAdminId id to delete fam_user_role_assignment record.
+ * @param accessPrivilegegId id to delete delegated admin accesss record.
  */
 export const deleteAndRefreshDelegatedAdmin = async (
-    accessPrivilegId: number
+    accessPrivilegegId: number
 // ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     ) => {
     const t = await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
-        accessPrivilegId
+        accessPrivilegegId
     );
     // When deletion is successful, refresh (fetch) for frontend state.
     return fetchDelegatedAdmins(selectedApplicationId.value);
