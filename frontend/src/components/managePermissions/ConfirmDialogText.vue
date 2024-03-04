@@ -15,7 +15,7 @@ const props = defineProps({
 <template>
     <p>
         Are you sure you want to remove
-        <strong>{{ props.role }}</strong> access to
+        <strong>{{ props.role }}</strong> access from
         <strong>{{ props.userName }}</strong> in
         <strong>{{ selectedApplicationDisplayText }}</strong>
     </p>
