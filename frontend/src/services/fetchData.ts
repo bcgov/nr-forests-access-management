@@ -134,8 +134,7 @@ export const fetchDelegatedAdmins = async (
  */
 export const deleteAndRefreshDelegatedAdmin = async (
     accessPrivilegegId: number
-// ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
-    ) => {
+) => {
     await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
         accessPrivilegegId
     );
