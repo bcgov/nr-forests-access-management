@@ -136,7 +136,7 @@ export const deleteAndRefreshDelegatedAdmin = async (
     accessPrivilegegId: number
 // ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     ) => {
-    const t = await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
+    await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
         accessPrivilegegId
     );
     // When deletion is successful, refresh (fetch) for frontend state.
