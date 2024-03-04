@@ -31,11 +31,10 @@ DESCRIPTION_INACTIVE = "Inactive"
 
 # Constans for FAM to coneniently refer to Forest Client API return json object
 # keys/values.
-FOREST_CLIENT_STATUS = {
-    "KEY": "clientStatusCode",
-    "CODE_ACTIVE": "ACT"
-}
+FOREST_CLIENT_STATUS = {"KEY": "clientStatusCode", "CODE_ACTIVE": "ACT"}
 
 FAM_PROXY_API_USER = "fam_proxy_api"
 
 COGNITO_USERNAME_KEY = "username"
+
+IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
