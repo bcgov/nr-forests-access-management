@@ -13,4 +13,9 @@ export enum ErrorCode {
 export const ErrorDescription = {
     SelfGrantProhibited: 'Granting admin privilege to self is not allowed.',
     Default: 'An error has occured.',
+};
+
+export enum GrantPermissionType {
+    Regular = 'GrantUserAccess',
+    DelegatedAdmin = 'GrantDelegatedAdmin',
 }

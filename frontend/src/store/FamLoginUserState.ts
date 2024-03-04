@@ -1,13 +1,13 @@
+import { readonly, ref } from "vue";
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import { setRouteToastError } from '@/store/ToastState';
+import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
 } from '@/store/ApplicationState';
-import { readonly, ref } from 'vue';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
