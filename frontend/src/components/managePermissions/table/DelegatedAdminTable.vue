@@ -77,7 +77,7 @@ const deleteDelegatedAdmin = (
         : delegatedAdmin.role.role_name;
     confirm.require({
         group: 'deleteDelegatedAdmin',
-        header: 'Remove Access',
+        header: 'Remove Privilege',
         rejectLabel: 'Cancel',
         acceptLabel: 'Remove',
         accept: () => {
