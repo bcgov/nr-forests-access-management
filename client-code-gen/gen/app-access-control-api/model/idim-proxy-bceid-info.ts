@@ -17,31 +17,49 @@
 /**
  * 
  * @export
- * @interface IdimProxyIdirInfo
+ * @interface IdimProxyBceidInfo
  */
-export interface IdimProxyIdirInfo {
+export interface IdimProxyBceidInfo {
     /**
      * 
      * @type {boolean}
-     * @memberof IdimProxyIdirInfo
+     * @memberof IdimProxyBceidInfo
      */
     'found': boolean;
     /**
      * 
      * @type {string}
-     * @memberof IdimProxyIdirInfo
+     * @memberof IdimProxyBceidInfo
      */
     'userId': string;
     /**
      * 
      * @type {string}
-     * @memberof IdimProxyIdirInfo
+     * @memberof IdimProxyBceidInfo
+     */
+    'guid'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyBceidInfo
+     */
+    'businessGuid'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyBceidInfo
+     */
+    'businessLegalName'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyBceidInfo
      */
     'firstName'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof IdimProxyIdirInfo
+     * @memberof IdimProxyBceidInfo
      */
     'lastName'?: string | null;
 }

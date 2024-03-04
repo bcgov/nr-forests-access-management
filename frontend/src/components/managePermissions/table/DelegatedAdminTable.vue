@@ -115,7 +115,7 @@ const deleteDelegatedAdmin = (
                 :globalFilterFields="[
                     'user.user_name',
                     'user.user_type.description',
-                    'role.role_name.role_name',
+                    'role.role_name',
                     'role.parent_role.role_name',
                     'role.client_number.forest_client_number',
                 ]"

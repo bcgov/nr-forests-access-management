@@ -57,41 +57,50 @@ const toRequestPayload = (formData: any) => {
 
 const handleSubmit = async () => {
     const data = toRequestPayload(formData.value);
-    await AdminMgmtApiService.applicationAdminApi
-        .createApplicationAdmin(data)
-        .then(() => {
+    const appEnv = formData.value.application.env
+        ? ` ${formData.value.application.env}`
+        : '';
+
+    try {
+        await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
+            data
+        );
+        setNotificationMsg(
+            Severity.Success,
+            `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
+                formData.value.application.name
+            }${appEnv}`
+        );
+    } catch (error: any) {
+        if (error.response?.status === 409) {
             setNotificationMsg(
-                Severity.Success,
-                `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
+                Severity.Error,
+                `${formData.value.userId.toUpperCase()} is already a ${
                     formData.value.application.name
-                }`
+                }${appEnv} admin`
             );
-        })
-        .catch((error) => {
-            if (error.response?.status === 409) {
-                setNotificationMsg(
-                    Severity.Error,
-                    `User ${formData.value.userId.toUpperCase()} is already a ${
-                        formData.value.application.name
-                    } admin`
-                );
-            } else if (
-                error.response.data.detail.code === 'self_grant_prohibited'
-            ) {
-                setNotificationMsg(
-                    Severity.Error,
-                    ErrorDescription.SelfGrantProhibited
-                );
-            } else {
-                setNotificationMsg(
-                    Severity.Error,
-                    `${ErrorDescription.Default} ${error.response.data.detail.description}`
-                );
-            }
-        })
-        .finally(() => {
-            router.push('/dashboard');
-        });
+        } else if (
+            error.response?.data.detail.code === 'self_grant_prohibited'
+        ) {
+            setNotificationMsg(
+                Severity.Error,
+                ErrorDescription.SelfGrantProhibited
+            );
+        } else {
+            const errorMsg = error.response?.data.detail.description
+                ? ` ${error.response?.data.detail.description}`
+                : ' ';
+            setNotificationMsg(
+                Severity.Error,
+                `${
+                    ErrorDescription.Default
+                }${errorMsg} ${formData.value.userId.toUpperCase()} was not added as ${
+                    formData.value.application.name
+                }${appEnv} admin`
+            );
+        }
+    }
+    router.push('/dashboard');
 };
 </script>
 <template>

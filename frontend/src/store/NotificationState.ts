@@ -4,7 +4,12 @@
     It is intended to be used in conjunction with the NotificationStack component.
 */
 import { ref } from 'vue';
-import { ErrorDescription, ErrorCode, Severity } from '@/enum/SeverityEnum';
+import {
+    ErrorDescription,
+    ErrorCode,
+    Severity,
+    GrantPermissionType,
+} from '@/enum/SeverityEnum';
 
 const defaultNotification = {
     success: { msg: '', fullMsg: '' },
@@ -42,55 +47,109 @@ export interface CommonObjectType {
     [key: string]: any;
 }
 
-export const setGrantAccessNotificationMsg = (
-    forestClientNumberList: string[],
+export const composeAndPushGrantPermissionNotification = (
+    type: GrantPermissionType,
     userId: string,
-    severity: Severity,
-    role = '',
-    code: string = ErrorCode.Default
+    successList: string[],
+    errorList: string[],
+    errorCode: string,
+    role: string = ''
 ) => {
-    let notificationFullMsg = '';
+    if (successList.length > 0) {
+        setGrantPermissionNotificationMsg(
+            type,
+            Severity.Success,
+            userId,
+            successList,
+            role
+        );
+    }
 
+    if (errorList.length > 0) {
+        setGrantPermissionNotificationMsg(
+            type,
+            Severity.Error,
+            userId,
+            errorList,
+            role,
+            errorCode
+        );
+    }
+};
+
+export const setGrantPermissionNotificationMsg = (
+    type: GrantPermissionType,
+    severity: Severity,
+    userId: string,
+    forestClientNumberList: string[],
+    role: string = '',
+    errorCode: string = ErrorCode.Default
+) => {
+    const msgByType: CommonObjectType = formataAndGetMsgByGrantType(
+        type,
+        userId,
+        role,
+        forestClientNumberList
+    );
+
+    const notificationMsg =
+        severity == Severity.Success
+            ? msgByType[severity]
+            : msgByType[severity][errorCode];
+
+    // when there are more than 2 forest client numbers, set full message to include all forest client numbers
+    // replace the message after ':' to be the whole forest client number list
+    const notificationFullMsg =
+        forestClientNumberList.length > 2
+            ? `${notificationMsg.split(':')[0]}: ${forestClientNumberList.join(
+                  ', '
+              )}`
+            : '';
+
+    setNotificationMsg(severity, notificationMsg, notificationFullMsg);
+};
+
+const formataAndGetMsgByGrantType = (
+    grantType: string,
+    userId: string,
+    role: string,
+    forestClientNumberList: string[] = []
+) => {
     const isPlural = forestClientNumberList.length === 1 ? 'ID' : 'IDs';
+    const firstTwoForestClientList = forestClientNumberList.slice(0, 2);
+    // for example: forestClientMsg = "00001011, 00001012",
+    // or forestClientMsg = "00001011, 00001012 and more" when there are more than 2 forest client numbers
+    const forestClientMsg = `${firstTwoForestClientList.join(', ')} ${
+        forestClientNumberList.length > 2
+            ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
+            : ''
+    }`;
+
+    const msgForGrantConcreteRole = `the role ${role}`;
+    const msgForGrantAbstractRole = `Client ${isPlural}: ${forestClientMsg}`;
+    const msgByRoleType =
+        forestClientNumberList.length == 1 && forestClientNumberList[0] == ''
+            ? msgForGrantConcreteRole
+            : msgForGrantAbstractRole;
 
     const msgByType: CommonObjectType = {
-        [Severity.Success]: {
-            [ErrorCode.Default]:
-                forestClientNumberList[0] === ''
-                    ? `${userId} was successfully added with the role ${role}`
-                    : `${userId} was successfully added with Client ${isPlural}:`,
+        [GrantPermissionType.Regular]: {
+            [Severity.Success]: `${userId} was successfully added with ${msgByRoleType}`,
+            [Severity.Error]: {
+                [ErrorCode.Conflict]: `${userId} already exists with ${msgByRoleType}`,
+                [ErrorCode.SelfGrantProhibited]: `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with ${msgByRoleType}`,
+                [ErrorCode.Default]: `${ErrorDescription.Default} ${userId} was not added with ${msgByRoleType}`,
+            },
         },
-        [Severity.Error]: {
-            [ErrorCode.Conflict]:
-                forestClientNumberList[0] === ''
-                    ? `${userId} already exists with the role ${role}`
-                    : `${userId} already exists with Client ${isPlural}:`,
-            [ErrorCode.SelfGrantProhibited]:
-                forestClientNumberList[0] === ''
-                    ? `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with the role: ${role}`
-                    : `${ErrorDescription.SelfGrantProhibited} ${userId} was not added with Client ${isPlural}:`,
-            [ErrorCode.Default]:
-                forestClientNumberList[0] === ''
-                    ? `${ErrorDescription.Default} ${userId} was not added with the role: ${role}`
-                    : `${ErrorDescription.Default} ${userId} was not added with Client ${isPlural}:`,
+        [GrantPermissionType.DelegatedAdmin]: {
+            [Severity.Success]: `${userId} was successfully granted privilege to manage ${msgByRoleType}`,
+            [Severity.Error]: {
+                [ErrorCode.Conflict]: `${userId} already has the privilege to manage ${msgByRoleType}`,
+                [ErrorCode.SelfGrantProhibited]: `${ErrorDescription.SelfGrantProhibited} ${userId} was not granted privilege to manage ${msgByRoleType}`,
+                [ErrorCode.Default]: `${ErrorDescription.Default} ${userId} was not granted privilege to manage ${msgByRoleType}`,
+            },
         },
     };
 
-    const clientIdList = forestClientNumberList.slice(0, 2);
-    if (forestClientNumberList.length > 2) {
-        notificationFullMsg = `${
-            msgByType[severity][code]
-        } ${forestClientNumberList.join(', ')}`;
-    }
-
-    const notificationMsg = `
-        ${msgByType[severity][code]} ${clientIdList.join(', ')}
-        ${
-            isPlural === 'IDs' && forestClientNumberList.length > 2
-                ? 'and ' + (forestClientNumberList.length - 2) + ' more...'
-                : ''
-        }
-    `;
-
-    setNotificationMsg(severity, notificationMsg, notificationFullMsg);
+    return msgByType[grantType];
 };
