@@ -102,7 +102,7 @@ const deleteUserRoleAssignment = async (
 
         setNotificationMsg(
             Severity.Success,
-            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+            `You removed ${assignment.role.role_name} access from ${assignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
@@ -140,7 +140,7 @@ const deleteDelegatedAdminAssignment = async (
 
         setNotificationMsg(
             Severity.Success,
-            `You removed ${delegatedAdminAssignment.role.role_name} access to ${delegatedAdminAssignment.user.user_name}`
+            `You removed ${delegatedAdminAssignment.role.role_name} privilege from ${delegatedAdminAssignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
