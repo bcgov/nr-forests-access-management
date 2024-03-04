@@ -80,7 +80,6 @@ const deleteDelegatedAdmin = (
         header: 'Remove Access',
         rejectLabel: 'Cancel',
         acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
         accept: () => {
             emit('deleteDelegatedAdminAssignment', delegatedAdmin);
         },
