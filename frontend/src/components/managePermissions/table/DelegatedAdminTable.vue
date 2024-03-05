@@ -93,6 +93,7 @@ const deleteDelegatedAdmin = (
             <ConfirmDialogText
                 :userName="confirmDeleteData.adminName"
                 :role="confirmDeleteData.role"
+                customMsg="privilege"
             />
         </template>
     </ConfirmDialog>
