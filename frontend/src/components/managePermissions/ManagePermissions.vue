@@ -26,11 +26,12 @@ import type {
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
 import {
-    deletAndRefreshUserRoleAssignments,
+    deleteAndRefreshUserRoleAssignments,
     deleteAndRefreshApplicationAdmin,
     fetchUserRoleAssignments,
     fetchApplicationAdmins,
     fetchDelegatedAdmins,
+    deleteAndRefreshDelegatedAdmin,
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
@@ -94,14 +95,14 @@ const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
     try {
-        userRoleAssignments.value = await deletAndRefreshUserRoleAssignments(
+        userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
             assignment.role.application_id
         );
 
         setNotificationMsg(
             Severity.Success,
-            `You removed ${assignment.role.role_name} access to ${assignment.user.user_name}`
+            `You removed ${assignment.role.role_name} access from ${assignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
@@ -120,6 +121,26 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
         setNotificationMsg(
             Severity.Success,
             `You removed ${admin.user.user_name}'s admin privilege`
+        );
+    } catch (error: any) {
+        setNotificationMsg(
+            Severity.Error,
+            `An error has occured. ${error.response.data.detail.description}`
+        );
+    }
+};
+
+const deleteDelegatedAdminAssignment = async (
+    delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
+) => {
+    try {
+        delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
+            delegatedAdminAssignment.access_control_privilege_id
+        );
+
+        setNotificationMsg(
+            Severity.Success,
+            `You removed ${delegatedAdminAssignment.role.role_name} privilege from ${delegatedAdminAssignment.user.user_name}`
         );
     } catch (error: any) {
         setNotificationMsg(
@@ -211,6 +232,9 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
+                        @deleteDelegatedAdminAssignment="
+                            deleteDelegatedAdminAssignment
+                        "
                     />
                 </TabPanel>
             </TabView>
