@@ -86,9 +86,9 @@ async def get_current_requester(
     return requester
 
 
-# for delegated admin, there is no access group in the token
-# the API get_admin_user_access don't require user have any access
+# for delegated admin, there is no access group in the token, our auth lambda function only add app admin to the token
 # get_request_cognito_user_id_without_access_check will return the requester without checking the access group in the token
+# this should only used by the get_admin_user_access API, all other APIs require admin access in the token
 async def get_current_requester_without_access_check(
     request_cognito_user_id: str = Depends(
         get_request_cognito_user_id_without_access_check

@@ -21,7 +21,7 @@ router = APIRouter()
 async def get_admin_user_access(
     requester: Requester = Depends(
         get_current_requester_without_access_check
-    ),  # Internally Requester already has basic token claim validated.
+    ),  # the get_admin_user_access API don't require user has any access, it will return what access the user has
     admin_user_access_service: AdminUserAccessService = Depends(
         admin_user_access_service_instance
     ),
