@@ -9,6 +9,7 @@ from api.app.jwt_validation import (
     get_access_roles,
     get_request_cognito_user_id,
     validate_token,
+    get_request_cognito_user_id_without_access_check,
 )
 from api.app.schemas import Requester, TargetUser, FamAppAdminCreateRequest
 from api.app.constants import AdminRoleAuthGroup, UserType
@@ -66,6 +67,8 @@ def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
         )
 
 
+# for app admin and FAM admin, we require the access group in the token
+# the get_request_cognito_user_id will check the access in the token
 async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles=Depends(get_access_roles),
@@ -79,6 +82,26 @@ async def get_current_requester(
 
     requester = Requester.model_validate(fam_user)
     requester.access_roles = access_roles
+    LOGGER.debug(f"Current request user (requester): {requester}")
+    return requester
+
+
+# for delegated admin, there is no access group in the token
+# the API get_admin_user_access don't require user have any access
+# get_request_cognito_user_id_without_access_check will return the requester without checking the access group in the token
+async def get_current_requester_without_access_check(
+    request_cognito_user_id: str = Depends(
+        get_request_cognito_user_id_without_access_check
+    ),
+    user_service: UserService = Depends(user_service_instance),
+):
+    fam_user: FamUser = user_service.get_user_by_cognito_user_id(
+        request_cognito_user_id
+    )
+    if fam_user is None:
+        raise no_requester_exception
+
+    requester = Requester.model_validate(fam_user)
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
 

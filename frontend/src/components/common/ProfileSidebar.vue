@@ -11,6 +11,7 @@ const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
+const organization = LoginUserState.state.value.famLoginUser!.organization;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -26,13 +27,15 @@ const buttonLabel = computed(() => {
 });
 
 const adminRoles = computed(() => {
-    const userAdminRoles = LoginUserState.getUserAdminRoleGroups()
+    const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
     if (userAdminRoles) {
-        return userAdminRoles.map((adminRole) => {
-            return adminRole.replace("_", " ")
-        }).join(", ")
+        return userAdminRoles
+            .map((adminRole) => {
+                return adminRole.replace('_', ' ');
+            })
+            .join(', ');
     }
-})
+});
 </script>
 
 <template>
@@ -61,9 +64,14 @@ const adminRoles = computed(() => {
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-idir">IDIR: {{ userName }}</p>
-                    <p class="profile-email">{{ email }}</p>
-                    <p class="profile-admin-level">Granted: <strong>{{ adminRoles }}</strong></p>
+                    <p class="profile-userid">UserID: {{ userName }}</p>
+                    <p class="profile-organization" v-if="organization">
+                        Organization: {{ organization }}
+                    </p>
+                    <p class="profile-email">Email: {{ email }}</p>
+                    <p class="profile-admin-level">
+                        Granted: <strong>{{ adminRoles }}</strong>
+                    </p>
                 </div>
             </div>
             <hr class="profile-divider" />
@@ -143,7 +151,8 @@ const adminRoles = computed(() => {
     }
 
     .profile-name,
-    .profile-idir,
+    .profile-userid,
+    .profile-organization,
     .profile-email {
         margin-bottom: 0.375rem;
     }
@@ -177,7 +186,8 @@ const adminRoles = computed(() => {
     outline: none !important;
 }
 
-.profile-idir,
+.profile-userid,
+.profile-organization,
 .profile-email,
 .profile-admin-level,
 .options {

@@ -40,6 +40,7 @@ generate "dev_tfvars" {
     "${local.common_vars.inputs.idp_logout_chain_dev_url}http://localhost:5173"
   ]
   fam_console_idp_name = "DEV-IDIR"
+  fam_console_idp_name_bceid = "TEST-BCEIDBUSINESS"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
   use_override_proxy_endpoints = true
   dev_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"

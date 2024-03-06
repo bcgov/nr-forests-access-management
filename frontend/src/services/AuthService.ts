@@ -18,9 +18,15 @@ const login = async () => {
     */
 
     const environmentSettings = new EnvironmentSettings();
-
     Auth.federatedSignIn({
-        customProvider: environmentSettings.getIdentityProvider(),
+        customProvider: environmentSettings.getIdentityProviderIdir(),
+    });
+};
+
+const loginBceid = async () => {
+    const environmentSettings = new EnvironmentSettings();
+    Auth.federatedSignIn({
+        customProvider: environmentSettings.getIdentityProviderBceid(),
     });
 };
 
@@ -38,7 +44,6 @@ const handlePostLogin = async () => {
         // This is to update the FamLoginUser for FamLoginUser.accesses.
         // For now team decided to grab user's access only when user login and may change later.
         await LoginUserState.cacheUserAccess();
-
     } catch (error) {
         console.log('Not signed in');
         console.log('Authentication Error:', error);
@@ -69,7 +74,6 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
         if (accesses) famLoginUser.accesses = accesses;
         LoginUserState.storeFamUser(famLoginUser);
         return famLoginUser;
-
     } catch (error) {
         console.error(
             'Problem refreshing token or token is invalidated:',
@@ -96,6 +100,7 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
         idpProvider: decodedIdToken['identities']['providerName'],
         roles: decodedAccessToken['cognito:groups'],
         authToken: authToken,
+        organization: decodedIdToken['custom:idp_business_name'],
     };
     return famLoginUser;
 };
@@ -104,6 +109,7 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
 
 export default {
     login,
+    loginBceid,
     isLoggedIn,
     handlePostLogin,
     logout,
