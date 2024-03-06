@@ -8,6 +8,11 @@ const props = defineProps({
     userName: {
         type: String,
         required: true
+    },
+    customMsg: {
+        type: String,
+        required: false,
+        default: 'access'
     }
 });
 </script>
@@ -15,7 +20,7 @@ const props = defineProps({
 <template>
     <p>
         Are you sure you want to remove
-        <strong>{{ props.role }}</strong> access to
+        <strong>{{ props.role }}</strong> {{ props.customMsg }} from
         <strong>{{ props.userName }}</strong> in
         <strong>{{ selectedApplicationDisplayText }}</strong>
     </p>

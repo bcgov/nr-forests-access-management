@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref, reactive, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import { useConfirm } from 'primevue/useconfirm';
+import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
 import {
@@ -11,7 +13,13 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
+
+type emit = (
+    e: 'deleteDelegatedAdminAssignment',
+    item: FamAccessControlPrivilegeGetResponse
+) => void;
 
 const props = defineProps({
     loading: {
@@ -50,18 +58,45 @@ const delegatedAdminFilters = ref({
 const delegatedAdminSearchChange = (newvalue: string) => {
     delegatedAdminFilters.value.global.value = newvalue;
 };
+
+const confirm = useConfirm();
+
+const emit = defineEmits<emit>();
+
+const confirmDeleteData = reactive({
+    adminName: '',
+    role: '',
+});
+
+const deleteDelegatedAdmin = (
+    delegatedAdmin: FamAccessControlPrivilegeGetResponse
+) => {
+    confirmDeleteData.adminName = delegatedAdmin.user.user_name;
+    confirmDeleteData.role = delegatedAdmin.role.parent_role
+        ? delegatedAdmin.role.parent_role.role_name
+        : delegatedAdmin.role.role_name;
+    confirm.require({
+        group: 'deleteDelegatedAdmin',
+        header: 'Remove Privilege',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Remove',
+        accept: () => {
+            emit('deleteDelegatedAdminAssignment', delegatedAdmin);
+        },
+    });
+};
 </script>
 
 <template>
-    <!-- Hidden until functionality is available
-    <ConfirmDialog group="deleteAdmin">
+    <ConfirmDialog group="deleteDelegatedAdmin">
         <template #message>
-            <ConfirmDialogtext
-                :userName=""
-                :role=""
+            <ConfirmDialogText
+                :userName="confirmDeleteData.adminName"
+                :role="confirmDeleteData.role"
+                customMsg="privilege"
             />
         </template>
-    </ConfirmDialog> -->
+    </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
             <DataTableHeader
@@ -127,12 +162,15 @@ const delegatedAdminSearchChange = (newvalue: string) => {
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <!-- Hidden until functionality is available
-                            <button
-                                class="btn btn-icon"
-                            >
-                                <Icon icon="edit" :size="IconSize.small"/>
-                            </button> -->
+                        <button
+                            class="btn btn-icon"
+                            @click="deleteDelegatedAdmin(data)"
+                        >
+                            <Icon
+                                icon="trash-can"
+                                :size="IconSize.small"
+                            />
+                        </button>
                     </template>
                 </Column>
             </DataTable>
