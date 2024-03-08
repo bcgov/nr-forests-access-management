@@ -81,12 +81,6 @@ const routes = [
         },
         component: GrantAccessView,
         beforeEnter: beforeEnterHandlers[routeItems.grantUserPermission.name],
-        props: (route: any) => {
-            return {
-                // options is ready for the `component` as props.
-                applicationRoleOptions: route.meta.applicationRoleOptions,
-            };
-        },
     },
     {
         path: routeItems.grantAppAdmin.path,

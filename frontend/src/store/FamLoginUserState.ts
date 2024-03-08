@@ -17,7 +17,6 @@ export interface FamLoginUser {
     displayName?: string;
     email?: string;
     idpProvider?: string; // from ID Token's ['identities']['providerName'] attribute.
-    roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
 }
