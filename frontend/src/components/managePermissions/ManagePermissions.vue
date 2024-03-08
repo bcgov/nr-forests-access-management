@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import TabView from 'primevue/tabview';
+import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
 import LoginUserState from '@/store/FamLoginUserState';
+import {
+    getCurrentTabState,
+    setCurrentTabState,
+} from '@/store/CurrentTabState';
 import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
 import {
     isApplicationSelected,
@@ -35,6 +39,7 @@ import {
 } from '@/services/fetchData';
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
+import { TabKey } from '@/enum/TabEnum';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -63,11 +68,11 @@ const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
     props.delegatedAdmins
 );
 
-const resetActiveTab = ref(0);
-
 const applicationsUserAdministers = computed(() => {
     return LoginUserState.getApplicationsUserAdministers();
 });
+
+const tabViewRef = ref();
 
 onUnmounted(() => {
     resetNotification();
@@ -76,8 +81,6 @@ onUnmounted(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
 
-    // make the first tab active
-    resetActiveTab.value = 0;
     if (e.value.id === FAM_APPLICATION_ID) {
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
@@ -149,6 +152,20 @@ const deleteDelegatedAdminAssignment = async (
         );
     }
 };
+
+// Tabs methods
+const setCurrentTab = (event: TabViewChangeEvent) => {
+    setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
+};
+
+const getCurrentTab = () => {
+    const tabIndex = tabViewRef.value?.tabs
+        .map((item: any) => {
+            return item.key;
+        })
+        .indexOf(getCurrentTabState());
+    return tabIndex > 0 ? tabIndex : 0;
+};
 </script>
 
 <template>
@@ -171,7 +188,9 @@ const deleteDelegatedAdminAssignment = async (
             <TablePlaceholder v-if="!isApplicationSelected" />
             <TabView
                 v-else
-                v-model:active-index="resetActiveTab"
+                ref="tabViewRef"
+                :active-index="getCurrentTab()"
+                @tab-change="setCurrentTab($event)"
                 :pt="{
                     root: {
                         style: 'margin-top: 1.5rem',
@@ -182,14 +201,12 @@ const deleteDelegatedAdminAssignment = async (
                 }"
             >
                 <TabPanel
+                    :key="TabKey.App"
                     header="Application admins"
                     v-if="selectedApplicationId === FAM_APPLICATION_ID"
                 >
                     <template #header>
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
+                        <Icon icon="enterprise" :size="IconSize.small" />
                     </template>
                     <ApplicationAdminTable
                         :loading="isLoading()"
@@ -197,15 +214,9 @@ const deleteDelegatedAdminAssignment = async (
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
-                <TabPanel
-                    header="Users"
-                    v-else
-                >
+                <TabPanel :key="TabKey.User" header="Users" v-else>
                     <template #header>
-                        <Icon
-                            icon="user"
-                            :size="IconSize.small"
-                        />
+                        <Icon icon="user" :size="IconSize.small" />
                     </template>
 
                     <UserDataTable
@@ -216,6 +227,7 @@ const deleteDelegatedAdminAssignment = async (
                 </TabPanel>
 
                 <TabPanel
+                    :key="TabKey.Delegated"
                     v-if="
                         LoginUserState.isAdminOfSelectedApplication() &&
                         selectedApplicationId !== FAM_APPLICATION_ID
@@ -223,10 +235,7 @@ const deleteDelegatedAdminAssignment = async (
                     header="Delegated admins"
                 >
                     <template #header>
-                        <Icon
-                            icon="enterprise"
-                            :size="IconSize.small"
-                        />
+                        <Icon icon="enterprise" :size="IconSize.small" />
                     </template>
 
                     <DelegatedAdminTable

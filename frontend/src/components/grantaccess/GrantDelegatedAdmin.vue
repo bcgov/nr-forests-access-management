@@ -21,6 +21,8 @@ import type {
     FamRoleDto,
     FamAccessControlPrivilegeCreateRequest,
 } from 'fam-admin-mgmt-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const confirm = useConfirm();
 
@@ -140,8 +142,9 @@ const confirmSubmit = async () => {
         successList,
         errorList,
         errorCode,
-        role,
+        role
     );
+    setCurrentTabState(TabKey.Delegated);
     router.push('/dashboard');
 };
 
