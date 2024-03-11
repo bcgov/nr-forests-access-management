@@ -1,8 +1,13 @@
-import { readonly, ref } from "vue";
+import { readonly, ref } from 'vue';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
+import {
+    AdminRoleAuthGroup,
+    type FamApplicationDto,
+    type FamAuthGrantDto,
+    type FamRoleDto,
+} from 'fam-admin-mgmt-api/model';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
@@ -17,7 +22,6 @@ export interface FamLoginUser {
     displayName?: string;
     email?: string;
     idpProvider?: string; // from ID Token's ['identities']['providerName'] attribute.
-    roles?: string[]; // roles from Access Token's ['cognito:groups']. This may soon be redundant after delegated admin design.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
 }
@@ -25,9 +29,9 @@ export interface FamLoginUser {
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-            | FamLoginUser
-            | undefined
-            | null)
+              | FamLoginUser
+              | undefined
+              | null)
         : undefined,
 });
 
@@ -122,9 +126,7 @@ const isAdminOfSelectedApplication = () => {
 };
 
 const hasAccess = (role: string): boolean => {
-    return !!getUserAccess()?.find(
-        (access) => access.auth_key === role
-    );
+    return !!getUserAccess()?.find((access) => access.auth_key === role);
 };
 
 // --- setters
@@ -165,9 +167,23 @@ const cacheUserAccess = async () => {
 };
 
 const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
-    const grantAppData = getUserAccess()!.find(key => key.auth_key === AdminRoleAuthGroup.AppAdmin)?.grants.find((item) => {
-        return item.application.id === application_id
-    })
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.AppAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
+
+    return grantAppData?.roles!;
+};
+
+const getCachedAppRolesForDelegatedAdmin = (
+    application_id: number
+): FamRoleDto[] => {
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.DelegatedAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
 
     return grantAppData?.roles!;
 };
@@ -180,11 +196,12 @@ export default {
     getUserAccess,
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
+    getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
     hasAccess,
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
     isAdminOfSelectedApplication,
-    getCachedAppRoles
+    getCachedAppRoles,
 };

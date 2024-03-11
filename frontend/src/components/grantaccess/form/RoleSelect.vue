@@ -26,14 +26,6 @@ const computedRoleId = computed({
     },
 });
 
-// TODO: This method isFamApplicationRoleType is not going to be needed anymore
-// when completing task #1147 and the roleOptions is accepting only FamRoleDto as type.
-// Please remember to remove both ternary checks for 'optionLabel' and 'optionValue'
-const isFamApplicationRoleType = (): boolean => {
-    return (
-        (props.roleOptions.at(0) as FamApplicationRole).role_name !== undefined
-    );
-};
 </script>
 
 <template>
@@ -47,8 +39,8 @@ const isFamApplicationRoleType = (): boolean => {
         >
             <Dropdown
                 :options="roleOptions"
-                :optionLabel="isFamApplicationRoleType() ? 'role_name' : 'name'"
-                :optionValue="isFamApplicationRoleType() ? 'role_id' : 'id'"
+                optionLabel="name"
+                optionValue="id"
                 :modelValue="field.value"
                 placeholder="Choose an option"
                 class="w-100 custom-height"
