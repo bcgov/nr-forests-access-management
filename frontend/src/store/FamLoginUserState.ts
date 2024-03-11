@@ -24,9 +24,9 @@ export interface FamLoginUser {
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-            | FamLoginUser
-            | undefined
-            | null)
+              | FamLoginUser
+              | undefined
+              | null)
         : undefined,
 });
 
@@ -164,9 +164,23 @@ const cacheUserAccess = async () => {
 };
 
 const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
-    const grantAppData = getUserAccess()!.find(key => key.auth_key === AdminRoleAuthGroup.AppAdmin)?.grants.find((item) => {
-        return item.application.id === application_id
-    })
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.AppAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
+
+    return grantAppData?.roles!;
+};
+
+const getCachedAppRolesForDelegatedAdmin = (
+    application_id: number
+): FamRoleDto[] => {
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.DelegatedAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
 
     return grantAppData?.roles!;
 };
@@ -179,6 +193,7 @@ export default {
     getUserAccess,
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
+    getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
     hasAccess,
     storeFamUser,

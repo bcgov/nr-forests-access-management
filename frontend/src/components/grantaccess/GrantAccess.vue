@@ -30,7 +30,15 @@ const defaultFormData = {
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const regularUserRoleOptions = computed(() => {
-    return FamLoginUserState.getCachedAppRoles(selectedApplicationId.value!);
+    if (FamLoginUserState.isAdminOfSelectedApplication()) {
+        return FamLoginUserState.getCachedAppRoles(
+            selectedApplicationId.value!
+        );
+    } else {
+        return FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
+            selectedApplicationId.value!
+        );
+    }
 });
 
 /* ------------------ User information method ------------------------- */
