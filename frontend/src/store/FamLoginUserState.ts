@@ -1,8 +1,13 @@
-import { readonly, ref } from "vue";
+import { readonly, ref } from 'vue';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
-import { AdminRoleAuthGroup, type FamApplicationDto, type FamAuthGrantDto, type FamRoleDto } from 'fam-admin-mgmt-api/model';
+import {
+    AdminRoleAuthGroup,
+    type FamApplicationDto,
+    type FamAuthGrantDto,
+    type FamRoleDto,
+} from 'fam-admin-mgmt-api/model';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
@@ -121,9 +126,7 @@ const isAdminOfSelectedApplication = () => {
 };
 
 const hasAccess = (role: string): boolean => {
-    return !!getUserAccess()?.find(
-        (access) => access.auth_key === role
-    );
+    return !!getUserAccess()?.find((access) => access.auth_key === role);
 };
 
 // --- setters
@@ -200,5 +203,5 @@ export default {
     removeFamUser,
     cacheUserAccess,
     isAdminOfSelectedApplication,
-    getCachedAppRoles
+    getCachedAppRoles,
 };

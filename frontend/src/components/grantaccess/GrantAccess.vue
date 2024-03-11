@@ -29,7 +29,7 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
-const regularUserRoleOptions = computed(() => {
+const applicationRoleOptions = computed(() => {
     if (FamLoginUserState.isAdminOfSelectedApplication()) {
         return FamLoginUserState.getCachedAppRoles(
             selectedApplicationId.value!
@@ -58,7 +58,7 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 
 /* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamRoleDto | undefined => {
-    return regularUserRoleOptions?.value.find(
+    return applicationRoleOptions?.value.find(
         (item) => item.id === formData.value.roleId
     );
 };
@@ -198,7 +198,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                 >
                     <RoleSelect
                         :roleId="formData.roleId"
-                        :roleOptions="regularUserRoleOptions"
+                        :roleOptions="applicationRoleOptions"
                         @change="roleSelectChange"
                         @resetVerifiedForestClients="resetVerifiedForestClients"
                     />
