@@ -56,15 +56,6 @@ export const deleteAndRefreshUserRoleAssignments = async (
     return fetchUserRoleAssignments(applicationId);
 };
 
-export const fetchApplicationRoles = async (applicationId: number) => {
-    const applicationRoles = (
-        await AppActlApiService.applicationsApi.getFamApplicationRoles(
-            applicationId
-        )
-    ).data;
-    return applicationRoles;
-};
-
 export const fetchApplicationAdmins = async (): Promise<
     FamAppAdminGetResponse[]
 > => {
@@ -141,4 +132,3 @@ export const deleteAndRefreshDelegatedAdmin = async (
     // When deletion is successful, refresh (fetch) for frontend state.
     return fetchDelegatedAdmins(selectedApplicationId.value);
 };
-
