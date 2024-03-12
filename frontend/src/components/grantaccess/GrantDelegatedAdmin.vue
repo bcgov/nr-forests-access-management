@@ -144,7 +144,7 @@ const confirmSubmit = async () => {
         errorCode,
         role
     );
-    setCurrentTabState(TabKey.Delegated);
+    setCurrentTabState(TabKey.DelegatedAdminAccess);
     router.push('/dashboard');
 };
 

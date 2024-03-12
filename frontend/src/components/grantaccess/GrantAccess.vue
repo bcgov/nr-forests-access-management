@@ -146,7 +146,7 @@ const handleSubmit = async () => {
         errorCode,
         role
     );
-    setCurrentTabState(TabKey.User);
+    setCurrentTabState(TabKey.UserAccess);
     router.push('/dashboard');
 };
 

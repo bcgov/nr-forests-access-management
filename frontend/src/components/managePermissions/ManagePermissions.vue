@@ -82,12 +82,15 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
 
     if (e.value.id === FAM_APPLICATION_ID) {
+        setCurrentTabState(TabKey.AdminAccess);
         applicationAdmins.value = await fetchApplicationAdmins();
     } else {
+        if (!LoginUserState.isAdminOfSelectedApplication()) {
+            setCurrentTabState(TabKey.UserAccess);
+        }
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
-
         delegatedAdmins.value = await fetchDelegatedAdmins(
             selectedApplicationId.value
         );
@@ -201,7 +204,7 @@ const getCurrentTab = () => {
                 }"
             >
                 <TabPanel
-                    :key="TabKey.App"
+                    :key="TabKey.AdminAccess"
                     header="Application admins"
                     v-if="selectedApplicationId === FAM_APPLICATION_ID"
                 >
@@ -214,7 +217,7 @@ const getCurrentTab = () => {
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
-                <TabPanel :key="TabKey.User" header="Users" v-else>
+                <TabPanel :key="TabKey.UserAccess" header="Users" v-else>
                     <template #header>
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
@@ -227,7 +230,7 @@ const getCurrentTab = () => {
                 </TabPanel>
 
                 <TabPanel
-                    :key="TabKey.Delegated"
+                    :key="TabKey.DelegatedAdminAccess"
                     v-if="
                         LoginUserState.isAdminOfSelectedApplication() &&
                         selectedApplicationId !== FAM_APPLICATION_ID

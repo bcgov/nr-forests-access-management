@@ -102,7 +102,7 @@ const handleSubmit = async () => {
             );
         }
     }
-    setCurrentTabState(TabKey.App);
+    setCurrentTabState(TabKey.AdminAccess);
     router.push('/dashboard');
 };
 </script>
