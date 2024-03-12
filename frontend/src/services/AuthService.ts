@@ -96,7 +96,7 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
         username: decodedIdToken['custom:idp_username'],
         displayName: decodedIdToken['custom:idp_display_name'],
         email: decodedIdToken['email'],
-        idpProvider: decodedIdToken['identities']['providerName'],
+        idpProvider: decodedIdToken['identities'][0]['providerName'],
         authToken: authToken,
         organization: decodedIdToken['custom:idp_business_name'],
     };
