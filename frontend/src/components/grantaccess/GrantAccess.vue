@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { Form as VeeForm } from 'vee-validate';
-import { ref, type PropType } from 'vue';
+import { computed, ref } from 'vue';
 
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -11,23 +11,18 @@ import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
 import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 import {
-    type FamApplicationRole,
-    UserType,
-    type FamUserRoleAssignmentCreate,
-} from 'fam-app-acsctl-api';
+    selectedApplicationDisplayText,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
+import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-
-const props = defineProps({
-    applicationRoleOptions: {
-        // options fetched from route.
-        type: Array as PropType<FamApplicationRole[]>,
-        default: [],
-    },
-});
+import FamLoginUserState from '@/store/FamLoginUserState';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     domain: UserType.I,
@@ -36,6 +31,17 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+const applicationRoleOptions = computed(() => {
+    if (FamLoginUserState.isAdminOfSelectedApplication()) {
+        return FamLoginUserState.getCachedAppRoles(
+            selectedApplicationId.value!
+        );
+    } else {
+        return FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
+            selectedApplicationId.value!
+        );
+    }
+});
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
@@ -53,14 +59,14 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 };
 
 /* ------------------- Role selection method -------------------------- */
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    return props.applicationRoleOptions?.find(
-        (item) => item.role_id === formData.value.roleId
+const getSelectedRole = (): FamRoleDto | undefined => {
+    return applicationRoleOptions?.value.find(
+        (item) => item.id === formData.value.roleId
     );
 };
 
 const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.role_type_code == 'A';
+    return getSelectedRole()?.type_code == 'A';
 };
 
 const roleSelectChange = (roleId: number) => {
@@ -102,7 +108,7 @@ const areVerificationsPassed = () => {
 
 const handleSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
-    const role = getSelectedRole()?.role_name;
+    const role = getSelectedRole()?.name;
     const successList: string[] = [];
     const errorList: string[] = [];
     let errorCode = ErrorCode.Default;
@@ -140,7 +146,7 @@ const handleSubmit = async () => {
         errorCode,
         role
     );
-
+    setCurrentTabState(TabKey.UserAccess);
     router.push('/dashboard');
 };
 

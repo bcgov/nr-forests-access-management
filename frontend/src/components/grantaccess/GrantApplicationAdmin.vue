@@ -13,6 +13,8 @@ import { setNotificationMsg } from '@/store/NotificationState';
 import LoginUserState from '@/store/FamLoginUserState';
 import { computed, ref } from 'vue';
 import { UserType } from 'fam-app-acsctl-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     userId: '',
@@ -100,6 +102,7 @@ const handleSubmit = async () => {
             );
         }
     }
+    setCurrentTabState(TabKey.AdminAccess);
     router.push('/dashboard');
 };
 </script>

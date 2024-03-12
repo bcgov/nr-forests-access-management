@@ -2,7 +2,6 @@ import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
 import {
-    fetchApplicationRoles,
     fetchApplicationAdmins,
     fetchUserRoleAssignments,
     fetchDelegatedAdmins,
@@ -10,7 +9,6 @@ import {
 import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
-    selectedApplication,
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
@@ -70,19 +68,7 @@ const beforeEnterGrantUserPermissionRoute = async (
         return { path: routeItems.dashboard.path };
     }
 
-    const appRolesFetchResult = await asyncWrap(
-        fetchApplicationRoles(selectedApplication.value!.id)
-    );
-    if (appRolesFetchResult.error) {
-        emitRouteToastError(appRolesFetchResult.error);
-        return { path: routeItems.dashboard.path };
-    }
-
     populateBreadcrumb([routeItems.dashboard, routeItems.grantUserPermission]);
-    // Passing fetched data to router.meta (so it is available for assigning to 'props' later)
-    Object.assign(to.meta, {
-        applicationRoleOptions: appRolesFetchResult.data,
-    });
     return true;
 };
 

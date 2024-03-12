@@ -27,6 +27,8 @@ const setSideNavOptions = () => {
 
         if (LoginUserState.isAdminOfSelectedApplication()) {
             disableSideNavOption('Add delegated admin', false);
+        } else {
+            disableSideNavOption('Add delegated admin', true);
         }
     }
 };
@@ -52,10 +54,7 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
 };
 </script>
 <template>
-    <Header
-        title="FAM"
-        subtitle="Forests Access Management"
-    />
+    <Header title="FAM" subtitle="Forests Access Management" />
 
     <SideNav :data="navigationData" />
     <div class="main">
