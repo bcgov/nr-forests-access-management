@@ -21,6 +21,8 @@ import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     domain: UserType.I,
@@ -144,7 +146,7 @@ const handleSubmit = async () => {
         errorCode,
         role
     );
-
+    setCurrentTabState(TabKey.UserAccess);
     router.push('/dashboard');
 };
 
