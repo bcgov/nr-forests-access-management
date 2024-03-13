@@ -80,6 +80,7 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+    resetNotification();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -100,6 +101,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
+    resetNotification();
     try {
         userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
@@ -119,6 +121,7 @@ const deleteUserRoleAssignment = async (
 };
 
 const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
+    resetNotification();
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id
@@ -139,6 +142,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 const deleteDelegatedAdminAssignment = async (
     delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
 ) => {
+    resetNotification();
     try {
         delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
             delegatedAdminAssignment.access_control_privilege_id
@@ -158,6 +162,7 @@ const deleteDelegatedAdminAssignment = async (
 
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
+    resetNotification();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 

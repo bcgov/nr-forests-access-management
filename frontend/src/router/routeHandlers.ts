@@ -14,6 +14,7 @@ import {
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
+import { resetNotification } from '@/store/NotificationState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -109,6 +110,7 @@ export const beforeEachRouteHandler = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
+    resetNotification()
     // Authentication guard. Always check first.
     if (to.meta.requiresAuth && !AuthService.isLoggedIn()) {
         // Only to compose this custom error, but not to throw.

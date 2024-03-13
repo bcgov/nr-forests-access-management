@@ -35,6 +35,7 @@ export const setNotificationMsg = (
     msg: string = '',
     fullMsg: string = ''
 ) => {
+    clearNotification(severity)
     notifications.value[severity].msg = msg;
     notifications.value[severity].fullMsg = fullMsg;
 };
