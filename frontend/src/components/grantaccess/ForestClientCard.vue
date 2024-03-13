@@ -33,8 +33,8 @@ const props = defineProps({
                             />
 
                             <Icon
-                                class="flex-grow-0 custom-carbon-icon-error--filled"
-                                icon="error--filled"
+                                class="flex-grow-0 custom-carbon-icon-misuse"
+                                icon="misuse"
                                 style="margin-right: 1rem"
                                 :size="IconSize.small"
                                 v-else
@@ -150,7 +150,7 @@ p * {
 }
 
 .custom-carbon-icon-checkmark--filled,
-.custom-carbon-icon-error--filled,
+.custom-carbon-icon-misuse,
 .custom-carbon-icon--trash-can {
     margin-right: 1rem !important;
     float: left;

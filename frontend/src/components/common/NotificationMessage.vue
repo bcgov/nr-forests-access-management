@@ -45,7 +45,7 @@ const closeNotification = () => {
                     props.severity === 'success'
                         ? 'checkmark--filled'
                         : props.severity === 'error'
-                        ? 'error--filled'
+                        ? 'misuse'
                         : 'warning--filled'
                 "
                 :size="IconSize.medium"

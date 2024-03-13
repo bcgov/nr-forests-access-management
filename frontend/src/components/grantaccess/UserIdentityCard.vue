@@ -20,8 +20,8 @@ const props = defineProps<{
             />
             <Icon
                 id="errorIcon"
-                class="custom-carbon-icon-error--filled"
-                icon="error--filled"
+                class="custom-carbon-icon-misuse"
+                icon="misuse"
                 :size="IconSize.small"
                 v-else
             />
