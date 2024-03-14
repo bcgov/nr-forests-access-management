@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.0...v1.12.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* [#1232](https://github.com/bcgov/nr-forests-access-management/issues/1232) add flyway script to add a new client role ([#1237](https://github.com/bcgov/nr-forests-access-management/issues/1237)) ([e744380](https://github.com/bcgov/nr-forests-access-management/commit/e744380fe2da4f1282cc82a9ccc4d8c04968965e))
+
 ## [1.12.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.11.0...v1.12.0) (2024-02-16)
 
 
