@@ -23,7 +23,7 @@
             {
                 "name": "Add delegated admin",
                 "icon": "enterprise",
-                "link": "#",
+                "link": "/grant-delegated-admin",
                 "disabled": true
             }
         ]
