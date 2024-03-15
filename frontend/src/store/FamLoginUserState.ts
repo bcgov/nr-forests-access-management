@@ -64,7 +64,11 @@ const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
         )[0];
         return access.grants
             .map((grant) => grant.application)
-            .sort((first, second) => first.id - second.id);
+            .sort((first, second) => {
+                if(first.name < second.name) return -1
+                if(first.name > second.name) return 1
+                return 0
+            })
     }
 };
 
@@ -103,7 +107,11 @@ const getApplicationsUserAdministers = () => {
                 });
             }
         });
-        applicationList.sort((first, second) => first.id - second.id);
+        applicationList.sort((first, second) => {
+            if(first.name < second.name) return -1
+            if(first.name > second.name) return 1
+            return 0
+        });
         if (famApp) applicationList.unshift(famApp); // add FAM to the first if FAM Admin.
     }
 
@@ -173,6 +181,7 @@ const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
             return item.application.id === application_id;
         });
 
+        console.log(grantAppData)
     return grantAppData?.roles!;
 };
 
@@ -185,7 +194,11 @@ const getCachedAppRolesForDelegatedAdmin = (
             return item.application.id === application_id;
         });
 
-    return grantAppData?.roles!;
+    return grantAppData?.roles!.sort((first, second) => {
+        if(first.name < second.name) return -1
+        if(first.name > second.name) return 1
+        return 0
+    });
 };
 
 // --- export
