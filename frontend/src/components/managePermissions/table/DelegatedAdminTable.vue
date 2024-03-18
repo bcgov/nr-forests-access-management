@@ -1,37 +1,40 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType } from 'vue';
+import { ref, reactive, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
-import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
-import Button from '@/components/common/Button.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import { IconSize } from '@/enum/IconEnum';
+import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
 
-type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
+type emit = (
+    e: 'deleteDelegatedAdminAssignment',
+    item: FamAccessControlPrivilegeGetResponse
+) => void;
 
 const props = defineProps({
     loading: {
         type: Boolean,
         default: false,
     },
-    applicationAdmins: {
-        type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
+    delegatedAdmins: {
+        type: [Array] as PropType<
+            FamAccessControlPrivilegeGetResponse[] | undefined
+        >,
         required: true,
     },
 });
 
-const adminFilters = ref({
+const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'user.user_type.description': {
@@ -42,11 +45,19 @@ const adminFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'application.app_environment': {
+    'role.parent_role.role_name': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'role.client_number.forest_client_number': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
 });
+
+const delegatedAdminSearchChange = (newvalue: string) => {
+    delegatedAdminFilters.value.global.value = newvalue;
+};
 
 const confirm = useConfirm();
 
@@ -54,47 +65,49 @@ const emit = defineEmits<emit>();
 
 const confirmDeleteData = reactive({
     adminName: '',
-    role: 'ADMIN',
+    role: '',
 });
 
-const adminSearchChange = (newvalue: string) => {
-    adminFilters.value.global.value = newvalue;
-};
-
-const deleteAdmin = (admin: FamAppAdminGetResponse) => {
-    confirmDeleteData.adminName = admin.user.user_name;
+const deleteDelegatedAdmin = (
+    delegatedAdmin: FamAccessControlPrivilegeGetResponse
+) => {
+    confirmDeleteData.adminName = delegatedAdmin.user.user_name;
+    confirmDeleteData.role = delegatedAdmin.role.parent_role
+        ? delegatedAdmin.role.parent_role.role_name
+        : delegatedAdmin.role.role_name;
     confirm.require({
-        group: 'deleteAdmin',
-        header: 'Remove Access',
+        group: 'deleteDelegatedAdmin',
+        header: 'Remove Privilege',
         rejectLabel: 'Cancel',
         acceptLabel: 'Remove',
         accept: () => {
-            emit('deleteAppAdmin', admin);
+            emit('deleteDelegatedAdminAssignment', delegatedAdmin);
         },
     });
 };
 </script>
 
 <template>
-    <ConfirmDialog group="deleteAdmin">
+    <ConfirmDialog group="deleteDelegatedAdmin">
         <template #message>
-            <ConfirmDialogtext
+            <ConfirmDialogText
                 :userName="confirmDeleteData.adminName"
                 :role="confirmDeleteData.role"
+                customMsg="privilege"
             />
         </template>
     </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
             <DataTableHeader
-                btnLabel="Add application admin"
-                :btnRoute="routeItems.grantAppAdmin.path"
-                :filter="adminFilters['global'].value"
-                @change="adminSearchChange"
+                btnLabel="Create delegated admin"
+                :btnRoute="routeItems.grantDelegatedAdmin.path"
+                :filter="delegatedAdminFilters['global'].value"
+                @change="delegatedAdminSearchChange"
             />
             <DataTable
-                v-model:filters="adminFilters"
-                :value="props.applicationAdmins"
+                v-model:filters="delegatedAdminFilters"
+                :value="props.delegatedAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -102,10 +115,10 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 :loading="props.loading"
                 :globalFilterFields="[
                     'user.user_name',
-                    'application.application_name',
                     'user.user_type.description',
                     'role.role_name',
-                    'application.app_environment',
+                    'role.parent_role.role_name',
+                    'role.client_number.forest_client_number',
                 ]"
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
@@ -115,8 +128,8 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column
                     header="User Name"
-                    sortable
                     field="user.user_name"
+                    sortable
                 >
                     <template #body="{ data }">
                         <span>
@@ -130,33 +143,28 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     sortable
                 ></Column>
                 <Column
-                    field="application.application_name"
-                    header="Application"
-                    sortable
-                ></Column>
-                <Column
-                    field="application.app_environment"
-                    header="Environment"
-                    sortable
-                ></Column>
-                <Column
-                    field="role.role_name"
-                    header="Role"
+                    field="role.client_number.forest_client_number"
+                    header="Client ID"
                     sortable
                 >
-                    <template #body="{ data }"> Admin </template></Column
+                </Column>
+                <Column
+                    header="Role Enabled To Assign"
+                    sortable
                 >
+                    <template #body="{ data }">
+                        {{
+                            data.role.parent_role
+                                ? data.role.parent_role.role_name
+                                : data.role.role_name
+                        }}
+                    </template>
+                </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <!-- Hidden until functionality is available
-                            <button
-                                class="btn btn-icon"
-                            >
-                                <Icon icon="edit" :size="IconSize.small"/>
-                            </button> -->
                         <button
                             class="btn btn-icon"
-                            @click="deleteAdmin(data)"
+                            @click="deleteDelegatedAdmin(data)"
                         >
                             <Icon
                                 icon="trash-can"

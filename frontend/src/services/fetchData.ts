@@ -1,18 +1,16 @@
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import type {
+    FamAppAdminGetResponse,
+    FamAccessControlPrivilegeGetResponse,
+} from 'fam-admin-mgmt-api/model';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { AppActlApiService, AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { setApplicationsUserAdministers } from '@/store/ApplicationState';
+import {
+    AppActlApiService,
+    AdminMgmtApiService,
+} from '@/services/ApiServiceFactory';
+import FamLoginUserState from '@/store/FamLoginUserState';
+import { selectedApplicationId } from '@/store/ApplicationState';
 
 // --- Fetching data (from backend)
-
-export const fetchApplications = async () => {
-    const applications = (
-        await AppActlApiService.applicationsApi.getApplications()
-    ).data;
-
-    // State change.
-    setApplicationsUserAdministers(applications);
-};
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined
@@ -46,7 +44,7 @@ export const fetchUserRoleAssignments = async (
  * @param userRoleXrefId id to delete fam_user_role_assignment record.
  * @param applicationId id to fetch and refresh fam_user_role_assignment records with the applicationId.
  */
-export const deletAndRefreshUserRoleAssignments = async (
+export const deleteAndRefreshUserRoleAssignments = async (
     userRoleXrefId: number,
     applicationId: number
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
@@ -58,18 +56,9 @@ export const deletAndRefreshUserRoleAssignments = async (
     return fetchUserRoleAssignments(applicationId);
 };
 
-export const fetchApplicationRoles = async (
-    applicationId: number
-) => {
-    const applicationRoles = (
-        await AppActlApiService.applicationsApi.getFamApplicationRoles(
-            applicationId
-        )
-    ).data;
-    return applicationRoles;
-};
-
-export const fetchApplicationAdmins = async (): Promise<FamAppAdminGetResponse[]> => {
+export const fetchApplicationAdmins = async (): Promise<
+    FamAppAdminGetResponse[]
+> => {
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
@@ -81,7 +70,7 @@ export const fetchApplicationAdmins = async (): Promise<FamAppAdminGetResponse[]
             second.user.user_name
         );
 
-        return userNameCompare
+        return userNameCompare;
     });
 
     return applicationAdmins;
@@ -93,11 +82,53 @@ export const fetchApplicationAdmins = async (): Promise<FamAppAdminGetResponse[]
  * @param applicationAdminId id to delete fam_user_role_assignment record.
  */
 export const deleteAndRefreshApplicationAdmin = async (
-    applicationAdminId: number,
+    applicationAdminId: number
 ): Promise<FamAppAdminGetResponse[]> => {
     await AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
         applicationAdminId
     );
     // When deletion is successful, refresh (fetch) for frontend state.
     return fetchApplicationAdmins();
+};
+
+export const fetchDelegatedAdmins = async (
+    applicationId: number | undefined
+): Promise<FamAccessControlPrivilegeGetResponse[]> => {
+    if (!applicationId || !FamLoginUserState.isAdminOfSelectedApplication()) {
+        return [];
+    }
+
+    const delegatedAdmins = (
+        await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
+            applicationId!
+        )
+    ).data;
+
+    // Default sorting
+    delegatedAdmins.sort((first, second) => {
+        // By user_name
+        const userNameCompare = first.user.user_name.localeCompare(
+            second.user.user_name
+        );
+
+        return userNameCompare;
+    });
+
+    return delegatedAdmins;
+
+};
+
+/**
+ * This will call api to delete delegatedAdminPrivilege record from backend and fetch again
+ * to refresh the state.
+ * @param accessPrivilegegId id to delete delegated admin accesss record.
+ */
+export const deleteAndRefreshDelegatedAdmin = async (
+    accessPrivilegegId: number
+): Promise<FamAccessControlPrivilegeGetResponse[]> => {
+    await AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
+        accessPrivilegegId
+    );
+    // When deletion is successful, refresh (fetch) for frontend state.
+    return fetchDelegatedAdmins(selectedApplicationId.value);
 };

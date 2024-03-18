@@ -6,7 +6,7 @@ import authService from '@/services/AuthService';
  * This component is to deal with Auth callback.
  */
 
-authService.methods.handlePostLogin().then((data) => {
+authService.handlePostLogin().then((data) => {
     router.push('/dashboard');
 });
 </script>

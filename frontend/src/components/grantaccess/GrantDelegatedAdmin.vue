@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import router from '@/router';
+import { ref, computed } from 'vue';
 import { Form as VeeForm } from 'vee-validate';
-import { computed, ref } from 'vue';
-
+import { useConfirm } from 'primevue/useconfirm';
+import ConfirmDialog from 'primevue/confirmdialog';
+import router from '@/router';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
+import LoginUserState from '@/store/FamLoginUserState';
 import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
-    selectedApplicationDisplayText,
     selectedApplicationId,
+    selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
-import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
-import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
-import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
-import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-import FamLoginUserState from '@/store/FamLoginUserState';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { formValidationSchema } from '@/services/utils';
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { UserType } from 'fam-app-acsctl-api';
+import type {
+    FamRoleDto,
+    FamAccessControlPrivilegeCreateRequest,
+} from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
+
+const confirm = useConfirm();
 
 const defaultFormData = {
     domain: UserType.I,
@@ -31,16 +33,9 @@ const defaultFormData = {
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
-const applicationRoleOptions = computed(() => {
-    if (FamLoginUserState.isAdminOfSelectedApplication()) {
-        return FamLoginUserState.getCachedAppRoles(
-            selectedApplicationId.value!
-        );
-    } else {
-        return FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
-            selectedApplicationId.value!
-        );
-    }
+
+const delegatedRoleOptions = computed(() => {
+    return LoginUserState.getCachedAppRoles(selectedApplicationId.value!);
 });
 
 /* ------------------ User information method ------------------------- */
@@ -60,7 +55,7 @@ const setVerifyUserIdPassed = (verifiedResult: boolean) => {
 
 /* ------------------- Role selection method -------------------------- */
 const getSelectedRole = (): FamRoleDto | undefined => {
-    return applicationRoleOptions?.value.find(
+    return delegatedRoleOptions?.value.find(
         (item) => item.id === formData.value.roleId
     );
 };
@@ -106,73 +101,99 @@ const areVerificationsPassed = () => {
     );
 };
 
-const handleSubmit = async () => {
+const confirmSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
-    const errorList: string[] = [];
+    let errorList: string[] = [];
     let errorCode = ErrorCode.Default;
+    const data = toRequestPayload(formData.value);
 
-    // when we assign a concrete a role to the user, there is no forest client number,
-    // we add an empty string to the success or error list,
-    // so the successList or errorList will be [''] for granting concrete role,
-    // or ["00001011", "00001012", ...] for granting abstract role,
-    // the composeAndPushGrantPermissionNotification method will handle both cases
-    do {
-        const forestClientNumber = formData.value.verifiedForestClients.pop();
-        const data = toRequestPayload(formData.value, forestClientNumber);
-        try {
-            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+    try {
+        const returnResponse =
+            await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
                 data
             );
-            successList.push(forestClientNumber ?? '');
-        } catch (error: any) {
-            if (error.response?.status === 409) {
-                errorCode = ErrorCode.Conflict;
-            } else if (
-                error.response?.data.detail.code === 'self_grant_prohibited'
-            ) {
-                errorCode = ErrorCode.SelfGrantProhibited;
+        returnResponse.data.forEach((response) => {
+            const forestClientNumber =
+                response.detail.role.client_number?.forest_client_number;
+            if (response.status_code == 200) {
+                successList.push(forestClientNumber ?? '');
+            } else {
+                if (response.status_code == 409) errorCode = ErrorCode.Conflict;
+                errorList.push(forestClientNumber ?? '');
             }
-            errorList.push(forestClientNumber ?? '');
+        });
+    } catch (error: any) {
+        // error happens here will fail adding all forest client numbers
+        if (error.response?.data.detail.code === 'self_grant_prohibited') {
+            errorCode = ErrorCode.SelfGrantProhibited;
         }
-    } while (formData.value.verifiedForestClients.length > 0);
-
+        // if has forest clientn number, set errorList to be the verifiedForestClients list
+        // if not, set to be [''] for concrete role, the composeAndPushGrantPermissionNotification will handle both cases
+        errorList =
+            formData.value.verifiedForestClients.length > 0
+                ? formData.value.verifiedForestClients
+                : [''];
+    }
     composeAndPushGrantPermissionNotification(
-        GrantPermissionType.Regular,
+        GrantPermissionType.DelegatedAdmin,
         username,
         successList,
         errorList,
         errorCode,
         role
     );
-    setCurrentTabState(TabKey.UserAccess);
+    setCurrentTabState(TabKey.DelegatedAdminAccess);
     router.push('/dashboard');
 };
 
-function toRequestPayload(formData: any, forestClientNumber: string) {
+function toRequestPayload(formData: any) {
     const request = {
         user_name: formData.userId,
         user_type_code: formData.domain,
         role_id: formData.roleId,
-        ...(forestClientNumber
+        ...(formData.verifiedForestClients.length > 0
             ? {
-                  forest_client_number: forestClientNumber.padStart(
-                      FOREST_CLIENT_INPUT_MAX_LENGTH,
-                      '0'
-                  ),
+                  forest_client_numbers: formData.verifiedForestClients,
               }
             : {}),
-    } as FamUserRoleAssignmentCreate;
+    } as FamAccessControlPrivilegeCreateRequest;
     return request;
+}
+
+function handleSubmit() {
+    confirm.require({
+        group: 'addDelegatedAdmin',
+        header: 'Add a delegated admin',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Submit delegated admin',
+        acceptClass: 'dialog-accept-button',
+        accept: () => {
+            confirmSubmit();
+        },
+    });
 }
 </script>
 
 <template>
+    <ConfirmDialog group="addDelegatedAdmin">
+        <template #message>
+            <p>
+                Are you sure you want to add
+                <strong>{{ formData.userId.toUpperCase() }}</strong> as a
+                delegated admin? As a delegated admin <br />
+                <strong>{{ formData.userId.toUpperCase() }}</strong> will be
+                able to add, edit or delete users
+            </p>
+        </template>
+    </ConfirmDialog>
+
     <PageTitle
-        title="Add user permission"
-        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
+        title="Add a delegated admin"
+        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
+
     <VeeForm
         ref="form"
         v-slot="{ meta }"
@@ -180,7 +201,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
         as="div"
     >
         <div class="page-body">
-            <form id="grantAccessForm" class="form-container">
+            <form id="grantDelegatedForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
                         :domain="formData.domain"
@@ -195,12 +216,13 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                 </StepContainer>
 
                 <StepContainer
-                    title="Add user roles"
+                    title="Add the role a delegated admin can assign"
                     :divider="isAbstractRoleSelected()"
                 >
                     <RoleSelect
                         :roleId="formData.roleId"
-                        :roleOptions="applicationRoleOptions"
+                        :roleOptions="delegatedRoleOptions"
+                        label="Assign a role the delgated admin can manage"
                         @change="roleSelectChange"
                         @resetVerifiedForestClients="resetVerifiedForestClients"
                     />
@@ -226,7 +248,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                 <div class="button-stack">
                     <Button
                         type="button"
-                        id="grantAccessCancel"
+                        id="grantDelegatedCancel"
                         class="w100"
                         severity="secondary"
                         label="Cancel"
@@ -236,7 +258,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                     >
                     <Button
                         type="button"
-                        id="grantAccessSubmit"
+                        id="grantDelegatedSubmit"
                         class="w100"
                         label="Submit Application"
                         :disabled="
@@ -252,3 +274,28 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
         </div>
     </VeeForm>
 </template>
+<style lang="scss">
+@use '@bcgov-nr/nr-theme/design-tokens/light-buttons.scss' as lightButton;
+@use 'sass:map';
+
+.dialog-accept-button {
+    border: 0.0625rem solid
+        map.get(lightButton.$light-button-token-overrides, 'button-primary') !important;
+    background-color: map.get(
+        lightButton.$light-button-token-overrides,
+        'button-primary'
+    ) !important;
+}
+
+.dialog-accept-button:hover {
+    border: 0.0625rem solid
+        map.get(
+            lightButton.$light-button-token-overrides,
+            'button-primary-hover'
+        ) !important;
+    background-color: map.get(
+        lightButton.$light-button-token-overrides,
+        'button-primary-hover'
+    ) !important;
+}
+</style>

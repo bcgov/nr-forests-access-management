@@ -57,7 +57,7 @@ describe('Landing', () => {
     });
     it('should button Login with IDIR be clicked', async () => {
         const button = wrapper.get('#login-idir-button');
-        const loginSpy = vi.spyOn(AuthService.methods, 'login');
+        const loginSpy = vi.spyOn(AuthService, 'login');
         await button.trigger('click');
         expect(loginSpy).toHaveBeenCalled();
     });
