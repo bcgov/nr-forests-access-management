@@ -16,10 +16,8 @@ const organization = LoginUserState.state.value.famLoginUser!.organization;
 // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
 const idpProvider =
     LoginUserState.state.value.famLoginUser!.idpProvider?.split('-')[1];
-let userType = '';
-if (idpProvider == 'IDIR') {
-    userType = IdpProvider.IDIR;
-} else if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
+let userType = IdpProvider.IDIR;
+if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -72,8 +70,7 @@ const adminRoles = computed(() => {
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-userid">UserID: {{ userName }}</p>
-                    <p class="profile-usertype">IDP Type: {{ userType }}</p>
+                    <p class="profile-userid">{{ userType }}: {{ userName }}</p>
                     <p class="profile-organization" v-if="organization">
                         Organization: {{ organization }}
                     </p>
@@ -161,7 +158,6 @@ const adminRoles = computed(() => {
 
     .profile-name,
     .profile-userid,
-    .profile-usertype,
     .profile-organization,
     .profile-email {
         margin-bottom: 0.375rem;
@@ -197,7 +193,6 @@ const adminRoles = computed(() => {
 }
 
 .profile-userid,
-.profile-usertype,
 .profile-organization,
 .profile-email,
 .profile-admin-level,
