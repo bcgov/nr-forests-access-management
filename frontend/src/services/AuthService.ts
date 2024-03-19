@@ -31,7 +31,7 @@ const loginBceid = async () => {
 };
 
 const logout = async () => {
-    Auth.signOut();
+    await Auth.signOut();
     LoginUserState.removeFamUser();
     console.log('User logged out.');
 };
