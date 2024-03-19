@@ -64,9 +64,7 @@ const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
         )[0];
         return access.grants
             .map((grant) => grant.application)
-            .sort((first, second) => {
-                return first.description < second.description ? -1 : 1
-            })
+            .sort((first, second) => first.id - second.id);
     }
 };
 

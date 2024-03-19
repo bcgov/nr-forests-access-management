@@ -32,22 +32,15 @@ const defaultFormData = {
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const applicationRoleOptions = computed(() => {
-    let roleOptions
     if (FamLoginUserState.isAdminOfSelectedApplication()) {
-        roleOptions = FamLoginUserState.getCachedAppRoles(
+        return FamLoginUserState.getCachedAppRoles(
             selectedApplicationId.value!
         );
     } else {
-        roleOptions = FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
+        return FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
             selectedApplicationId.value!
         );
     }
-
-    roleOptions.sort((first, second) => {
-        return first.name < second.name ? -1 : 1
-        })
-
-    return roleOptions
 });
 
 /* ------------------ User information method ------------------------- */
