@@ -24,7 +24,7 @@ const props = defineProps({
     },
 });
 
-const showSeeAll = ref(props.hasFullMsg as Boolean);
+const showSeeAll = ref(props.hasFullMsg as boolean);
 
 const closeNotification = () => {
     clearNotification(props.severity);
