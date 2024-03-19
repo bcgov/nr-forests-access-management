@@ -110,7 +110,6 @@ export const beforeEachRouteHandler = async (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
 ) => {
-    resetNotification()
     // Authentication guard. Always check first.
     if (to.meta.requiresAuth && !AuthService.isLoggedIn()) {
         // Only to compose this custom error, but not to throw.

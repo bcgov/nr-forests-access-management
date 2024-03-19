@@ -147,6 +147,7 @@ p * {
 .org-status-wrapper {
     padding-top: 0.2rem;
     margin-right: 2rem;
+    margin-top: 0.1rem;
 }
 
 .custom-carbon-icon-checkmark--filled,
@@ -156,13 +157,6 @@ p * {
     float: left;
 }
 
-.status {
-    margin-bottom: 0.6rem !important;
-}
-
-.org-status-wrapper {
-    margin-top: 0.1rem;
-}
 .status {
     margin-bottom: 0.6rem !important;
 }
