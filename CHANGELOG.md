@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.13.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.0...v1.13.0) (2024-03-19)
+
+
+### Features
+
+* [#1144](https://github.com/bcgov/nr-forests-access-management/issues/1144) call api after login and cache results ([#1200](https://github.com/bcgov/nr-forests-access-management/issues/1200)) ([88d18e5](https://github.com/bcgov/nr-forests-access-management/commit/88d18e5911a756bf53bce48dbde841d8e7e2f7d6))
+* [#1145](https://github.com/bcgov/nr-forests-access-management/issues/1145) use cached access for applications list ([#1209](https://github.com/bcgov/nr-forests-access-management/issues/1209)) ([ac55350](https://github.com/bcgov/nr-forests-access-management/commit/ac55350d17dd380bd60c48ccebe365db07bdbb91))
+* [#1147](https://github.com/bcgov/nr-forests-access-management/issues/1147) get list of roles from cache ([#1229](https://github.com/bcgov/nr-forests-access-management/issues/1229)) ([8f18c47](https://github.com/bcgov/nr-forests-access-management/commit/8f18c47b5c144185bcca2c464193e166ff57366a))
+* [#1149](https://github.com/bcgov/nr-forests-access-management/issues/1149) delegated admin table screen ([#1211](https://github.com/bcgov/nr-forests-access-management/issues/1211)) ([8d39e2f](https://github.com/bcgov/nr-forests-access-management/commit/8d39e2f32354ed0a3ac6ec348996a09a0468ce57))
+* [#1150](https://github.com/bcgov/nr-forests-access-management/issues/1150) navigation to grant delegated admin screen ([#1228](https://github.com/bcgov/nr-forests-access-management/issues/1228)) ([44733c3](https://github.com/bcgov/nr-forests-access-management/commit/44733c36235b92476615d2a228ccfed7abac5d87))
+* [#1159](https://github.com/bcgov/nr-forests-access-management/issues/1159) add delegated admin form ([#1212](https://github.com/bcgov/nr-forests-access-management/issues/1212)) ([02395db](https://github.com/bcgov/nr-forests-access-management/commit/02395dbc632afa7e1b9234830db9fb995766b84a))
+* [#1160](https://github.com/bcgov/nr-forests-access-management/issues/1160) submit delegated admin form ([#1220](https://github.com/bcgov/nr-forests-access-management/issues/1220)) ([7d7e01d](https://github.com/bcgov/nr-forests-access-management/commit/7d7e01dd13d6f7ab8e289789a5e80b76d28c5f34))
+* [#1163](https://github.com/bcgov/nr-forests-access-management/issues/1163) delete delegated admin function ([#1219](https://github.com/bcgov/nr-forests-access-management/issues/1219)) ([469c1e9](https://github.com/bcgov/nr-forests-access-management/commit/469c1e96ba04578840b0fd69e6c3ec839e72a83a))
+* [#1180](https://github.com/bcgov/nr-forests-access-management/issues/1180) add backend api to verify bceid ([#1218](https://github.com/bcgov/nr-forests-access-management/issues/1218)) ([e1bc451](https://github.com/bcgov/nr-forests-access-management/commit/e1bc451fb8afa4f6831be6024e0eaa93cc461d4e))
+
+
+### Bug Fixes
+
+* [#1224](https://github.com/bcgov/nr-forests-access-management/issues/1224) - Delegated Admin Table Disappears On Sign Out ([#1248](https://github.com/bcgov/nr-forests-access-management/issues/1248)) ([ac24c9c](https://github.com/bcgov/nr-forests-access-management/commit/ac24c9c760705de6eb7bbe668779456542126257))
+* [#1232](https://github.com/bcgov/nr-forests-access-management/issues/1232) Merge hotfix branch for adding new forest client role ([#1244](https://github.com/bcgov/nr-forests-access-management/issues/1244)) ([57be90f](https://github.com/bcgov/nr-forests-access-management/commit/57be90f3806d654976f3c7e3bbe97449615814ed))
+* [#1247](https://github.com/bcgov/nr-forests-access-management/issues/1247) [#1233](https://github.com/bcgov/nr-forests-access-management/issues/1233) Merge hotfix to add new client role, update client redirect urls  ([#1251](https://github.com/bcgov/nr-forests-access-management/issues/1251)) ([9c220ab](https://github.com/bcgov/nr-forests-access-management/commit/9c220abbfbf350efb24e3e1bece9d4592492e379))
+
+
+### Miscellaneous
+
+* **deps:** update dependency cryptography to v42.0.4 [security] ([#1208](https://github.com/bcgov/nr-forests-access-management/issues/1208)) ([5668013](https://github.com/bcgov/nr-forests-access-management/commit/5668013bb8112802dc146a67d27b700f9e1eb24b))
+
 ## [1.12.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.1...v1.12.2) (2024-03-18)
 
 
