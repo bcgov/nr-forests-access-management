@@ -124,6 +124,19 @@ export const beforeEachRouteHandler = async (
         return { path: routeItems.landing.path };
     }
 
+    // if the login user does not have any access, return access error
+    if (
+        to.path !== '/' &&
+        LoginUserState.state.value.famLoginUser?.accesses?.length == 0
+    ) {
+        const routeError = new FamRouteError(
+            RouteErrorName.NOT_AUTHENTICATED_ERROR,
+            'You do not have any access in FAM',
+            { to, from }
+        );
+        emitRouteToastError(routeError);
+    }
+
     // Application selected guard.
     if (to.meta.requiresAppSelected && !isApplicationSelected.value) {
         const routeError = new FamRouteError(
