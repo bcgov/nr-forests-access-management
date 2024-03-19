@@ -206,12 +206,6 @@ variable "cognito_app_client_logout_chain_url" {
 
 # Variables for FAM front-end config
 
-variable "frontend_logout_chain_url" {
-  description = "Url of Siteminder and Keycloak logout chain for frontend"
-  type = string
-  default = "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-}
-
 variable "front_end_redirect_path" {
   description = "Path to public FAM front-end (for redirect URI)"
   type = string
