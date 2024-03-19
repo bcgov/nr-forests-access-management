@@ -238,6 +238,11 @@ variable "fam_console_idp_name" {
   type = string
 }
 
+variable "fam_console_idp_name_bceid" {
+  description = "Identifies which version of BUSINESS BCEID to use (DEV, TEST, or PROD)"
+  type = string
+}
+
 variable "minimum_oidc_attribute_list" {
   description = "Required fields for FAM clients to be able to read and write"
   type        = list(string)

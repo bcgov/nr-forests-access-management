@@ -24,6 +24,7 @@ export interface FamLoginUser {
     idpProvider?: string; // from ID Token's ['identities']['providerName'] attribute.
     authToken?: CognitoUserSession; // original JWT token from AWS Cognito (ID && Access Tokens).
     accesses?: FamAuthGrantDto[]; // admin privileges retrieved from backend.
+    organization?: string;
 }
 
 const state = ref({
