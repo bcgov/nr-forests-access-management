@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.1...v1.12.2) (2024-03-18)
+
+
+### Bug Fixes
+
+* [#1247](https://github.com/bcgov/nr-forests-access-management/issues/1247) [#1233](https://github.com/bcgov/nr-forests-access-management/issues/1233) add new client role, update client redirect urls ([#1249](https://github.com/bcgov/nr-forests-access-management/issues/1249)) ([2a79595](https://github.com/bcgov/nr-forests-access-management/commit/2a79595189e3bf3ccce56fc73218d25c6ec52ec0))
+
 ## [1.12.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.0...v1.12.1) (2024-03-14)
 
 
