@@ -44,9 +44,7 @@ const applicationRoleOptions = computed(() => {
     }
 
     roleOptions.sort((first, second) => {
-            if(first.name < second.name) return -1
-            if(first.name > second.name) return 1
-            return 0
+        return first.name < second.name ? -1 : 1
         })
 
     return roleOptions
