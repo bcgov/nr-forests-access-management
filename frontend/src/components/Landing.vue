@@ -32,8 +32,7 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                     outlined
                     label="Login with BCeID"
                     id="login-bceid-button"
-                    disabled
-                    @click="AuthService.login()"
+                    @click="AuthService.loginBceid()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>

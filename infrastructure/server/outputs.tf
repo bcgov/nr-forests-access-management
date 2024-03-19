@@ -51,3 +51,8 @@ output "fam_console_idp_name" {
   description = "Identifies which version of IDIR to use (DEV, TEST, or PROD)"
   value = var.fam_console_idp_name
 }
+
+output "fam_console_idp_name_bceid" {
+  description = "Identifies which version of BUSINESS BCEID to use (DEV, TEST, or PROD)"
+  value = var.fam_console_idp_name_bceid
+}
