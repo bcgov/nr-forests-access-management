@@ -45,5 +45,6 @@ VALUES
 ('JFERREIR','I','test-idir_278f48bd9mangledf7e618d@idir',CURRENT_USER),
 ('NSAGLION','I','test-idir_3f1414bd1mangled18a1293c40@idir',CURRENT_USER),
 ('CMENG','I','test-idir_a9888e8ac6a04mangled35df625bf@idir',CURRENT_USER),
-('OLIBERCH','I','test-idir_b7e191fa11dmangled9df1854b71@idir',CURRENT_USER);
+('OLIBERCH','I','test-idir_b7e191fa11dmangled9df1854b71@idir',CURRENT_USER),
+('LOAD-3-TEST', 'B', 'test-bceidbusiness_81069f39b35b4861bdmangled9dcd010582b63b112@bceidbusiness',CURRENT_USER);
 
