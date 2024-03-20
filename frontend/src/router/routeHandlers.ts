@@ -14,7 +14,6 @@ import {
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
-import { resetNotification } from '@/store/NotificationState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
