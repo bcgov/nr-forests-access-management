@@ -11,7 +11,8 @@ import GrantAccessView from '@/views/GrantAccessView.vue';
 import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import { FAM_ADMIN_ROLE } from '@/store/Constants';
+import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
+import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -63,7 +64,8 @@ const routes = [
             return {
                 // userRoleAssignments is ready for the `component` as props.
                 userRoleAssignments: route.meta.userRoleAssignments,
-                applicationAdmins: route.meta.applicationAdmins
+                applicationAdmins: route.meta.applicationAdmins,
+                delegatedAdmins: route.meta.delegatedAdmins,
             };
         },
     },
@@ -79,12 +81,6 @@ const routes = [
         },
         component: GrantAccessView,
         beforeEnter: beforeEnterHandlers[routeItems.grantUserPermission.name],
-        props: (route: any) => {
-            return {
-                // options is ready for the `component` as props.
-                applicationRoleOptions: route.meta.applicationRoleOptions,
-            };
-        },
     },
     {
         path: routeItems.grantAppAdmin.path,
@@ -92,13 +88,27 @@ const routes = [
         meta: {
             requiresAuth: true,
             requiresAppSelected: true,
-            requiredPrivileges: [FAM_ADMIN_ROLE],
+            requiredPrivileges: [AdminRoleAuthGroup.FamAdmin],
             title: routeItems.grantAppAdmin.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
         },
         component: GrantApplicationAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
+    },
+    {
+        path: routeItems.grantDelegatedAdmin.path,
+        name: routeItems.grantDelegatedAdmin.name,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: true,
+            requiredPrivileges: [AdminRoleAuthGroup.AppAdmin],
+            title: routeItems.grantDelegatedAdmin.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true,
+        },
+        component: GrantDelegatedAdminView,
+        beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
     },
     {
         path: '/authCallback',

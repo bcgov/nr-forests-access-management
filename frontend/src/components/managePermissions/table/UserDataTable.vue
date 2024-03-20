@@ -11,6 +11,11 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import {
+    TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
+    TABLE_PAGINATOR_TEMPLATE,
+    TABLE_ROWS_PER_PAGE,
+} from '@/store/Constants';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
@@ -75,7 +80,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         header: 'Remove Access',
         rejectLabel: 'Cancel',
         acceptLabel: 'Remove',
-        acceptClass: 'p-button-danger',
         accept: () => {
             emit('deleteUserRoleAssignment', assignment);
         },
@@ -105,7 +109,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :value="props.userRoleAssignments"
                 paginator
                 :rows="50"
-                :rowsPerPageOptions="[5, 10, 15, 20, 50, 100]"
+                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
                 filterDisplay="menu"
                 :loading="props.loading"
                 :globalFilterFields="[
@@ -115,13 +119,17 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     'role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
-                paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
-                currentPageReportTemplate="{first} - {last} of {totalRecords} items"
+                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column header="User Name" sortable field="user.user_name">
+                <Column
+                    header="User Name"
+                    sortable
+                    field="user.user_name"
+                >
                     <template #body="{ data }">
                         <span>
                             {{ data.user.user_name }}
@@ -155,7 +163,11 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     header="Client ID"
                     sortable
                 ></Column>
-                <Column field="role.role_name" header="Role" sortable>
+                <Column
+                    field="role.role_name"
+                    header="Role"
+                    sortable
+                >
                     <template #body="{ data }">
                         {{
                             data.role.parent_role
@@ -176,7 +188,10 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
                         >
-                            <Icon icon="trash-can" :size="IconSize.small" />
+                            <Icon
+                                icon="trash-can"
+                                :size="IconSize.small"
+                            />
                         </button>
                     </template>
                 </Column>

@@ -46,7 +46,7 @@ const props = defineProps({
 
             <a
                 title="Profile"
-                v-if="authService.getters.isLoggedIn()"
+                v-if="authService.isLoggedIn()"
                 @click="profileSidebarState.toggleVisible()"
             >
                 <Icon icon="user--avatar" :size="IconSize.medium" />

@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { object, string } from 'yup';
 import router from '@/router';
 import Dropdown from 'primevue/dropdown';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { UserType, type FamApplication } from 'fam-app-acsctl-api';
 import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
-import type { FamApplicationGetResponse } from 'fam-admin-mgmt-api/model/fam-application-get-response';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
-
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
+import LoginUserState from '@/store/FamLoginUserState';
+import { computed, ref } from 'vue';
+import { UserType } from 'fam-app-acsctl-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     userId: '',
@@ -28,13 +29,8 @@ const formValidationSchema = object({
     application: object().required('Application is required'),
 });
 
-const applications = ref<FamApplicationGetResponse[]>();
-
-// This is going to be changed when the new backend API is ready
-onMounted(async () => {
-    applications.value = (
-        await AdminMgmtApiService.applicationsApi.getApplications()
-    ).data;
+const applicationOptions = computed(() => {
+    return LoginUserState.getAppsForFamAdminRole();
 });
 
 /* ------------------ User information method ------------------------- */
@@ -55,7 +51,7 @@ const cancelForm = () => {
 const toRequestPayload = (formData: any) => {
     const request = {
         user_name: formData.userId,
-        application_id: formData.application.application_id,
+        application_id: formData.application.id,
         user_type_code: UserType.I,
     } as FamAppAdminCreateRequest;
     return request;
@@ -63,41 +59,51 @@ const toRequestPayload = (formData: any) => {
 
 const handleSubmit = async () => {
     const data = toRequestPayload(formData.value);
-    await AdminMgmtApiService.applicationAdminApi
-        .createApplicationAdmin(data)
-        .then(() => {
+    const appEnv = formData.value.application.env
+        ? ` ${formData.value.application.env}`
+        : '';
+
+    try {
+        await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
+            data
+        );
+        setNotificationMsg(
+            Severity.Success,
+            `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
+                formData.value.application.name
+            }${appEnv}`
+        );
+    } catch (error: any) {
+        if (error.response?.status === 409) {
             setNotificationMsg(
-                Severity.Success,
-                `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
-                    formData.value.application.application_name
-                }`
+                Severity.Error,
+                `${formData.value.userId.toUpperCase()} is already a ${
+                    formData.value.application.name
+                }${appEnv} admin`
             );
-        })
-        .catch((error) => {
-            if (error.response?.status === 409) {
-                setNotificationMsg(
-                    Severity.Error,
-                    `User ${formData.value.userId.toUpperCase()} is already a ${
-                        formData.value.application.application_name
-                    } admin`
-                );
-            } else if (
-                error.response.data.detail.code === 'self_grant_prohibited'
-            ) {
-                setNotificationMsg(
-                    Severity.Error,
-                    ErrorDescription.SelfGrantProhibited
-                );
-            } else {
-                setNotificationMsg(
-                    Severity.Error,
-                    `${ErrorDescription.Default} ${error.response.data.detail.description}`
-                );
-            }
-        })
-        .finally(() => {
-            router.push('/dashboard');
-        });
+        } else if (
+            error.response?.data.detail.code === 'self_grant_prohibited'
+        ) {
+            setNotificationMsg(
+                Severity.Error,
+                ErrorDescription.SelfGrantProhibited
+            );
+        } else {
+            const errorMsg = error.response?.data.detail.description
+                ? ` ${error.response?.data.detail.description}`
+                : ' ';
+            setNotificationMsg(
+                Severity.Error,
+                `${
+                    ErrorDescription.Default
+                }${errorMsg} ${formData.value.userId.toUpperCase()} was not added as ${
+                    formData.value.application.name
+                }${appEnv} admin`
+            );
+        }
+    }
+    setCurrentTabState(TabKey.AdminAccess);
+    router.push('/dashboard');
 };
 </script>
 <template>
@@ -136,8 +142,8 @@ const handleSubmit = async () => {
                             <label>Select application</label>
                             <Dropdown
                                 v-model="formData.application"
-                                :options="(applications as FamApplication[])"
-                                optionLabel="application_description"
+                                :options="applicationOptions"
+                                optionLabel="description"
                                 placeholder="Choose an application"
                             />
                         </div>
@@ -151,7 +157,7 @@ const handleSubmit = async () => {
                 <div class="button-stack">
                     <Button
                         type="button"
-                        id="grantAccessCancel"
+                        id="grantAdminCancel"
                         class="w100"
                         severity="secondary"
                         label="Cancel"
@@ -161,7 +167,7 @@ const handleSubmit = async () => {
                     >
                     <Button
                         type="button"
-                        id="grantAccessSubmit"
+                        id="grantAdminSubmit"
                         class="w100"
                         label="Submit Application"
                         :disabled="
