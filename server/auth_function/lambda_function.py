@@ -82,17 +82,23 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
         audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
             event["request"]["userAttributes"]["custom:idp_name"]
         ]
-        if (
-            audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR
-            or audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS
-        ):
+
+        if audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR:
             audit_event_log["requestingUser"]["idpUserName"] = event["request"][
                 "userAttributes"
             ]["custom:idp_username"]
+        elif audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS:
+            audit_event_log["requestingUser"]["idpUserName"] = event["request"][
+                "userAttributes"
+            ]["custom:idp_username"]
+            audit_event_log["requestingUser"]["businessGuid"] = event["request"][
+                "userAttributes"
+            ]["custom:idp_business_id"]
         else:
             audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                 "userAttributes"
             ]["custom:idp_display_name"]
+
         audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
 
         db_connection = obtain_db_connection()
@@ -136,6 +142,9 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
     user_type = event["request"]["userAttributes"]["custom:idp_name"]
     user_guid = event["request"]["userAttributes"]["custom:idp_user_id"]
+    business_guid = event["request"]["userAttributes"].get(
+        "custom:idp_business_id"
+    )  # only bceid user has this attribute
     cognito_user_id = event["userName"]
 
     user_type_code = USER_TYPE_CODE_DICT[user_type]
@@ -151,13 +160,14 @@ def populate_user_if_necessary(db_connection, event) -> None:
         VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, lower(user_name)) DO
-        UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id};"""
+        UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""
 
     sql_query = sql.SQL(raw_query).format(
         user_type_code=sql.Literal(user_type_code),
         user_guid=sql.Literal(user_guid),
         cognito_user_id=sql.Literal(cognito_user_id),
         user_name=sql.Literal(user_name),
+        business_guid=sql.Literal(business_guid),
     )
 
     db_connection.cursor().execute(sql_query)
@@ -236,7 +246,7 @@ def handle_event(db_connection, event) -> event_type.Event:
             """
             sql_query_fam_app_admin = sql.SQL(query_fam_app_admin).format(
                 user_guid=sql.Literal(user_guid),
-                user_type_code=sql.Literal(user_type_code)
+                user_type_code=sql.Literal(user_type_code),
             )
             cursor.execute(sql_query_fam_app_admin)
             for record in cursor:
