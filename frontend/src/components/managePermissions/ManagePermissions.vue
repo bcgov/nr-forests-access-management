@@ -180,8 +180,12 @@ const getCurrentTab = () => {
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
-            <label>You are modifying access in this application:</label>
+            <label for="application-dropdown-id">
+                You are modifying access in this application:
+            </label>
             <Dropdown
+                id="application-dropdown-id"
+                name="application-dropdown-id"
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
                 :options="applicationsUserAdministers"

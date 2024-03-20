@@ -52,8 +52,13 @@ const props = defineProps({
                             class="flex-grow-0 client-id-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label>Client ID: </label>
-                            <span id="forest-client-id">
+                            <label for="forest-client-id">
+                                Client ID:
+                            </label>
+                            <span
+                                id="forest-client-id"
+                                name="forest-client-id"
+                            >
                                 {{ forestItem.forest_client_number }}
                             </span>
                         </p>
@@ -61,9 +66,12 @@ const props = defineProps({
                             class="org-name-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label>Organization name: </label>
+                            <label for="forest-client-name">
+                                Organization name:
+                            </label>
                             <span
                                 id="forest-client-name"
+                                name="forest-client-name"
                                 class="organization-name"
                             >
                                 {{ forestItem.client_name }}
@@ -73,9 +81,15 @@ const props = defineProps({
                             class="org-status-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label class="status">Organization status: </label>
+                            <label
+                                for="forest-client-status"
+                                class="status"
+                            >
+                                Organization status:
+                            </label>
                             <Tag
                                 id="forest-client-status"
+                                name="forest-client-status"
                                 class="custom-tag"
                                 :severity="
                                     forestItem.status?.status_code == 'A'
