@@ -4,8 +4,8 @@ export class EnvironmentSettings {
     private environmentDisplayNameKey: string = 'fam_environment_display_name';
 
     private readonly API = {
-        ADMIN_MANAGEMENT_API: "admin_management_api",
-        APP_ACCESS_CONTROL_API: "app_access_control_api"
+        ADMIN_MANAGEMENT_API: 'admin_management_api',
+        APP_ACCESS_CONTROL_API: 'app_access_control_api',
     };
 
     constructor() {
@@ -25,8 +25,12 @@ export class EnvironmentSettings {
         }
     }
 
-    getIdentityProvider(): string {
+    getIdentityProviderIdir(): string {
         return this.env?.fam_console_idp_name.value;
+    }
+
+    getIdentityProviderBceid(): string {
+        return this.env?.fam_console_idp_name_bceid.value;
     }
 
     // Admin Management API
@@ -60,12 +64,12 @@ export class EnvironmentSettings {
 
         // Default to 'ADMIN_MANAGEMENT_API'
         if (!useApi || useApi == this.API.ADMIN_MANAGEMENT_API) {
-            apiBaseUrl = this.env?.fam_admin_management_api_base_url.value
-                            || 'http://localhost:8001'; // local api
-        }
-        else {
-            apiBaseUrl = this.env?.fam_api_base_url.value
-                            || 'http://localhost:8000';
+            apiBaseUrl =
+                this.env?.fam_admin_management_api_base_url.value ||
+                'http://localhost:8001'; // local api
+        } else {
+            apiBaseUrl =
+                this.env?.fam_api_base_url.value || 'http://localhost:8000';
         }
         return apiBaseUrl;
     }
