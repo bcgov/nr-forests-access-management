@@ -27,6 +27,12 @@
 
 * **deps:** update dependency cryptography to v42.0.4 [security] ([#1208](https://github.com/bcgov/nr-forests-access-management/issues/1208)) ([5668013](https://github.com/bcgov/nr-forests-access-management/commit/5668013bb8112802dc146a67d27b700f9e1eb24b))
 
+## [1.12.3](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.2...v1.12.3) (2024-03-20)
+
+### Bug Fixes
+
+* [#1256](https://github.com/bcgov/nr-forests-access-management/issues/1256) add client role admin ([#1257](https://github.com/bcgov/nr-forests-access-management/issues/1257)) ([865ea90](https://github.com/bcgov/nr-forests-access-management/commit/865ea90f3b56ea03865ef339378d16bec9ecffdf))
+
 ## [1.12.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.1...v1.12.2) (2024-03-18)
 
 
