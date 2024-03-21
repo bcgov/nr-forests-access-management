@@ -185,8 +185,8 @@ const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name!.toLocaleLowerCase() <
-            second.name!.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
@@ -202,8 +202,8 @@ const getCachedAppRolesForDelegatedAdmin = (
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name!.toLocaleLowerCase() <
-            second.name!.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
