@@ -321,6 +321,7 @@ class Requester(BaseModel):
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
 
     model_config = ConfigDict(from_attributes=True)
 

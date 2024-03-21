@@ -1,9 +1,12 @@
 import logging
-
 import requests
+from http import HTTPStatus
+from fastapi import HTTPException
 from api.app.schemas import IdimProxySearchParam, Requester
 from api.config import config
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType
+from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,5 +77,19 @@ class IdimProxyService:
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
         r.raise_for_status()  # There is a general error handler, see: requests_http_error_handler
         api_result = r.json()
+
+        if (
+            self.requester.user_type_code == UserType.BCEID
+            and self.requester.business_guid != api_result.get("businessGuid")
+        ):
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail={
+                    "code": ERROR_PERMISSION_REQUIRED,
+                    "description": f"Operation requires business bceid users to be within the same organization",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
         LOGGER.debug(f"API result: {api_result}")
         return api_result
