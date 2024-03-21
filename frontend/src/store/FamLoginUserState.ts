@@ -65,7 +65,12 @@ const getAppsForFamAdminRole = (): FamApplicationDto[] | undefined => {
         )[0];
         return access.grants
             .map((grant) => grant.application)
-            .sort((first, second) => first.id - second.id);
+            .sort((first, second) => {
+                return first.description!.toLocaleLowerCase() <
+                    second.description!.toLocaleLowerCase()
+                    ? -1
+                    : 1;
+            });
     }
 };
 
@@ -104,7 +109,12 @@ const getApplicationsUserAdministers = () => {
                 });
             }
         });
-        applicationList.sort((first, second) => first.id - second.id);
+        applicationList.sort((first, second) => {
+            return first.description!.toLocaleLowerCase() <
+                second.description!.toLocaleLowerCase()
+                ? -1
+                : 1;
+        });
         if (famApp) applicationList.unshift(famApp); // add FAM to the first if FAM Admin.
     }
 
@@ -174,7 +184,12 @@ const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
             return item.application.id === application_id;
         });
 
-    return grantAppData?.roles!;
+    return grantAppData!.roles!.sort((first, second) => {
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
+            ? -1
+            : 1;
+    });
 };
 
 const getCachedAppRolesForDelegatedAdmin = (
@@ -186,9 +201,13 @@ const getCachedAppRolesForDelegatedAdmin = (
             return item.application.id === application_id;
         });
 
-    return grantAppData?.roles!;
-};
-
+    return grantAppData!.roles!.sort((first, second) => {
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
+            ? -1
+            : 1;
+    });
+}
 // --- export
 
 export default {
