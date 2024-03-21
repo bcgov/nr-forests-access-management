@@ -226,6 +226,7 @@ class FamUser(Base):
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
+    business_guid = Column(String(32))
     cognito_user_id = Column(String(100))
     update_user = Column(
         String(30),
