@@ -28,68 +28,28 @@ const props = defineProps<{
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div
-                class="col"
-                style="margin-left: 2rem"
-            >
-                <label
-                    for="userId"
-                    class="row"
-                >
-                    Username
-                </label>
-                <span
-                    id="userId"
-                    name="userId"
-                    class="row"
-                >
+            <div class="col" style="margin-left: 2rem">
+                <label for="userId" class="row">Username</label>
+                <span id="userId" name="userId" class="row">
                     {{ props.userIdentity.userId }}
                 </span>
             </div>
-            <div
-                class="col"
-                v-if="props.userIdentity.found"
-            >
-                <label
-                    for="firstName"
-                    class="row"
-                >
-                    First Name
-                </label>
-                <span
-                    class="row"
-                    id="firstName"
-                    name="firstName"
-                >
+            <div class="col" v-if="props.userIdentity.found">
+                <label for="firstName" class="row">First Name</label>
+                <span class="row" id="firstName" name="firstName">
                     {{ props.userIdentity.firstName }}
                 </span>
             </div>
-            <div
-                class="col-2"
-                v-if="props.userIdentity.found"
-            >
-                <label
-                    for="lastName"
-                    class="row"
-                >
+            <div class="col-2" v-if="props.userIdentity.found">
+                <label for="lastName" class="row">
                     Last Name
                 </label>
-                <span
-                    id="lastName"
-                    name="lastName"
-                    class="row"
-                >
+                <span id="lastName" name="lastName" class="row">
                     {{ props.userIdentity.lastName }}
                 </span>
             </div>
-            <div
-                class="col-6 d-flex"
-                v-if="!props.userIdentity.found"
-            >
-                <span
-                    class="px-0 invalid"
-                    id="userNotExist"
-                >
+            <div class="col-6 d-flex" v-if="!props.userIdentity.found">
+                <span class="px-0 invalid" id="userNotExist">
                     User does not exist
                 </span>
             </div>
