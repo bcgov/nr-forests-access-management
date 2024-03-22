@@ -260,7 +260,7 @@ function handleSubmit() {
                         type="button"
                         id="grantDelegatedSubmit"
                         class="w100"
-                        label="Submit Application"
+                        label="Create Delegated Admin"
                         :disabled="
                             !(meta.valid && areVerificationsPassed()) ||
                             isLoading()

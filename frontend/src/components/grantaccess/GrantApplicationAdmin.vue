@@ -169,7 +169,7 @@ const handleSubmit = async () => {
                         type="button"
                         id="grantAdminSubmit"
                         class="w100"
-                        label="Submit Application"
+                        label="Create Application Admin"
                         :disabled="
                             !(meta.valid && verifyUserIdPassed) || isLoading()
                         "

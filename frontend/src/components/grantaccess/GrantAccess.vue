@@ -238,7 +238,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                         type="button"
                         id="grantAccessSubmit"
                         class="w100"
-                        label="Submit Application"
+                        label="Grant Access"
                         :disabled="
                             !(meta.valid && areVerificationsPassed()) ||
                             isLoading()
