@@ -139,12 +139,13 @@ const handleSubmit = async () => {
                         v-model="formData.application"
                     >
                         <div class="application-admin-group">
-                            <label>Select application</label>
+                            <label for="application-dropdown">Select application</label>
                             <Dropdown
                                 v-model="formData.application"
                                 :options="applicationOptions"
                                 optionLabel="description"
                                 placeholder="Choose an application"
+                                name="application-dropdown"
                             />
                         </div>
                         <ErrorMessage
