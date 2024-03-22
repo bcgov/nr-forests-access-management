@@ -17,7 +17,6 @@ import {
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
-import { resetNotification } from '@/store/NotificationState';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 
@@ -63,7 +62,6 @@ const adminSearchChange = (newvalue: string) => {
 };
 
 const deleteAdmin = (admin: FamAppAdminGetResponse) => {
-    resetNotification()
     confirmDeleteData.adminName = admin.user.user_name;
     confirm.require({
         group: 'deleteAdmin',
