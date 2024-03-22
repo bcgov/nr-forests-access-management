@@ -30,7 +30,7 @@ def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.authorize),
+    token_claims: dict = Depends(jwt_validation.validate_token),
     requester: Requester = Depends(get_current_requester),
 ):
     """

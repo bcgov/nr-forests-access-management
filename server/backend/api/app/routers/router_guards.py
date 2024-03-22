@@ -5,11 +5,21 @@ from typing import Union
 
 from api.app import database
 from api.app.constants import UserType
-from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
-from api.app.jwt_validation import (ERROR_PERMISSION_REQUIRED,
-                                    get_access_roles,
-                                    get_request_cognito_user_id,
-                                    validate_token)
+from api.app.crud import (
+    crud_application,
+    crud_role,
+    crud_user,
+    crud_user_role,
+    crud_access_control_privilege,
+)
+from api.app.jwt_validation import (
+    ERROR_PERMISSION_REQUIRED,
+    ERROR_GROUPS_REQUIRED,
+    JWT_GROUPS_KEY,
+    get_access_roles,
+    get_request_cognito_user_id,
+    validate_token,
+)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import Requester, TargetUser
 from fastapi import Depends, HTTPException, Request
@@ -30,11 +40,11 @@ ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 
 no_requester_exception = HTTPException(
-    status_code=HTTPStatus.FORBIDDEN, # 403
+    status_code=HTTPStatus.FORBIDDEN,  # 403
     detail={
         "code": ERROR_REQUESTER_NOT_EXISTS,
         "description": "Requester does not exist, action is not allowed",
-    }
+    },
 )
 
 external_user_prohibited_exception = HTTPException(
@@ -42,13 +52,55 @@ external_user_prohibited_exception = HTTPException(
     detail={
         "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
         "description": "Action is not allowed for external user.",
-    }
+    },
 )
+
+
+async def get_current_requester(
+    request_cognito_user_id: str = Depends(get_request_cognito_user_id),
+    db: Session = Depends(database.get_db),
+):
+    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
+        db, request_cognito_user_id
+    )
+    if fam_user is None:
+        raise no_requester_exception
+
+    requester = Requester.model_validate(fam_user)
+    LOGGER.debug(f"Current request user (requester): {requester}")
+    return requester
+
+
+def authorize(
+    claims: dict = Depends(validate_token),
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester),
+):
+    # we require user to be the app admin or delegated admin of at least one application
+    if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
+        # if use has no application admin access
+        # check if user has any delegated admin access
+        user_access_control_privilege = (
+            crud_access_control_privilege.get_delegated_admin_by_user_id(
+                db, requester.user_id
+            )
+        )
+        if len(user_access_control_privilege) == 0:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": ERROR_GROUPS_REQUIRED,
+                    "description": "At least one access group is required",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
 
 def authorize_by_app_id(
     application_id: int,
     db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token)
+    claims: dict = Depends(validate_token),
+    requester: Requester = Depends(get_current_requester),
 ):
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
@@ -61,23 +113,31 @@ def authorize_by_app_id(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    required_role = f"{application.application_name.upper()}_ADMIN"
+    admin_role = f"{application.application_name.upper()}_ADMIN"
     access_roles = get_access_roles(claims)
 
-    if required_role not in access_roles:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_PERMISSION_REQUIRED,
-                "description": f"Operation requires role {required_role}",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+    # if user is not application admin
+    if not access_roles or admin_role not in access_roles:
+        # check if user is application delegated admin
+        user_access_control_privilege = (
+            crud_access_control_privilege.get_delegated_admin_by_user_and_app_id(
+                db, requester.user_id, application_id
+            )
         )
+        # if user is not app admin and not delegated admin, throw permission error
+        if not user_access_control_privilege:
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail={
+                    "code": ERROR_PERMISSION_REQUIRED,
+                    "description": f"Requester has no appropriate access.",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
 async def get_request_role_from_id(
-    request: Request,
-    db: Session = Depends(database.get_db)
+    request: Request, db: Session = Depends(database.get_db)
 ) -> FamRole:
     """
     (this is a sub-dependency as convenient function)
@@ -89,9 +149,8 @@ async def get_request_role_from_id(
     if "user_role_xref_id" in request.path_params:
         user_role_xref_id = request.path_params["user_role_xref_id"]
 
-    if (user_role_xref_id):
-        LOGGER.debug(f"Retrieving role by user_role_xref_id: "
-                     f"{user_role_xref_id}")
+    if user_role_xref_id:
+        LOGGER.debug(f"Retrieving role by user_role_xref_id: " f"{user_role_xref_id}")
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
         return user_role.role
 
@@ -101,7 +160,7 @@ async def get_request_role_from_id(
             role_id = rbody["role_id"]
             LOGGER.debug(f"Retrieving role by Request's role_id: {role_id}")
             role = crud_role.get_role(db, role_id)
-            return role # role could be None.
+            return role  # role could be None.
 
         # When request does not contains body part.
         except json.JSONDecodeError:
@@ -114,6 +173,7 @@ def authorize_by_application_role(
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     claims: dict = Depends(validate_token),
+    requester: Requester = Depends(get_current_requester),
 ):
     """
     This router validation is currently design to validate logged on "admin"
@@ -133,31 +193,12 @@ def authorize_by_application_role(
 
     # Delegate to this for main check.
     authorize_by_app_id(
-        application_id=role.application_id,
-        db=db,
-        claims=claims
+        application_id=role.application_id, db=db, claims=claims, requester=requester
     )
     return role
 
 
-async def get_current_requester(
-    request_cognito_user_id: str = Depends(get_request_cognito_user_id),
-    access_roles = Depends(get_access_roles),
-    db: Session = Depends(database.get_db)
-):
-    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(db, request_cognito_user_id)
-    if fam_user is None:
-        raise no_requester_exception
-
-    requester = Requester.model_validate(fam_user)
-    requester.access_roles = access_roles
-    LOGGER.debug(f"Current request user (requester): {requester}")
-    return requester
-
-
-async def internal_only_action(
-    requester: Requester =Depends(get_current_requester)
-):
+async def internal_only_action(requester: Requester = Depends(get_current_requester)):
     if requester.user_type_code is not UserType.IDIR:
         raise external_user_prohibited_exception
 
@@ -169,8 +210,7 @@ async def internal_only_action(
 # Specifically: "user_role_xref_id" and "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
-    request: Request,
-    db: Session = Depends(database.get_db)
+    request: Request, db: Session = Depends(database.get_db)
 ) -> Union[TargetUser, None]:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
@@ -181,7 +221,9 @@ async def get_target_user_from_id(
         user_role = crud_user_role.find_by_id(
             db, request.path_params["user_role_xref_id"]
         )
-        return TargetUser.model_validate(user_role.user) if user_role is not None else None
+        return (
+            TargetUser.model_validate(user_role.user) if user_role is not None else None
+        )
     else:
         # from body - {user_name/user_type_code}
         try:
@@ -198,7 +240,7 @@ async def get_target_user_from_id(
 
 async def enforce_self_grant_guard(
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
 ):
     """
     Verify logged on admin (requester):
@@ -208,13 +250,13 @@ async def enforce_self_grant_guard(
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
     if target_user is not None:
         is_same_user_name = requester.user_name == target_user.user_name
-        is_same_user_type_code = (
-            requester.user_type_code == target_user.user_type_code
-        )
+        is_same_user_type_code = requester.user_type_code == target_user.user_type_code
 
         if is_same_user_name and is_same_user_type_code:
-            LOGGER.debug(f"User '{requester.user_name}' should not "
-                         f"grant/remove permission privilege to self.")
+            LOGGER.debug(
+                f"User '{requester.user_name}' should not "
+                f"grant/remove permission privilege to self."
+            )
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
