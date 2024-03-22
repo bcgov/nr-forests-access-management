@@ -78,13 +78,14 @@ def authorize(
 ):
     # we require user to be the app admin or delegated admin of at least one application
     if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
-        # if use has no application admin access
+        # if user has no application admin access
         # check if user has any delegated admin access
         user_access_control_privilege = (
             crud_access_control_privilege.get_delegated_admin_by_user_id(
                 db, requester.user_id
             )
         )
+        # if user is not app admin and not delegated admin of any application, throw miss access group error
         if len(user_access_control_privilege) == 0:
             raise HTTPException(
                 status_code=403,
@@ -124,7 +125,7 @@ def authorize_by_app_id(
                 db, requester.user_id, application_id
             )
         )
-        # if user is not app admin and not delegated admin, throw permission error
+        # if user is not app admin and not delegated admin of the application, throw permission error
         if not user_access_control_privilege:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
