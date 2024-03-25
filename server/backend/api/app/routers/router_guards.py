@@ -76,7 +76,10 @@ def authorize(
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
-    # we require user to be the app admin or delegated admin of at least one application
+    """
+    This authorize method is used by Forest Client API and IDIM Proxy API integration for a general authorization check,
+    we require user to be the app admin or delegated admin of at least one application
+    """
     if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
         # if user has no application admin access
         # check if user has any delegated admin access
@@ -103,6 +106,10 @@ def authorize_by_app_id(
     claims: dict = Depends(validate_token),
     requester: Requester = Depends(get_current_requester),
 ):
+    """
+    This authorize_by_app_id method is used for the authorization check of a specific application,
+    we require user to be the app admin or delegated admin of the application
+    """
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
@@ -177,8 +184,8 @@ def authorize_by_application_role(
     requester: Requester = Depends(get_current_requester),
 ):
     """
-    This router validation is currently design to validate logged on "admin"
-    has authority to perform actions for application with roles in [app]_ADMIN.
+    This router validation is currently design to validate logged on "admin/delegated admin"
+    has authority to perform actions for application with roles in [app]_ADMIN or has record in access_control_pirivilege table (for delegated admin).
     This function basically is the same and depends on (authorize_by_app_id()) but for
     the need that some routers contains target role_id in the request (instead of application_id).
     """

@@ -1,7 +1,9 @@
 import logging
+from typing import List
 
 from api.app.models.model import FamAccessControlPrivilege, FamRole
 from sqlalchemy.orm import Session
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,12 +31,12 @@ def get_delegated_admin_by_user_and_app_id(
 
 def get_delegated_admin_by_user_id(
     db: Session, user_id: int
-) -> FamAccessControlPrivilege:
+) -> List[FamAccessControlPrivilege]:
     """
     Find out from `app_fam.fam_access_control_privilege` if user is the delegated admin of any application.
 
     :param user_id: primary id that is associated with the user.
-    :return: FamAccessControlPrivilege record, role information the user is able to manage
+    :return: FamAccessControlPrivilege records, role information the user is able to manage
     """
     return (
         db.query(FamAccessControlPrivilege)
