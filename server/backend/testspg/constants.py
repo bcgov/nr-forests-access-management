@@ -1,5 +1,5 @@
-
 from api.app import constants as fam_constants
+import os
 
 TEST_FOM_DEV_APPLICATION_ID = 2
 TEST_FOM_TEST_APPLICATION_ID = 3
@@ -41,18 +41,18 @@ CLIENT_NUMBER_EXISTS_SUSPENDED = "00003643"
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID
+    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
 TEST_NEW_USER = {
@@ -60,4 +60,15 @@ TEST_NEW_USER = {
     "user_name": "TEST_USER",
     "create_user": TEST_CREATOR,
 }
-TEST_NOT_EXIST_USER_TYPE = 'NS'
+TEST_NOT_EXIST_USER_TYPE = "NS"
+
+# -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
+TEST_BCEID_REQUESTER_DICT = {
+    "cognito_user_id": "test-bceidbusiness_532905de0aa24923ae535428f171bf13@bceidbusiness",
+    "user_name": "LOAD-3-TEST",
+    "user_type_code": "B",
+    "user_guid": "532905DE0AA24923AE535428F171BF13",
+    "business_guid": "E7C0431DA55D4ACA9FA901EE2C91CB3B",
+}
+TEST_VALID_BUSINESS_BCEID_USERNAME_ONE = "TEST-3-LOAD-CHILD-1"
+TEST_VALID_BUSINESS_BCEID_USERNAME_TWO = "TEST-2-LOAD"

@@ -2,16 +2,25 @@ import logging
 from http import HTTPStatus
 import os
 import pytest
+from fastapi.testclient import TestClient
 
-import testspg.jwt_utils as jwt_utils
+
 from api.app.constants import UserType
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import get_current_requester, no_requester_exception
 from api.app.schemas import Requester
-from fastapi.testclient import TestClient
+from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED, ERROR_GROUPS_REQUIRED
+import testspg.jwt_utils as jwt_utils
 from testspg.conftest import test_client_fixture
+from testspg.constants import (
+    TEST_BCEID_REQUESTER_DICT,
+    TEST_VALID_BUSINESS_BCEID_USERNAME_ONE,
+    TEST_VALID_BUSINESS_BCEID_USERNAME_TWO,
+)
+
 
 LOGGER = logging.getLogger(__name__)
+
 
 endPoint_search_idir = f"{apiPrefix}/identity_search/idir"
 endPoint_search_bceid = f"{apiPrefix}/identity_search/bceid"
@@ -36,13 +45,11 @@ async def mock_get_current_requester_with_idir_user():
     return Requester(**sample_idir_requester_dict)
 
 
-async def mock_get_current_requester_with_none_idir_user():
+async def mock_get_current_requester_with_business_bceid_user():
     """
     A mock for router dependency, for requester who is not IDIR user.
     """
-    none_idir_requester = {**sample_idir_requester_dict}
-    none_idir_requester["user_type_code"] = UserType.BCEID  # Set to none-IDIR
-    return Requester(**none_idir_requester)
+    return Requester(**TEST_BCEID_REQUESTER_DICT)
 
 
 async def mock_get_current_requester_user_not_exists():
@@ -52,6 +59,7 @@ async def mock_get_current_requester_user_not_exists():
     raise no_requester_exception
 
 
+# -------------------- Test search for IDIR ---------------------------- #
 def test_search_idir_with_valid_user_found_result(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
@@ -115,7 +123,7 @@ def test_none_idir_user_cannot_search_idir_user(
     # override dependency for requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
-        mock_get_current_requester_with_none_idir_user
+        mock_get_current_requester_with_business_bceid_user
     )
 
     test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}"
@@ -151,22 +159,20 @@ def test_search_idir_user_requester_not_found_error_raised(
     assert "Requester does not exist" in response.text
 
 
-@pytest.mark.skip(
-    reason="need idir user guid to run this test, switch to use bceid search bceid later"
-)
-def test_search_bceid_with_valid_user_found_result(
+# --------------------- Test search for Business BCEID --------------------------- #
+def test_search_bceid_with_valid_user_same_org_found_result(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
-    Test idir user search valid business bceid user_id.
+    Test business bceid user search valid business bceid user_id within same organization
     """
     # override dependency for requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
-        mock_get_current_requester_with_idir_user
+        mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={valid_user_id_param_business_bceid}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -176,7 +182,7 @@ def test_search_bceid_with_valid_user_found_result(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json()["found"] == True
-    assert response.json()["userId"] == valid_user_id_param_business_bceid
+    assert response.json()["userId"] == TEST_VALID_BUSINESS_BCEID_USERNAME_ONE
     assert response.json()["guid"] is not None
     assert response.json()["businessGuid"] is not None
     assert response.json()["businessLegalName"] is not None
@@ -184,8 +190,58 @@ def test_search_bceid_with_valid_user_found_result(
     assert response.json()["lastName"] is not None
 
 
+def test_search_bceid_with_valid_user_diff_org_fail(
+    test_client_fixture: test_client_fixture, test_rsa_key
+):
+    """
+    Test business bceid user search valid business bceid user_id from different organization
+    """
+    # override dependency for requester on router.
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = (
+        mock_get_current_requester_with_business_bceid_user
+    )
+    test_end_point = (
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}"
+    )
+    LOGGER.debug(f"test_end_point: {test_end_point}")
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{test_end_point}", headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
+
+
+def test_search_bceid_with_valid_user_without_authorization_fail(
+    test_client_fixture: test_client_fixture, test_rsa_key
+):
+    """
+    Test business bceid user search valid business bceid user_id without authorization
+    """
+    # override dependency for requester on router.
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = (
+        mock_get_current_requester_with_business_bceid_user
+    )
+    test_end_point = (
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
+    )
+    LOGGER.debug(f"test_end_point: {test_end_point}")
+    token = jwt_utils.create_jwt_token(test_rsa_key, [])
+    response = test_client_fixture.get(
+        f"{test_end_point}", headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(ERROR_GROUPS_REQUIRED) != -1
+
+
 @pytest.mark.skip(
-    reason="need idir user guid to run this test, switch to use bceid search bceid later"
+    reason="need idir user guid to run this test"
 )
 def test_search_bceid_with_invalid_user_return_not_found(
     test_client_fixture: test_client_fixture, test_rsa_key
@@ -226,7 +282,7 @@ def test_search_bceid_user_requester_not_found_error_raised(
     )
 
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={valid_user_id_param_business_bceid}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
