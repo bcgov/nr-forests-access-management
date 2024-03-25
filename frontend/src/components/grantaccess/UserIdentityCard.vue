@@ -20,8 +20,8 @@ const props = defineProps<{
             />
             <Icon
                 id="errorIcon"
-                class="custom-carbon-icon-error--filled"
-                icon="error--filled"
+                class="custom-carbon-icon-misuse"
+                icon="misuse"
                 :size="IconSize.small"
                 v-else
             />
@@ -29,22 +29,24 @@ const props = defineProps<{
         </template>
         <template #content>
             <div class="col" style="margin-left: 2rem">
-                <label class="row">Username</label>
-                <span class="row" id="userId">{{
-                    props.userIdentity.userId
-                }}</span>
+                <label for="userId" class="row">Username</label>
+                <span id="userId" name="userId" class="row">
+                    {{ props.userIdentity.userId }}
+                </span>
             </div>
             <div class="col" v-if="props.userIdentity.found">
-                <label class="row">First Name</label>
-                <span class="row" id="firstName">{{
-                    props.userIdentity.firstName
-                }}</span>
+                <label for="firstName" class="row">First Name</label>
+                <span class="row" id="firstName" name="firstName">
+                    {{ props.userIdentity.firstName }}
+                </span>
             </div>
             <div class="col-2" v-if="props.userIdentity.found">
-                <label class="row">Last Name</label>
-                <span class="row" id="lastName">{{
-                    props.userIdentity.lastName
-                }}</span>
+                <label for="lastName" class="row">
+                    Last Name
+                </label>
+                <span id="lastName" name="lastName" class="row">
+                    {{ props.userIdentity.lastName }}
+                </span>
             </div>
             <div class="col-6 d-flex" v-if="!props.userIdentity.found">
                 <span class="px-0 invalid" id="userNotExist">
