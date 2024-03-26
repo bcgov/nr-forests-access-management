@@ -17,7 +17,7 @@ from .kms_lookup import init_bcsc_public_key
 from .routers import (router_application, router_bcsc_proxy,
                       router_forest_client, router_idim_proxy,
                       router_smoke_test,
-                      router_user_role_assignment)
+                      router_user_role_assignment, router_guards)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -104,11 +104,11 @@ app.include_router(router_user_role_assignment.router,
                    tags=["FAM User Role Assignment"])
 app.include_router(router_forest_client.router,
                    prefix=apiPrefix + '/forest_clients',
-                   dependencies=[Depends(jwt_validation.authorize)],
+                   dependencies=[Depends(router_guards.authorize)],
                    tags=["FAM Forest Clients"])
 app.include_router(router_idim_proxy.router,
                    prefix=apiPrefix + '/identity_search',
-                   dependencies=[Depends(jwt_validation.authorize)],
+                   dependencies=[Depends(router_guards.authorize)],
                    tags=["IDIR/BCeID Proxy"])
 
 # This router is used to proxy the BCSC userinfo endpoint

@@ -1,5 +1,6 @@
-
+import os
 from api.app import constants as fam_constants
+
 
 TEST_FOM_DEV_APPLICATION_ID = 2
 TEST_FOM_TEST_APPLICATION_ID = 3
@@ -13,6 +14,8 @@ TEST_NOT_EXIST_ROLE_ID = 0
 TEST_NOT_EXIST_APPLICATION_ID = 0
 
 TEST_CREATOR = "TESTER"
+
+TEST_USER_ID = 1
 
 # Testing Forest Client numbers (TEST Environment)
 CLIENT_NUMBER_LEN_TOO_SHORT = "0001011"
@@ -41,18 +44,18 @@ CLIENT_NUMBER_EXISTS_SUSPENDED = "00003643"
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID
+    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
 TEST_NEW_USER = {
@@ -60,4 +63,12 @@ TEST_NEW_USER = {
     "user_name": "TEST_USER",
     "create_user": TEST_CREATOR,
 }
-TEST_NOT_EXIST_USER_TYPE = 'NS'
+TEST_NOT_EXIST_USER_TYPE = "NS"
+
+TEST_IDIR_REQUESTER_DICT = {
+    "cognito_user_id": "test-idir_e72a12c916a44f39e5dcdffae7@idir",
+    "user_name": "IANLIU",
+    "user_type_code": fam_constants.UserType.IDIR,
+    "user_id": 4,
+    "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
+}
