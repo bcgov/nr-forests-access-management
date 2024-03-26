@@ -231,9 +231,6 @@ def test_search_bceid_with_valid_user_without_authorization_fail(
     assert str(response.json()["detail"]).find(ERROR_GROUPS_REQUIRED) != -1
 
 
-@pytest.mark.skip(
-    reason="need idir user guid to run this test"
-)
 def test_search_bceid_with_invalid_user_return_not_found(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
@@ -243,7 +240,7 @@ def test_search_bceid_with_invalid_user_return_not_found(
     # override dependency for requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
-        mock_get_current_requester_with_idir_user
+        mock_get_current_requester_with_business_bceid_user
     )
 
     invalid_user_id_param = "USERNOTEXISTS"

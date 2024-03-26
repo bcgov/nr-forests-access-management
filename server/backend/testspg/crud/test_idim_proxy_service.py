@@ -86,9 +86,8 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    @pytest.mark.skip(reason="need idir user guid to run this test")
     def test_bceid_search_not_exist_no_user_found(self):
-        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         not_exists_idir_user = "USERNOTEXISTS"
         search_params.userId = not_exists_idir_user

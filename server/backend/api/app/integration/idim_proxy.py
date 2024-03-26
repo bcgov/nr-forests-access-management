@@ -79,7 +79,8 @@ class IdimProxyService:
         api_result = r.json()
 
         if (
-            self.requester.user_type_code == UserType.BCEID
+            api_result.get("found") == True
+            and self.requester.user_type_code == UserType.BCEID
             and self.requester.business_guid != api_result.get("businessGuid")
         ):
             raise HTTPException(
