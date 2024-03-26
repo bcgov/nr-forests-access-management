@@ -1,11 +1,13 @@
 import copy
 import logging
 import os
-
+from requests import HTTPError
 import pytest
+
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import IdimProxySearchParam, Requester
-from requests import HTTPError
+from testspg.constants import TEST_IDIR_REQUESTER_DICT
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,15 +27,7 @@ class TestIdimProxyServiceClass(object):
 
     def setup_class(self):
         # local valid mock requester
-        self.requester = Requester(
-            **{
-                "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
-                "user_name": "IANLIU",
-                "user_type_code": "I",
-                "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"],
-                "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
-            }
-        )
+        self.requester = Requester(**TEST_IDIR_REQUESTER_DICT)
 
     def test_verify_init(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester))
