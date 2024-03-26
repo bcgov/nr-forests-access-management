@@ -80,6 +80,7 @@ onUnmounted(() => {
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
+    resetNotification();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -158,6 +159,7 @@ const deleteDelegatedAdminAssignment = async (
 
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
+    resetNotification();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
@@ -175,8 +177,12 @@ const getCurrentTab = () => {
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
-            <label>You are modifying access in this application:</label>
+            <label for="application-dropdown-id">
+                You are modifying access in this application:
+            </label>
             <Dropdown
+                id="application-dropdown-id"
+                name="application-dropdown-id"
                 v-model="selectedApplication"
                 @change="onApplicationSelected"
                 :options="applicationsUserAdministers"

@@ -36,9 +36,9 @@ const handleToastTimeoutEnds = (message: ToastMessageOptions) => {
         @life-end="handleToastTimeoutEnds"
     >
         <Icon
-            icon="error--filled"
+            icon="misuse"
             :size="IconSize.large"
-            class="custom-carbon-icon-error--filled"
+            class="custom-carbon-icon-misuse"
         />
     </Toast>
 </template>
