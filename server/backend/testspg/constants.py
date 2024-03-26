@@ -1,5 +1,6 @@
-from api.app import constants as fam_constants
 import os
+from api.app import constants as fam_constants
+
 
 TEST_FOM_DEV_APPLICATION_ID = 2
 TEST_FOM_TEST_APPLICATION_ID = 3
@@ -13,6 +14,8 @@ TEST_NOT_EXIST_ROLE_ID = 0
 TEST_NOT_EXIST_APPLICATION_ID = 0
 
 TEST_CREATOR = "TESTER"
+
+TEST_USER_ID = 1
 
 # Testing Forest Client numbers (TEST Environment)
 CLIENT_NUMBER_LEN_TOO_SHORT = "0001011"
@@ -63,12 +66,21 @@ TEST_NEW_USER = {
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
+TEST_IDIR_REQUESTER_DICT = {
+    "cognito_user_id": "test-idir_e72a12c916a44f39e5dcdffae7@idir",
+    "user_name": "IANLIU",
+    "user_type_code": fam_constants.UserType.IDIR,
+    "user_id": 4,
+    "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
+}
 TEST_BCEID_REQUESTER_DICT = {
     "cognito_user_id": "test-bceidbusiness_532905de0aa24923ae535428f171bf13@bceidbusiness",
     "user_name": "LOAD-3-TEST",
     "user_type_code": "B",
+    "user_id": 10, # this is a fake user id, it doesn't matter
     "user_guid": "532905DE0AA24923AE535428F171BF13",
     "business_guid": "E7C0431DA55D4ACA9FA901EE2C91CB3B",
 }
 TEST_VALID_BUSINESS_BCEID_USERNAME_ONE = "TEST-3-LOAD-CHILD-1"
 TEST_VALID_BUSINESS_BCEID_USERNAME_TWO = "TEST-2-LOAD"
+

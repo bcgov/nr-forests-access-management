@@ -9,11 +9,11 @@ from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import IdimProxySearchParam, Requester
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from testspg.constants import (
+    TEST_IDIR_REQUESTER_DICT,
     TEST_BCEID_REQUESTER_DICT,
     TEST_VALID_BUSINESS_BCEID_USERNAME_ONE,
     TEST_VALID_BUSINESS_BCEID_USERNAME_TWO,
 )
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,15 +35,7 @@ class TestIdimProxyServiceClass(object):
 
     def setup_class(self):
         # local valid mock requester
-        self.requester_idir = Requester(
-            **{
-                "cognito_user_id": "test-idir_e72a12c916a44f39e5dcdffae7@idir",
-                "user_name": "IANLIU",
-                "user_type_code": "I",
-                "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"],
-                "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
-            }
-        )
+        self.requester_idir = Requester(**TEST_IDIR_REQUESTER_DICT)
         self.requester_business_bceid = Requester(**TEST_BCEID_REQUESTER_DICT)
 
     def test_verify_init(self):

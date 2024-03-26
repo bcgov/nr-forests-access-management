@@ -317,14 +317,13 @@ class Requester(BaseModel):
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
-    access_roles: Union[
-        List[Annotated[str, StringConstraints(max_length=50)]], None
-    ] = None
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    user_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class TargetUser(Requester):
     pass
+
