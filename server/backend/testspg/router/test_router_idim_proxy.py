@@ -10,6 +10,7 @@ from api.app.routers.router_guards import get_current_requester, no_requester_ex
 from api.app.schemas import Requester
 from fastapi.testclient import TestClient
 from testspg.conftest import test_client_fixture
+from testspg.constants import TEST_IDIR_REQUESTER_DICT
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,29 +19,19 @@ endPoint_search_bceid = f"{apiPrefix}/identity_search/bceid"
 valid_user_id_param = "CMENG"
 valid_user_id_param_business_bceid = "LOAD-2-TEST"
 
-# Override this.
-# Valid sample IDIR type ("user_type": "I") requester
-sample_idir_requester_dict = {
-    "cognito_user_id": "dev-idir_e72a12c916a44f39e5dcdffae7@idir",
-    "user_name": "IANLIU",
-    "user_type_code": UserType.IDIR,
-    "access_roles": ["FAM_ADMIN", "FOM_DEV_ADMIN"],
-    "user_guid": os.environ.get("TEST_IDIR_USER_GUID"),
-}
-
 
 async def mock_get_current_requester_with_idir_user():
     """
     A mock for router dependency, for requester who is IDIR user.
     """
-    return Requester(**sample_idir_requester_dict)
+    return Requester(**TEST_IDIR_REQUESTER_DICT)
 
 
 async def mock_get_current_requester_with_none_idir_user():
     """
     A mock for router dependency, for requester who is not IDIR user.
     """
-    none_idir_requester = {**sample_idir_requester_dict}
+    none_idir_requester = {**TEST_IDIR_REQUESTER_DICT}
     none_idir_requester["user_type_code"] = UserType.BCEID  # Set to none-IDIR
     return Requester(**none_idir_requester)
 
