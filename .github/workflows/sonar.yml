@@ -146,7 +146,7 @@ jobs:
   ci-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.1
         with:
           commands: |
             npm run install-frontend
