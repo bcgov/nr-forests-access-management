@@ -318,6 +318,7 @@ class Requester(BaseModel):
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)

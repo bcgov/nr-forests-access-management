@@ -40,7 +40,7 @@ def create_jwt_token(
     test_algorithm='RS256',
     test_headers={"kid": "12345"},
 ):
-    if len(roles) > 0:
+    if roles is not None:
         claims["cognito:groups"] = roles
     return jws.sign(claims, test_rsa_key, algorithm=test_algorithm,
                     headers=test_headers)
