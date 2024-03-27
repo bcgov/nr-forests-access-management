@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.14.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.13.0...v1.14.0) (2024-03-27)
+
+
+### Features
+
+* [#1126](https://github.com/bcgov/nr-forests-access-management/issues/1126) Change button wording ([#1265](https://github.com/bcgov/nr-forests-access-management/issues/1265)) ([e89cfb2](https://github.com/bcgov/nr-forests-access-management/commit/e89cfb20ae7b66d8a807c7c4190fed523e6e6587))
+* [#1179](https://github.com/bcgov/nr-forests-access-management/issues/1179) bceid login ([#1225](https://github.com/bcgov/nr-forests-access-management/issues/1225)) ([eb815a0](https://github.com/bcgov/nr-forests-access-management/commit/eb815a097ff011da0dafb1aca12a125f496c3725))
+* [#1189](https://github.com/bcgov/nr-forests-access-management/issues/1189) Update successful and warning notification when adding or deleting application admin ([#1241](https://github.com/bcgov/nr-forests-access-management/issues/1241)) ([a1cad1b](https://github.com/bcgov/nr-forests-access-management/commit/a1cad1b00f2c9e2dde16fc86ee80adc8c122529f))
+* [#1217](https://github.com/bcgov/nr-forests-access-management/issues/1217) backend check both token and access control table for authorization ([#1267](https://github.com/bcgov/nr-forests-access-management/issues/1267)) ([2f6ff98](https://github.com/bcgov/nr-forests-access-management/commit/2f6ff985cccd70680bc3ea7be0c1db35106f5c1e))
+* [#1222](https://github.com/bcgov/nr-forests-access-management/issues/1222) store business guid ([#1230](https://github.com/bcgov/nr-forests-access-management/issues/1230)) ([aeabd35](https://github.com/bcgov/nr-forests-access-management/commit/aeabd357d2d7c902a6cbe25c28f36bfdefb653cd))
+
+
+### Bug Fixes
+
+* [#1179](https://github.com/bcgov/nr-forests-access-management/issues/1179) bceid login bug fix ([#1255](https://github.com/bcgov/nr-forests-access-management/issues/1255)) ([f6e0dc5](https://github.com/bcgov/nr-forests-access-management/commit/f6e0dc5465beda08d5fdb0730b8c5c2850155b4f))
+* [#1191](https://github.com/bcgov/nr-forests-access-management/issues/1191) Confirmation popup has too many white space ([#1268](https://github.com/bcgov/nr-forests-access-management/issues/1268)) ([c863771](https://github.com/bcgov/nr-forests-access-management/commit/c863771788699a8a2fc94fa596c06421fae4202c))
+* [#1194](https://github.com/bcgov/nr-forests-access-management/issues/1194) application dropdown should list application in order ([#1252](https://github.com/bcgov/nr-forests-access-management/issues/1252)) ([6dd2266](https://github.com/bcgov/nr-forests-access-management/commit/6dd2266719978e7913de5a18e533e9541e164f33))
+* [#1236](https://github.com/bcgov/nr-forests-access-management/issues/1236) update client app name ([#1271](https://github.com/bcgov/nr-forests-access-management/issues/1271)) ([e4e564e](https://github.com/bcgov/nr-forests-access-management/commit/e4e564e29b9179acd670d5504700b7c329f64fe4))
+* [#1256](https://github.com/bcgov/nr-forests-access-management/issues/1256) Merge hotfix to add new client role admin ([#1261](https://github.com/bcgov/nr-forests-access-management/issues/1261)) ([dcb5002](https://github.com/bcgov/nr-forests-access-management/commit/dcb500200c638572946cac4d7d2ff2f8097161fc))
+
+
+### Miscellaneous
+
+* **deps:** replace dependency npm-run-all with npm-run-all2 ^5.0.0 ([#1253](https://github.com/bcgov/nr-forests-access-management/issues/1253)) ([3725c96](https://github.com/bcgov/nr-forests-access-management/commit/3725c96a17b7de6edd2ed10e54d38c11715b1b10))
+* **deps:** replace dependency npm-run-all with npm-run-all2 ^5.0.0 ([#1258](https://github.com/bcgov/nr-forests-access-management/issues/1258)) ([672d613](https://github.com/bcgov/nr-forests-access-management/commit/672d613924f3ca1ac4c289baba938854f8018814))
+* **deps:** update dependency black to v24 [security] ([#1260](https://github.com/bcgov/nr-forests-access-management/issues/1260)) ([c3d8eea](https://github.com/bcgov/nr-forests-access-management/commit/c3d8eea8863085babe8c572c04669584777cec72))
+
 ## [1.13.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.0...v1.13.0) (2024-03-19)
 
 
