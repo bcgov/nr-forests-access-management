@@ -22,7 +22,7 @@ const props = defineProps({
         Are you sure you want to remove
         <strong>{{ props.role }}</strong> {{ props.customMsg }} from
         <strong>{{ props.userName }}</strong> in
-        <strong>{{ selectedApplicationDisplayText }}</strong>
+        <strong>{{ selectedApplicationDisplayText }}</strong>?
     </p>
 </template>
 

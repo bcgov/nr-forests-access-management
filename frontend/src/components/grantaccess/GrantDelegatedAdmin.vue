@@ -182,7 +182,7 @@ function handleSubmit() {
             <p>
                 Are you sure you want to add
                 <strong>{{ formData.userId.toUpperCase() }}</strong> as a
-                delegated admin? As a delegated admin <br />
+                delegated admin? As a delegated admin
                 <strong>{{ formData.userId.toUpperCase() }}</strong> will be
                 able to add, edit or delete users
             </p>
