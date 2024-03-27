@@ -43,7 +43,7 @@ class FamApplication(Base):
         comment="Identifies which environment the application is for; DEV, TEST, PROD etc.",
     )
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -54,7 +54,7 @@ class FamApplication(Base):
         comment="The date and time the record was created.",
     )
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated "
         + "the record.",
     )
@@ -125,7 +125,7 @@ class FamForestClient(Base):
     # client_name = Column(String(100), nullable=True, index=True)  # noqa NOSONAR
 
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -136,7 +136,7 @@ class FamForestClient(Base):
         comment="The date and time the record was created.",
     )
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
@@ -216,7 +216,7 @@ class FamUser(Base):
     )
     user_name = Column(String(100), nullable=False)
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -230,7 +230,7 @@ class FamUser(Base):
     business_guid = Column(String(32))
     cognito_user_id = Column(String(100))
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated the " "record.",
     )
     update_date = Column(
@@ -301,7 +301,7 @@ class FamApplicationClient(Base):
     )
     cognito_client_id = Column(String(32), nullable=False)
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -317,7 +317,7 @@ class FamApplicationClient(Base):
         + "of an Application registered under FAM",
     )
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated the "
         + "record. ",
     )
@@ -410,7 +410,7 @@ class FamRole(Base):
         comment="Sequentially assigned number to identify a ministry client.",
     )
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -428,7 +428,7 @@ class FamRole(Base):
         + "of a Role within the FAM Application",
     )
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
@@ -534,7 +534,7 @@ class FamUserRoleXref(Base):
         "of a Role within the FAM Application",
     )
     create_user = Column(
-        String(30),
+        String(100),
         nullable=False,
         comment="The user or proxy account that created the record.",
     )
@@ -545,7 +545,7 @@ class FamUserRoleXref(Base):
         comment="The date and time the record was created.",
     )
     update_user = Column(
-        String(30),
+        String(100),
         comment="The user or proxy account that created or last updated "
         "the record. ",
     )
@@ -650,7 +650,7 @@ class FamAccessControlPrivilege(Base):
         comment="Unique ID to reference and identify the application role within FAM system.",
     )
     create_user = Column(
-        String(60), comment="The user or proxy account that created the record."
+        String(100), comment="The user or proxy account that created the record."
     )
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
@@ -659,7 +659,7 @@ class FamAccessControlPrivilege(Base):
         comment="The date and time the record was created.",
     )
     update_user = Column(
-        String(60),
+        String(100),
         comment="The user or proxy account that created or last updated the record.",
     )
     update_date = Column(
