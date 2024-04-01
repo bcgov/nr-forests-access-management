@@ -58,7 +58,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
         :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
         stripedRows
     >
-        <template #empty> No permissions found. </template>
+        <template #empty> You have no accesses in FAM. </template>
         <template #loading> Loading permissions data. Please wait. </template>
         <Column
             header="Application"
