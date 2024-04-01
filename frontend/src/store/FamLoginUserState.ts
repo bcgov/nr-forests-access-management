@@ -214,9 +214,9 @@ const getMyCachedPermissions = () => {
     getUserAccess()?.map((item) => {
         item.grants.map((grant) => {
             grant.roles?.forEach((role) => {
+                grant.application['roles'] = role
                 myRoles.push({
                     application: grant.application,
-                    roles: role,
                 });
             });
         });

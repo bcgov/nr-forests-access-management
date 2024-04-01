@@ -13,8 +13,9 @@ import { isLoading } from '@/store/LoadingState';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import FamLoginUserState from '@/store/FamLoginUserState';
+import DataTableHeader from '../managePermissions/table/DataTableHeader.vue';
 
-const delegatedAdminFilters = ref({
+const myPermissiosFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'application.description': {
         value: null,
@@ -24,44 +25,41 @@ const delegatedAdminFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'roles.name': {
+    'application.roles.name': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     }
 });
 
-const delegatedAdminSearchChange = (newvalue: string) => {
-    delegatedAdminFilters.value.global.value = newvalue;
+const myPermissionsSearchChange = (newvalue: string) => {
+    myPermissiosFilters.value.global.value = newvalue;
 };
 </script>
 
 <template>
-    <div class="p-input-icon-left">
-        <Icon
-            icon="search"
-            :size="IconSize.small"
-        />
-        <InputText
-            id="dashboardSearch"
-            class="dash-search"
-            placeholder="Search by keyword"
-            v-model="delegatedAdminFilters['global'].value"
-        />
-    </div>
+    <DataTableHeader
+        @change="myPermissionsSearchChange"
+        :filter="myPermissiosFilters['global'].value"
+    />
     <DataTable
-        v-model:filters="delegatedAdminFilters"
+        v-model:filters="myPermissiosFilters"
         :value="FamLoginUserState.getMyCachedPermissions()"
         paginator
         :rows="50"
         :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
         filterDisplay="menu"
         :loading="isLoading()"
+        :globalFilterFields="[
+            'application.description',
+            'application.env',
+            'application.roles.name',
+        ]"
         :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
         :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
         stripedRows
     >
-        <template #empty> No user found. </template>
-        <template #loading> Loading users data. Please wait. </template>
+        <template #empty> No permissions found. </template>
+        <template #loading> Loading permissions data. Please wait. </template>
         <Column
             header="Application"
             field="application.description"
@@ -85,10 +83,11 @@ const delegatedAdminSearchChange = (newvalue: string) => {
         </Column>
         <Column
             header="Role"
+            field="application.roles.name"
             sortable
         >
             <template #body="{ data }">
-                {{ data.roles.name }}
+                {{ data.application.roles.name }}
             </template>
         </Column>
     </DataTable>
