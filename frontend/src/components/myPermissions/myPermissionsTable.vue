@@ -38,6 +38,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
 
 <template>
     <DataTableHeader
+        :hasHeader="false"
         @change="myPermissionsSearchChange"
         :filter="myPermissiosFilters['global'].value"
     />

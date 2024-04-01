@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, reactive } from 'vue';
 import InputText from 'primevue/inputtext';
 import router from '@/router';
 import { routeItems } from '@/router/routeItem';
@@ -19,6 +19,11 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    hasHeader: {
+        type: Boolean,
+        default: true,
+        required: true,
+    }
 });
 const emit = defineEmits(['change']);
 
@@ -45,8 +50,9 @@ const tableHeaderCustomText = computed(() => {
 </script>
 
 <template>
-    <div class="custom-data-table-header">
+    <div class="custom-data-table-header" v-if="props.hasHeader">
         <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
+
         <span>
             This table shows all the {{ userLevelText }} in
             {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
