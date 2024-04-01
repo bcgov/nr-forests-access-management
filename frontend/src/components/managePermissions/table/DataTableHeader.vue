@@ -9,11 +9,11 @@ import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 const props = defineProps({
     btnLabel: {
         type: String,
-        required: true,
+        required: false,
     },
     btnRoute: {
         type: String,
-        required: true,
+        required: false,
     },
     filter: {
         type: String,
@@ -55,6 +55,7 @@ const tableHeaderCustomText = computed(() => {
 
     <div class="search-container">
         <Button
+            v-if="props.btnRoute"
             class="btn-add-user"
             :label="props.btnLabel"
             @click="router.push(props.btnRoute)"

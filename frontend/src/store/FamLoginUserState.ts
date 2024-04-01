@@ -208,6 +208,21 @@ const getCachedAppRolesForDelegatedAdmin = (
             : 1;
     });
 }
+
+const getMyCachedPermissions = () => {
+    let myRoles: any = [];
+    getUserAccess()?.map((item) => {
+        item.grants.map((grant) => {
+            grant.roles?.forEach((role) => {
+                myRoles.push({
+                    application: grant.application,
+                    roles: role,
+                });
+            });
+        });
+    });
+    return myRoles;
+};
 // --- export
 
 export default {
@@ -216,6 +231,7 @@ export default {
     getUserAccess,
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
+    getMyCachedPermissions,
     getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
     hasAccess,
