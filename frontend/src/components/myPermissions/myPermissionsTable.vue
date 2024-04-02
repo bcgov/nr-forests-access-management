@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, shallowRef, type PropType, onMounted, computed } from 'vue';
+import { ref } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
-import InputText from 'primevue/inputtext';
-import { IconSize } from '@/enum/IconEnum';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -28,7 +26,7 @@ const myPermissiosFilters = ref({
     'application.roles.name': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
-    }
+    },
 });
 
 const myPermissionsSearchChange = (newvalue: string) => {
@@ -63,7 +61,9 @@ const myPermissionsSearchChange = (newvalue: string) => {
             stripedRows
         >
             <template #empty> You have no accesses in FAM. </template>
-            <template #loading> Loading permissions data. Please wait. </template>
+            <template #loading>
+                Loading permissions data. Please wait.
+            </template>
             <Column
                 header="Application"
                 field="application.description"
