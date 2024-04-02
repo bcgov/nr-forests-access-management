@@ -44,3 +44,6 @@ ALTER TABLE app_fam.fam_access_control_privilege
     ALTER COLUMN create_user SET DATA TYPE VARCHAR(100),
     ALTER COLUMN update_user SET DATA TYPE VARCHAR(100);
 
+ALTER TABLE app_fam.fam_application_admin
+    ALTER COLUMN create_user SET DATA TYPE VARCHAR(100),
+    ALTER COLUMN update_user SET DATA TYPE VARCHAR(100);
