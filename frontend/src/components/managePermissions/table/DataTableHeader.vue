@@ -22,7 +22,7 @@ const props = defineProps({
     hasHeader: {
         type: Boolean,
         default: true,
-        required: true
+        required: false
     },
     inputPlaceholder: {
         type: String,
