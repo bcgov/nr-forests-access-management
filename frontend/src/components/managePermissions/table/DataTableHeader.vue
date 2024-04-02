@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed } from 'vue';
 import InputText from 'primevue/inputtext';
 import router from '@/router';
 import { routeItems } from '@/router/routeItem';
@@ -22,7 +22,12 @@ const props = defineProps({
     hasHeader: {
         type: Boolean,
         default: true,
-        required: true,
+        required: true
+    },
+    inputPlaceholder: {
+        type: String,
+        default: 'Search by keyword',
+        required: false
     }
 });
 const emit = defineEmits(['change']);
@@ -73,7 +78,7 @@ const tableHeaderCustomText = computed(() => {
             <InputText
                 id="dashboardSearch"
                 class="dash-search"
-                placeholder="Search by keyword"
+                :placeholder="props.inputPlaceholder"
                 v-model="computedFilter"
                 :value="props.filter"
             />

@@ -37,59 +37,69 @@ const myPermissionsSearchChange = (newvalue: string) => {
 </script>
 
 <template>
-    <DataTableHeader
-        :hasHeader="false"
-        @change="myPermissionsSearchChange"
-        :filter="myPermissiosFilters['global'].value"
-    />
-    <DataTable
-        v-model:filters="myPermissiosFilters"
-        :value="FamLoginUserState.getMyCachedPermissions()"
-        paginator
-        :rows="50"
-        :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
-        filterDisplay="menu"
-        :loading="isLoading()"
-        :globalFilterFields="[
-            'application.description',
-            'application.env',
-            'application.roles.name',
-        ]"
-        :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
-        :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
-        stripedRows
-    >
-        <template #empty> You have no accesses in FAM. </template>
-        <template #loading> Loading permissions data. Please wait. </template>
-        <Column
-            header="Application"
-            field="application.description"
-            sortable
+    <div class="my-permissions-table-wrapper">
+        <DataTableHeader
+            :hasHeader="false"
+            input-placeholder="Search for application, environment, client IDs, company name, role, status, and more"
+            @change="myPermissionsSearchChange"
+            :filter="myPermissiosFilters['global'].value"
+        />
+        <DataTable
+            class="custom-data-table"
+            v-model:filters="myPermissiosFilters"
+            :value="FamLoginUserState.getMyCachedPermissions()"
+            paginator
+            :rows="50"
+            :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
+            filterDisplay="menu"
+            :loading="isLoading()"
+            :globalFilterFields="[
+                'application.description',
+                'application.env',
+                'application.roles.name',
+            ]"
+            :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+            :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
+            stripedRows
         >
-            <template #body="{ data }">
-                <span>
-                    {{ data.application.name }}
-                </span>
-            </template>
-        </Column>
-        <Column
-            field="application.env"
-            header="Environment"
-            sortable
-        ></Column>
-        <Column
-            header="Client ID"
-            sortable
-        >
-        </Column>
-        <Column
-            header="Role"
-            field="application.roles.name"
-            sortable
-        >
-            <template #body="{ data }">
-                {{ data.application.roles.name }}
-            </template>
-        </Column>
-    </DataTable>
+            <template #empty> You have no accesses in FAM. </template>
+            <template #loading> Loading permissions data. Please wait. </template>
+            <Column
+                header="Application"
+                field="application.description"
+                sortable
+            >
+                <template #body="{ data }">
+                    <span>
+                        {{ data.application.name }}
+                    </span>
+                </template>
+            </Column>
+            <Column
+                field="application.env"
+                header="Environment"
+                sortable
+            ></Column>
+            <Column
+                header="Client ID"
+                sortable
+            >
+            </Column>
+            <Column
+                header="Role"
+                field="application.roles.name"
+                sortable
+            >
+                <template #body="{ data }">
+                    {{ data.application.roles.name }}
+                </template>
+            </Column>
+        </DataTable>
+    </div>
 </template>
+
+<style>
+.my-permissions-table-wrapper {
+    margin: 3rem -2.5rem -2.5rem;
+}
+</style>
