@@ -37,7 +37,7 @@ const props = defineProps({
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
     'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'user.user_type.description': {
+    'user.user_type.description': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -45,7 +45,7 @@ const delegatedAdminFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-'role.parent_role.role_name': {
+    'role.parent_role.role_name': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
