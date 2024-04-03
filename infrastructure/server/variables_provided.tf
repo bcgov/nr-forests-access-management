@@ -272,8 +272,7 @@ variable "maximum_oidc_attribute_read_list" {
     "profile",
     "updated_at",
     "website",
-    "zoneinfo",
-    "username"
+    "zoneinfo"
   ]
 
 }
@@ -306,8 +305,7 @@ variable "maximum_oidc_attribute_write_list" {
     "profile",
     "updated_at",
     "website",
-    "zoneinfo",
-    "username"
+    "zoneinfo"
   ]
 }
 

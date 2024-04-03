@@ -24,7 +24,6 @@ resource "aws_cognito_identity_provider" "dev_bcsc_oidc_provider" {
   }
 
   attribute_mapping = {
-    username = "sub",
     given_name = "given_name",
     family_name = "family_name",
     birthdate = "birthdate",
@@ -59,7 +58,6 @@ resource "aws_cognito_identity_provider" "test_bcsc_oidc_provider" {
   }
 
   attribute_mapping = {
-    username = "sub",
     given_name = "given_name",
     family_name = "family_name",
     birthdate = "birthdate",
@@ -95,7 +93,6 @@ resource "aws_cognito_identity_provider" "prod_bcsc_oidc_provider" {
   }
 
   attribute_mapping = {
-    username = "sub",
     given_name = "given_name",
     family_name = "family_name",
     birthdate = "birthdate",
