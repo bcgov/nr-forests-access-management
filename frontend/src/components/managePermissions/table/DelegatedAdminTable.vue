@@ -151,6 +151,7 @@ const deleteDelegatedAdmin = (
                 <Column
                     header="Role Enabled To Assign"
                     sortable
+                    field="role.role_name"
                 >
                     <template #body="{ data }">
                         {{
