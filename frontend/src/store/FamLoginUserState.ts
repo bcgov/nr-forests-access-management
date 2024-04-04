@@ -207,7 +207,7 @@ const getCachedAppRolesForDelegatedAdmin = (
             ? -1
             : 1;
     });
-}
+};
 
 const getMyCachedPermissions = () => {
     let myRoles: any = [];
@@ -215,8 +215,8 @@ const getMyCachedPermissions = () => {
         item.grants.map((grant) => {
             grant.roles?.forEach((role) => {
                 Object.assign(grant.application, {
-                    roles: role
-                })
+                    roles: role,
+                });
                 myRoles.push({
                     application: grant.application,
                 });

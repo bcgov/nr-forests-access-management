@@ -91,7 +91,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
                 sortable
             >
                 <template #body="{ data }">
-                    {{ data.application.roles.name }}
+                    {{ `${data.application.authKey}, ${data.application.roles.name}` }}
                 </template>
             </Column>
         </DataTable>
