@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import myPermissionsTable from '@/components/myPermissions/myPermissionsTable.vue';
+import MyPermissionsTable from '@/components/myPermissions/MyPermissionsTable.vue';
 import PageTitle from '@/components/common/PageTitle.vue';
 </script>
 
@@ -8,5 +8,5 @@ import PageTitle from '@/components/common/PageTitle.vue';
         title="My permissions"
         subtitle="Check all the applications and permissions that you have access to"
     />
-    <myPermissionsTable />
+    <MyPermissionsTable />
 </template>
