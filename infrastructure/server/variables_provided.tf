@@ -305,7 +305,8 @@ variable "maximum_oidc_attribute_write_list" {
     "profile",
     "updated_at",
     "website",
-    "zoneinfo"]
+    "zoneinfo"
+  ]
 }
 
 # Variables for connecting Cognito to BCSC OIDC
