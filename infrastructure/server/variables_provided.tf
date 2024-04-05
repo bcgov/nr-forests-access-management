@@ -129,7 +129,7 @@ variable "test_oidc_bcsc_idp_client_id" {
 
 variable "prod_oidc_bcsc_idp_client_id" {
   type = string
-  default = "not.yet.implemented"
+  default = "ca.bc.gov.flnr.fam.prod"
 }
 
 # Networking Variables
@@ -331,6 +331,24 @@ variable "test_override_bcsc_userinfo_proxy_endpoint" {
 
 variable "prod_override_bcsc_userinfo_proxy_endpoint" {
   description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "dev_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "test_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "prod_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC PROD environment"
   type = string
   default = "not used unless overridden in terragrunt"
 }
