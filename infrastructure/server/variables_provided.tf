@@ -311,7 +311,7 @@ variable "maximum_oidc_attribute_write_list" {
 # Variables for connecting Cognito to BCSC OIDC
 
 variable "use_override_proxy_endpoints" {
-  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
   type = bool
   default = false
 }
