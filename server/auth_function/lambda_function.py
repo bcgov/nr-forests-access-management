@@ -22,7 +22,7 @@ LOGGER = logging.getLogger()
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
-IDP_NAME_BCSC_PROD = "ca.bc.gov.flnr.fam"
+IDP_NAME_BCSC_PROD = "ca.bc.gov.flnr.fam.prod"
 IDP_NAME_IDIR = "idir"
 IDP_NAME_BCEID_BUSINESS = "bceidbusiness"
 
