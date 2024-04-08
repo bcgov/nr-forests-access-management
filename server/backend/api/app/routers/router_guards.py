@@ -100,16 +100,11 @@ def authorize(
             )
 
 
-def authorize_by_app_id(
+def is_app_admin(
     application_id: int,
-    db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token),
-    requester: Requester = Depends(get_current_requester),
+    db: Session,
+    claims: dict,
 ):
-    """
-    This authorize_by_app_id method is used for the authorization check of a specific application,
-    we require user to be the app admin or delegated admin of the application
-    """
     application = crud_application.get_application(application_id=application_id, db=db)
     if not application:
         raise HTTPException(
@@ -124,8 +119,25 @@ def authorize_by_app_id(
     admin_role = f"{application.application_name.upper()}_ADMIN"
     access_roles = get_access_roles(claims)
 
+    if access_roles and admin_role in access_roles:
+        return True
+    return False
+
+
+def authorize_by_app_id(
+    application_id: int,
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token),
+    requester: Requester = Depends(get_current_requester),
+):
+    """
+    This authorize_by_app_id method is used for the authorization check of a specific application,
+    we require user to be the app admin or delegated admin of the application
+    """
+    requester_is_app_admin = is_app_admin(application_id, db, claims)
+
     # if user is not application admin
-    if not access_roles or admin_role not in access_roles:
+    if not requester_is_app_admin:
         # check if user is application delegated admin
         user_access_control_privilege = (
             crud_access_control_privilege.get_delegated_admin_by_user_and_app_id(
@@ -153,26 +165,33 @@ async def get_request_role_from_id(
     Some endpoints has path_params with "user_role_xref_id".
     Some endpoints has role_id in request body.
     """
-    user_role_xref_id = None
+    role = None
+
     if "user_role_xref_id" in request.path_params:
         user_role_xref_id = request.path_params["user_role_xref_id"]
-
-    if user_role_xref_id:
         LOGGER.debug(f"Retrieving role by user_role_xref_id: " f"{user_role_xref_id}")
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
-        return user_role.role
-
+        role = user_role.role
     else:
         try:
             rbody = await request.json()
             role_id = rbody["role_id"]
             LOGGER.debug(f"Retrieving role by Request's role_id: {role_id}")
-            role = crud_role.get_role(db, role_id)
-            return role  # role could be None.
+            role = crud_role.get_role(db, role_id)  # role could be None.
+        except json.JSONDecodeError:  # When request does not contains body part.
+            role = None
 
-        # When request does not contains body part.
-        except json.JSONDecodeError:
-            return None
+    if not role:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_INVALID_ROLE_ID,
+                "description": "Role does not exist",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return role
 
 
 def authorize_by_application_role(
@@ -189,16 +208,6 @@ def authorize_by_application_role(
     the need that some routers contains target role_id in the request (instead of application_id)
     we need to get application_id from role and check if role exists first, and then call authorize_by_app_id()
     """
-    if not role:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_INVALID_ROLE_ID,
-                "description": "Role does not exist",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
     # Delegate to this for main check.
     authorize_by_app_id(
         application_id=role.application_id, db=db, claims=claims, requester=requester
@@ -213,38 +222,16 @@ async def authorize_by_privilege(
     claims: dict = Depends(validate_token),
     requester: Requester = Depends(get_current_requester),
 ):
-    # throw error if role does not exist
-    # for remove access, this is the concrete role get by user_role_xref_id in the request params
-    # for grant access, this is the concrete role, or the parent role of an abstract role get by role_id in the request params
-    if not role:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_INVALID_ROLE_ID,
-                "description": "Role does not exist.",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    """
+    This authorize_by_privilege method is used for checking if the requester has the privilege to grant/remove access of the role.
+    :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
+                 for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
+    """
 
-    # get the application the role belongs to
-    application = crud_application.get_application(
-        application_id=role.application_id, db=db
-    )
-    if not application:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {role.application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    admin_role = f"{application.application_name.upper()}_ADMIN"
-    access_roles = get_access_roles(claims)
+    requester_is_app_admin = is_app_admin(role.application_id, db, claims)
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
-    if not access_roles or admin_role not in access_roles:
+    if not requester_is_app_admin:
         # for remove access, role is what we get above from Depends(get_request_role_from_id)
         # for grant access, if the request params has forest_client_number, need to get the child role
         # the child role should already exist when the delegated admin has been created
