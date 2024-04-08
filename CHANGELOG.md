@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.14.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.13.0...v1.14.0) (2024-04-08)
+
+
+### Features
+
+* [#1126](https://github.com/bcgov/nr-forests-access-management/issues/1126) Change button wording ([#1265](https://github.com/bcgov/nr-forests-access-management/issues/1265)) ([e89cfb2](https://github.com/bcgov/nr-forests-access-management/commit/e89cfb20ae7b66d8a807c7c4190fed523e6e6587))
+* [#1179](https://github.com/bcgov/nr-forests-access-management/issues/1179) bceid login ([#1225](https://github.com/bcgov/nr-forests-access-management/issues/1225)) ([eb815a0](https://github.com/bcgov/nr-forests-access-management/commit/eb815a097ff011da0dafb1aca12a125f496c3725))
+* [#1182](https://github.com/bcgov/nr-forests-access-management/issues/1182) bceid search bceid need check org ([#1269](https://github.com/bcgov/nr-forests-access-management/issues/1269)) ([054810d](https://github.com/bcgov/nr-forests-access-management/commit/054810d4d1ab9960a53e250a093f1989dbc83fea))
+* [#1189](https://github.com/bcgov/nr-forests-access-management/issues/1189) Update successful and warning notification when adding or deleting application admin ([#1241](https://github.com/bcgov/nr-forests-access-management/issues/1241)) ([a1cad1b](https://github.com/bcgov/nr-forests-access-management/commit/a1cad1b00f2c9e2dde16fc86ee80adc8c122529f))
+* [#1217](https://github.com/bcgov/nr-forests-access-management/issues/1217) backend check both token and access control table for authorization ([#1267](https://github.com/bcgov/nr-forests-access-management/issues/1267)) ([2f6ff98](https://github.com/bcgov/nr-forests-access-management/commit/2f6ff985cccd70680bc3ea7be0c1db35106f5c1e))
+* [#1222](https://github.com/bcgov/nr-forests-access-management/issues/1222) store business guid ([#1230](https://github.com/bcgov/nr-forests-access-management/issues/1230)) ([aeabd35](https://github.com/bcgov/nr-forests-access-management/commit/aeabd357d2d7c902a6cbe25c28f36bfdefb653cd))
+* [#1264](https://github.com/bcgov/nr-forests-access-management/issues/1264) config prod bcsc ([#1288](https://github.com/bcgov/nr-forests-access-management/issues/1288)) ([d748585](https://github.com/bcgov/nr-forests-access-management/commit/d748585e6f7e43c9c1b7ec220db6376d604b71b0))
+
+
+### Bug Fixes
+
+* [#1179](https://github.com/bcgov/nr-forests-access-management/issues/1179) bceid login bug fix ([#1255](https://github.com/bcgov/nr-forests-access-management/issues/1255)) ([f6e0dc5](https://github.com/bcgov/nr-forests-access-management/commit/f6e0dc5465beda08d5fdb0730b8c5c2850155b4f))
+* [#1191](https://github.com/bcgov/nr-forests-access-management/issues/1191) Confirmation popup has too many white space ([#1268](https://github.com/bcgov/nr-forests-access-management/issues/1268)) ([c863771](https://github.com/bcgov/nr-forests-access-management/commit/c863771788699a8a2fc94fa596c06421fae4202c))
+* [#1194](https://github.com/bcgov/nr-forests-access-management/issues/1194) application dropdown should list application in order ([#1252](https://github.com/bcgov/nr-forests-access-management/issues/1252)) ([6dd2266](https://github.com/bcgov/nr-forests-access-management/commit/6dd2266719978e7913de5a18e533e9541e164f33))
+* [#1236](https://github.com/bcgov/nr-forests-access-management/issues/1236) update client app name ([#1271](https://github.com/bcgov/nr-forests-access-management/issues/1271)) ([e4e564e](https://github.com/bcgov/nr-forests-access-management/commit/e4e564e29b9179acd670d5504700b7c329f64fe4))
+* [#1256](https://github.com/bcgov/nr-forests-access-management/issues/1256) Merge hotfix to add new client role admin ([#1261](https://github.com/bcgov/nr-forests-access-management/issues/1261)) ([dcb5002](https://github.com/bcgov/nr-forests-access-management/commit/dcb500200c638572946cac4d7d2ff2f8097161fc))
+* [#1263](https://github.com/bcgov/nr-forests-access-management/issues/1263) Sort role in delegated admin table is not working ([#1278](https://github.com/bcgov/nr-forests-access-management/issues/1278)) ([0c71c89](https://github.com/bcgov/nr-forests-access-management/commit/0c71c897e4cfb10b9ecb80c4dbf09dc931312fef))
+* [#1264](https://github.com/bcgov/nr-forests-access-management/issues/1264) disable bceid login button ([#1289](https://github.com/bcgov/nr-forests-access-management/issues/1289)) ([d12757f](https://github.com/bcgov/nr-forests-access-management/commit/d12757f97d291ab853a5edc92755a96dd5089660))
+* [#1266](https://github.com/bcgov/nr-forests-access-management/issues/1266) update create_user and update_user length in db ([#1275](https://github.com/bcgov/nr-forests-access-management/issues/1275)) ([8ce7a02](https://github.com/bcgov/nr-forests-access-management/commit/8ce7a02a9b81a427125b2355955cfc019a28db63))
+* [#1272](https://github.com/bcgov/nr-forests-access-management/issues/1272) revert read write attribute ([#1279](https://github.com/bcgov/nr-forests-access-management/issues/1279)) ([2a17a4e](https://github.com/bcgov/nr-forests-access-management/commit/2a17a4ee94efb0d79c3f51fa3d9afaea40f40ec3))
+* [#1272](https://github.com/bcgov/nr-forests-access-management/issues/1272) try to add username attribute for mapping ([#1277](https://github.com/bcgov/nr-forests-access-management/issues/1277)) ([68ca9b0](https://github.com/bcgov/nr-forests-access-management/commit/68ca9b07737e0f5d2de2785dd0d1722473a58be7))
+* fix the table header text for delegated admin ([#1290](https://github.com/bcgov/nr-forests-access-management/issues/1290)) ([b892597](https://github.com/bcgov/nr-forests-access-management/commit/b8925972a093cd334a15107ecf28b176ea419ab5))
+
+
+### Miscellaneous
+
+* **deps:** replace dependency npm-run-all with npm-run-all2 ^5.0.0 ([#1253](https://github.com/bcgov/nr-forests-access-management/issues/1253)) ([3725c96](https://github.com/bcgov/nr-forests-access-management/commit/3725c96a17b7de6edd2ed10e54d38c11715b1b10))
+* **deps:** replace dependency npm-run-all with npm-run-all2 ^5.0.0 ([#1258](https://github.com/bcgov/nr-forests-access-management/issues/1258)) ([672d613](https://github.com/bcgov/nr-forests-access-management/commit/672d613924f3ca1ac4c289baba938854f8018814))
+* **deps:** update dependency black to v24 [security] ([#1260](https://github.com/bcgov/nr-forests-access-management/issues/1260)) ([c3d8eea](https://github.com/bcgov/nr-forests-access-management/commit/c3d8eea8863085babe8c572c04669584777cec72))
+
 ## [1.13.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.12.0...v1.13.0) (2024-03-19)
 
 
