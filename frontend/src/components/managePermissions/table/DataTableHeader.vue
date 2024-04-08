@@ -33,7 +33,7 @@ const computedFilter = computed({
 
 const userLevelText = computed(() => {
     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return 'delegate admins';
+        return 'delegated admins';
     return 'users';
 });
 </script>
