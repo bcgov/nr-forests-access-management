@@ -184,17 +184,17 @@ def authorize_by_application_role(
     requester: Requester = Depends(get_current_requester),
 ):
     """
-    This router validation is currently design to validate logged on "admin/delegated admin"
-    has authority to perform actions for application with roles in [app]_ADMIN or has record in access_control_pirivilege table (for delegated admin).
-    This function basically is the same and depends on (authorize_by_app_id()) but for
-    the need that some routers contains target role_id in the request (instead of application_id).
+    This authorize_by_application_role method is used for the authorization check of a specific application,
+    it is the same and depends on the method authorize_by_app_id() but for
+    the need that some routers contains target role_id in the request (instead of application_id)
+    we need to get application_id from role and check if role exists first, and then call authorize_by_app_id()
     """
     if not role:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
-                "description": f"Requester has no appropriate role.",
+                "description": "Role does not exist",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -204,6 +204,79 @@ def authorize_by_application_role(
         application_id=role.application_id, db=db, claims=claims, requester=requester
     )
     return role
+
+
+async def authorize_by_privilege(
+    request: Request,
+    role: FamRole = Depends(get_request_role_from_id),
+    db: Session = Depends(database.get_db),
+    claims: dict = Depends(validate_token),
+    requester: Requester = Depends(get_current_requester),
+):
+    # throw error if role does not exist
+    # for remove access, this is the concrete role get by user_role_xref_id in the request params
+    # for grant access, this is the concrete role, or the parent role of an abstract role get by role_id in the request params
+    if not role:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_INVALID_ROLE_ID,
+                "description": "Role does not exist.",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # get the application the role belongs to
+    application = crud_application.get_application(
+        application_id=role.application_id, db=db
+    )
+    if not application:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_INVALID_APPLICATION_ID,
+                "description": f"Application ID {role.application_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    admin_role = f"{application.application_name.upper()}_ADMIN"
+    access_roles = get_access_roles(claims)
+
+    # if requester is not application admin, check if has the privilege to grant/remove access of the role
+    if not access_roles or admin_role not in access_roles:
+        # for remove access, role is what we get above from Depends(get_request_role_from_id)
+        # for grant access, if the request params has forest_client_number, need to get the child role
+        # the child role should already exist when the delegated admin has been created
+        if "user_role_xref_id" not in request.path_params:
+            rbody = await request.json()
+            forest_client_number = rbody.get("forest_client_number")
+            if forest_client_number:
+                parent_role = role
+                forest_client_role_name = (
+                    crud_user_role.construct_forest_client_role_name(
+                        parent_role.role_name, forest_client_number
+                    )
+                )
+                role = crud_role.get_role_by_role_name_and_app_id(
+                    db, forest_client_role_name, parent_role.application_id
+                )  # when role is None, means the role is not created for this delegated admin
+
+        user_access_control_privilege = None
+        if role:
+            user_access_control_privilege = crud_access_control_privilege.get_delegated_admin_by_user_id_and_role_id(
+                db, requester.user_id, role.role_id
+            )
+        # if user has no privilege of the role, throw permission error
+        if not user_access_control_privilege:
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail={
+                    "code": ERROR_PERMISSION_REQUIRED,
+                    "description": f"Requester has no privilege to grant this access.",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
 async def internal_only_action(requester: Requester = Depends(get_current_requester)):

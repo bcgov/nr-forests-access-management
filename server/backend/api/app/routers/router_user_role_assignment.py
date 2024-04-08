@@ -4,6 +4,7 @@ from http import HTTPStatus
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
 from api.app.routers.router_guards import (authorize_by_application_role,
+                                           authorize_by_privilege,
                                            enforce_self_grant_guard,
                                            get_current_requester)
 from api.app.schemas import Requester
@@ -23,6 +24,7 @@ router = APIRouter()
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(authorize_by_application_role),
+        Depends(authorize_by_privilege),
         Depends(enforce_self_grant_guard)
     ]
 )
