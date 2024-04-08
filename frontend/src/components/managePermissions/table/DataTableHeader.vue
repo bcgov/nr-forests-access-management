@@ -33,8 +33,14 @@ const computedFilter = computed({
 
 const userLevelText = computed(() => {
     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return 'delegated admins';
+        return 'delegated administrators';
     return 'users';
+});
+
+const tableHeaderCustomText = computed(() => {
+    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+        return 'and the roles they are allowed to manage for their users';
+    return 'and their permissions levels';
 });
 </script>
 
@@ -43,7 +49,7 @@ const userLevelText = computed(() => {
         <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
         <span>
             This table shows all the {{ userLevelText }} in
-            {{ selectedApplicationDisplayText }} and their permissions levels
+            {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
         </span>
     </div>
 
