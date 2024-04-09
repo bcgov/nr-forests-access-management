@@ -38,6 +38,7 @@ ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
+ERROR_REQUEST_INVALID = "invalid_request"
 
 no_requester_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,  # 403
@@ -186,7 +187,7 @@ async def get_request_role_from_id(
             status_code=HTTPStatus.FORBIDDEN,
             detail={
                 "code": ERROR_INVALID_ROLE_ID,
-                "description": "Role does not exist",
+                "description": "Role does not exist or failed to get the role_id from request",
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -264,6 +265,47 @@ async def authorize_by_privilege(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+
+async def authorize_by_user_type(
+    request: Request,
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester),
+):
+    """
+    This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
+    """
+    user_type_code = None
+    if "user_role_xref_id" in request.path_params:
+        user_role_xref_id = request.path_params["user_role_xref_id"]
+        user_role = crud_user_role.find_by_id(db, user_role_xref_id)
+        user_type_code = user_role.user.user_type_code
+    else:
+        try:
+            rbody = await request.json()
+            user_type_code = rbody["user_type_code"]
+        except json.JSONDecodeError:  # When request does not contains body part.
+            user_type_code = None
+
+    if not user_type_code:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_REQUEST_INVALID,
+                "description": f"Failed to get the user type code from the request.",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if user_type_code == UserType.IDIR and requester.user_type_code == UserType.BCEID:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={
+                "code": ERROR_PERMISSION_REQUIRED,
+                "description": f"Business BCEID requester has no privilege to grant this access to IDIR user.",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def internal_only_action(requester: Requester = Depends(get_current_requester)):

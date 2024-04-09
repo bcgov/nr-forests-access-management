@@ -5,6 +5,7 @@ from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
 from api.app.routers.router_guards import (authorize_by_application_role,
                                            authorize_by_privilege,
+                                           authorize_by_user_type,
                                            enforce_self_grant_guard,
                                            get_current_requester)
 from api.app.schemas import Requester
@@ -23,8 +24,9 @@ router = APIRouter()
     response_model=schemas.FamUserRoleAssignmentGet,
     # Guarding endpoint with Depends().
     dependencies=[
-        Depends(authorize_by_application_role),
-        Depends(authorize_by_privilege),
+        Depends(authorize_by_application_role), # requester needs to be app admin or delegated admin
+        Depends(authorize_by_privilege),  # if requester is delegated admin, needs to have privilge to grant access with the request role
+        Depends(authorize_by_user_type),  # check business bceid user cannot grant idir user access
         Depends(enforce_self_grant_guard)
     ]
 )
@@ -91,6 +93,8 @@ def create_user_role_assignment(
     response_class=Response,
     dependencies=[
         Depends(authorize_by_application_role),
+        Depends(authorize_by_privilege),
+        Depends(authorize_by_user_type),
         Depends(enforce_self_grant_guard)
     ]
 )
