@@ -64,6 +64,9 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     :type context: Any
     :return: returns a modified event with the roles injected into it
     :rtype: event_type.Event
+
+    When we onboard applications to FAM, we config at least the minimum attribute list for them
+    All applications should be configured with user attributes: "custom:idp_name", "custom:idp_user_id", "custom:idp_username"
     """
 
     audit_event_log = {
@@ -75,6 +78,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     LOGGER.debug(f"context: {context}")
 
     try:
+
         audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
         audit_event_log["requestingUser"]["userGuid"] = event["request"][
             "userAttributes"
@@ -91,13 +95,15 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
             audit_event_log["requestingUser"]["idpUserName"] = event["request"][
                 "userAttributes"
             ]["custom:idp_username"]
-            # audit_event_log["requestingUser"]["businessGuid"] = event["request"][
-            #     "userAttributes"
-            # ]["custom:idp_business_id"]
+            # for the user attributes that are not configured to be readable and writable for all applications
+            # we make the audit log optional
+            audit_event_log["requestingUser"]["businessGuid"] = event["request"][
+                "userAttributes"
+            ].get("custom:idp_business_id")
         else:
             audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                 "userAttributes"
-            ]["custom:idp_display_name"]
+            ].get("custom:idp_display_name")
 
         audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
 
