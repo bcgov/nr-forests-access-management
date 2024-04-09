@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { FilterMatchMode } from 'primevue/api';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
@@ -8,22 +11,23 @@ import {
 } from '@/store/Constants';
 import { isLoading } from '@/store/LoadingState';
 
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import DataTableHeader from '../managePermissions/table/DataTableHeader.vue';
 
 const myPermissiosFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
-    'application.description': {
+    'application': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'application.env': {
+    'env': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'application.roles.name': {
+    'clientId': {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+    },
+    'adminRole': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -52,9 +56,10 @@ const myPermissionsSearchChange = (newvalue: string) => {
             filterDisplay="menu"
             :loading="isLoading()"
             :globalFilterFields="[
-                'application.description',
-                'application.env',
-                'application.roles.name',
+                'application',
+                'env',
+                'adminRole',
+                'clientId',
             ]"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
@@ -66,32 +71,37 @@ const myPermissionsSearchChange = (newvalue: string) => {
             </template>
             <Column
                 header="Application"
-                field="application.description"
+                field="application"
                 sortable
             >
                 <template #body="{ data }">
                     <span>
-                        {{ data.application.name }}
+                        {{ data.application }}
                     </span>
                 </template>
             </Column>
             <Column
-                field="application.env"
+                field="env"
                 header="Environment"
                 sortable
             ></Column>
             <Column
+                field="clientId"
                 header="Client ID"
                 sortable
             >
             </Column>
             <Column
                 header="Role"
-                field="application.roles.name"
+                field="adminRole"
                 sortable
             >
                 <template #body="{ data }">
-                    {{ `${data.application.authKey}, ${data.application.roles.name}` }}
+                    {{
+                        data.adminRole === 'Delegated Admin'
+                            ? `${data.adminRole}, ${data.role}`
+                            : data.adminRole
+                    }}
                 </template>
             </Column>
         </DataTable>
