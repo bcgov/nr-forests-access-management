@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import InputText from 'primevue/inputtext';
 import router from '@/router';
+import { routeItems } from '@/router/routeItem';
 import { IconSize } from '@/enum/IconEnum';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 
@@ -12,33 +13,43 @@ const props = defineProps({
     },
     btnRoute: {
         type: String,
-        required: true
+        required: true,
     },
     filter: {
         type: String,
-        required: true
-    }
+        required: true,
+    },
 });
 const emit = defineEmits(['change']);
 
 const computedFilter = computed({
     get() {
-        return props.filter
+        return props.filter;
     },
     set(newValue) {
-        emit('change', newValue)
-    }
-})
+        emit('change', newValue);
+    },
+});
 
+const userLevelText = computed(() => {
+    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+        return 'delegated administrators';
+    return 'users';
+});
+
+const tableHeaderCustomText = computed(() => {
+    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+        return 'and the roles they are allowed to manage for their users';
+    return 'and their permissions levels';
+});
 </script>
 
 <template>
     <div class="custom-data-table-header">
-        <h3>{{ selectedApplicationDisplayText }} users</h3>
+        <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
         <span>
-            This table shows all the users in
-            {{ selectedApplicationDisplayText }} and their permissions
-            levels
+            This table shows all the {{ userLevelText }} in
+            {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
         </span>
     </div>
 
