@@ -237,15 +237,26 @@ const getMyCachedPermissions = () => {
         if (item.auth_key === AdminRoleAuthGroup.DelegatedAdmin) {
             item.grants.map((grant) => {
                 grant.roles?.forEach((role) => {
-                    role.forest_clients?.forEach((clientId) => {
+                    console.log(role.name)
+                    if(!role.forest_clients) {
                         myRoles.push({
                             adminRole: 'Delegated Admin',
                             application: grant.application.description,
                             env: grant.application.env,
-                            clientId: clientId,
+                            clientId: null,
                             role: role.name,
                         });
-                    });
+                    } else {
+                        role.forest_clients?.forEach((clientId) => {
+                            myRoles.push({
+                                adminRole: 'Delegated Admin',
+                                application: grant.application.description,
+                                env: grant.application.env,
+                                clientId: clientId,
+                                role: role.name,
+                            });
+                        });
+                    }
                 });
             });
         }
