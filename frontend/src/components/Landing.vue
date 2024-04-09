@@ -30,6 +30,7 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                 <Button
                     class="landing-button"
                     outlined
+                    disabled
                     label="Login with BCeID"
                     id="login-bceid-button"
                     @click="AuthService.loginBceid()"

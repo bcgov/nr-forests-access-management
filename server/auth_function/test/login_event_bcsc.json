@@ -25,7 +25,6 @@
             "address": "{'street_address':'4000 SEYMOUR PLACE','country':'CA','locality':'VICTORIA','region':'BC','postal_code':'V8Z 1C8'}",
             "birthdate": "1967-01-23",
             "custom:given_names": "GIVEnull GIVENTWO",
-            "gender": "unknown",
             "sub": "9c7d65b8-a0b1-70eb-bfba-caeadfdbbb48"
         }
     },
