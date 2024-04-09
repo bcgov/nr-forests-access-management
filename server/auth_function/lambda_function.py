@@ -91,9 +91,9 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
             audit_event_log["requestingUser"]["idpUserName"] = event["request"][
                 "userAttributes"
             ]["custom:idp_username"]
-            audit_event_log["requestingUser"]["businessGuid"] = event["request"][
-                "userAttributes"
-            ]["custom:idp_business_id"]
+            # audit_event_log["requestingUser"]["businessGuid"] = event["request"][
+            #     "userAttributes"
+            # ]["custom:idp_business_id"]
         else:
             audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                 "userAttributes"
