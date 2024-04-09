@@ -101,6 +101,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
                 "userAttributes"
             ].get("custom:idp_business_id")
         else:
+            # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
             audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                 "userAttributes"
             ].get("custom:idp_display_name")

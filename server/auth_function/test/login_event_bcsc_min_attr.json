@@ -1,0 +1,30 @@
+{
+    "callerContext": {
+        "awsSdkVersion": "aws-sdk-unknown-unknown",
+        "clientId": "10afna6ln33b2978g1nibfeqhg"
+    },
+    "region": "ca-central-1",
+    "request": {
+        "groupConfiguration": {
+            "groupsToOverride": [
+                "ca-central-1_p8X8GdjKW_TEST-BCSC"
+            ],
+            "iamRolesToOverride": [],
+            "preferredRole": null
+        },
+        "userAttributes": {
+            "cognito:user_status": "EXTERNAL_PROVIDER",
+            "custom:idp_name": "ca.bc.gov.flnr.fam.test",
+            "custom:idp_user_id": "6RRZFAU3ANJ5WASQ4N22GKJXSMANGLED",
+            "identities": "[{'userId':'6RRZFAU3ANJ5WASQ4N22GKJXSMANGLED','providerName':'TEST-BCSC','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1692046321660}]",
+            "sub": "9c7d65b8-a0b1-70eb-bfba-caeadfdbbb48"
+        }
+    },
+    "response": {
+        "claimsOverrideDetails": null
+    },
+    "triggerSource": "TokenGeneration_HostedAuth",
+    "userName": "test-bcsc_6rrzfau3anj5wasq4n22gkjxsmangled",
+    "userPoolId": "ca-central-1_t2HSZBHur",
+    "version": "1"
+}

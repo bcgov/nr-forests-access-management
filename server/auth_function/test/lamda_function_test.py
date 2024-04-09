@@ -20,6 +20,8 @@ LOGGER = logging.getLogger(__name__)
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
@@ -81,6 +83,8 @@ def test_create_user_if_not_found(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
@@ -132,6 +136,8 @@ def test_update_user_if_already_exists(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
@@ -167,6 +173,8 @@ def test_direct_role_assignment(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
@@ -198,6 +206,8 @@ def test_parent_role_assignment(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
@@ -219,6 +229,8 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json"
     ],
     indirect=True,
 )
