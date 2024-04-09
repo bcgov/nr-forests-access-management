@@ -110,11 +110,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
 
 <style>
 .my-permissions-table-wrapper {
-    margin: 3rem -2.5rem -2.5rem;
+    margin-top: 3rem;
 }
-@media (max-width: 768px) {
-    .my-permissions-table-wrapper {
-        margin: 3rem 0;
-    }
-}
+
 </style>
