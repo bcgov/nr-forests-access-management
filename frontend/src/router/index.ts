@@ -115,7 +115,7 @@ const routes = [
         path: routeItems.myPermissions.path,
         name: routeItems.myPermissions.name,
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
             title: routeItems.myPermissions.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: false,
