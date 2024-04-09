@@ -3,5 +3,5 @@ import MyPermissions from '@/components/myPermissions/MyPermissions.vue';
 </script>
 
 <template>
-    <MyPermissions></MyPermissions>
+    <MyPermissions />
 </template>
