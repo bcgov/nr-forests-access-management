@@ -237,7 +237,6 @@ const getMyCachedPermissions = () => {
         if (item.auth_key === AdminRoleAuthGroup.DelegatedAdmin) {
             item.grants.map((grant) => {
                 grant.roles?.forEach((role) => {
-                    console.log(role.name)
                     if(!role.forest_clients) {
                         myRoles.push({
                             adminRole: 'Delegated Admin',
