@@ -2,7 +2,7 @@
 
 <template>
     <div class="no-app-selected">
-        <IconCapitol />
+        <IconCapitol title="Capitol image"/>
         <p class="no-app-selected-title">Nothing to show yet!</p>
         <p class="no-app-selected-text">
             Choose an application to show a list of users with access to it. The

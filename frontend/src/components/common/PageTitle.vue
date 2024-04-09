@@ -18,15 +18,9 @@ const route = useRoute();
 </script>
 
 <template>
-    <Breadcrumb
-        v-if="route.meta.hasBreadcrumb"
-        :model="breadcrumbState"
-    >
+    <Breadcrumb v-if="route.meta.hasBreadcrumb" :model="breadcrumbState">
         <template #item="{ item }">
-            <RouterLink
-                v-if="item.path"
-                :to="item.path"
-            >
+            <RouterLink v-if="item.path" :to="item.path">
                 <span>
                     {{ item.label }}
                 </span>
@@ -34,7 +28,7 @@ const route = useRoute();
         </template>
     </Breadcrumb>
     <h1 class="title">{{ props.title }}</h1>
-    <h2 class="subtitle">{{ props.subtitle }}</h2>
+    <p class="subtitle">{{ props.subtitle }}</p>
 </template>
 
 <style lang="scss" scoped>

@@ -70,6 +70,9 @@ li {
     padding: 0.88rem;
     border: none;
     border-radius: 0;
+    .label {
+        display: none !important;
+    }
 }
 .subtitle {
     display: none;
@@ -84,7 +87,7 @@ li {
 
     padding: 0;
     z-index: 1;
-    color: $dark-text-primary;
+    color: $text-on-color;
     .header-title {
         margin: 0 auto 0 0;
         a i {
@@ -123,6 +126,9 @@ a > svg {
 
     .btn-toggleSideNav {
         display: none;
+        .label {
+            display: none !important;
+        }
     }
 }
 </style>

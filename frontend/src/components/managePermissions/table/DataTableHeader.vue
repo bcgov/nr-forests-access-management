@@ -86,7 +86,7 @@ const tableHeaderCustomText = computed(() => {
         padding: 0;
     }
 
-    span {
+    p {
         @extend %body-compact-01;
         margin: 0;
         padding: 0;

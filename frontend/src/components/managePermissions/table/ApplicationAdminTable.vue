@@ -113,11 +113,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column
-                    header="User Name"
-                    sortable
-                    field="user.user_name"
-                >
+                <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
                         <span>
                             {{ data.user.user_name }}
@@ -139,11 +135,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                     header="Environment"
                     sortable
                 ></Column>
-                <Column
-                    field="role.role_name"
-                    header="Role"
-                    sortable
-                >
+                <Column field="role.role_name" header="Role" sortable>
                     <template #body="{ data }"> Admin </template></Column
                 >
                 <Column header="Action">
@@ -155,13 +147,11 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
                         <button
+                            title="Delete"
                             class="btn btn-icon"
                             @click="deleteAdmin(data)"
                         >
-                            <Icon
-                                icon="trash-can"
-                                :size="IconSize.small"
-                            />
+                            <Icon icon="trash-can" :size="IconSize.small" />
                         </button>
                     </template>
                 </Column>
