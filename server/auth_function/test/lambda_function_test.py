@@ -20,6 +20,8 @@ LOGGER = logging.getLogger(__name__)
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
@@ -33,6 +35,7 @@ def test_create_user_if_not_found(
     test_idp_user_id = test_user_properties["idp_user_id"]
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
+    test_idp_business_guid = test_user_properties["idp_business_id"]
 
     # make sure the user doesn't exist
     user_query = sql.SQL(
@@ -70,9 +73,31 @@ def test_create_user_if_not_found(
         sql.Literal(test_cognito_user_id),
         sql.Literal(test_idp_username),
     )
+
     cursor.execute(replaced_query)
     count = cursor.fetchone()[0]
     assert count == 1
+
+    if test_idp_business_guid is not None:
+        # validate the user is created with the business_guid
+        raw_query = """select count(*) from app_fam.fam_user where
+            user_type_code = {} and
+            user_guid = {} and
+            cognito_user_id = {} and
+            user_name = {} and
+            business_guid = {};"""
+
+        replaced_query = sql.SQL(raw_query).format(
+            sql.Literal(test_idp_type_code),
+            sql.Literal(test_idp_user_id),
+            sql.Literal(test_cognito_user_id),
+            sql.Literal(test_idp_username),
+            sql.Literal(test_idp_business_guid),
+        )
+
+        cursor.execute(replaced_query)
+        count = cursor.fetchone()[0]
+        assert count == 1
 
 
 @pytest.mark.parametrize(
@@ -81,6 +106,8 @@ def test_create_user_if_not_found(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
@@ -100,6 +127,7 @@ def test_update_user_if_already_exists(
     test_idp_user_id = test_user_properties["idp_user_id"]
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
+    test_idp_business_guid = test_user_properties["idp_business_id"]
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
@@ -119,11 +147,30 @@ def test_update_user_if_already_exists(
         sql.Literal(test_cognito_user_id),
         sql.Literal(test_idp_username),
     )
+
     cursor.execute(query)
-
     count = cursor.fetchone()[0]
-
     assert count == 1
+
+    if test_idp_business_guid is not None:
+        # verify the user is updated with business_guid
+        raw_query = """select count(*) from app_fam.fam_user where
+            user_type_code = {} and
+            user_guid = {} and
+            cognito_user_id = {} and
+            user_name = {} and
+            business_guid = {};"""
+        query = sql.SQL(raw_query).format(
+            sql.Literal(test_idp_type_code),
+            sql.Literal(test_idp_user_id),
+            sql.Literal(test_cognito_user_id),
+            sql.Literal(test_idp_username),
+            sql.Literal(test_idp_business_guid),
+        )
+
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+        assert count == 1
 
 
 @pytest.mark.parametrize(
@@ -132,6 +179,8 @@ def test_update_user_if_already_exists(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
@@ -143,7 +192,7 @@ def test_direct_role_assignment(
     create_test_fam_role,
     create_test_fam_cognito_client,
     create_user_role_xref_record,
-    create_fam_application_admin_record
+    create_fam_application_admin_record,
 ):
     """role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
@@ -167,6 +216,8 @@ def test_direct_role_assignment(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
@@ -198,6 +249,8 @@ def test_parent_role_assignment(
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
@@ -219,6 +272,8 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
         "login_event.json",
         "login_event_bceid.json",
         "login_event_bcsc.json",
+        "login_event_bceid_min_attr.json",
+        "login_event_bcsc_min_attr.json",
     ],
     indirect=True,
 )
