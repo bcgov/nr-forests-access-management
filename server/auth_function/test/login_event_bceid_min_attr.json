@@ -14,7 +14,6 @@
         },
         "userAttributes": {
             "cognito:user_status": "EXTERNAL_PROVIDER",
-            "custom:idp_display_name": "NRS Load Test-2",
             "custom:idp_name": "bceidbusiness",
             "custom:idp_user_id": "81069F39B35B4861BCD010582MANGLED",
             "custom:idp_username": "LOAD-2-TEST",
