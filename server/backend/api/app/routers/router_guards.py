@@ -173,8 +173,8 @@ async def get_request_role_from_id(
         role = user_role.role
     else:
         try:
-            rbody = await request.json()
-            role_id = rbody["role_id"]
+            attrs = await get_request_attributes(request, "role_id")
+            role_id = attrs["role_id"]
             LOGGER.debug(f"Retrieving role by Request's role_id: {role_id}")
             role = crud_role.get_role(db, role_id)  # role could be None.
         except json.JSONDecodeError:  # When request does not contains body part.
@@ -235,8 +235,8 @@ async def authorize_by_privilege(
         # for grant access, if the request params has forest_client_number, need to get the child role
         # the child role should already exist when the delegated admin has been created
         if "user_role_xref_id" not in request.path_params:
-            rbody = await request.json()
-            forest_client_number = rbody.get("forest_client_number")
+            attrs = await get_request_attributes(request, "forest_client_number")
+            forest_client_number = attrs["forest_client_number"]
             if forest_client_number:
                 parent_role = role
                 forest_client_role_name = (
@@ -263,52 +263,6 @@ async def authorize_by_privilege(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
-
-async def authorize_by_user_type(
-    request: Request,
-    db: Session = Depends(database.get_db),
-    requester: Requester = Depends(get_current_requester),
-):
-    """
-    This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
-    """
-    user_type_code = None
-    if "user_role_xref_id" in request.path_params:
-        user_role_xref_id = request.path_params["user_role_xref_id"]
-        user_role = crud_user_role.find_by_id(db, user_role_xref_id)
-        user_type_code = user_role.user.user_type_code
-    else:
-        try:
-            rbody = await request.json()
-            user_type_code = rbody["user_type_code"]
-        except json.JSONDecodeError:  # When request does not contains body part.
-            user_type_code = None
-
-    if not user_type_code:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_REQUEST_INVALID,
-                "description": f"Failed to get the user type code from the request.",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    if user_type_code == UserType.IDIR and requester.user_type_code == UserType.BCEID:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_PERMISSION_REQUIRED,
-                "description": f"Business BCEID requester has no privilege to grant this access to IDIR user.",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-
-async def internal_only_action(requester: Requester = Depends(get_current_requester)):
-    if requester.user_type_code is not UserType.IDIR:
-        raise external_user_prohibited_exception
 
 
 # Note!!
@@ -347,6 +301,50 @@ async def get_target_user_from_id(
             return None
 
 
+async def authorize_by_user_type(
+    request: Request,
+    requester: Requester = Depends(get_current_requester),
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+):
+    """
+    This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
+    """
+    if requester.user_type_code == UserType.BCEID:
+        target_user_type_code = None
+        if target_user:
+            # in the case of granting/removing access to an existing user
+            target_user_type_code = target_user.user_type_code
+        else:
+            # in the case of granting access to a new user
+            attrs = await get_request_attributes(request, ["user_type_code"])
+            target_user_type_code = attrs["user_type_code"]
+
+        if not target_user_type_code:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail={
+                    "code": ERROR_REQUEST_INVALID,
+                    "description": f"Failed to get the user type code from the request.",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if target_user_type_code == UserType.IDIR:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail={
+                    "code": ERROR_PERMISSION_REQUIRED,
+                    "description": f"Business BCEID requester has no privilege to grant this access to IDIR user.",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+
+async def internal_only_action(requester: Requester = Depends(get_current_requester)):
+    if requester.user_type_code is not UserType.IDIR:
+        raise external_user_prohibited_exception
+
+
 async def enforce_self_grant_guard(
     requester: Requester = Depends(get_current_requester),
     target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
@@ -375,11 +373,9 @@ async def enforce_self_grant_guard(
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-# TODO: draft versoin. In progress...
+
 async def enforce_bceid_by_same_org_guard(
     request: Request,
-    # forbid business bceid user (requester) manage idir user's access
-    _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
     target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
 ):
@@ -398,9 +394,10 @@ async def enforce_bceid_by_same_org_guard(
             target_user_business_guid = target_user.business_guid
         else:
             # target_user does not exist in FAM database (new user)
-            # search business_guid from IDIM proxy
+            # search the target user from IDIM proxy and get business_guid
+            # todo: update to search by user_guid instead of user_name
             attrs = await get_request_attributes(request, ["user_name"])
-            target_user_business_guid = search_business_guid(requester, attrs["user_name"])
+            target_user_business_guid = get_business_guid(requester, attrs["user_name"])
 
         if requester_business_guid is None or target_user_business_guid is None:
             error_description = f"{missing_key_attribute_error.detail['description']}
@@ -411,12 +408,8 @@ async def enforce_bceid_by_same_org_guard(
         if requester_business_guid.upper() != target_user_business_guid.upper():
             raise different_org_grant_prohibited_exception
 
-        # TODO: if pass, returns "target_user" with available/searched business_guid?
 
-
-# --- helper functions.
-
-
+# ----------------------- helper functions -------------------- #
 def is_app_admin(
     application_id: int,
     db: Session,
@@ -452,7 +445,7 @@ async def get_request_attributes(request: Request, attrs: array):
     return attrs_dict
 
 
-def search_business_guid(requester: Requester, user_id: str):
+def get_business_guid(requester: Requester, user_id: str):
     LOGGER.debug(f"Searching for business guid for user: {user_id}")
     idim_proxy_api = IdimProxyService(requester)
     search_result = idim_proxy_api.search_business_bceid(
