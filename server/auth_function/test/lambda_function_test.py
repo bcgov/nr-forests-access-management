@@ -35,6 +35,7 @@ def test_create_user_if_not_found(
     test_idp_user_id = test_user_properties["idp_user_id"]
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
+    test_idp_business_guid = test_user_properties["idp_business_id"]
 
     # make sure the user doesn't exist
     user_query = sql.SQL(
@@ -77,68 +78,26 @@ def test_create_user_if_not_found(
     count = cursor.fetchone()[0]
     assert count == 1
 
+    if test_idp_business_guid is not None:
+        # validate the user is created with the business_guid
+        raw_query = """select count(*) from app_fam.fam_user where
+            user_type_code = {} and
+            user_guid = {} and
+            cognito_user_id = {} and
+            user_name = {} and
+            business_guid = {};"""
 
-@pytest.mark.parametrize(
-    "cognito_event",
-    [
-        "login_event_bceid.json",
-    ],
-    indirect=True,
-)
-def test_create_bceid_user_if_not_found_test_with_business_guid(
-    db_pg_transaction, cognito_event, cognito_context, test_user_properties
-):
-    cursor = db_pg_transaction.cursor()
+        replaced_query = sql.SQL(raw_query).format(
+            sql.Literal(test_idp_type_code),
+            sql.Literal(test_idp_user_id),
+            sql.Literal(test_cognito_user_id),
+            sql.Literal(test_idp_username),
+            sql.Literal(test_idp_business_guid),
+        )
 
-    # shorter variables
-    test_idp_type_code = test_user_properties["idp_type_code"]
-    test_idp_user_id = test_user_properties["idp_user_id"]
-    test_cognito_user_id = test_user_properties["cognito_user_id"]
-    test_idp_username = test_user_properties["idp_username"]
-    test_idp_business_guid = test_user_properties["idp_business_id"]
-
-    # make sure the user doesn't exist
-    user_query = sql.SQL(
-        """SELECT user_name from app_fam.fam_user where
-            user_name = {0}"""
-    ).format(sql.Literal(test_idp_username))
-
-    cursor.execute(user_query)
-    results = cursor.fetchall()
-    LOGGER.debug(f"results: {results}")
-    assert len(results) == 0
-    assert results == []
-
-    # simulate a login
-    lambda_function.lambda_handler(cognito_event, cognito_context)
-
-    # verify that the user exists now
-    cursor.execute(user_query)
-    results = cursor.fetchall()
-    LOGGER.debug(f"results: {results}")
-    assert len(results) == 1
-    assert results[0][0] == test_idp_username
-
-    # validate that there is one user in the database with the properties from
-    # the incoming event, the user is created with the business_guid
-    raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {} and
-        business_guid = {};"""
-
-    replaced_query = sql.SQL(raw_query).format(
-        sql.Literal(test_idp_type_code),
-        sql.Literal(test_idp_user_id),
-        sql.Literal(test_cognito_user_id),
-        sql.Literal(test_idp_username),
-        sql.Literal(test_idp_business_guid),
-    )
-
-    cursor.execute(replaced_query)
-    count = cursor.fetchone()[0]
-    assert count == 1
+        cursor.execute(replaced_query)
+        count = cursor.fetchone()[0]
+        assert count == 1
 
 
 @pytest.mark.parametrize(
@@ -168,6 +127,7 @@ def test_update_user_if_already_exists(
     test_idp_user_id = test_user_properties["idp_user_id"]
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
+    test_idp_business_guid = test_user_properties["idp_business_id"]
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
@@ -187,63 +147,30 @@ def test_update_user_if_already_exists(
         sql.Literal(test_cognito_user_id),
         sql.Literal(test_idp_username),
     )
+
     cursor.execute(query)
-
     count = cursor.fetchone()[0]
-
     assert count == 1
 
+    if test_idp_business_guid is not None:
+        # verify the user is updated with business_guid
+        raw_query = """select count(*) from app_fam.fam_user where
+            user_type_code = {} and
+            user_guid = {} and
+            cognito_user_id = {} and
+            user_name = {} and
+            business_guid = {};"""
+        query = sql.SQL(raw_query).format(
+            sql.Literal(test_idp_type_code),
+            sql.Literal(test_idp_user_id),
+            sql.Literal(test_cognito_user_id),
+            sql.Literal(test_idp_username),
+            sql.Literal(test_idp_business_guid),
+        )
 
-@pytest.mark.parametrize(
-    "cognito_event",
-    [
-        "login_event_bceid.json",
-    ],
-    indirect=True,
-)
-def test_update_bceid_user_if_already_exists_test_with_business_guid(
-    db_pg_transaction,
-    cognito_event,
-    cognito_context,
-    test_user_properties,
-    initial_user_without_guid_or_cognito_id,
-):
-    """
-    if the user has already been created but does not have a guid or a cognito user
-    id then, it will be updated, and the guid / cognito user id will be populated.
-    """
-
-    test_idp_type_code = test_user_properties["idp_type_code"]
-    test_idp_user_id = test_user_properties["idp_user_id"]
-    test_cognito_user_id = test_user_properties["cognito_user_id"]
-    test_idp_username = test_user_properties["idp_username"]
-    test_idp_business_guid = test_user_properties["idp_business_id"]
-
-    # execute
-    result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    LOGGER.debug(f"result: \n{pprint.pformat(result, indent=4)}")
-
-    # validate that there is one user in the database with the properties from
-    # the incoming event
-    cursor = db_pg_transaction.cursor()
-    raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {} and
-        business_guid = {};"""
-    query = sql.SQL(raw_query).format(
-        sql.Literal(test_idp_type_code),
-        sql.Literal(test_idp_user_id),
-        sql.Literal(test_cognito_user_id),
-        sql.Literal(test_idp_username),
-        sql.Literal(test_idp_business_guid),
-    )
-    cursor.execute(query)
-
-    count = cursor.fetchone()[0]
-
-    assert count == 1
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+        assert count == 1
 
 
 @pytest.mark.parametrize(
