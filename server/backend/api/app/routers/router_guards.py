@@ -5,7 +5,7 @@ from http import HTTPStatus
 from typing import Union
 
 from api.app import database
-from api.app.constants import UserType
+from api.app.constants import UserType, RoleType
 from api.app.crud import (
     crud_application,
     crud_role,
@@ -173,8 +173,8 @@ async def get_request_role_from_id(
         role = user_role.role
     else:
         try:
-            attrs = await get_request_attributes(request, "role_id")
-            role_id = attrs["role_id"]
+            rbody = await request.json()
+            role_id = rbody["role_id"]
             LOGGER.debug(f"Retrieving role by Request's role_id: {role_id}")
             role = crud_role.get_role(db, role_id)  # role could be None.
         except json.JSONDecodeError:  # When request does not contains body part.
@@ -226,7 +226,6 @@ async def authorize_by_privilege(
     :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
                  for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
     """
-
     requester_is_app_admin = is_app_admin(role.application_id, db, claims)
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
@@ -235,9 +234,12 @@ async def authorize_by_privilege(
         # for grant access, if the request params has forest_client_number, need to get the child role
         # the child role should already exist when the delegated admin has been created
         if "user_role_xref_id" not in request.path_params:
-            attrs = await get_request_attributes(request, "forest_client_number")
-            forest_client_number = attrs["forest_client_number"]
-            if forest_client_number:
+            rbody = await request.json()
+            forest_client_number = rbody["forest_client_number"]
+            if (
+                forest_client_number
+                and role.role_type_code == RoleType.ROLE_TYPE_ABSTRACT
+            ):
                 parent_role = role
                 forest_client_role_name = (
                     crud_user_role.construct_forest_client_role_name(
@@ -272,8 +274,7 @@ async def authorize_by_privilege(
 # Specifically: "user_role_xref_id" and "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
-    request: Request,
-    db: Session = Depends(database.get_db)
+    request: Request, db: Session = Depends(database.get_db)
 ) -> Union[TargetUser, None]:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
@@ -290,11 +291,11 @@ async def get_target_user_from_id(
     else:
         # from request body - {user_name/user_type_code}
         try:
-            attrs = await get_request_attributes(request, ["user_type_code", "user_name"])
+            rbody = await request.json()
             user = crud_user.get_user_by_domain_and_name(
                 db,
-                attrs["user_type_code"],
-                attrs["user_name"],
+                rbody["user_type_code"],
+                rbody["user_name"],
             )
             return TargetUser.model_validate(user) if user is not None else None
         except json.JSONDecodeError:
@@ -304,7 +305,7 @@ async def get_target_user_from_id(
 async def authorize_by_user_type(
     request: Request,
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
 ):
     """
     This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
@@ -316,8 +317,11 @@ async def authorize_by_user_type(
             target_user_type_code = target_user.user_type_code
         else:
             # in the case of granting access to a new user
-            attrs = await get_request_attributes(request, ["user_type_code"])
-            target_user_type_code = attrs["user_type_code"]
+            try:
+                rbody = await request.json()
+                target_user_type_code = rbody["user_type_code"]
+            except json.JSONDecodeError:
+                target_user_type_code = None
 
         if not target_user_type_code:
             raise HTTPException(
@@ -377,14 +381,16 @@ async def enforce_self_grant_guard(
 async def enforce_bceid_by_same_org_guard(
     request: Request,
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage
     target user from the same organization.
     """
-    LOGGER.info(f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
-                "is allowed to manage BCeID target user for the same organization.")
+    LOGGER.info(
+        f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
+        "is allowed to manage BCeID target user for the same organization."
+    )
     if requester.user_type_code == UserType.BCEID:
         requester_business_guid = requester.business_guid
         target_user_business_guid = None
@@ -396,12 +402,17 @@ async def enforce_bceid_by_same_org_guard(
             # target_user does not exist in FAM database (new user)
             # search the target user from IDIM proxy and get business_guid
             # todo: update to search by user_guid instead of user_name
-            attrs = await get_request_attributes(request, ["user_name"])
-            target_user_business_guid = get_business_guid(requester, attrs["user_name"])
+            try:
+                rbody = await request.json()
+                target_user_business_guid = get_business_guid(
+                    requester, rbody["user_name"]
+                )
+
+            except json.JSONDecodeError:
+                target_user_business_guid = None
 
         if requester_business_guid is None or target_user_business_guid is None:
-            error_description = f"{missing_key_attribute_error.detail['description']}
-                Requester or target user business GUID is missing."
+            error_description = f"{missing_key_attribute_error.detail['description']} Requester or target user business GUID is missing."
             missing_key_attribute_error.detail["description"] = error_description
             raise missing_key_attribute_error
 
@@ -432,17 +443,6 @@ def is_app_admin(
     if access_roles and admin_role in access_roles:
         return True
     return False
-
-
-async def get_request_attributes(request: Request, attrs: array):
-    rbody = await request.json()
-    attrs_dict = {}
-
-    for attr in attrs:
-        # AttributeError if attr not found. Ensure passing correct attrs.
-        attrs_dict[attr] = getattr(rbody, attr)
-
-    return attrs_dict
 
 
 def get_business_guid(requester: Requester, user_id: str):
