@@ -77,7 +77,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
 
     LOGGER.debug(f"context: {context}")
 
-    LOGGER.info(f"event: {event}")
+    LOGGER.debug(f"event: {event}")
 
     try:
 
