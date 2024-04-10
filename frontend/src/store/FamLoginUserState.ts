@@ -217,7 +217,6 @@ const getMyCachedPermissions = () => {
                 return grant.application.name === FAM_APPLICATION_NAME;
             });
             myRoles.push({
-                adminRole: 'Admin',
                 application: famGrant?.application.description,
                 env: famGrant?.application.env,
                 role: 'Admin',
@@ -227,7 +226,7 @@ const getMyCachedPermissions = () => {
         if (item.auth_key === AdminRoleAuthGroup.AppAdmin) {
             item.grants.map((grant) => {
                 myRoles.push({
-                    adminRole: 'Admin',
+                    role: 'Admin',
                     application: grant.application.description,
                     env: grant.application.env,
                 });
@@ -239,20 +238,18 @@ const getMyCachedPermissions = () => {
                 grant.roles?.forEach((role) => {
                     if(!role.forest_clients) {
                         myRoles.push({
-                            adminRole: 'Delegated Admin',
                             application: grant.application.description,
                             env: grant.application.env,
                             clientId: null,
-                            role: role.name,
+                            role: 'Delegated Admin, ' + role.name,
                         });
                     } else {
                         role.forest_clients?.forEach((clientId) => {
                             myRoles.push({
-                                adminRole: 'Delegated Admin',
                                 application: grant.application.description,
                                 env: grant.application.env,
                                 clientId: clientId,
-                                role: role.name,
+                                role: 'Delegated Admin, ' + role.name,
                             });
                         });
                     }

@@ -27,7 +27,7 @@ const myPermissiosFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'adminRole': {
+    'role': {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -58,7 +58,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
             :globalFilterFields="[
                 'application',
                 'env',
-                'adminRole',
+                'role',
                 'clientId',
             ]"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
@@ -93,14 +93,12 @@ const myPermissionsSearchChange = (newvalue: string) => {
             </Column>
             <Column
                 header="Role"
-                field="adminRole"
+                field="role"
                 sortable
             >
                 <template #body="{ data }">
                     {{
-                        data.adminRole === 'Delegated Admin'
-                            ? `${data.adminRole}, ${data.role}`
-                            : data.adminRole
+                        data.role
                     }}
                 </template>
             </Column>
