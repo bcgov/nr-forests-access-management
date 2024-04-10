@@ -164,9 +164,9 @@ def populate_user_if_necessary(db_connection, event) -> None:
         user_name = event["request"]["userAttributes"]["custom:idp_username"]
 
     raw_query = """INSERT INTO app_fam.fam_user
-        (user_type_code, user_guid, cognito_user_id, user_name,
+        (user_type_code, user_guid, cognito_user_id, user_name, business_guid,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name},
+        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, lower(user_name)) DO
         UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""
