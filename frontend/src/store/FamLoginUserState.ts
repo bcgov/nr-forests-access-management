@@ -209,14 +209,14 @@ const getCachedAppRolesForDelegatedAdmin = (
     });
 };
 
-const getMyCachedPermissions = () => {
-    let myRoles: any = [];
+const getMyAdminPermission = () => {
+    let myPermissions: any = [];
     getUserAccess()?.map((item) => {
         if (item.auth_key === AdminRoleAuthGroup.FamAdmin) {
             const famGrant = item.grants.find((grant) => {
                 return grant.application.name === FAM_APPLICATION_NAME;
             });
-            myRoles.push({
+            myPermissions.push({
                 application: famGrant?.application.description,
                 env: famGrant?.application.env,
                 role: 'Admin',
@@ -225,7 +225,7 @@ const getMyCachedPermissions = () => {
 
         if (item.auth_key === AdminRoleAuthGroup.AppAdmin) {
             item.grants.map((grant) => {
-                myRoles.push({
+                myPermissions.push({
                     role: 'Admin',
                     application: grant.application.description,
                     env: grant.application.env,
@@ -237,7 +237,7 @@ const getMyCachedPermissions = () => {
             item.grants.map((grant) => {
                 grant.roles?.forEach((role) => {
                     if(!role.forest_clients) {
-                        myRoles.push({
+                        myPermissions.push({
                             application: grant.application.description,
                             env: grant.application.env,
                             clientId: null,
@@ -245,7 +245,7 @@ const getMyCachedPermissions = () => {
                         });
                     } else {
                         role.forest_clients?.forEach((clientId) => {
-                            myRoles.push({
+                            myPermissions.push({
                                 application: grant.application.description,
                                 env: grant.application.env,
                                 clientId: clientId,
@@ -257,7 +257,7 @@ const getMyCachedPermissions = () => {
             });
         }
     });
-    return myRoles;
+    return myPermissions;
 };
 // --- export
 
@@ -267,7 +267,7 @@ export default {
     getUserAccess,
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
-    getMyCachedPermissions,
+    getMyAdminPermission,
     getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
     hasAccess,

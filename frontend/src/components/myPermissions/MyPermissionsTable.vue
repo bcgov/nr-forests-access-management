@@ -49,7 +49,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
         <DataTable
             class="custom-data-table"
             v-model:filters="myPermissiosFilters"
-            :value="FamLoginUserState.getMyCachedPermissions()"
+            :value="FamLoginUserState.getMyAdminPermission()"
             paginator
             :rows="50"
             :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
