@@ -1,3 +1,4 @@
+import array
 import json
 import logging
 from http import HTTPStatus
@@ -20,8 +21,9 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
+from api.app.integration.idim_proxy import IdimProxyService
 from api.app.models.model import FamRole, FamUser
-from api.app.schemas import Requester, TargetUser
+from api.app.schemas import IdimProxySearchParam, Requester, TargetUser
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -39,6 +41,8 @@ ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_REQUEST_INVALID = "invalid_request"
+ERROR_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
+ERROR_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 
 no_requester_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,  # 403
@@ -54,6 +58,24 @@ external_user_prohibited_exception = HTTPException(
         "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
         "description": "Action is not allowed for external user.",
     },
+)
+
+different_org_grant_prohibited_exception = HTTPException(
+    status_code=HTTPStatus.FORBIDDEN,
+    detail={
+        "code": ERROR_DIFFERENT_ORG_GRANT_PROHIBITED,
+        "description": "Managing for different organization is not allowed.",
+    },
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+missing_key_attribute_error = HTTPException(
+    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,  # 500
+    detail={
+        "code": ERROR_MISSING_KEY_ATTRIBUTE,
+        "description": "Operation encountered unexpected error.",
+    },
+    headers={"WWW-Authenticate": "Bearer"},
 )
 
 
@@ -99,30 +121,6 @@ def authorize(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
-
-def is_app_admin(
-    application_id: int,
-    db: Session,
-    claims: dict,
-):
-    application = crud_application.get_application(application_id=application_id, db=db)
-    if not application:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    admin_role = f"{application.application_name.upper()}_ADMIN"
-    access_roles = get_access_roles(claims)
-
-    if access_roles and admin_role in access_roles:
-        return True
-    return False
 
 
 def authorize_by_app_id(
@@ -320,7 +318,8 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
 # Specifically: "user_role_xref_id" and "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
-    request: Request, db: Session = Depends(database.get_db)
+    request: Request,
+    db: Session = Depends(database.get_db)
 ) -> Union[TargetUser, None]:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
@@ -335,13 +334,13 @@ async def get_target_user_from_id(
             TargetUser.model_validate(user_role.user) if user_role is not None else None
         )
     else:
-        # from body - {user_name/user_type_code}
+        # from request body - {user_name/user_type_code}
         try:
-            rbody = await request.json()
+            attrs = await get_request_attributes(request, ["user_type_code", "user_name"])
             user = crud_user.get_user_by_domain_and_name(
                 db,
-                rbody["user_type_code"],
-                rbody["user_name"],
+                attrs["user_type_code"],
+                attrs["user_name"],
             )
             return TargetUser.model_validate(user) if user is not None else None
         except json.JSONDecodeError:
@@ -375,3 +374,89 @@ async def enforce_self_grant_guard(
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+# TODO: draft versoin. In progress...
+async def enforce_bceid_by_same_org_guard(
+    request: Request,
+    # forbid business bceid user (requester) manage idir user's access
+    _enforce_user_type_auth: None = Depends(authorize_by_user_type),
+    requester: Requester = Depends(get_current_requester),
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+):
+    """
+    When requester is a BCeID user, enforce requester can only manage
+    target user from the same organization.
+    """
+    LOGGER.info(f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
+                "is allowed to manage BCeID target user for the same organization.")
+    if requester.user_type_code == UserType.BCEID:
+        requester_business_guid = requester.business_guid
+        target_user_business_guid = None
+
+        if target_user:
+            # target_user found, expect it to have business_guid
+            target_user_business_guid = target_user.business_guid
+        else:
+            # target_user does not exist in FAM database (new user)
+            # search business_guid from IDIM proxy
+            attrs = await get_request_attributes(request, ["user_name"])
+            target_user_business_guid = search_business_guid(requester, attrs["user_name"])
+
+        if requester_business_guid is None or target_user_business_guid is None:
+            error_description = f"{missing_key_attribute_error.detail['description']}
+                Requester or target user business GUID is missing."
+            missing_key_attribute_error.detail["description"] = error_description
+            raise missing_key_attribute_error
+
+        if requester_business_guid.upper() != target_user_business_guid.upper():
+            raise different_org_grant_prohibited_exception
+
+        # TODO: if pass, returns "target_user" with available/searched business_guid?
+
+
+# --- helper functions.
+
+
+def is_app_admin(
+    application_id: int,
+    db: Session,
+    claims: dict,
+):
+    application = crud_application.get_application(application_id=application_id, db=db)
+    if not application:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_INVALID_APPLICATION_ID,
+                "description": f"Application ID {application_id} not found",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    admin_role = f"{application.application_name.upper()}_ADMIN"
+    access_roles = get_access_roles(claims)
+
+    if access_roles and admin_role in access_roles:
+        return True
+    return False
+
+
+async def get_request_attributes(request: Request, attrs: array):
+    rbody = await request.json()
+    attrs_dict = {}
+
+    for attr in attrs:
+        # AttributeError if attr not found. Ensure passing correct attrs.
+        attrs_dict[attr] = getattr(rbody, attr)
+
+    return attrs_dict
+
+
+def search_business_guid(requester: Requester, user_id: str):
+    LOGGER.debug(f"Searching for business guid for user: {user_id}")
+    idim_proxy_api = IdimProxyService(requester)
+    search_result = idim_proxy_api.search_business_bceid(
+        IdimProxySearchParam(**{"userId": user_id})
+    )
+    business_guid = search_result.get("businessGuid")
+    return business_guid
