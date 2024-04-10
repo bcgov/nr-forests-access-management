@@ -20,11 +20,13 @@ LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.post("",
+
+@router.post(
+    "",
     response_model=schemas.FamUserRoleAssignmentGet,
     # Guarding endpoint with Depends().
     dependencies=[
-        Depends(authorize_by_application_role), # requester needs to be app admin or delegated admin
+        Depends(authorize_by_application_role),  # requester needs to be app admin or delegated admin
         Depends(authorize_by_privilege),  # if requester is delegated admin, needs to have privilge to grant access with the request role
         Depends(authorize_by_user_type),  # check business bceid user cannot grant idir user access
         Depends(enforce_self_grant_guard)
