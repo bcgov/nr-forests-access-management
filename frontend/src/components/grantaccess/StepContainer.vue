@@ -22,7 +22,7 @@ const props = defineProps({
         <div :class="subtitle ? 'step-content' : ''">
             <slot />
         </div>
-        <Divider role="presentation" v-if="props.divider" />
+        <Divider v-if="props.divider" />
     </div>
 </template>
 

@@ -87,7 +87,6 @@ const props = defineProps({
     width: 100%;
     height: calc(100vh - 3.125rem);
     left: 0rem;
-    // top: 3rem;
     overflow-x: hidden;
     overflow-y: auto;
     .content {
