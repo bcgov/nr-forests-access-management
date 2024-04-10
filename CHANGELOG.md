@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.14.0...v1.14.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* bceid login for FOM production login issue ([#1291](https://github.com/bcgov/nr-forests-access-management/issues/1291)) ([5238703](https://github.com/bcgov/nr-forests-access-management/commit/52387038011772c264aad10712e65862ddcb6288))
+
 ## [1.14.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.13.0...v1.14.0) (2024-04-08)
 
 
