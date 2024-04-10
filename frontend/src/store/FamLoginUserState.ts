@@ -211,7 +211,7 @@ const getCachedAppRolesForDelegatedAdmin = (
 
 const getMyAdminPermission = () => {
     let myPermissions: any = [];
-    getUserAccess()?.map((item) => {
+    getUserAccess()?.forEach((item) => {
         if (item.auth_key === AdminRoleAuthGroup.FamAdmin) {
             const famGrant = item.grants.find((grant) => {
                 return grant.application.name === FAM_APPLICATION_NAME;
@@ -224,7 +224,7 @@ const getMyAdminPermission = () => {
         }
 
         if (item.auth_key === AdminRoleAuthGroup.AppAdmin) {
-            item.grants.map((grant) => {
+            item.grants.forEach((grant) => {
                 myPermissions.push({
                     role: 'Admin',
                     application: grant.application.description,
@@ -234,7 +234,7 @@ const getMyAdminPermission = () => {
         }
 
         if (item.auth_key === AdminRoleAuthGroup.DelegatedAdmin) {
-            item.grants.map((grant) => {
+            item.grants.forEach((grant) => {
                 grant.roles?.forEach((role) => {
                     if(!role.forest_clients) {
                         myPermissions.push({
