@@ -1,7 +1,6 @@
 import { it, describe, beforeEach, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
-import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
