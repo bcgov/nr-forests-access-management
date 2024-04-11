@@ -235,7 +235,7 @@ async def authorize_by_privilege(
         # the child role should already exist when the delegated admin has been created
         if "user_role_xref_id" not in request.path_params:
             rbody = await request.json()
-            forest_client_number = rbody["forest_client_number"]
+            forest_client_number = rbody.get("forest_client_number")
             if (
                 forest_client_number
                 and role.role_type_code == RoleType.ROLE_TYPE_ABSTRACT
