@@ -68,6 +68,9 @@ const icons = {
     'enterprise16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/enterprise/16')
     ),
+    'user--profile16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user--profile/16')
+    ),
 
     // medium icons
     'checkmark--filled20': defineAsyncComponent(

@@ -207,7 +207,58 @@ const getCachedAppRolesForDelegatedAdmin = (
             ? -1
             : 1;
     });
-}
+};
+
+const getMyAdminPermission = () => {
+    let myPermissions: any = [];
+    getUserAccess()?.forEach((item) => {
+        if (item.auth_key === AdminRoleAuthGroup.FamAdmin) {
+            const famGrant = item.grants.find((grant) => {
+                return grant.application.name === FAM_APPLICATION_NAME;
+            });
+            myPermissions.push({
+                application: famGrant?.application.description,
+                env: famGrant?.application.env,
+                role: 'Admin',
+            });
+        }
+
+        if (item.auth_key === AdminRoleAuthGroup.AppAdmin) {
+            item.grants.forEach((grant) => {
+                myPermissions.push({
+                    role: 'Admin',
+                    application: grant.application.description,
+                    env: grant.application.env,
+                });
+            });
+        }
+
+        if (item.auth_key === AdminRoleAuthGroup.DelegatedAdmin) {
+            item.grants.forEach((grant) => {
+                grant.roles?.forEach((role) => {
+                    if(!role.forest_clients) {
+                        myPermissions.push({
+                            application: grant.application.description,
+                            env: grant.application.env,
+                            clientId: null,
+                            role: 'Delegated Admin, ' + role.name,
+                        });
+                    } else {
+                        role.forest_clients?.forEach((clientId) => {
+                            myPermissions.push({
+                                application: grant.application.description,
+                                env: grant.application.env,
+                                clientId: clientId,
+                                role: 'Delegated Admin, ' + role.name,
+                            });
+                        });
+                    }
+                });
+            });
+        }
+    });
+    return myPermissions;
+};
 // --- export
 
 export default {
@@ -216,6 +267,7 @@ export default {
     getUserAccess,
     getUserAdminRoleGroups,
     getAppsForFamAdminRole,
+    getMyAdminPermission,
     getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
     hasAccess,
