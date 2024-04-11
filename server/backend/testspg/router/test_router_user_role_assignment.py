@@ -13,17 +13,19 @@ from api.app.main import apiPrefix
 from api.app.routers.router_guards import ERROR_SELF_GRANT_PROHIBITED
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from testspg.constants import (CLIENT_NUMBER_2_EXISTS_ACTIVE,
-                               CLIENT_NUMBER_EXISTS_ACTIVE,
-                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
-                               CLIENT_NUMBER_NOT_EXISTS,
-                               TEST_FOM_DEV_APPLICATION_ID,
-                               TEST_FOM_DEV_REVIEWER_ROLE_ID,
-                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                               TEST_FOM_TEST_APPLICATION_ID,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE)
+from testspg.constants import (
+    CLIENT_NUMBER_2_EXISTS_ACTIVE,
+    CLIENT_NUMBER_EXISTS_ACTIVE,
+    CLIENT_NUMBER_EXISTS_DEACTIVATED,
+    CLIENT_NUMBER_NOT_EXISTS,
+    TEST_FOM_DEV_APPLICATION_ID,
+    TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    TEST_FOM_TEST_APPLICATION_ID,
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+    TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
+)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -31,6 +33,7 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
+
 
 @pytest.fixture(scope="function")
 def fom_dev_access_admin_token(test_rsa_key):
@@ -52,19 +55,18 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_2_EXISTS_ACTIVE
+    "forest_client_number": CLIENT_NUMBER_2_EXISTS_ACTIVE,
 }
 
 
 def test_create_user_role_assignment_not_authorized(
-    test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
     test user has no authentication to the app
@@ -74,7 +76,7 @@ def test_create_user_role_assignment_not_authorized(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(token)
+        headers=jwt_utils.headers(token),
     )
     assert response.status_code == 403
     assert response.json() is not None
@@ -85,7 +87,7 @@ def test_create_user_role_assignment_not_authorized(
 def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
     """
     test assign a concrete role to a user
@@ -93,7 +95,7 @@ def test_create_user_role_assignment_with_concrete_role(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
@@ -108,8 +110,9 @@ def test_create_user_role_assignment_with_concrete_role(
         db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_concrete) == 1
-    assert assignment_user_role_concrete[0].user_role_xref_id \
-        == data["user_role_xref_id"]
+    assert (
+        assignment_user_role_concrete[0].user_role_xref_id == data["user_role_xref_id"]
+    )
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
@@ -127,14 +130,13 @@ def test_create_user_role_assignment_with_concrete_role(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
-    test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token
+    test_client_fixture: starlette.testclient.TestClient, fom_dev_access_admin_token
 ):
     """
     test assign same role for the same user
@@ -143,7 +145,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json()
@@ -152,7 +154,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 409
     assert response.json()["detail"] == ERROR_DUPLICATE_USER_ROLE
@@ -160,31 +162,34 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
-    test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token
+    test_client_fixture: starlette.testclient.TestClient, fom_dev_access_admin_token
 ):
     """
     test assign an abscrate role to a user without forest client number
     """
-    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT)
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = copy.deepcopy(
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT
+    )
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_number")
     response = test_client_fixture.post(
         f"{endPoint}",
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid role assignment request. " + \
-        "Cannot assign user " + \
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"] + \
-        " to abstract role FOM_SUBMITTER"
+    assert (
+        response.json()["detail"]
+        == "Invalid role assignment request. "
+        + "Cannot assign user "
+        + TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"]
+        + " to abstract role FOM_SUBMITTER"
+    )
 
 
 def test_create_user_role_assignment_with_abstract_role(
@@ -198,7 +203,7 @@ def test_create_user_role_assignment_with_abstract_role(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
@@ -213,7 +218,9 @@ def test_create_user_role_assignment_with_abstract_role(
         db_pg_session, data["application_id"]
     )
     assert len(assignment_user_role_abstract) == 1
-    assert assignment_user_role_abstract[0].user_role_xref_id == data["user_role_xref_id"]
+    assert (
+        assignment_user_role_abstract[0].user_role_xref_id == data["user_role_xref_id"]
+    )
 
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
@@ -231,7 +238,7 @@ def test_create_user_role_assignment_with_abstract_role(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -239,13 +246,13 @@ def test_create_user_role_assignment_with_abstract_role(
 def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assignment_one = response.json()
@@ -254,7 +261,7 @@ def test_create_user_role_assignment_with_same_username(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assignment_two = response.json()
@@ -263,7 +270,7 @@ def test_create_user_role_assignment_with_same_username(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assignment_three = response.json()
@@ -276,70 +283,34 @@ def test_create_user_role_assignment_with_same_username(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_one['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_two['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     response = test_client_fixture.delete(
         f"{endPoint}/{assignment_three['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
-
-
-def test_delete_user_role_assignment(
-    test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
-    db_pg_session: Session
-):
-    # create a user role assignment
-    response = test_client_fixture.post(
-        f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
-    )
-    assert response.status_code == HTTPStatus.OK
-    data = response.json()
-    assert "user_role_xref_id" in data
-
-    # verify assignment did get created
-    assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
-    )
-    assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
-
-    # execute Delete
-    response = test_client_fixture.delete(
-        f"{endPoint}/{data['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
-    )
-    assert response.status_code == HTTPStatus.NO_CONTENT
-
-    # verify user/role assignment has been deleted
-    assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
-    )
-    assert len(assignment_user_role_items) == 0
 
 
 def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     fom_test_access_admin_token,
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     fom_dev_user_role_assignment = response.json()
@@ -349,7 +320,7 @@ def test_assign_same_application_roles_for_different_environments(
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
-        headers=jwt_utils.headers(fom_test_access_admin_token)
+        headers=jwt_utils.headers(fom_test_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     fom_test_user_role_assignment = response.json()
@@ -367,29 +338,34 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify application id
     assert fom_dev_user_role_assignment["application_id"] == TEST_FOM_DEV_APPLICATION_ID
-    assert fom_test_user_role_assignment["application_id"] \
-        == TEST_FOM_TEST_APPLICATION_ID
+    assert (
+        fom_test_user_role_assignment["application_id"] == TEST_FOM_TEST_APPLICATION_ID
+    )
 
     # verify assignment did get created for fom_dev
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db_pg_session, TEST_FOM_DEV_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == \
-        fom_dev_user_role_assignment["user_role_xref_id"]
+    assert (
+        assignment_user_role_items[0].user_role_xref_id
+        == fom_dev_user_role_assignment["user_role_xref_id"]
+    )
 
     # verify assignment did get created for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db_pg_session, TEST_FOM_TEST_APPLICATION_ID
     )
     assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == \
-        fom_test_user_role_assignment["user_role_xref_id"]
+    assert (
+        assignment_user_role_items[0].user_role_xref_id
+        == fom_test_user_role_assignment["user_role_xref_id"]
+    )
 
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{fom_dev_user_role_assignment['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -406,7 +382,7 @@ def test_assign_same_application_roles_for_different_environments(
     # cleanup
     response = test_client_fixture.delete(
         f"{endPoint}/{fom_test_user_role_assignment['user_role_xref_id']}",
-        headers=jwt_utils.headers(fom_test_access_admin_token)
+        headers=jwt_utils.headers(fom_test_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -418,8 +394,7 @@ def test_assign_same_application_roles_for_different_environments(
 
 
 def test_user_role_forest_client_number_not_exist_bad_request(
-    test_client_fixture: TestClient,
-    fom_dev_access_admin_token
+    test_client_fixture: TestClient, fom_dev_access_admin_token
 ):
     """
     Test assign user role with none-existing forest client number should be
@@ -428,23 +403,23 @@ def test_user_role_forest_client_number_not_exist_bad_request(
     client_number_not_exists = CLIENT_NUMBER_NOT_EXISTS
     invalid_request = {
         **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        "forest_client_number": client_number_not_exists
+        "forest_client_number": client_number_not_exists,
     }
     response = test_client_fixture.post(
         f"{endPoint}",
         json=invalid_request,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert (f"Forest Client Number {client_number_not_exists} does not exist."
-            in response.json()["detail"]
-            )
+    assert (
+        f"Forest Client Number {client_number_not_exists} does not exist."
+        in response.json()["detail"]
+    )
 
 
 def test_user_role_forest_client_number_inactive_bad_request(
-    test_client_fixture: TestClient,
-    fom_dev_access_admin_token
+    test_client_fixture: TestClient, fom_dev_access_admin_token
 ):
     """
     Test assign user role with inactive forest client number should be
@@ -452,79 +427,110 @@ def test_user_role_forest_client_number_inactive_bad_request(
     """
     invalid_request = {
         **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        "forest_client_number": CLIENT_NUMBER_EXISTS_DEACTIVATED
+        "forest_client_number": CLIENT_NUMBER_EXISTS_DEACTIVATED,
     }
     response = test_client_fixture.post(
         f"{endPoint}",
         json=invalid_request,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert ("Forest Client is not in Active status")
+    assert "Forest Client is not in Active status"
 
 
 def test_self_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
     # Setup challenge: The user in the json sent to the service must match the user
     # in the JWT security token.
     user_role_assignment_request_data = {
         "user_name": jwt_utils.IDIR_USERNAME,
         "user_type_code": UserType.IDIR,
-        "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID
+        "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
     }
 
     response = test_client_fixture.post(
         f"{endPoint}",
         json=user_role_assignment_request_data,
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session,
-        jwt_utils.COGNITO_USERNAME,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, TEST_FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is None, "Expected user role assignment not to be created"
 
     jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
 
 
+# ---------------- Test delete user role assignment ------------ #
+
+
+def test_delete_user_role_assignment(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    db_pg_session: Session,
+):
+    # create a user role assignment
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert "user_role_xref_id" in data
+
+    # verify assignment did get created
+    assignment_user_role_items = crud_application.get_application_role_assignments(
+        db_pg_session, data["application_id"]
+    )
+    assert len(assignment_user_role_items) == 1
+    assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
+
+    # execute Delete
+    response = test_client_fixture.delete(
+        f"{endPoint}/{data['user_role_xref_id']}",
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    # verify user/role assignment has been deleted
+    assignment_user_role_items = crud_application.get_application_role_assignments(
+        db_pg_session, data["application_id"]
+    )
+    assert len(assignment_user_role_items) == 0
+
+
 def test_self_remove_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
 
     # Setup: the user_role_assignment record already exists
     # It should NOT get deleted
     user = crud_user.get_user_by_cognito_user_id(
-        db=db_pg_session,
-        cognito_user_id=jwt_utils.COGNITO_USERNAME
+        db=db_pg_session, cognito_user_id=jwt_utils.COGNITO_USERNAME
     )
     user_role = crud_user_role.create(
         db=db_pg_session,
         user_id=user.user_id,
         role_id=TEST_FOM_DEV_REVIEWER_ROLE_ID,
-        requester=jwt_utils.COGNITO_USERNAME
+        requester=jwt_utils.COGNITO_USERNAME,
     )
 
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role.user_role_xref_id}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token)
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session,
-        jwt_utils.COGNITO_USERNAME,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, TEST_FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
-
-
-
