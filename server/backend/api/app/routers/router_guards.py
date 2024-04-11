@@ -248,13 +248,15 @@ async def authorize_by_privilege(
                     db, forest_client_role_name, parent_role.application_id
                 )  # when role is None, means the role is not created for this delegated admin
 
-        user_access_control_privilege = None
+        requester_has_privilege = False
         if role:
-            user_access_control_privilege = crud_access_control_privilege.get_delegated_admin_by_user_id_and_role_id(
-                db, requester.user_id, role.role_id
+            requester_has_privilege = (
+                crud_access_control_privilege.has_privilege_by_role_id(
+                    db, requester.user_id, role.role_id
+                )
             )
         # if user has no privilege of the role, throw permission error
-        if not user_access_control_privilege:
+        if not requester_has_privilege:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
