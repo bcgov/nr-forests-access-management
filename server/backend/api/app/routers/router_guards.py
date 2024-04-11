@@ -374,12 +374,16 @@ async def enforce_self_grant_guard(
 
 async def enforce_bceid_by_same_org_guard(
     request: Request,
+    # forbid business bceid user (requester) manage idir user's access
+    _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
     target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage
     target user from the same organization.
+    :param _enforce_user_type_auth, call the authorize_by_user_type method to ensure that
+    this enforce_bceid_by_same_org_guard method only checks when business bceid user grants access to another business bceid user
     """
     LOGGER.info(
         f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
