@@ -25,6 +25,12 @@
                 "icon": "enterprise",
                 "link": "/grant-delegated-admin",
                 "disabled": true
+            },
+            {
+                "name": "My permissions",
+                "icon": "user--profile",
+                "link": "/my-permissions",
+                "disabled": false
             }
         ]
     }
