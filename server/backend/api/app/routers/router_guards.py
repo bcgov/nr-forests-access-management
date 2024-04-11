@@ -146,7 +146,7 @@ def authorize_by_app_id(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Requester has no admin or delegated admin access to the application.",
+                    "description": "Requester has no admin or delegated admin access to the application.",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
