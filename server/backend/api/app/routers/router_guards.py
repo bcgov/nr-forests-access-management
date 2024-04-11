@@ -260,7 +260,7 @@ async def authorize_by_privilege(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Requester has no privilege to grant this access.",
+                    "description": "Requester has no privilege to grant this access.",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
@@ -332,7 +332,7 @@ async def authorize_by_user_type(
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Business BCEID requester has no privilege to grant this access to IDIR user.",
+                    "description": "Business BCEID requester has no privilege to grant this access to IDIR user.",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
