@@ -136,18 +136,18 @@ def authorize_by_app_id(
     # if user is not application admin
     if not requester_is_app_admin:
         # check if user is application delegated admin
-        user_access_control_privilege = (
-            crud_access_control_privilege.get_delegated_admin_by_user_and_app_id(
+        requester_is_app_delegated_admin = (
+            crud_access_control_privilege.is_delegated_admin_by_app_id(
                 db, requester.user_id, application_id
             )
         )
         # if user is not app admin and not delegated admin of the application, throw permission error
-        if not user_access_control_privilege:
+        if not requester_is_app_delegated_admin:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Requester has no appropriate access.",
+                    "description": f"Requester has no admin or delegated admin access to the application.",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )

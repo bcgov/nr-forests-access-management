@@ -8,24 +8,26 @@ from sqlalchemy.orm import Session
 LOGGER = logging.getLogger(__name__)
 
 
-def get_delegated_admin_by_user_and_app_id(
+def is_delegated_admin_by_app_id(
     db: Session, user_id: int, application_id: int
-) -> List[FamAccessControlPrivilege]:
+) -> bool:
     """
     Find out from `app_fam.fam_access_control_privilege` if user is the delegated admin of the application.
 
     :param user_id: primary id that is associated with the user.
     :param application_id: primary id that is associated with the application.
-    :return: FamAccessControlPrivilege records, role information the user is able to manage
+    :return: true if there is at least one record, false if no record
     """
     return (
-        db.query(FamAccessControlPrivilege)
+        True
+        if db.query(FamAccessControlPrivilege)
         .join(FamRole)
         .filter(
             FamAccessControlPrivilege.user_id == user_id,
             FamRole.application_id == application_id,
         )
-        .all()
+        .first()
+        else False
     )
 
 
@@ -34,7 +36,7 @@ def is_delegated_admin(db: Session, user_id: int) -> bool:
     Find out from `app_fam.fam_access_control_privilege` if user is the delegated admin of any application.
 
     :param user_id: primary id that is associated with the user.
-    :return: FamAccessControlPrivilege records, role information the user is able to manage
+    :return: true if there is at least one record, false if no record
     """
     return (
         True
