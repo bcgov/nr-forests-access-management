@@ -22,12 +22,12 @@ def test_get_delegated_admin_by_user_and_app_id(db_pg_session: Session):
     assert len(access_control_privileges) == 0
 
 
-def test_get_delegated_admin_by_user_id(db_pg_session: Session):
-    access_control_privileges = (
-        crud_access_control_privilege.get_delegated_admin_by_user_id(
+def test_is_delegated_admin(db_pg_session: Session):
+    # we don't have a any access control privilege for any user by default
+    assert (
+        crud_access_control_privilege.is_delegated_admin(
             db=db_pg_session,
             user_id=TEST_USER_ID,
         )
+        is False
     )
-    # we don't have a any access control privilege for any user by default
-    assert len(access_control_privileges) == 0

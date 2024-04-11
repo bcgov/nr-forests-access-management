@@ -105,13 +105,12 @@ def authorize(
     if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
         # if user has no application admin access
         # check if user has any delegated admin access
-        user_access_control_privilege = (
-            crud_access_control_privilege.get_delegated_admin_by_user_id(
-                db, requester.user_id
-            )
+        requester_is_delegated_admin = crud_access_control_privilege.is_delegated_admin(
+            db, requester.user_id
         )
+
         # if user is not app admin and not delegated admin of any application, throw miss access group error
-        if len(user_access_control_privilege) == 0:
+        if not requester_is_delegated_admin:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={

@@ -29,9 +29,7 @@ def get_delegated_admin_by_user_and_app_id(
     )
 
 
-def get_delegated_admin_by_user_id(
-    db: Session, user_id: int
-) -> List[FamAccessControlPrivilege]:
+def is_delegated_admin(db: Session, user_id: int) -> bool:
     """
     Find out from `app_fam.fam_access_control_privilege` if user is the delegated admin of any application.
 
@@ -39,11 +37,13 @@ def get_delegated_admin_by_user_id(
     :return: FamAccessControlPrivilege records, role information the user is able to manage
     """
     return (
-        db.query(FamAccessControlPrivilege)
+        True
+        if db.query(FamAccessControlPrivilege)
         .filter(
             FamAccessControlPrivilege.user_id == user_id,
         )
-        .all()
+        .first()
+        else False
     )
 
 
