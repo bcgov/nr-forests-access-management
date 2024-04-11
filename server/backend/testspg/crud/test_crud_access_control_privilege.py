@@ -19,7 +19,7 @@ def test_get_delegated_admin_by_user_and_app_id(db_pg_session: Session):
         )
     )
     # we don't have a any access control privilege for FOM by default
-    assert access_control_privileges is None
+    assert len(access_control_privileges) == 0
 
 
 def test_get_delegated_admin_by_user_id(db_pg_session: Session):
