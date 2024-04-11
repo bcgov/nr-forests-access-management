@@ -40,7 +40,6 @@ ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
 ERROR_INVALID_ROLE_ID = "invalid_role_id"
 ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
 ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
-ERROR_REQUEST_INVALID = "invalid_request"
 ERROR_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
 ERROR_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 
@@ -114,7 +113,7 @@ def authorize(
         # if user is not app admin and not delegated admin of any application, throw miss access group error
         if len(user_access_control_privilege) == 0:
             raise HTTPException(
-                status_code=403,
+                status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_GROUPS_REQUIRED,
                     "description": "At least one access group is required",
@@ -324,14 +323,9 @@ async def authorize_by_user_type(
                 target_user_type_code = None
 
         if not target_user_type_code:
-            raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail={
-                    "code": ERROR_REQUEST_INVALID,
-                    "description": f"Failed to get the user type code from the request.",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            error_description = f"{missing_key_attribute_error.detail['description']} Target user user type code is missing."
+            missing_key_attribute_error.detail["description"] = error_description
+            raise missing_key_attribute_error
 
         if target_user_type_code == UserType.IDIR:
             raise HTTPException(
