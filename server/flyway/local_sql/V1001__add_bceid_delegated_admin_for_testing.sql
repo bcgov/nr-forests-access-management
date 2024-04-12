@@ -10,7 +10,8 @@ INSERT INTO app_fam.fam_user (
 )
 VALUES
 ('TEST-3-LOAD-CHILD-1','B','test-bceidbusiness_bda2a1e212244dc2b9f9522057mangledc58bbb@bceidbusiness', 'E7C0431DA55D4ACA9FA901EE2C91CB3B', CURRENT_USER),
-('LOAD-3-TEST', 'B', 'test-bceidbusiness_81069f39b35b4861bdmangled9dcd010582b63b112@bceidbusiness', 'E7C0431DA55D4ACA9FA901EE2C91CB3B', CURRENT_USER);
+('LOAD-3-TEST', 'B', 'test-bceidbusiness_532905de0aa24923ae535428mangledf171bf13@bceidbusiness', 'E7C0431DA55D4ACA9FA901EE2C91CB3B', CURRENT_USER),
+('LOAD-2-TEST', 'B', 'test-bceidbusiness_81069f39b35b4861bcd01058mangled2b63b112@bceidbusiness', '2DA5FA0A3E9F4A76825342BCCB861A15', CURRENT_USER);
 
 
 -- add TEST-3-LOAD-CHILD-1 as delegated admin to manage FOM DEV role FOM_REVIEWER

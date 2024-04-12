@@ -1,1 +1,3 @@
-local_sql/**
+# local_sql/**
+
+local_sql/V1002__add_local_user_cognito_id.sql

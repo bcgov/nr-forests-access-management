@@ -10,7 +10,10 @@ from api.app.constants import UserType
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import ERROR_SELF_GRANT_PROHIBITED
+from api.app.routers.router_guards import (
+    ERROR_SELF_GRANT_PROHIBITED,
+    ERROR_DIFFERENT_ORG_GRANT_PROHIBITED,
+)
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (
@@ -25,6 +28,8 @@ from testspg.constants import (
     TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
     TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
     TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -47,6 +52,20 @@ def fom_test_access_admin_token(test_rsa_key):
     return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 
 
+# helper method
+def create_test_user_role_assignment(
+    test_client_fixture: starlette.testclient.TestClient, token, requestBody
+):
+    # create a user role assignment used for testing
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=requestBody,
+        headers=jwt_utils.headers(token),
+    )
+    data = response.json()
+    return data["user_role_xref_id"]
+
+
 # note: this might need to be a real idir username
 # and a real forest client id
 # once we enable the verifiy idir feature
@@ -65,12 +84,13 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
 }
 
 
+# ------------------ test create user role assignment ----------------------- #
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
     test user has no authentication to the app
-    user without FOM_DEV_ADMIN role cannot grant FOM_DEV roles
+    user without FOM_DEV_ADMIN role and not delegated admin of FOM DEV cannot grant FOM_DEV roles
     """
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.post(
@@ -78,7 +98,7 @@ def test_create_user_role_assignment_not_authorized(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(token),
     )
-    assert response.status_code == 403
+    assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
@@ -467,6 +487,184 @@ def test_self_grant_fail(
 
 
 # ---------------- Test delete user role assignment ------------ #
+
+
+def test_delete_user_role_assignment_not_authorized(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    test_rsa_key,
+):
+    """
+    test user if is not app admin, and not app delegated admin, can not remove user role assginments of the application
+
+    this test case uses FOM DEV as example
+    test if user is not app admin and not delegated admin of FOM DEV, cannot remove FOM DEV user role assginments
+    """
+    # create a user role assignment
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+    )
+
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+
+
+def test_deleter_user_role_assignment_authorize_by_delegated_admin(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    test_rsa_key,
+):
+    """
+    test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
+
+    this test case uses business bceid user with FOM DEV FOM_REVIEWER privilege as example
+    test if business bceid user is delegated admin of FOM DEV for FOM_REVIEWER role,
+    able to remove FOM_REVIEWER access for business bceid user from same org
+    """
+    # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+    )
+
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
+    # we already grant this user the delegated admin privilege used for testing in local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    # delete is successful
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+
+def test_delete_user_role_assignment_with_forest_client_number(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    test_rsa_key,
+):
+    """
+    test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
+
+    this test case uses business bceid user with FOM DEV FOM_SUBMITTER_00001018 privilege as example
+    test if business bceid user is delegated admin of FOM DEV for FOM_SUBMITTER role with forest client number 00001018,
+    able to remove FOM_SUBMITTER_00001018 access for business bceid user from same org,
+    will not be able to remove access with other forest client numbers like FOM_SUBMITTER_00001011
+    """
+    # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
+    # with abstract role FOM_SUBMITTER and forest client number 00001018
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+    )
+
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
+    # we already grant this user the delegated admin privilege for role FOM_SUBMITTER_00001018
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    # delete is successful
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
+    # with abstract role FOM_SUBMITTER and forest client number 00001011
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        {**TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID, "forest_client_number": "00001011"},
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user has no privilege to delete role with forest client number 00001011
+    assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+
+
+def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    test_rsa_key,
+):
+    """
+    test business bceid user cannnot delete idir user access
+    """
+    # create a user role assignment for IDIR user
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+    )
+
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with FOM_DEV_ADMIN role
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [FOM_DEV_ADMIN_ROLE], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user cannot delete idir user access
+    assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+
+
+def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    test_rsa_key,
+):
+    """
+    test business bceid user cannnot delete business bceid user access from different organization
+    """
+    # create a user role assignment for a business bceid user from diff organization as the user COGNITO_USERNAME_BCEID
+    user_role_xref_id = create_test_user_role_assignment(
+        test_client_fixture,
+        fom_dev_access_admin_token,
+        {
+            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+            "user_name": "LOAD-2-TEST",
+        },
+    )
+
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
+    # we already grant this user the delegated admin privilege used for testing in local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user cannot delete business bceid user access from different organization
+    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
 
 
 def test_delete_user_role_assignment(
