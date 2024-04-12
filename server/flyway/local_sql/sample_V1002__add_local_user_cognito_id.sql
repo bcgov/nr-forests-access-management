@@ -33,7 +33,7 @@ SET cognito_user_id = 'test-idir_eb65e9d782mangledc7d7f9b1@idir'
 WHERE user_name = 'PTOLLEST';
 
 UPDATE app_fam.fam_user
-SET cognito_user_id = 'test-bceidbusiness_81069f39b35b4861bdcd01058mangled9d2b63b112@bceidbusiness'
+SET cognito_user_id = 'test-bceidbusiness_532905de0aa24923ae535428mangledf171bf13@bceidbusiness'
 WHERE user_name = 'LOAD-3-TEST';
 
 -- These users were never added through a script
