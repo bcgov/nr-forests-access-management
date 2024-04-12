@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import RadioButton from 'primevue/radiobutton';
 import { UserType } from 'fam-app-acsctl-api';
+import { IdpProvider } from '@/enum/IdpEnum';
 
 const domainOptions = { IDIR: UserType.I, BCEID: UserType.B };
 
@@ -30,7 +31,7 @@ const computedDomain = computed({
                 name="domainRadioOptions"
                 :value="domainOptions.IDIR"
             />
-            <label class="mx-2" for="idirSelect">IDIR</label>
+            <label class="mx-2" for="idirSelect">{{ IdpProvider.IDIR }}</label>
         </div>
         <div class="px-0">
             <RadioButton
@@ -39,7 +40,9 @@ const computedDomain = computed({
                 name="domainRadioOptions"
                 :value="domainOptions.BCEID"
             />
-            <label class="mx-2" for="bceidSelect">BCeID</label>
+            <label class="mx-2" for="bceidSelect">{{
+                IdpProvider.BCEIDBUSINESS
+            }}</label>
         </div>
     </div>
 </template>
