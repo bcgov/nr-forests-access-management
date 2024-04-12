@@ -13,9 +13,9 @@ LOGGER = logging.getLogger(__name__)
 class FamGroupPost(BaseModel):
     group_name: Annotated[str, StringConstraints(max_length=100)]
     purpose: Annotated[str, StringConstraints(max_length=200)]
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     parent_group_id: int
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -31,9 +31,9 @@ class FamGroupGet(FamGroupPost):
 class FamApplicationClient(BaseModel):
     application_client_id: int
     cognito_client_id: Annotated[str, StringConstraints(max_length=32)]
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     create_date: datetime
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     update_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -50,9 +50,9 @@ class FamApplicationCreate(BaseModel):
 
 class FamApplication(FamApplicationCreate):
     application_id: int
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     create_date: datetime
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     update_date: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -65,8 +65,8 @@ class FamUser(BaseModel):
     )
     user_name: Annotated[str, StringConstraints(max_length=20)]
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    create_user: Annotated[str, StringConstraints(max_length=60)]
-    update_user: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    create_user: Annotated[str, StringConstraints(max_length=100)]
+    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -108,14 +108,14 @@ class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
     # client_name: str
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class FamRoleCreate(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    role_purpose: Union[Annotated[str, StringConstraints(max_length=200)], None] = None
+    role_purpose: Union[Annotated[str, StringConstraints(max_length=300)], None] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
@@ -123,7 +123,7 @@ class FamRoleCreate(BaseModel):
     forest_client_number: Union[
         Annotated[str, StringConstraints(max_length=8)], None
     ] = Field(default=None, title="Forest Client this role is associated with")
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     role_type_code: famConstants.RoleType
     client_number: Optional[FamForestClientCreate] = None
 
@@ -132,7 +132,7 @@ class FamRoleCreate(BaseModel):
 
 class FamRoleGet(FamRoleCreate):
     role_id: int
-    update_user: Union[Annotated[str, StringConstraints(max_length=60)], None] = None
+    update_user: Union[Annotated[str, StringConstraints(max_length=100)], None] = None
     create_date: Union[datetime, None] = None
     update_date: Union[datetime, None] = None
 
