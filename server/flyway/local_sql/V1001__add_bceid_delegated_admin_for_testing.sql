@@ -1,6 +1,6 @@
 -- create user for running test, test for the security check for delegated admin grant/remove access
 
--- create two business bceid users from the same organization
+-- create two business bceid users from the same organization, one from different organization
 INSERT INTO app_fam.fam_user (
     user_name,
     user_type_code,
@@ -38,7 +38,7 @@ VALUES (
 );
 
 
--- create a chile role FOM_SUBMITTER_00001018, role_id form FOM DEV FOM_SUBMITTER is 3
+-- create a chile role FOM_SUBMITTER_00001018
 INSERT INTO app_fam.fam_role (
     role_name,
     role_purpose,
