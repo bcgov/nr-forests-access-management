@@ -647,7 +647,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
         fom_dev_access_admin_token,
         {
             **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
-            "user_name": "LOAD-2-TEST",
+            "user_name": "LOAD-4-TEST", # we created this user with business_guid in local_sql
         },
     )
 
