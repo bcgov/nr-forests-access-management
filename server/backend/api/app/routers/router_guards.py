@@ -390,7 +390,7 @@ async def enforce_bceid_by_same_org_guard(
         else:
             # target_user does not exist in FAM database (new user)
             # search the target user from IDIM proxy and get business_guid
-            # todo: update to search by user_guid instead of user_name
+            # TODO: update to search by user_guid instead of user_name
             rbody = await request.json()
             target_user_business_guid = get_business_guid(requester, rbody["user_name"])
 
