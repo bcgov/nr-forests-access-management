@@ -33,8 +33,8 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                     outlined
                     disabled
                     :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
-                    id="login-bceid-button"
-                    @click="AuthService.loginBceid()"
+                    id="login-business-bceid-button"
+                    @click="AuthService.loginBusinessBceid()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
