@@ -12,9 +12,9 @@ IDP_USER_GUID = "b5ecdb094dfb4149a6a8445a0mangled"
 COGNITO_USERNAME = f"test-idir_{IDP_USER_GUID}@idir"
 IDIR_USERNAME = "COGUSTAF"
 
-# note for testing purpose,
-# we added this user as FOM DEV delegated admin,
-# to manage role FOM REVIEWER and FOM SUBMITTER with forest client number 00001011
+# for testing purpose,
+# we added this user as FOM DEV delegated admin in local sql,
+# to manage role FOM REVIEWER and FOM SUBMITTER with forest client number 00001018
 COGNITO_USERNAME_BCEID = (
     "test-bceidbusiness_bda2a1e212244dc2b9f9522057mangledc58bbb@bceidbusiness"
 )
