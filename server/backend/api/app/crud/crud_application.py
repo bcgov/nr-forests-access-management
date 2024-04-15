@@ -1,13 +1,11 @@
-import datetime
 import logging
 from typing import List
 
-from sqlalchemy.orm import Session, load_only, joinedload
-
-import api.app.constants as constants
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+from api.app import schemas
+from api.app.constants import UserType
 from api.app.models import model as models
-
-from .. import schemas
 from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
@@ -108,29 +106,42 @@ def get_application_roles(
 
 
 def get_application_role_assignments(
-    db: Session, application_id: int
+    db: Session, application_id: int, requester: schemas.Requester
 ) -> List[models.FamUserRoleXref]:
     """query the user / role cross reference table to retrieve the role
     assignments
 
     :param db: database session
-    :type db: Session
     :param application_id: the application id that we want to retrieve the role
         assignments for.
-    :return: the role assignments for the given application
-
+    :param requester: the user who perform this request/action.
+    :return: the user role assignments for the given application.
     """
-    LOGGER.debug(f"Query for user role assignments for app id: {application_id}")
+    LOGGER.debug(f"Querying for user role assignments on app id: {application_id} by requester: {requester} ")
 
-    crossref = (
+    # base query
+    q = (
         db.query(models.FamUserRoleXref)
         .join(models.FamRole)
         .filter(models.FamRole.application_id == application_id)
-        .all()
     )
 
-    LOGGER.debug(f"Query for user role assignment complete with # of results = {len(crossref)}")
-    return crossref
+    if (requester.user_type_code == UserType.BCEID):
+        # append additional delegated admin filtering.
+        (
+            q
+            .join(models.FamUser)
+            .filter(
+                models.FamRole.application_id == application_id,
+                models.FamUser.user_type_code == UserType.BCEID,
+                func.upper(models.FamUser.business_guid) == requester.business_guid.upper(),
+            )
+        )
+
+    LOGGER.info(f"query: {q}")
+    qresult = q.all()
+    LOGGER.debug(f"Query for user role assignment complete with # of results = {len(qresult)}")
+    return qresult
 
 
 def get_application_id_by_role_id(db: Session, role_id):
