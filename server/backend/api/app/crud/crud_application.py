@@ -112,12 +112,12 @@ def get_application_role_assignments(
     assignments
 
     :param db: database session
-    :param application_id: the application id that we want to retrieve the role
-        assignments for.
+    :param application_id: the application id to retrieve the role assignments for.
     :param requester: the user who perform this request/action.
     :return: the user role assignments for the given application.
     """
-    LOGGER.debug(f"Querying for user role assignments on app id: {application_id} by requester: {requester} ")
+    LOGGER.debug(f"Querying for user role assignments on app id:\
+                  {application_id} by requester: {requester} ")
 
     # base query
     q = (
@@ -128,19 +128,22 @@ def get_application_role_assignments(
 
     if (requester.user_type_code == UserType.BCEID):
         # append additional delegated admin filtering.
-        (
+        # Note, need to reassign to variable.
+        q = (
             q
             .join(models.FamUser)
             .filter(
                 models.FamRole.application_id == application_id,
                 models.FamUser.user_type_code == UserType.BCEID,
-                func.upper(models.FamUser.business_guid) == requester.business_guid.upper(),
+                func.upper(
+                    models.FamUser.business_guid
+                ) == requester.business_guid.upper(),
             )
         )
 
-    LOGGER.info(f"query: {q}")
     qresult = q.all()
-    LOGGER.debug(f"Query for user role assignment complete with # of results = {len(qresult)}")
+    LOGGER.debug(f"Query for user role assignment complete with \
+                 # of results = {len(qresult)}")
     return qresult
 
 

@@ -70,10 +70,8 @@ def get_fam_application_user_role_assignment(
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester)
 ):
-    """gets the roles associated with an application
-
-    :param application_id: application id
-    :param db: database session, defaults to Depends(database.get_db)
+    """
+    gets the roles assignment associated with an application
     """
     LOGGER.debug(f"Loading application role assigments for application_id: {application_id}")
     app_user_role_assignment = crud_application.get_application_role_assignments(
@@ -81,6 +79,7 @@ def get_fam_application_user_role_assignment(
         application_id=application_id,
         requester=requester
     )
-    LOGGER.debug(f"Finished loading application role assigments - # of results = {len(app_user_role_assignment)}")
+    LOGGER.debug(f"Completed loading application role assigments -\
+                 # of results = {len(app_user_role_assignment)}")
 
     return app_user_role_assignment
