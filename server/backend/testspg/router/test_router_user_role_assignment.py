@@ -495,7 +495,7 @@ def test_delete_user_role_assignment_not_authorized(
     test_rsa_key,
 ):
     """
-    test user if is not app admin, and not app delegated admin, can not remove user role assginments of the application
+    test if user is not app admin, and not app delegated admin, can not remove user role assginments of the application
 
     this test case uses FOM DEV as example
     test if user is not app admin and not delegated admin of FOM DEV, cannot remove FOM DEV user role assginments
