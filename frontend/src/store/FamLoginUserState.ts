@@ -257,7 +257,11 @@ const getMyAdminPermission = () => {
             });
         }
     });
-    return myPermissions;
+
+    return myPermissions.map(permission => {
+        permission.application = permission.application.replace(/ *\([^)]*\) */g, "")
+        return permission
+    });
 };
 // --- export
 
