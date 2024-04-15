@@ -507,7 +507,7 @@ def test_delete_user_role_assignment_not_authorized(
         TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
     )
 
-    # create a token without any app admin roles
+    # create a token for idir user without any app admin roles and no delegated admin privilege
     token = jwt_utils.create_jwt_token(test_rsa_key, roles=[])
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
