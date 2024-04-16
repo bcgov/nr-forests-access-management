@@ -148,30 +148,6 @@ def get_application_role_assignments(
     return qresult
 
 
-def get_application_id_by_role_id(db: Session, role_id):
-    # question: why we need to go to fam_application table?
-    # the fam_role table has the application_id already
-
-    application_id =\
-        db.query(models.FamApplication.application_id)\
-        .join(models.FamRole)\
-        .filter(models.FamRole.role_id == role_id)\
-        .scalar()
-
-    return application_id
-
-
-def get_application_id_by_user_role_xref_id(db: Session, user_role_xref_id):
-    application_id =\
-        db.query(models.FamApplication.application_id)\
-        .join(models.FamRole)\
-        .join(models.FamUserRoleXref)\
-        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)\
-        .scalar()
-
-    return application_id
-
-
 if __name__ == "__main__":
     # this is just demo code that can make it easier to develop crud functions
     # but technically should go into either a test or a fixture
