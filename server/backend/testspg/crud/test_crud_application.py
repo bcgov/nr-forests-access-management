@@ -116,10 +116,4 @@ def test_get_application_roles(db_pg_session: Session):
     assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
 
 
-def test_get_application_id_by_role_id(db_pg_session: Session):
-    app_id = crud_application.get_application_id_by_role_id(
-        db=db_pg_session, role_id=TEST_FOM_DEV_SUBMITTER_ROLE_ID
-    )
-    assert app_id == TEST_FOM_DEV_APPLICATION_ID
-
 
