@@ -115,8 +115,8 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     test if business bceid user is delegated admin of FOM DEV for FOM_REVIEWER role,
     able to grant FOM_REVIEWER access to a business bceid user from same org
     """
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
-    # we already grant this user the delegated admin privilege used for testing in local sql
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
         test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
     )
@@ -146,8 +146,8 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     able to grant FOM_SUBMITTER_00001018 access for business bceid user from same org,
     will not be able to grant access with other forest client numbers like FOM_SUBMITTER_00001011
     """
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
-    # we already grant this user the delegated admin privilege used for testing in local sql
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
         test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
     )
@@ -186,9 +186,10 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     """
     test business bceid user cannnot grant idir user access
     """
-    # create a token for business bceid user COGNITO_USERNAME_BCEID
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -209,15 +210,16 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
-    # create a token for business bceid user COGNITO_USERNAME_BCEI
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
     )
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
             **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
-            "user_name": "LOAD-4-TEST",  # we created this user with business_guid in local_sql
+            "user_name": "LOAD-4-TEST",  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid
         },
         headers=jwt_utils.headers(token),
     )
