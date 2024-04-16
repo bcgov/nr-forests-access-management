@@ -42,7 +42,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
     <div class="my-permissions-table-wrapper">
         <DataTableHeader
             :hasHeader="false"
-            input-placeholder="search by..."
+            input-placeholder="search by application, environment, client IDs, company name, role, status, and more"
             @change="myPermissionsSearchChange"
             :filter="myPermissiosFilters['global'].value"
         />
