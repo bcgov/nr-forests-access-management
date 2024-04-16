@@ -17,7 +17,7 @@
 -- These users are already in the DB from an early production flyway script
 
 UPDATE app_fam.fam_user
-SET cognito_user_id = 'test-idir_b5ecdb094dmangledmangled@idir'
+SET cognito_user_id = 'test-idir_b5ecdb094dfb4149a6a8445a0mangled@idir'
 WHERE user_name = 'COGUSTAF';
 
 UPDATE app_fam.fam_user
