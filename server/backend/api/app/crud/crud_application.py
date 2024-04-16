@@ -109,7 +109,7 @@ def get_application_role_assignments(
     db: Session, application_id: int, requester: schemas.Requester
 ) -> List[models.FamUserRoleXref]:
     """query the user / role cross reference table to retrieve the role
-    assignments
+    assignments. BCeID requester will be restricted for the same organization.
 
     :param db: database session
     :param application_id: the application id to retrieve the role assignments for.
@@ -127,13 +127,14 @@ def get_application_role_assignments(
     )
 
     if (requester.user_type_code == UserType.BCEID):
-        # append additional delegated admin filtering.
-        # Note, need to reassign to variable.
+        # append additional filtering: A BCeID requester can only see
+        # user_role records belonging to the same business organization.
+
+        # Note, need to reassign to the variable from the base query.
         q = (
             q
             .join(models.FamUser)
             .filter(
-                models.FamRole.application_id == application_id,
                 models.FamUser.user_type_code == UserType.BCEID,
                 func.upper(
                     models.FamUser.business_guid
