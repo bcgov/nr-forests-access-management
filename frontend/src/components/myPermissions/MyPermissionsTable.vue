@@ -60,12 +60,9 @@ const myPermissionsSearchChange = (newvalue: string) => {
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             stripedRows
             :pt="{
-                headerRow: {
-                    class: 'custom-table-header-row',
-                },
-                tbody: {
-                    class: 'custom-table-body',
-                },
+                table: {
+                    class: 'custom-table',
+                }
             }"
         >
             <template #empty> You have no accesses in FAM. </template>
@@ -112,12 +109,8 @@ const myPermissionsSearchChange = (newvalue: string) => {
     margin-top: 3rem;
 }
 
-@media (min-width: 1345px) {
-    .custom-table-header-row > th:first-child {
-        width: 0;
-    }
-    .custom-table-body {
-        white-space: nowrap;
-    }
+.custom-table {
+    table-layout: fixed;
 }
+
 </style>
