@@ -102,6 +102,7 @@ def test_create_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
 
 
 def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_admin(
@@ -177,6 +178,7 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     data = response.json()
     # business bceid user has no privilege to grant FOM_SUBMITTER access with forest client number 00001011
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no privilege to grant this access."
 
 
 def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
@@ -201,6 +203,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     data = response.json()
     # business bceid user cannot grant idir user access
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
 
 
 def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
@@ -228,6 +231,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     data = response.json()
     # business bceid user cannot grant business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 
 def test_create_user_role_assignment_with_concrete_role(
