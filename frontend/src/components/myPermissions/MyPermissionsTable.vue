@@ -55,15 +55,18 @@ const myPermissionsSearchChange = (newvalue: string) => {
             :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
             filterDisplay="menu"
             :loading="isLoading()"
-            :globalFilterFields="[
-                'application',
-                'env',
-                'role',
-                'clientId',
-            ]"
+            :globalFilterFields="['application', 'env', 'role', 'clientId']"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             stripedRows
+            :pt="{
+                headerRow: {
+                    class: 'custom-table-header-row',
+                },
+                tbody: {
+                    class: 'custom-table-body',
+                },
+            }"
         >
             <template #empty> You have no accesses in FAM. </template>
             <template #loading>
@@ -97,9 +100,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
                 sortable
             >
                 <template #body="{ data }">
-                    {{
-                        data.role
-                    }}
+                    {{ data.role }}
                 </template>
             </Column>
         </DataTable>
@@ -111,4 +112,12 @@ const myPermissionsSearchChange = (newvalue: string) => {
     margin-top: 3rem;
 }
 
+@media (min-width: 1345px) {
+    .custom-table-header-row > th:first-child {
+        width: 0;
+    }
+    .custom-table-body {
+        white-space: nowrap;
+    }
+}
 </style>
