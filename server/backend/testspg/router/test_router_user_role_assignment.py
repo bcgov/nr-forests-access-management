@@ -631,7 +631,8 @@ def test_delete_user_role_assignment_not_authorized(
         TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
     )
 
-    token = jwt_utils.create_jwt_token(test_rsa_key)
+    # create a token for idir user without any app admin roles and no delegated admin privilege
+    token = jwt_utils.create_jwt_token(test_rsa_key, roles=[])
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
         headers=jwt_utils.headers(token),
@@ -640,6 +641,7 @@ def test_delete_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
 
 
 def test_deleter_user_role_assignment_authorize_by_delegated_admin(
@@ -661,10 +663,10 @@ def test_deleter_user_role_assignment_authorize_by_delegated_admin(
         TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
     )
 
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
-    # we already grant this user the delegated admin privilege used for testing in local sql
+    # create a token for business bceid user COGNITO_USERNAME_BCEID without any app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -695,8 +697,8 @@ def test_delete_user_role_assignment_with_forest_client_number(
         TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
     )
 
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
-    # we already grant this user the delegated admin privilege for role FOM_SUBMITTER_00001018
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
         test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
     )
@@ -714,7 +716,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
         fom_dev_access_admin_token,
         {
             **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
-            "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
+            "forest_client_number": "00001011",
         },
     )
     response = test_client_fixture.delete(
@@ -726,6 +728,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     data = response.json()
     # business bceid user has no privilege to delete role with forest client number 00001011
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no privilege to grant this access."
 
 
 def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
@@ -743,9 +746,10 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
         TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
     )
 
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with FOM_DEV_ADMIN role
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [FOM_DEV_ADMIN_ROLE], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -756,6 +760,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
     data = response.json()
     # business bceid user cannot delete idir user access
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
 
 
 def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
@@ -776,10 +781,10 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
         },
     )
 
-    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role
-    # we already grant this user the delegated admin privilege used for testing in local sql
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -790,6 +795,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     data = response.json()
     # business bceid user cannot delete business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 
 def test_delete_user_role_assignment(

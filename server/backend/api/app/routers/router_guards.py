@@ -114,7 +114,7 @@ def authorize(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_GROUPS_REQUIRED,
-                    "description": "At least one access group is required",
+                    "description": "At least one access group is required.",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )

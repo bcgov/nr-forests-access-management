@@ -61,17 +61,17 @@ describe('Landing', () => {
         await button.trigger('click');
         expect(loginSpy).toHaveBeenCalled();
     });
-    it.skip('should render BCeID button and be enabled', async () => {
-        const button = wrapper.get('#login-bceid-button');
+    it.skip('should render Business BCeID button and be enabled', async () => {
+        const button = wrapper.get('#login-business-bceid-button');
         expect(button.classes()).toEqual(
             expect.arrayContaining(['landing-button'])
         );
-        expect(button.html().includes('Login with BCeID')).toBe(true);
+        expect(button.html().includes('Login with Business BCeID')).toBe(true);
         expect(button.attributes()).not.toHaveProperty('disabled');
     });
-    it.skip('should button Login with BCEID be clicked', async () => {
-        const button = wrapper.get('#login-bceid-button');
-        const loginSpy = vi.spyOn(AuthService, 'loginBceid');
+    it.skip('should button Login with Business BCeID be clicked', async () => {
+        const button = wrapper.get('#login-business-bceid-button');
+        const loginSpy = vi.spyOn(AuthService, 'loginBusinessBceid');
         await button.trigger('click');
         expect(loginSpy).toHaveBeenCalled();
     });
