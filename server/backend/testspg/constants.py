@@ -36,19 +36,11 @@ CLIENT_NUMBER_EXISTS_DECEASED = "00152880"
 CLIENT_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
 CLIENT_NUMBER_EXISTS_SUSPENDED = "00003643"
 
-
-TEST_NEW_USER = {
-    "user_type_code": "I",
-    "user_name": "TEST_USER",
-    "create_user": TEST_CREATOR,
-}
-TEST_NOT_EXIST_USER_TYPE = "NS"
-
-# ------------------- Test grant/remove access -------------------------- #
 # note:
 # test idir and bceid username might need change to a
 # real one after we enable the verfication, same for
 # forest client number
+
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
@@ -66,18 +58,12 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID = {
-    "user_name": "LOAD-3-TEST",
-    "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+TEST_NEW_USER = {
+    "user_type_code": "I",
+    "user_name": "TEST_USER",
+    "create_user": TEST_CREATOR,
 }
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID = {
-    "user_name": "LOAD-3-TEST",
-    "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": "00001018", # note this is matched with the test delegated admin privilege in local sql
-}
-
+TEST_NOT_EXIST_USER_TYPE = "NS"
 
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
 TEST_IDIR_REQUESTER_DICT = {
