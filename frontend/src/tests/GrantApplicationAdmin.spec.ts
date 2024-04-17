@@ -1,10 +1,9 @@
-import PageTitle from '@/components/common/PageTitle.vue';
 import { routes } from '@/router';
 import { mount, VueWrapper } from '@vue/test-utils';
-import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
+import { it, describe, beforeEach, expect, afterEach,vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
-import PrimeVue from 'primevue/config';
+import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
 
 fixJsdomCssErr();
 vi.mock('vue-router', async () => {
@@ -18,19 +17,11 @@ vi.mock('vue-router', async () => {
         },
     };
 });
-
-describe('PageTitle', () => {
+describe('GrantApplicationAdmin', () => {
     let wrapper: VueWrapper;
 
-    const props = {
-        title: 'Header title',
-        subtitle: 'Header subtitle',
-    };
-
     beforeEach(async () => {
-        wrapper = mount(PageTitle, {
-            props,
-        });
+        wrapper = mount(GrantApplicationAdmin);
     });
 
     afterEach(() => {
@@ -38,12 +29,16 @@ describe('PageTitle', () => {
     });
 
     it('Should display the correct heading texts', () => {
-        expect(wrapper.find('.title').element.textContent).toContain(
-            props.title
-        );
+        // console.log(wrapper.html())
+        wrapper.findAll('.title').forEach((title) => {
+            expect(title.isVisible()).toBe(true)
+        })
 
-        expect(wrapper.find('.subtitle').element.textContent).toContain(
-            props.subtitle
-        );
-    });
-});
+        wrapper.findAll('.subtitle').forEach((subtitle) => {
+            expect(subtitle.isVisible()).toBe(true)
+        })
+        expect(wrapper.find('#userIdInput').isVisible()).toBe(true)
+        expect(wrapper.find('[aria-label="Verify user IDIR"]').isVisible()).toBe(true)
+    })
+
+})
