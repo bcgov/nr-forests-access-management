@@ -55,7 +55,7 @@ const tableHeaderCustomText = computed(() => {
 </script>
 
 <template>
-    <div class="custom-data-table-header">
+    <div class="custom-data-table-header" v-if="props.hasHeader">
         <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
         <p aria-roledescription="subtitle">
             This table shows all the {{ userLevelText }} in
