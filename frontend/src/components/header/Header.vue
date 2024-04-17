@@ -128,9 +128,6 @@ a > svg {
 
     .btn-toggleSideNav {
         display: none;
-        .label {
-            display: none !important;
-        }
     }
 }
 </style>
