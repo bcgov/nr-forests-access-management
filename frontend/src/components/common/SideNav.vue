@@ -83,7 +83,7 @@ const props = defineProps({
 @import '@/assets/styles/styles.scss';
 .sidenav {
     position: fixed;
-    padding: 0.75rem 0rem;
+    padding: 0.313rem 0rem;
     width: 100%;
     height: calc(100vh - 3.125rem);
     left: 0rem;
@@ -122,7 +122,7 @@ const props = defineProps({
 }
 
 .sidenav li.child {
-    font-size: 0.875rem;
+    font-size: 1rem;
 }
 
 .sidenav li.child:hover {

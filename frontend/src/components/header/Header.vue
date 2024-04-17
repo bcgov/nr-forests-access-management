@@ -81,6 +81,8 @@ li {
     @extend %heading-compact-01;
     position: fixed;
 
+    font-size: 1rem;
+
     height: $header-height;
     width: $header-width;
     background: $light-background-brand;

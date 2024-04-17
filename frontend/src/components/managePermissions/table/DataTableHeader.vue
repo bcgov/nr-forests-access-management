@@ -53,7 +53,7 @@ const tableHeaderCustomText = computed(() => {
         </span>
     </div>
 
-    <div class="search-container">
+    <div class="add-search-container">
         <Button
             class="btn-add-user"
             :label="props.btnLabel"
@@ -94,7 +94,7 @@ const tableHeaderCustomText = computed(() => {
     }
 }
 
-.search-container {
+.add-search-container {
     display: flex;
 }
 
