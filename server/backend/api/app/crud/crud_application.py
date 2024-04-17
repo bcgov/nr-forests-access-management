@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from api.app import schemas
 from api.app.constants import UserType
@@ -109,7 +109,9 @@ def get_application_role_assignments(
     db: Session, application_id: int, requester: schemas.Requester
 ) -> List[models.FamUserRoleXref]:
     """query the user / role cross reference table to retrieve the role
-    assignments. BCeID requester will be restricted for the same organization.
+    assignments.
+    Delegated Admin will only see user role assignments by the roles granted for them.
+    BCeID Delegated Admin will be further restricted for the same organization.
 
     :param db: database session
     :param application_id: the application id to retrieve the role assignments for.
@@ -119,28 +121,56 @@ def get_application_role_assignments(
     LOGGER.debug(f"Querying for user role assignments on app id:\
                   {application_id} by requester: {requester} ")
 
-    # base query
+    # base query - users assigned to the application. This could be the case
+    #              for [APP]_ADMIN.
     q = (
         db.query(models.FamUserRoleXref)
         .join(models.FamRole)
         .filter(models.FamRole.application_id == application_id)
     )
 
-    if (requester.user_type_code == UserType.BCEID):
-        # append additional filtering: A BCeID requester can only see
-        # user_role records belonging to the same business organization.
-
-        # Note, need to reassign to the variable from the base query.
-        q = (
-            q
+    if not crud_utils.is_app_admin(
+        application_id=application_id,
+        access_roles=requester.access_roles,
+        db=db
+    ):
+        # subquery for finding out what roles (role_ids) the requester
+        # (as an application delegated admin) is managing at.
+        role_ids_dlgdadmin_managed_subquery = (
+            db.query(models.FamAccessControlPrivilege.role_id)
             .join(models.FamUser)
+            .join(models.FamRole)
             .filter(
-                models.FamUser.user_type_code == UserType.BCEID,
-                func.upper(
-                    models.FamUser.business_guid
-                ) == requester.business_guid.upper(),
+                models.FamUser.cognito_user_id == requester.cognito_user_id,
+                models.FamRole.application_id == application_id
+            )
+            .subquery()
+        )
+
+        # filtered by the managed role for user_role assignments that the
+        # requester (as an delegated admin) is allowed to see.
+        q = q.filter(
+            models.FamUserRoleXref.role_id.in_(
+                select(role_ids_dlgdadmin_managed_subquery)
             )
         )
+
+        if (requester.user_type_code == UserType.BCEID):
+            # append additional filtering: A BCeID requester can only see
+            # user_role records belonging to the same business organization.
+
+            # Note, need to reassign to the variable from the base query.
+            q = (
+                q
+                .join(models.FamUser)
+                # .join(models.FamUserRoleXref)
+                .filter(
+                    models.FamUser.user_type_code == UserType.BCEID,
+                    func.upper(
+                        models.FamUser.business_guid
+                    ) == requester.business_guid.upper()
+                )
+            )
 
     qresult = q.all()
     LOGGER.debug(f"Query for user role assignment complete with \
