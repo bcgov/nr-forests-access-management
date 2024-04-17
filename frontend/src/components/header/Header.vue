@@ -31,6 +31,7 @@ const props = defineProps({
             <Button
                 class="btn-toggleSideNav"
                 @click="sideNavState.toggleSideNavVisible()"
+                aria-label="Toggle Side Nav"
             >
                 <Icon
                     class="custom-carbon-icon--menu"
@@ -40,8 +41,9 @@ const props = defineProps({
             </Button>
             <span class="header-title">
                 {{ props.title }}
-                <strong class="subtitle">{{ props.subtitle }}</strong>
-                <strong>{{ environmentLabel }}</strong>
+                <strong class="subtitle"
+                    >{{ props.subtitle }} {{ environmentLabel }}</strong
+                >
             </span>
 
             <a

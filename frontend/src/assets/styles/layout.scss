@@ -57,6 +57,10 @@ input[type='number'] {
     font-family: inherit;
 }
 
+.p-sidebar-header {
+    display: none;
+}
+
 .helper-text {
     font-size: 0.75rem;
     color: $light-text-secondary;

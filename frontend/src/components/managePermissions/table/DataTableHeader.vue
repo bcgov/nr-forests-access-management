@@ -55,16 +55,17 @@ const tableHeaderCustomText = computed(() => {
 </script>
 
 <template>
-    <div class="custom-data-table-header" v-if="props.hasHeader">
-        <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
-
-        <span>
-            This table shows all the {{ userLevelText }} in
-            {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
-        </span>
+    <div class="custom-data-table-header">
+        <hgroup>
+            <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
+            <p aria-roledescription="subtitle">
+                This table shows all the {{ userLevelText }} in
+                {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
+            </p>
+        </hgroup>
     </div>
 
-    <div class="add-search-container">
+    <div class="utility-container">
         <Button
             v-if="props.btnRoute"
             class="btn-add-user"
@@ -106,7 +107,7 @@ const tableHeaderCustomText = computed(() => {
     }
 }
 
-.add-search-container {
+.utility-container {
     display: flex;
 }
 
