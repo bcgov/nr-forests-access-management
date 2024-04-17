@@ -31,7 +31,7 @@ const props = defineProps({
             <Button
                 class="btn-toggleSideNav"
                 @click="sideNavState.toggleSideNavVisible()"
-                aria-label="Toggle Side Nav"
+                aria-label="Toggle Side Navigation"
             >
                 <Icon
                     class="custom-carbon-icon--menu"

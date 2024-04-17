@@ -177,7 +177,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
                         <button
-                            title="Delete"
+                            title="Delete user"
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
                         >

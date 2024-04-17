@@ -161,7 +161,7 @@ const deleteDelegatedAdmin = (
                     <template #body="{ data }">
                         <button
                             class="btn btn-icon"
-                            title="Delete"
+                            title="Delete delegated admin"
                             @click="deleteDelegatedAdmin(data)"
                         >
                             <Icon icon="trash-can" :size="IconSize.small" />

@@ -147,7 +147,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                                 <Icon icon="edit" :size="IconSize.small"/>
                             </button> -->
                         <button
-                            title="Delete"
+                            title="Delete application admin"
                             class="btn btn-icon"
                             @click="deleteAdmin(data)"
                         >
