@@ -64,6 +64,9 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     :type context: Any
     :return: returns a modified event with the roles injected into it
     :rtype: event_type.Event
+
+    When we onboard applications to FAM, we config at least the minimum attribute list for them
+    All applications should be configured with user attributes: "custom:idp_name", "custom:idp_user_id", "custom:idp_username"
     """
 
     audit_event_log = {
@@ -74,7 +77,10 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
 
     LOGGER.debug(f"context: {context}")
 
+    LOGGER.debug(f"event: {event}")
+
     try:
+
         audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
         audit_event_log["requestingUser"]["userGuid"] = event["request"][
             "userAttributes"
@@ -91,13 +97,16 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
             audit_event_log["requestingUser"]["idpUserName"] = event["request"][
                 "userAttributes"
             ]["custom:idp_username"]
-            # audit_event_log["requestingUser"]["businessGuid"] = event["request"][
-            #     "userAttributes"
-            # ]["custom:idp_business_id"]
+            # for the user attributes that are not configured to be readable and writable for all applications
+            # we make the audit log optional
+            audit_event_log["requestingUser"]["businessGuid"] = event["request"][
+                "userAttributes"
+            ].get("custom:idp_business_id")
         else:
+            # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
             audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                 "userAttributes"
-            ]["custom:idp_display_name"]
+            ].get("custom:idp_display_name")
 
         audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
 
@@ -155,9 +164,9 @@ def populate_user_if_necessary(db_connection, event) -> None:
         user_name = event["request"]["userAttributes"]["custom:idp_username"]
 
     raw_query = """INSERT INTO app_fam.fam_user
-        (user_type_code, user_guid, cognito_user_id, user_name,
+        (user_type_code, user_guid, cognito_user_id, user_name, business_guid,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name},
+        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, lower(user_name)) DO
         UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""

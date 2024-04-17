@@ -6,6 +6,7 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { isLoading } from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { IdpProvider } from '@/enum/IdpEnum';
 import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps({
@@ -72,8 +73,8 @@ watch(
                         id="userIdInput"
                         :placeholder="
                             props.domain === UserType.I
-                                ? 'Type user\'s IDIR'
-                                : 'Type user\'s BCeID'
+                                ? `Type user\'s ${IdpProvider.IDIR}`
+                                : `Type user\'s ${IdpProvider.BCEIDBUSINESS}`
                         "
                         :validateOnChange="true"
                         class="w-100 custom-height"
@@ -98,7 +99,7 @@ watch(
                 <Button
                     v-if="props.domain === UserType.I"
                     class="w-100 custom-height"
-                    aria-label="Verify user IDIR"
+                    :aria-label="`Verify user ${IdpProvider.IDIR}`"
                     name="verifyIdir"
                     label="Verify"
                     @click="verifyUserId()"

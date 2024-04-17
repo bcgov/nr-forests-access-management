@@ -9,16 +9,26 @@ import { selectedApplicationDisplayText } from '@/store/ApplicationState';
 const props = defineProps({
     btnLabel: {
         type: String,
-        required: true,
+        required: false,
     },
     btnRoute: {
         type: String,
-        required: true,
+        required: false,
     },
     filter: {
         type: String,
         required: true,
     },
+    hasHeader: {
+        type: Boolean,
+        default: true,
+        required: false
+    },
+    inputPlaceholder: {
+        type: String,
+        default: 'Search by keyword',
+        required: false
+    }
 });
 const emit = defineEmits(['change']);
 
@@ -45,8 +55,9 @@ const tableHeaderCustomText = computed(() => {
 </script>
 
 <template>
-    <div class="custom-data-table-header">
+    <div class="custom-data-table-header" v-if="props.hasHeader">
         <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
+
         <span>
             This table shows all the {{ userLevelText }} in
             {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
@@ -55,6 +66,7 @@ const tableHeaderCustomText = computed(() => {
 
     <div class="add-search-container">
         <Button
+            v-if="props.btnRoute"
             class="btn-add-user"
             :label="props.btnLabel"
             @click="router.push(props.btnRoute)"
@@ -66,7 +78,7 @@ const tableHeaderCustomText = computed(() => {
             <InputText
                 id="dashboardSearch"
                 class="dash-search"
-                placeholder="Search by keyword"
+                :placeholder="props.inputPlaceholder"
                 v-model="computedFilter"
                 :value="props.filter"
             />

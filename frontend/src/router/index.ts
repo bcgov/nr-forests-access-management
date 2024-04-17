@@ -13,6 +13,7 @@ import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
+import MyPermissionsView from '@/views/MyPermissionsView.vue';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -109,6 +110,17 @@ const routes = [
         },
         component: GrantDelegatedAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
+    },
+    {
+        path: routeItems.myPermissions.path,
+        name: routeItems.myPermissions.name,
+        meta: {
+            requiresAuth: true,
+            title: routeItems.myPermissions.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: false,
+        },
+        component: MyPermissionsView,
     },
     {
         path: '/authCallback',

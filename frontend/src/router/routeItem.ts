@@ -34,4 +34,9 @@ export const routeItems = {
         path: '/grant-delegated-admin',
         label: 'Add a delegated admin',
     },
+    myPermissions: {
+        name: 'myPermissions',
+        path: '/my-permissions',
+        label: 'Check my permissions',
+    }
 } as RouteItems;
