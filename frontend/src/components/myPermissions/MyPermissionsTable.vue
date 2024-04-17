@@ -42,7 +42,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
     <div class="my-permissions-table-wrapper">
         <DataTableHeader
             :hasHeader="false"
-            input-placeholder="Search for application, environment, client IDs, company name, role, status, and more"
+            input-placeholder="search by application, environment, client IDs, company name, role, status, and more"
             @change="myPermissionsSearchChange"
             :filter="myPermissiosFilters['global'].value"
         />
@@ -55,15 +55,15 @@ const myPermissionsSearchChange = (newvalue: string) => {
             :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
             filterDisplay="menu"
             :loading="isLoading()"
-            :globalFilterFields="[
-                'application',
-                'env',
-                'role',
-                'clientId',
-            ]"
+            :globalFilterFields="['application', 'env', 'role', 'clientId']"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             stripedRows
+            :pt="{
+                table: {
+                    class: 'custom-table',
+                }
+            }"
         >
             <template #empty> You have no accesses in FAM. </template>
             <template #loading>
@@ -97,9 +97,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
                 sortable
             >
                 <template #body="{ data }">
-                    {{
-                        data.role
-                    }}
+                    {{ data.role }}
                 </template>
             </Column>
         </DataTable>
@@ -109,6 +107,10 @@ const myPermissionsSearchChange = (newvalue: string) => {
 <style>
 .my-permissions-table-wrapper {
     margin-top: 3rem;
+}
+
+.custom-table {
+    table-layout: fixed;
 }
 
 </style>
