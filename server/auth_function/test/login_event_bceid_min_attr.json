@@ -15,9 +15,9 @@
         "userAttributes": {
             "cognito:user_status": "EXTERNAL_PROVIDER",
             "custom:idp_name": "bceidbusiness",
-            "custom:idp_user_id": "B5251DBE95724894AA698043099A4DE2",
-            "custom:idp_username": "LOAD-4-TEST",
-            "identities": "[{'userId':'B5251DBE95724894AA6980430mangled99A4DE2@bceidbusiness','providerName':'TEST-BCEIDBUSINESS','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1699051596416}]",
+            "custom:idp_user_id": "81069F39B35B4861BCD010582B63B112",
+            "custom:idp_username": "LOAD-2-TEST",
+            "identities": "[{'userId':'81069F39B35B4861BCD01058mangled2B63B112@bceidbusiness','providerName':'TEST-BCEIDBUSINESS','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1699051596416}]",
             "sub": "bdc3cf92-f0c7-4e17-8a1f-359991136919"
         }
     },
@@ -25,7 +25,7 @@
         "claimsOverrideDetails": null
     },
     "triggerSource": "TokenGeneration_HostedAuth",
-    "userName": "test-bceidbusiness_B5251DBE95724894AA6980430mangled99A4DE2@bceidbusiness",
+    "userName": "test-bceidbusiness_81069F39B35B4861BCD01058mangled2B63B112@bceidbusiness",
     "userPoolId": "ca-central-1_p8X8GdjKW",
     "version": "1"
 }

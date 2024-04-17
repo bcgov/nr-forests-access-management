@@ -266,6 +266,7 @@ const getMyAdminPermission = () => {
     });
 
     return myPermissions.map((permission: IMyPermission) => {
+
         permission.application = permission.application.replace(/\([^()]*\)/g, '')
         return permission
     });
