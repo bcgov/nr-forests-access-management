@@ -27,6 +27,13 @@ export interface FamLoginUser {
     organization?: string;
 }
 
+interface IMyPermission {
+    application: string,
+    env: string,
+    clientId: number,
+    role: string,
+}
+
 const state = ref({
     famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
         ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
@@ -258,7 +265,7 @@ const getMyAdminPermission = () => {
         }
     });
 
-    return myPermissions.map(permission => {
+    return myPermissions.map((permission: IMyPermission) => {
         permission.application = permission.application.replace(/\([^()]*\)/g, '')
         return permission
     });
