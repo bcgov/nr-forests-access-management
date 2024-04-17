@@ -47,5 +47,6 @@ const route = useRoute();
     line-height: 1.125rem;
     letter-spacing: 0.01rem;
     color: $light-text-secondary;
+    margin-bottom: 0.5rem;
 }
 </style>
