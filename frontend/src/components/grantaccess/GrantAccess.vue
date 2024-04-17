@@ -27,6 +27,7 @@ import { TabKey } from '@/enum/TabEnum';
 const defaultFormData = {
     domain: UserType.I,
     userId: '',
+    userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
 };
@@ -47,15 +48,18 @@ const applicationRoleOptions = computed(() => {
 const userDomainChange = (selectedDomain: string) => {
     formData.value.domain = selectedDomain;
     formData.value.userId = '';
+    formData.value.userGuid = '';
 };
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);
-const setVerifyUserIdPassed = (verifiedResult: boolean) => {
+const setVerifyUserId = (verifiedResult: boolean, userGuid: string = '') => {
     verifyUserIdPassed.value = verifiedResult;
+    formData.value.userGuid = userGuid;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -190,7 +194,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                         :domain="formData.domain"
                         :userId="formData.userId"
                         @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed"
+                        @setVerifyResult="setVerifyUserId"
                     />
                 </StepContainer>
 

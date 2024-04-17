@@ -283,6 +283,7 @@ class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
     userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 

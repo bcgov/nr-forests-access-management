@@ -41,7 +41,7 @@ const verifyUserId = async () => {
         )
     ).data;
 
-    if (verifiedUserIdentity.value?.found) emit('setVerifyResult', true);
+    if (verifiedUserIdentity.value?.found) emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
 };
 const resetVerifiedUserIdentity = () => {
     verifiedUserIdentity.value = null;
