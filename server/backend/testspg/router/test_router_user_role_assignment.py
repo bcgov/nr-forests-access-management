@@ -17,7 +17,7 @@ from api.app.routers.router_guards import (
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (
-    CLIENT_NUMBER_2_EXISTS_ACTIVE,
+    CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
     CLIENT_NUMBER_EXISTS_ACTIVE,
     CLIENT_NUMBER_EXISTS_DEACTIVATED,
     CLIENT_NUMBER_NOT_EXISTS,
@@ -80,7 +80,7 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_2_EXISTS_ACTIVE,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
 }
 
 
@@ -102,6 +102,136 @@ def test_create_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
+
+
+def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_admin(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+):
+    """
+    test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
+
+    this test case uses business bceid user with FOM DEV FOM_REVIEWER privilege as example
+    test if business bceid user is delegated admin of FOM DEV for FOM_REVIEWER role,
+    able to grant FOM_REVIEWER access to a business bceid user from same org
+    """
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() is not None
+    data = response.json()
+    assert "user_role_xref_id" in data
+    assert "user_id" in data
+    assert "role_id" in data
+    assert "application_id" in data
+
+
+def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_admin(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+):
+    """
+    test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
+
+    this test case uses business bceid user with FOM DEV FOM_SUBMITTER_00001018 privilege as example
+    test if business bceid user is delegated admin of FOM DEV for FOM_SUBMITTER role with forest client number 00001018,
+    able to grant FOM_SUBMITTER_00001018 access for business bceid user from same org,
+    will not be able to grant access with other forest client numbers like FOM_SUBMITTER_00001011
+    """
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() is not None
+    data = response.json()
+    assert "user_role_xref_id" in data
+    assert "user_id" in data
+    assert "role_id" in data
+    assert "application_id" in data
+
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+            "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user has no privilege to grant FOM_SUBMITTER access with forest client number 00001011
+    assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Requester has no privilege to grant this access."
+
+
+def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+):
+    """
+    test business bceid user cannnot grant idir user access
+    """
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user cannot grant idir user access
+    assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
+    assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
+
+
+def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+):
+    """
+    test business bceid user cannnot grant business bceid user access from different organization
+    """
+    # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
+    # this user has delegated admin privilege which is granted in the local sql
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+            "user_name": "LOAD-4-TEST",  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() is not None
+    data = response.json()
+    # business bceid user cannot grant business bceid user access from different organization
+    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 
 def test_create_user_role_assignment_with_concrete_role(
