@@ -1,5 +1,6 @@
+from http import HTTPStatus
 import logging
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy
 from api.app.models import model as models
@@ -8,9 +9,10 @@ from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
-# from typing import
+from api.app.crud import crud_application
 
 LOGGER = logging.getLogger(__name__)
+
 
 def to_upper(elements: List[str]) -> List[str]:
     return [x.upper() for x in elements] if elements else None
@@ -90,3 +92,20 @@ def get_application_id_from_name(db, application_name):
 def raise_http_exception(status_code: str, error_msg: str):
     LOGGER.info(error_msg)
     raise HTTPException(status_code=status_code, detail=error_msg)
+
+
+def is_app_admin(
+    application_id: int,
+    db: Session,
+    access_roles: Optional[List[str]] = None,
+):
+    application = crud_application.get_application(application_id=application_id, db=db)
+    if not application:
+        error_msg = f"Application ID {application_id} not found"
+        raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+
+    admin_role = f"{application.application_name.upper()}_ADMIN"
+
+    if access_roles and admin_role in access_roles:
+        return True
+    return False
