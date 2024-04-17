@@ -27,12 +27,10 @@ const route = useRoute();
             </RouterLink>
         </template>
     </Breadcrumb>
-    <hgroup>
-        <h1 class="title">{{ props.title }}</h1>
-        <p class="subtitle" aria-roledescription="subtitle">
-            {{ props.subtitle }}
-        </p>
-    </hgroup>
+    <h1 class="title">{{ props.title }}</h1>
+    <p class="subtitle" aria-roledescription="subtitle">
+        {{ props.subtitle }}
+    </p>
 </template>
 
 <style lang="scss" scoped>

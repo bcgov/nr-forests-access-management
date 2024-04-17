@@ -22,13 +22,13 @@ const props = defineProps({
     hasHeader: {
         type: Boolean,
         default: true,
-        required: false
+        required: false,
     },
     inputPlaceholder: {
         type: String,
         default: 'Search by keyword',
-        required: false
-    }
+        required: false,
+    },
 });
 const emit = defineEmits(['change']);
 
@@ -56,13 +56,11 @@ const tableHeaderCustomText = computed(() => {
 
 <template>
     <div class="custom-data-table-header">
-        <hgroup>
-            <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
-            <p aria-roledescription="subtitle">
-                This table shows all the {{ userLevelText }} in
-                {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
-            </p>
-        </hgroup>
+        <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
+        <p aria-roledescription="subtitle">
+            This table shows all the {{ userLevelText }} in
+            {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
+        </p>
     </div>
 
     <div class="utility-container">

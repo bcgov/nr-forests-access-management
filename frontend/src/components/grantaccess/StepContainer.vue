@@ -17,12 +17,10 @@ const props = defineProps({
 
 <template>
     <div>
-        <hgroup>
-            <h2 class="title">{{ props.title }}</h2>
-            <p v-if="subtitle" class="subtitle" aria-roledescription="subtitle">
-                {{ props.subtitle }}
-            </p>
-        </hgroup>
+        <h2 class="title">{{ props.title }}</h2>
+        <p v-if="subtitle" class="subtitle" aria-roledescription="subtitle">
+            {{ props.subtitle }}
+        </p>
         <div :class="subtitle ? 'step-content' : ''">
             <slot />
         </div>
