@@ -13,6 +13,4 @@ def remove_app_env_suffix(name: str):
     suffix_list = ["_DEV", "_TEST", "_PROD"]
     for suffix in suffix_list:
         if name.endswith(suffix):
-            name = name.rstrip(suffix)
-            break
-    return name
+            return name[: -len(suffix)]
