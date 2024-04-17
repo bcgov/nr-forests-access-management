@@ -1,7 +1,6 @@
-import json
 import logging
 from http import HTTPStatus
-from typing import Union
+from typing import List, Union
 
 from api.app import database
 from api.app.constants import UserType, RoleType
@@ -79,6 +78,7 @@ missing_key_attribute_error = HTTPException(
 
 async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
+    access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
 ):
     fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
@@ -88,6 +88,7 @@ async def get_current_requester(
         raise no_requester_exception
 
     requester = Requester.model_validate(fam_user)
+    requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
 
