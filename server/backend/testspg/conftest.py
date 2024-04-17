@@ -14,6 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
+from api.app.constants import COGNITO_USERNAME_KEY
 from api.app.main import app
 from api.app.routers.router_guards import get_current_requester
 from api.app.schemas import Requester
@@ -151,7 +152,8 @@ def get_current_requester_by_token(db_pg_session):
         claims = jwt.get_unverified_claims(access_token)
         requester = await get_current_requester(
             db=db_pg_session,
-            request_cognito_user_id=claims["username"]
+            access_roles=jwt_validation.get_access_roles(claims),
+            request_cognito_user_id=claims[COGNITO_USERNAME_KEY]
         )
         LOGGER.debug(f"requester: {requester}")
 
