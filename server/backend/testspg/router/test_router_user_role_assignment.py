@@ -595,7 +595,7 @@ def test_user_role_forest_client_number_not_exist_bad_request(
     assert response.json() is not None
     assert (
         f"Forest Client Number {client_number_not_exists} does not exist."
-        in response.json()["detail"]
+        in response.json()["detail"].get("description")
     )
 
 
@@ -681,7 +681,7 @@ def test_delete_user_role_assignment_not_authorized(
     assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
 
 
-def test_deleter_user_role_assignment_authorize_by_delegated_admin(
+def test_delete_user_role_assignment_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
@@ -768,7 +768,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     assert data["detail"]["description"] == "Requester has no privilege to grant this access."
 
 
-def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
+def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
@@ -800,7 +800,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
     assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
 
 
-def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
+def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
