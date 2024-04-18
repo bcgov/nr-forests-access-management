@@ -3,7 +3,7 @@ import { notifications } from '@/store/NotificationState';
 </script>
 
 <template>
-    <div v-for="(value, key) in notifications">
+    <template v-for="(value, key) in notifications" :key="key">
         <NotificationMessage
             v-if="value.msg !== ''"
             :severity="key.toString()"
@@ -11,7 +11,7 @@ import { notifications } from '@/store/NotificationState';
             :hasFullMsg="value.fullMsg !== ''"
             class="notification-stack"
         />
-    </div>
+    </template>
 </template>
 
 <style lang="scss" scoped>
