@@ -22,13 +22,13 @@ const props = defineProps({
     hasHeader: {
         type: Boolean,
         default: true,
-        required: false
+        required: false,
     },
     inputPlaceholder: {
         type: String,
         default: 'Search by keyword',
-        required: false
-    }
+        required: false,
+    },
 });
 const emit = defineEmits(['change']);
 
@@ -57,14 +57,13 @@ const tableHeaderCustomText = computed(() => {
 <template>
     <div class="custom-data-table-header" v-if="props.hasHeader">
         <h3>{{ selectedApplicationDisplayText }} {{ userLevelText }}</h3>
-
-        <span>
+        <p aria-roledescription="subtitle">
             This table shows all the {{ userLevelText }} in
             {{ selectedApplicationDisplayText }} {{ tableHeaderCustomText }}
-        </span>
+        </p>
     </div>
 
-    <div class="search-container">
+    <div class="utility-container">
         <Button
             v-if="props.btnRoute"
             class="btn-add-user"
@@ -98,7 +97,7 @@ const tableHeaderCustomText = computed(() => {
         padding: 0;
     }
 
-    span {
+    p {
         @extend %body-compact-01;
         margin: 0;
         padding: 0;
@@ -106,7 +105,7 @@ const tableHeaderCustomText = computed(() => {
     }
 }
 
-.search-container {
+.utility-container {
     display: flex;
 }
 

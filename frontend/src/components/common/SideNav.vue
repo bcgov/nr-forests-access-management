@@ -28,18 +28,6 @@ const props = defineProps({
 </script>
 <template>
     <Sidebar v-model:visible="sideNavState.isVisible">
-        <template #header>
-            <div
-                class="sidenav-logo"
-                title="Forests Access Management"
-                @click="router.push('/dashboard')"
-            >
-                <img
-                    src="@/assets/images/17_gov3_bc_logo_transparent.svg"
-                    alt="B.C. Government Logo"
-                />
-            </div>
-        </template>
         <nav class="sidenav">
             <div class="content">
                 <ul>
@@ -93,23 +81,12 @@ const props = defineProps({
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
-
-.sidenav-logo {
-    cursor: pointer;
-    img {
-        margin: 0px 0px 1rem 0.188rem;
-        width: 8.75rem;
-        height: 2rem;
-    }
-}
-
 .sidenav {
     position: fixed;
-    padding: 0.75rem 0rem;
+    padding: 0.313rem 0rem;
     width: 100%;
     height: calc(100vh - 3.125rem);
     left: 0rem;
-    top: 3rem;
     overflow-x: hidden;
     overflow-y: auto;
     .content {
@@ -145,7 +122,7 @@ const props = defineProps({
 }
 
 .sidenav li.child {
-    font-size: 0.875rem;
+    font-size: 1rem;
 }
 
 .sidenav li.child:hover {

@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import List
 
 from api.app import schemas
 from api.app.repositories.application_admin_repository import \
@@ -54,7 +53,9 @@ class ApplicationAdminService:
                 + f"{fam_application_admin_user.application_admin_id}."
             )
             error_msg = "User is admin already."
-            utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+            utils.raise_http_exception(
+                status_code=HTTPStatus.CONFLICT,
+                error_msg=error_msg)
         else:
             # Create application admin if user is not admin yet
             fam_application_admin_user = (

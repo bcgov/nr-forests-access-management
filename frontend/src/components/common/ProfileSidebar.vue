@@ -80,7 +80,7 @@ const adminRoles = computed(() => {
                     </p>
                 </div>
             </div>
-            <hr class="profile-divider" />
+            <Divider class="profile-divider" />
             <p class="options">Options</p>
             <div class="sign-out-wrapper">
                 <Icon
@@ -202,9 +202,7 @@ const adminRoles = computed(() => {
 }
 
 .profile-divider {
-    background: #ffffff;
-    background-blend-mode: multiply;
-    margin: 1rem 0;
+    margin: 1rem 0 !important;
 }
 
 .sign-out {
