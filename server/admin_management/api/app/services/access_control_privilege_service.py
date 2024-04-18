@@ -67,6 +67,10 @@ class AccessControlPrivilegeService:
         if not fam_role:
             error_msg = f"Role id {request.role_id} does not exist."
             utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            utils.raise_http_exception(
+                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
 
         # Role is a 'Abstract' type, create access control privilege with forst client child role
         require_child_role = (
@@ -100,7 +104,10 @@ class AccessControlPrivilegeService:
                         "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} does not exist."
                     )
-                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+                    utils.raise_http_exception(
+                        error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                        error_msg=error_msg
+                    )
 
                 if not forest_client_active(forest_client_validator_return):
                     error_msg = (
@@ -108,7 +115,10 @@ class AccessControlPrivilegeService:
                         + f"Forest client number {forest_client_number} is not in active status: "
                         + f"{get_forest_client_status(forest_client_validator_return)}."
                     )
-                    utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+                    utils.raise_http_exception(
+                        error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                        error_msg=error_msg
+                    )
 
                 # Check if child role exists or add a new child role
                 child_role = self.role_service.find_or_create_forest_client_child_role(
