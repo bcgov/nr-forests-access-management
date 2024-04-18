@@ -6,14 +6,14 @@ import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import UserType
+from api.app.constants import (
+    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
+    UserType
+)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import (
-    ERROR_SELF_GRANT_PROHIBITED,
-    ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
-)
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (
@@ -230,7 +230,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     assert response.json() is not None
     data = response.json()
     # business bceid user cannot grant business bceid user access from different organization
-    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 @pytest.mark.asyncio
@@ -644,7 +644,7 @@ def test_self_grant_fail(
     )
     assert row is None, "Expected user role assignment not to be created"
 
-    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+    jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
 # ---------------- Test delete user role assignment ------------ #
@@ -831,7 +831,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     assert response.json() is not None
     data = response.json()
     # business bceid user cannot delete business bceid user access from different organization
-    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 
@@ -909,4 +909,4 @@ def test_self_remove_grant_fail(
     )
     assert row is not None, "Expected user role assignment not to be deleted"
 
-    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+    jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
