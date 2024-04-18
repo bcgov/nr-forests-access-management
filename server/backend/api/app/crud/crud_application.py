@@ -135,7 +135,7 @@ def get_application_role_assignments(
         db=db
     ):
         # subquery for finding out what roles (role_ids) the requester
-        # (as an application delegated admin) is managing at.
+        # (as an application delegated admin) is managing at for a specific application.
         role_ids_dlgdadmin_managed_subquery = (
             db.query(models.FamAccessControlPrivilege.role_id)
             .join(models.FamUser)
@@ -163,7 +163,6 @@ def get_application_role_assignments(
             q = (
                 q
                 .join(models.FamUser)
-                # .join(models.FamUserRoleXref)
                 .filter(
                     models.FamUser.user_type_code == UserType.BCEID,
                     func.upper(
