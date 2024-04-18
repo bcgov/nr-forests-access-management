@@ -126,11 +126,7 @@ const deleteDelegatedAdmin = (
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column
-                    header="User Name"
-                    field="user.user_name"
-                    sortable
-                >
+                <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
                         <span>
                             {{ data.user.user_name }}
@@ -165,12 +161,10 @@ const deleteDelegatedAdmin = (
                     <template #body="{ data }">
                         <button
                             class="btn btn-icon"
+                            title="Delete delegated admin"
                             @click="deleteDelegatedAdmin(data)"
                         >
-                            <Icon
-                                icon="trash-can"
-                                :size="IconSize.small"
-                            />
+                            <Icon icon="trash-can" :size="IconSize.small" />
                         </button>
                     </template>
                 </Column>
