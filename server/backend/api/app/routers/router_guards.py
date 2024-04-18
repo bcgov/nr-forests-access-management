@@ -4,6 +4,7 @@ from typing import List, Union
 
 from api.app import database
 from api.app.constants import (
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
     ERROR_CODE_INVALID_ROLE_ID,
     ERROR_CODE_REQUESTER_NOT_EXISTS,
     ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
@@ -193,7 +194,7 @@ def authorize_by_application_role(
     # what id to use to get role from endpoint.
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token),
+    access_roles= Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
 ):
     """
@@ -204,7 +205,10 @@ def authorize_by_application_role(
     """
     # Delegate to this for main check.
     authorize_by_app_id(
-        application_id=role.application_id, db=db, claims=claims, requester=requester
+        application_id=role.application_id,
+        db=db,
+        access_roles=access_roles,
+        requester=requester
     )
     return role
 
@@ -221,7 +225,7 @@ async def authorize_by_privilege(
     :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
                  for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
     """
-    requester_is_app_admin = crud_utils.is_app_admin(application_id, db, access_roles)
+    requester_is_app_admin = crud_utils.is_app_admin(role.application_id, db, access_roles)
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
     if not requester_is_app_admin:
@@ -357,7 +361,7 @@ async def enforce_self_grant_guard(
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
-                    "code": ERROR_SELF_GRANT_PROHIBITED,
+                    "code": ERROR_CODE_SELF_GRANT_PROHIBITED,
                     "description": "Altering permission privilege to self is not allowed",
                 },
                 headers={"WWW-Authenticate": "Bearer"},

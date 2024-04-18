@@ -311,7 +311,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 409
-    assert response.json()["detail"] == ERROR_DUPLICATE_USER_ROLE
+    assert response.json()["detail"] .get("description")== ERROR_DUPLICATE_USER_ROLE
 
     # cleanup
     response = test_client_fixture.delete(
@@ -338,7 +338,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     )
     assert response.status_code == 400
     assert (
-        response.json()["detail"]
+        response.json()["detail"].get("description")
         == "Invalid role assignment request. "
         + "Cannot assign user "
         + TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"]
