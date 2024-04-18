@@ -66,7 +66,6 @@ class AccessControlPrivilegeService:
         fam_role = self.role_service.get_role_by_id(request.role_id)
         if not fam_role:
             error_msg = f"Role id {request.role_id} does not exist."
-            utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
             utils.raise_http_exception(
                 error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
                 error_msg=error_msg
@@ -91,7 +90,10 @@ class AccessControlPrivilegeService:
                 or len(request.forest_client_numbers) < 1
             ):
                 error_msg = "Invalid access control privilege request, missing forest client number."
-                utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+                utils.raise_http_exception(
+                    error_code=famConstants.ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                    error_msg=error_msg
+                )
 
             forest_client_integration_service = ForestClientIntegrationService()
             for forest_client_number in request.forest_client_numbers:
