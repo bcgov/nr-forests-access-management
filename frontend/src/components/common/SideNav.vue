@@ -125,8 +125,7 @@ const props = defineProps({
 
 .sidenav li.child:hover,
 li.header:hover {
-    background: $light-layer-selected-01;
-    box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
+    background: $light-layer-hover-01;
     color: $light-text-primary;
     font-weight: 700;
     cursor: pointer;
@@ -144,11 +143,8 @@ li.header:hover {
     cursor: pointer;
 }
 
-.sidenav li a:hover,
-ul#nav li.active a {
-    color: $light-text-primary;
-    background: $light-layer-selected-01;
-    box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
+.sidenav-selected:hover {
+    background: $light-layer-selected-hover-01 !important;
 }
 
 @media (min-width: 768px) {
