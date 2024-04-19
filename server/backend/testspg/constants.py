@@ -26,7 +26,7 @@ Forest Client API has following status codes.
     REC (Receivership) - client "00169575"
     SPN (Suspended) - client "00003643"
 """
-CLIENT_NUMBER_EXISTS_ACTIVE = "00000001"
+CLIENT_NUMBER_EXISTS_ACTIVE_00000001 = "00000001"
 CLIENT_NUMBER_EXISTS_ACTIVE_00001011 = "00001011"
 CLIENT_NUMBER_EXISTS_ACTIVE_00001018 = "00001018"
 CLIENT_NUMBER_EXISTS_DEACTIVATED = "00000002"
@@ -53,18 +53,12 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 # Please refer to V1001__ flyway script for pre-test admin setup (needed for
 # tests)". "TEST-3-LOAD-CHILD-1" is being setup as delegated admin.
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
+TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = {
-    "user_name": "fom_user_test",
-    "user_type_code": fam_constants.UserType.BCEID,
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
-}
-TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
+TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
@@ -75,7 +69,15 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID = {
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
+
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID = {
+    "user_name": "fom_user_test",
+    "user_type_code": fam_constants.UserType.BCEID,
+    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+}
+
+TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T = {
     "user_name": "LOAD-3-TEST",
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,

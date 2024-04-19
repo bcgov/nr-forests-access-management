@@ -6,8 +6,8 @@ import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
 from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
 from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -75,7 +75,7 @@ def test_get_fam_application_roles(
 
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -161,7 +161,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -174,9 +174,9 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
     assert data[0]["user"]["user_type_code"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_type_code"]
+        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_type_code"]
     assert data[0]["user"]["user_name"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE["user_name"]
+        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_name"]
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
 
@@ -195,7 +195,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -208,12 +208,12 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
     assert data[0]["user"]["user_type_code"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_type_code"]
+        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["user_type_code"]
     assert data[0]["user"]["user_name"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"]
+        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["user_name"]
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_SUBMITTER" + "_" + \
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["forest_client_number"]
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["forest_client_number"]
     assert data[0]["role"]["parent_role"]["role_type_code"] == "A"
     assert data[0]["role"]["parent_role"]["role_name"] == "FOM_SUBMITTER"
 
@@ -257,7 +257,7 @@ def test_get_application_user_assignments_as_add_admin(
     # create users at FOM_DEV
     user_role_assignments = create_test_user_role_assignments(
         fom_dev_access_admin_token,
-        [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE]
+        [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR]
     )
 
     assert len(user_role_assignments) == 1

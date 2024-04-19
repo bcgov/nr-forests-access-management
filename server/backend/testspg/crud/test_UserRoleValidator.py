@@ -7,7 +7,7 @@ from api.app.crud.crud_user_role import UserRoleValidator
 from api.app.schemas import FamUserRoleAssignmentCreate
 from mock import patch
 from pydantic import ValidationError
-from testspg.constants import (CLIENT_NUMBER_EXISTS_ACTIVE,
+from testspg.constants import (CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
                                CLIENT_NUMBER_EXISTS_DEACTIVATED,
                                CLIENT_NUMBER_EXISTS_DECEASED,
                                CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
@@ -53,7 +53,7 @@ def test_init_with_request_param_client_number_too_long_error(
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
     (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None, "exists": False}),
     (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None, "exists": False}),
-    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT", "exists": True}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE_00000001, {"api_client_status_code": "ACT", "exists": True}),
     (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC", "exists": True}),
     (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC", "exists": True}),
     (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC", "exists": True}),
@@ -81,7 +81,7 @@ def test_forest_client_number_exists(
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
     (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None}),
     (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None}),
-    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT"}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE_00000001, {"api_client_status_code": "ACT"}),
     (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC"}),
     (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC"}),
     (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC"}),
@@ -111,7 +111,7 @@ def test_get_forst_client(
 @pytest.mark.parametrize("client_id_to_test, expcted_result", [
     (CLIENT_NUMBER_LEN_TOO_SHORT, {"api_client_status_code": None, "is_active": False}),
     (CLIENT_NUMBER_NOT_EXISTS, {"api_client_status_code": None, "is_active": False}),
-    (CLIENT_NUMBER_EXISTS_ACTIVE, {"api_client_status_code": "ACT", "is_active": True}),
+    (CLIENT_NUMBER_EXISTS_ACTIVE_00000001, {"api_client_status_code": "ACT", "is_active": True}),
     (CLIENT_NUMBER_EXISTS_DEACTIVATED, {"api_client_status_code": "DAC", "is_active": False}),
     (CLIENT_NUMBER_EXISTS_DECEASED, {"api_client_status_code": "DEC", "is_active": False}),
     (CLIENT_NUMBER_EXISTS_RECEIVERSHIP, {"api_client_status_code": "REC", "is_active": False}),
