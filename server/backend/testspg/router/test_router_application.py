@@ -245,3 +245,82 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     assert invalid_path_router_msg in response.text
+
+
+# ---------------- Test get application user role assignment filtering scenarios ------------ #
+
+# TODO: in progress...
+def test_get_application_user_assignments_as_add_admin(
+    create_test_user_role_assignments,
+    fom_dev_access_admin_token
+):
+    # create users at FOM_DEV
+    user_role_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token,
+        [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE]
+    )
+
+    assert len(user_role_assignments) == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
