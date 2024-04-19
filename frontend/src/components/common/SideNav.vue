@@ -1,26 +1,21 @@
 <script setup lang="ts">
 import Sidebar from 'primevue/sidebar';
 import router from '@/router';
-import { IconSize } from '@/enum/IconEnum';
 import { sideNavState } from '@/store/SideNavState';
 import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
-
-export interface ISideNavData {
-    name: string;
-    items: [ISideNavItem];
-}
 
 export interface ISideNavItem {
     name: string;
     icon: string;
     link: RouteLocationRaw;
     disabled: boolean;
+    items?: [ISideNavItem];
 }
 
 const props = defineProps({
     data: {
-        type: Object as PropType<ISideNavData[]>,
+        type: Object as PropType<ISideNavItem[]>,
         required: true,
         default: '',
     },
@@ -30,30 +25,30 @@ const props = defineProps({
     <Sidebar v-model:visible="sideNavState.isVisible">
         <nav class="sidenav">
             <div class="content">
-                <ul>
-                    <div v-for="item in props.data">
-                        <li class="header">{{ item.name }}</li>
-                        <ul>
-                            <li
-                                v-for="child in item.items"
-                                class="child"
-                                :class="{
-                                    'sidenav-selected':
-                                        $router.currentRoute.value.path ==
-                                        child.link,
-                                    'sidenav-disabled': child.disabled,
-                                }"
-                                @click="router.push(child.link)"
-                            >
-                                <Icon
-                                    class="custom-carbon-icon--sidenav"
-                                    :icon="child.icon.toString()"
-                                    :size="IconSize.small"
-                                />
-                                {{ child.name }}
-                            </li>
-                        </ul>
-                    </div>
+                <ul v-for="item in props.data">
+                    <li
+                        class="header"
+                        :class="{
+                            'sidenav-selected':
+                                $router.currentRoute.value.path == item.link,
+                            'sidenav-disabled': item.disabled,
+                        }"
+                        @click="router.push(item.link)"
+                    >
+                        {{ item.name }}
+                    </li>
+                    <li
+                        class="child"
+                        v-for="child in item.items"
+                        :class="{
+                            'sidenav-selected':
+                                $router.currentRoute.value.path == child.link,
+                            'sidenav-disabled': child.disabled,
+                        }"
+                        @click="router.push(child.link)"
+                    >
+                        <span>{{ child.name }}</span>
+                    </li>
                 </ul>
             </div>
 
@@ -83,7 +78,7 @@ const props = defineProps({
 @import '@/assets/styles/styles.scss';
 .sidenav {
     position: fixed;
-    padding: 0.313rem 0rem;
+    padding: 2.25rem 0rem;
     width: 100%;
     height: calc(100vh - 3.125rem);
     left: 0rem;
@@ -101,16 +96,15 @@ const props = defineProps({
 
 .sidenav ul {
     padding: 0;
+    margin: 0;
     list-style-type: none;
-}
-
-.sidenav li.header {
-    font-weight: 400;
 }
 
 .sidenav li {
     @extend %helper-text-01;
     color: $light-text-secondary;
+    font-size: 1rem;
+    font-weight: 400;
     align-items: center;
     padding: 0.9375rem 1rem;
     i {
@@ -121,14 +115,16 @@ const props = defineProps({
     }
 }
 
-.sidenav li.child {
-    font-size: 1rem;
+.sidenav li.child > span {
+    margin-left: 1.5rem;
 }
 
-.sidenav li.child:hover {
+.sidenav li.child:hover,
+li.header:hover {
     background: $light-layer-selected-01;
     box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
     color: $light-text-primary;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -140,6 +136,7 @@ const props = defineProps({
     background: $light-layer-selected-01;
     box-shadow: inset 0.188rem 0rem 0rem $light-border-interactive;
     color: $light-text-primary !important;
+    font-weight: 700 !important;
     cursor: pointer;
 }
 
