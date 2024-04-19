@@ -42,11 +42,17 @@ TEST_NEW_USER = {
 }
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
+# Admin role level at token
+FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
+FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
+
 # ------------------- Test grant/remove access -------------------------- #
-# note:
-# test idir and bceid username might need change to a
-# real one after we enable the verfication, same for
-# forest client number
+# Note:
+# The test idir and bceid username might need change to a real one after we
+#   enable the verfication, same for forest client number.
+# Please refer to V1001__ flyway script for pre-test admin setup (needed for
+# tests)". "TEST-3-LOAD-CHILD-1" is being setup as delegated admin.
+
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",

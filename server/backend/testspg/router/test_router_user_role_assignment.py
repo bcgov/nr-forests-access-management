@@ -16,6 +16,7 @@ from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from testspg.conftest import create_test_user_role_assignment
 from testspg.constants import (
     CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
     CLIENT_NUMBER_EXISTS_ACTIVE,
@@ -35,35 +36,7 @@ from testspg.constants import (
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
-FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
-FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
-
-
-@pytest.fixture(scope="function")
-def fom_dev_access_admin_token(test_rsa_key):
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-
-
-@pytest.fixture(scope="function")
-def fom_test_access_admin_token(test_rsa_key):
-    access_roles = [FOM_TEST_ADMIN_ROLE]
-    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-
-
-# helper method
-def create_test_user_role_assignment(
-    test_client_fixture: starlette.testclient.TestClient, token, requestBody
-):
-    # create a user role assignment used for testing
-    response = test_client_fixture.post(
-        f"{endPoint}",
-        json=requestBody,
-        headers=jwt_utils.headers(token),
-    )
-    data = response.json()
-    return data["user_role_xref_id"]
 
 
 # note: this might need to be a real idir username
@@ -232,6 +205,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     # business bceid user cannot grant business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
+
 
 @pytest.mark.asyncio
 async def test_create_user_role_assignment_with_concrete_role(
