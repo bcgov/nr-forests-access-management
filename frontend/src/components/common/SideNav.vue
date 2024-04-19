@@ -25,30 +25,34 @@ const props = defineProps({
     <Sidebar v-model:visible="sideNavState.isVisible">
         <nav class="sidenav">
             <div class="content">
-                <ul v-for="item in props.data">
-                    <li
-                        class="header"
-                        :class="{
-                            'sidenav-selected':
-                                $router.currentRoute.value.path == item.link,
-                            'sidenav-disabled': item.disabled,
-                        }"
-                        @click="router.push(item.link)"
-                    >
-                        {{ item.name }}
-                    </li>
-                    <li
-                        class="child"
-                        v-for="child in item.items"
-                        :class="{
-                            'sidenav-selected':
-                                $router.currentRoute.value.path == child.link,
-                            'sidenav-disabled': child.disabled,
-                        }"
-                        @click="router.push(child.link)"
-                    >
-                        <span>{{ child.name }}</span>
-                    </li>
+                <ul>
+                    <template v-for="item in props.data">
+                        <li
+                            class="header"
+                            :class="{
+                                'sidenav-selected':
+                                    $router.currentRoute.value.path ==
+                                    item.link,
+                                'sidenav-disabled': item.disabled,
+                            }"
+                            @click="router.push(item.link)"
+                        >
+                            {{ item.name }}
+                        </li>
+                        <li
+                            class="child"
+                            v-for="child in item.items"
+                            :class="{
+                                'sidenav-selected':
+                                    $router.currentRoute.value.path ==
+                                    child.link,
+                                'sidenav-disabled': child.disabled,
+                            }"
+                            @click="router.push(child.link)"
+                        >
+                            <span>{{ child.name }}</span>
+                        </li>
+                    </template>
                 </ul>
             </div>
 
