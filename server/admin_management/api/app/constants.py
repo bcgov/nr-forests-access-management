@@ -49,3 +49,4 @@ FOREST_CLIENT_STATUS = {
 # Note, this is default error code but better use specific code category if possible.
 ERROR_CODE_INVALID_OPERATION = "invalid_operation"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
+ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
