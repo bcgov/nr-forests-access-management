@@ -320,6 +320,9 @@ class Requester(BaseModel):
     user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_id: int
+    access_roles: Union[
+        List[Annotated[str, StringConstraints(max_length=50)]], None
+    ] = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -1,13 +1,11 @@
-import datetime
 import logging
 from typing import List
 
-from sqlalchemy.orm import Session, load_only, joinedload
-
-import api.app.constants as constants
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+from api.app import schemas
+from api.app.constants import UserType
 from api.app.models import model as models
-
-from .. import schemas
 from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
@@ -108,53 +106,75 @@ def get_application_roles(
 
 
 def get_application_role_assignments(
-    db: Session, application_id: int
+    db: Session, application_id: int, requester: schemas.Requester
 ) -> List[models.FamUserRoleXref]:
     """query the user / role cross reference table to retrieve the role
-    assignments
+    assignments.
+    Delegated Admin will only see user role assignments by the roles granted for them.
+    BCeID Delegated Admin will be further restricted for the same organization.
 
     :param db: database session
-    :type db: Session
-    :param application_id: the application id that we want to retrieve the role
-        assignments for.
-    :return: the role assignments for the given application
-
+    :param application_id: the application id to retrieve the role assignments for.
+    :param requester: the user who perform this request/action.
+    :return: the user role assignments for the given application.
     """
-    LOGGER.debug(f"Query for user role assignments for app id: {application_id}")
+    LOGGER.debug(f"Querying for user role assignments on app id:\
+                  {application_id} by requester: {requester} ")
 
-    crossref = (
+    # base query - users assigned to the application. This could be the case
+    #              for [APP]_ADMIN.
+    q = (
         db.query(models.FamUserRoleXref)
         .join(models.FamRole)
         .filter(models.FamRole.application_id == application_id)
-        .all()
     )
 
-    LOGGER.debug(f"Query for user role assignment complete with # of results = {len(crossref)}")
-    return crossref
+    if not crud_utils.is_app_admin(
+        application_id=application_id,
+        access_roles=requester.access_roles,
+        db=db
+    ):
+        # subquery for finding out what roles (role_ids) the requester
+        # (as an application delegated admin) is managing at for a specific application.
+        role_ids_dlgdadmin_managed_subquery = (
+            db.query(models.FamAccessControlPrivilege.role_id)
+            .join(models.FamUser)
+            .join(models.FamRole)
+            .filter(
+                models.FamUser.cognito_user_id == requester.cognito_user_id,
+                models.FamRole.application_id == application_id
+            )
+            .subquery()
+        )
 
+        # filtered by the managed role for user_role assignments that the
+        # requester (as an delegated admin) is allowed to see.
+        q = q.filter(
+            models.FamUserRoleXref.role_id.in_(
+                select(role_ids_dlgdadmin_managed_subquery)
+            )
+        )
 
-def get_application_id_by_role_id(db: Session, role_id):
-    # question: why we need to go to fam_application table?
-    # the fam_role table has the application_id already
+        if (requester.user_type_code == UserType.BCEID):
+            # append additional filtering: A BCeID requester can only see
+            # user_role records belonging to the same business organization.
 
-    application_id =\
-        db.query(models.FamApplication.application_id)\
-        .join(models.FamRole)\
-        .filter(models.FamRole.role_id == role_id)\
-        .scalar()
+            # Note, need to reassign to the variable from the base query.
+            q = (
+                q
+                .join(models.FamUser)
+                .filter(
+                    models.FamUser.user_type_code == UserType.BCEID,
+                    func.upper(
+                        models.FamUser.business_guid
+                    ) == requester.business_guid.upper()
+                )
+            )
 
-    return application_id
-
-
-def get_application_id_by_user_role_xref_id(db: Session, user_role_xref_id):
-    application_id =\
-        db.query(models.FamApplication.application_id)\
-        .join(models.FamRole)\
-        .join(models.FamUserRoleXref)\
-        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)\
-        .scalar()
-
-    return application_id
+    qresult = q.all()
+    LOGGER.debug(f"Query for user role assignment complete with \
+                 # of results = {len(qresult)}")
+    return qresult
 
 
 if __name__ == "__main__":
