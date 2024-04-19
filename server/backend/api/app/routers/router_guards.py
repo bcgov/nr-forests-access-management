@@ -1,16 +1,23 @@
-import json
 import logging
 from http import HTTPStatus
-from typing import Union
+from typing import List, Union
 
 from api.app import database
-from api.app.constants import UserType, RoleType
+from api.app.constants import (
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
+    ERROR_CODE_INVALID_ROLE_ID,
+    ERROR_CODE_REQUESTER_NOT_EXISTS,
+    ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+    ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+    UserType, RoleType
+)
 from api.app.crud import (
-    crud_application,
     crud_role,
     crud_user,
     crud_user_role,
     crud_access_control_privilege,
+    crud_utils
 )
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
@@ -34,18 +41,10 @@ at crud(service) layer).
 
 LOGGER = logging.getLogger(__name__)
 
-ERROR_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
-ERROR_INVALID_APPLICATION_ID = "invalid_application_id"
-ERROR_INVALID_ROLE_ID = "invalid_role_id"
-ERROR_REQUESTER_NOT_EXISTS = "requester_not_exists"
-ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
-ERROR_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
-ERROR_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
-
 no_requester_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,  # 403
     detail={
-        "code": ERROR_REQUESTER_NOT_EXISTS,
+        "code": ERROR_CODE_REQUESTER_NOT_EXISTS,
         "description": "Requester does not exist, action is not allowed",
     },
 )
@@ -53,7 +52,7 @@ no_requester_exception = HTTPException(
 external_user_prohibited_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,
     detail={
-        "code": ERROR_EXTERNAL_USER_ACTION_PROHIBITED,
+        "code": ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
         "description": "Action is not allowed for external user.",
     },
 )
@@ -61,7 +60,7 @@ external_user_prohibited_exception = HTTPException(
 different_org_grant_prohibited_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,
     detail={
-        "code": ERROR_DIFFERENT_ORG_GRANT_PROHIBITED,
+        "code": ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
         "description": "Managing for different organization is not allowed.",
     },
     headers={"WWW-Authenticate": "Bearer"},
@@ -70,7 +69,7 @@ different_org_grant_prohibited_exception = HTTPException(
 missing_key_attribute_error = HTTPException(
     status_code=HTTPStatus.INTERNAL_SERVER_ERROR,  # 500
     detail={
-        "code": ERROR_MISSING_KEY_ATTRIBUTE,
+        "code": ERROR_CODE_MISSING_KEY_ATTRIBUTE,
         "description": "Operation encountered unexpected error.",
     },
     headers={"WWW-Authenticate": "Bearer"},
@@ -79,6 +78,7 @@ missing_key_attribute_error = HTTPException(
 
 async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
+    access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
 ):
     fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
@@ -88,6 +88,7 @@ async def get_current_requester(
         raise no_requester_exception
 
     requester = Requester.model_validate(fam_user)
+    requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
 
@@ -123,14 +124,15 @@ def authorize(
 def authorize_by_app_id(
     application_id: int,
     db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token),
+    access_roles=Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
 ):
     """
     This authorize_by_app_id method is used for the authorization check of a specific application,
     we require user to be the app admin or delegated admin of the application
     """
-    requester_is_app_admin = is_app_admin(application_id, db, claims)
+    requester_is_app_admin = crud_utils.is_app_admin(
+        db=db, application_id=application_id, access_roles=access_roles)
 
     # if user is not application admin
     if not requester_is_app_admin:
@@ -178,7 +180,7 @@ async def get_request_role_from_id(
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
             detail={
-                "code": ERROR_INVALID_ROLE_ID,
+                "code": ERROR_CODE_INVALID_ROLE_ID,
                 "description": "Role does not exist or failed to get the role_id from request",
             },
             headers={"WWW-Authenticate": "Bearer"},
@@ -192,7 +194,7 @@ def authorize_by_application_role(
     # what id to use to get role from endpoint.
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token),
+    access_roles= Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
 ):
     """
@@ -203,7 +205,10 @@ def authorize_by_application_role(
     """
     # Delegate to this for main check.
     authorize_by_app_id(
-        application_id=role.application_id, db=db, claims=claims, requester=requester
+        application_id=role.application_id,
+        db=db,
+        access_roles=access_roles,
+        requester=requester
     )
     return role
 
@@ -212,7 +217,7 @@ async def authorize_by_privilege(
     request: Request,
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
-    claims: dict = Depends(validate_token),
+    access_roles=Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
 ):
     """
@@ -220,7 +225,7 @@ async def authorize_by_privilege(
     :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
                  for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
     """
-    requester_is_app_admin = is_app_admin(role.application_id, db, claims)
+    requester_is_app_admin = crud_utils.is_app_admin(role.application_id, db, access_roles)
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
     if not requester_is_app_admin:
@@ -356,7 +361,7 @@ async def enforce_self_grant_guard(
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
-                    "code": ERROR_SELF_GRANT_PROHIBITED,
+                    "code": ERROR_CODE_SELF_GRANT_PROHIBITED,
                     "description": "Altering permission privilege to self is not allowed",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
@@ -404,29 +409,6 @@ async def enforce_bceid_by_same_org_guard(
 
 
 # ----------------------- helper functions -------------------- #
-def is_app_admin(
-    application_id: int,
-    db: Session,
-    claims: dict,
-):
-    application = crud_application.get_application(application_id=application_id, db=db)
-    if not application:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    admin_role = f"{application.application_name.upper()}_ADMIN"
-    access_roles = get_access_roles(claims)
-
-    if access_roles and admin_role in access_roles:
-        return True
-    return False
-
 
 def get_business_guid(requester: Requester, user_id: str):
     LOGGER.debug(f"Searching for business guid for user: {user_id}")

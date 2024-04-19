@@ -6,14 +6,14 @@ import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import UserType
+from api.app.constants import (
+    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
+    UserType
+)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import (
-    ERROR_SELF_GRANT_PROHIBITED,
-    ERROR_DIFFERENT_ORG_GRANT_PROHIBITED,
-)
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.constants import (
@@ -230,14 +230,15 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     assert response.json() is not None
     data = response.json()
     # business bceid user cannot grant business bceid user access from different organization
-    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
-
-def test_create_user_role_assignment_with_concrete_role(
+@pytest.mark.asyncio
+async def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
     db_pg_session: Session,
+    fom_dev_access_admin_token,
+    get_current_requester_by_token
 ):
     """
     test assign a concrete role to a user
@@ -247,6 +248,7 @@ def test_create_user_role_assignment_with_concrete_role(
         json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
+
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
@@ -256,8 +258,10 @@ def test_create_user_role_assignment_with_concrete_role(
     assert "application_id" in data
 
     # verify assignment did get created
+    # retrieved requester for current request.
+    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
+        db=db_pg_session, application_id=data["application_id"], requester=requester
     )
     assert len(assignment_user_role_concrete) == 1
     assert (
@@ -307,7 +311,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 409
-    assert response.json()["detail"] == ERROR_DUPLICATE_USER_ROLE
+    assert response.json()["detail"] .get("description")== ERROR_DUPLICATE_USER_ROLE
 
     # cleanup
     response = test_client_fixture.delete(
@@ -334,7 +338,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     )
     assert response.status_code == 400
     assert (
-        response.json()["detail"]
+        response.json()["detail"].get("description")
         == "Invalid role assignment request. "
         + "Cannot assign user "
         + TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"]
@@ -342,10 +346,12 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     )
 
 
-def test_create_user_role_assignment_with_abstract_role(
+@pytest.mark.asyncio
+async def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
     db_pg_session: Session,
+    fom_dev_access_admin_token,
+    get_current_requester_by_token
 ):
     """
     test assign an abscrate role to a user
@@ -364,8 +370,10 @@ def test_create_user_role_assignment_with_abstract_role(
     assert "application_id" in data
 
     # verify assignment did get created
+    # retrieved requester for current request.
+    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
+        db=db_pg_session, application_id=data["application_id"], requester=requester
     )
     assert len(assignment_user_role_abstract) == 1
     assert (
@@ -392,11 +400,12 @@ def test_create_user_role_assignment_with_abstract_role(
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
-
-def test_create_user_role_assignment_with_same_username(
+@pytest.mark.asyncio
+async def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
     db_pg_session: Session,
+    fom_dev_access_admin_token,
+    get_current_requester_by_token
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -425,8 +434,10 @@ def test_create_user_role_assignment_with_same_username(
     assert response.status_code == HTTPStatus.OK
     assignment_three = response.json()
 
+    # retrieved requester for current request.
+    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, assignment_one["application_id"]
+        db=db_pg_session, application_id=assignment_one["application_id"], requester=requester
     )
     assert len(assignment_user_role_items) == 3
 
@@ -450,11 +461,13 @@ def test_create_user_role_assignment_with_same_username(
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_assign_same_application_roles_for_different_environments(
+@pytest.mark.asyncio
+async def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
+    db_pg_session: Session,
     fom_dev_access_admin_token,
     fom_test_access_admin_token,
-    db_pg_session: Session,
+    get_current_requester_by_token
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -493,8 +506,14 @@ def test_assign_same_application_roles_for_different_environments(
     )
 
     # verify assignment did get created for fom_dev
+    # retrieved requester for current request.
+    fom_dev_access_admin_requester = await get_current_requester_by_token(
+        fom_dev_access_admin_token
+    )
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, TEST_FOM_DEV_APPLICATION_ID
+        db=db_pg_session,
+        application_id=TEST_FOM_DEV_APPLICATION_ID,
+        requester=fom_dev_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
     assert (
@@ -503,8 +522,14 @@ def test_assign_same_application_roles_for_different_environments(
     )
 
     # verify assignment did get created for fom_test
+    # retrieved requester for current request.
+    fom_test_access_admin_requester = await get_current_requester_by_token(
+        fom_test_access_admin_token
+    )
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
+        db=db_pg_session,
+        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
     assert (
@@ -521,11 +546,15 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify no user role assignment for fom_dev, but still have one for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, TEST_FOM_DEV_APPLICATION_ID
+        db=db_pg_session,
+        application_id=TEST_FOM_DEV_APPLICATION_ID,
+        requester=fom_dev_access_admin_requester
     )
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
+        db=db_pg_session,
+        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
 
@@ -538,7 +567,9 @@ def test_assign_same_application_roles_for_different_environments(
 
     # verify no user role assignment for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, TEST_FOM_TEST_APPLICATION_ID
+        db=db_pg_session,
+        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 0
 
@@ -564,7 +595,7 @@ def test_user_role_forest_client_number_not_exist_bad_request(
     assert response.json() is not None
     assert (
         f"Forest Client Number {client_number_not_exists} does not exist."
-        in response.json()["detail"]
+        in response.json()["detail"].get("description")
     )
 
 
@@ -613,7 +644,7 @@ def test_self_grant_fail(
     )
     assert row is None, "Expected user role assignment not to be created"
 
-    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+    jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
 # ---------------- Test delete user role assignment ------------ #
@@ -650,7 +681,7 @@ def test_delete_user_role_assignment_not_authorized(
     assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
 
 
-def test_deleter_user_role_assignment_authorize_by_delegated_admin(
+def test_delete_user_role_assignment_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
@@ -737,7 +768,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     assert data["detail"]["description"] == "Requester has no privilege to grant this access."
 
 
-def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
+def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
@@ -769,7 +800,7 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_idir_access(
     assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
 
 
-def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
+def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
@@ -800,14 +831,16 @@ def test_deleter_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     assert response.json() is not None
     data = response.json()
     # business bceid user cannot delete business bceid user access from different organization
-    assert data["detail"]["code"] == ERROR_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
 
 
-def test_delete_user_role_assignment(
+@pytest.mark.asyncio
+async def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
-    fom_dev_access_admin_token,
     db_pg_session: Session,
+    fom_dev_access_admin_token,
+    get_current_requester_by_token
 ):
     # create a user role assignment
     response = test_client_fixture.post(
@@ -820,8 +853,14 @@ def test_delete_user_role_assignment(
     assert "user_role_xref_id" in data
 
     # verify assignment did get created
+    # retrieved requester for current request.
+    requester = await get_current_requester_by_token(
+        fom_dev_access_admin_token
+    )
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
+        db=db_pg_session,
+        application_id=data["application_id"],
+        requester=requester
     )
     assert len(assignment_user_role_items) == 1
     assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
@@ -835,7 +874,9 @@ def test_delete_user_role_assignment(
 
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db_pg_session, data["application_id"]
+        db=db_pg_session,
+        application_id=data["application_id"],
+        requester=requester
     )
     assert len(assignment_user_role_items) == 0
 
@@ -868,4 +909,4 @@ def test_self_remove_grant_fail(
     )
     assert row is not None, "Expected user role assignment not to be deleted"
 
-    jwt_utils.assert_error_response(response, 403, ERROR_SELF_GRANT_PROHIBITED)
+    jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
