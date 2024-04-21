@@ -11,7 +11,7 @@ from testspg.constants import (TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
                                TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                                TEST_NOT_EXIST_ROLE_ID,
                                TEST_NOT_EXIST_USER_TYPE,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR)
+                               USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ TEST_FOREST_CLIENT_NUMBER = "00000001"
 
 def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     user_role = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR)
+        copy.deepcopy(USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR)
     user_role["role_id"] = TEST_NOT_EXIST_ROLE_ID
 
     with pytest.raises(HTTPException) as e:
@@ -39,7 +39,7 @@ def test_create_user_role_with_user_types_not_exists(
 ):
     # Create a user_type_code with not supported type.
     user_role = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR)
+        copy.deepcopy(USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR)
     user_role["user_type_code"] = \
         TEST_NOT_EXIST_USER_TYPE
 

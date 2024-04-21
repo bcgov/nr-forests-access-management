@@ -200,7 +200,6 @@ def create_test_user_role_assignments(
                 token=requester_token,
                 request_body=request_body
             ))
-        LOGGER.debug(f"created_users: {created_users}")
         return created_users
 
     return _create_test_user_role_assignments

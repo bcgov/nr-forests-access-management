@@ -8,11 +8,15 @@ TEST_NOT_EXIST_APPLICATION_ID = 0
 
 TEST_FOM_DEV_SUBMITTER_ROLE_ID = 3
 TEST_FOM_DEV_REVIEWER_ROLE_ID = 4
+TEST_FOM_TEST_SUBMITTER_ROLE_ID = 7
 TEST_FOM_TEST_REVIEWER_ROLE_ID = 8
 TEST_NOT_EXIST_ROLE_ID = 0
 
 TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
+USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
+USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"
+
 
 # Testing Forest Client numbers (TEST Environment)
 CLIENT_NUMBER_LEN_TOO_SHORT = "0001011"
@@ -53,37 +57,63 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 # Please refer to V1001__ flyway script for pre-test admin setup (needed for
 # tests)". "TEST-3-LOAD-CHILD-1" is being setup as delegated admin.
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR = {
+USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR = {
     "user_name": "fom_user_test",
-    "user_type_code": "I",
+    "user_type_code": fam_constants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
-TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE_IDIR = {
+
+USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_IDIR = {
+    "user_name": "fom_user_test",
+    "user_type_code": fam_constants.UserType.IDIR,
+    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+}
+
+USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID = {
-    "user_name": "LOAD-3-TEST",
+USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L3T = {
+    "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID = {
+USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_BCEID_L3T = {
+    "user_name": USER_NAME_BCEID_LOAD_3_TEST,
+    "user_type_code": "B",
+    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
+}
+
+USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L4T = {
+    "user_name": USER_NAME_BCEID_LOAD_4_TEST,
+    "user_type_code": "B",
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+}
+
+USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T = {
-    "user_name": "LOAD-3-TEST",
+USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T = {
+    "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,  # note this is matched with the test delegated admin privilege in local sql
 }
 
+USER_ROLE_ASGNMNT_FOM_TEST_ABSTRACT_BCEID_L4T = {
+    "user_name": USER_NAME_BCEID_LOAD_4_TEST,
+    "user_type_code": "B",
+    "role_id": TEST_FOM_TEST_SUBMITTER_ROLE_ID,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,
+}
 
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
 TEST_IDIR_REQUESTER_DICT = {

@@ -5,9 +5,18 @@ import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
 from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
-from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR)
+from testspg.constants import (
+    CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+    TEST_FOM_DEV_APPLICATION_ID,
+    USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID,
+    USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T,
+    USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_IDIR,
+    USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L3T,
+    USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L4T,
+    USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR,
+    USER_ROLE_ASGNMNT_FOM_TEST_ABSTRACT_BCEID_L4T,
+    USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_BCEID_L3T,
+    USER_NAME_BCEID_LOAD_4_TEST)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -75,7 +84,7 @@ def test_get_fam_application_roles(
 
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+        json=USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -161,7 +170,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR,
+        json=USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -174,9 +183,9 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
     assert data[0]["user"]["user_type_code"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_type_code"]
+        == USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR["user_type_code"]
     assert data[0]["user"]["user_name"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_name"]
+        == USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR["user_name"]
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
 
@@ -195,7 +204,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+        json=USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID,
         headers=jwt_utils.headers(token)
     )
     assert response.status_code == 200
@@ -208,12 +217,12 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
     assert data[0]["user"]["user_type_code"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["user_type_code"]
+        == USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID["user_type_code"]
     assert data[0]["user"]["user_name"] \
-        == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["user_name"]
+        == USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID["user_name"]
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_SUBMITTER" + "_" + \
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID["forest_client_number"]
+        USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID["forest_client_number"]
     assert data[0]["role"]["parent_role"]["role_type_code"] == "A"
     assert data[0]["role"]["parent_role"]["role_name"] == "FOM_SUBMITTER"
 
@@ -250,27 +259,88 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
 # ---------------- Test get application user role assignment filtering scenarios ------------ #
 
 # TODO: in progress...
-def test_get_application_user_assignments_as_add_admin(
+def test_get_application_user_assignments_filtering_for_delegated_admin(
     create_test_user_role_assignments,
-    fom_dev_access_admin_token
+    fom_dev_access_admin_token,
+    fom_test_access_admin_token
 ):
-    # create users at FOM_DEV
-    user_role_assignments = create_test_user_role_assignments(
-        fom_dev_access_admin_token,
-        [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR]
+    # --- Create users at FOM_DEV (IDIR/BCEID, business organizations, etc...)
+    # --- and verify different visibility scenarios.
+
+    # Assign IDIR test user to FOM_DEV app: FOM_REVIEWER and FOM_SUBMITTER role.
+    assigned_fom_dev_idir_users = [
+        USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR,  # FOM_REVIEWER
+        USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_IDIR   # FOM_SUBMITTER
+    ]
+    fom_dev_idir_users_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token, assigned_fom_dev_idir_users
     )
 
-    assert len(user_role_assignments) == 1
+    # Assign BCEID users to FOM_DEV app: FOM_REVIEWER role.
+    # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
+    assigned_fom_dev_bceid_reviewers = [
+        USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L3T,  # BCEID user (org 1)
+        USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L4T   # BCEID user (org 2)
+    ]
+    fom_dev_bceid_reviewers_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token, assigned_fom_dev_bceid_reviewers
+    )
+
+    # Assign BCEID users (LOAD-3-TEST, LOAD-4-TEST) to FOM_DEV FOM_SUBMITTER
+    #   with the same role (forest client: 00001018)
+    # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L4T = \
+        dict(USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T)
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L4T["user_name"] = \
+        USER_NAME_BCEID_LOAD_4_TEST
+    assigned_fom_dev_bceid_submitter_00001018 = [
+        USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T,
+        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L4T
+    ]
+    fom_dev_bceid_submitter_00001018_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token, assigned_fom_dev_bceid_submitter_00001018
+    )
+
+    # Also only assign BCEID user (LOAD-3-TEST) to FOM_DEV FOM_SUBMITTER with forest client 00001011
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2 = \
+        dict(USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T)
+    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2["forest_client_number"] = CLIENT_NUMBER_EXISTS_ACTIVE_00000001
+    fom_dev_bceid_submitter_00001011_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token, [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2]
+    )
+
+    # FOM_TEST:
+
+    assigned_fom_test_bceid_users = [
+        USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_BCEID_L3T,  # BCEID user (org 1) FOM_REVIEWER
+        USER_ROLE_ASGNMNT_FOM_TEST_ABSTRACT_BCEID_L4T  # BCEID user (org 2) FOM_SUBMITTER
+    ]
+    fom_test_bceid_reviewers_assignments = create_test_user_role_assignments(
+        fom_test_access_admin_token, assigned_fom_test_bceid_users
+    )
+    assert len(fom_test_bceid_reviewers_assignments) == 2
 
 
 
 
 
-
-
-
-
-
+    # APP_ADMIN
+    #     get_role_assignment_end_point = endPoint + \
+    #    f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"
+    # access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
+    # token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
+    # # check
+    # response = test_client_fixture.get(role_assignment_end_point,
+    #                                  headers=jwt_utils.headers(token))
+    # data = response.json()
+    # assert len(data) == 1
+    # assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
+    # assert data[0]["user"]["user_type_code"] \
+    #     == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_type_code"]
+    # assert data[0]["user"]["user_name"] \
+    #     == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_name"]
+    # assert data[0]["role"]["role_type_code"] == "C"
+    # assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
 
 
 
