@@ -14,17 +14,9 @@
         },
         "userAttributes": {
             "cognito:user_status": "EXTERNAL_PROVIDER",
-            "custom:idp_display_name": "GIVEnull SURNAME",
             "custom:idp_name": "ca.bc.gov.flnr.fam.test",
             "custom:idp_user_id": "6RRZFAU3ANJ5WASQ4N22GKJXSMANGLED",
-            "email": "FAM2@test.com",
-            "email_verified": "true",
-            "family_name": "SURNAME",
-            "given_name": "GIVEnull",
             "identities": "[{'userId':'6RRZFAU3ANJ5WASQ4N22GKJXSMANGLED','providerName':'TEST-BCSC','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1692046321660}]",
-            "address": "{'street_address':'4000 SEYMOUR PLACE','country':'CA','locality':'VICTORIA','region':'BC','postal_code':'V8Z 1C8'}",
-            "birthdate": "1967-01-23",
-            "custom:given_names": "GIVEnull GIVENTWO",
             "sub": "9c7d65b8-a0b1-70eb-bfba-caeadfdbbb48"
         }
     },

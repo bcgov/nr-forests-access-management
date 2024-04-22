@@ -57,6 +57,10 @@ input[type='number'] {
     font-family: inherit;
 }
 
+.p-sidebar-header {
+    display: none;
+}
+
 .helper-text {
     font-size: 0.75rem;
     color: $light-text-secondary;
@@ -96,6 +100,15 @@ input[type='number'] {
     .custom-card {
         width: $card-width;
     }
+
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-app-selected {
+        margin: 0 14rem;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -113,17 +126,6 @@ input[type='number'] {
     .data-table-container {
         margin: 0;
         padding: 0;
-    }
-}
-
-@media (min-width: 768px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-app-selected {
-        margin: 0 14rem;
     }
 }
 

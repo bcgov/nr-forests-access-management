@@ -129,7 +129,7 @@ variable "test_oidc_bcsc_idp_client_id" {
 
 variable "prod_oidc_bcsc_idp_client_id" {
   type = string
-  default = "not.yet.implemented"
+  default = "ca.bc.gov.flnr.fam.prod"
 }
 
 # Networking Variables
@@ -257,9 +257,9 @@ variable "maximum_oidc_attribute_read_list" {
     "custom:idp_user_id",
     "custom:idp_username",
     "custom:keycloak_username",
-    "email", "email_verified",
+    "email",
+    "email_verified",
     "family_name",
-    "gender",
     "given_name",
     "locale",
     "middle_name",
@@ -293,7 +293,6 @@ variable "maximum_oidc_attribute_write_list" {
     "custom:keycloak_username",
     "email",
     "family_name",
-    "gender",
     "given_name",
     "locale",
     "middle_name",
@@ -312,7 +311,7 @@ variable "maximum_oidc_attribute_write_list" {
 # Variables for connecting Cognito to BCSC OIDC
 
 variable "use_override_proxy_endpoints" {
-  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
   type = bool
   default = false
 }
@@ -331,6 +330,24 @@ variable "test_override_bcsc_userinfo_proxy_endpoint" {
 
 variable "prod_override_bcsc_userinfo_proxy_endpoint" {
   description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "dev_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "test_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
+
+variable "prod_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC PROD environment"
   type = string
   default = "not used unless overridden in terragrunt"
 }

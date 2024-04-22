@@ -23,7 +23,7 @@ const login = async () => {
     });
 };
 
-const loginBceid = async () => {
+const loginBusinessBceid = async () => {
     const environmentSettings = new EnvironmentSettings();
     Auth.federatedSignIn({
         customProvider: environmentSettings.getIdentityProviderBceid(),
@@ -107,7 +107,7 @@ const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
 
 export default {
     login,
-    loginBceid,
+    loginBusinessBceid,
     isLoggedIn,
     handlePostLogin,
     logout,

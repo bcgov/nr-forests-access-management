@@ -1,13 +1,12 @@
 import logging
 from http import HTTPStatus
 
-from api.app import constants as famConstants
+from api.app import constants as famConstants, schemas
+from api.app.crud import crud_forest_client, crud_role, crud_user
 from api.app.models import model as models
 from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
-
-from .. import schemas
-from . import crud_forest_client, crud_role, crud_user, crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +31,10 @@ def create_user_role(
         and request.user_type_code != famConstants.UserType.BCEID
     ):
         error_msg = f"Invalid user type: {request.user_type_code}."
-        crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+        raise_http_exception(
+            error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+            error_msg=error_msg
+        )
 
     # Determine if user already exists or add a new user.
     fam_user = crud_user.find_or_create(
@@ -46,7 +48,11 @@ def create_user_role(
     fam_role = crud_role.get_role(db, request.role_id)
     if not fam_role:
         error_msg = f"Role id {request.role_id} does not exist."
-        crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+        raise_http_exception(
+            error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+            error_msg=error_msg
+        )
+
     LOGGER.debug(
         f"Role for user_role assignment found: {fam_role.role_name}" +
         f"({fam_role.role_id})."
@@ -69,20 +75,26 @@ def create_user_role(
             error_msg = (
                 "Invalid role assignment request. Cannot assign user " +
                 f"{request.user_name} to abstract role {fam_role.role_name}")
-            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            raise_http_exception(
+                error_code=famConstants.ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                error_msg=error_msg
+            )
 
         validator = UserRoleValidator(request)
         if (not validator.forest_client_number_exists()):
             error_msg = (
                 "Invalid role assignment request. " +
                 f"Forest Client Number {request.forest_client_number} does not exist.")
-            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            raise_http_exception(
+                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
 
         if (not validator.forest_client_active()):
             error_msg = (
                 "Invalid role assignment request. Forest Client is not in Active status: " +
                 f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
-            crud_utils.raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
 
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
@@ -106,7 +118,10 @@ def create_user_role(
         )
 
         error_msg = "Role already assigned to user."
-        crud_utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+        raise_http_exception(
+            status_code=HTTPStatus.CONFLICT,
+            error_msg=error_msg
+        )
     else:
         fam_user_role_xref = create(db, fam_user.user_id, associate_role_id, requester)
 

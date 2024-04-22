@@ -5,6 +5,7 @@ import pytest
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from jose import jwt
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -13,7 +14,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
+from api.app.constants import COGNITO_USERNAME_KEY
 from api.app.main import app
+from api.app.routers.router_guards import get_current_requester
+from api.app.schemas import Requester
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -128,3 +132,31 @@ def override_get_rsa_key_method_none():
 def override_get_rsa_key_none(kid):
     return None
 
+
+@pytest.fixture(scope="function")
+def get_current_requester_by_token(db_pg_session):
+    """
+    Convenient fixture to get current requester from token (retrieved from database setup).
+    The fixture returns a function to be called based on access_token's ["username"]
+        , which is the user's cognito_user_id.
+
+    Note, the returned function is an 'async'.
+        To be able to use the returned function from Pytest, please mark the test
+        as '@pytest.mark.asyncio' and use 'async def' for the test with 'await'
+        call to the fixture.
+        (Although it is strange the outer function is not async but it is
+         currently how Pytest can work with async from fixture.)
+    """
+    async def _get_current_requester_by_token(access_token: str) -> Requester:
+
+        claims = jwt.get_unverified_claims(access_token)
+        requester = await get_current_requester(
+            db=db_pg_session,
+            access_roles=jwt_validation.get_access_roles(claims),
+            request_cognito_user_id=claims[COGNITO_USERNAME_KEY]
+        )
+        LOGGER.debug(f"requester: {requester}")
+
+        return requester
+
+    return _get_current_requester_by_token

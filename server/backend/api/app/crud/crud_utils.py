@@ -1,16 +1,18 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy
 from api.app.models import model as models
-from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
-# from typing import
+from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
+from api.app.crud import crud_application
+from api.app.utils.utils import raise_http_exception
 
 LOGGER = logging.getLogger(__name__)
+
 
 def to_upper(elements: List[str]) -> List[str]:
     return [x.upper() for x in elements] if elements else None
@@ -87,6 +89,21 @@ def get_application_id_from_name(db, application_name):
     return application.application_id if application else None
 
 
-def raise_http_exception(status_code: str, error_msg: str):
-    LOGGER.info(error_msg)
-    raise HTTPException(status_code=status_code, detail=error_msg)
+def is_app_admin(
+    application_id: int,
+    db: Session,
+    access_roles: Optional[List[str]] = None,
+):
+    application = crud_application.get_application(application_id=application_id, db=db)
+    if not application:
+        error_msg = f"Application ID {application_id} not found"
+        raise_http_exception(
+            error_msg=error_msg,
+            error_code=ERROR_CODE_INVALID_APPLICATION_ID
+        )
+
+    admin_role = f"{application.application_name.upper()}_ADMIN"
+
+    if access_roles and admin_role in access_roles:
+        return True
+    return False
