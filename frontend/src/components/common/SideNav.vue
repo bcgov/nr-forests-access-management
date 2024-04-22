@@ -127,7 +127,6 @@ const props = defineProps({
 li.header:hover {
     background: $light-layer-hover-01;
     color: $light-text-primary;
-    font-weight: 700;
     cursor: pointer;
 }
 
