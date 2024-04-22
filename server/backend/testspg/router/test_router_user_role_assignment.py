@@ -92,7 +92,7 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -123,7 +123,7 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -164,7 +164,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -189,7 +189,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -677,7 +677,7 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     # create a token for business bceid user COGNITO_USERNAME_BCEID without any app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -711,7 +711,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -760,7 +760,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -795,7 +795,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",

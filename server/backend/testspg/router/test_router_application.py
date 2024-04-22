@@ -352,7 +352,9 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
     # but has delegated admin privilege for FOM_REVIEWER and
     # FORM_SUBMITTER_00001018, which is granted in the local sql.
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_IDIR
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_IDIR_DELEGATED_ADMIN
     )
     fom_dev_idir_dgadmin_user_access_grants_response = test_client_fixture.get(
         get_role_assignment_end_point, headers=jwt_utils.headers(token)
@@ -403,7 +405,9 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
     # is the same organization as "LOAD-3-TEST" user but not the same
     # organization as "LOAD-4-TEST".
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     fom_dev_bceid_dgadmin_user_access_grants_response = test_client_fixture.get(
         get_role_assignment_end_point, headers=jwt_utils.headers(token)
@@ -448,52 +452,3 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018 and
         granted["user"]["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
     )]) == len(fom_dev_bceid_submitters_00001018_access_grants_l3t)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

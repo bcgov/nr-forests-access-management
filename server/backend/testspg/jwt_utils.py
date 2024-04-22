@@ -16,11 +16,11 @@ IDIR_USERNAME = "COGUSTAF"
 # We added these user "TEST-3-LOAD-CHILD-1"(BCEID) and "PTOLLEST"(IDIR) as
 #   FOM DEV delegated admin in local flyway sql, to manage role for
 #   FOM REVIEWER and FOM SUBMITTER with forest client number 00001018
-COGNITO_USERNAME_BCEID = (
+COGNITO_USERNAME_BCEID_DELEGATED_ADMIN = (
     # "TEST-3-LOAD-CHILD-1"(BCEID)
     "test-bceidbusiness_bda2a1e212244dc2b9f9522057mangledc58bbb@bceidbusiness"
 )
-COGNITO_USERNAME_IDIR = (
+COGNITO_USERNAME_IDIR_DELEGATED_ADMIN = (
     # "PTOLLEST"(IDIR)
     "test-idir_eb65e9d7828d4718aa6f4193c0mangled@idir"
 )
