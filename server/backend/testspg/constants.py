@@ -54,61 +54,82 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 # Note:
 # The test idir and bceid username might need change to a real one after we
 #   enable the verfication, same for forest client number.
+#
 # Please refer to V1001__ flyway script for pre-test admin setup (needed for
 # tests)". "TEST-3-LOAD-CHILD-1" is being setup as delegated admin.
+#
+# Note:
+# Do not change bellow various configuration for user role assignments
+# unless needed (refactoring is required if it is changed). If there is a need
+# for additional configuration, perhaps, better to "copy" on of them and
+# assign individual values in specific test cases.
+#
+# Note: (variable uses these to shorter the name)
+#   USERR_ASGNMNT_ : UserRole Assignment
+#   _AR_ : Abstract Role
+#   _CR_ : Concrete Role
+#   _L3T_: LOAD_3_TEST
+#   _L4T_: LOAD_4_TEST
 
-USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_IDIR = {
+USERR_ASGNMNT_FOM_DEV_CR_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_IDIR = {
+USERR_ASGNMNT_FOM_DEV_AR_00000001_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
-USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_IDIR = {
+USERR_ASGNMNT_FOM_TEST_CR_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L3T = {
+USERR_ASGNMNT_FOM_DEV_CR_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USER_ROLE_ASGNMNT_FOM_TEST_CONCRETE_BCEID_L3T = {
+USERR_ASGNMNT_FOM_TEST_CR_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-USER_ROLE_ASGNMNT_FOM_DEV_CONCRETE_BCEID_L4T = {
+USERR_ASGNMNT_FOM_DEV_CR_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID = {
+USERR_ASGNMNT_FOM_DEV_AR_00000001_BCEID = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
-USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T = {
+USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,  # note this is matched with the test delegated admin privilege in local sql
 }
 
-USER_ROLE_ASGNMNT_FOM_TEST_ABSTRACT_BCEID_L4T = {
+USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L4T = {
+    "user_name": USER_NAME_BCEID_LOAD_4_TEST,
+    "user_type_code": "B",
+    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,
+}
+
+USERR_ASGNMNT_FOM_TEST_AR_00001018_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
     "role_id": TEST_FOM_TEST_SUBMITTER_ROLE_ID,
