@@ -5,10 +5,8 @@ import api.app.constants as constants
 import api.app.schemas as schemas
 from api.app.crud import crud_application
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
-                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                               TEST_NOT_EXIST_APPLICATION_ID,
-                               TEST_NOT_EXIST_ROLE_ID)
+from testspg.constants import (FOM_DEV_APPLICATION_ID,
+                               NOT_EXIST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -57,7 +55,7 @@ def test_get_application(db_pg_session: Session):
     assert app_by_id.application_name == TEST_APPLICATION_NAME_FAM
 
     app_by_id = crud_application.get_application(
-        db=db_pg_session, application_id=TEST_NOT_EXIST_APPLICATION_ID
+        db=db_pg_session, application_id=NOT_EXIST_APPLICATION_ID
     )
     assert app_by_id is None
 
@@ -86,7 +84,7 @@ def test_get_application_by_name(db_pg_session: Session):
 
 def test_get_application_roles(db_pg_session: Session):
     app_roles = crud_application.get_application_roles(
-        db=db_pg_session, application_id=TEST_FOM_DEV_APPLICATION_ID
+        db=db_pg_session, application_id=FOM_DEV_APPLICATION_ID
     )
 
     for app_role in app_roles:
@@ -101,13 +99,13 @@ def test_get_application_roles(db_pg_session: Session):
     for app_role in app_roles:
         if (
             app_role.role_name == TEST_APPLICATION_ROLES_FOM_DEV[0]
-            and app_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+            and app_role.application_id == FOM_DEV_APPLICATION_ID
             and app_role.role_type_code == "A"
         ):
             fom_submitter_role_found = True
         elif (
             app_role.role_name == TEST_APPLICATION_ROLES_FOM_DEV[1]
-            and app_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+            and app_role.application_id == FOM_DEV_APPLICATION_ID
             and app_role.role_type_code == "C"
         ):
             fom_reviewer_role_found = True

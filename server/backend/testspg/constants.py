@@ -2,26 +2,25 @@ import os
 from api.app import constants as fam_constants
 
 
-TEST_FOM_DEV_APPLICATION_ID = 2
-TEST_FOM_TEST_APPLICATION_ID = 3
-TEST_NOT_EXIST_APPLICATION_ID = 0
+FOM_DEV_APPLICATION_ID = 2
+FOM_TEST_APPLICATION_ID = 3
+NOT_EXIST_APPLICATION_ID = 0
 
-TEST_FOM_DEV_SUBMITTER_ROLE_ID = 3
-TEST_FOM_DEV_REVIEWER_ROLE_ID = 4
-TEST_FOM_TEST_SUBMITTER_ROLE_ID = 7
-TEST_FOM_TEST_REVIEWER_ROLE_ID = 8
-TEST_NOT_EXIST_ROLE_ID = 0
+FOM_DEV_SUBMITTER_ROLE_ID = 3
+FOM_DEV_REVIEWER_ROLE_ID = 4
+FOM_TEST_SUBMITTER_ROLE_ID = 7
+FOM_TEST_REVIEWER_ROLE_ID = 8
+NOT_EXIST_ROLE_ID = 0
 
 TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
 USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
 USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"
 
-
-# Testing Forest Client numbers (TEST Environment)
-CLIENT_NUMBER_LEN_TOO_SHORT = "0001011"
-CLIENT_NUMBER_LEN_TOO_LONG = "000001011"
-CLIENT_NUMBER_NOT_EXISTS = "99999999"
+# Testing Forest Client numbers
+FC_NUMBER_LEN_TOO_SHORT = "0001011"
+FC_NUMBER_LEN_TOO_LONG = "000001011"
+FC_NUMBER_NOT_EXISTS = "99999999"
 """
 Forest Client API has following status codes.
     ACT (Active) - client "00000001"
@@ -30,13 +29,13 @@ Forest Client API has following status codes.
     REC (Receivership) - client "00169575"
     SPN (Suspended) - client "00003643"
 """
-CLIENT_NUMBER_EXISTS_ACTIVE_00000001 = "00000001"
-CLIENT_NUMBER_EXISTS_ACTIVE_00001011 = "00001011"
-CLIENT_NUMBER_EXISTS_ACTIVE_00001018 = "00001018"
-CLIENT_NUMBER_EXISTS_DEACTIVATED = "00000002"
-CLIENT_NUMBER_EXISTS_DECEASED = "00152880"
-CLIENT_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
-CLIENT_NUMBER_EXISTS_SUSPENDED = "00003643"
+FC_NUMBER_EXISTS_ACTIVE_00000001 = "00000001"
+FC_NUMBER_EXISTS_ACTIVE_00001011 = "00001011"
+FC_NUMBER_EXISTS_ACTIVE_00001018 = "00001018"
+FC_NUMBER_EXISTS_DEACTIVATED = "00000002"
+FC_NUMBER_EXISTS_DECEASED = "00152880"
+FC_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
+FC_NUMBER_EXISTS_SUSPENDED = "00003643"
 
 
 TEST_NEW_USER = {
@@ -55,85 +54,85 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 # The test idir and bceid username might need change to a real one after we
 #   enable the verfication, same for forest client number.
 #
-# Please refer to V1001__ flyway script for pre-test admin setup (needed for
-# tests)". "TEST-3-LOAD-CHILD-1" is being setup as delegated admin.
+# Please refer to V1001__ flyway script for pre-test admin testers setup
+#   (needed for tests)". "TEST-3-LOAD-CHILD-1" and "PTOLLEST" are being setup
+#   as delegated admin.
 #
 # Note:
-# Do not change bellow various configuration for user role assignments
-# unless needed (refactoring is required if it is changed). If there is a need
-# for additional configuration, perhaps, better to "copy" on of them and
-# assign individual values in specific test cases.
+# Do not change bellow various configuration for user role assignments (ACCESS_
+#   GRANT) unless needed (refactoring is required if it is changed).
+# If there is a need for additional configuration, perhaps, better to "copy"
+#   on of them and assign individual values in specific test cases.
 #
 # Note: (variable uses these to shorter the name)
-#   USERR_ASGNMNT_ : UserRole Assignment
 #   _AR_ : Abstract Role
 #   _CR_ : Concrete Role
 #   _L3T_: LOAD_3_TEST
 #   _L4T_: LOAD_4_TEST
 
-USERR_ASGNMNT_FOM_DEV_CR_IDIR = {
+ACCESS_GRANT_FOM_DEV_CR_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.IDIR,
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USERR_ASGNMNT_FOM_DEV_AR_00000001_IDIR = {
+ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.IDIR,
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
-USERR_ASGNMNT_FOM_TEST_CR_IDIR = {
+ACCESS_GRANT_FOM_TEST_CR_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
+    "role_id": FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-USERR_ASGNMNT_FOM_DEV_CR_BCEID_L3T = {
+ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USERR_ASGNMNT_FOM_TEST_CR_BCEID_L3T = {
+ACCESS_GRANT_FOM_TEST_CR_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
+    "role_id": FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-USERR_ASGNMNT_FOM_DEV_CR_BCEID_L4T = {
+ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-USERR_ASGNMNT_FOM_DEV_AR_00000001_BCEID = {
+ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID = {
     "user_name": "fom_user_test",
     "user_type_code": fam_constants.UserType.BCEID,
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
-USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T = {
+ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,  # note this is matched with the test delegated admin privilege in local sql
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
 }
 
-USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L4T = {
+ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
 }
 
-USERR_ASGNMNT_FOM_TEST_AR_00001018_BCEID_L4T = {
+ACCESS_GRANT_FOM_TEST_AR_00001018_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
-    "role_id": TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,
+    "role_id": FOM_TEST_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
 }
 
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #

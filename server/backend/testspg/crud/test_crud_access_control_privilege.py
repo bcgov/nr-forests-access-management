@@ -3,9 +3,9 @@ import logging
 from api.app.crud import crud_access_control_privilege
 from sqlalchemy.orm import Session
 from testspg.constants import (
-    TEST_FOM_DEV_APPLICATION_ID,
+    FOM_DEV_APPLICATION_ID,
     TEST_USER_ID,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    FOM_DEV_REVIEWER_ROLE_ID,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def test_is_delegated_admin_by_app_id(db_pg_session: Session):
         crud_access_control_privilege.is_delegated_admin_by_app_id(
             db=db_pg_session,
             user_id=TEST_USER_ID,
-            application_id=TEST_FOM_DEV_APPLICATION_ID,
+            application_id=FOM_DEV_APPLICATION_ID,
         )
         is False
     )
@@ -40,7 +40,7 @@ def test_has_privilege_by_role_id(db_pg_session: Session):
         crud_access_control_privilege.has_privilege_by_role_id(
             db=db_pg_session,
             user_id=TEST_USER_ID,
-            role_id=TEST_FOM_DEV_REVIEWER_ROLE_ID,
+            role_id=FOM_DEV_REVIEWER_ROLE_ID,
         )
         is False
     )

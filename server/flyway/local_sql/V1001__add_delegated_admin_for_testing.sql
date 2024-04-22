@@ -14,13 +14,20 @@ VALUES
 ('LOAD-4-TEST', 'B', 'test-bceidbusiness_b5251dbe95724894aa698043mangled099a4de2@bceidbusiness ', 'B1323E832A4A4947B50367EF4A4F79DE', CURRENT_USER);
 
 
+-- add PTOLLEST as delegated admin to manage FOM DEV role FOM_REVIEWER
 -- add TEST-3-LOAD-CHILD-1 as delegated admin to manage FOM DEV role FOM_REVIEWER
 INSERT INTO app_fam.fam_access_control_privilege (
     user_id,
     role_id,
     create_user
 )
-VALUES (
+VALUES
+(
+    (select user_id from app_fam.fam_user where user_name='PTOLLEST' and user_type_code='I'),
+    (select role_id from app_fam.fam_role where role_name='FOM_REVIEWER' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
+    CURRENT_USER
+),
+(
     (select user_id from app_fam.fam_user where user_name='TEST-3-LOAD-CHILD-1' and user_type_code='B'),
     (select role_id from app_fam.fam_role where role_name='FOM_REVIEWER' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
     CURRENT_USER
@@ -58,13 +65,20 @@ VALUES (
     CURRENT_USER
 );
 
+-- add PTOLLEST as delegated admin to manage FOM DEV role FOM_SUBMITTER with forest client number 00001018
 -- add TEST-3-LOAD-CHILD-1 as delegated admin to manage FOM DEV role FOM_SUBMITTER with forest client number 00001018
 INSERT INTO app_fam.fam_access_control_privilege (
     user_id,
     role_id,
     create_user
 )
-VALUES (
+VALUES
+(
+    (select user_id from app_fam.fam_user where user_name='PTOLLEST' and user_type_code='I'),
+    (select role_id from app_fam.fam_role where role_name='FOM_SUBMITTER_00001018' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
+    CURRENT_USER
+),
+(
     (select user_id from app_fam.fam_user where user_name='TEST-3-LOAD-CHILD-1' and user_type_code='B'),
     (select role_id from app_fam.fam_role where role_name='FOM_SUBMITTER_00001018' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
     CURRENT_USER
