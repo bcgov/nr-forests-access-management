@@ -262,7 +262,6 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
 
 # ---------------- Test get application user role assignment filtering scenarios ------------ #
 
-# TODO: in progress...
 def test_get_application_user_role_assignments_filtering_for_delegated_admin(
     test_client_fixture,
     test_rsa_key,
@@ -279,7 +278,7 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
     # --- Prepare
     # Assign IDIR test user to FOM_DEV app: FOM_REVIEWER and FOM_SUBMITTER roles.
     fom_dev_idir_access_grants = [
-        ACCESS_GRANT_FOM_DEV_CR_IDIR,  # FOM_REVIEWER
+        ACCESS_GRANT_FOM_DEV_CR_IDIR,           # FOM_REVIEWER
         ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR   # FOM_SUBMITTER
     ]
     # Assign BCEID users to FOM_DEV app: FOM_REVIEWER role.
@@ -303,7 +302,7 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         FC_NUMBER_EXISTS_ACTIVE_00001011
     fom_dev_bceid_submitter_00001011_access_grants = [USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T]
 
-    # --- Create users' access grants
+    # --- Create users' access grants for FOM_DEV
     fom_dev_user_role_assignments_created = create_test_user_role_assignments(
         fom_dev_access_admin_token,
         fom_dev_idir_access_grants +
@@ -312,8 +311,9 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         fom_dev_bceid_submitter_00001011_access_grants
     )
 
-    # --- Verify
+    # --- Verify created users' access grants for FOM_DEV
 
+    # verify created result length is the same as access requested
     assert len(fom_dev_user_role_assignments_created) == (
         len(fom_dev_idir_access_grants) +
         len(fom_dev_bceid_reviewer_access_grants) +
@@ -321,7 +321,7 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         len(fom_dev_bceid_submitter_00001011_access_grants)
     )
 
-    # GET enpoint for users' access grants.
+    # View filtering results: GET enpoint for users' access grants.
     # ("{apiPrefix}/fam_applications/{application_id}/user_role_assignment")
     get_role_assignment_end_point = (
         endPoint + f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
