@@ -4,9 +4,10 @@ from http import HTTPStatus
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
-from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
+from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, UserType
 from testspg.constants import (
     FC_NUMBER_EXISTS_ACTIVE_00001011,
+    FC_NUMBER_EXISTS_ACTIVE_00001018,
     FOM_DEV_APPLICATION_ID,
     ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
     ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
@@ -14,7 +15,12 @@ from testspg.constants import (
     ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
     ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
     ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+    FOM_DEV_REVIEWER_ROLE_ID,
+    FOM_DEV_SUBMITTER_ROLE_ID,
+    ROLE_NAME_FOM_REVIEWER,
+    ROLE_NAME_FOM_SUBMITTER_00001018,
+    USER_NAME_BCEID_LOAD_3_TEST)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -272,20 +278,20 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
 
     # --- Prepare
     # Assign IDIR test user to FOM_DEV app: FOM_REVIEWER and FOM_SUBMITTER roles.
-    configured_fom_dev_idir_user_roles = [
+    fom_dev_idir_access_grants = [
         ACCESS_GRANT_FOM_DEV_CR_IDIR,  # FOM_REVIEWER
         ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR   # FOM_SUBMITTER
     ]
     # Assign BCEID users to FOM_DEV app: FOM_REVIEWER role.
     # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
-    configured_fom_dev_bceid_reviewers = [
+    fom_dev_bceid_reviewer_access_grants = [
         ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,  # BCEID user L3T (org 1)
         ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T   # BCEID user L4T (org 2)
     ]
     # Assign BCEID users (LOAD-3-TEST, LOAD-4-TEST) to FOM_DEV FOM_SUBMITTER
     #   with the same role (forest client: 00001018)
     # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
-    configured_fom_dev_bceid_submitters_00001018 = [
+    fom_dev_bceid_submitters_00001018_access_grants = [
         ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,  # BCEID user L3T (org 1)
         ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T   # BCEID user L4T (org 2)
     ]
@@ -295,26 +301,28 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         dict(ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T)  # copy object
     USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T["forest_client_number"] = \
         FC_NUMBER_EXISTS_ACTIVE_00001011
-    configured_fom_dev_bceid_submitter_00001011 = [USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T]
+    fom_dev_bceid_submitter_00001011_access_grants = [USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T]
 
-    # --- Create
+    # --- Create users' access grants
     fom_dev_user_role_assignments_created = create_test_user_role_assignments(
         fom_dev_access_admin_token,
-        configured_fom_dev_idir_user_roles +
-        configured_fom_dev_bceid_reviewers +
-        configured_fom_dev_bceid_submitters_00001018 +
-        configured_fom_dev_bceid_submitter_00001011
+        fom_dev_idir_access_grants +
+        fom_dev_bceid_reviewer_access_grants +
+        fom_dev_bceid_submitters_00001018_access_grants +
+        fom_dev_bceid_submitter_00001011_access_grants
     )
 
     # --- Verify
 
     assert len(fom_dev_user_role_assignments_created) == (
-        len(configured_fom_dev_idir_user_roles) +
-        len(configured_fom_dev_bceid_reviewers) +
-        len(configured_fom_dev_bceid_submitters_00001018) +
-        len(configured_fom_dev_bceid_submitter_00001011)
+        len(fom_dev_idir_access_grants) +
+        len(fom_dev_bceid_reviewer_access_grants) +
+        len(fom_dev_bceid_submitters_00001018_access_grants) +
+        len(fom_dev_bceid_submitter_00001011_access_grants)
     )
 
+    # GET enpoint for users' access grants.
+    # ("{apiPrefix}/fam_applications/{application_id}/user_role_assignment")
     get_role_assignment_end_point = (
         endPoint + f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
     )
@@ -322,11 +330,11 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
     # verify: FOM_DEV_ADMIN has visibility for FOM_DEV
     #         all user role assignments.
     token = fom_dev_access_admin_token
-    fom_dev_admin_get_user_role_asgnmnt_response = test_client_fixture.get(
+    fom_dev_admin_user_access_grants_response = test_client_fixture.get(
         get_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
 
-    fom_dev_admin_rs_data = fom_dev_admin_get_user_role_asgnmnt_response.json()
+    fom_dev_admin_rs_data = fom_dev_admin_user_access_grants_response.json()
     # verify FOM_DEV_ADMIN GET result contains exact set of user_role_xref_id
     #   from assigned user role assignments.
     assert len(fom_dev_admin_rs_data) == len(fom_dev_user_role_assignments_created)
@@ -335,40 +343,111 @@ def test_get_application_user_role_assignments_filtering_for_delegated_admin(
         set(fom_dev_user_role_assignments_created)
     )
 
-    # verify: IDIR FOM_DEV (application) delegated admin for FOM_REVIEWER
-    #         role has visibility only on user role assignments for both
-    #         IDIR and BCEID users with FOM_REVIEWER role.
-
-    # verify: IDIR FOM_DEV (application) delegated admin for FOM_SUBMITTER
-    #         00001018 role has visibility only on user role assignments for
-    #          both IDIR and BCEID users with FOM_REVIEWER role.
+    # verify: IDIR FOM_DEV (application) delegated admin with FOM_REVIEWER
+    #         and FOM_SUBMITTER_00001018 roles has visibility on user role
+    #         assignments for both IDIR and BCEID users with FOM_REVIEWER and
+    #         FOM_SUBMITTER_00001018 role.
 
     # Use 'COGNITO_USERNAME_IDIR'. this user has no FOM_DEV app admin role,
-    # but has delegated admin privilege for FOM_REVIEWER AND FORM_SUBMITTER_00001018
-    # which is granted in the local sql.
+    # but has delegated admin privilege for FOM_REVIEWER and
+    # FORM_SUBMITTER_00001018, which is granted in the local sql.
     token = jwt_utils.create_jwt_token(
         test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_IDIR
     )
-    fom_dev_idir_dgadmin_get_user_role_asgnmnt_response = test_client_fixture.get(
+    fom_dev_idir_dgadmin_user_access_grants_response = test_client_fixture.get(
         get_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    fom_dev_idir_dgadmin_rs_data = fom_dev_idir_dgadmin_get_user_role_asgnmnt_response.json()
-    assert len(fom_dev_idir_dgadmin_rs_data) == 5
+    fom_dev_idir_dgadmin_rs_data = fom_dev_idir_dgadmin_user_access_grants_response.json()
+    fom_dev_idir_access_grants_for_reviewer = [
+        grant for grant in fom_dev_idir_access_grants
+        if grant["role_id"] == FOM_DEV_REVIEWER_ROLE_ID
+    ]
+    # this idir user should only see user access granted only for FOM_DEV
+    # FOM_REVIEWER and FORM_SUBMITTER_00001018 role, not FORM_SUBMITTER_00000001
+    # or FORM_SUBMITTER_00001011.
+    assert len(fom_dev_idir_dgadmin_rs_data) == (
+        len(fom_dev_idir_access_grants_for_reviewer) +
+        len(fom_dev_bceid_reviewer_access_grants) +
+        len(fom_dev_bceid_submitters_00001018_access_grants)
+    )
+    assert all(
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        (granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER or
+         granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018)
+        for granted in fom_dev_idir_dgadmin_rs_data
+    )
+    assert len([granted for granted in fom_dev_idir_dgadmin_rs_data if (
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        granted["user"]["user_type_code"] == UserType.IDIR and
+        granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
+    )]) == len(fom_dev_idir_access_grants_for_reviewer)
+    assert len([granted for granted in fom_dev_idir_dgadmin_rs_data if (
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        granted["user"]["user_type_code"] == UserType.BCEID and
+        granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
+    )]) == len(fom_dev_bceid_reviewer_access_grants)
+    assert len([granted for granted in fom_dev_idir_dgadmin_rs_data if (
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        granted["user"]["user_type_code"] == UserType.BCEID and
+        granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018
+    )]) == len(fom_dev_bceid_submitters_00001018_access_grants)
 
-    # verify: BCEID FOM_DEV (application) delegated admin for FOM_REVIEWER
-    #         role has visibility only on user role assignments for BCEID
-    #         users with FOM_REVIEWER role for the same organization.
+    # verify: BCEID FOM_DEV (application) delegated admin with FOM_REVIEWER
+    #         and FOM_SUBMITTER_00001018 roles has visibility on user role
+    #         assignments for only BCEID users with FOM_REVIEWER and
+    #         FOM_SUBMITTER_00001018 role, for the same organization.
 
-    # verify: BCEID FOM_DEV (application) delegated admin for FOM_SUBMITTER
-    #         00001018 role has visibility only on user role assignments for
-    #         BCEID users with FOM_SUBMITTER 00001018 role for the same
-    #         organization.
-
-
-    # TODO, setup IDIR delegated adminS in flyway FOM_REVIEWER, FOM_SUBMITTER
-    #       setup BCEID delegated admins in flyway separate FOM_REVIEWER, FOM_SUBMITTER roles?
-
-
+    # Use 'COGNITO_USERNAME_BCEID'. this user "TEST-3-LOAD-CHILD-1" has no
+    # FOM_DEV app admin role, but has delegated admin privilege for FOM_REVIEWER
+    # and FORM_SUBMITTER_00001018, which is granted in the local sql. It also
+    # is the same organization as "LOAD-3-TEST" user but not the same
+    # organization as "LOAD-4-TEST".
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+    )
+    fom_dev_bceid_dgadmin_user_access_grants_response = test_client_fixture.get(
+        get_role_assignment_end_point, headers=jwt_utils.headers(token)
+    )
+    fom_dev_bceid_dgadmin_rs_data = fom_dev_bceid_dgadmin_user_access_grants_response.json()
+    # this BCEID delegated admin should only see user access granted for
+    # FOM_DEV FOM_REVIEWER and FORM_SUBMITTER_00001018 role for BCEID users,
+    # within its organization, not FORM_SUBMITTER_00000001 or
+    # FORM_SUBMITTER_00001011.
+    fom_dev_bceid_access_grants_for_reviewer_l3t = [
+        grant for grant in fom_dev_bceid_reviewer_access_grants
+        if grant["role_id"] == FOM_DEV_REVIEWER_ROLE_ID and
+        grant["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
+    ]
+    fom_dev_bceid_submitters_00001018_access_grants_l3t = [
+        grant for grant in fom_dev_bceid_submitters_00001018_access_grants
+        if grant["role_id"] == FOM_DEV_SUBMITTER_ROLE_ID and
+        grant["user_name"] == USER_NAME_BCEID_LOAD_3_TEST and
+        grant["forest_client_number"] == FC_NUMBER_EXISTS_ACTIVE_00001018
+    ]
+    assert len(fom_dev_bceid_dgadmin_rs_data) == (
+        len(fom_dev_bceid_access_grants_for_reviewer_l3t) +
+        len(fom_dev_bceid_submitters_00001018_access_grants_l3t)
+    )
+    assert all(
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        (granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER or
+         granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018) and
+        granted["user"]["user_type_code"] == UserType.BCEID and
+        granted["user"]["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
+        for granted in fom_dev_bceid_dgadmin_rs_data
+    )
+    assert len([granted for granted in fom_dev_bceid_dgadmin_rs_data if (
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        granted["user"]["user_type_code"] == UserType.BCEID and
+        granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER and
+        granted["user"]["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
+    )]) == len(fom_dev_bceid_access_grants_for_reviewer_l3t)
+    assert len([granted for granted in fom_dev_bceid_dgadmin_rs_data if (
+        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
+        granted["user"]["user_type_code"] == UserType.BCEID and
+        granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018 and
+        granted["user"]["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
+    )]) == len(fom_dev_bceid_submitters_00001018_access_grants_l3t)
 
 
 
