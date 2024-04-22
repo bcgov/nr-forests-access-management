@@ -6,7 +6,7 @@ import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
 from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
 from testspg.constants import (
-    CLIENT_NUMBER_EXISTS_ACTIVE_00000001,
+    CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
     TEST_FOM_DEV_APPLICATION_ID,
     USERR_ASGNMNT_FOM_DEV_AR_00000001_BCEID,
     USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T,
@@ -16,8 +16,7 @@ from testspg.constants import (
     USERR_ASGNMNT_FOM_DEV_CR_BCEID_L4T,
     USERR_ASGNMNT_FOM_DEV_CR_IDIR,
     USERR_ASGNMNT_FOM_TEST_AR_00001018_BCEID_L4T,
-    USERR_ASGNMNT_FOM_TEST_CR_BCEID_L3T,
-    USER_NAME_BCEID_LOAD_4_TEST)
+    USERR_ASGNMNT_FOM_TEST_CR_BCEID_L3T)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications"
@@ -265,84 +264,62 @@ def test_get_application_user_assignments_filtering_for_delegated_admin(
     fom_dev_access_admin_token,
     fom_test_access_admin_token
 ):
-    # --- Create users at FOM_DEV (IDIR/BCEID, business organizations, etc...)
-    # --- and verify different visibility scenarios.
+    """
+    This test first create various user assigment at FOM_DEV (IDIR/BCEID,
+    business organizations and forest client...) and verify different
+    visibility scenarios based on requester's admin level/privileges.
+    """
 
     # --- Prepare
-    # Assign IDIR test user to FOM_DEV app: FOM_REVIEWER and FOM_SUBMITTER role.
-    configured_fom_dev_idir_users = [
+    # Assign IDIR test user to FOM_DEV app: FOM_REVIEWER and FOM_SUBMITTER roles.
+    configured_fom_dev_idir_user_roles = [
         USERR_ASGNMNT_FOM_DEV_CR_IDIR,  # FOM_REVIEWER
         USERR_ASGNMNT_FOM_DEV_AR_00000001_IDIR   # FOM_SUBMITTER
     ]
     # Assign BCEID users to FOM_DEV app: FOM_REVIEWER role.
     # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
     configured_fom_dev_bceid_reviewers = [
-        USERR_ASGNMNT_FOM_DEV_CR_BCEID_L3T,  # BCEID user (org 1)
-        USERR_ASGNMNT_FOM_DEV_CR_BCEID_L4T   # BCEID user (org 2)
+        USERR_ASGNMNT_FOM_DEV_CR_BCEID_L3T,  # BCEID user L3T (org 1)
+        USERR_ASGNMNT_FOM_DEV_CR_BCEID_L4T   # BCEID user L4T (org 2)
     ]
     # Assign BCEID users (LOAD-3-TEST, LOAD-4-TEST) to FOM_DEV FOM_SUBMITTER
     #   with the same role (forest client: 00001018)
     # Two users (LOAD-3-TEST, LOAD-4-TEST) belong to two different organizations.
     configured_fom_dev_bceid_submitter_00001018 = [
-        USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T,
-        USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L4T
+        USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T,  # BCEID user L3T (org 1)
+        USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L4T   # BCEID user L4T (org 2)
     ]
-    # Also only assign BCEID user (LOAD-3-TEST) to FOM_DEV FOM_SUBMITTER with forest client 00001011
-    USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2 = \
+    # Also only assign BCEID user (LOAD-3-TEST) to FOM_DEV FOM_SUBMITTER
+    # with forest client 00001011
+    USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T = \
         dict(USERR_ASGNMNT_FOM_DEV_AR_00001018_BCEID_L3T)
-    USER_ROLE_ASGNMNT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2["forest_client_number"] = CLIENT_NUMBER_EXISTS_ACTIVE_00000001
+    USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T["forest_client_number"] = CLIENT_NUMBER_EXISTS_ACTIVE_00001011
 
-    # Additional BCEID users
+    # Additionally assign BCEID users to FOM_TEST.
     configured_fom_test_bceid_users = [
         USERR_ASGNMNT_FOM_TEST_CR_BCEID_L3T,  # BCEID user (org 1) FOM_REVIEWER
         USERR_ASGNMNT_FOM_TEST_AR_00001018_BCEID_L4T  # BCEID user (org 2) FOM_SUBMITTER
     ]
 
-    # # --- Create
-    # fom_dev_idir_users_assignments = create_test_user_role_assignments(
-    #     fom_dev_access_admin_token, assigned_fom_dev_idir_users
-    # )
+    # --- Create
+    fom_dev_user_role_assignments = create_test_user_role_assignments(
+        fom_dev_access_admin_token,
+        configured_fom_dev_idir_user_roles +
+        configured_fom_dev_bceid_reviewers +
+        configured_fom_dev_bceid_submitter_00001018 +
+        [USERR_ASGNMNT_FOM_DEV_AR_00001011_BCEID_L3T]
+    )
 
-    # fom_dev_bceid_reviewers_assignments = create_test_user_role_assignments(
-    #     fom_dev_access_admin_token, assigned_fom_dev_bceid_reviewers
-    # )
-
-    # fom_dev_bceid_submitter_00001018_assignments = create_test_user_role_assignments(
-    #     fom_dev_access_admin_token, assigned_fom_dev_bceid_submitter_00001018
-    # )
-    # # FOM_TEST:
-    # fom_dev_bceid_submitter_00001011_assignments = create_test_user_role_assignments(
-    #     fom_dev_access_admin_token, [TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID_L3T_FC2]
-    # )
-
-
-    # fom_test_bceid_reviewers_assignments = create_test_user_role_assignments(
-    #     fom_test_access_admin_token, assigned_fom_test_bceid_users
-    # )
-
+    fom_test_user_role_assignments = create_test_user_role_assignments(
+        fom_test_access_admin_token, configured_fom_test_bceid_users
+    )
 
     # --- Verify
 
+    assert len(fom_dev_user_role_assignments) == 7
+    assert len(fom_test_user_role_assignments) == 2
 
-    # APP_ADMIN
-    #     get_role_assignment_end_point = endPoint + \
-    #    f"/{TEST_FOM_DEV_APPLICATION_ID}/user_role_assignment"
-    # access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-    # token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
-    # # check
-    # response = test_client_fixture.get(role_assignment_end_point,
-    #                                  headers=jwt_utils.headers(token))
-    # data = response.json()
-    # assert len(data) == 1
-    # assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
-    # assert data[0]["user"]["user_type_code"] \
-    #     == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_type_code"]
-    # assert data[0]["user"]["user_name"] \
-    #     == TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_IDIR["user_name"]
-    # assert data[0]["role"]["role_type_code"] == "C"
-    # assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
-
-
+    # FOM_DEV_APP_ADMIN has visibility for FOM_DEV all user role assignments.
 
 
 
