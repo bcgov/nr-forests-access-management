@@ -57,9 +57,9 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 # The test idir and bceid username might need change to a real one after we
 #   enable the verfication, same for forest client number.
 #
-# Please refer to V1001__ flyway script for pre-test admin testers setup
-#   (needed for tests)". "TEST-3-LOAD-CHILD-1" and "PTOLLEST" are being setup
-#   as delegated admin.
+# Please refer to flyway/local_sql/V1001__add_delegated_admin_for_testing
+#   script for pre-test admin testers setup (needed for tests)".
+#   "TEST-3-LOAD-CHILD-1" and "PTOLLEST" are being setup as delegated admin.
 #
 # Note:
 # Do not change bellow various configuration for user role assignments (ACCESS_
