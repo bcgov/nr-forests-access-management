@@ -1,37 +1,30 @@
 [
     {
-        "name": "Main activities",
+        "name": "Manage permissions",
+        "link": "/dashboard",
+        "disabled": false,
         "items": [
             {
-                "name": "Manage permissions",
-                "icon": "group--access",
-                "link": "/dashboard",
-                "disabled": false
-            },
-            {
                 "name": "Add user permission",
-                "icon": "virtual-column--key",
                 "link": "/grant",
                 "disabled": true
             },
             {
                 "name": "Add application admin",
-                "icon": "enterprise",
                 "link": "/grant-app-admin",
                 "disabled": true
             },
             {
                 "name": "Add delegated admin",
-                "icon": "enterprise",
                 "link": "/grant-delegated-admin",
                 "disabled": true
-            },
-            {
-                "name": "My permissions",
-                "icon": "user--profile",
-                "link": "/my-permissions",
-                "disabled": false
             }
         ]
+    },
+    {
+        "name": "My permissions",
+        "link": "/my-permissions",
+        "disabled": false,
+        "items": []
     }
 ]
