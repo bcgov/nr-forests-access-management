@@ -108,7 +108,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             };
         },
         /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
+         * gets the roles assignment associated with an application
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -177,7 +177,7 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
+         * gets the roles assignment associated with an application
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -217,7 +217,7 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
             return localVarFp.getFamApplicationRoles(applicationId, options).then((request) => request(axios, basePath));
         },
         /**
-         * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
+         * gets the roles assignment associated with an application
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -255,7 +255,7 @@ export interface FAMApplicationsApiInterface {
     getFamApplicationRoles(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamApplicationRole>>;
 
     /**
-     * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
+     * gets the roles assignment associated with an application
      * @summary Get Fam Application User Role Assignment
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
@@ -297,7 +297,7 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     }
 
     /**
-     * gets the roles associated with an application  :param application_id: application id :param db: database session, defaults to Depends(database.get_db)
+     * gets the roles assignment associated with an application
      * @summary Get Fam Application User Role Assignment
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
