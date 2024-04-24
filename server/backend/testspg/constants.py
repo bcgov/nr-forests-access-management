@@ -14,6 +14,7 @@ NOT_EXIST_ROLE_ID = 0
 
 ROLE_NAME_FOM_REVIEWER = "FOM_REVIEWER"
 ROLE_NAME_FOM_SUBMITTER_00001018 = "FOM_SUBMITTER_00001018"
+ROLE_NAME_FOM_SUBMITTER_00000001 = "FOM_SUBMITTER_00000001"
 
 TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
@@ -86,6 +87,13 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR = {
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
+ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR = {
+    "user_name": "fom_user_test",
+    "user_type_code": fam_constants.UserType.IDIR,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
+}
+
 ACCESS_GRANT_FOM_TEST_CR_IDIR = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
@@ -117,9 +125,16 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID = {
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
 }
 
+ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T = {
+    "user_name": USER_NAME_BCEID_LOAD_3_TEST,
+    "user_type_code": fam_constants.UserType.BCEID,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
+}
+
 ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T = {
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
-    "user_type_code": "B",
+    "user_type_code": fam_constants.UserType.BCEID,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
 }
