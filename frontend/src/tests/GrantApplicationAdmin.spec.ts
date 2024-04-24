@@ -49,12 +49,23 @@ describe('GrantApplicationAdmin', () => {
 
     it('Should display the correct heading texts', () => {
         // console.log(wrapper.html())
-        wrapper.findAll('.title').forEach((title) => {
+        const titleText = [
+            'Add application admin',
+            'User information',
+            'Add application',
+        ];
+        const subtitleText = [
+            'All fields are mandatory',
+            'Select an application this user will be able to manage',
+        ];
+        wrapper.findAll('.title').forEach((title, i) => {
             expect(title.isVisible()).toBe(true);
+            expect(title.element.textContent).toContain(titleText[i]);
         });
 
-        wrapper.findAll('.subtitle').forEach((subtitle) => {
+        wrapper.findAll('.subtitle').forEach((subtitle, i) => {
             expect(subtitle.isVisible()).toBe(true);
+            expect(subtitle.element.textContent).toContain(subtitleText[i]);
         });
         expect(wrapper.find('#userIdInput').isVisible()).toBe(true);
         expect(
@@ -63,6 +74,8 @@ describe('GrantApplicationAdmin', () => {
         expect(
             wrapper.find('.application-admin-group .p-dropdown').isVisible()
         ).toBe(true);
+
+        // console.log(wrapper.html())
     });
 
     it('Should show validation error when username input invalid', async () => {
@@ -133,7 +146,6 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('should breadcrumb', () => {
-        console.log(wrapper.html())
-    })
-
+        // console.log(wrapper.html())
+    });
 });
