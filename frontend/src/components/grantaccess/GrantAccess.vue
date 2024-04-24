@@ -59,7 +59,7 @@ const userIdChange = (userId: string) => {
 const verifyUserIdPassed = ref(false);
 const setVerifyUserId = (verifiedResult: boolean, userGuid: string = '') => {
     verifyUserIdPassed.value = verifiedResult;
-    formData.value.userGuid = userGuid;
+    if (verifiedResult) formData.value.userGuid = userGuid;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -157,6 +157,7 @@ const handleSubmit = async () => {
 function toRequestPayload(formData: any, forestClientNumber: string) {
     const request = {
         user_name: formData.userId,
+        user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
         ...(forestClientNumber
