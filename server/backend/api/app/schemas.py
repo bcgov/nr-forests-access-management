@@ -86,6 +86,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: Annotated[
         str, StringConstraints(min_length=3, max_length=20)
     ]  # IDIM search max length
+    user_guid: Annotated[str, StringConstraints(max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[
