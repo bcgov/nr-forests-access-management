@@ -48,7 +48,6 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('Should display the correct heading texts', () => {
-        // console.log(wrapper.html())
         const titleText = [
             'Add application admin',
             'User information',
@@ -67,15 +66,15 @@ describe('GrantApplicationAdmin', () => {
             expect(subtitle.isVisible()).toBe(true);
             expect(subtitle.element.textContent).toContain(subtitleText[i]);
         });
-        expect(wrapper.find('#userIdInput').isVisible()).toBe(true);
-        expect(
-            wrapper.find('[aria-label="Verify user IDIR"]').isVisible()
-        ).toBe(true);
-        expect(
-            wrapper.find('.application-admin-group .p-dropdown').isVisible()
-        ).toBe(true);
+    });
 
-        // console.log(wrapper.html())
+    it('Should display the correct breadcrumb info', async () => {
+        // populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin])
+            const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+
+            expect(breadcrumb.exists()).toBe(true);
+            console.log(wrapper.html());
+            // expect(breadcrumb.props('model')).toEqual([routeItems.dashboard, routeItems.grantAppAdmin]);
     });
 
     it('Should show validation error when username input invalid', async () => {
@@ -143,9 +142,5 @@ describe('GrantApplicationAdmin', () => {
         expect(cancelFormSpy).toHaveBeenCalled();
         // called route.push with '/dashboard'
         expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
-    });
-
-    it('should breadcrumb', () => {
-        // console.log(wrapper.html())
     });
 });

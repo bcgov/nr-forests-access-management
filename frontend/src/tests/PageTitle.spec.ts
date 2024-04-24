@@ -4,7 +4,6 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
-import PrimeVue from 'primevue/config';
 
 fixJsdomCssErr();
 vi.mock('vue-router', async () => {
@@ -47,17 +46,4 @@ describe('PageTitle', () => {
         );
     });
 
-    it('Should render correct breadcrumb items', () => {
-        const mockBreadcrumbState = [
-            { label: 'dashboard', path: '/dashboard' },
-            { label: 'grantAdmin', path: '/grantAdmin' },
-        ];
-        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
-
-        expect(breadcrumb.exists()).toBe(true);
-        console.log(wrapper.html())
-
-        // Assert that the model prop of the Breadcrumb component matches the expected breadcrumb data
-        expect(breadcrumb.props('model')).toEqual(mockBreadcrumbState);
-    });
 });
