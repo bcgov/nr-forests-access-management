@@ -46,4 +46,18 @@ describe('PageTitle', () => {
             props.subtitle
         );
     });
+
+    it('Should render correct breadcrumb items', () => {
+        const mockBreadcrumbState = [
+            { label: 'dashboard', path: '/dashboard' },
+            { label: 'grantAdmin', path: '/grantAdmin' },
+        ];
+        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+
+        expect(breadcrumb.exists()).toBe(true);
+        console.log(wrapper.html())
+
+        // Assert that the model prop of the Breadcrumb component matches the expected breadcrumb data
+        expect(breadcrumb.props('model')).toEqual(mockBreadcrumbState);
+    });
 });
