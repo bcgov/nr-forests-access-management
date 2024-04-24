@@ -118,4 +118,22 @@ describe('GrantApplicationAdmin', () => {
         expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
     });
 
+    it('Should call cancelForm method and route to dashboard', async () => {
+        // Spy on cancelForm method
+        const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
+        const routerPushSpy = vi.spyOn(router, 'push');
+
+        const cancelBtn = wrapper.get('#grantAdminCancel');
+        await cancelBtn.trigger('click');
+
+        // cancelForm is called
+        expect(cancelFormSpy).toHaveBeenCalled();
+        // called route.push with '/dashboard'
+        expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
+    });
+
+    it('should breadcrumb', () => {
+        console.log(wrapper.html())
+    })
+
 });
