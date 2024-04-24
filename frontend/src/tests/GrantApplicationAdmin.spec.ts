@@ -1,5 +1,5 @@
-import { routes } from '@/router';
-import { mount, VueWrapper } from '@vue/test-utils';
+import router, { routes } from '@/router';
+import { mount, RouterLinkStub, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
@@ -7,6 +7,7 @@ import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmi
 import waitForExpect from 'wait-for-expect';
 
 fixJsdomCssErr();
+const mockRoutePush = vi.fn();
 vi.mock('vue-router', async () => {
     const actual: Object = await vi.importActual('vue-router');
     return {
@@ -16,6 +17,11 @@ vi.mock('vue-router', async () => {
                 (route) => route.name == routeItems.grantAppAdmin.name
             )[0];
         },
+        useRouter: () => {
+            return {
+                push: mockRoutePush,
+            };
+        },
     };
 });
 
@@ -23,7 +29,18 @@ describe('GrantApplicationAdmin', () => {
     let wrapper: VueWrapper;
 
     beforeEach(async () => {
-        wrapper = mount(GrantApplicationAdmin);
+        wrapper = mount(GrantApplicationAdmin, {
+            global: {
+                components: {
+                    RouterLink: RouterLinkStub, // Stub RouterLink component
+                },
+                mocks: {
+                    $router: {
+                        push: vi.fn(),
+                    },
+                },
+            },
+        });
     });
 
     afterEach(() => {
@@ -86,4 +103,19 @@ describe('GrantApplicationAdmin', () => {
             ).toBe(true);
         });
     });
+
+    it('Should call cancelForm method and route to dashboard', async () => {
+        // Spy on cancelForm method
+        const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
+        const routerPushSpy = vi.spyOn(router, 'push');
+
+        const cancelBtn = wrapper.get('#grantAdminCancel');
+        await cancelBtn.trigger('click');
+
+        // cancelForm is called
+        expect(cancelFormSpy).toHaveBeenCalled();
+        // called route.push with '/dashboard'
+        expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
+    });
+
 });
