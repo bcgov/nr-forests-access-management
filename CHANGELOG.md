@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.15.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.14.1...v1.15.0) (2024-04-23)
+
+
+### Features
+
+* [#1184](https://github.com/bcgov/nr-forests-access-management/issues/1184) delegated admin filtering same org ([#1310](https://github.com/bcgov/nr-forests-access-management/issues/1310)) ([5ca70f8](https://github.com/bcgov/nr-forests-access-management/commit/5ca70f86bd4db7aa471b0be0ff58630a2c08e8a4))
+* [#1186](https://github.com/bcgov/nr-forests-access-management/issues/1186) add test for delegated admin granting access ([#1312](https://github.com/bcgov/nr-forests-access-management/issues/1312)) ([6cf4da8](https://github.com/bcgov/nr-forests-access-management/commit/6cf4da80c8432daf751a4fd52e3f7fe6d371fe5f))
+* [#1187](https://github.com/bcgov/nr-forests-access-management/issues/1187) add security check for delegated admin remove access ([#1299](https://github.com/bcgov/nr-forests-access-management/issues/1299)) ([d3ae17f](https://github.com/bcgov/nr-forests-access-management/commit/d3ae17fad2730cfc134ad00abd525466deebc228))
+* [#1187](https://github.com/bcgov/nr-forests-access-management/issues/1187) add test for security check for delegated admin removing user access ([#1305](https://github.com/bcgov/nr-forests-access-management/issues/1305)) ([3a884ee](https://github.com/bcgov/nr-forests-access-management/commit/3a884ee05cb3800cefc0f6d6d5c8680d83330ba2))
+* [#1223](https://github.com/bcgov/nr-forests-access-management/issues/1223) accessibility on fam pages ([#1296](https://github.com/bcgov/nr-forests-access-management/issues/1296)) ([ff99b49](https://github.com/bcgov/nr-forests-access-management/commit/ff99b490be36c8383548f65cbdf05eee2e427bd3))
+* [#1239](https://github.com/bcgov/nr-forests-access-management/issues/1239) adding business to bceid references ([#1304](https://github.com/bcgov/nr-forests-access-management/issues/1304)) ([e9a3c7f](https://github.com/bcgov/nr-forests-access-management/commit/e9a3c7f7e0d4b6b8388e2efafc83efd9c1bda272))
+* [#985](https://github.com/bcgov/nr-forests-access-management/issues/985) check my own permissions ([#1276](https://github.com/bcgov/nr-forests-access-management/issues/1276)) ([8cddcd0](https://github.com/bcgov/nr-forests-access-management/commit/8cddcd014418e4ab63ddb3b59275c92512d7f96d))
+* [#985](https://github.com/bcgov/nr-forests-access-management/issues/985) minor table styling tweaks ([#1308](https://github.com/bcgov/nr-forests-access-management/issues/1308)) ([135c625](https://github.com/bcgov/nr-forests-access-management/commit/135c6257f594ab1a21e54b7011d03787f7e04a37))
+
+
+### Bug Fixes
+
+* [#1206](https://github.com/bcgov/nr-forests-access-management/issues/1206) [#1207](https://github.com/bcgov/nr-forests-access-management/issues/1207) clean up and add new spar roles ([#1286](https://github.com/bcgov/nr-forests-access-management/issues/1286)) ([ae18515](https://github.com/bcgov/nr-forests-access-management/commit/ae185151fca01c6b146c8efdba6be7f8da84ca37))
+* [#1293](https://github.com/bcgov/nr-forests-access-management/issues/1293) fix audit log and add test ([#1295](https://github.com/bcgov/nr-forests-access-management/issues/1295)) ([8df3969](https://github.com/bcgov/nr-forests-access-management/commit/8df39699532e692d964b4bc5bf8a52b2fdc3306e))
+* [#1315](https://github.com/bcgov/nr-forests-access-management/issues/1315) fix application name error ([#1316](https://github.com/bcgov/nr-forests-access-management/issues/1316)) ([5f47c4c](https://github.com/bcgov/nr-forests-access-management/commit/5f47c4c20732ed8bf26d632870579b0f45f07401))
+* [#1317](https://github.com/bcgov/nr-forests-access-management/issues/1317) fix frontend build type error caused by sidenav ([#1322](https://github.com/bcgov/nr-forests-access-management/issues/1322)) ([e3bc784](https://github.com/bcgov/nr-forests-access-management/commit/e3bc7844ae0fcbc8cf920f3b26e854a6163af2b4))
+* 985 frontend pipe line fix ([#1313](https://github.com/bcgov/nr-forests-access-management/issues/1313)) ([b26166e](https://github.com/bcgov/nr-forests-access-management/commit/b26166ef7a9e465fc9759ee792cca719e4860c35))
+* adjusting sidenav list for better viewing ([#1317](https://github.com/bcgov/nr-forests-access-management/issues/1317)) ([e9f7ca5](https://github.com/bcgov/nr-forests-access-management/commit/e9f7ca532744c91d6d69fc13b3a3dd6b16257135))
+* **ci:** sonarcloud versions ([#1311](https://github.com/bcgov/nr-forests-access-management/issues/1311)) ([21975c4](https://github.com/bcgov/nr-forests-access-management/commit/21975c4eb47b5379db89d3ff90c8a1533b0a1bd9))
+
+
+### Miscellaneous
+
+* **deps:** [Snyk] Security upgrade vite from 4.5.2 to 4.5.3 ([#1283](https://github.com/bcgov/nr-forests-access-management/issues/1283)) ([2b9a4bc](https://github.com/bcgov/nr-forests-access-management/commit/2b9a4bcc481270c7e7f9bc9c5d3bc3cb0fe8ddbe))
+* Update wiki architecture diagram ([#1318](https://github.com/bcgov/nr-forests-access-management/issues/1318)) ([73a5d76](https://github.com/bcgov/nr-forests-access-management/commit/73a5d76b34a3a636c77df1ce06c9535d8eac1d30))
+
 ## [1.14.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.14.0...v1.14.1) (2024-04-09)
 
 
