@@ -46,4 +46,8 @@ describe('PageTitle', () => {
         );
     });
 
+    it('Should display breadcrumb', async () => {
+        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+        expect(breadcrumb.exists()).toBe(true);
+    });
 });

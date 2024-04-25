@@ -1,5 +1,5 @@
 import router, { routes } from '@/router';
-import { mount, RouterLinkStub, VueWrapper } from '@vue/test-utils';
+import { DOMWrapper, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
@@ -27,20 +27,17 @@ vi.mock('vue-router', async () => {
 
 describe('GrantApplicationAdmin', () => {
     let wrapper: VueWrapper;
+    let usernameInputText: DOMWrapper<HTMLElement>;
+    let usernameInputTextEl: HTMLInputElement;
+    let verifyButton: DOMWrapper<HTMLElement>;
+    let verifyButtonEl: HTMLButtonElement;
 
     beforeEach(async () => {
-        wrapper = mount(GrantApplicationAdmin, {
-            global: {
-                components: {
-                    RouterLink: RouterLinkStub, // Stub RouterLink component
-                },
-                mocks: {
-                    $router: {
-                        push: vi.fn(),
-                    },
-                },
-            },
-        });
+        wrapper = mount(GrantApplicationAdmin);
+        usernameInputText = wrapper.find('#userIdInput');
+        usernameInputTextEl = usernameInputText.element as HTMLInputElement;
+        verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
+        verifyButtonEl = verifyButton.element as HTMLButtonElement;
     });
 
     afterEach(() => {
@@ -82,6 +79,13 @@ describe('GrantApplicationAdmin', () => {
         const usernameInputTextEl =
             usernameInputText.element as HTMLInputElement;
 
+        //verify btn is disabled by default
+        expect(
+            wrapper
+                .find('.input-with-verify-button button')
+                .classes('p-disabled')
+        ).toBe(true);
+
         await usernameInputText.setValue('I');
         expect(usernameInputTextEl.value).toBe('I');
 
@@ -117,7 +121,7 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('Should call cancelForm method and route to dashboard', async () => {
-        // Spy on cancelForm method
+        // Spy on cancelForm method, spy on router.push
         const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
         const routerPushSpy = vi.spyOn(router, 'push');
 
@@ -127,20 +131,7 @@ describe('GrantApplicationAdmin', () => {
         // cancelForm is called
         expect(cancelFormSpy).toHaveBeenCalled();
         // called route.push with '/dashboard'
-        expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
+        expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
-    it('Should call cancelForm method and route to dashboard', async () => {
-        // Spy on cancelForm method
-        const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
-        const routerPushSpy = vi.spyOn(router, 'push');
-
-        const cancelBtn = wrapper.get('#grantAdminCancel');
-        await cancelBtn.trigger('click');
-
-        // cancelForm is called
-        expect(cancelFormSpy).toHaveBeenCalled();
-        // called route.push with '/dashboard'
-        expect(routerPushSpy).toHaveBeenCalledWith('/dashboard');
-    });
 });
