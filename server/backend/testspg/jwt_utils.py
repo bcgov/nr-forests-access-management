@@ -22,7 +22,7 @@ COGNITO_USERNAME_BCEID_DELEGATED_ADMIN = (
 )
 COGNITO_USERNAME_IDIR_DELEGATED_ADMIN = (
     # "PTOLLEST"(IDIR)
-    "test-idir_eb65e9d7828d4718aa6f4193c0mangled@idir"
+    "test-idir_eb65e9d7828d4718aa6f4193cmangled@idir"
 )
 
 
