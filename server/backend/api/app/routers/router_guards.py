@@ -418,3 +418,10 @@ def get_business_guid(requester: Requester, user_id: str):
     )
     business_guid = search_result.get("businessGuid")
     return business_guid
+
+
+def target_user_bceid_search(
+        requester,
+        target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+):
+    return get_business_guid(requester, target_user.user_name)
