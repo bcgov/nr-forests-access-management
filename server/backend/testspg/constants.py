@@ -106,12 +106,6 @@ ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T = {
     "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }
 
-ACCESS_GRANT_FOM_TEST_CR_BCEID_L3T = {
-    "user_name": USER_NAME_BCEID_LOAD_3_TEST,
-    "user_type_code": "B",
-    "role_id": FOM_TEST_REVIEWER_ROLE_ID,
-}
-
 ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T = {
     "user_name": USER_NAME_BCEID_LOAD_4_TEST,
     "user_type_code": "B",
