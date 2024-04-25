@@ -72,10 +72,7 @@ describe('GrantApplicationAdmin', () => {
         expect(breadcrumb.exists()).toBe(true);
 
         // assert that primevue breadcrumb is receiving the correct prop
-        expect(breadcrumb.props('model')).toEqual([
-            routeItems.dashboard,
-            routeItems.grantAppAdmin,
-        ]);
+        expect(breadcrumb.props('model')).toEqual(breadcrumbItems);
 
         // assert that the text is the same as the breacrumbItems label
         breadcrumb.findAll('span').forEach((breadcrumbItem, i) => {
