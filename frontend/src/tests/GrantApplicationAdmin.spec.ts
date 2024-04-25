@@ -154,4 +154,11 @@ describe('GrantApplicationAdmin', () => {
         // called route.push with '/dashboard'
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
+
+    it('Should submit btn be render and desabled', () => {
+        const submitBtn = wrapper.find('#grantAdminSubmit')
+        expect(submitBtn.isVisible()).toBe(true)
+        expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true)
+        expect(submitBtn.classes()).toContain('p-disabled')
+    })
 });
