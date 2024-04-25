@@ -34,11 +34,11 @@ describe('GrantApplicationAdmin', () => {
     let verifyButtonEl: HTMLButtonElement;
 
     //populate the breadcrumbState
-    const breadcrumbItems = [routeItems.dashboard, routeItems.grantAppAdmin]
+    const breadcrumbItems = [routeItems.dashboard, routeItems.grantAppAdmin];
     populateBreadcrumb(breadcrumbItems);
 
     beforeEach(async () => {
-        wrapper = mount(GrantApplicationAdmin,{
+        wrapper = mount(GrantApplicationAdmin, {
             global: {
                 plugins: [router], // Inject mocked Vue Router
             },
@@ -80,27 +80,33 @@ describe('GrantApplicationAdmin', () => {
         expect(breadcrumb.exists()).toBe(true);
 
         // assert that primevue breadcrumb is receiving the correct prop
-        expect(breadcrumb.props('model')).toEqual([routeItems.dashboard, routeItems.grantAppAdmin]);
+        expect(breadcrumb.props('model')).toEqual([
+            routeItems.dashboard,
+            routeItems.grantAppAdmin,
+        ]);
 
         // assert that the text is the same as the breacrumbItems label
         breadcrumb.findAll('span').forEach((breadcrumbItem, i) => {
             expect(breadcrumbItem.isVisible()).toBe(true);
-            expect(breadcrumbItem.element.textContent).toBe(breadcrumbItems[i].label);
-        })
-
+            expect(breadcrumbItem.element.textContent).toBe(
+                breadcrumbItems[i].label
+            );
+        });
     });
 
     it('Should show validation error when username input invalid', async () => {
         const usernameInputText = wrapper.find('#userIdInput');
         const usernameInputTextEl =
             usernameInputText.element as HTMLInputElement;
+        const btnVerify = wrapper.find('.input-with-verify-button button');
+
+        // input is rendered
+        expect(usernameInputText.isVisible()).toBe(true);
+        expect(btnVerify.isVisible()).toBe(true);
 
         //verify btn is disabled by default
-        expect(
-            wrapper
-                .find('.input-with-verify-button button')
-                .classes('p-disabled')
-        ).toBe(true);
+        expect((btnVerify.element as HTMLButtonElement).disabled).toBe(true);
+        expect(btnVerify.classes()).toContain('p-disabled');
 
         await usernameInputText.setValue('I');
         expect(usernameInputTextEl.value).toBe('I');
@@ -112,11 +118,10 @@ describe('GrantApplicationAdmin', () => {
             ).toContain('at least 2 characters');
 
             //verify btn is disabled
-            expect(
-                wrapper
-                    .find('.input-with-verify-button button')
-                    .classes('p-disabled')
-            ).toBe(true);
+            expect((btnVerify.element as HTMLButtonElement).disabled).toBe(
+                true
+            );
+            expect(btnVerify.classes()).toContain('p-disabled');
         });
 
         await usernameInputText.setValue('');
@@ -128,11 +133,11 @@ describe('GrantApplicationAdmin', () => {
                     .element.textContent
             ).toContain('required');
 
-            expect(
-                wrapper
-                    .find('.input-with-verify-button button')
-                    .classes('p-disabled')
-            ).toBe(true);
+            //verify btn is disabled
+            expect((btnVerify.element as HTMLButtonElement).disabled).toBe(
+                true
+            );
+            expect(btnVerify.classes()).toContain('p-disabled');
         });
     });
 
@@ -149,5 +154,4 @@ describe('GrantApplicationAdmin', () => {
         // called route.push with '/dashboard'
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
-
 });
