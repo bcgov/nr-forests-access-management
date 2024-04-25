@@ -1,7 +1,9 @@
 import logging
 import os
 import sys
+from typing import List
 import pytest
+import starlette
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
@@ -14,10 +16,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
+import testspg.jwt_utils as jwt_utils
 from api.app.constants import COGNITO_USERNAME_KEY
-from api.app.main import app
+from api.app.main import app, apiPrefix
 from api.app.routers.router_guards import get_current_requester
 from api.app.schemas import Requester
+from testspg.constants import FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -134,6 +138,18 @@ def override_get_rsa_key_none(kid):
 
 
 @pytest.fixture(scope="function")
+def fom_dev_access_admin_token(test_rsa_key):
+    access_roles = [FOM_DEV_ADMIN_ROLE]
+    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+
+
+@pytest.fixture(scope="function")
+def fom_test_access_admin_token(test_rsa_key):
+    access_roles = [FOM_TEST_ADMIN_ROLE]
+    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+
+
+@pytest.fixture(scope="function")
 def get_current_requester_by_token(db_pg_session):
     """
     Convenient fixture to get current requester from token (retrieved from database setup).
@@ -160,3 +176,46 @@ def get_current_requester_by_token(db_pg_session):
         return requester
 
     return _get_current_requester_by_token
+
+
+@pytest.fixture(scope="function")
+def create_test_user_role_assignments(
+    test_client_fixture
+):
+    """
+    Convenient function to assign multipe users to an application.
+    :param requester_token: token to be used for the request.
+                            Pass appropriate application_admin level to
+                            create the users to.
+    :param request_bodies: request content to create the users.
+    """
+    def _create_test_user_role_assignments(
+            requester_token,
+            request_bodies: List[dict]
+    ):
+        created_users = []
+        for request_body in request_bodies:
+            created_users.append(create_test_user_role_assignment(
+                test_client_fixture=test_client_fixture,
+                token=requester_token,
+                request_body=request_body
+            ))
+        return created_users
+
+    return _create_test_user_role_assignments
+
+
+# helper method
+# create a user role assignment used for testing
+def create_test_user_role_assignment(
+    test_client_fixture: starlette.testclient.TestClient,
+    token,
+    request_body
+):
+    response = test_client_fixture.post(
+        f"{apiPrefix}/user_role_assignment",
+        json=request_body,
+        headers=jwt_utils.headers(token),
+    )
+    data = response.json()
+    return data["user_role_xref_id"]
