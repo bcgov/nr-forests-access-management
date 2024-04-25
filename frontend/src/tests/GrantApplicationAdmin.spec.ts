@@ -8,7 +8,6 @@ import waitForExpect from 'wait-for-expect';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 
 fixJsdomCssErr();
-const mockRoutePush = vi.fn();
 vi.mock('vue-router', async () => {
     const actual: Object = await vi.importActual('vue-router');
     return {
@@ -17,11 +16,6 @@ vi.mock('vue-router', async () => {
             return routes.filter(
                 (route) => route.name == routeItems.grantAppAdmin.name
             )[0];
-        },
-        useRouter: () => {
-            return {
-                push: mockRoutePush,
-            };
         },
     };
 });
