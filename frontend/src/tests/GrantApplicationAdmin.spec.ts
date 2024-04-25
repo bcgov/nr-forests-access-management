@@ -1,5 +1,5 @@
 import router, { routes } from '@/router';
-import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
