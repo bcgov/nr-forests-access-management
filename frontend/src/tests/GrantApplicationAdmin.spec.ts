@@ -89,10 +89,10 @@ describe('GrantApplicationAdmin', () => {
             return item.element.textContent === routeItems.dashboard.label;
         });
 
-        expect(breadcrumbDashboardItem.element.textContent).toBe(
+        expect(breadcrumbDashboardItem?.element.textContent).toBe(
             routeItems.dashboard.label
         );
-        await breadcrumbDashboardItem.trigger('click');
+        await breadcrumbDashboardItem?.trigger('click');
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
