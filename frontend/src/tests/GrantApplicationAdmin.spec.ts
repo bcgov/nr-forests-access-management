@@ -28,10 +28,6 @@ vi.mock('vue-router', async () => {
 
 describe('GrantApplicationAdmin', () => {
     let wrapper: VueWrapper;
-    let usernameInputText: DOMWrapper<HTMLElement>;
-    let usernameInputTextEl: HTMLInputElement;
-    let verifyButton: DOMWrapper<HTMLElement>;
-    let verifyButtonEl: HTMLButtonElement;
     const routerPushSpy = vi.spyOn(router, 'push');
 
     //populate the breadcrumbState
@@ -43,10 +39,6 @@ describe('GrantApplicationAdmin', () => {
                 plugins: [router], // Inject mocked Vue Router
             },
         });
-        usernameInputText = wrapper.find('#userIdInput');
-        usernameInputTextEl = usernameInputText.element as HTMLInputElement;
-        verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
-        verifyButtonEl = verifyButton.element as HTMLButtonElement;
     });
 
     afterEach(() => {
@@ -167,7 +159,7 @@ describe('GrantApplicationAdmin', () => {
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
-    it('Should submit btn be render and desabled', () => {
+    it('Should render submit btn and desabled by default', () => {
         const submitBtn = wrapper.find('#grantAdminSubmit');
         expect(submitBtn.isVisible()).toBe(true);
         expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true);

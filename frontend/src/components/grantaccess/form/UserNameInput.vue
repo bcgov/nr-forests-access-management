@@ -90,7 +90,6 @@ watch(
                         >{{ helperText }}</small
                     >
                     <ErrorMessage
-                        data-testid="test"
                         class="invalid-feedback"
                         :name="props.fieldId"
                         style="display: inline"
