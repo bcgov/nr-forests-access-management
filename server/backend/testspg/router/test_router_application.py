@@ -156,11 +156,10 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
     access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
 
     # test no user role assignment for the application
-    role_assignment_end_point = end_point + \
-        f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
-    response = test_client_fixture.get(role_assignment_end_point,
-                                       headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point,
+        headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 0  # initially no one is assigned with FOM_DEV roles
 
@@ -170,9 +169,6 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     test_rsa_key
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-
-    role_assignment_end_point = end_point + \
-        f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
 
     # test user role assignment
     # create
@@ -186,8 +182,9 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     concrete_role_data = response.json()
 
     # check
-    response = test_client_fixture.get(role_assignment_end_point,
-                                       headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point,
+        headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
@@ -205,9 +202,6 @@ def test_get_fam_application_user_role_assignment_abstract_role(
 ):
     access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
 
-    role_assignment_end_point = end_point + \
-        f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
-
     # test user role assignment for abstract role
     # create
     token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
@@ -220,8 +214,9 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     abstract_role_data = response.json()
 
     # check
-    response = test_client_fixture.get(role_assignment_end_point,
-                                       headers=jwt_utils.headers(token))
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point,
+        headers=jwt_utils.headers(token))
     data = response.json()
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
