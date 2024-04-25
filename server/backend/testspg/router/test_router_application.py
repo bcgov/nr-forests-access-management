@@ -421,9 +421,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
     #   role.
     assert len([data for data in response_data if (
         data["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
-        data["user"]["user_type_code"] == UserType.IDIR and
-        (data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER or
-         data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018)
+        data["user"]["user_type_code"] == UserType.IDIR
     )]) == len([grant for grant in access_grants_able_to_see if (
         grant["user_type_code"] == UserType.IDIR
     )])
@@ -433,9 +431,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
     #   role.
     assert len([data for data in response_data if (
         data["role"]["application_id"] == FOM_DEV_APPLICATION_ID and
-        data["user"]["user_type_code"] == UserType.BCEID and
-        (data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER or
-         data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018)
+        data["user"]["user_type_code"] == UserType.BCEID
     )]) == len([grant for grant in access_grants_able_to_see if (
         grant["user_type_code"] == UserType.BCEID
     )])
