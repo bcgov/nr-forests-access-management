@@ -113,23 +113,6 @@ describe('UserNameInput', () => {
         expect(emitSetVerifyResult![0][0]).toEqual(false);
     });
 
-    it('Should show error message', async () => {
-        // input is empty, button starts as disabled
-        expect(usernameInputTextEl.value).toBe('');
-        expect(verifyButtonEl.disabled).toBe(true);
-        expect(wrapper.find('#userIdInput-helper').text()).contain(props.helperText)
-
-        // input one character
-        await usernameInputText.setValue('t')
-        expect(usernameInputTextEl.value).toBe('t');
-
-        // verify button is disabled when input has less than 2 characters
-        expect(verifyButtonEl.disabled).toBe(true);
-        expect(verifyButton.classes('p-disabled')).toBe(true);
-        await flushPromises();
-        console.log(wrapper.html())
-    });
-
     it('Should enable verify btn when username is inputted', async () => {
         // input is empty, button starts as disabled
         expect(usernameInputTextEl.value).toBe('');

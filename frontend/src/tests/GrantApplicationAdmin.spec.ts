@@ -95,16 +95,17 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('Should redirect when breadcrumb item is clickled', async () => {
-
         const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
         const breadcrumbDashboardItem = breadcrumb.findAll('a').find((item) => {
-            return item.element.textContent === routeItems.dashboard.label
-        })
+            return item.element.textContent === routeItems.dashboard.label;
+        });
 
-        expect(breadcrumbDashboardItem.element.textContent).toBe(routeItems.dashboard.label)
-        await breadcrumbDashboardItem.trigger('click')
+        expect(breadcrumbDashboardItem.element.textContent).toBe(
+            routeItems.dashboard.label
+        );
+        await breadcrumbDashboardItem.trigger('click');
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
-    })
+    });
 
     it('Should show validation error when username input invalid', async () => {
         const usernameInputText = wrapper.find('#userIdInput');
@@ -167,9 +168,9 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('Should submit btn be render and desabled', () => {
-        const submitBtn = wrapper.find('#grantAdminSubmit')
-        expect(submitBtn.isVisible()).toBe(true)
-        expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true)
-        expect(submitBtn.classes()).toContain('p-disabled')
-    })
+        const submitBtn = wrapper.find('#grantAdminSubmit');
+        expect(submitBtn.isVisible()).toBe(true);
+        expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true);
+        expect(submitBtn.classes()).toContain('p-disabled');
+    });
 });
