@@ -1,10 +1,11 @@
 import router, { routes } from '@/router';
-import { DOMWrapper, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils';
+import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
 import { fixJsdomCssErr } from './common/fixJsdomCssErr';
 import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
 import waitForExpect from 'wait-for-expect';
+import { populateBreadcrumb } from '@/store/BreadcrumbState';
 
 fixJsdomCssErr();
 const mockRoutePush = vi.fn();
@@ -32,8 +33,16 @@ describe('GrantApplicationAdmin', () => {
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
 
+    //populate the breadcrumbState
+    const breadcrumbItems = [routeItems.dashboard, routeItems.grantAppAdmin]
+    populateBreadcrumb(breadcrumbItems);
+
     beforeEach(async () => {
-        wrapper = mount(GrantApplicationAdmin);
+        wrapper = mount(GrantApplicationAdmin,{
+            global: {
+                plugins: [router], // Inject mocked Vue Router
+            },
+        });
         usernameInputText = wrapper.find('#userIdInput');
         usernameInputTextEl = usernameInputText.element as HTMLInputElement;
         verifyButton = wrapper.find("[data-target-btn='verifyIdir']");
@@ -66,12 +75,19 @@ describe('GrantApplicationAdmin', () => {
     });
 
     it('Should display the correct breadcrumb info', async () => {
-        // populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin])
-            const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
 
-            expect(breadcrumb.exists()).toBe(true);
-            console.log(wrapper.html());
-            // expect(breadcrumb.props('model')).toEqual([routeItems.dashboard, routeItems.grantAppAdmin]);
+        expect(breadcrumb.exists()).toBe(true);
+
+        // assert that primevue breadcrumb is receiving the correct prop
+        expect(breadcrumb.props('model')).toEqual([routeItems.dashboard, routeItems.grantAppAdmin]);
+
+        // assert that the text is the same as the breacrumbItems label
+        breadcrumb.findAll('span').forEach((breadcrumbItem, i) => {
+            expect(breadcrumbItem.isVisible()).toBe(true);
+            expect(breadcrumbItem.element.textContent).toBe(breadcrumbItems[i].label);
+        })
+
     });
 
     it('Should show validation error when username input invalid', async () => {
