@@ -43,10 +43,7 @@ generate "tools_tfvars" {
   fam_console_idp_name = "TEST-IDIR"
   fam_console_idp_name_bceid = "TEST-BCEIDBUSINESS"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
-  use_override_proxy_endpoints = true
-  dev_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
-  test_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/test"
-  prod_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/prod"
+  use_override_proxy_endpoints = false
   idim_proxy_api_base_url = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
 EOF
 }

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Header from '@/components/header/Header.vue';
-import SideNav, {
-    type ISideNavData,
-    type ISideNavItem,
-} from '@/components/common/SideNav.vue';
+import SideNav, { type ISideNavItem } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import {
@@ -13,7 +10,7 @@ import {
 } from '@/store/ApplicationState';
 import LoginUserState from '@/store/FamLoginUserState';
 
-const navigationData = ref<[ISideNavData]>(sideNavData as any);
+const navigationData = ref<[ISideNavItem]>(sideNavData as any);
 
 // Show and hide the correct sideNav btn based on the application
 const setSideNavOptions = () => {
@@ -45,7 +42,7 @@ watch(selectedApplicationId, () => {
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
     navigationData.value.map((navItem) => {
-        navItem.items.map((childNavItem: ISideNavItem) => {
+        navItem.items?.map((childNavItem: ISideNavItem) => {
             if (childNavItem.name === optionName) {
                 childNavItem.disabled = disabled;
             }

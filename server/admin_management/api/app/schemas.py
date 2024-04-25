@@ -72,7 +72,7 @@ class FamUserBase(BaseModel):
 
 class FamUserDto(FamUserBase):
     user_type_code: famConstants.UserType
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -100,7 +100,7 @@ class FamForestClientBase(BaseModel):
 
 
 class FamForestClientCreateDto(FamForestClientBase):
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -129,14 +129,14 @@ class FamRoleBase(BaseModel):
 
 class FamRoleCreateDto(FamRoleBase):
     application_id: int = Field(title="Application this role is associated with")
-    role_purpose: Optional[Annotated[str, StringConstraints(max_length=200)]] = None
+    role_purpose: Optional[Annotated[str, StringConstraints(max_length=300)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
     forest_client_number: Optional[Annotated[str, StringConstraints(max_length=8)]] = (
         Field(default=None, title="Forest Client this role is associated with")
     )
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     client_number: Optional[FamForestClientCreateDto] = (
         None  # this is matched with the model
     )
@@ -199,7 +199,7 @@ class FamAccessControlPrivilegeCreateDto(BaseModel):
     """
 
     user_id: int
-    create_user: Annotated[str, StringConstraints(max_length=60)]
+    create_user: Annotated[str, StringConstraints(max_length=100)]
     role_id: int
 
     model_config = ConfigDict(from_attributes=True)

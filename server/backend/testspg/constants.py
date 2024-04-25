@@ -4,17 +4,14 @@ from api.app import constants as fam_constants
 
 TEST_FOM_DEV_APPLICATION_ID = 2
 TEST_FOM_TEST_APPLICATION_ID = 3
+TEST_NOT_EXIST_APPLICATION_ID = 0
 
 TEST_FOM_DEV_SUBMITTER_ROLE_ID = 3
 TEST_FOM_DEV_REVIEWER_ROLE_ID = 4
-
 TEST_FOM_TEST_REVIEWER_ROLE_ID = 8
-
 TEST_NOT_EXIST_ROLE_ID = 0
-TEST_NOT_EXIST_APPLICATION_ID = 0
 
 TEST_CREATOR = "TESTER"
-
 TEST_USER_ID = 1
 
 # Testing Forest Client numbers (TEST Environment)
@@ -30,17 +27,26 @@ Forest Client API has following status codes.
     SPN (Suspended) - client "00003643"
 """
 CLIENT_NUMBER_EXISTS_ACTIVE = "00000001"
-CLIENT_NUMBER_2_EXISTS_ACTIVE = "00001011"
+CLIENT_NUMBER_EXISTS_ACTIVE_00001011 = "00001011"
+CLIENT_NUMBER_EXISTS_ACTIVE_00001018 = "00001018"
 CLIENT_NUMBER_EXISTS_DEACTIVATED = "00000002"
 CLIENT_NUMBER_EXISTS_DECEASED = "00152880"
 CLIENT_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
 CLIENT_NUMBER_EXISTS_SUSPENDED = "00003643"
 
+
+TEST_NEW_USER = {
+    "user_type_code": "I",
+    "user_name": "TEST_USER",
+    "create_user": TEST_CREATOR,
+}
+TEST_NOT_EXIST_USER_TYPE = "NS"
+
+# ------------------- Test grant/remove access -------------------------- #
 # note:
 # test idir and bceid username might need change to a
 # real one after we enable the verfication, same for
 # forest client number
-
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
@@ -58,12 +64,18 @@ TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE = {
     "role_id": TEST_FOM_TEST_REVIEWER_ROLE_ID,
 }
 
-TEST_NEW_USER = {
-    "user_type_code": "I",
-    "user_name": "TEST_USER",
-    "create_user": TEST_CREATOR,
+TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID = {
+    "user_name": "LOAD-3-TEST",
+    "user_type_code": "B",
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
-TEST_NOT_EXIST_USER_TYPE = "NS"
+TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID = {
+    "user_name": "LOAD-3-TEST",
+    "user_type_code": "B",
+    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001018,  # note this is matched with the test delegated admin privilege in local sql
+}
+
 
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
 TEST_IDIR_REQUESTER_DICT = {
@@ -77,10 +89,9 @@ TEST_BCEID_REQUESTER_DICT = {
     "cognito_user_id": "test-bceidbusiness_532905de0aa24923ae535428f171bf13@bceidbusiness",
     "user_name": "LOAD-3-TEST",
     "user_type_code": "B",
-    "user_id": 10, # this is a fake user id, it doesn't matter
+    "user_id": 10,  # this is a fake user id, it doesn't matter
     "user_guid": "532905DE0AA24923AE535428F171BF13",
     "business_guid": "E7C0431DA55D4ACA9FA901EE2C91CB3B",
 }
 TEST_VALID_BUSINESS_BCEID_USERNAME_ONE = "TEST-3-LOAD-CHILD-1"
 TEST_VALID_BUSINESS_BCEID_USERNAME_TWO = "LOAD-2-TEST"
-

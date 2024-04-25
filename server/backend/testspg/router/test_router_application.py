@@ -4,7 +4,7 @@ from http import HTTPStatus
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import ERROR_INVALID_APPLICATION_ID
+from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
 from testspg.constants import (TEST_FOM_DEV_APPLICATION_ID,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
                                TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
@@ -15,6 +15,7 @@ endPoint = f"{apiPrefix}/fam_applications"
 TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
 TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
 TEST_APPLICATION_ID_NOT_FOUND = 0
+
 
 def test_get_applications(
     test_client_fixture: starlette.testclient.TestClient,
@@ -127,7 +128,7 @@ def test_get_fam_application_user_role_assignment_no_matching_application(
     response = test_client_fixture.get(role_assignment_end_point,
                                        headers=jwt_utils.headers(token))
     data = response.json()
-    assert data["detail"]["code"] == ERROR_INVALID_APPLICATION_ID
+    assert data["detail"]["code"] == ERROR_CODE_INVALID_APPLICATION_ID
 
 
 def test_get_fam_application_user_role_assignment_no_role_assignments(
