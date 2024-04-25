@@ -12,11 +12,17 @@ IDP_USER_GUID = "b5ecdb094dfb4149a6a8445a0mangled"
 COGNITO_USERNAME = f"test-idir_{IDP_USER_GUID}@idir"
 IDIR_USERNAME = "COGUSTAF"
 
-# for testing purpose,
-# we added this user as FOM DEV delegated admin in local sql,
-# to manage role FOM REVIEWER and FOM SUBMITTER with forest client number 00001018
-COGNITO_USERNAME_BCEID = (
+# Users setup (key identifier: cognito_user_id) for testing purpose.
+# We added these user "TEST-3-LOAD-CHILD-1"(BCEID) and "PTOLLEST"(IDIR) as
+#   FOM DEV delegated admin in local flyway sql, to manage role for
+#   FOM REVIEWER and FOM SUBMITTER with forest client number 00001018
+COGNITO_USERNAME_BCEID_DELEGATED_ADMIN = (
+    # "TEST-3-LOAD-CHILD-1"(BCEID)
     "test-bceidbusiness_bda2a1e212244dc2b9f9522057mangledc58bbb@bceidbusiness"
+)
+COGNITO_USERNAME_IDIR_DELEGATED_ADMIN = (
+    # "PTOLLEST"(IDIR)
+    "test-idir_eb65e9d7828d4718aa6f4193cmangled@idir"
 )
 
 

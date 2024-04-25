@@ -16,54 +16,27 @@ from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from testspg.conftest import create_test_user_role_assignment
 from testspg.constants import (
-    CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
-    CLIENT_NUMBER_EXISTS_ACTIVE,
-    CLIENT_NUMBER_EXISTS_DEACTIVATED,
-    CLIENT_NUMBER_NOT_EXISTS,
-    TEST_FOM_DEV_APPLICATION_ID,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_FOM_TEST_APPLICATION_ID,
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
-    TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
-    TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+    FC_NUMBER_EXISTS_ACTIVE_00001011,
+    FC_NUMBER_EXISTS_ACTIVE_00000001,
+    FC_NUMBER_EXISTS_DEACTIVATED,
+    FC_NUMBER_NOT_EXISTS,
+    FOM_DEV_APPLICATION_ID,
+    FOM_DEV_REVIEWER_ROLE_ID,
+    FOM_DEV_SUBMITTER_ROLE_ID,
+    FOM_TEST_APPLICATION_ID,
+    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+    ACCESS_GRANT_FOM_TEST_CR_IDIR,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
 )
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
-FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
-FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
-
-
-@pytest.fixture(scope="function")
-def fom_dev_access_admin_token(test_rsa_key):
-    access_roles = [FOM_DEV_ADMIN_ROLE]
-    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-
-
-@pytest.fixture(scope="function")
-def fom_test_access_admin_token(test_rsa_key):
-    access_roles = [FOM_TEST_ADMIN_ROLE]
-    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
-
-
-# helper method
-def create_test_user_role_assignment(
-    test_client_fixture: starlette.testclient.TestClient, token, requestBody
-):
-    # create a user role assignment used for testing
-    response = test_client_fixture.post(
-        f"{endPoint}",
-        json=requestBody,
-        headers=jwt_utils.headers(token),
-    )
-    data = response.json()
-    return data["user_role_xref_id"]
 
 
 # note: this might need to be a real idir username
@@ -73,14 +46,14 @@ def create_test_user_role_assignment(
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
     "user_type_code": "I",
-    "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
+    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001011,
 }
 
 
@@ -95,7 +68,7 @@ def test_create_user_role_assignment_not_authorized(
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -119,11 +92,11 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -150,11 +123,11 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+        json=ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -168,8 +141,8 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
-            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
-            "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,
+            **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+            "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001011,
         },
         headers=jwt_utils.headers(token),
     )
@@ -191,11 +164,11 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -216,12 +189,12 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
-            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
             "user_name": "LOAD-4-TEST",  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid
         },
         headers=jwt_utils.headers(token),
@@ -232,6 +205,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     # business bceid user cannot grant business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert data["detail"]["description"] == "Managing for different organization is not allowed."
+
 
 @pytest.mark.asyncio
 async def test_create_user_role_assignment_with_concrete_role(
@@ -245,7 +219,7 @@ async def test_create_user_role_assignment_with_concrete_role(
     """
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
@@ -298,7 +272,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     # create user role assignment the first time
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -307,7 +281,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
     # create user role assignment the second time
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 409
@@ -328,7 +302,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     test assign an abscrate role to a user without forest client number
     """
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = copy.deepcopy(
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT
+        ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID
     )
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_number")
     response = test_client_fixture.post(
@@ -341,7 +315,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
         response.json()["detail"].get("description")
         == "Invalid role assignment request. "
         + "Cannot assign user "
-        + TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT["user_name"]
+        + ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["user_name"]
         + " to abstract role FOM_SUBMITTER"
     )
 
@@ -358,7 +332,7 @@ async def test_create_user_role_assignment_with_abstract_role(
     """
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -391,7 +365,7 @@ async def test_create_user_role_assignment_with_abstract_role(
         db_pg_session, assignment_user_role_abstract[0].role_id
     )
     assert assignment_role is not None
-    assert assignment_role.parent_role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
+    assert assignment_role.parent_role_id == FOM_DEV_SUBMITTER_ROLE_ID
 
     # cleanup
     response = test_client_fixture.delete(
@@ -410,7 +384,7 @@ async def test_create_user_role_assignment_with_same_username(
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -472,7 +446,7 @@ async def test_assign_same_application_roles_for_different_environments(
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -482,7 +456,7 @@ async def test_assign_same_application_roles_for_different_environments(
     # create a user role assignment with same username and type, but for FOM_TEST role
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_TEST_CONCRETE,
+        json=ACCESS_GRANT_FOM_TEST_CR_IDIR,
         headers=jwt_utils.headers(fom_test_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -500,9 +474,9 @@ async def test_assign_same_application_roles_for_different_environments(
     assert assignment_role_id_dev != assignment_role_id_test
 
     # verify application id
-    assert fom_dev_user_role_assignment["application_id"] == TEST_FOM_DEV_APPLICATION_ID
+    assert fom_dev_user_role_assignment["application_id"] == FOM_DEV_APPLICATION_ID
     assert (
-        fom_test_user_role_assignment["application_id"] == TEST_FOM_TEST_APPLICATION_ID
+        fom_test_user_role_assignment["application_id"] == FOM_TEST_APPLICATION_ID
     )
 
     # verify assignment did get created for fom_dev
@@ -512,7 +486,7 @@ async def test_assign_same_application_roles_for_different_environments(
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=TEST_FOM_DEV_APPLICATION_ID,
+        application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
@@ -528,7 +502,7 @@ async def test_assign_same_application_roles_for_different_environments(
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
@@ -547,13 +521,13 @@ async def test_assign_same_application_roles_for_different_environments(
     # verify no user role assignment for fom_dev, but still have one for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=TEST_FOM_DEV_APPLICATION_ID,
+        application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester
     )
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 1
@@ -568,7 +542,7 @@ async def test_assign_same_application_roles_for_different_environments(
     # verify no user role assignment for fom_test
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=TEST_FOM_TEST_APPLICATION_ID,
+        application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester
     )
     assert len(assignment_user_role_items) == 0
@@ -581,9 +555,9 @@ def test_user_role_forest_client_number_not_exist_bad_request(
     Test assign user role with none-existing forest client number should be
     rejected.
     """
-    client_number_not_exists = CLIENT_NUMBER_NOT_EXISTS
+    client_number_not_exists = FC_NUMBER_NOT_EXISTS
     invalid_request = {
-        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
+        **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         "forest_client_number": client_number_not_exists,
     }
     response = test_client_fixture.post(
@@ -607,8 +581,8 @@ def test_user_role_forest_client_number_inactive_bad_request(
     rejected.
     """
     invalid_request = {
-        **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
-        "forest_client_number": CLIENT_NUMBER_EXISTS_DEACTIVATED,
+        **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+        "forest_client_number": FC_NUMBER_EXISTS_DEACTIVATED,
     }
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -630,7 +604,7 @@ def test_self_grant_fail(
     user_role_assignment_request_data = {
         "user_name": jwt_utils.IDIR_USERNAME,
         "user_type_code": UserType.IDIR,
-        "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        "role_id": FOM_DEV_REVIEWER_ROLE_ID,
     }
 
     response = test_client_fixture.post(
@@ -640,7 +614,7 @@ def test_self_grant_fail(
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session, jwt_utils.COGNITO_USERNAME, TEST_FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is None, "Expected user role assignment not to be created"
 
@@ -665,7 +639,7 @@ def test_delete_user_role_assignment_not_authorized(
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
         fom_dev_access_admin_token,
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        ACCESS_GRANT_FOM_DEV_CR_IDIR,
     )
 
     # create a token for idir user without any app admin roles and no delegated admin privilege
@@ -697,13 +671,13 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
         fom_dev_access_admin_token,
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+        ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
     )
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID without any app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -731,13 +705,13 @@ def test_delete_user_role_assignment_with_forest_client_number(
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
         fom_dev_access_admin_token,
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+        ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
     )
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -752,7 +726,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
         test_client_fixture,
         fom_dev_access_admin_token,
         {
-            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT_BCEID,
+            **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
             "forest_client_number": "00001011",
         },
     )
@@ -780,13 +754,13 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
         fom_dev_access_admin_token,
-        TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        ACCESS_GRANT_FOM_DEV_CR_IDIR,
     )
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -813,7 +787,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
         test_client_fixture,
         fom_dev_access_admin_token,
         {
-            **TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE_BCEID,
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
             "user_name": "LOAD-4-TEST",  # we created this user with business_guid in local_sql
         },
     )
@@ -821,7 +795,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID
+        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -845,7 +819,7 @@ async def test_delete_user_role_assignment(
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE,
+        json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -895,7 +869,7 @@ def test_self_remove_grant_fail(
     user_role = crud_user_role.create(
         db=db_pg_session,
         user_id=user.user_id,
-        role_id=TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        role_id=FOM_DEV_REVIEWER_ROLE_ID,
         requester=jwt_utils.COGNITO_USERNAME,
     )
 
@@ -905,7 +879,7 @@ def test_self_remove_grant_fail(
     )
 
     row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session, jwt_utils.COGNITO_USERNAME, TEST_FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is not None, "Expected user role assignment not to be deleted"
 

@@ -29,7 +29,7 @@ SET cognito_user_id = 'test-idir_e72a12c916amangled9e5dcdffae7@idir'
 WHERE user_name = 'IANLIU';
 
 UPDATE app_fam.fam_user
-SET cognito_user_id = 'test-idir_eb65e9d782mangledc7d7f9b1@idir'
+SET cognito_user_id = 'test-idir_eb65e9d7828d4718aa6f4193cmangled@idir'
 WHERE user_name = 'PTOLLEST';
 
 UPDATE app_fam.fam_user
