@@ -32,11 +32,11 @@ describe('GrantApplicationAdmin', () => {
     let usernameInputTextEl: HTMLInputElement;
     let verifyButton: DOMWrapper<HTMLElement>;
     let verifyButtonEl: HTMLButtonElement;
+    const routerPushSpy = vi.spyOn(router, 'push');
 
     //populate the breadcrumbState
     const breadcrumbItems = [routeItems.dashboard, routeItems.grantAppAdmin];
     populateBreadcrumb(breadcrumbItems);
-
     beforeEach(async () => {
         wrapper = mount(GrantApplicationAdmin, {
             global: {
@@ -94,6 +94,18 @@ describe('GrantApplicationAdmin', () => {
         });
     });
 
+    it('Should redirect when breadcrumb item is clickled', async () => {
+
+        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+        const breadcrumbDashboardItem = breadcrumb.findAll('a').find((item) => {
+            return item.element.textContent === routeItems.dashboard.label
+        })
+
+        expect(breadcrumbDashboardItem.element.textContent).toBe(routeItems.dashboard.label)
+        await breadcrumbDashboardItem.trigger('click')
+        expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
+    })
+
     it('Should show validation error when username input invalid', async () => {
         const usernameInputText = wrapper.find('#userIdInput');
         const usernameInputTextEl =
@@ -144,9 +156,8 @@ describe('GrantApplicationAdmin', () => {
     it('Should call cancelForm method and route to dashboard', async () => {
         // Spy on cancelForm method, spy on router.push
         const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
-        const routerPushSpy = vi.spyOn(router, 'push');
-
         const cancelBtn = wrapper.get('#grantAdminCancel');
+
         await cancelBtn.trigger('click');
 
         // cancelForm is called
