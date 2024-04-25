@@ -72,12 +72,14 @@ def create_test_user_role_assignment(
 # and the verify of forest client id feature
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
     "user_name": "fom_user_test",
+    "user_guid": "",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE,
 }
 TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
     "user_name": "fom_user_test",
+    "user_guid": "",
     "user_type_code": "I",
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": CLIENT_NUMBER_EXISTS_ACTIVE_00001011,

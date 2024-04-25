@@ -19,7 +19,7 @@ Note: This is no longer necessary if running through Docker or running tests thr
 cd server/admin_management
 set -o allexport; source local-dev.env; set +o allexport
 ```
-
+Please update the value of `FC_API_TOKEN` to be the TEST Forest Client Api token, update `USER_GUID_IDIR` to be your IDIR GUID for running tests.
 
 ## -------------- Windows Configuration ----------------------------------------
 

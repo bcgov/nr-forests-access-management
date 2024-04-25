@@ -90,7 +90,8 @@ This is an API Token for Forest Client API external service to lookup forest cli
 
 In case it needs to be reset, use [API Service Portal](https://api.gov.bc.ca/devportal/api-directory/3179?preview=false) with your IDIR credential to login and go to "Forest Client API" service to request a reset for the token.
 
-<b>IDIM_PROXY_API_KEY</b>: FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key.
+<b>IDIM_PROXY_API_KEY</b>: \
+FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key.
 
 ## Run the API from VS Code launch configuration
 
@@ -129,6 +130,8 @@ pip3 freeze
 
 Tests are running using pytest. They can be run from the command line or using VS Code tools.
 Test sets are located under "server/backend/testspg", it contains unit tests and integration tests that uses "testcontainers" to spin up a temporary "Postgres" database container. Pytest config will connect to the temporary database container for testing.
+
+Note: Please update the value of `USER_GUID_IDIR` in `local-dev.env` file to be your IDIR GUID in order to run the tests.
 
 ## Install test dependencies
 
