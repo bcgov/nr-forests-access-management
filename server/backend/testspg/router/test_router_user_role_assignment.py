@@ -31,33 +31,14 @@ from testspg.constants import (
     ACCESS_GRANT_FOM_TEST_CR_IDIR,
     ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
     ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR
 )
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
-
-
-# note: this might need to be a real idir username
-# and a real forest client id
-# once we enable the verifiy idir feature
-# and the verify of forest client id feature
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE = {
-    "user_name": "fom_user_test",
-    "user_guid": "",
-    "user_type_code": "I",
-    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
-}
-TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN = {
-    "user_name": "fom_user_test",
-    "user_guid": "",
-    "user_type_code": "I",
-    "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001011,
-}
-
 
 # ------------------ test create user role assignment ----------------------- #
 def test_create_user_role_assignment_not_authorized(
@@ -395,7 +376,7 @@ async def test_create_user_role_assignment_with_same_username(
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_ROLE,
+        json=ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
@@ -404,7 +385,7 @@ async def test_create_user_role_assignment_with_same_username(
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_DIFF_FCN,
+        json=ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
