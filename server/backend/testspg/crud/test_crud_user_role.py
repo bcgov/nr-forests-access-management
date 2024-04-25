@@ -7,11 +7,11 @@ from api.app.crud import crud_role, crud_user_role
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
-                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                               TEST_NOT_EXIST_ROLE_ID,
+from testspg.constants import (TEST_CREATOR, FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID,
+                               NOT_EXIST_ROLE_ID,
                                TEST_NOT_EXIST_USER_TYPE,
-                               TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,8 +21,8 @@ TEST_FOREST_CLIENT_NUMBER = "00000001"
 
 def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     user_role = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
-    user_role["role_id"] = TEST_NOT_EXIST_ROLE_ID
+        copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    user_role["role_id"] = NOT_EXIST_ROLE_ID
 
     with pytest.raises(HTTPException) as e:
         assert crud_user_role.create_user_role(
@@ -39,7 +39,7 @@ def test_create_user_role_with_user_types_not_exists(
 ):
     # Create a user_type_code with not supported type.
     user_role = \
-        copy.deepcopy(TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_CONCRETE)
+        copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
     user_role["user_type_code"] = \
         TEST_NOT_EXIST_USER_TYPE
 
@@ -58,7 +58,7 @@ def test_create(db_pg_session: Session):
     user_role_xref = crud_user_role.create(
         db_pg_session,
         TEST_USER_ID,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        FOM_DEV_REVIEWER_ROLE_ID,
         TEST_CREATOR
     )
     xref_dict = user_role_xref.__dict__
@@ -67,7 +67,7 @@ def test_create(db_pg_session: Session):
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
         db_pg_session,
         TEST_USER_ID,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        FOM_DEV_REVIEWER_ROLE_ID,
     )
     assert found_user_role_xref is not None
 
@@ -77,7 +77,7 @@ def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
         db_pg_session,
         TEST_USER_ID,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        FOM_DEV_REVIEWER_ROLE_ID,
     )
     assert found_user_role_xref is None
 
@@ -85,7 +85,7 @@ def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
     user_role_xref = crud_user_role.create(
         db_pg_session,
         TEST_USER_ID,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        FOM_DEV_REVIEWER_ROLE_ID,
         TEST_CREATOR
     )
     xref_dict = user_role_xref.__dict__
@@ -94,7 +94,7 @@ def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(
         db_pg_session,
         TEST_USER_ID,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID,
+        FOM_DEV_REVIEWER_ROLE_ID,
     )
     assert found_user_role_xref is not None
 
@@ -117,7 +117,7 @@ def test_construct_forest_client_role_purpose():
 
 def test_find_or_create_forest_client_child_role(db_pg_session: Session):
     # create child role for abstract parent role
-    test_role = crud_role.get_role(db_pg_session, TEST_FOM_DEV_SUBMITTER_ROLE_ID)
+    test_role = crud_role.get_role(db_pg_session, FOM_DEV_SUBMITTER_ROLE_ID)
     result = crud_user_role.find_or_create_forest_client_child_role(
         db_pg_session,
         TEST_FOREST_CLIENT_NUMBER,
@@ -132,7 +132,7 @@ def test_find_or_create_forest_client_child_role(db_pg_session: Session):
     # create child role for concrete parent role
     test_concrete_role = crud_role.get_role(
         db_pg_session,
-        TEST_FOM_DEV_REVIEWER_ROLE_ID
+        FOM_DEV_REVIEWER_ROLE_ID
     )
     result = crud_user_role.find_or_create_forest_client_child_role(
         db_pg_session,

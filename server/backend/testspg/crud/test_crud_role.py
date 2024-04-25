@@ -7,12 +7,12 @@ import pytest
 from api.app.crud import crud_forest_client, crud_role, crud_user_role
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_CREATOR, TEST_FOM_DEV_APPLICATION_ID,
-                               TEST_FOM_DEV_REVIEWER_ROLE_ID,
-                               TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                               TEST_FOM_TEST_APPLICATION_ID,
-                               TEST_NOT_EXIST_APPLICATION_ID,
-                               TEST_NOT_EXIST_ROLE_ID)
+from testspg.constants import (TEST_CREATOR, FOM_DEV_APPLICATION_ID,
+                               FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID,
+                               FOM_TEST_APPLICATION_ID,
+                               NOT_EXIST_APPLICATION_ID,
+                               NOT_EXIST_ROLE_ID)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ TEST_FOREST_CLIENT_NUMBER = "00000002"
 TEST_FOREST_CLIENT_NUMBER_TWO = "00000003"
 TEST_ROLE_PURPOSE = "test role"
 TEST_ROLE_CREATE = {
-    "application_id": TEST_FOM_DEV_APPLICATION_ID,
+    "application_id": FOM_DEV_APPLICATION_ID,
     "role_name": TEST_NEW_ROLE,
     "role_purpose": TEST_ROLE_PURPOSE,
     "create_user": TEST_CREATOR,
@@ -37,20 +37,20 @@ def test_get_roles(db_pg_session: Session):
 
 def test_get_role(db_pg_session: Session):
     # get non exists role
-    found_role = crud_role.get_role(db_pg_session, TEST_NOT_EXIST_ROLE_ID)
+    found_role = crud_role.get_role(db_pg_session, NOT_EXIST_ROLE_ID)
     assert found_role is None
 
     # get concreate role
-    found_role = crud_role.get_role(db_pg_session, TEST_FOM_DEV_REVIEWER_ROLE_ID)
-    assert found_role.role_id == TEST_FOM_DEV_REVIEWER_ROLE_ID
+    found_role = crud_role.get_role(db_pg_session, FOM_DEV_REVIEWER_ROLE_ID)
+    assert found_role.role_id == FOM_DEV_REVIEWER_ROLE_ID
     assert found_role.role_name == "FOM_REVIEWER"
-    assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+    assert found_role.application_id == FOM_DEV_APPLICATION_ID
 
     # get abstract role
-    found_role = crud_role.get_role(db_pg_session, TEST_FOM_DEV_SUBMITTER_ROLE_ID)
-    assert found_role.role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
+    found_role = crud_role.get_role(db_pg_session, FOM_DEV_SUBMITTER_ROLE_ID)
+    assert found_role.role_id == FOM_DEV_SUBMITTER_ROLE_ID
     assert found_role.role_name == "FOM_SUBMITTER"
-    assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+    assert found_role.application_id == FOM_DEV_APPLICATION_ID
 
 
 def test_create_role(db_pg_session: Session):
@@ -64,7 +64,7 @@ def test_create_role(db_pg_session: Session):
     found_role = crud_role.get_role(db_pg_session, new_role.role_id)
     assert found_role.role_id == new_role.role_id
     assert found_role.role_name == TEST_NEW_ROLE
-    assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+    assert found_role.application_id == FOM_DEV_APPLICATION_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
 
@@ -97,8 +97,8 @@ def test_create_role_child_role_with_forest_client(db_pg_session: Session):
     new_child_role = crud_role.create_role(
         schemas.FamRoleCreate(
             **{
-                "parent_role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-                "application_id": TEST_FOM_DEV_APPLICATION_ID,
+                "parent_role_id": FOM_DEV_SUBMITTER_ROLE_ID,
+                "application_id": FOM_DEV_APPLICATION_ID,
                 "forest_client_number": TEST_FOREST_CLIENT_NUMBER,
                 "role_name": "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER,
                 "role_purpose": crud_user_role.construct_forest_client_role_purpose(
@@ -117,8 +117,8 @@ def test_create_role_child_role_with_forest_client(db_pg_session: Session):
     found_role = crud_role.get_role(db_pg_session, new_child_role.role_id)
     assert found_role.role_id == new_child_role.role_id
     assert found_role.role_name == "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER
-    assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
-    assert found_role.parent_role_id == TEST_FOM_DEV_SUBMITTER_ROLE_ID
+    assert found_role.application_id == FOM_DEV_APPLICATION_ID
+    assert found_role.parent_role_id == FOM_DEV_SUBMITTER_ROLE_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     # make sure that a forest client record exists in the database
@@ -135,8 +135,8 @@ def test_create_role_child_role_with_invalid_parent(db_pg_session: Session):
         crud_role.create_role(
             schemas.FamRoleCreate(
                 **{
-                    "parent_role_id": TEST_NOT_EXIST_ROLE_ID,
-                    "application_id": TEST_FOM_DEV_APPLICATION_ID,
+                    "parent_role_id": NOT_EXIST_ROLE_ID,
+                    "application_id": FOM_DEV_APPLICATION_ID,
                     "forest_client_number": TEST_FOREST_CLIENT_NUMBER_TWO,
                     "role_name": "FOM_SUBMITTER_" + TEST_FOREST_CLIENT_NUMBER_TWO,
                     "role_purpose": crud_user_role.construct_forest_client_role_purpose(
@@ -165,10 +165,10 @@ def test_create_role_same_role_for_different_application(db_pg_session: Session)
     found_role = crud_role.get_role(db_pg_session, first_new_role.role_id)
     assert found_role.role_id == first_new_role.role_id
     assert found_role.role_name == TEST_NEW_ROLE_TWO
-    assert found_role.application_id == TEST_FOM_DEV_APPLICATION_ID
+    assert found_role.application_id == FOM_DEV_APPLICATION_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
-    copy_test_role_create["application_id"] = TEST_FOM_TEST_APPLICATION_ID
+    copy_test_role_create["application_id"] = FOM_TEST_APPLICATION_ID
     second_new_role = crud_role.create_role(
         schemas.FamRoleCreate(**copy_test_role_create),
         db_pg_session,
@@ -179,7 +179,7 @@ def test_create_role_same_role_for_different_application(db_pg_session: Session)
     found_role = crud_role.get_role(db_pg_session, second_new_role.role_id)
     assert found_role.role_id == second_new_role.role_id
     assert found_role.role_name == TEST_NEW_ROLE_TWO
-    assert found_role.application_id == TEST_FOM_TEST_APPLICATION_ID
+    assert found_role.application_id == FOM_TEST_APPLICATION_ID
     assert found_role.role_type_code == constants.RoleType.ROLE_TYPE_CONCRETE
 
     # verify two roles are for different application
@@ -193,7 +193,7 @@ def test_get_role_by_role_name_and_app_id(db_pg_session: Session):
     found_role = crud_role.get_role_by_role_name_and_app_id(
         db_pg_session,
         "TEST_NON_ROLE",
-        TEST_FOM_DEV_APPLICATION_ID
+        FOM_DEV_APPLICATION_ID
     )
     assert found_role is None
 
@@ -201,7 +201,7 @@ def test_get_role_by_role_name_and_app_id(db_pg_session: Session):
     found_role = crud_role.get_role_by_role_name_and_app_id(
         db_pg_session,
         "FOM_REVIEWER",
-        TEST_NOT_EXIST_APPLICATION_ID
+        NOT_EXIST_APPLICATION_ID
     )
     assert found_role is None
 
@@ -217,6 +217,6 @@ def test_get_role_by_role_name_and_app_id(db_pg_session: Session):
     found_role = crud_role.get_role_by_role_name_and_app_id(
         db_pg_session,
         "FOM_REVIEWER",
-        TEST_FOM_DEV_APPLICATION_ID
+        FOM_DEV_APPLICATION_ID
     )
     assert found_role.role_name == "FOM_REVIEWER"

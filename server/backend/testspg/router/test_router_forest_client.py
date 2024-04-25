@@ -8,11 +8,11 @@ from api.app.constants import FamForestClientStatusType
 from api.app.main import apiPrefix
 from api.app.schemas import FamForestClient
 from fastapi.testclient import TestClient
-from testspg.constants import (CLIENT_NUMBER_EXISTS_ACTIVE,
-                               CLIENT_NUMBER_EXISTS_DEACTIVATED,
-                               CLIENT_NUMBER_EXISTS_DECEASED,
-                               CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
-                               CLIENT_NUMBER_EXISTS_SUSPENDED)
+from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
+                               FC_NUMBER_EXISTS_DEACTIVATED,
+                               FC_NUMBER_EXISTS_DECEASED,
+                               FC_NUMBER_EXISTS_RECEIVERSHIP,
+                               FC_NUMBER_EXISTS_SUSPENDED)
 
 LOGGER = logging.getLogger(__name__)
 endPoint_search = f"{apiPrefix}/forest_clients/search"
@@ -71,7 +71,7 @@ def test_search_client_number_exists_with_one_result(
     """
     Client "00000001" have ACT (Active) status.
     """
-    exist_forest_client_number = CLIENT_NUMBER_EXISTS_ACTIVE
+    exist_forest_client_number = FC_NUMBER_EXISTS_ACTIVE_00000001
     test_end_point = endPoint_search + f"?client_number={exist_forest_client_number}"
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -91,15 +91,15 @@ def test_search_client_number_exists_with_one_result(
 
 
 @pytest.mark.parametrize("client_id_to_test, expcted_status", [
-    (CLIENT_NUMBER_EXISTS_ACTIVE,
+    (FC_NUMBER_EXISTS_ACTIVE_00000001,
         {"code": FamForestClientStatusType.ACTIVE, "description": constants.DESCRIPTION_ACTIVE}),
-    (CLIENT_NUMBER_EXISTS_DEACTIVATED,
+    (FC_NUMBER_EXISTS_DEACTIVATED,
         {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    (CLIENT_NUMBER_EXISTS_DECEASED,
+    (FC_NUMBER_EXISTS_DECEASED,
         {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    (CLIENT_NUMBER_EXISTS_RECEIVERSHIP,
+    (FC_NUMBER_EXISTS_RECEIVERSHIP,
         {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
-    (CLIENT_NUMBER_EXISTS_SUSPENDED,
+    (FC_NUMBER_EXISTS_SUSPENDED,
         {"code": FamForestClientStatusType.INACTIVE, "description": constants.DESCRIPTION_INACTIVE}),
 ])
 def test_search_client_number_with_status_mapping_correctly(

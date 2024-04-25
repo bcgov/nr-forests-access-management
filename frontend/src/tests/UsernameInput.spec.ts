@@ -70,7 +70,7 @@ describe('UserNameInput', () => {
         helperText: 'New text helper',
     };
 
-    beforeEach(async () => {
+    beforeEach(() => {
         wrapper = mount(UserNameInput, {
             props,
         });
