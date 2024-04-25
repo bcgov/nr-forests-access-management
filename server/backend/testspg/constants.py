@@ -140,13 +140,6 @@ ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T = {
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
 }
 
-ACCESS_GRANT_FOM_TEST_AR_00001018_BCEID_L4T = {
-    "user_name": USER_NAME_BCEID_LOAD_4_TEST,
-    "user_type_code": "B",
-    "role_id": FOM_TEST_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
-}
-
 # -------- Test IDIM Proxy API for searching IDIR and BCEID ---------- #
 TEST_IDIR_REQUESTER_DICT = {
     "cognito_user_id": "test-idir_e72a12c916a44f39e5dcdffae7@idir",
