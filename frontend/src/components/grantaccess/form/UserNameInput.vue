@@ -31,8 +31,17 @@ const computedUserId = computed({
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 const verifyUserId = async () => {
     if (props.domain == UserType.B) {
-        emit('setVerifyResult', true);
-        return;
+        verifiedUserIdentity.value = (
+            await AppActlApiService.idirBceidProxyApi.bceidSearch(
+                computedUserId.value
+            )
+        ).data;
+    } else {
+        verifiedUserIdentity.value = (
+            await AppActlApiService.idirBceidProxyApi.idirSearch(
+                computedUserId.value
+            )
+        ).data;
     }
 
     verifiedUserIdentity.value = (
@@ -101,6 +110,21 @@ watch(
                     class="w-100 custom-height"
                     :aria-label="`Verify user ${IdpProvider.IDIR}`"
                     name="verifyIdir"
+                    label="Verify"
+                    @click="verifyUserId()"
+                    :disabled="
+                        isLoading() ||
+                        !computedUserId ||
+                        errorMessage !== undefined
+                    "
+                >
+                    <Icon icon="search--locate" :size="IconSize.small" />
+                </Button>
+                <Button
+                    v-else
+                    class="w-100 custom-height"
+                    :aria-label="`Verify user ${IdpProvider.BCEIDBUSINESS}`"
+                    name="verifyBusinessBceid"
                     label="Verify"
                     @click="verifyUserId()"
                     :disabled="
