@@ -24,7 +24,7 @@
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "primevue": "3.40.0",
         "vee-validate": "^4.7.3",
-        "vue": "^3.2.38",
+        "vue": "^3.4.21",
         "vue-router": "^4.1.5",
         "wait-for-expect": "^3.0.2"
     },
