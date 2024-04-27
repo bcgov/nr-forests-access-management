@@ -49,8 +49,7 @@ def create_user_role_assignment(
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
-    requester: Requester = Depends(get_current_requester),
-    business_guid: str = Depends(target_user_bceid_search)
+    requester: Requester = Depends(get_current_requester)
 ):
     """
     Create FAM user_role_xref association.
@@ -59,8 +58,6 @@ def create_user_role_assignment(
         f"Executing 'create_user_role_assignment' "
         f"with request: {role_assignment_request}, requestor: {token_claims}"
     )
-
-    LOGGER.info(f"business_guid: {business_guid}")
 
     audit_event_log = AuditEventLog(
         request=request,

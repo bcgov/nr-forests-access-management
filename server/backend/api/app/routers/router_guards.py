@@ -4,6 +4,7 @@ from typing import List, Union
 
 from api.app import database
 from api.app.constants import (
+    ERROR_CODE_INVALID_REQUEST_PARAMETER,
     ERROR_CODE_SELF_GRANT_PROHIBITED,
     ERROR_CODE_INVALID_ROLE_ID,
     ERROR_CODE_REQUESTER_NOT_EXISTS,
@@ -73,6 +74,14 @@ missing_key_attribute_error = HTTPException(
         "description": "Operation encountered unexpected error.",
     },
     headers={"WWW-Authenticate": "Bearer"},
+)
+
+invalid_request_parameter_exception = HTTPException(
+    status_code=HTTPStatus.BAD_REQUEST,
+    detail={
+        "code": ERROR_CODE_INVALID_REQUEST_PARAMETER,
+        "description": "Invalid request parameter.",
+    }
 )
 
 
@@ -269,48 +278,67 @@ async def authorize_by_privilege(
 
 
 # Note!!
-# currently to take care of different scenarios (id or fields needed in path/param/body)
-# to find target user, will only consider request "path_params" and for "body"(json) for PUT/POST.
-# For now, only consider known cases ("router_user_role_assigment.py" endpoints that need this).
-# Specifically: "user_role_xref_id" and "user_name/user_type_code".
+# currently to take care of different scenarios (id or fields needed in
+# path/param/body) to find target user, will only consider request
+# "path_params" and for "body"(json) for PUT/POST/DELETE.
+# For now, only consider known cases ("router_user_role_assigment.py" endpoints
+# that need this). Specifically: "user_role_xref_id" and
+# "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
     request: Request, db: Session = Depends(database.get_db)
-) -> Union[TargetUser, None]:
+) -> TargetUser:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
     For requester, use "get_current_requester()" above.
     """
-    # from path_param - user_role_xref_id
+    # from path_param - "user_role_xref_id"; should exists already in db.
     if "user_role_xref_id" in request.path_params:
         user_role = crud_user_role.find_by_id(
             db, request.path_params["user_role_xref_id"]
         )
-        return (
-            TargetUser.model_validate(user_role.user) if user_role is not None else None
-        )
+        if user_role is not None:
+            found_target_user = TargetUser.model_validate(user_role.user)
+            LOGGER.info(f"User found, target user = {found_target_user}")
+            return found_target_user
+        else:
+            error_description = "Parameter 'user_role_xref_id' is missing or invalid."
+            invalid_request_parameter_exception.detail["description"] = error_description
+            raise invalid_request_parameter_exception
     else:
         # from request body - {user_name/user_type_code}
         rbody = await request.json()
+        rb_user_name = rbody["user_name"]
+        rb_user_type_code = rbody["user_type_code"]
         user = crud_user.get_user_by_domain_and_name(
             db,
-            rbody["user_type_code"],
-            rbody["user_name"],
+            rb_user_type_code,
+            rb_user_name,
         )
-        return TargetUser.model_validate(user) if user is not None else None
+        if user is not None:
+            found_target_user = TargetUser.model_validate(user)
+            return found_target_user
+
+        # user not found, case of new user.
+        else:
+            target_new_user = TargetUser.model_validate({
+                "user_name": rb_user_name,
+                "user_type_code": rb_user_type_code
+            })
+            return target_new_user
 
 
 async def authorize_by_user_type(
     request: Request,
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ):
     """
     This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
     """
     if requester.user_type_code == UserType.BCEID:
         target_user_type_code = None
-        if target_user:
+        if not target_user.is_new_user():
             # in the case of granting/removing access to an existing user
             target_user_type_code = target_user.user_type_code
         else:
@@ -341,7 +369,7 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
 
 async def enforce_self_grant_guard(
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ):
     """
     Verify logged on admin (requester):
@@ -373,7 +401,7 @@ async def enforce_bceid_by_same_org_guard(
     # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage
@@ -389,7 +417,7 @@ async def enforce_bceid_by_same_org_guard(
         requester_business_guid = requester.business_guid
         target_user_business_guid = None
 
-        if target_user:
+        if not target_user.is_new_user():
             # target_user found, expect it to have business_guid
             target_user_business_guid = target_user.business_guid
         else:
@@ -411,7 +439,7 @@ async def enforce_bceid_by_same_org_guard(
 # ----------------------- helper functions -------------------- #
 
 def get_business_guid(requester: Requester, user_id: str):
-    LOGGER.debug(f"Searching for business guid for user: {user_id}")
+    LOGGER.debug(f"Searching for business guid for user: {user_id}, with requester {requester}")
     idim_proxy_api = IdimProxyService(requester)
     search_result = idim_proxy_api.search_business_bceid(
         IdimProxySearchParam(**{"userId": user_id})
@@ -420,8 +448,10 @@ def get_business_guid(requester: Requester, user_id: str):
     return business_guid
 
 
+# TODO: in progress...
 def target_user_bceid_search(
-        requester,
-        target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
+    requester: Requester = Depends(get_current_requester),
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
 ):
+    LOGGER.info(f"requester: {requester}")
     return get_business_guid(requester, target_user.user_name)
