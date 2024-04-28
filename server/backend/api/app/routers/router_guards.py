@@ -203,7 +203,7 @@ def authorize_by_application_role(
     # what id to use to get role from endpoint.
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
-    access_roles= Depends(get_access_roles),
+    access_roles=Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
 ):
     """
@@ -299,7 +299,6 @@ async def get_target_user_from_id(
         )
         if user_role is not None:
             found_target_user = TargetUser.model_validate(user_role.user)
-            LOGGER.info(f"User found, target user = {found_target_user}")
             return found_target_user
         else:
             error_description = "Parameter 'user_role_xref_id' is missing or invalid."
@@ -396,36 +395,54 @@ async def enforce_self_grant_guard(
             )
 
 
+async def target_user_bceid_search(
+    requester: Requester = Depends(get_current_requester),
+    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    _enforce_user_type_auth: None = Depends(authorize_by_user_type)
+) -> TargetUser:
+    if (
+        target_user.is_new_user() or
+        target_user.business_guid is None
+    ):
+        user_id = target_user.user_name
+        LOGGER.debug(
+            f"Searching for business guid for user: {user_id}, with requester {requester}"
+        )
+        idim_proxy_api = IdimProxyService(requester)
+        search_result = idim_proxy_api.search_business_bceid(
+            IdimProxySearchParam(**{"userId": user_id})
+        )
+        business_guid = search_result.get("businessGuid")
+        LOGGER.debug(
+            f"business_guid result: {business_guid} is updated to target_user."
+        )
+        target_user.business_guid = business_guid
+
+    return target_user
+
+
 async def enforce_bceid_by_same_org_guard(
     request: Request,
     # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(target_user_bceid_search),
 ):
     """
-    When requester is a BCeID user, enforce requester can only manage
-    target user from the same organization.
-    :param _enforce_user_type_auth, call the authorize_by_user_type method to ensure that
-    this enforce_bceid_by_same_org_guard method only checks when business bceid user grants access to another business bceid user
+    When requester is a BCeID user, enforce requester can only manage target
+    user from the same organization.
+    :param _enforce_user_type_auth: call the authorize_by_user_type method
+            to ensure that this enforce_bceid_by_same_org_guard method only
+            checks when business bceid user grants access to another business
+            bceid user
     """
-    LOGGER.info(
+    LOGGER.debug(
         f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
         "is allowed to manage BCeID target user for the same organization."
     )
     if requester.user_type_code == UserType.BCEID:
         requester_business_guid = requester.business_guid
-        target_user_business_guid = None
-
-        if not target_user.is_new_user():
-            # target_user found, expect it to have business_guid
-            target_user_business_guid = target_user.business_guid
-        else:
-            # target_user does not exist in FAM database (new user)
-            # search the target user from IDIM proxy and get business_guid
-            # TODO: update to search by user_guid instead of user_name
-            rbody = await request.json()
-            target_user_business_guid = get_business_guid(requester, rbody["user_name"])
+        target_user_business_guid = target_user.business_guid
 
         if requester_business_guid is None or target_user_business_guid is None:
             error_description = f"{missing_key_attribute_error.detail['description']} Requester or target user business GUID is missing."
@@ -438,20 +455,11 @@ async def enforce_bceid_by_same_org_guard(
 
 # ----------------------- helper functions -------------------- #
 
-def get_business_guid(requester: Requester, user_id: str):
-    LOGGER.debug(f"Searching for business guid for user: {user_id}, with requester {requester}")
-    idim_proxy_api = IdimProxyService(requester)
-    search_result = idim_proxy_api.search_business_bceid(
-        IdimProxySearchParam(**{"userId": user_id})
-    )
-    business_guid = search_result.get("businessGuid")
-    return business_guid
-
-
-# TODO: in progress...
-def target_user_bceid_search(
-    requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id)
-):
-    LOGGER.info(f"requester: {requester}")
-    return get_business_guid(requester, target_user.user_name)
+# def get_business_guid(requester: Requester, user_id: str):
+#     LOGGER.debug(f"Searching for business guid for user: {user_id}, with requester {requester}")
+#     idim_proxy_api = IdimProxyService(requester)
+#     search_result = idim_proxy_api.search_business_bceid(
+#         IdimProxySearchParam(**{"userId": user_id})
+#     )
+#     business_guid = search_result.get("businessGuid")
+#     return business_guid
