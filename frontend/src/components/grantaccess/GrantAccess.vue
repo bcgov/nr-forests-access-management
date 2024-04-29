@@ -62,7 +62,7 @@ const setVerifyUserIdPassed = (
     userGuid: string = ''
 ) => {
     verifyUserIdPassed.value = verifiedResult;
-    if (verifiedResult) formData.value.userGuid = userGuid;
+    formData.value.userGuid = userGuid;
 };
 
 /* ------------------- Role selection method -------------------------- */
