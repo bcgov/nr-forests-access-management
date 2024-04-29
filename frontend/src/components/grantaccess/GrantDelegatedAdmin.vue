@@ -29,6 +29,7 @@ const confirm = useConfirm();
 const defaultFormData = {
     domain: UserType.I,
     userId: '',
+    userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
 };
@@ -46,11 +47,16 @@ const userDomainChange = (selectedDomain: string) => {
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);
-const setVerifyUserIdPassed = (verifiedResult: boolean) => {
+const setVerifyUserIdPassed = (
+    verifiedResult: boolean,
+    userGuid: string = ''
+) => {
     verifyUserIdPassed.value = verifiedResult;
+    formData.value.userGuid = userGuid;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -151,6 +157,7 @@ const confirmSubmit = async () => {
 function toRequestPayload(formData: any) {
     const request = {
         user_name: formData.userId,
+        user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
         ...(formData.verifiedForestClients.length > 0
