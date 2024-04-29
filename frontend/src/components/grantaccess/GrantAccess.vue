@@ -57,7 +57,10 @@ const userIdChange = (userId: string) => {
 };
 
 const verifyUserIdPassed = ref(false);
-const setVerifyUserId = (verifiedResult: boolean, userGuid: string = '') => {
+const setVerifyUserIdPassed = (
+    verifiedResult: boolean,
+    userGuid: string = ''
+) => {
     verifyUserIdPassed.value = verifiedResult;
     if (verifiedResult) formData.value.userGuid = userGuid;
 };
@@ -195,7 +198,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                         :domain="formData.domain"
                         :userId="formData.userId"
                         @change="userIdChange"
-                        @setVerifyResult="setVerifyUserId"
+                        @setVerifyResult="setVerifyUserIdPassed"
                     />
                 </StepContainer>
 
