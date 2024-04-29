@@ -32,7 +32,7 @@ TEST_NEW_USER = {
 }
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
-USER_GUID_IDIR = os.environ.get("USER_GUID_IDIR") or ""
+USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
 USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
 USER_GUID_BCEID_LOAD_3_TEST = "532905DE0AA24923AE535428F171BF13"
 USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"

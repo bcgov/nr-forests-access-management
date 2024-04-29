@@ -38,7 +38,7 @@ TEST_NEW_BCEID_USER = schemas.FamUserDto(
     }
 )
 
-TEST_USER_GUID_IDIR = os.environ.get("USER_GUID_IDIR") or ""
+TEST_USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
 
 # ---------------------- test application data ---------------------- #
 TEST_NOT_EXIST_APPLICATION_ID = 0

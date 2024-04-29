@@ -131,8 +131,6 @@ pip3 freeze
 Tests are running using pytest. They can be run from the command line or using VS Code tools.
 Test sets are located under "server/backend/testspg", it contains unit tests and integration tests that uses "testcontainers" to spin up a temporary "Postgres" database container. Pytest config will connect to the temporary database container for testing.
 
-Note: Please update the value of `USER_GUID_IDIR` in `local-dev.env` file to be your IDIR GUID in order to run the tests.
-
 ## Install test dependencies
 
 Assuming you've already installed the dependencies from requirements.txt, you just need to install the dependencies from requirements-dev.txt. If you are running in a VENV, make sure you run the install command in the same VENV.
