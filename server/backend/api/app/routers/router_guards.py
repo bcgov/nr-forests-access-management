@@ -397,12 +397,15 @@ async def enforce_self_grant_guard(
 
 async def target_user_bceid_search(
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type)
 ) -> TargetUser:
     if (
-        target_user.is_new_user() or
-        target_user.business_guid is None
+        target_user.user_type_code == UserType.BCEID and
+        (
+            target_user.is_new_user() or
+            target_user.business_guid is None
+        )
     ):
         user_id = target_user.user_name
         LOGGER.debug(
