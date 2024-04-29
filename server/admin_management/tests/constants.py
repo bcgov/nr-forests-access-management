@@ -36,6 +36,8 @@ TEST_NEW_BCEID_USER = schemas.FamUserDto(
     }
 )
 
+TEST_USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
+
 # ---------------------- test application data ---------------------- #
 TEST_NOT_EXIST_APPLICATION_ID = 0
 TEST_APPLICATION_ID_FAM = 1
@@ -49,6 +51,7 @@ TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
 TEST_NEW_APPLICATION_ADMIN = {
     "user_type_code": famConstants.UserType.IDIR,
     "user_name": TEST_USER_NAME,
+    "user_guid": TEST_USER_GUID_IDIR,
     "application_id": TEST_APPLICATION_ADMIN_APPLICATION_ID,
 }
 
@@ -117,6 +120,7 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE = schemas.FamAccessControlPrivilegeCreateDt
 )
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST = {
     "user_name": TEST_USER_NAME,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_numbers": [TEST_FOREST_CLIENT_NUMBER],
@@ -124,6 +128,7 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST = {
 
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE = {
     "user_name": TEST_USER_NAME,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }

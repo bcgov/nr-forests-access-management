@@ -31,6 +31,12 @@ export interface FamUserRoleAssignmentCreate {
     'user_name': string;
     /**
      * 
+     * @type {string}
+     * @memberof FamUserRoleAssignmentCreate
+     */
+    'user_guid': string;
+    /**
+     * 
      * @type {UserType}
      * @memberof FamUserRoleAssignmentCreate
      */

@@ -61,9 +61,8 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
+            **TEST_NEW_APPLICATION_ADMIN,
             "user_type_code": TEST_INVALID_USER_TYPE,
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
-            "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
         },
         headers=jwt_utils.headers(token),
     )
@@ -75,9 +74,8 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
+            **TEST_NEW_APPLICATION_ADMIN,
             "user_type_code": UserType.BCEID,
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
-            "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
         },
         headers=jwt_utils.headers(token),
     )
@@ -89,8 +87,7 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
-            "user_type_code": TEST_NEW_APPLICATION_ADMIN.get("user_type_code"),
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
+            **TEST_NEW_APPLICATION_ADMIN,
             "application_id": TEST_NOT_EXIST_APPLICATION_ID,
         },
         headers=jwt_utils.headers(token),

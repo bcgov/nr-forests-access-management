@@ -157,6 +157,7 @@ class FamRoleWithClientDto(BaseModel):
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
+    user_guid: Annotated[str, StringConstraints(max_length=32)]
     user_type_code: famConstants.UserType
     application_id: int
 
@@ -184,6 +185,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     """
 
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
+    user_guid: Annotated[str, StringConstraints(max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_numbers: Union[
