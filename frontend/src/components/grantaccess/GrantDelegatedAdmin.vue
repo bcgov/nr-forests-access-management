@@ -47,6 +47,7 @@ const userDomainChange = (selectedDomain: string) => {
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);

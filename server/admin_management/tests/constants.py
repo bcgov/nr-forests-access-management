@@ -1,5 +1,3 @@
-import os
-
 from api.app import constants as famConstants
 import api.app.schemas as schemas
 from api.app.services.role_service import RoleService

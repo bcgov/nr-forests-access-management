@@ -37,6 +37,7 @@ const applicationOptions = computed(() => {
 /* ------------------ User information method ------------------------- */
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);
