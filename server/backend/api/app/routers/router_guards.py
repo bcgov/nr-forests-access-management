@@ -1,6 +1,6 @@
 import logging
 from http import HTTPStatus
-from typing import List, Union
+from typing import List
 
 from api.app import database
 from api.app.constants import (
@@ -397,9 +397,15 @@ async def enforce_self_grant_guard(
 
 async def target_user_bceid_search(
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(get_target_user_from_id),
-    _enforce_user_type_auth: None = Depends(authorize_by_user_type)
+    target_user: TargetUser = Depends(get_target_user_from_id)
 ) -> TargetUser:
+    """
+    BCeID user search for target_user.
+    :param target_user "Depends(get_target_user_from_id)": the initial
+        dependency with "get_target_user_from_id" have initial target_user
+        parsed from the request. It's business_guid will be updated after
+        user is searched through IDIM Proxy.
+    """
     if (
         target_user.user_type_code == UserType.BCEID and
         (
@@ -454,15 +460,3 @@ async def enforce_bceid_by_same_org_guard(
 
         if requester_business_guid.upper() != target_user_business_guid.upper():
             raise different_org_grant_prohibited_exception
-
-
-# ----------------------- helper functions -------------------- #
-
-# def get_business_guid(requester: Requester, user_id: str):
-#     LOGGER.debug(f"Searching for business guid for user: {user_id}, with requester {requester}")
-#     idim_proxy_api = IdimProxyService(requester)
-#     search_result = idim_proxy_api.search_business_bceid(
-#         IdimProxySearchParam(**{"userId": user_id})
-#     )
-#     business_guid = search_result.get("businessGuid")
-#     return business_guid
