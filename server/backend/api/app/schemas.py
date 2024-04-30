@@ -86,6 +86,7 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_name: Annotated[
         str, StringConstraints(min_length=3, max_length=20)
     ]  # IDIM search max length
+    user_guid: Annotated[str, StringConstraints(max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_number: Union[
@@ -283,6 +284,7 @@ class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool
     userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 
