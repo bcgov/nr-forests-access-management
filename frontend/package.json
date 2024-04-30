@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "@bcgov-nr/nr-theme": "^1.8.6",
-        "@carbon/icons-vue": "^10.72.1",
+        "@carbon/icons-vue": "^10.88.0",
         "aws-amplify": "^5.3.6",
         "axios": "1.6.5",
         "bootstrap": "^5.2.3",
