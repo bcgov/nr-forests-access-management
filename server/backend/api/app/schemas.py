@@ -353,7 +353,6 @@ class TargetUser(Requester):
     checking "is_new_user()".
     """
     user_id: Optional[int] = None
-    # is_new_user: bool = False  # default; assuming target user can be found from db.
 
     def is_new_user(self):
         return self.user_id is None

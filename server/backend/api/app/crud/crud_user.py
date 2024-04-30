@@ -129,3 +129,12 @@ def get_user_by_user_role_xref_id(
     return user
 
 
+def update(
+    db: Session, user_id: int, update_values: dict
+):
+    LOGGER.debug(f"Update on FamUser {user_id} with values: {update_values}")
+    update_count = (
+        db.query(models.FamUser).filter(user_id).update(update_values)
+    )
+    LOGGER.debug(f"{update_count} row updated.")
+    return get_user(db, user_id)

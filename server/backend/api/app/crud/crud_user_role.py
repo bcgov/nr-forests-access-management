@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import Optional
 
 from api.app import constants as famConstants, schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user
@@ -12,7 +13,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_user_role(
-    db: Session, request: schemas.FamUserRoleAssignmentCreate, requester: str
+    db: Session,
+    request: schemas.FamUserRoleAssignmentCreate,
+    requester: str,
+    target_user_business_guid: Optional[str] = None
 ) -> schemas.FamUserRoleAssignmentGet:
     """
     Create fam_user_role_xref Association
@@ -42,6 +46,9 @@ def create_user_role(
         request.user_type_code,
         request.user_name,
         requester
+    )
+    fam_user = _update_user_business_guid(
+        db, fam_user, target_user_business_guid
     )
 
     # Verify if role exists.
@@ -259,6 +266,19 @@ def find_by_id(
     return user_role
 
 
+def _update_user_business_guid(db, fam_user: models.FamUser, business_guid):
+    if (
+        business_guid is not None and
+        fam_user.business_guid != business_guid
+    ):
+        # update user when necessary.
+        # "target_user_business_guid" is alerady searched from IDIM.
+        return crud_user.update(db, fam_user.user_id, {
+            models.FamUser.business_guid: business_guid
+        })
+    return fam_user
+
+
 class UserRoleValidator:
     """
     Purpose: More validations on inputs (other than basic validations) and
@@ -296,5 +316,3 @@ class UserRoleValidator:
 
     def get_forest_client(self):
         return self.fc[0] if self.forest_client_number_exists() else None
-
-
