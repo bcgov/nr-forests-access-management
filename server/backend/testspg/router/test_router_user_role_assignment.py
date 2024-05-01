@@ -867,3 +867,6 @@ def test_self_remove_grant_fail(
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
+
+
+# TODO add test to test create assignment for BCEID new user (not exists in db, and update business_guid)

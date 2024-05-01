@@ -295,9 +295,10 @@ async def get_target_user_from_id(
     """
     # from path_param - "user_role_xref_id"; should exists already in db.
     if "user_role_xref_id" in request.path_params:
-        user_role = crud_user_role.find_by_id(
-            db, request.path_params["user_role_xref_id"]
-        )
+        urxid = request.path_params["user_role_xref_id"]
+        LOGGER.debug("Dependency 'get_target_user_from_id' called with " +
+                     f"request containing user_role_xref_id path param {urxid}.")
+        user_role = crud_user_role.find_by_id(db, urxid)
         if user_role is not None:
             found_target_user = TargetUser.model_validate(user_role.user)
             return found_target_user
@@ -308,10 +309,13 @@ async def get_target_user_from_id(
     else:
         # from request body - {user_name/user_type_code}
         rbody = await request.json()
+        LOGGER.debug("Dependency 'get_target_user_from_id' called with " +
+                     f"request body {rbody}.")
         rb_user_name = rbody["user_name"]
         rb_user_type_code = rbody["user_type_code"]
         # user_guid is searched from IDIM search and passed from frontend.
         rb_user_guid = rbody["user_guid"]
+
         user = crud_user.get_user_by_domain_and_name(
             db,
             rb_user_type_code,
@@ -331,6 +335,8 @@ async def get_target_user_from_id(
                 "user_type_code": rb_user_type_code,
                 "user_buid": rb_user_guid
             })
+            # update this target_new_user with user_guid from request body.
+            target_new_user.user_guid = rb_user_guid
             return target_new_user
 
 
@@ -422,7 +428,7 @@ async def target_user_bceid_search(
     ):
         user_guid = target_user.user_guid
         LOGGER.debug(
-            f"Searching for business guid for user: {user_guid}, with requester {requester}"
+            f"Searching for business guid for user: {target_user}, with requester {requester}"
         )
         idim_proxy_api = IdimProxyService(requester)
         search_result = idim_proxy_api.search_business_bceid(
