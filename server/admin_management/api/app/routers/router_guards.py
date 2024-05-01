@@ -4,6 +4,7 @@ from http import HTTPStatus
 from typing import Union
 from fastapi import Depends, HTTPException, Request
 
+from api.app.utils import utils
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     get_access_roles,
@@ -41,7 +42,7 @@ ERROR_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_INVALID_APPLICATION_ADMIN_ID = "invalid_application_admin_id"
 ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID = "invalid_access_control_privilege_id"
 ERROR_NOT_ALLOWED_USER_TYPE = "user_type_not_allowed"
-
+ERROR_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 
 no_requester_exception = HTTPException(
     status_code=HTTPStatus.FORBIDDEN,  # 403
@@ -108,9 +109,10 @@ async def get_current_requester_without_access_check(
 
 # Note!!
 # currently to take care of different scenarios (id or fields needed in path/param/body)
-# to find target user, will only consider request "path_params" and for "body"(json) for PUT/POST.
-# For now, only consider known cases ("router_application_admin.py" endpoints that need this).
-# Specifically: "user_role_xref_id" and "user_name/user_type_code".
+# to find target user, will only consider request "path_params" and "body"(json) for PUT/POST.
+# For now, only consider known cases.
+# Specifically: "application_admin_id", "access_control_privilege_id" and
+# "user_name/user_type_code" in request body.
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
     request: Request,
@@ -121,47 +123,77 @@ async def get_target_user_from_id(
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
         access_control_privilege_service_instance
     ),
-) -> Union[TargetUser, None]:
+) -> TargetUser:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
-    For requester, use "get_current_requester()" above.
+    For requester, use "get_current_requester()".
     """
     # from path_param - application_admin_id, when remove admin access for a user
-
     if "application_admin_id" in request.path_params:
+        raaid = request.path_params["application_admin_id"]
+        LOGGER.debug("Dependency 'get_target_user_from_id': 'application_admin_id' " +
+                     f"path param found: {raaid}.")
         application_admin = application_admin_service.get_application_admin_by_id(
-            request.path_params["application_admin_id"]
+            raaid
         )
-        return (
-            TargetUser.model_validate(application_admin.user)
-            if application_admin is not None
-            else None
-        )
+        if application_admin is not None:
+            return TargetUser.model_validate(application_admin.user)
+        else:
+            error_msg = "Parameter 'application_admin_id' {raaid} is missing or invalid."
+            utils.raise_http_exception(
+                error_code=ERROR_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
+
     elif "access_control_privilege_id" in request.path_params:
+        acpid = request.path_params["access_control_privilege_id"]
+        LOGGER.debug("Dependency 'get_target_user_from_id': 'access_control_privilege_id' " +
+                     f"path param found: {acpid}.")
         access_control_privilege = access_control_privilege_service.get_acp_by_id(
-            request.path_params["access_control_privilege_id"]
+            acpid
         )
-        return (
-            TargetUser.model_validate(access_control_privilege.user)
-            if access_control_privilege is not None
-            else None
-        )
+        if access_control_privilege is not None:
+            return TargetUser.model_validate(access_control_privilege.user)
+        else:
+            error_msg = "Parameter 'access_control_privilege_id' {acpid} is missing or invalid."
+            utils.raise_http_exception(
+                error_code=ERROR_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
     else:
         # from body - {user_name/user_type_code}, when grant admin access
-        try:
-            rbody = await request.json()
-            user = user_service.get_user_by_domain_and_name(
-                rbody["user_type_code"],
-                rbody["user_name"],
-            )
-            return TargetUser.model_validate(user) if user is not None else None
-        except json.JSONDecodeError:
-            return None
+        rbody = await request.json()
+        LOGGER.debug(f"Dependency 'get_target_user_from_id' request body {rbody}.")
+        rb_user_name = rbody["user_name"]
+        rb_user_type_code = rbody["user_type_code"]
+        # user_guid is searched from IDIM search and passed from frontend.
+        rb_user_guid = rbody["user_guid"]
+
+        user = user_service.get_user_by_domain_and_name(
+            rb_user_type_code,
+            rb_user_name,
+        )
+        if user is not None:
+            found_target_user = TargetUser.model_validate(user)
+            # old data might not have user_guid.
+            if found_target_user.user_guid is None:
+                found_target_user.user_guid = rb_user_guid
+            return found_target_user
+        # user not found, case of new user.
+        else:
+            target_new_user = TargetUser.model_validate({
+                "user_name": rb_user_name,
+                "user_type_code": rb_user_type_code,
+                "user_guid": rb_user_guid
+            })
+            # update this target_new_user with user_guid from request body.
+            target_new_user.user_guid = rb_user_guid
+            return target_new_user
 
 
 async def enforce_self_grant_guard(
     requester: Requester = Depends(get_current_requester),
-    target_user: Union[TargetUser, None] = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ):
     """
     Verify logged on admin (requester):
@@ -169,23 +201,22 @@ async def enforce_self_grant_guard(
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
-    if target_user is not None:
-        is_same_user_name = requester.user_name == target_user.user_name
-        is_same_user_type_code = requester.user_type_code == target_user.user_type_code
+    is_same_user_name = requester.user_name == target_user.user_name
+    is_same_user_type_code = requester.user_type_code == target_user.user_type_code
 
-        if is_same_user_name and is_same_user_type_code:
-            LOGGER.debug(
-                f"User '{requester.user_name}' should not "
-                f"grant/remove permission privilege to self."
-            )
-            raise HTTPException(
-                status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_SELF_GRANT_PROHIBITED,
-                    "description": "Altering permission privilege to self is not allowed",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+    if is_same_user_name and is_same_user_type_code:
+        LOGGER.debug(
+            f"User '{requester.user_name}' should not "
+            f"grant/remove permission privilege to self."
+        )
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_SELF_GRANT_PROHIBITED,
+                "description": "Altering permission privilege to self is not allowed",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def get_request_role_from_id(

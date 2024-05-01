@@ -389,23 +389,22 @@ async def enforce_self_grant_guard(
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
-    if target_user is not None:
-        is_same_user_name = requester.user_name == target_user.user_name
-        is_same_user_type_code = requester.user_type_code == target_user.user_type_code
+    is_same_user_name = requester.user_name == target_user.user_name
+    is_same_user_type_code = requester.user_type_code == target_user.user_type_code
 
-        if is_same_user_name and is_same_user_type_code:
-            LOGGER.debug(
-                f"User '{requester.user_name}' should not "
-                f"grant/remove permission privilege to self."
-            )
-            raise HTTPException(
-                status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_CODE_SELF_GRANT_PROHIBITED,
-                    "description": "Altering permission privilege to self is not allowed",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+    if is_same_user_name and is_same_user_type_code:
+        LOGGER.debug(
+            f"User '{requester.user_name}' should not "
+            f"grant/remove permission privilege to self."
+        )
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail={
+                "code": ERROR_CODE_SELF_GRANT_PROHIBITED,
+                "description": "Altering permission privilege to self is not allowed",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def target_user_bceid_search(

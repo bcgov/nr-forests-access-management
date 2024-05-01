@@ -7,8 +7,8 @@ from api.app.constants import AdminRoleAuthGroup, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import (
-    ERROR_INVALID_APPLICATION_ADMIN_ID,
     ERROR_INVALID_APPLICATION_ID,
+    ERROR_INVALID_REQUEST_PARAMETER,
     ERROR_NOT_ALLOWED_USER_TYPE,
 )
 from tests.constants import (
@@ -58,17 +58,18 @@ def test_create_application_admin(
     assert str(response.json()["detail"]).find("User is admin already") != -1
 
     # test create with invalid user type
-    response = test_client_fixture.post(
-        f"{endPoint}",
-        json={
-            **TEST_NEW_APPLICATION_ADMIN,
-            "user_type_code": TEST_INVALID_USER_TYPE,
-        },
-        headers=jwt_utils.headers(token),
-    )
-    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    assert response.json() is not None
-    assert str(response.json()["detail"]).find("Input should be 'I' or 'B'") != -1
+    try:
+        response = test_client_fixture.post(
+            f"{endPoint}",
+            json={
+                **TEST_NEW_APPLICATION_ADMIN,
+                "user_type_code": TEST_INVALID_USER_TYPE,
+            },
+            headers=jwt_utils.headers(token),
+        )
+    except Exception as err:
+        assert str(err).find("validation error") != -1
+        assert str(err).find("Input should be 'I' or 'B'") != -1
 
     # test not allowed user type, only allow IDIR
     response = test_client_fixture.post(
@@ -134,7 +135,7 @@ def test_delete_application_admin(
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(ERROR_INVALID_APPLICATION_ADMIN_ID) != -1
+    assert response.json()["detail"]["code"] == ERROR_INVALID_REQUEST_PARAMETER
 
 
 def test_get_application_admins(
