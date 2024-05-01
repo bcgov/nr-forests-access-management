@@ -306,3 +306,34 @@ class ForestClientIntegrationFindResponse(BaseModel):
     clientName: str
     clientStatusCode: str
     clientTypeCode: str
+
+
+# ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
+class IdimProxySearchParam(BaseModel):
+    userId: Annotated[
+        str, StringConstraints(max_length=20)
+    ]  # param for Idim-Proxy search of this form (not snake case)
+
+
+class IdimProxyBceidSearchParam(BaseModel):
+    searchUserBy: famConstants.IdimSearchUserParamType
+    searchValue: str
+
+
+class IdimProxyIdirInfo(BaseModel):
+    # property returned from Idim-Proxy search of this form (not snake case)
+    found: bool
+    userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+
+
+class IdimProxyBceidInfo(BaseModel):
+    found: bool
+    userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessGuid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
