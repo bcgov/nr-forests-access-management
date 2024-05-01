@@ -280,6 +280,11 @@ class IdimProxySearchParam(BaseModel):
     ]  # param for Idim-Proxy search of this form (not snake case)
 
 
+class IdimProxyBceidSearchParam(BaseModel):
+    searchUserBy: famConstants.IdimSearchUserParamType
+    searchValue: str
+
+
 class IdimProxyIdirInfo(BaseModel):
     # property returned from Idim-Proxy search of this form (not snake case)
     found: bool

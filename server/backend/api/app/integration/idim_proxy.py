@@ -69,9 +69,9 @@ class IdimProxyService:
             }
         )
 
-        url = f"{self.api_idim_proxy_url}/bceid"
+        url = f"{self.api_idim_proxy_url}/businessBceid"
         LOGGER.info(
-            f"IdimProxyService search_bceid() - url: {url} and param: {query_params}"
+            f"IdimProxyService search_business_bceid() - url: {url} and param: {query_params}"
         )
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)

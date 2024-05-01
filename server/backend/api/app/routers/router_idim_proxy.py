@@ -2,8 +2,13 @@ import logging
 
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.routers.router_guards import get_current_requester, internal_only_action
-from api.app.schemas import IdimProxyIdirInfo, IdimProxySearchParam, IdimProxyBceidInfo
+from api.app.schemas import (
+    IdimProxyBceidSearchParam, IdimProxyIdirInfo,
+    IdimProxySearchParam, IdimProxyBceidInfo
+)
 from fastapi import APIRouter, Depends, Query
+
+from api.app.constants import IdimSearchUserParamType
 
 
 LOGGER = logging.getLogger(__name__)
@@ -32,6 +37,7 @@ def idir_search(
     return search_result
 
 
+# TODO later change this to "/business_bceid"
 @router.get("/bceid", response_model=IdimProxyBceidInfo)
 def bceid_search(
     user_id: str = Query(max_length=20), requester=Depends(get_current_requester)
@@ -39,6 +45,9 @@ def bceid_search(
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester)
     search_result = idim_proxy_api.search_business_bceid(
-        IdimProxySearchParam(**{"userId": user_id})
+        IdimProxyBceidSearchParam(**{
+            "searchUserBy": IdimSearchUserParamType.USER_ID,
+            "searchValue": user_id
+        })
     )
     return search_result

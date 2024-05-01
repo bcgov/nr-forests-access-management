@@ -11,6 +11,7 @@ from api.app.constants import (
     ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+    IdimSearchUserParamType,
     UserType, RoleType
 )
 from api.app.crud import (
@@ -30,7 +31,7 @@ from api.app.jwt_validation import (
 )
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.models.model import FamRole, FamUser
-from api.app.schemas import IdimProxySearchParam, Requester, TargetUser
+from api.app.schemas import IdimProxyBceidSearchParam, Requester, TargetUser
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -309,6 +310,8 @@ async def get_target_user_from_id(
         rbody = await request.json()
         rb_user_name = rbody["user_name"]
         rb_user_type_code = rbody["user_type_code"]
+        # user_guid is searched from IDIM search and passed from frontend.
+        rb_user_guid = rbody["user_guid"]
         user = crud_user.get_user_by_domain_and_name(
             db,
             rb_user_type_code,
@@ -316,13 +319,17 @@ async def get_target_user_from_id(
         )
         if user is not None:
             found_target_user = TargetUser.model_validate(user)
+            # old data might not have user_guid.
+            if found_target_user.user_guid is None:
+                found_target_user.user_guid = rb_user_guid
             return found_target_user
 
         # user not found, case of new user.
         else:
             target_new_user = TargetUser.model_validate({
                 "user_name": rb_user_name,
-                "user_type_code": rb_user_type_code
+                "user_type_code": rb_user_type_code,
+                "user_buid": rb_user_guid
             })
             return target_new_user
 
@@ -413,13 +420,16 @@ async def target_user_bceid_search(
             target_user.business_guid is None
         )
     ):
-        user_id = target_user.user_name
+        user_guid = target_user.user_guid
         LOGGER.debug(
-            f"Searching for business guid for user: {user_id}, with requester {requester}"
+            f"Searching for business guid for user: {user_guid}, with requester {requester}"
         )
         idim_proxy_api = IdimProxyService(requester)
         search_result = idim_proxy_api.search_business_bceid(
-            IdimProxySearchParam(**{"userId": user_id})
+            IdimProxyBceidSearchParam(**{
+                "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                "searchValue": user_guid
+            })
         )
         business_guid = search_result.get("businessGuid")
         LOGGER.debug(
