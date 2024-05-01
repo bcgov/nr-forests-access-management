@@ -82,15 +82,16 @@ async def get_current_requester(
     db: Session = Depends(database.get_db),
 ):
     LOGGER.debug(f"Debug router_guard get_current_requester, current request_cognito_user_id: {request_cognito_user_id}")
+    LOGGER.debug(f"Debug router_guard get_current_requester, current db connection: {db}")
     fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
         db, request_cognito_user_id
     )
-    LOGGER.debug(f"Debug router_guard get_current_requester, current db connection: {db}")
     LOGGER.debug(f"Debug router_guard get_current_requester, current fam_user: {fam_user}")
     if fam_user is None:
         raise no_requester_exception
 
     requester = Requester.model_validate(fam_user)
+    LOGGER.debug(f"Debug router_guard get_current_requester, current requester: {requester}")
     requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
