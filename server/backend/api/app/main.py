@@ -1,7 +1,6 @@
 import logging.config
 import os.path
 
-from api.app import jwt_validation
 from api.app.exception_handlers import (requests_http_error_handler,
                                         unhandled_exception_handler)
 from api.config.config import (get_allow_origins, get_root_path,
@@ -59,9 +58,9 @@ app = FastAPI(
     description=description,
     version='0.0.1',
     contact={
-        "name": "Guy Lafleur",
-        "url": "https://en.wikipedia.org/wiki/Guy_Lafleur",
-        "email": "guy.lafleur@montreal.canadians.ca",
+        "name": "Team Heartwood",
+        "url": "https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Team+Heartwood",
+        "email": "SIBIFSAF@Victoria1.gov.bc.ca",
     },
     license_info={
         "name": "Apache 2.0",
