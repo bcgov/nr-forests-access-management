@@ -53,18 +53,17 @@ def test_create_application_admin(
     assert str(response.json()["detail"]).find("User is admin already") != -1
 
     # test create with invalid user type
-    try:
-        response = test_client_fixture.post(
-            f"{endPoint}",
-            json={
-                **TEST_NEW_APPLICATION_ADMIN,
-                "user_type_code": TEST_INVALID_USER_TYPE,
-            },
-            headers=jwt_utils.headers(token),
-        )
-    except Exception as err:
-        assert str(err).find("validation error") != -1
-        assert str(err).find("Input should be 'I' or 'B'") != -1
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            **TEST_NEW_APPLICATION_ADMIN,
+            "user_type_code": TEST_INVALID_USER_TYPE,
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert response.content is not None
+    assert str(response.content).find("Input should be 'I' or 'B'") != -1
 
     # test not allowed user type, only allow IDIR
     response = test_client_fixture.post(
