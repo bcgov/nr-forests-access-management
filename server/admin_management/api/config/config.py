@@ -145,3 +145,14 @@ def get_forest_client_api_baseurl():
     )  # Test env.
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
+
+
+def get_idim_proxy_api_baseurl():
+    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL")
+    LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
+    return idim_proxy_api_baseurl
+
+
+def get_idim_proxy_api_key():
+    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+    return idim_proxy_api_key
