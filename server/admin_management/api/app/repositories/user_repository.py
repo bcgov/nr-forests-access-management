@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from api.app.models import model as models
 from api.app import schemas
@@ -14,7 +14,7 @@ class UserRepository:
         self.db = db
 
     # --- Get ---
-    def get_user(self, user_id) -> models.FamUser:
+    def get_user(self, user_id) -> Optional[models.FamUser]:
         return self.db.query(models.FamUser).get(user_id)
 
     def get_users(self) -> List[models.FamUser]:

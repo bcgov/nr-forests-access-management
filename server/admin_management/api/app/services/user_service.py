@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
-from api.app import models
+from api.app.models import model as models
 from api.app.schemas import FamUserDto
 from api.app.repositories.user_repository import UserRepository
 
@@ -54,6 +54,8 @@ class UserService:
         :param user_id: The user to be updated on.
         :param business_id: The business_guid value to updated for the user.
         """
+        LOGGER.debug(f"update_user_business_guid() with: user_id: {user_id} " +
+                     f"business_guid: {business_guid}")
         if business_guid is not None:
             user = self.user_repo.get_user(user_id)
             if (
