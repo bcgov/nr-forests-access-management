@@ -30,25 +30,23 @@ const computedUserId = computed({
 
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
 const verifyUserId = async () => {
+    console.log('here')
     if (props.domain == UserType.B) {
         verifiedUserIdentity.value = (
             await AppActlApiService.idirBceidProxyApi.bceidSearch(
                 computedUserId.value
             )
         ).data;
+        console.log(verifiedUserIdentity.value)
     } else {
         verifiedUserIdentity.value = (
             await AppActlApiService.idirBceidProxyApi.idirSearch(
                 computedUserId.value
             )
         ).data;
-    }
 
-    verifiedUserIdentity.value = (
-        await AppActlApiService.idirBceidProxyApi.idirSearch(
-            computedUserId.value
-        )
-    ).data;
+        console.log(verifiedUserIdentity.value)
+    }
 
     if (verifiedUserIdentity.value?.found) emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
 };
@@ -106,35 +104,16 @@ watch(
                 </div>
 
                 <Button
-                    v-if="props.domain === UserType.I"
                     class="w-100 custom-height"
-                    :aria-label="`Verify user ${IdpProvider.IDIR}`"
-                    name="verifyIdir"
+                    :aria-label="`Verify user ${props.domain === UserType.I ? IdpProvider.IDIR : IdpProvider.BCEIDBUSINESS}`"
+                    :name="props.domain === UserType.I ? 'verifyIdir' : 'verifyBusinessBceid'"
                     label="Verify"
                     @click="verifyUserId()"
-                    :disabled="
-                        isLoading() ||
-                        !computedUserId ||
-                        errorMessage !== undefined
-                    "
+
                 >
                     <Icon icon="search--locate" :size="IconSize.small" />
                 </Button>
-                <Button
-                    v-else
-                    class="w-100 custom-height"
-                    :aria-label="`Verify user ${IdpProvider.BCEIDBUSINESS}`"
-                    name="verifyBusinessBceid"
-                    label="Verify"
-                    @click="verifyUserId()"
-                    :disabled="
-                        isLoading() ||
-                        !computedUserId ||
-                        errorMessage !== undefined
-                    "
-                >
-                    <Icon icon="search--locate" :size="IconSize.small" />
-                </Button>
+
             </div>
         </Field>
 
