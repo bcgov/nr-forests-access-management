@@ -4,7 +4,9 @@ from http import HTTPStatus
 from typing import Union
 
 from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               AdminRoleAuthGroup, UserType)
+                               AdminRoleAuthGroup, IdimSearchUserParamType,
+                               UserType)
+from api.app.integration.idim_proxy import IdimProxyService
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED, get_access_roles, get_request_cognito_user_id,
     get_request_cognito_user_id_without_access_check, validate_token)
@@ -13,7 +15,8 @@ from api.app.routers.router_utils import (
     access_control_privilege_service_instance,
     application_admin_service_instance, application_service_instance,
     role_service_instance, user_service_instance)
-from api.app.schemas import FamAppAdminCreateRequest, Requester, TargetUser
+from api.app.schemas import (FamAppAdminCreateRequest,
+                             IdimProxyBceidSearchParam, Requester, TargetUser)
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
 from api.app.services.application_admin_service import ApplicationAdminService
@@ -180,6 +183,44 @@ async def get_target_user_from_id(
             # update this target_new_user with user_guid from request body.
             target_new_user.user_guid = rb_user_guid
             return target_new_user
+
+
+async def target_user_bceid_search(
+    requester: Requester = Depends(get_current_requester),
+    target_user: TargetUser = Depends(get_target_user_from_id)
+) -> TargetUser:
+    """
+    BCeID user search for target_user.
+    :param target_user "Depends(get_target_user_from_id)": the initial
+        dependency with "get_target_user_from_id" has initial target_user
+        parsed from the request. It's business_guid will be updated after
+        user is searched through IDIM Proxy.
+    """
+    if (
+        target_user.user_type_code == UserType.BCEID and
+        (
+            target_user.is_new_user() or
+            target_user.business_guid is None
+        )
+    ):
+        user_guid = target_user.user_guid
+        LOGGER.debug(
+            f"Searching business guid for target_user: {target_user}, with requester {requester}"
+        )
+        idim_proxy_api = IdimProxyService(requester)
+        search_result = idim_proxy_api.search_business_bceid(
+            IdimProxyBceidSearchParam(**{
+                "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                "searchValue": user_guid
+            })
+        )
+        business_guid = search_result.get("businessGuid")
+        LOGGER.debug(
+            f"business_guid result: {business_guid} is updated to target_user."
+        )
+        target_user.business_guid = business_guid
+
+    return target_user
 
 
 async def enforce_self_grant_guard(

@@ -414,7 +414,7 @@ async def target_user_bceid_search(
     """
     BCeID user search for target_user.
     :param target_user "Depends(get_target_user_from_id)": the initial
-        dependency with "get_target_user_from_id" have initial target_user
+        dependency with "get_target_user_from_id" has initial target_user
         parsed from the request. It's business_guid will be updated after
         user is searched through IDIM Proxy.
     """
@@ -427,7 +427,7 @@ async def target_user_bceid_search(
     ):
         user_guid = target_user.user_guid
         LOGGER.debug(
-            f"Searching for business guid for user: {target_user}, with requester {requester}"
+            f"Searching business guid for target_user: {target_user}, with requester {requester}"
         )
         idim_proxy_api = IdimProxyService(requester)
         search_result = idim_proxy_api.search_business_bceid(
