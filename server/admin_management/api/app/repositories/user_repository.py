@@ -52,14 +52,15 @@ class UserRepository:
         return db_item
 
     # --- Update ---
-    def update(self, user_id, update_values: dict) -> int:
+    def update(self, user_id, update_values: dict, requester: str) -> int:
         LOGGER.debug(
-            f"Update on FamUser {user_id} with values: {update_values}"
+            f"Update on FamUser {user_id} with values: {update_values} " +
+            f"for requester {requester}"
         )
         update_count = (
             self.db.query(models.FamUser)
             .filter(models.FamUser.user_id == user_id)
-            .update(update_values)
+            .update({**update_values, models.FamUser.update_user: requester})
         )
         LOGGER.debug(f"{update_count} row updated.")
         return update_count

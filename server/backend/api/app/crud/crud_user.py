@@ -130,19 +130,25 @@ def get_user_by_user_role_xref_id(
 
 
 def update(
-    db: Session, user_id: int, update_values: dict
+    db: Session, user_id: int, update_values: dict, requester: str  # cognito_user_id
 ) -> int:
-    LOGGER.debug(f"Update on FamUser {user_id} with values: {update_values}")
+    LOGGER.debug(
+        f"Update on FamUser {user_id} with values: {update_values} " +
+        f"for requester {requester}"
+    )
     update_count = (
         db.query(models.FamUser)
         .filter(models.FamUser.user_id == user_id)
-        .update(update_values)
+        .update({**update_values, models.FamUser.update_user: requester})
     )
     LOGGER.debug(f"{update_count} row updated.")
     return update_count
 
 
-def update_user_business_guid(db: Session, user_id: int, business_guid: str):
+def update_user_business_guid(
+    db: Session, user_id: int, business_guid: str,
+    requester: str  # cognito_user_id
+):
     """
     The method only updates business_guid for user if necessary.
     The calling method should make sure "business_guid" is correct for the
@@ -150,9 +156,12 @@ def update_user_business_guid(db: Session, user_id: int, business_guid: str):
     search.
     :param user_id: The user to be updated on.
     :param business_id: The business_guid value to updated for the user.
+    :param requester: This is requester's cognito_user_id when updating
+        record from the 'update_user'.
     """
-    LOGGER.debug(f"update_user_business_guid() with: user_id: {user_id} " +
-                 f"business_guid: {business_guid}")
+    LOGGER.debug(
+        f"update_user_business_guid() with: user_id: {user_id} " +
+        f"business_guid: {business_guid} from requester: {requester}")
     if business_guid is not None:
         user = get_user(db, user_id)
         if (
@@ -162,5 +171,5 @@ def update_user_business_guid(db: Session, user_id: int, business_guid: str):
             # update user when necessary.
             update(db, user_id, {
                 models.FamUser.business_guid: business_guid
-            })
+            }, requester)
     return get_user(db, user_id)

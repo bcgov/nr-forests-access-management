@@ -48,7 +48,7 @@ def create_user_role(
         requester
     )
     fam_user = crud_user.update_user_business_guid(
-        db, fam_user.user_id, target_user_business_guid
+        db, fam_user.user_id, target_user_business_guid, requester
     )
 
     # Verify if role exists.
