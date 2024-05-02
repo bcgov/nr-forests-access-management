@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 
+from api.app import models
 from api.app.schemas import FamUserDto
 from api.app.repositories.user_repository import UserRepository
 
@@ -43,3 +44,24 @@ class UserService:
 
         LOGGER.debug(f"User {fam_user.user_id} found.")
         return fam_user
+
+    def update_user_business_guid(self, user_id: int, business_guid: str):
+        """
+        The method only updates business_guid for user if necessary.
+        The calling method should make sure "business_guid" is correct for the
+        user (e.g.,searched from IDIM). This method does not do BCeID user 
+        search.
+        :param user_id: The user to be updated on.
+        :param business_id: The business_guid value to updated for the user.
+        """
+        if business_guid is not None:
+            user = self.user_repo.get_user(user_id)
+            if (
+                user.business_guid is None 
+                or business_guid != user.business_guid
+            ):
+                # update user when necessary.
+                self.user_repo.update(user_id, {
+                    models.FamUser.business_guid: business_guid
+                })
+        return self.user_repo.get_user(user_id)

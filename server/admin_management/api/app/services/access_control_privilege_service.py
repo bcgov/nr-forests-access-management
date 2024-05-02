@@ -62,6 +62,9 @@ class AccessControlPrivilegeService:
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, requester
         )
+        fam_user = self.user_service.update_user_business_guid(
+            fam_user.user_id, target_user.business_guid
+        )
 
         # Verify if role exists
         fam_role = self.role_service.get_role_by_id(request.role_id)

@@ -13,6 +13,13 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
+    # --- Get ---
+    def get_user(self, user_id) -> models.FamUser:
+        return self.db.query(models.FamUser).get(user_id)
+
+    def get_users(self) -> List[models.FamUser]:
+        return self.db.query(models.FamUser).all()
+
     def get_user_by_domain_and_name(
         self, user_type_code: str, user_name: str
     ) -> models.FamUser:
@@ -36,12 +43,23 @@ class UserRepository:
             .one_or_none()
         )
 
-    def get_users(self) -> List[models.FamUser]:
-        return self.db.query(models.FamUser).all()
-
+    # --- Create ---
     def create_user(self, fam_user: schemas.FamUserDto) -> models.FamUser:
         user_dict = fam_user.model_dump()
         db_item = models.FamUser(**user_dict)
         self.db.add(db_item)
         self.db.flush()
         return db_item
+
+    # --- Update ---
+    def update(self, user_id, update_values: dict) -> int:
+        LOGGER.debug(
+            f"Update on FamUser {user_id} with values: {update_values}"
+        )
+        update_count = (
+            self.db.query(models.FamUser)
+            .filter(models.FamUser.user_id == user_id)
+            .update(update_values)
+        )
+        LOGGER.debug(f"{update_count} row updated.")
+        return update_count
