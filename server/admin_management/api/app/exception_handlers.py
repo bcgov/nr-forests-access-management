@@ -89,4 +89,3 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         f'Pydantic ValidationError occurred, cannot process request {request} with error {exc}'
     )
     return PlainTextResponse(str(exc), status_code=HTTPStatus.UNPROCESSABLE_ENTITY)
-

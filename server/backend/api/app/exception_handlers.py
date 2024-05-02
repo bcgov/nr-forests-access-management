@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 from fastapi import Request
 from fastapi.responses import JSONResponse, PlainTextResponse
+from pydantic import ValidationError
 from requests import HTTPError
 
 LOGGER = logging.getLogger(__name__)
@@ -81,3 +82,10 @@ async def unhandled_exception_handler(
         f'{host}:{port} - "{request.method} {url}" 500 Internal Server Error <{exception_name}: {exception_value}>'
     )
     return PlainTextResponse(str(exc), status_code=500)
+
+
+async def validation_exception_handler(request: Request, exc: ValidationError):
+    LOGGER.error(
+        f'Pydantic ValidationError occurred, cannot process request {request} with error {exc}'
+    )
+    return PlainTextResponse(str(exc), status_code=HTTPStatus.UNPROCESSABLE_ENTITY)
