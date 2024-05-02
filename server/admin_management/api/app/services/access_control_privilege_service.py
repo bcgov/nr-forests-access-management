@@ -51,7 +51,8 @@ class AccessControlPrivilegeService:
         )
 
     def create_access_control_privilege_many(
-        self, request: schemas.FamAccessControlPrivilegeCreateRequest, requester: str
+        self, request: schemas.FamAccessControlPrivilegeCreateRequest, 
+        requester: str, target_user: schemas.TargetUser
     ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."

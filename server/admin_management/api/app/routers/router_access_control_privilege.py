@@ -22,7 +22,9 @@ from api.app.services.access_control_privilege_service import (
 )
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.utils.audit_util import (
+    AuditEventLog, AuditEventOutcome, AuditEventType
+)
 from fastapi import APIRouter, Depends, Request, Response
 
 LOGGER = logging.getLogger(__name__)
@@ -89,7 +91,8 @@ def create_access_control_privilege_many(
         )
 
         return access_control_privilege_service.create_access_control_privilege_many(
-            access_control_privilege_request, requester.cognito_user_id
+            access_control_privilege_request, requester.cognito_user_id,
+            target_user
         )
 
     except Exception as e:
