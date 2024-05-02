@@ -131,7 +131,7 @@ def get_user_by_user_role_xref_id(
 
 def update(
     db: Session, user_id: int, update_values: dict
-):
+) -> int:
     LOGGER.debug(f"Update on FamUser {user_id} with values: {update_values}")
     update_count = (
         db.query(models.FamUser)
@@ -139,4 +139,28 @@ def update(
         .update(update_values)
     )
     LOGGER.debug(f"{update_count} row updated.")
+    return update_count
+
+
+def update_user_business_guid(db: Session, user_id: int, business_guid: str):
+    """
+    The method only updates business_guid for user if necessary.
+    The calling method should make sure "business_guid" is correct for the
+    user (e.g.,searched from IDIM). This method does not do BCeID user
+    search.
+    :param user_id: The user to be updated on.
+    :param business_id: The business_guid value to updated for the user.
+    """
+    LOGGER.debug(f"update_user_business_guid() with: user_id: {user_id} " +
+                 f"business_guid: {business_guid}")
+    if business_guid is not None:
+        user = get_user(db, user_id)
+        if (
+            user.business_guid is None
+            or business_guid != user.business_guid
+        ):
+            # update user when necessary.
+            update(db, user_id, {
+                models.FamUser.business_guid: business_guid
+            })
     return get_user(db, user_id)

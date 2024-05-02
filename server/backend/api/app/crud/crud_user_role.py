@@ -47,8 +47,8 @@ def create_user_role(
         request.user_name,
         requester
     )
-    fam_user = _update_user_business_guid(
-        db, fam_user, target_user_business_guid
+    fam_user = crud_user.update_user_business_guid(
+        db, fam_user.user_id, target_user_business_guid
     )
 
     # Verify if role exists.
@@ -264,19 +264,6 @@ def find_by_id(
         .one_or_none()
     )
     return user_role
-
-
-def _update_user_business_guid(db, fam_user: models.FamUser, business_guid):
-    if (
-        business_guid is not None and
-        fam_user.business_guid != business_guid
-    ):
-        # update user when necessary.
-        # "target_user_business_guid" is alerady searched from IDIM.
-        return crud_user.update(db, fam_user.user_id, {
-            models.FamUser.business_guid: business_guid
-        })
-    return fam_user
 
 
 class UserRoleValidator:
