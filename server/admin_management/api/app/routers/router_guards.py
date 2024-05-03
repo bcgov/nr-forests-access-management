@@ -52,13 +52,11 @@ def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:
-        raise HTTPException(
+        error_msg = f"Operation requires role {required_role}."
+        utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_PERMISSION_REQUIRED,
-                "description": f"Operation requires role {required_role}",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+            error_code=ERROR_PERMISSION_REQUIRED,
+            error_msg=error_msg
         )
 
 
@@ -193,8 +191,8 @@ async def target_user_bceid_search(
     BCeID user search for target_user.
     :param target_user "Depends(get_target_user_from_id)": the initial
         dependency with "get_target_user_from_id" has initial target_user
-        parsed from the request. It's business_guid will be updated after
-        user is searched through IDIM Proxy.
+        parsed from the request. It's business_guid will be updated to the
+        target_user after user is searched through IDIM Proxy.
     """
     if (
         target_user.user_type_code == UserType.BCEID and
@@ -203,7 +201,7 @@ async def target_user_bceid_search(
             target_user.business_guid is None
         )
     ):
-        user_guid = target_user.user_guid
+        user_guid = target_user.user_guid  # will be used by search using user_guid
         LOGGER.debug(
             f"Searching business guid for target_user: {target_user}, with requester {requester}"
         )
@@ -241,13 +239,11 @@ async def enforce_self_grant_guard(
             f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."
         )
-        raise HTTPException(
+        error_msg = "Altering permission privilege to self is not allowed."
+        utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_SELF_GRANT_PROHIBITED,
-                "description": "Altering permission privilege to self is not allowed",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+            error_code=ERROR_SELF_GRANT_PROHIBITED,
+            error_msg=error_msg
         )
 
 
@@ -299,13 +295,10 @@ def authorize_by_application_role(
     Check if role exists or not
     """
     if not role:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_ROLE_ID,
-                "description": "Requester has no appropriate role",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = "Requester has no appropriate role."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_ROLE_ID,
+            error_msg=error_msg
         )
 
     authorize_by_app_id(role.application_id, claims, application_service)
@@ -319,26 +312,21 @@ def authorize_by_app_id(
 ):
     application = application_service.get_application(application_id)
     if not application:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = f"Application ID {application_id} not found."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_APPLICATION_ID,
+            error_msg=error_msg
         )
 
     required_role = f"{application.application_name.upper()}_ADMIN"
     access_roles = get_access_roles(claims)
 
     if required_role not in access_roles:
-        raise HTTPException(
+        error_msg = f"Operation requires role {required_role}."
+        utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_PERMISSION_REQUIRED,
-                "description": f"Operation requires role {required_role}",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+            error_code=ERROR_PERMISSION_REQUIRED,
+            error_msg=error_msg
         )
 
 
@@ -352,13 +340,10 @@ async def validate_param_application_admin_id(
         application_admin_id
     )
     if not application_admin:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ADMIN_ID,
-                "description": f"Application Admin ID {application_admin_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = f"Application Admin ID {application_admin_id} not found."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_APPLICATION_ADMIN_ID,
+            error_msg=error_msg
         )
 
 
@@ -370,13 +355,10 @@ async def validate_param_application_id(
         application_admin_request.application_id
     )
     if not application:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_APPLICATION_ID,
-                "description": f"Application ID {application_admin_request.application_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = f"Application ID {application_admin_request.application_id} not found."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_APPLICATION_ID,
+            error_msg=error_msg
         )
 
 
@@ -385,13 +367,10 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
         not application_admin_request.user_type_code
         or application_admin_request.user_type_code != UserType.IDIR
     ):
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_NOT_ALLOWED_USER_TYPE,
-                "description": f"User type {application_admin_request.user_type_code} is not allowed",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = f"User type {application_admin_request.user_type_code} is not allowed."
+        utils.raise_http_exception(
+            error_code=ERROR_NOT_ALLOWED_USER_TYPE,
+            error_msg=error_msg
         )
 
 
@@ -405,11 +384,8 @@ async def validate_param_access_control_privilege_id(
         access_control_privilege_id
     )
     if not access_control_privilege:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail={
-                "code": ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
-                "description": f"Access control privilege ID {access_control_privilege_id} not found",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+        error_msg = f"Access control privilege ID {access_control_privilege_id} not found."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
+            error_msg=error_msg
         )

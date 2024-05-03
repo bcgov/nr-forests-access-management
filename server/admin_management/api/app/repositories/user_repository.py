@@ -14,6 +14,7 @@ class UserRepository:
         self.db = db
 
     # --- Get ---
+
     def get_user(self, user_id) -> Optional[models.FamUser]:
         return self.db.query(models.FamUser).get(user_id)
 
@@ -44,6 +45,7 @@ class UserRepository:
         )
 
     # --- Create ---
+
     def create_user(self, fam_user: schemas.FamUserDto) -> models.FamUser:
         user_dict = fam_user.model_dump()
         db_item = models.FamUser(**user_dict)
@@ -52,6 +54,7 @@ class UserRepository:
         return db_item
 
     # --- Update ---
+
     def update(self, user_id, update_values: dict, requester: str) -> int:
         LOGGER.debug(
             f"Update on FamUser {user_id} with values: {update_values} " +
