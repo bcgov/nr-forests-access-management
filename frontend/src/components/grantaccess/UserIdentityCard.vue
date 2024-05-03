@@ -2,10 +2,11 @@
 import Card from 'primevue/card';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
-import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps<{
-    userIdentity: IdimProxyIdirInfo | IdimProxyBceidInfo;
+    userIdentity: IdimProxyBceidInfo;
+    cardMgs: string;
 }>(); // Vue3 alternative way for Type the defineProps().
 </script>
 
@@ -29,6 +30,7 @@ const props = defineProps<{
         </template>
         <template #content>
             <div
+                v-if="!props.cardMgs"
                 class="col"
                 style="margin-left: 2rem"
             >
@@ -102,14 +104,14 @@ const props = defineProps<{
                 </span>
             </div>
             <div
-                class="col-6 d-flex"
+                :class="props.cardMgs ? 'col d-flex' : 'col-6 d-flex'"
                 v-if="!props.userIdentity.found"
             >
                 <span
                     class="px-0 invalid"
                     id="userNotExist"
                 >
-                    User does not exist
+                    {{ props.cardMgs ? props.cardMgs : 'User does not exist' }}
                 </span>
             </div>
         </template>
@@ -118,4 +120,7 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+.col {
+    align-self: flex-start !important;
+}
 </style>
