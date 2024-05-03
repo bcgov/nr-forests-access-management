@@ -438,11 +438,17 @@ async def target_user_bceid_search(
                 "searchValue": user_guid
             })
         )
-        business_guid = search_result.get("businessGuid")
-        LOGGER.debug(
-            f"business_guid result: {business_guid} is updated to target_user."
-        )
-        target_user.business_guid = business_guid
+        if search_result.get("found"):
+            business_guid = search_result.get("businessGuid")
+            LOGGER.debug(
+                f"business_guid result: {business_guid} is updated to target_user."
+            )
+            target_user.business_guid = business_guid
+        else:
+            LOGGER.debug(
+                f"IDIM look up user guid:`{user_guid}` returns no result. " +
+                "business_guid will NOT be updated to target_user."
+            )
 
     return target_user
 
