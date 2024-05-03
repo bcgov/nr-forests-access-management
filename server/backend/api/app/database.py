@@ -36,7 +36,8 @@ def get_db():
         db = _session_local()
         yield db
 
-    except Exception:
+    except Exception as e:
+        LOGGER.debug(f"db session excpetion: {e}")
         db.rollback()
 
     finally:
