@@ -178,8 +178,6 @@ async def get_target_user_from_id(
                 "user_type_code": rb_user_type_code,
                 "user_guid": rb_user_guid
             })
-            # update this target_new_user with user_guid from request body.
-            target_new_user.user_guid = rb_user_guid
             return target_new_user
 
 
