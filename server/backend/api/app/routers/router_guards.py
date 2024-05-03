@@ -337,7 +337,7 @@ async def get_target_user_from_id(
             target_new_user = TargetUser.model_validate({
                 "user_name": rb_user_name,
                 "user_type_code": rb_user_type_code,
-                "user_buid": rb_user_guid
+                "user_guid": rb_user_guid
             })
             return target_new_user
 
