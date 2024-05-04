@@ -32,7 +32,8 @@ from api.app.jwt_validation import (
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import IdimProxyBceidSearchParam, Requester, TargetUser
-from fastapi import Depends, HTTPException, Request
+from api.app.utils.utils import raise_http_exception
+from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
 """
@@ -42,48 +43,6 @@ at crud(service) layer).
 """
 
 LOGGER = logging.getLogger(__name__)
-
-no_requester_exception = HTTPException(
-    status_code=HTTPStatus.FORBIDDEN,  # 403
-    detail={
-        "code": ERROR_CODE_REQUESTER_NOT_EXISTS,
-        "description": "Requester does not exist, action is not allowed",
-    },
-)
-
-external_user_prohibited_exception = HTTPException(
-    status_code=HTTPStatus.FORBIDDEN,
-    detail={
-        "code": ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-        "description": "Action is not allowed for external user.",
-    },
-)
-
-different_org_grant_prohibited_exception = HTTPException(
-    status_code=HTTPStatus.FORBIDDEN,
-    detail={
-        "code": ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-        "description": "Managing for different organization is not allowed.",
-    },
-    headers={"WWW-Authenticate": "Bearer"},
-)
-
-missing_key_attribute_error = HTTPException(
-    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,  # 500
-    detail={
-        "code": ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-        "description": "Operation encountered unexpected error.",
-    },
-    headers={"WWW-Authenticate": "Bearer"},
-)
-
-invalid_request_parameter_exception = HTTPException(
-    status_code=HTTPStatus.BAD_REQUEST,
-    detail={
-        "code": ERROR_CODE_INVALID_REQUEST_PARAMETER,
-        "description": "Invalid request parameter.",
-    }
-)
 
 
 async def get_current_requester(
@@ -98,7 +57,11 @@ async def get_current_requester(
     )
     LOGGER.debug(f"Debug router_guard get_current_requester, current fam_user: {fam_user}")
     if fam_user is None:
-        raise no_requester_exception
+        raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_REQUESTER_NOT_EXISTS,
+            error_msg="Requester does not exist, action is not allowed."
+        )
 
     requester = Requester.model_validate(fam_user)
     LOGGER.debug(f"Debug router_guard get_current_requester, current requester: {requester}")
@@ -125,13 +88,10 @@ def authorize(
 
         # if user is not app admin and not delegated admin of any application, throw miss access group error
         if not requester_is_delegated_admin:
-            raise HTTPException(
+            raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_GROUPS_REQUIRED,
-                    "description": "At least one access group is required.",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code=ERROR_GROUPS_REQUIRED,
+                error_msg="At least one access group is required."
             )
 
 
@@ -158,13 +118,10 @@ def authorize_by_app_id(
         )
         # if user is not app admin and not delegated admin of the application, throw permission error
         if not requester_is_app_delegated_admin:
-            raise HTTPException(
+            raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_PERMISSION_REQUIRED,
-                    "description": "Requester has no admin or delegated admin access to the application.",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code=ERROR_PERMISSION_REQUIRED,
+                error_msg="Requester has no admin or delegated admin access to the application."
             )
 
 
@@ -191,15 +148,11 @@ async def get_request_role_from_id(
         role = crud_role.get_role(db, role_id)  # role could be None.
 
     if not role:
-        raise HTTPException(
+        raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_CODE_INVALID_ROLE_ID,
-                "description": "Role does not exist or failed to get the role_id from request",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+            error_code=ERROR_CODE_INVALID_ROLE_ID,
+            error_msg="Role does not exist or failed to get the role_id from request."
         )
-
     return role
 
 
@@ -272,15 +225,11 @@ async def authorize_by_privilege(
             )
         # if user has no privilege of the role, throw permission error
         if not requester_has_privilege:
-            raise HTTPException(
+            raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_PERMISSION_REQUIRED,
-                    "description": "Requester has no privilege to grant this access.",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code=ERROR_PERMISSION_REQUIRED,
+                error_msg="Requester has no privilege to grant this access."
             )
-
 
 # Note!!
 # currently to take care of different scenarios (id or fields needed in
@@ -307,9 +256,12 @@ async def get_target_user_from_id(
             found_target_user = TargetUser.model_validate(user_role.user)
             return found_target_user
         else:
-            error_description = "Parameter 'user_role_xref_id' is missing or invalid."
-            invalid_request_parameter_exception.detail["description"] = error_description
-            raise invalid_request_parameter_exception
+            error_msg = "Parameter 'user_role_xref_id' is missing or invalid."
+            raise_http_exception(
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
+
     else:
         # from request body - {user_name/user_type_code}
         rbody = await request.json()
@@ -361,24 +313,28 @@ async def authorize_by_user_type(
             target_user_type_code = rbody["user_type_code"]
 
         if not target_user_type_code:
-            error_description = f"{missing_key_attribute_error.detail['description']} Target user user type code is missing."
-            missing_key_attribute_error.detail["description"] = error_description
-            raise missing_key_attribute_error
+            error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
+            raise_http_exception(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                error_msg=error_msg
+            )
 
         if target_user_type_code == UserType.IDIR:
-            raise HTTPException(
+            raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail={
-                    "code": ERROR_PERMISSION_REQUIRED,
-                    "description": "Business BCEID requester has no privilege to grant this access to IDIR user.",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code=ERROR_PERMISSION_REQUIRED,
+                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user."
             )
 
 
 async def internal_only_action(requester: Requester = Depends(get_current_requester)):
     if requester.user_type_code is not UserType.IDIR:
-        raise external_user_prohibited_exception
+        raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+            error_msg="Action is not allowed for external user."
+        )
 
 
 async def enforce_self_grant_guard(
@@ -399,13 +355,10 @@ async def enforce_self_grant_guard(
             f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."
         )
-        raise HTTPException(
+        raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            detail={
-                "code": ERROR_CODE_SELF_GRANT_PROHIBITED,
-                "description": "Altering permission privilege to self is not allowed",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
+            error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
+            error_msg="Altering permission privilege to self is not allowed."
         )
 
 
@@ -477,9 +430,17 @@ async def enforce_bceid_by_same_org_guard(
         target_user_business_guid = target_user.business_guid
 
         if requester_business_guid is None or target_user_business_guid is None:
-            error_description = f"{missing_key_attribute_error.detail['description']} Requester or target user business GUID is missing."
-            missing_key_attribute_error.detail["description"] = error_description
-            raise missing_key_attribute_error
+            error_msg = "Operation encountered unexpected error. Requester or target user business GUID is missing."
+            raise_http_exception(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                error_msg=error_msg
+            )
 
         if requester_business_guid.upper() != target_user_business_guid.upper():
-            raise different_org_grant_prohibited_exception
+            raise_http_exception(
+                status_code=HTTPStatus.FORBIDDEN,
+                error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                error_msg="Managing for different organization is not allowed."
+            )
+
