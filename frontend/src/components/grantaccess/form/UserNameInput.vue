@@ -53,6 +53,7 @@ const verifyUserId = async () => {
         }
     } catch (error: any) {
         if (
+            error.response.status === 403 &&
             error.response.data.detail.code ===
             PERMISSION_REQUIRED_FOR_OPERATION
         ) {
