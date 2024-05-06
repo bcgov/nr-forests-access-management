@@ -3,18 +3,12 @@ import Card from 'primevue/card';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
 import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
-import type { PropType } from 'vue';
 
-const props = defineProps({
-    userIdentity: {
-        type: Object as PropType<IdimProxyBceidInfo>,
-        required: true,
-    },
-    errorMgs: {
-        type: String,
-        required: false,
-    },
-});
+const props = defineProps<{
+    userIdentity: IdimProxyBceidInfo,
+    errorMgs?: string
+}>(); // Vue3 alternative way for Type the defineProps().
+
 </script>
 
 <template>
