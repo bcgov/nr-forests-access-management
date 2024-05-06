@@ -52,7 +52,6 @@ const verifyUserId = async () => {
             ).data;
         }
     } catch (error: any) {
-        console.log(error.response.status);
         if (
             error.response.status === 403 &&
             error.response.data.detail.code ===
