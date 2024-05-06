@@ -125,7 +125,11 @@ watch(
 
                 <Button
                     class="w-100 custom-height"
-                    :aria-label="`Verify user ${props.domain === UserType.I ? IdpProvider.IDIR : IdpProvider.BCEIDBUSINESS}`"
+                    :aria-label="`Verify user ${
+                        props.domain === UserType.I
+                            ? IdpProvider.IDIR
+                            : IdpProvider.BCEIDBUSINESS
+                    }`"
                     :name="
                         props.domain === UserType.I
                             ? 'verifyIdir'
@@ -159,4 +163,3 @@ watch(
         </div>
     </div>
 </template>
-<style lang="scss" scoped></style>

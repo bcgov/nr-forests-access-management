@@ -5,10 +5,9 @@ import { IconSize } from '@/enum/IconEnum';
 import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps<{
-    userIdentity: IdimProxyBceidInfo,
-    errorMgs?: string
+    userIdentity: IdimProxyBceidInfo;
+    errorMgs?: string;
 }>(); // Vue3 alternative way for Type the defineProps().
-
 </script>
 
 <template>
@@ -121,7 +120,6 @@ const props = defineProps<{
             >
                 <span
                     class="px-0 invalid"
-                    id="userNotExist"
                 >
                     {{ props.errorMgs }}
                 </span>
