@@ -31,7 +31,7 @@ const props = defineProps<{
         </template>
         <template #content>
             <div
-                v-if="props.userIdentity.found"
+                v-if="!props.errorMgs"
                 class="col"
                 style="margin-left: 2rem"
             >
