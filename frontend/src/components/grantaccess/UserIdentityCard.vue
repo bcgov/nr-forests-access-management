@@ -98,7 +98,7 @@ const props = defineProps<{
                 </label>
                 <span
                     id="orgName"
-                    name="lastName"
+                    name="organization name"
                     class="row"
                 >
                     {{ props.userIdentity.businessLegalName }}
