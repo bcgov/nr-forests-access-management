@@ -30,7 +30,7 @@ class IdimProxyService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search_idir(self, search_params: IdimProxyBceidSearchParam):
+    def search_idir(self, search_params: IdimProxySearchParam):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
@@ -54,7 +54,7 @@ class IdimProxyService:
         LOGGER.debug(f"API result: {api_result}")
         return api_result
 
-    def search_business_bceid(self, search_params: IdimProxySearchParam):
+    def search_business_bceid(self, search_params: IdimProxyBceidSearchParam):
         """
         Search on Business BCEID user.
         """
