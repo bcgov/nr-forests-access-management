@@ -52,15 +52,15 @@ const verifyUserId = async () => {
             ).data;
         }
     } catch (error: any) {
+        verifiedUserIdentity.value = {
+            userId: computedUserId.value,
+            found: false,
+        };
         if (
             error.response.status === 403 &&
             error.response.data.detail.code ===
                 PERMISSION_REQUIRED_FOR_OPERATION
         ) {
-            verifiedUserIdentity.value = {
-                userId: computedUserId.value,
-                found: false,
-            };
             errorMgs.value = `${
                 error.response.data.detail.description
             }. Org name: ${
@@ -68,18 +68,14 @@ const verifyUserId = async () => {
             }`;
         }
     } finally {
-        emit(
-            'setVerifyResult',
-            verifiedUserIdentity.value?.found,
-            verifiedUserIdentity.value?.guid
-        );
+        if (verifiedUserIdentity.value?.found)
+            emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
     }
 };
 const resetVerifiedUserIdentity = () => {
-    errorMgs.value = '';
     verifiedUserIdentity.value = null;
-    if (props.domain == UserType.I) emit('setVerifyResult', false);
-    else emit('setVerifyResult', true);
+    errorMgs.value = '';
+    emit('setVerifyResult', false);
 };
 
 // whenver user domain change, remove the previous user identity card
@@ -149,10 +145,7 @@ watch(
                         errorMessage !== undefined
                     "
                 >
-                    <Icon
-                        icon="search--locate"
-                        :size="IconSize.small"
-                    />
+                    <Icon icon="search--locate" :size="IconSize.small" />
                 </Button>
             </div>
         </Field>

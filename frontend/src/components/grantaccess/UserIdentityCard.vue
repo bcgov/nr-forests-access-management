@@ -6,7 +6,7 @@ import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps<{
     userIdentity: IdimProxyBceidInfo;
-    errorMgs?: string;
+    errorMgs: string;
 }>(); // Vue3 alternative way for Type the defineProps().
 </script>
 
@@ -30,55 +30,24 @@ const props = defineProps<{
         </template>
         <template #content>
             <div
-                v-if="!props.errorMgs"
+                v-if="props.errorMgs == ''"
                 class="col"
                 style="margin-left: 2rem"
             >
-                <label
-                    for="userId"
-                    class="row"
-                    >Username</label
-                >
-                <span
-                    id="userId"
-                    name="userId"
-                    class="row"
-                >
+                <label for="userId" class="row">Username</label>
+                <span id="userId" name="userId" class="row">
                     {{ props.userIdentity.userId }}
                 </span>
             </div>
-            <div
-                class="col"
-                v-if="props.userIdentity.found"
-            >
-                <label
-                    for="firstName"
-                    class="row"
-                    >First Name</label
-                >
-                <span
-                    class="row"
-                    id="firstName"
-                    name="firstName"
-                >
+            <div class="col" v-if="props.userIdentity.found">
+                <label for="firstName" class="row">First Name</label>
+                <span class="row" id="firstName" name="firstName">
                     {{ props.userIdentity.firstName }}
                 </span>
             </div>
-            <div
-                class="col"
-                v-if="props.userIdentity.found"
-            >
-                <label
-                    for="lastName"
-                    class="row"
-                >
-                    Last Name
-                </label>
-                <span
-                    id="lastName"
-                    name="lastName"
-                    class="row"
-                >
+            <div class="col" v-if="props.userIdentity.found">
+                <label for="lastName" class="row"> Last Name </label>
+                <span id="lastName" name="lastName" class="row">
                     {{ props.userIdentity.lastName }}
                 </span>
             </div>
@@ -89,38 +58,23 @@ const props = defineProps<{
                     props.userIdentity.businessLegalName
                 "
             >
-                <label
-                    for="organizationName"
-                    class="row"
-                >
+                <label for="organizationName" class="row">
                     Organization Name
                 </label>
-                <span
-                    id="organizationName"
-                    name="organizationName"
-                    class="row"
-                >
+                <span id="organizationName" name="organizationName" class="row">
                     {{ props.userIdentity.businessLegalName }}
                 </span>
             </div>
             <div
                 class="col-6 d-flex"
-                v-if="!props.userIdentity.found && !props.errorMgs"
+                v-if="!props.userIdentity.found && props.errorMgs == ''"
             >
-                <span
-                    class="px-0 invalid"
-                    id="userNotExist"
-                >
+                <span class="px-0 invalid" id="userNotExist">
                     User does not exist
                 </span>
             </div>
-            <div
-                class="col d-flex"
-                v-if="!props.userIdentity.found && props.errorMgs"
-            >
-                <span
-                    class="px-0 invalid"
-                >
+            <div class="col d-flex" v-if="props.errorMgs != ''">
+                <span class="px-0 invalid">
                     {{ props.errorMgs }}
                 </span>
             </div>
