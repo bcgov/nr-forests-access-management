@@ -72,6 +72,7 @@ const verifyUserId = async () => {
         emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
 };
 const resetVerifiedUserIdentity = () => {
+    errorMgs.value = ''
     verifiedUserIdentity.value = null;
     if (props.domain == UserType.I) emit('setVerifyResult', false);
     else emit('setVerifyResult', true);
