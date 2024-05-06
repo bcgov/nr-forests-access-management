@@ -7,7 +7,7 @@ import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { setLoadingState } from '@/store/LoadingState';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
-import type { AxiosRequestHeaders, AxiosResponse } from 'axios';
+import type { AxiosRequestHeaders, AxiosResponse, AxiosError } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
 fixJsdomCssErr();
@@ -15,6 +15,8 @@ fixJsdomCssErr();
 const USERID = 'TestUser';
 const FIRSTNAME = 'TestUserFirstName';
 const LASTNAME = 'TestUserLastName';
+const BUSINESSLEGALNAME = 'TestBusinessLegalName';
+const TESTUSERGUID = '00000000000000000000000000000000';
 
 const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
     if (isUserFound) {
@@ -24,12 +26,76 @@ const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
                 found: true,
                 lastName: LASTNAME,
                 userId: USERID,
+                guid: TESTUSERGUID, // no need to pass a real guid here
             },
             status: 200,
             statusText: 'Ok',
             headers: {},
             config: {
                 headers: {} as AxiosRequestHeaders,
+            },
+        };
+    } else {
+        return {
+            data: {
+                found: false,
+                userId: USERID,
+            },
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {
+                headers: {} as AxiosRequestHeaders,
+            },
+        };
+    }
+};
+
+const idimBceidSearchMock = (
+    isUserFound: boolean,
+    isPermissionError: boolean = false
+): AxiosResponse | AxiosError => {
+    if (isUserFound) {
+        return {
+            data: {
+                found: true,
+                userId: USERID,
+                firstName: FIRSTNAME,
+                lastName: LASTNAME,
+                businessLegalName: BUSINESSLEGALNAME,
+                businessGuid: '', // no need to pass a real guid here
+                guid: TESTUSERGUID, // no need to pass a real guid here
+            },
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {
+                headers: {} as AxiosRequestHeaders,
+            },
+        };
+    } else if (isPermissionError) {
+        // todo: investigate how to mock a axios error
+        return {
+            code: 'ERR_BAD_REQUEST',
+            config: { headers: {} as AxiosRequestHeaders },
+            message: 'Request failed with status code 403',
+            name: 'AxiosError',
+            response: {
+                config: { headers: {} as AxiosRequestHeaders },
+                data: {
+                    detail: {
+                        code: 'permission_required_for_operation',
+                        description:
+                            'Operation requires business bceid users to be within the same organization',
+                    },
+                },
+                headers: {},
+                status: 403,
+                statusText: 'Forbidden',
+            },
+            isAxiosError: true,
+            toJSON: () => {
+                return {};
             },
         };
     } else {
@@ -148,7 +214,7 @@ describe('UserNameInput', () => {
         setLoadingState(false);
     });
 
-    it('Should show the user identity card with correct info when user is found', async () => {
+    it('Should show the user identity card with correct info when IDIR user is found', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
             'idirSearch'
@@ -164,11 +230,11 @@ describe('UserNameInput', () => {
         await verifyButton.trigger('click');
         await flushPromises();
 
-        // call emit setVerifyResult with true, when prop domain is I, mock api returns user found
-        // currently when domain is B, the verify button will be hidden
+        // call emit setVerifyResult with true, mock api returns user found
         const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         expect(emitSetVerifyResult).toBeTruthy();
         expect(emitSetVerifyResult![0][0]).toEqual(true);
+        expect(emitSetVerifyResult![0][1]).toEqual(TESTUSERGUID);
 
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
         const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
@@ -184,6 +250,82 @@ describe('UserNameInput', () => {
         expect(wrapper.find('#lastName').element.textContent).toContain(
             LASTNAME
         );
+    });
+
+    it('Should show the user identity card with correct info when BCEID user is found', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'bceidSearch'
+        ).mockImplementation(async () => {
+            return idimBceidSearchMock(true);
+        });
+
+        // by default no identity card display
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
+
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({ domain: UserType.B });
+        await wrapper.setProps({ userId: USERID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // call emit setVerifyResult with true, mock api returns user found
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeTruthy();
+        // i.e. emitSetVerifyResult = [ [ false ], [ true, '' ] ]
+        // the outter array indicates how many times it has been called
+        // the inner array indicates how many parameters it has
+        // when we call wrapper.setProps({ domain: UserType.B }) above, the emitSetVerifyResult already be called once with parameter false
+        expect(emitSetVerifyResult![1][0]).toEqual(true);
+        expect(emitSetVerifyResult![1][1]).toEqual(TESTUSERGUID);
+
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        // verify identity card title
+        expect(cardEl.textContent).toContain('Username');
+        expect(cardEl.textContent).toContain('First Name');
+        expect(cardEl.textContent).toContain('Last Name');
+        expect(cardEl.textContent).toContain('Organization Name');
+        // verify identity card user info
+        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
+        expect(wrapper.find('#firstName').element.textContent).toContain(
+            FIRSTNAME
+        );
+        expect(wrapper.find('#lastName').element.textContent).toContain(
+            LASTNAME
+        );
+        expect(wrapper.find('#organizationName').element.textContent).toContain(
+            BUSINESSLEGALNAME
+        );
+    });
+
+    it.skip('Should show the user identity card with permission when BCEID user is not allowed to search', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'bceidSearch'
+        ).mockImplementation(async () => {
+            return idimBceidSearchMock(false, true);
+        });
+
+        // by default no identity card display
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
+
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({ domain: UserType.B });
+        await wrapper.setProps({ userId: USERID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // call emit setVerifyResult with true, mock api returns permission error, won't call setVerifyResult
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeTruthy();
+        // setVerifyResult is only called once when we call wrapper.setProps({ domain: UserType.B }) above
+        // when we verify the business bceid user but got a permission error, won't call emitSetVerifyResult again
+        expect(emitSetVerifyResult!.length).toEqual(1);
+
+        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(wrapper.find('#errorMsg').exists()).toBe(true);
     });
 
     it('Should show not found on card when user is not found', async () => {
@@ -222,9 +364,9 @@ describe('UserNameInput', () => {
 
         // change the domain to be B
         await wrapper.setProps({ domain: UserType.B });
-        // for BCeID should emit true
+        // for BCeID should emit false
         const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
-        expect(emitSetVerifyResult![0][0]).toEqual(true);
+        expect(emitSetVerifyResult![0][0]).toEqual(false);
         // UserIdentityCard not on page anymore
         expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
 

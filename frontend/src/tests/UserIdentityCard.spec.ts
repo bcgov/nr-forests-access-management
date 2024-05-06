@@ -9,14 +9,25 @@ fixJsdomCssErr();
 describe('UserIdentityCard', () => {
     let wrapper: VueWrapper;
 
-    const props = {
+    const propsIDIR = {
         userIdentity: {
             userId: 'userId',
             found: true,
             firstName: 'First Name',
             lastName: 'Last Name',
         },
-        errorMgs: ''
+        errorMsg: '',
+    };
+
+    const propsBusinessBCeID = {
+        userIdentity: {
+            userId: 'userId',
+            found: true,
+            firstName: 'First Name',
+            lastName: 'Last Name',
+            businessLegalName: 'Business Name',
+        },
+        errorMsg: '',
     };
 
     const propsNotFound = {
@@ -24,31 +35,59 @@ describe('UserIdentityCard', () => {
             userId: 'userId',
             found: false,
         },
-        errorMgs: ''
+        errorMsg: '',
+    };
+
+    const propsPermissionError = {
+        userIdentity: {
+            userId: 'userId',
+            found: false,
+        },
+        errorMsg: 'test permission error messages',
     };
 
     beforeEach(async () => {
-        wrapper = mount(UserIdentityCard, { props });
+        wrapper = mount(UserIdentityCard, { props: propsIDIR });
     });
 
-    it('Should show correct user info on card when receive identity in prop', () => {
+    it('Should show correct user info on card when receive IDIR identity in props', () => {
         expect(wrapper.find('.custom-card').element).toBeTruthy();
         expect(wrapper.find('.custom-card').element.textContent).toContain(
             'Verified user information'
         );
         expect(wrapper.find('#userId').element.textContent).toContain(
-            props.userIdentity.userId
+            propsIDIR.userIdentity.userId
         );
         expect(wrapper.find('#firstName').element.textContent).toContain(
-            props.userIdentity.firstName
+            propsIDIR.userIdentity.firstName
         );
         expect(wrapper.find('#lastName').element.textContent).toContain(
-            props.userIdentity.lastName
+            propsIDIR.userIdentity.lastName
         );
         expect(wrapper.find('#checkmarkIcon')).toBeTruthy();
     });
 
-    it('Should show the user does not exist when receive not found in prop', async () => {
+    it('Should show correct user info on card when receive Business BCeID identity in props', async () => {
+        await wrapper.setProps(propsBusinessBCeID);
+        expect(wrapper.find('.custom-card').element.textContent).toContain(
+            'Verified user information'
+        );
+        expect(wrapper.find('#userId').element.textContent).toContain(
+            propsBusinessBCeID.userIdentity.userId
+        );
+        expect(wrapper.find('#firstName').element.textContent).toContain(
+            propsBusinessBCeID.userIdentity.firstName
+        );
+        expect(wrapper.find('#lastName').element.textContent).toContain(
+            propsBusinessBCeID.userIdentity.lastName
+        );
+        expect(wrapper.find('#organizationName').element.textContent).toContain(
+            propsBusinessBCeID.userIdentity.businessLegalName
+        );
+        expect(wrapper.find('#checkmarkIcon')).toBeTruthy();
+    });
+
+    it('Should show the user does not exist when receive not found in props', async () => {
         await wrapper.setProps(propsNotFound);
         expect(wrapper.find('.custom-card').element.textContent).toContain(
             'Verified user information'
@@ -58,6 +97,17 @@ describe('UserIdentityCard', () => {
         );
         expect(wrapper.find('#userNotExist').element.textContent).toContain(
             'User does not exist'
+        );
+        expect(wrapper.find('#errorIcon')).toBeTruthy();
+    });
+
+    it('Should display permission error messages if received in props', async () => {
+        await wrapper.setProps(propsPermissionError);
+        expect(wrapper.find('.custom-card').element.textContent).toContain(
+            'Verified user information'
+        );
+        expect(wrapper.find('#errorMsg').element.textContent).toContain(
+            propsPermissionError.errorMsg
         );
         expect(wrapper.find('#errorIcon')).toBeTruthy();
     });

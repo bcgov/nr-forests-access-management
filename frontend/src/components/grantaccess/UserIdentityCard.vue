@@ -6,7 +6,7 @@ import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
 
 const props = defineProps<{
     userIdentity: IdimProxyBceidInfo;
-    errorMgs: string;
+    errorMsg: string;
 }>(); // Vue3 alternative way for Type the defineProps().
 </script>
 
@@ -30,7 +30,7 @@ const props = defineProps<{
         </template>
         <template #content>
             <div
-                v-if="props.errorMgs == ''"
+                v-if="props.errorMsg == ''"
                 class="col"
                 style="margin-left: 2rem"
             >
@@ -67,15 +67,15 @@ const props = defineProps<{
             </div>
             <div
                 class="col-6 d-flex"
-                v-if="!props.userIdentity.found && props.errorMgs == ''"
+                v-if="!props.userIdentity.found && props.errorMsg == ''"
             >
                 <span class="px-0 invalid" id="userNotExist">
                     User does not exist
                 </span>
             </div>
-            <div class="col d-flex" v-if="props.errorMgs != ''">
-                <span class="px-0 invalid">
-                    {{ props.errorMgs }}
+            <div class="col d-flex" v-if="props.errorMsg != ''">
+                <span class="px-0 invalid" id="errorMsg">
+                    {{ props.errorMsg }}
                 </span>
             </div>
         </template>

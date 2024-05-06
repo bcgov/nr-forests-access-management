@@ -32,7 +32,7 @@ const computedUserId = computed({
     },
 });
 
-const errorMgs = ref('');
+const errorMsg = ref('');
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
     null
 );
@@ -61,20 +61,21 @@ const verifyUserId = async () => {
             error.response.data.detail.code ===
                 PERMISSION_REQUIRED_FOR_OPERATION
         ) {
-            errorMgs.value = `${
+            errorMsg.value = `${
                 error.response.data.detail.description
             }. Org name: ${
                 FamLoginUserState.state.value.famLoginUser!.organization
             }`;
         }
     } finally {
-        if (verifiedUserIdentity.value?.found)
+        if (verifiedUserIdentity.value?.found) {
             emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
+        }
     }
 };
 const resetVerifiedUserIdentity = () => {
     verifiedUserIdentity.value = null;
-    errorMgs.value = '';
+    errorMsg.value = '';
     emit('setVerifyResult', false);
 };
 
@@ -157,7 +158,7 @@ watch(
         >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
-                :errorMgs="errorMgs"
+                :errorMsg="errorMsg"
             ></UserIdentityCard>
         </div>
     </div>
