@@ -2,18 +2,18 @@
 import Card from 'primevue/card';
 import Icon from '@/components/common/Icon.vue';
 import { IconSize } from '@/enum/IconEnum';
-import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import type { IdimProxyBceidInfo } from 'fam-app-acsctl-api';
 import type { PropType } from 'vue';
 
 const props = defineProps({
     userIdentity: {
-        type: Object as unknown as PropType<IdimProxyBceidInfo>,
-        required: true
+        type: Object as PropType<IdimProxyBceidInfo>,
+        required: true,
     },
-    cardMgs: {
+    errorMgs: {
         type: String,
-        required: false
-    }
+        required: false,
+    },
 });
 </script>
 
@@ -37,7 +37,7 @@ const props = defineProps({
         </template>
         <template #content>
             <div
-                v-if="!props.cardMgs"
+                v-if="!props.errorMgs"
                 class="col"
                 style="margin-left: 2rem"
             >
@@ -111,14 +111,25 @@ const props = defineProps({
                 </span>
             </div>
             <div
-                :class="props.cardMgs ? 'col d-flex' : 'col-6 d-flex'"
-                v-if="!props.userIdentity.found"
+                class="col-6 d-flex"
+                v-if="!props.userIdentity.found && !props.errorMgs"
             >
                 <span
                     class="px-0 invalid"
                     id="userNotExist"
                 >
-                    {{ props.cardMgs ? props.cardMgs : 'User does not exist' }}
+                    User does not exist
+                </span>
+            </div>
+            <div
+                class="col d-flex"
+                v-if="!props.userIdentity.found && props.errorMgs"
+            >
+                <span
+                    class="px-0 invalid"
+                    id="userNotExist"
+                >
+                    {{ props.errorMgs }}
                 </span>
             </div>
         </template>

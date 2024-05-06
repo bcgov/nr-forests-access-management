@@ -32,7 +32,7 @@ const computedUserId = computed({
     },
 });
 
-const cardMgs = ref('');
+const errorMgs = ref('');
 const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
     null
 );
@@ -60,7 +60,7 @@ const verifyUserId = async () => {
                 userId: computedUserId.value,
                 found: false,
             };
-            cardMgs.value = `${
+            errorMgs.value = `${
                 error.response.data.detail.description
             }. Org name: ${
                 FamLoginUserState.state.value.famLoginUser!.organization
@@ -154,7 +154,7 @@ watch(
         >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
-                :cardMgs="cardMgs"
+                :errorMgs="errorMgs"
             ></UserIdentityCard>
         </div>
     </div>
