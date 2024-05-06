@@ -91,14 +91,14 @@ const props = defineProps<{
                 "
             >
                 <label
-                    for="Organization name"
+                    for="organizationName"
                     class="row"
                 >
                     Organization Name
                 </label>
                 <span
-                    id="orgName"
-                    name="organization name"
+                    id="organizationName"
+                    name="organizationName"
                     class="row"
                 >
                     {{ props.userIdentity.businessLegalName }}
