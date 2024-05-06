@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.16.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.15.0...v1.16.0) (2024-05-03)
+
+
+### Features
+
+* [#1081](https://github.com/bcgov/nr-forests-access-management/issues/1081) grant application admin component test ([#1336](https://github.com/bcgov/nr-forests-access-management/issues/1336)) ([c4b46bc](https://github.com/bcgov/nr-forests-access-management/commit/c4b46bc23c6161b69383da47f28b8487014718c8))
+* [#1184](https://github.com/bcgov/nr-forests-access-management/issues/1184) delegated admin filtering same org tests ([#1319](https://github.com/bcgov/nr-forests-access-management/issues/1319)) ([ed6ab53](https://github.com/bcgov/nr-forests-access-management/commit/ed6ab5308dd5eee99e5c9a6b06cdb5a4120c5e40))
+* [#1285](https://github.com/bcgov/nr-forests-access-management/issues/1285) pass user guid from frontend, update backend schema ([#1343](https://github.com/bcgov/nr-forests-access-management/issues/1343)) ([7c79c9b](https://github.com/bcgov/nr-forests-access-management/commit/7c79c9b8c897e9f2907627af6b4123caca58165e))
+
+
+### Bug Fixes
+
+* [#1306](https://github.com/bcgov/nr-forests-access-management/issues/1306) fix description for user type code B ([#1348](https://github.com/bcgov/nr-forests-access-management/issues/1348)) ([135d529](https://github.com/bcgov/nr-forests-access-management/commit/135d529bdebd9e1b5c13c4dd10c919337c114f27))
+* [#1338](https://github.com/bcgov/nr-forests-access-management/issues/1338) add log for debugging db session connection ([#1351](https://github.com/bcgov/nr-forests-access-management/issues/1351)) ([0150e48](https://github.com/bcgov/nr-forests-access-management/commit/0150e48a95723fe257d62ccbd508d0c27914e741))
+
+
+### Miscellaneous
+
+* **deps:** [Snyk] Upgrade @carbon/icons-vue from 10.79.1 to 10.88.0 ([#1339](https://github.com/bcgov/nr-forests-access-management/issues/1339)) ([9522d68](https://github.com/bcgov/nr-forests-access-management/commit/9522d6838ec345082f73e2217f7018b1b02d791d))
+* **deps:** [Snyk] Upgrade vue from 3.4.6 to 3.4.21 ([#1341](https://github.com/bcgov/nr-forests-access-management/issues/1341)) ([77aecb1](https://github.com/bcgov/nr-forests-access-management/commit/77aecb19c1eb05b797bb07241c4331ae2478b9b5))
+
 ## [1.15.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.14.1...v1.15.0) (2024-04-23)
 
 
