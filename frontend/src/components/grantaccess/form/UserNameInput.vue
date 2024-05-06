@@ -55,7 +55,7 @@ const verifyUserId = async () => {
         if (
             error.response.status === 403 &&
             error.response.data.detail.code ===
-            PERMISSION_REQUIRED_FOR_OPERATION
+                PERMISSION_REQUIRED_FOR_OPERATION
         ) {
             verifiedUserIdentity.value = {
                 userId: computedUserId.value,
@@ -67,11 +67,16 @@ const verifyUserId = async () => {
                 FamLoginUserState.state.value.famLoginUser!.organization
             }`;
         }
+    } finally {
+        emit(
+            'setVerifyResult',
+            verifiedUserIdentity.value?.found,
+            verifiedUserIdentity.value?.guid
+        );
     }
-    if (verifiedUserIdentity.value?.found)
-        emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
 };
 const resetVerifiedUserIdentity = () => {
+    errorMgs.value = '';
     verifiedUserIdentity.value = null;
     if (props.domain == UserType.I) emit('setVerifyResult', false);
     else emit('setVerifyResult', true);
