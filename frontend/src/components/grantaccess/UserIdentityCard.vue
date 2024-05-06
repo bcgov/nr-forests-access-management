@@ -97,7 +97,7 @@ const props = defineProps<{
                     Organization Name
                 </label>
                 <span
-                    id="lastName"
+                    id="orgName"
                     name="lastName"
                     class="row"
                 >
