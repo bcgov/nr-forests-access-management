@@ -31,7 +31,7 @@ const props = defineProps<{
         </template>
         <template #content>
             <div
-                v-if="!props.errorMgs"
+                v-if="props.userIdentity.found"
                 class="col"
                 style="margin-left: 2rem"
             >
@@ -91,7 +91,7 @@ const props = defineProps<{
                 "
             >
                 <label
-                    for="lastName"
+                    for="Organization name"
                     class="row"
                 >
                     Organization Name
