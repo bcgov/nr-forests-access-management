@@ -16,6 +16,7 @@ describe('UserIdentityCard', () => {
             firstName: 'First Name',
             lastName: 'Last Name',
         },
+        errorMgs: ''
     };
 
     const propsNotFound = {
@@ -23,6 +24,7 @@ describe('UserIdentityCard', () => {
             userId: 'userId',
             found: false,
         },
+        errorMgs: ''
     };
 
     beforeEach(async () => {
