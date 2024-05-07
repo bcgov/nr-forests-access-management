@@ -1,4 +1,4 @@
-import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
+import { it, describe, beforeAll, beforeEach, afterEach, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
@@ -143,7 +143,10 @@ describe('UserNameInput', () => {
         organization: 'organizationTest',
     };
 
-    FamLoginUserState.storeFamUser(mockFamLoginUser);
+    beforeAll(() => {
+        // we need to set the FamLoginUser as the error message uses famLoginUser.organization
+        FamLoginUserState.storeFamUser(mockFamLoginUser);
+    });
 
     beforeEach(() => {
         wrapper = mount(UserNameInput, {
