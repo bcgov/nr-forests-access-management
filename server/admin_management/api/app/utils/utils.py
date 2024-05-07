@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 def raise_http_exception(
     error_msg: str,
     error_code: str = ERROR_CODE_INVALID_OPERATION,  # default, please override if necessary
-    status_code: str = HTTPStatus.BAD_REQUEST,  # default http status, please override if necessary
+    status_code: HTTPStatus = HTTPStatus.BAD_REQUEST,  # default http status, please override if necessary
 ):
     LOGGER.debug(error_msg)
     raise HTTPException(

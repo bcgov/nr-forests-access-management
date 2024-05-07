@@ -76,7 +76,7 @@ async def unhandled_exception_handler(
         if request.query_params
         else request.url.path
     )
-    exception_type, exception_value, *rest = sys.exc_info()
+    exception_type, exception_value, _rest = sys.exc_info()
     exception_name = getattr(exception_type, "__name__", None)
     LOGGER.error(
         f'{host}:{port} - "{request.method} {url}" 500 Internal Server Error <{exception_name}: {exception_value}>'
