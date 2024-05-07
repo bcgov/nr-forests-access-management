@@ -1,12 +1,13 @@
 import logging
-import requests
 from http import HTTPStatus
-from fastapi import HTTPException
-from api.app.schemas import IdimProxyBceidSearchParam, IdimProxySearchParam, Requester
-from api.config import config
+
+import requests
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-
+from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
+                             Requester)
+from api.config import config
+from fastapi import HTTPException
 
 LOGGER = logging.getLogger(__name__)
 

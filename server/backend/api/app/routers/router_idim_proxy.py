@@ -1,15 +1,12 @@
 import logging
 
-from api.app.integration.idim_proxy import IdimProxyService
-from api.app.routers.router_guards import get_current_requester, internal_only_action
-from api.app.schemas import (
-    IdimProxyBceidSearchParam, IdimProxyIdirInfo,
-    IdimProxySearchParam, IdimProxyBceidInfo
-)
-from fastapi import APIRouter, Depends, Query
-
 from api.app.constants import IdimSearchUserParamType
-
+from api.app.integration.idim_proxy import IdimProxyService
+from api.app.routers.router_guards import (get_current_requester,
+                                           internal_only_action)
+from api.app.schemas import (IdimProxyBceidInfo, IdimProxyBceidSearchParam,
+                             IdimProxyIdirInfo, IdimProxySearchParam)
+from fastapi import APIRouter, Depends, Query
 
 LOGGER = logging.getLogger(__name__)
 
