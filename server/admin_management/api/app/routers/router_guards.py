@@ -194,10 +194,7 @@ async def target_user_bceid_search(
     """
     if (
         target_user.user_type_code == UserType.BCEID and
-        (
-            target_user.is_new_user() or
-            target_user.business_guid is None
-        )
+        target_user.business_guid is None
     ):
         user_guid = target_user.user_guid  # will be used by search using user_guid
         LOGGER.debug(
