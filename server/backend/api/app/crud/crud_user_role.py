@@ -101,7 +101,10 @@ def create_user_role(
             error_msg = (
                 "Invalid role assignment request. Forest Client is not in Active status: " +
                 f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
-            raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            raise_http_exception(
+                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
 
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
