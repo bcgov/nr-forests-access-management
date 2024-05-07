@@ -269,7 +269,7 @@ describe('UserNameInput', () => {
             AppActlApiService.idirBceidProxyApi,
             'bceidSearch'
         ).mockImplementation(async () => {
-            return idimBceidSearchMock(true);
+            return idimBceidSearchMock(true) as AxiosResponse;
         });
 
         // by default no identity card display
@@ -316,7 +316,7 @@ describe('UserNameInput', () => {
             AppActlApiService.idirBceidProxyApi,
             'bceidSearch'
         ).mockImplementation(async () => {
-            return idimBceidSearchMock(false, true);
+            return idimBceidSearchMock(false, true) as AxiosResponse;
         });
 
         // by default no identity card display
