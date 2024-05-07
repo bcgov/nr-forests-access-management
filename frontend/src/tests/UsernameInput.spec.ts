@@ -75,7 +75,6 @@ const idimBceidSearchMock = (
             },
         };
     } else if (isPermissionError) {
-        // todo: investigate how to mock a axios error
         throw {
             code: 'ERR_BAD_REQUEST',
             config: { headers: {} as AxiosRequestHeaders },
