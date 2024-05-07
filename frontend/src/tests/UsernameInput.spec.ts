@@ -9,6 +9,7 @@ import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosRequestHeaders, AxiosResponse, AxiosError } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
+import FamLoginUserState from '@/store/FamLoginUserState';
 
 fixJsdomCssErr();
 
@@ -75,7 +76,7 @@ const idimBceidSearchMock = (
         };
     } else if (isPermissionError) {
         // todo: investigate how to mock a axios error
-        return {
+        throw {
             code: 'ERR_BAD_REQUEST',
             config: { headers: {} as AxiosRequestHeaders },
             message: 'Request failed with status code 403',
@@ -135,6 +136,16 @@ describe('UserNameInput', () => {
         fieldId: 'testNewFiledId',
         helperText: 'New text helper',
     };
+    const mockFamLoginUser = {
+        username: "usernameTEST",
+        displayName: "displayNameTest",
+        email: "email_test@test.com",
+        idpProvider: "idpProviderTest",
+        organization: "organizationTest",
+      };
+
+      FamLoginUserState.storeFamUser(mockFamLoginUser)
+
 
     beforeEach(() => {
         wrapper = mount(UserNameInput, {
@@ -299,7 +310,7 @@ describe('UserNameInput', () => {
         );
     });
 
-    it.skip('Should show the user identity card with permission when BCEID user is not allowed to search', async () => {
+    it('Should show the user identity card with permission when BCEID user is not allowed to search', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
             'bceidSearch'
