@@ -397,7 +397,6 @@ async def target_user_bceid_search(
 
 
 async def enforce_bceid_by_same_org_guard(
-    request: Request,
     # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
