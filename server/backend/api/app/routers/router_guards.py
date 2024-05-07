@@ -231,6 +231,7 @@ async def authorize_by_privilege(
                 error_msg="Requester has no privilege to grant this access."
             )
 
+
 # Note!!
 # currently to take care of different scenarios (id or fields needed in
 # path/param/body) to find target user, will only consider request
@@ -295,7 +296,6 @@ async def get_target_user_from_id(
 
 
 async def authorize_by_user_type(
-    request: Request,
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
 ):
@@ -303,14 +303,7 @@ async def authorize_by_user_type(
     This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
     """
     if requester.user_type_code == UserType.BCEID:
-        target_user_type_code = None
-        if not target_user.is_new_user():
-            # in the case of granting/removing access to an existing user
-            target_user_type_code = target_user.user_type_code
-        else:
-            # in the case of granting access to a new user
-            rbody = await request.json()
-            target_user_type_code = rbody["user_type_code"]
+        target_user_type_code = target_user.user_type_code
 
         if not target_user_type_code:
             error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
