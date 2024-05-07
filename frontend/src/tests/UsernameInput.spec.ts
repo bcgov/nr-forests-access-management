@@ -136,15 +136,14 @@ describe('UserNameInput', () => {
         helperText: 'New text helper',
     };
     const mockFamLoginUser = {
-        username: "usernameTEST",
-        displayName: "displayNameTest",
-        email: "email_test@test.com",
-        idpProvider: "idpProviderTest",
-        organization: "organizationTest",
-      };
+        username: 'usernameTEST',
+        displayName: 'displayNameTest',
+        email: 'email_test@test.com',
+        idpProvider: 'idpProviderTest',
+        organization: 'organizationTest',
+    };
 
-      FamLoginUserState.storeFamUser(mockFamLoginUser)
-
+    FamLoginUserState.storeFamUser(mockFamLoginUser);
 
     beforeEach(() => {
         wrapper = mount(UserNameInput, {
