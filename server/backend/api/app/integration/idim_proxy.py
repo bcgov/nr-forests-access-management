@@ -88,7 +88,7 @@ class IdimProxyService:
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Operation requires business bceid users to be within the same organization",
+                    "description": "Operation requires business bceid users to be within the same organization",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
