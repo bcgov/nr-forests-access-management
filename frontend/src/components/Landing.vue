@@ -31,7 +31,6 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                 <Button
                     class="landing-button"
                     outlined
-                    disabled
                     :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
                     id="login-business-bceid-button"
                     @click="AuthService.loginBusinessBceid()"
