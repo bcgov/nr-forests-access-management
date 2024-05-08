@@ -1,9 +1,11 @@
 import logging.config
 import os.path
 
-from api.app import jwt_validation
+from pydantic import ValidationError
+
 from api.app.exception_handlers import (requests_http_error_handler,
-                                        unhandled_exception_handler)
+                                        unhandled_exception_handler,
+                                        validation_exception_handler)
 from api.config.config import (get_allow_origins, get_root_path,
                                is_bcsc_key_enabled)
 from fastapi import APIRouter, Depends, FastAPI
@@ -59,9 +61,9 @@ app = FastAPI(
     description=description,
     version='0.0.1',
     contact={
-        "name": "Guy Lafleur",
-        "url": "https://en.wikipedia.org/wiki/Guy_Lafleur",
-        "email": "guy.lafleur@montreal.canadians.ca",
+        "name": "Team Heartwood",
+        "url": "https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Team+Heartwood",
+        "email": "SIBIFSAF@Victoria1.gov.bc.ca",
     },
     license_info={
         "name": "Apache 2.0",
@@ -88,6 +90,7 @@ app.add_middleware(
 )
 app.add_exception_handler(HTTPError, requests_http_error_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
+app.add_exception_handler(ValidationError, validation_exception_handler)
 
 
 @app.get("/", include_in_schema=False, tags=["docs"])

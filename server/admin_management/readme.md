@@ -20,7 +20,6 @@ cd server/admin_management
 set -o allexport; source local-dev.env; set +o allexport
 ```
 
-
 ## -------------- Windows Configuration ----------------------------------------
 
 Before you follow the steps below, ensure you have Python installed or updated to the latest version. Install and start your Docker desktop for Windows.

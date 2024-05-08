@@ -3,21 +3,16 @@ from http import HTTPStatus
 
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
-from api.app.constants import AdminRoleAuthGroup, UserType
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               AdminRoleAuthGroup, UserType)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import (
-    ERROR_INVALID_APPLICATION_ADMIN_ID,
-    ERROR_INVALID_APPLICATION_ID,
-    ERROR_NOT_ALLOWED_USER_TYPE,
-)
-from tests.constants import (
-    TEST_APPLICATION_NAME_FAM,
-    TEST_FOM_DEV_ADMIN_ROLE,
-    TEST_INVALID_USER_TYPE,
-    TEST_NEW_APPLICATION_ADMIN,
-    TEST_NOT_EXIST_APPLICATION_ID,
-)
+from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
+                                           ERROR_NOT_ALLOWED_USER_TYPE)
+from tests.constants import (TEST_APPLICATION_NAME_FAM,
+                             TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
+                             TEST_NEW_APPLICATION_ADMIN,
+                             TEST_NOT_EXIST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/application_admins"
@@ -61,23 +56,21 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
+            **TEST_NEW_APPLICATION_ADMIN,
             "user_type_code": TEST_INVALID_USER_TYPE,
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
-            "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
         },
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    assert response.json() is not None
-    assert str(response.json()["detail"]).find("Input should be 'I' or 'B'") != -1
+    assert response.content is not None
+    assert str(response.content).find("Input should be 'I' or 'B'") != -1
 
     # test not allowed user type, only allow IDIR
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
+            **TEST_NEW_APPLICATION_ADMIN,
             "user_type_code": UserType.BCEID,
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
-            "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
         },
         headers=jwt_utils.headers(token),
     )
@@ -89,8 +82,7 @@ def test_create_application_admin(
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
-            "user_type_code": TEST_NEW_APPLICATION_ADMIN.get("user_type_code"),
-            "user_name": TEST_NEW_APPLICATION_ADMIN.get("user_name"),
+            **TEST_NEW_APPLICATION_ADMIN,
             "application_id": TEST_NOT_EXIST_APPLICATION_ID,
         },
         headers=jwt_utils.headers(token),
@@ -137,7 +129,7 @@ def test_delete_application_admin(
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(ERROR_INVALID_APPLICATION_ADMIN_ID) != -1
+    assert response.json()["detail"]["code"] == ERROR_CODE_INVALID_REQUEST_PARAMETER
 
 
 def test_get_application_admins(

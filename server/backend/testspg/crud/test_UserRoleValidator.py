@@ -21,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
 # Override this.
 sample_request_dict = {
     "user_name": "test_user",
+    "user_guid": "",
     "user_type_code": constants.UserType.IDIR,
     "role_id": 99,
     "forest_client_number": FC_NUMBER_NOT_EXISTS

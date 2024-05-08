@@ -18,6 +18,7 @@ import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     userId: '',
+    userGuid: '',
     application: null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
@@ -36,11 +37,16 @@ const applicationOptions = computed(() => {
 /* ------------------ User information method ------------------------- */
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);
-const setVerifyUserIdPassed = (verifiedResult: boolean) => {
+const setVerifyUserIdPassed = (
+    verifiedResult: boolean,
+    userGuid: string = ''
+) => {
     verifyUserIdPassed.value = verifiedResult;
+    formData.value.userGuid = userGuid;
 };
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
@@ -51,6 +57,7 @@ const cancelForm = () => {
 const toRequestPayload = (formData: any) => {
     const request = {
         user_name: formData.userId,
+        user_guid: formData.userGuid,
         application_id: formData.application.id,
         user_type_code: UserType.I,
     } as FamAppAdminCreateRequest;
@@ -139,7 +146,9 @@ const handleSubmit = async () => {
                         v-model="formData.application"
                     >
                         <div class="application-admin-group">
-                            <label for="application-dropdown">Select application</label>
+                            <label for="application-dropdown"
+                                >Select application</label
+                            >
                             <Dropdown
                                 v-model="formData.application"
                                 :options="applicationOptions"
