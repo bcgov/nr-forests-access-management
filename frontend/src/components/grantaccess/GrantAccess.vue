@@ -20,13 +20,18 @@ import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { UserType, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
 
+const defaultDomain =
+    FamLoginUserState.getUserType() === IdpProvider.IDIR
+        ? UserType.I
+        : UserType.B;
+
 const defaultFormData = {
-    domain: FamLoginUserState.getUserType(),
+    domain: defaultDomain,
     userId: '',
     userGuid: '',
     verifiedForestClients: [],
