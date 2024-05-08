@@ -19,7 +19,6 @@ from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
 from testspg.constants import (
     FC_NUMBER_EXISTS_ACTIVE_00001011,
-    FC_NUMBER_EXISTS_ACTIVE_00000001,
     FC_NUMBER_EXISTS_DEACTIVATED,
     FC_NUMBER_NOT_EXISTS,
     FOM_DEV_APPLICATION_ID,
@@ -588,6 +587,7 @@ def test_self_grant_fail(
         "user_name": jwt_utils.IDIR_USERNAME,
         "user_type_code": UserType.IDIR,
         "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+        "user_guid": jwt_utils.IDP_USER_GUID
     }
 
     response = test_client_fixture.post(
@@ -867,3 +867,6 @@ def test_self_remove_grant_fail(
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
+
+
+# TODO add test to test create assignment for BCEID new user (not exists in db, and update business_guid)

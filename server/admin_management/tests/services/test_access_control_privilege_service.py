@@ -13,6 +13,7 @@ from api.app.services.access_control_privilege_service import (
 )
 from api.app.services.user_service import UserService
 from api.app.services.forest_client_service import ForestClientService
+from tests.conftest import to_mocked_target_user
 from tests.constants import (
     TEST_CREATOR,
     TEST_USER_ID,
@@ -89,6 +90,9 @@ def test_create_access_control_privilege_many(
                 **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
+            )
         )
     )
     assert len(return_result) == 1
@@ -119,6 +123,9 @@ def test_create_access_control_privilege_many(
                 **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     )
     assert len(return_result) == 1
@@ -165,6 +172,9 @@ def test_create_access_control_privilege_many(
                 }
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     )
     assert len(return_result) == 2
@@ -206,6 +216,9 @@ def test_create_access_control_privilege_many(
         access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(**copy_data),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     assert (
         str(e._excinfo).find(
@@ -245,6 +258,9 @@ def test_create_access_control_privilege_many_invalid_role_id(
                 }
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     error_msg = f"Role id {TEST_NOT_EXIST_ROLE_ID} does not exist."
     assert str(e._excinfo).find(error_msg) != -1
@@ -262,6 +278,9 @@ def test_create_access_control_privilege_many_invalid_forest_client(
                 }
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     assert (
         str(e._excinfo).find(
@@ -283,6 +302,9 @@ def test_create_access_control_privilege_many_inactive_forest_client(
                 }
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     assert (
         str(e._excinfo).find(
@@ -310,6 +332,9 @@ def test_create_access_control_privilege_many_active_and_inactive_forest_client(
                 }
             ),
             TEST_CREATOR,
+            to_mocked_target_user(
+                TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
+            )
         )
     assert (
         str(e._excinfo).find(
