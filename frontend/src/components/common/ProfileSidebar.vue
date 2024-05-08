@@ -7,17 +7,17 @@ import { IdpProvider } from '@/enum/IdpEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
+import FamLoginUserState from '@/store/FamLoginUserState';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
 const organization = LoginUserState.state.value.famLoginUser!.organization;
-// the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
-const idpProvider =
-    LoginUserState.state.value.famLoginUser!.idpProvider?.split('-')[1];
-let userType = IdpProvider.IDIR;
-if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
+const userType =
+    FamLoginUserState.userType === IdpProvider.IDIR
+        ? IdpProvider.IDIR
+        : IdpProvider.BCEIDBUSINESS;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.

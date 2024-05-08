@@ -23,6 +23,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
+import { IdpProvider } from '@/enum/IdpEnum';
 
 const defaultFormData = {
     domain: UserType.I,
@@ -191,6 +192,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
             <form id="grantAccessForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
+                        v-if="FamLoginUserState.userType === IdpProvider.IDIR"
                         :domain="formData.domain"
                         @change="userDomainChange"
                     />

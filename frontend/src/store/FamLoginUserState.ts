@@ -13,6 +13,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { IdpProvider } from '@/enum/IdpEnum';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -42,6 +43,11 @@ const state = ref({
               | null)
         : undefined,
 });
+
+// the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
+const idpProvider =
+    state.value.famLoginUser!.idpProvider?.split('-')[1];
+const userType = idpProvider == 'IDIR' ? IdpProvider.IDIR : IdpProvider.BCEIDBUSINESS
 
 // --- getters
 
@@ -275,6 +281,7 @@ const getMyAdminPermission = () => {
 
 export default {
     state: readonly(state), // readonly to prevent direct state change; force it through functions if needed to.
+    userType,
     getAuthToken,
     getUserAccess,
     getUserAdminRoleGroups,
