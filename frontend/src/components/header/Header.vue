@@ -31,6 +31,7 @@ const props = defineProps({
             <Button
                 class="btn-toggleSideNav"
                 @click="sideNavState.toggleSideNavVisible()"
+                aria-label="Toggle Side Navigation"
             >
                 <Icon
                     class="custom-carbon-icon--menu"
@@ -40,13 +41,14 @@ const props = defineProps({
             </Button>
             <span class="header-title">
                 {{ props.title }}
-                <strong class="subtitle">{{ props.subtitle }}</strong>
-                <strong>{{ environmentLabel }}</strong>
+                <strong class="subtitle"
+                    >{{ props.subtitle }} {{ environmentLabel }}</strong
+                >
             </span>
 
             <a
                 title="Profile"
-                v-if="authService.getters.isLoggedIn()"
+                v-if="authService.isLoggedIn()"
                 @click="profileSidebarState.toggleVisible()"
             >
                 <Icon icon="user--avatar" :size="IconSize.medium" />
@@ -70,6 +72,9 @@ li {
     padding: 0.88rem;
     border: none;
     border-radius: 0;
+    .label {
+        display: none !important;
+    }
 }
 .subtitle {
     display: none;
@@ -78,13 +83,15 @@ li {
     @extend %heading-compact-01;
     position: fixed;
 
+    font-size: 1rem;
+
     height: $header-height;
     width: $header-width;
     background: $light-background-brand;
 
     padding: 0;
     z-index: 1;
-    color: $dark-text-primary;
+    color: $text-on-color;
     .header-title {
         margin: 0 auto 0 0;
         a i {

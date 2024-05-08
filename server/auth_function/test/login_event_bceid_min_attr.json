@@ -1,0 +1,31 @@
+{
+    "callerContext": {
+        "awsSdkVersion": "aws-sdk-unknown-unknown",
+        "clientId": "10afna6ln33b2978g1nibfeqhg"
+    },
+    "region": "ca-central-1",
+    "request": {
+        "groupConfiguration": {
+            "groupsToOverride": [
+                "ca-central-1_p8X8GdjKW_TEST-BCEIDBUSINESS"
+            ],
+            "iamRolesToOverride": [],
+            "preferredRole": null
+        },
+        "userAttributes": {
+            "cognito:user_status": "EXTERNAL_PROVIDER",
+            "custom:idp_name": "bceidbusiness",
+            "custom:idp_user_id": "81069F39B35B4861BCD010582B63B112",
+            "custom:idp_username": "LOAD-2-TEST",
+            "identities": "[{'userId':'81069F39B35B4861BCD01058mangled2B63B112@bceidbusiness','providerName':'TEST-BCEIDBUSINESS','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1699051596416}]",
+            "sub": "bdc3cf92-f0c7-4e17-8a1f-359991136919"
+        }
+    },
+    "response": {
+        "claimsOverrideDetails": null
+    },
+    "triggerSource": "TokenGeneration_HostedAuth",
+    "userName": "test-bceidbusiness_81069F39B35B4861BCD01058mangled2B63B112@bceidbusiness",
+    "userPoolId": "ca-central-1_p8X8GdjKW",
+    "version": "1"
+}

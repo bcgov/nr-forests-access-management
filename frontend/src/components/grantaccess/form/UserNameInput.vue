@@ -6,13 +6,19 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { isLoading } from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { UserType, type IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import { IdpProvider } from '@/enum/IdpEnum';
+import { UserType } from 'fam-app-acsctl-api';
+import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import FamLoginUserState from '@/store/FamLoginUserState';
 
 const props = defineProps({
     domain: { type: String, required: true },
     userId: { type: String, default: '' },
     fieldId: { type: String, default: 'userId' },
+    helperText: { type: String },
 });
+
+const PERMISSION_REQUIRED_FOR_OPERATION = 'permission_required_for_operation';
 
 const emit = defineEmits(['change', 'setVerifyResult']);
 
@@ -26,25 +32,51 @@ const computedUserId = computed({
     },
 });
 
-const verifiedUserIdentity = ref<IdimProxyIdirInfo | null>(null);
+const errorMsg = ref('');
+const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
+    null
+);
 const verifyUserId = async () => {
-    if (props.domain == UserType.B) {
-        emit('setVerifyResult', true);
-        return;
+    try {
+        if (props.domain == UserType.B) {
+            verifiedUserIdentity.value = (
+                await AppActlApiService.idirBceidProxyApi.bceidSearch(
+                    computedUserId.value
+                )
+            ).data;
+        } else {
+            verifiedUserIdentity.value = (
+                await AppActlApiService.idirBceidProxyApi.idirSearch(
+                    computedUserId.value
+                )
+            ).data;
+        }
+    } catch (error: any) {
+        verifiedUserIdentity.value = {
+            userId: computedUserId.value,
+            found: false,
+        };
+        if (
+            error.response.status === 403 &&
+            error.response.data.detail.code ===
+                PERMISSION_REQUIRED_FOR_OPERATION
+        ) {
+            errorMsg.value = `${
+                error.response.data.detail.description
+            }. Org name: ${
+                FamLoginUserState.state.value.famLoginUser!.organization
+            }`;
+        }
+    } finally {
+        if (verifiedUserIdentity.value?.found) {
+            emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
+        }
     }
-
-    verifiedUserIdentity.value = (
-        await AppActlApiService.idirBceidProxyApi.idirSearch(
-            computedUserId.value
-        )
-    ).data;
-
-    if (verifiedUserIdentity.value?.found) emit('setVerifyResult', true);
 };
 const resetVerifiedUserIdentity = () => {
     verifiedUserIdentity.value = null;
-    if (props.domain == UserType.I) emit('setVerifyResult', false);
-    else emit('setVerifyResult', true);
+    errorMsg.value = '';
+    emit('setVerifyResult', false);
 };
 
 // whenver user domain change, remove the previous user identity card
@@ -71,8 +103,8 @@ watch(
                         id="userIdInput"
                         :placeholder="
                             props.domain === UserType.I
-                                ? 'Type user\'s IDIR'
-                                : 'Type user\'s BCeID'
+                                ? `Type user\'s ${IdpProvider.IDIR}`
+                                : `Type user\'s ${IdpProvider.BCEIDBUSINESS}`
                         "
                         :validateOnChange="true"
                         class="w-100 custom-height"
@@ -84,8 +116,8 @@ watch(
                     <small
                         id="userIdInput-helper"
                         class="helper-text"
-                        v-if="!errorMessage"
-                        >Enter and verify the username for this user</small
+                        v-if="helperText && !errorMessage"
+                        >{{ helperText }}</small
                     >
                     <ErrorMessage
                         class="invalid-feedback"
@@ -95,10 +127,17 @@ watch(
                 </div>
 
                 <Button
-                    v-if="props.domain === UserType.I"
                     class="w-100 custom-height"
-                    aria-label="Verify user IDIR"
-                    name="verifyIdir"
+                    :aria-label="`Verify user ${
+                        props.domain === UserType.I
+                            ? IdpProvider.IDIR
+                            : IdpProvider.BCEIDBUSINESS
+                    }`"
+                    :name="
+                        props.domain === UserType.I
+                            ? 'verifyIdir'
+                            : 'verifyBusinessBceid'
+                    "
                     label="Verify"
                     @click="verifyUserId()"
                     :disabled="
@@ -112,11 +151,15 @@ watch(
             </div>
         </Field>
 
-        <div class="col-md-5 px-0" v-if="verifiedUserIdentity">
+        <div
+            v-if="verifiedUserIdentity"
+            id="UserIdentityCard"
+            class="col-md-5 px-0"
+        >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
+                :errorMsg="errorMsg"
             ></UserIdentityCard>
         </div>
     </div>
 </template>
-<style lang="scss" scoped></style>

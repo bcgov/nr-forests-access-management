@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import authService from '@/services/AuthService';
+import { IdpProvider } from '@/enum/IdpEnum';
+import AuthService from '@/services/AuthService';
 import logo from '@/assets/images/bc-gov-logo.png';
 import TreeLogs from '@/assets/images/tree-logs.jpg';
 </script>
@@ -21,19 +22,18 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                 </p>
                 <Button
                     class="landing-button"
-                    label="Login with IDIR"
+                    :label="`Login with ${IdpProvider.IDIR}`"
                     id="login-idir-button"
-                    @click="authService.methods.login()"
+                    @click="AuthService.login()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
                 <Button
                     class="landing-button"
                     outlined
-                    label="Login with BCeID"
-                    id="login-bceid-button"
-                    disabled
-                    @click="authService.methods.login()"
+                    :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
+                    id="login-business-bceid-button"
+                    @click="AuthService.loginBusinessBceid()"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>

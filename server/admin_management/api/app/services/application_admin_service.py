@@ -1,14 +1,13 @@
 import logging
 from http import HTTPStatus
-from sqlalchemy.orm import Session
-from typing import List
 
 from api.app import schemas
+from api.app.repositories.application_admin_repository import \
+    ApplicationAdminRepository
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
-from api.app.repositories.application_admin_repository import ApplicationAdminRepository
-
 from api.app.utils import utils
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,26 +18,19 @@ class ApplicationAdminService:
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
 
-    def get_application_admins(self) -> schemas.FamAppAdminGet:
+    def get_application_admins(self) -> schemas.FamAppAdminGetResponse:
         return self.application_admin_repo.get_application_admins()
 
     def get_application_admin_by_id(
         self, application_admin_id: int
-    ) -> schemas.FamAppAdminGet:
+    ) -> schemas.FamAppAdminGetResponse:
         return self.application_admin_repo.get_application_admin_by_id(
             application_admin_id
         )
 
-    def get_application_admin_by_application_id(
-        self, application_id: int
-    ) -> List[schemas.FamAppAdminGet]:
-        return self.application_admin_repo.get_application_admin_by_application_id(
-            application_id
-        )
-
     def create_application_admin(
-        self, request: schemas.FamAppAdminCreate, requester: str
-    ) -> schemas.FamAppAdminGet:
+        self, request: schemas.FamAppAdminCreateRequest, requester: str
+    ) -> schemas.FamAppAdminGetResponse:
         # Request has information: user_name, user_type_code, application_id
         LOGGER.debug(
             f"Request for assigning an application admin to a user: {request}."
@@ -61,7 +53,9 @@ class ApplicationAdminService:
                 + f"{fam_application_admin_user.application_admin_id}."
             )
             error_msg = "User is admin already."
-            utils.raise_http_exception(HTTPStatus.CONFLICT, error_msg)
+            utils.raise_http_exception(
+                status_code=HTTPStatus.CONFLICT,
+                error_msg=error_msg)
         else:
             # Create application admin if user is not admin yet
             fam_application_admin_user = (
@@ -71,7 +65,7 @@ class ApplicationAdminService:
             )
 
         fam_application_admin_user_dict = fam_application_admin_user.__dict__
-        app_admin_user_assignment = schemas.FamAppAdminGet(
+        app_admin_user_assignment = schemas.FamAppAdminGetResponse(
             **fam_application_admin_user_dict
         )
         LOGGER.debug(

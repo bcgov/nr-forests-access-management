@@ -16,14 +16,14 @@
             "cognito:user_status": "EXTERNAL_PROVIDER",
             "custom:idp_display_name": "NRS Load Test-2",
             "custom:idp_name": "bceidbusiness",
-            "custom:idp_user_id": "81069F39B35B4861BCD010582MANGLED",
+            "custom:idp_user_id": "81069F39B35B4861BCD010582B63B112",
             "custom:idp_username": "LOAD-2-TEST",
             "email": "nrpp_test@nrpp.compratech.com",
             "email_verified": "false",
             "custom:idp_business_id": "2DA5FA0A3E9F4A76825342BCCB861A15",
             "custom:idp_business_name": "NRS Load Test-2",
-            "identities": "[{'userId':'81069f39b35b4861bcd010582mangled@bceidbusiness','providerName':'TEST-BCEIDBUSINESS','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1699051596416}]",
-            "custom:keycloak_username": "81069f39b35b4861bcd010582mangled@bceidbusiness",
+            "identities": "[{'userId':'81069f39b35b4861bcd010582mangledB63B112@bceidbusiness','providerName':'TEST-BCEIDBUSINESS','providerType':'OIDC','issuer':null,'primary':true,'dateCreated':1699051596416}]",
+            "custom:keycloak_username": "81069f39b35b4861bcd010582mangledB63B112@bceidbusiness",
             "sub": "bdc3cf92-f0c7-4e17-8a1f-359991136919"
         }
     },
@@ -31,7 +31,7 @@
         "claimsOverrideDetails": null
     },
     "triggerSource": "TokenGeneration_HostedAuth",
-    "userName": "test-bceidbusiness_81069f39b35b4861bcd010582mangled@bceidbusiness",
+    "userName": "test-bceidbusiness_81069f39b35b4861bcd010582mangledB63B112@bceidbusiness",
     "userPoolId": "ca-central-1_p8X8GdjKW",
     "version": "1"
 }

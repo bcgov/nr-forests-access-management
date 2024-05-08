@@ -1,88 +1,83 @@
 <script setup lang="ts">
 import router from '@/router';
-import Dropdown from 'primevue/dropdown';
-import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
-import { ref, type PropType } from 'vue';
-import { number, object, string } from 'yup';
+import { Form as VeeForm } from 'vee-validate';
+import { computed, ref } from 'vue';
 
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
+import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
-import { setGrantAccessNotificationMsg } from '@/store/NotificationState';
+import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
-    type FamApplicationRole,
-    UserType,
-    type FamUserRoleAssignmentCreate,
-} from 'fam-app-acsctl-api';
+    selectedApplicationDisplayText,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
+import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-
-const props = defineProps({
-    applicationRoleOptions: {
-        // options fetched from route.
-        type: Array as PropType<FamApplicationRole[]>,
-        default: [],
-    },
-});
+import FamLoginUserState from '@/store/FamLoginUserState';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { TabKey } from '@/enum/TabEnum';
 
 const defaultFormData = {
     domain: UserType.I,
     userId: '',
+    userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
-const formValidationSchema = object({
-    userId: string()
-        .required('User ID is required')
-        .min(2, 'User ID must be at least 2 characters')
-        .nullable(),
-    roleId: number().required('Please select a value'),
-    forestClientNumbers: string()
-        .when('roleId', {
-            is: (_role_id: number) => isAbstractRoleSelected(),
-            then: () =>
-                string()
-                    .nullable()
-                    .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
-                    .matches(/^[0-9,\b]+$/, 'Please enter a digit or comma')
-                    .matches(
-                        /^\d{8}(,?\d{8})*$/,
-                        'Please enter a Forest Client ID with 8 digits long'
-                    ),
-        })
-        .nullable(),
+const applicationRoleOptions = computed(() => {
+    if (FamLoginUserState.isAdminOfSelectedApplication()) {
+        return FamLoginUserState.getCachedAppRoles(
+            selectedApplicationId.value!
+        );
+    } else {
+        return FamLoginUserState.getCachedAppRolesForDelegatedAdmin(
+            selectedApplicationId.value!
+        );
+    }
 });
 
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
     formData.value.domain = selectedDomain;
     formData.value.userId = '';
+    formData.value.userGuid = '';
 };
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
+    formData.value.userGuid = '';
 };
 
 const verifyUserIdPassed = ref(false);
-const setVerifyUserIdPassed = (verifiedResult: boolean) => {
+const setVerifyUserIdPassed = (
+    verifiedResult: boolean,
+    userGuid: string = ''
+) => {
     verifyUserIdPassed.value = verifiedResult;
+    formData.value.userGuid = userGuid;
 };
 
 /* ------------------- Role selection method -------------------------- */
-const getSelectedRole = (): FamApplicationRole | undefined => {
-    return props.applicationRoleOptions?.find(
-        (item) => item.role_id === formData.value.roleId
+const getSelectedRole = (): FamRoleDto | undefined => {
+    return applicationRoleOptions?.value.find(
+        (item) => item.id === formData.value.roleId
     );
 };
 
 const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.role_type_code == 'A';
+    return getSelectedRole()?.type_code == 'A';
+};
+
+const roleSelectChange = (roleId: number) => {
+    formData.value.roleId = roleId;
 };
 
 /* ----------------- Forest client number method ----------------------- */
@@ -119,50 +114,53 @@ const areVerificationsPassed = () => {
 };
 
 const handleSubmit = async () => {
-    const successForestClientIdList: string[] = [];
-    const warningForestClientIdList: string[] = [];
+    const username = formData.value.userId.toUpperCase();
+    const role = getSelectedRole()?.name;
+    const successList: string[] = [];
+    const errorList: string[] = [];
+    let errorCode = ErrorCode.Default;
 
-    // msg override the default error notification message
-    const errorNotification = {
-        msg: '',
-        errorForestClientIdList: [] as string[],
-    };
+    // when we assign a concrete a role to the user, there is no forest client number,
+    // we add an empty string to the success or error list,
+    // so the successList or errorList will be [''] for granting concrete role,
+    // or ["00001011", "00001012", ...] for granting abstract role,
+    // the composeAndPushGrantPermissionNotification method will handle both cases
     do {
         const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
-        await AppActlApiService.userRoleAssignmentApi
-            .createUserRoleAssignment(data)
-            .then(() => {
-                successForestClientIdList.push(forestClientNumber || '');
-            })
-            .catch((error) => {
-                if (error.response?.status === 409) {
-                    warningForestClientIdList.push(forestClientNumber || '');
-                } else if (
-                    error.response.data.detail.code === 'self_grant_prohibited'
-                ) {
-                    errorNotification.msg =
-                        'Granting roles to self is not allowed.';
-                } else {
-                    errorNotification.errorForestClientIdList.push(
-                        forestClientNumber || ''
-                    );
-                }
-            });
+        try {
+            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+                data
+            );
+            successList.push(forestClientNumber ?? '');
+        } catch (error: any) {
+            if (error.response?.status === 409) {
+                errorCode = ErrorCode.Conflict;
+            } else if (
+                error.response?.data.detail.code === 'self_grant_prohibited'
+            ) {
+                errorCode = ErrorCode.SelfGrantProhibited;
+            }
+            errorList.push(forestClientNumber ?? '');
+        }
     } while (formData.value.verifiedForestClients.length > 0);
 
-    composeAndPushNotificationMessages(
-        successForestClientIdList,
-        warningForestClientIdList,
-        errorNotification
+    composeAndPushGrantPermissionNotification(
+        GrantPermissionType.Regular,
+        username,
+        successList,
+        errorList,
+        errorCode,
+        role
     );
-
+    setCurrentTabState(TabKey.UserAccess);
     router.push('/dashboard');
 };
 
 function toRequestPayload(formData: any, forestClientNumber: string) {
     const request = {
         user_name: formData.userId,
+        user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
         ...(forestClientNumber
@@ -176,68 +174,22 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
     } as FamUserRoleAssignmentCreate;
     return request;
 }
-
-const composeAndPushNotificationMessages = (
-    successIdList: string[],
-    warningIdList: string[],
-    errorMsg: { msg: string; errorForestClientIdList: string[] }
-) => {
-    const username = formData.value.userId.toUpperCase();
-    if (successIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            successIdList,
-            username,
-            Severity.success,
-            getSelectedRole()?.role_name
-        );
-    }
-    if (warningIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            warningIdList,
-            username,
-            Severity.warning,
-            getSelectedRole()?.role_name
-        );
-    }
-
-    if (errorMsg.msg) {
-        setGrantAccessNotificationMsg(
-            errorMsg.errorForestClientIdList,
-            username,
-            Severity.error,
-            getSelectedRole()?.role_name,
-            `An error has occured. ${errorMsg.msg}`
-        );
-    } else if (errorMsg.errorForestClientIdList.length > 0) {
-        setGrantAccessNotificationMsg(
-            errorMsg.errorForestClientIdList,
-            username,
-            Severity.error,
-            getSelectedRole()?.role_name
-        );
-    }
-    return '';
-};
-
 </script>
 
 <template>
     <PageTitle
         title="Add user permission"
-        subtitle="Add a new permission to a user. All fields are mandatory unless noted"
+        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
     />
     <VeeForm
         ref="form"
-        v-slot="{ errors, meta }"
-        :validation-schema="formValidationSchema"
+        v-slot="{ meta }"
+        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
         as="div"
     >
         <div class="page-body">
             <form id="grantAccessForm" class="form-container">
-                <StepContainer
-                    title="User information"
-                    :subtitle="`Enter the user information to add a new user to ${selectedApplicationDisplayText}`"
-                >
+                <StepContainer title="User information">
                     <UserDomainSelect
                         :domain="formData.domain"
                         @change="userDomainChange"
@@ -252,34 +204,14 @@ const composeAndPushNotificationMessages = (
 
                 <StepContainer
                     title="Add user roles"
-                    subtitle="Enter a specific role for this user"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <label>Assign a role to the user</label>
-
-                    <Field
-                        name="roleId"
-                        aria-label="Role Select"
-                        v-slot="{ field, handleChange }"
-                        v-model="formData.roleId"
-                    >
-                        <Dropdown
-                            :options="applicationRoleOptions"
-                            optionLabel="role_name"
-                            optionValue="role_id"
-                            :modelValue="field.value"
-                            placeholder="Choose an option"
-                            class="w-100 custom-height"
-                            style="width: 100% !important"
-                            v-bind="field.value"
-                            @update:modelValue="handleChange"
-                            @change="resetVerifiedForestClients"
-                            :class="{
-                                'is-invalid': errors.roleId,
-                            }"
-                        />
-                    </Field>
-                    <ErrorMessage class="invalid-feedback" name="roleId" />
+                    <RoleSelect
+                        :roleId="formData.roleId"
+                        :roleOptions="applicationRoleOptions"
+                        @change="roleSelectChange"
+                        @resetVerifiedForestClients="resetVerifiedForestClients"
+                    />
                 </StepContainer>
 
                 <StepContainer
@@ -314,7 +246,7 @@ const composeAndPushNotificationMessages = (
                         type="button"
                         id="grantAccessSubmit"
                         class="w100"
-                        label="Submit Application"
+                        label="Grant Access"
                         :disabled="
                             !(meta.valid && areVerificationsPassed()) ||
                             isLoading()
@@ -328,4 +260,3 @@ const composeAndPushNotificationMessages = (
         </div>
     </VeeForm>
 </template>
-<style lang="scss" scoped></style>

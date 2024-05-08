@@ -31,11 +31,29 @@ DESCRIPTION_INACTIVE = "Inactive"
 
 # Constans for FAM to coneniently refer to Forest Client API return json object
 # keys/values.
-FOREST_CLIENT_STATUS = {
-    "KEY": "clientStatusCode",
-    "CODE_ACTIVE": "ACT"
-}
+FOREST_CLIENT_STATUS = {"KEY": "clientStatusCode", "CODE_ACTIVE": "ACT"}
 
 FAM_PROXY_API_USER = "fam_proxy_api"
 
 COGNITO_USERNAME_KEY = "username"
+
+IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
+
+
+class IdimSearchUserParamType(str, Enum):
+    USER_GUID = "userGuid"
+    USER_ID = "userId"
+
+
+# ------- Error/Exception Code Constant -------
+
+# Note, this is default error code but better use specific code category if possible.
+ERROR_CODE_INVALID_OPERATION = "invalid_operation"
+ERROR_CODE_INVALID_APPLICATION_ID = "invalid_application_id"
+ERROR_CODE_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
+ERROR_CODE_INVALID_ROLE_ID = "invalid_role_id"
+ERROR_CODE_REQUESTER_NOT_EXISTS = "requester_not_exists"
+ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
+ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
+ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
+ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"

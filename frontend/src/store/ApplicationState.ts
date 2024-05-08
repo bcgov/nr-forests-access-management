@@ -1,25 +1,17 @@
-import type { FamApplication } from 'fam-app-acsctl-api';
+import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
-// The applications the user has access to administer
-export const applicationsUserAdministers = ref<FamApplication[]>([]);
-
-// The application selected by the user to admin
-export const selectedApplication = ref<FamApplication | null>(
+export const selectedApplication = ref<FamApplicationDto | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
-              localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
-          )
+            localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
+        )
         : null
 );
 
 // --- Setter
-
-export const setApplicationsUserAdministers = (newValue: FamApplication[]) => {
-    applicationsUserAdministers.value = newValue;
-};
 
 export const setSelectedApplication = (newValue: string | null) => {
     selectedApplication.value = JSON.parse(newValue as string);
@@ -32,11 +24,15 @@ export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
 });
 
+export const selectedApplicationId = computed(() => {
+    return selectedApplication.value?.id
+})
+
 // --- Getter
 
 export const selectedApplicationShortDisplayText = computed(() => {
     if (selectedApplication.value) {
-        return `${selectedApplication.value.application_name.toUpperCase()}`;
+        return `${selectedApplication.value.name.toUpperCase()}`;
     } else {
         return '';
     }
@@ -44,7 +40,7 @@ export const selectedApplicationShortDisplayText = computed(() => {
 
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {
-        return `${selectedApplication.value.application_description}`;
+        return `${selectedApplication.value.description}`;
     } else {
         return '';
     }

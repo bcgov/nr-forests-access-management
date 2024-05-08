@@ -1,12 +1,12 @@
 import logging
 from typing import List
-
+from api.app import database, jwt_validation, schemas
 from api.app.crud import crud_application
-from api.app.routers.router_guards import authorize_by_app_id
-from fastapi import APIRouter, Depends, Response
+from api.app.routers.router_guards import authorize_by_app_id, get_current_requester
+from api.app.schemas import Requester
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from .. import database, jwt_validation, schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,16 +68,18 @@ def get_fam_application_roles(
 def get_fam_application_user_role_assignment(
     application_id: int,
     db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester)
 ):
-    """gets the roles associated with an application
-
-    :param application_id: application id
-    :param db: database session, defaults to Depends(database.get_db)
+    """
+    gets the roles assignment associated with an application
     """
     LOGGER.debug(f"Loading application role assigments for application_id: {application_id}")
     app_user_role_assignment = crud_application.get_application_role_assignments(
-        db=db, application_id=application_id
+        db=db,
+        application_id=application_id,
+        requester=requester
     )
-    LOGGER.debug(f"Finished loading application role assigments - # of results = {len(app_user_role_assignment)}")
+    LOGGER.debug(f"Completed loading application role assigments -\
+                 # of results = {len(app_user_role_assignment)}")
 
     return app_user_role_assignment

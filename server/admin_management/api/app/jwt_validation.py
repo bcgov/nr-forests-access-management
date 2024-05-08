@@ -184,7 +184,6 @@ def validate_token(
 
 
 def authorize(claims: dict = Depends(validate_token)) -> dict:
-
     if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
         raise HTTPException(
             status_code=403,
@@ -208,6 +207,12 @@ def get_request_cognito_user_id(claims: dict = Depends(authorize)):
     # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
     # It is the "cognito_user_id" column for fam_user table.
     # Example value: idir_b5ecdb094dfb4149a6a8445a0mangled0@idir
+    cognito_username = claims[COGNITO_USERNAME_KEY]
+    LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
+    return cognito_username
+
+
+def get_request_cognito_user_id_without_access_check(claims: dict = Depends(validate_token)):
     cognito_username = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username

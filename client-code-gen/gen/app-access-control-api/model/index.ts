@@ -13,6 +13,7 @@ export * from './fam-user-role-assignment-create';
 export * from './fam-user-role-assignment-get';
 export * from './fam-user-type';
 export * from './httpvalidation-error';
+export * from './idim-proxy-bceid-info';
 export * from './idim-proxy-idir-info';
 export * from './location-inner';
 export * from './role-type';

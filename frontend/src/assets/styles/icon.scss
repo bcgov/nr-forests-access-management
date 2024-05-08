@@ -1,6 +1,6 @@
 @import '@/assets/styles/styles.scss';
 
-.custom-carbon-icon-error--filled {
+.custom-carbon-icon-misuse {
     color: $light-support-error !important;
 }
 
@@ -14,8 +14,8 @@
     fill: $light-background-brand;
 }
 .custom-carbon-icon--help,
-.custom-carbon-icon--sidenav  {
-    margin-right: 1.5rem;
+.custom-carbon-icon--sidenav {
+    margin-right: 0.5rem;
 }
 
 .custom-carbon-icon--sidenav {

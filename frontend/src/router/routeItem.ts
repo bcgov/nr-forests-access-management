@@ -24,4 +24,19 @@ export const routeItems = {
         path: '/grant',
         label: 'Add user permission',
     },
+    grantAppAdmin: {
+        name: 'grantAppAdmin',
+        path: '/grant-app-admin',
+        label: 'Add application admin',
+    },
+    grantDelegatedAdmin: {
+        name: 'grantDelegatedAdmin',
+        path: '/grant-delegated-admin',
+        label: 'Add a delegated admin',
+    },
+    myPermissions: {
+        name: 'myPermissions',
+        path: '/my-permissions',
+        label: 'Check my permissions',
+    }
 } as RouteItems;

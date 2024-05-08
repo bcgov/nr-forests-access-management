@@ -128,6 +128,12 @@ resource "aws_lambda_function" "fam_admin_management_api_function" {
       COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
 
       ALLOW_ORIGIN = "${var.front_end_redirect_path}"
+
+      FC_API_TOKEN = "${var.forest_client_api_api_key}"
+      FC_API_BASE_URL = "${var.forest_client_api_base_url}"
+
+      IDIM_PROXY_BASE_URL = "${var.idim_proxy_api_base_url}"
+      IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"
     }
 
   }

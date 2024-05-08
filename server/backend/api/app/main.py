@@ -1,9 +1,11 @@
 import logging.config
 import os.path
 
-from api.app import jwt_validation
+from pydantic import ValidationError
+
 from api.app.exception_handlers import (requests_http_error_handler,
-                                        unhandled_exception_handler)
+                                        unhandled_exception_handler,
+                                        validation_exception_handler)
 from api.config.config import (get_allow_origins, get_root_path,
                                is_bcsc_key_enabled)
 from fastapi import APIRouter, Depends, FastAPI
@@ -17,7 +19,7 @@ from .kms_lookup import init_bcsc_public_key
 from .routers import (router_application, router_bcsc_proxy,
                       router_forest_client, router_idim_proxy,
                       router_smoke_test,
-                      router_user_role_assignment)
+                      router_user_role_assignment, router_guards)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__),
@@ -59,9 +61,9 @@ app = FastAPI(
     description=description,
     version='0.0.1',
     contact={
-        "name": "Guy Lafleur",
-        "url": "https://en.wikipedia.org/wiki/Guy_Lafleur",
-        "email": "guy.lafleur@montreal.canadians.ca",
+        "name": "Team Heartwood",
+        "url": "https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Team+Heartwood",
+        "email": "SIBIFSAF@Victoria1.gov.bc.ca",
     },
     license_info={
         "name": "Apache 2.0",
@@ -88,6 +90,7 @@ app.add_middleware(
 )
 app.add_exception_handler(HTTPError, requests_http_error_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
+app.add_exception_handler(ValidationError, validation_exception_handler)
 
 
 @app.get("/", include_in_schema=False, tags=["docs"])
@@ -104,11 +107,11 @@ app.include_router(router_user_role_assignment.router,
                    tags=["FAM User Role Assignment"])
 app.include_router(router_forest_client.router,
                    prefix=apiPrefix + '/forest_clients',
-                   dependencies=[Depends(jwt_validation.authorize)],
+                   dependencies=[Depends(router_guards.authorize)],
                    tags=["FAM Forest Clients"])
 app.include_router(router_idim_proxy.router,
                    prefix=apiPrefix + '/identity_search',
-                   dependencies=[Depends(jwt_validation.authorize)],
+                   dependencies=[Depends(router_guards.authorize)],
                    tags=["IDIR/BCeID Proxy"])
 
 # This router is used to proxy the BCSC userinfo endpoint

@@ -1,38 +1,16 @@
-import router from '@/router';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
-import { readonly, ref } from 'vue';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { CURRENT_SELECTED_APPLICATION_KEY } from '@/store/ApplicationState';
-
-const FAM_LOGIN_USER = 'famLoginUser';
-
-export interface FamLoginUser {
-    username?: string;
-    displayName?: string;
-    email?: string;
-    idpProvider?: string;
-    roles?: string[];
-    authToken?: CognitoUserSession;
-}
-
-const state = ref({
-    famLoginUser: localStorage.getItem(FAM_LOGIN_USER)
-        ? (JSON.parse(localStorage.getItem(FAM_LOGIN_USER) as string) as
-              | FamLoginUser
-              | undefined
-              | null)
-        : undefined,
-});
 
 // functions
 
-function isLoggedIn(): boolean {
-    const loggedIn = !!state.value.famLoginUser?.authToken; // TODO check if token expired later?
+const isLoggedIn = (): boolean => {
+    const loggedIn = !!LoginUserState.getAuthToken();
     return loggedIn;
-}
+};
 
-async function login() {
+const login = async () => {
     /*
         See Aws-Amplify documenation:
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
@@ -40,29 +18,38 @@ async function login() {
     */
 
     const environmentSettings = new EnvironmentSettings();
-
     Auth.federatedSignIn({
-        customProvider: environmentSettings.getIdentityProvider(),
+        customProvider: environmentSettings.getIdentityProviderIdir(),
     });
-}
+};
 
-async function logout() {
-    Auth.signOut();
-    removeFamUser();
+const loginBusinessBceid = async () => {
+    const environmentSettings = new EnvironmentSettings();
+    Auth.federatedSignIn({
+        customProvider: environmentSettings.getIdentityProviderBceid(),
+    });
+};
+
+const logout = async () => {
+    await Auth.signOut();
+    LoginUserState.removeFamUser();
     console.log('User logged out.');
-}
+};
 
-async function handlePostLogin() {
-    return Auth.currentAuthenticatedUser()
-        .then(async (_userData) => {
-            await refreshToken();
-        })
-        .catch((error) => {
-            console.log('Not signed in');
-            console.log('Authentication Error:', error);
-            return logout();
-        });
-}
+const handlePostLogin = async () => {
+    try {
+        await Auth.currentAuthenticatedUser();
+        await refreshToken();
+
+        // This is to update the FamLoginUser for FamLoginUser.accesses.
+        // For now team decided to grab user's access only when user login and may change later.
+        await LoginUserState.cacheUserAccess();
+    } catch (error) {
+        console.log('Not signed in');
+        console.log('Authentication Error:', error);
+        logout();
+    }
+};
 
 /**
  * Amplify method currentSession() will automatically refresh the accessToken and idToken
@@ -73,7 +60,7 @@ async function handlePostLogin() {
  *
  * Automatically logout if unable to get currentSession().
  */
-async function refreshToken(): Promise<FamLoginUser | undefined> {
+const refreshToken = async (): Promise<FamLoginUser | undefined> => {
     try {
         console.log('Refreshing Token...');
         const currentAuthToken: CognitoUserSession =
@@ -81,7 +68,11 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
         console.log('currentAuthToken: ', currentAuthToken);
 
         const famLoginUser = parseToken(currentAuthToken);
-        storeFamUser(famLoginUser);
+
+        // if there is and existing "accesses" for user, add it to FamLoginUser object.
+        const accesses = LoginUserState.getUserAccess();
+        if (accesses) famLoginUser.accesses = accesses;
+        LoginUserState.storeFamUser(famLoginUser);
         return famLoginUser;
     } catch (error) {
         console.error(
@@ -91,7 +82,7 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
         // logout and redirect to login.
         logout();
     }
-}
+};
 
 /**
  * See OIDC Attribute Mapping mapping reference:
@@ -99,51 +90,26 @@ async function refreshToken(): Promise<FamLoginUser | undefined> {
  * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
  * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
  */
-function parseToken(authToken: CognitoUserSession): FamLoginUser {
+const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
     const decodedIdToken = authToken.getIdToken().decodePayload();
-    const decodedAccessToken = authToken.getAccessToken().decodePayload();
     const famLoginUser = {
         username: decodedIdToken['custom:idp_username'],
         displayName: decodedIdToken['custom:idp_display_name'],
         email: decodedIdToken['email'],
-        idpProvider: decodedIdToken['identities']['providerName'],
-        roles: decodedAccessToken['cognito:groups'],
+        idpProvider: decodedIdToken['identities'][0]['providerName'],
         authToken: authToken,
+        organization: decodedIdToken['custom:idp_business_name'],
     };
     return famLoginUser;
-}
-
-function removeFamUser() {
-    storeFamUser(undefined);
-    // clean up local storage for selected application
-    localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
-}
-
-function storeFamUser(famLoginUser: FamLoginUser | null | undefined) {
-    state.value.famLoginUser = famLoginUser;
-    if (famLoginUser) {
-        localStorage.setItem(FAM_LOGIN_USER, JSON.stringify(famLoginUser));
-    } else {
-        localStorage.removeItem(FAM_LOGIN_USER);
-    }
-}
+};
 
 // -----
 
-const methods = {
+export default {
     login,
+    loginBusinessBceid,
+    isLoggedIn,
     handlePostLogin,
     logout,
     refreshToken,
-    removeFamUser,
-};
-
-const getters = {
-    isLoggedIn,
-};
-
-export default {
-    state: readonly(state), // readonly to prevent direct state change; force it through methods if needed to.
-    methods,
-    getters,
 };

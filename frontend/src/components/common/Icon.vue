@@ -48,8 +48,8 @@ const icons = {
     checkmark16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark/16')
     ),
-    'error--filled16': defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/error--filled/16')
+    'misuse16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/misuse/16')
     ),
     add16: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/16')),
     'trash-can16': defineAsyncComponent(
@@ -68,6 +68,9 @@ const icons = {
     'enterprise16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/enterprise/16')
     ),
+    'user--profile16': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/user--profile/16')
+    ),
 
     // medium icons
     'checkmark--filled20': defineAsyncComponent(
@@ -76,8 +79,8 @@ const icons = {
     checkmark: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark/20')
     ),
-    'error--filled20': defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/error--filled/20')
+    'misuse20': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/misuse/20')
     ),
     'warning--filled20': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/warning--filled/20')
@@ -97,8 +100,8 @@ const icons = {
     ),
 
     // large icons
-    'error--filled24': defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/error--filled/24')
+    'misuse24': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/misuse/24')
     ),
     menu20: defineAsyncComponent(() => import('@carbon/icons-vue/es/menu/20')),
 } as any;

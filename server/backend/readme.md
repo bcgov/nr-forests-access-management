@@ -18,7 +18,7 @@ Potential "gotchas":
 
 - The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
 - When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
-- There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1001\_\_add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
+- There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1002\_\_add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
 - Currently the unit tests for the API depend on connecting to the forest client API. You have to put the API key into local-dev.env in order for them to work. (Somebody please make a mock for this service!)
 - Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
 
@@ -28,16 +28,16 @@ These instructions assume running **without** a python virtual environment (VENV
 
 ## Start the Database
 
-==> **_See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1001__add_local_user_cognito_id.sql`."_**
+==> **_See the Potential "gotchas" section on `Running the API with Docker Compose` first. Specific instruction is written in `.server/flyway/local_sql/sample_V1002__add_local_user_cognito_id.sql`."_**
 
 Instruction in summary:
 
 - Go to **".server/flyway/local_sql/"** folder.
-- Rename file **sample_V1001\_\_add_local_user_cognito_id.sql** to **V1001\_\_add_local_user_cognito_id.sql**
+- Rename file **sample_V1002\_\_add_local_user_cognito_id.sql** to **V1002\_\_add_local_user_cognito_id.sql**
 - Open the script and find the entry corresponding to your user.
 - Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
 
-**Note!!**: If you already had a database running initially and you adjust the `sample_V1001__add_local_user_cognito_id.sql` script to "V1001\_\_..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
+**Note!!**: If you already had a database running initially and you adjust the `sample_V1002__add_local_user_cognito_id.sql` script to "V1002\_\_..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
 
 When running the API locally, you still need to have a working database to connect to. Docker compose can run everything **other than the API** with the command:
 
@@ -90,7 +90,8 @@ This is an API Token for Forest Client API external service to lookup forest cli
 
 In case it needs to be reset, use [API Service Portal](https://api.gov.bc.ca/devportal/api-directory/3179?preview=false) with your IDIR credential to login and go to "Forest Client API" service to request a reset for the token.
 
-<b>IDIM_PROXY_API_KEY</b>: FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key.
+<b>IDIM_PROXY_API_KEY</b>: \
+FAM currently and temporarily has its own proxy service on Openshift (within gov network) to connect to IDIM Webservice (SOAP) to lookup user's general identity information such as IDIR (and will be for BCeID). The proxy also needs an api key.
 
 ## Run the API from VS Code launch configuration
 
@@ -178,3 +179,19 @@ for test Output,
 
 - find the `output` tab
 - select `Python Test Log` in from the pulldown, top right of the output window
+
+
+## -------------- Windows Configuration ----------------------------------------
+
+Before you follow the steps below, ensure you have Python installed or updated to the latest version. Install and start your Docker desktop for Windows.
+
+```
+  - cd server/backend
+  - run docker compose up -d fam-flyway
+  - run this command in the same directory: python3 -m venv venv
+  - activate the venv environment by running this bat file: .\venv\Scripts\activate
+  - Ask one of the developers for the environment properties in the local-dev.env, and update the properties in local-dev-window.env.bat with them
+  - To install the required packages run: pip install -r requirements.txt
+  - In the same directory, enter(run) local-dev-window.env.bat
+  - To run start the backend, run python serverstart.py
+```

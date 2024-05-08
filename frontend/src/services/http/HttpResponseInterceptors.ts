@@ -1,8 +1,9 @@
+import router from '@/router';
 import AuthService from '@/services/AuthService';
 import Http from '@/services/http/HttpCommon';
+import LoginUserState from '@/store/FamLoginUserState';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ref } from 'vue';
-import router from '../../router';
 
 /*
 Note! Any status other than 2xx will be rejected (default status handling from Axios unless changed).
@@ -25,7 +26,7 @@ async function authenticationErrorResponsesItcpt(error: any) {
                 return Promise.reject(error);
             }
         } else {
-            AuthService.methods.removeFamUser(); // Done retry refresh token, token expired; remove user.
+            LoginUserState.removeFamUser(); // Done retry refresh token, token expired; remove user.
             router.replace('/'); // 401 unauthenticated/expired, back to home page.
         }
     }
@@ -38,7 +39,7 @@ async function refreshTokenAndReTry(
     response: AxiosResponse
 ) {
     // Refresh token.
-    await AuthService.methods.refreshToken();
+    await AuthService.refreshToken();
 
     // Try original request again.
     retryCount.value++;

@@ -4,6 +4,10 @@ body {
     margin: 0;
 }
 
+label {
+    margin-bottom: 0.5rem;
+}
+
 // Container
 .main {
     position: absolute;
@@ -53,6 +57,10 @@ input[type='number'] {
     font-family: inherit;
 }
 
+.p-sidebar-header {
+    display: none;
+}
+
 .helper-text {
     font-size: 0.75rem;
     color: $light-text-secondary;
@@ -68,6 +76,18 @@ input[type='number'] {
     width: 100%;
 }
 
+.data-table-container {
+    z-index: -1;
+}
+
+.custom-data-table {
+    background: transparent;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 0.0625rem solid $light-border-subtle-00;
+}
+
+//------ media queries
+
 @media (min-width: 768px) {
     .main {
         padding: 2.5rem 2.5rem 0 2.5rem;
@@ -80,6 +100,15 @@ input[type='number'] {
     .custom-card {
         width: $card-width;
     }
+
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-app-selected {
+        margin: 0 14rem;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -90,5 +119,31 @@ input[type='number'] {
     .main {
         left: 16rem;
         width: calc(100vw - 16rem);
+    }
+}
+
+@media (max-width: 390px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 1280px) {
+    .no-app-selected {
+        margin: 0 25rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .no-app-selected {
+        margin: 0 33rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .no-app-selected {
+        margin: 0 43.3rem;
+        width: auto;
     }
 }

@@ -13,10 +13,11 @@ export class FamCustomError extends Error {
 
 export enum RouteErrorName {
     NOT_AUTHENTICATED_ERROR = 'NOT_AUTHENTICATED_ERROR',
-    NO_APPLICATION_SELECTED_ERROR = 'NO_APPLICATION_SELECTED_ERROR'
+    NO_APPLICATION_SELECTED_ERROR = 'NO_APPLICATION_SELECTED_ERROR',
+    ACCESS_RESTRICTED = "ACCESS_RESTRICTED"
 }
 
-type RouteInfo = {to: any, from: any};
+type RouteInfo = { to: any, from: any };
 /**
  * FAM custom route error.
  * For use only when needing to throw during router transition.

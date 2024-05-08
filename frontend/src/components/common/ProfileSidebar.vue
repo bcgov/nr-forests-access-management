@@ -3,25 +3,44 @@ import { computed, ref } from 'vue';
 import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { IdpProvider } from '@/enum/IdpEnum';
 import authService from '@/services/AuthService';
+import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 
-const userName = authService.state.value.famLoginUser!.username;
-const initals = userName ? userName.slice(0, 2) : '';
-const displayName = authService.state.value.famLoginUser!.displayName;
-const email = authService.state.value.famLoginUser!.email;
+const userName = LoginUserState.state.value.famLoginUser!.username;
+const initials = userName ? userName.slice(0, 2) : '';
+const displayName = LoginUserState.state.value.famLoginUser!.displayName;
+const email = LoginUserState.state.value.famLoginUser!.email;
+const organization = LoginUserState.state.value.famLoginUser!.organization;
+// the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
+const idpProvider =
+    LoginUserState.state.value.famLoginUser!.idpProvider?.split('-')[1];
+let userType = IdpProvider.IDIR;
+if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
 const loading = ref(false);
 
 const logout = () => {
-    authService.methods.logout();
+    authService.logout();
     loading.value = true;
 };
 
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
+});
+
+const adminRoles = computed(() => {
+    const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
+    if (userAdminRoles) {
+        return userAdminRoles
+            .map((adminRole) => {
+                return adminRole.replace('_', ' ');
+            })
+            .join(', ');
+    }
 });
 </script>
 
@@ -44,18 +63,24 @@ const buttonLabel = computed(() => {
             </div>
             <div class="sidebar-body">
                 <Avatar
-                    :label="initals"
+                    :label="initials"
                     class="mr-2 profile-avatar"
                     size="xlarge"
                     shape="circle"
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-idir">IDIR: {{ userName }}</p>
-                    <p class="profile-email">{{ email }}</p>
+                    <p class="profile-userid">{{ userType }}: {{ userName }}</p>
+                    <p class="profile-organization" v-if="organization">
+                        Organization: {{ organization }}
+                    </p>
+                    <p class="profile-email">Email: {{ email }}</p>
+                    <p class="profile-admin-level">
+                        Granted: <strong>{{ adminRoles }}</strong>
+                    </p>
                 </div>
             </div>
-            <hr class="profile-divider" />
+            <Divider class="profile-divider" />
             <p class="options">Options</p>
             <div class="sign-out-wrapper">
                 <Icon
@@ -132,7 +157,9 @@ const buttonLabel = computed(() => {
     }
 
     .profile-name,
-    .profile-idir {
+    .profile-userid,
+    .profile-organization,
+    .profile-email {
         margin-bottom: 0.375rem;
     }
 }
@@ -165,17 +192,17 @@ const buttonLabel = computed(() => {
     outline: none !important;
 }
 
-.profile-idir,
+.profile-userid,
+.profile-organization,
 .profile-email,
+.profile-admin-level,
 .options {
     font-size: 0.75rem;
     font-weight: 400;
 }
 
 .profile-divider {
-    background: #ffffff;
-    background-blend-mode: multiply;
-    margin: 1rem 0;
+    margin: 1rem 0 !important;
 }
 
 .sign-out {

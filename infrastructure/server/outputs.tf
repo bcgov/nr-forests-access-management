@@ -32,9 +32,7 @@ output "fam_cognito_domain" {
 
 output "frontend_logout_chain_url" {
   description = "Url of Siteminder and Keycloak logout chain for FAM frontend"
-  value = var.target_env == "prod" ? var.cognito_app_client_logout_chain_url.prod : (
-          var.target_env == "test" ? var.cognito_app_client_logout_chain_url.test :
-          var.cognito_app_client_logout_chain_url.dev)
+  value = var.target_env == "prod" ? var.cognito_app_client_logout_chain_url.prod : var.cognito_app_client_logout_chain_url.test
 }
 
 output "front_end_redirect_base_url" {
@@ -50,4 +48,9 @@ output "target_env" {
 output "fam_console_idp_name" {
   description = "Identifies which version of IDIR to use (DEV, TEST, or PROD)"
   value = var.fam_console_idp_name
+}
+
+output "fam_console_idp_name_bceid" {
+  description = "Identifies which version of BUSINESS BCEID to use (DEV, TEST, or PROD)"
+  value = var.fam_console_idp_name_bceid
 }

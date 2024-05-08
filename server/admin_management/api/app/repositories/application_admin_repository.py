@@ -1,7 +1,8 @@
 import logging
 from typing import List
 
-from api.app.models.model import FamApplicationAdmin
+from api.app.constants import UserType
+from api.app.models.model import FamApplication, FamApplicationAdmin, FamUser
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -13,12 +14,8 @@ class ApplicationAdminRepository:
 
     def get_application_admins(self) -> List[FamApplicationAdmin]:
         return (
-            self.db
-            .query(FamApplicationAdmin)
-            .order_by(
-                FamApplicationAdmin.user_id,
-                FamApplicationAdmin.application_id
-            )
+            self.db.query(FamApplicationAdmin)
+            .order_by(FamApplicationAdmin.user_id, FamApplicationAdmin.application_id)
             .all()
         )
 
@@ -39,34 +36,19 @@ class ApplicationAdminRepository:
     ) -> FamApplicationAdmin:
         return (
             self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_admin_id == application_admin_id
-            )
+            .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
             .one_or_none()
-        )
-
-    def get_application_admin_by_application_id(
-        self, application_id: int
-    ) -> List[FamApplicationAdmin]:
-        return (
-            self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_id == application_id
-            )
-            .all()
         )
 
     def create_application_admin(
         self, application_id: int, user_id: int, requester: str
     ) -> FamApplicationAdmin:
-        new_fam_application_admin: FamApplicationAdmin = (
-            FamApplicationAdmin(
-                **{
-                    "user_id": user_id,
-                    "application_id": application_id,
-                    "create_user": requester,
-                }
-            )
+        new_fam_application_admin = FamApplicationAdmin(
+            **{
+                "user_id": user_id,
+                "application_id": application_id,
+                "create_user": requester,
+            }
         )
         self.db.add(new_fam_application_admin)
         self.db.flush()
@@ -79,10 +61,28 @@ class ApplicationAdminRepository:
     def delete_application_admin(self, application_admin_id: int):
         record = (
             self.db.query(FamApplicationAdmin)
-            .filter(
-                FamApplicationAdmin.application_admin_id == application_admin_id
-            )
+            .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
             .one()
         )
         self.db.delete(record)
         self.db.flush()
+
+    def get_user_app_admin_grants(self, user_id: int) -> List[FamApplication]:
+        """
+        Find out from `app_fam.fam_application_admin` the applications
+            being granted for the user; including "FAM" application.
+
+        Filter on: Only 'IDIR' type user can be an Application Admin.
+
+        :param user_id: primary id that is associated with the user.
+        :return: List of "applications" the user is admin of or None.
+        """
+        return (
+            self.db.query(FamApplication)
+            .select_from(FamApplicationAdmin)
+            .join(FamApplicationAdmin.application)
+            .join(FamApplicationAdmin.user)
+            .filter(FamApplicationAdmin.user_id == user_id)
+            .order_by(FamApplication.application_id)
+            .all()
+        )

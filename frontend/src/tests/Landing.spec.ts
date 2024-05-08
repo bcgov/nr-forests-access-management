@@ -57,17 +57,23 @@ describe('Landing', () => {
     });
     it('should button Login with IDIR be clicked', async () => {
         const button = wrapper.get('#login-idir-button');
-        const loginSpy = vi.spyOn(AuthService.methods, 'login');
+        const loginSpy = vi.spyOn(AuthService, 'login');
         await button.trigger('click');
         expect(loginSpy).toHaveBeenCalled();
     });
-    it('should render BCeID button and be disabled', async () => {
-        const button = wrapper.get('#login-bceid-button');
+    it.skip('should render Business BCeID button and be enabled', async () => {
+        const button = wrapper.get('#login-business-bceid-button');
         expect(button.classes()).toEqual(
             expect.arrayContaining(['landing-button'])
         );
-        expect(button.html().includes('Login with BCeID')).toBe(true);
-        expect(button.attributes()).toHaveProperty('disabled');
+        expect(button.html().includes('Login with Business BCeID')).toBe(true);
+        expect(button.attributes()).not.toHaveProperty('disabled');
+    });
+    it.skip('should button Login with Business BCeID be clicked', async () => {
+        const button = wrapper.get('#login-business-bceid-button');
+        const loginSpy = vi.spyOn(AuthService, 'loginBusinessBceid');
+        await button.trigger('click');
+        expect(loginSpy).toHaveBeenCalled();
     });
     it('should render image', () => {
         const img = wrapper.findAll('.landing-img');

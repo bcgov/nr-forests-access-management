@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
-IDP_NAME_BCSC_PROD = "ca.bc.gov.flnr.fam"
+IDP_NAME_BCSC_PROD = "ca.bc.gov.flnr.fam.prod"
 
 router = APIRouter()
 

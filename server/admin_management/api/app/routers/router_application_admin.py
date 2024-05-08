@@ -3,18 +3,24 @@ from typing import List
 
 from api.app import database, jwt_validation, schemas
 from api.app.models import model as models
-from api.app.routers.router_guards import (authorize_by_fam_admin,
-                                           enforce_self_grant_guard,
-                                           get_current_requester,
-                                           validate_param_application_admin_id,
-                                           validate_param_application_id)
-from api.app.routers.router_utils import application_admin_service_instance
+from api.app.routers.router_guards import (
+    authorize_by_fam_admin,
+    enforce_self_grant_guard,
+    get_current_requester,
+    validate_param_application_admin_id,
+    validate_param_application_id,
+    validate_param_user_type,
+)
+from api.app.routers.router_utils import (
+    application_admin_service_instance,
+    application_service_instance,
+    user_service_instance,
+)
 from api.app.schemas import Requester
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
-                                      AuditEventType)
+from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -25,33 +31,39 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=List[schemas.FamAppAdminGet],
+    response_model=List[schemas.FamAppAdminGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_fam_admin)],
 )
 async def get_application_admins(
-    application_admin_service: ApplicationAdminService = Depends(application_admin_service_instance),
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
 ):
     return application_admin_service.get_application_admins()
 
 
 @router.post(
     "",
-    response_model=schemas.FamAppAdminGet,
+    response_model=schemas.FamAppAdminGetResponse,
     dependencies=[
         Depends(authorize_by_fam_admin),
         Depends(enforce_self_grant_guard),
         Depends(validate_param_application_id),
+        Depends(validate_param_user_type),
     ],
 )
 def create_application_admin(
-    application_admin_request: schemas.FamAppAdminCreate,
+    application_admin_request: schemas.FamAppAdminCreateRequest,
     request: Request,
-    db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
+    application_service: ApplicationService = Depends(application_service_instance),
+    user_service: UserService = Depends(user_service_instance),
 ):
-
     LOGGER.debug(
         f"Executing 'create_application_admin' "
         f"with request: {application_admin_request}, requestor: {token_claims}"
@@ -64,10 +76,6 @@ def create_application_admin(
     )
 
     try:
-        application_admin_service = ApplicationAdminService(db)
-        application_service = ApplicationService(db)
-        user_service = UserService(db)
-
         audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
             requester.cognito_user_id
         )
@@ -147,29 +155,3 @@ def delete_application_admin(
 
     finally:
         audit_event_log.log_event()
-
-
-@router.get(
-    "/{application_id}/admins",
-    response_model=List[schemas.FamAppAdminGet],
-    status_code=200,
-    dependencies=[Depends(authorize_by_fam_admin)],
-)
-def get_application_admin_by_application_id(
-    application_id: int,
-    db: Session = Depends(database.get_db),
-):
-    LOGGER.debug(
-        f"Loading application admin access for application_id: {application_id}"
-    )
-    application_admin_service = ApplicationAdminService(db)
-    application_admin_access = (
-        application_admin_service.get_application_admin_by_application_id(
-            application_id
-        )
-    )
-    LOGGER.debug(
-        f"Finished loading application admin access for application - # of results = {len(application_admin_access)}"
-    )
-
-    return application_admin_access

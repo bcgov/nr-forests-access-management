@@ -1,4 +1,4 @@
-fastapi==0.108.0
+fastapi==0.109.1
 uvicorn[standard]==0.25.0
 SQLAlchemy==2.0.25
 mangum==0.17.0
@@ -8,3 +8,4 @@ python-jose==3.3.0
 httpx==0.26.0
 pydantic==2.5.3
 pydantic_core==2.14.6
+requests==2.31.0

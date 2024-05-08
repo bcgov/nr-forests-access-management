@@ -8,8 +8,8 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
     "http://localhost:3000/dashboard",
   ], [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
   logout_urls = concat([
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
-  ], [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
+    "http://localhost:3000/logout"
+  ], [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/logout"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -45,11 +45,11 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   callback_urls = [
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
-    "https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://forestclient-tst.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
-    "http://localhost:3000/",
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "http://localhost:3000/logout",
+    "https://forestclient-tst.nrs.gov.bc.ca/logout",
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -83,11 +83,11 @@ resource "aws_cognito_user_pool_client" "prod_forest_client_oidc_client" {
   callback_urls = [
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/dashboard",
-    "https://nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://forestclient.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
-    "http://localhost:3000/",
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca/"
+    "http://localhost:3000/logout",
+    "https://forestclient.nrs.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"

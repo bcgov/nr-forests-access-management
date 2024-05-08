@@ -4,35 +4,38 @@ import { UserType } from 'fam-app-acsctl-api';
 import type { VueWrapper } from '@vue/test-utils/dist/vueWrapper';
 import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
+import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
+
+fixJsdomCssErr()
 
 describe('UserDomainSelect', () => {
     let wrapper: VueWrapper;
     let emitChange: unknown[][] | undefined;
 
-    let bceidRadioBtn: DOMWrapper<HTMLInputElement>;
+    let businessBceidRadioBtn: DOMWrapper<HTMLInputElement>;
     let idirRadioBtn: DOMWrapper<HTMLInputElement>;
 
     beforeEach(async () => {
         wrapper = mount(UserDomainSelect);
-        bceidRadioBtn = wrapper.find('#bceidSelect');
+        businessBceidRadioBtn = wrapper.find('#businessBceidSelect');
         idirRadioBtn = wrapper.find('#idirSelect');
 
     });
 
     it('Should check the radioBtn box when clicked', async () => {
 
-        await bceidRadioBtn.trigger('click');
+        await businessBceidRadioBtn.trigger('click');
         expect(idirRadioBtn.element.checked).toBeFalsy();
-        expect(bceidRadioBtn.element.checked).toBeTruthy();
+        expect(businessBceidRadioBtn.element.checked).toBeTruthy();
 
         await idirRadioBtn.trigger('click');
-        expect(bceidRadioBtn.element.checked).toBeFalsy();
+        expect(businessBceidRadioBtn.element.checked).toBeFalsy();
         expect(idirRadioBtn.element.checked).toBeTruthy();
 
     });
 
     it('Should call and emit the correct value', async () => {
-        await bceidRadioBtn.trigger('click');
+        await businessBceidRadioBtn.trigger('click');
 
         emitChange = wrapper.emitted('change');
 
@@ -62,7 +65,7 @@ describe('UserDomainSelect', () => {
         expect(idirRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.B });
-        expect(bceidRadioBtn.element.checked).toBeTruthy();
+        expect(businessBceidRadioBtn.element.checked).toBeTruthy();
 
         await wrapper.setProps({ domain: UserType.I });
         expect(idirRadioBtn.element.checked).toBeTruthy();

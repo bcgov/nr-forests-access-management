@@ -3,13 +3,18 @@ import logging
 from urllib.request import urlopen
 
 from api.app.constants import COGNITO_USERNAME_KEY
+
 # think that just importing config then access through its namespace makes code
 # easier to understand, ie:
 # import config
 # then
 # config.get_aws_region()
-from api.config.config import (get_aws_region, get_oidc_client_id,
-                               get_user_pool_domain_name, get_user_pool_id)
+from api.config.config import (
+    get_aws_region,
+    get_oidc_client_id,
+    get_user_pool_domain_name,
+    get_user_pool_id,
+)
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import jwt
@@ -44,6 +49,7 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 _jwks = None
+
 
 def init_jwks():
     global _jwks
@@ -184,27 +190,12 @@ def validate_token(
     return claims
 
 
-def authorize(claims: dict = Depends(validate_token)) -> dict:
-
-    if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "code": ERROR_GROUPS_REQUIRED,
-                "description": "At least one group required int cognito:groups claim",
-            },
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    return claims
-
-
-def get_access_roles(claims: dict = Depends(authorize)):
-    groups = claims[JWT_GROUPS_KEY]
+def get_access_roles(claims: dict = Depends(validate_token)):
+    groups = claims.get(JWT_GROUPS_KEY)
     return groups
 
 
-def get_request_cognito_user_id(claims: dict = Depends(authorize)):
+def get_request_cognito_user_id(claims: dict = Depends(validate_token)):
     # This is NOT user's name, display name or user ID.
     # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
     # It is the "cognito_user_id" column for fam_user table.

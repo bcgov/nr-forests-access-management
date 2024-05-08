@@ -1,7 +1,9 @@
-import os
-from jose import jws
-import time
 import json
+import os
+import time
+
+from api.app.constants import AdminRoleAuthGroup
+from jose import jws
 
 COGNITO_REGION = os.environ.get("COGNITO_REGION")
 COGNITO_USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID")
@@ -9,7 +11,7 @@ COGNITO_CLIENT_ID = os.environ.get("COGNITO_CLIENT_ID")
 COGNITO_USER_POOL_DOMAIN = os.environ.get("COGNITO_USER_POOL_DOMAIN")
 
 IDP_USER_GUID = "b5ecdb094dfb4149a6a8445a0mangled"
-COGNITO_USERNAME = f"dev-idir_{IDP_USER_GUID}@idir"
+COGNITO_USERNAME = f"test-idir_{IDP_USER_GUID}@idir"
 IDIR_USERNAME = "COGUSTAF"
 
 
@@ -33,7 +35,7 @@ def create_jwt_claims():
 
 def create_jwt_token(
     test_rsa_key,
-    roles=["FAM_ADMIN"],
+    roles=[AdminRoleAuthGroup.FAM_ADMIN],
     claims=create_jwt_claims(),
     test_algorithm="RS256",
     test_headers={"kid": "12345"},

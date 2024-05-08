@@ -9,7 +9,7 @@ declare module '@carbon/icons-vue/es/user/16';
 declare module '@carbon/icons-vue/es/settings/16';
 declare module '@carbon/icons-vue/es/help/16';
 declare module '@carbon/icons-vue/es/search/16';
-declare module '@carbon/icons-vue/es/error--filled/16';
+declare module '@carbon/icons-vue/es/misuse/16';
 declare module '@carbon/icons-vue/es/checkmark--filled/16';
 declare module '@carbon/icons-vue/es/checkmark/16';
 declare module '@carbon/icons-vue/es/add/16';
@@ -18,10 +18,11 @@ declare module '@carbon/icons-vue/es/edit/16';
 declare module '@carbon/icons-vue/es/search--locate/16';
 declare module '@carbon/icons-vue/es/group--access/16';
 declare module '@carbon/icons-vue/es/enterprise/16'
+declare module '@carbon/icons-vue/es/user--profile/16'
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';
-declare module '@carbon/icons-vue/es/error--filled/20';
+declare module '@carbon/icons-vue/es/misuse/20';
 declare module '@carbon/icons-vue/es/warning--filled/20';
 declare module '@carbon/icons-vue/es/checkmark--filled/20';
 declare module '@carbon/icons-vue/es/checkmark/20';
@@ -31,7 +32,7 @@ declare module '@carbon/icons-vue/es/user--avatar/20';
 declare module '@carbon/icons-vue/es/search--locate/20';
 
 // large
-declare module '@carbon/icons-vue/es/error--filled/24';
+declare module '@carbon/icons-vue/es/misuse/24';
 declare module '@carbon/icons-vue/es/trash-can/16';
 declare module '@carbon/icons-vue/es/edit/16';
 declare module '@carbon/icons-vue/es/menu/20';

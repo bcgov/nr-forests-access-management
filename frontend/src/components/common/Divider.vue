@@ -1,5 +1,5 @@
 <template>
-    <hr class="col solid" />
+    <hr role="presentation" class="col solid" />
 </template>
 
 <style lang="scss" scoped>

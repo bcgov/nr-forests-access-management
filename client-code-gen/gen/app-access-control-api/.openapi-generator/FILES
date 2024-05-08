@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 api/bcscproxy-api.ts
@@ -29,6 +28,7 @@ model/fam-user-role-assignment-create.ts
 model/fam-user-role-assignment-get.ts
 model/fam-user-type.ts
 model/httpvalidation-error.ts
+model/idim-proxy-bceid-info.ts
 model/idim-proxy-idir-info.ts
 model/index.ts
 model/location-inner.ts

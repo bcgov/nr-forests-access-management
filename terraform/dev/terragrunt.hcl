@@ -36,15 +36,19 @@ generate "dev_tfvars" {
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/"
   ]
   fam_logout_urls = [
-    "${local.common_vars.inputs.idp_logout_chain_dev_url}https://fam-dev.nrs.gov.bc.ca",
-    "${local.common_vars.inputs.idp_logout_chain_dev_url}http://localhost:5173"
+    "${local.common_vars.inputs.idp_logout_chain_test_url}https://fam-dev.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_test_url}http://localhost:5173"
   ]
-  fam_console_idp_name = "DEV-IDIR"
+  fam_console_idp_name = "TEST-IDIR"
+  fam_console_idp_name_bceid = "TEST-BCEIDBUSINESS"
   forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
   use_override_proxy_endpoints = true
-  dev_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
-  test_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/test"
-  prod_override_bcsc_userinfo_proxy_endpoint = "https://c727z9v3cc.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/prod"
+  dev_override_bcsc_userinfo_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
+  test_override_bcsc_userinfo_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/test"
+  prod_override_bcsc_userinfo_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/prod"
+  dev_override_bcsc_token_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/dev"
+  test_override_bcsc_token_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/test"
+  prod_override_bcsc_token_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/prod"
   idim_proxy_api_base_url = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
 EOF
 }

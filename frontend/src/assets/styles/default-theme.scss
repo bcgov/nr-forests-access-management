@@ -15,11 +15,20 @@ $card-margin-top: 2rem;
 
 //darkTheme
 $dark-text-primary: map.get(darkTheme.$dark-theme, 'text-primary');
+$text-on-color: map.get(darkTheme.$dark-theme, 'text-on-color');
 
 //lightTheme
 $light-layer-selected-01: map.get(lightTheme.$light-theme, 'layer-selected-01');
+$light-layer-hover-01: map.get(lightTheme.$light-theme, 'layer-hover-01');
+$light-layer-selected-hover-01: map.get(
+    lightTheme.$light-theme,
+    'layer-selected-hover-01'
+);
 $light-link-primary: map.get(lightTheme.$light-theme, 'link-primary');
-$light-link-primary-hover: map.get(lightTheme.$light-theme, 'link-primary-hover');
+$light-link-primary-hover: map.get(
+    lightTheme.$light-theme,
+    'link-primary-hover'
+);
 
 //border
 $light-border-interactive: map.get(

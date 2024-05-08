@@ -66,18 +66,18 @@ def get_aws_db_string():
     username = secret_json.get("username")
     password = secret_json.get("password")
 
-    host = get_env_var('PG_HOST')
-    port = get_env_var('PG_PORT')
-    dbname = get_env_var('PG_DATABASE')
+    host = get_env_var("PG_HOST")
+    port = get_env_var("PG_PORT")
+    dbname = get_env_var("PG_DATABASE")
     return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
 def get_local_dev_db_string():
-    username = get_env_var('POSTGRES_USER')
-    password = get_env_var('POSTGRES_PASSWORD')
-    host = get_env_var('POSTGRES_HOST')
-    port = get_env_var('POSTGRES_PORT')
-    dbname = get_env_var('POSTGRES_DB')
+    username = get_env_var("POSTGRES_USER")
+    password = get_env_var("POSTGRES_PASSWORD")
+    host = get_env_var("POSTGRES_HOST")
+    port = get_env_var("POSTGRES_PORT")
+    dbname = get_env_var("POSTGRES_DB")
     return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
@@ -90,6 +90,7 @@ def get_aws_db_secret():
 
     return client.get_secret_value(SecretId=secret_name)
 
+
 def get_aws_region():
     env_var = "COGNITO_REGION"
     return get_env_var(env_var)
@@ -99,7 +100,6 @@ _client_id = None
 
 
 def get_oidc_client_id():
-
     # Outside of AWS, you can set COGNITO_CLIENT_ID
     # Inside AWS, you have to get this value from an AWS Secret
 
@@ -121,10 +121,38 @@ def get_oidc_client_id():
 
     return _client_id
 
+
 def get_user_pool_domain_name():
     env_var = "COGNITO_USER_POOL_DOMAIN"
     return get_env_var(env_var)
 
+
 def get_user_pool_id():
     env_var = "COGNITO_USER_POOL_ID"
     return get_env_var(env_var)
+
+
+def get_forest_client_api_token():
+    api_token = get_env_var("FC_API_TOKEN")
+    return api_token
+
+
+def get_forest_client_api_baseurl():
+    forest_client_api_baseurl = (
+        get_env_var("FC_API_BASE_URL")
+        if is_on_aws()
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"
+    )  # Test env.
+    LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
+    return forest_client_api_baseurl
+
+
+def get_idim_proxy_api_baseurl():
+    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL")
+    LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
+    return idim_proxy_api_baseurl
+
+
+def get_idim_proxy_api_key():
+    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+    return idim_proxy_api_key

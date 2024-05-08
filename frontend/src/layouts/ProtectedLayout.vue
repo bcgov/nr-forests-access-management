@@ -1,26 +1,48 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Header from '@/components/header/Header.vue';
-import SideNav, {
-    type ISideNavData,
-    type ISideNavItem,
-} from '@/components/common/SideNav.vue';
+import SideNav, { type ISideNavItem } from '@/components/common/SideNav.vue';
 import sideNavData from '@/static/sideNav.json';
-import { isApplicationSelected } from '@/store/ApplicationState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
+import {
+    isApplicationSelected,
+    selectedApplicationId,
+} from '@/store/ApplicationState';
+import LoginUserState from '@/store/FamLoginUserState';
 
-const navigationData = ref<[ISideNavData]>(sideNavData as any);
+const navigationData = ref<[ISideNavItem]>(sideNavData as any);
+
+// Show and hide the correct sideNav btn based on the application
+const setSideNavOptions = () => {
+    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
+        disableSideNavOption('Add user permission', true);
+        disableSideNavOption('Add application admin', false);
+        disableSideNavOption('Add delegated admin', true);
+    } else {
+        disableSideNavOption('Add application admin', true);
+        disableSideNavOption('Add user permission', false);
+
+        if (LoginUserState.isAdminOfSelectedApplication()) {
+            disableSideNavOption('Add delegated admin', false);
+        } else {
+            disableSideNavOption('Add delegated admin', true);
+        }
+    }
+};
 
 onMounted(() => {
-    disableSideNavOption('Add user permission', !isApplicationSelected.value);
+    if (isApplicationSelected.value) {
+        setSideNavOptions();
+    }
 });
 
-watch(isApplicationSelected, (value) => {
-    disableSideNavOption('Add user permission', !value);
+watch(selectedApplicationId, () => {
+    setSideNavOptions();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
     navigationData.value.map((navItem) => {
-        navItem.items.map((childNavItem: ISideNavItem) => {
+        navItem.items?.map((childNavItem: ISideNavItem) => {
             if (childNavItem.name === optionName) {
                 childNavItem.disabled = disabled;
             }
