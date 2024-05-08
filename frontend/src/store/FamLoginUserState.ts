@@ -48,13 +48,9 @@ const state = ref({
 
 const getUserType = () => {
     let userType = IdpProvider.IDIR;
-    if (state.value.famLoginUser!.idpProvider) {
-        // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
-        const idpProvider =
-            state.value.famLoginUser!.idpProvider!.split('-')[1];
-        if (idpProvider == 'BCEIDBUSINESS')
-            userType = IdpProvider.BCEIDBUSINESS;
-    }
+    // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
+    const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
+    if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
 
     return userType;
 };
