@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import Optional
 
 from api.app import constants as famConstants, schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user
@@ -12,7 +13,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_user_role(
-    db: Session, request: schemas.FamUserRoleAssignmentCreate, requester: str
+    db: Session,
+    request: schemas.FamUserRoleAssignmentCreate,
+    requester: str,
+    target_user_business_guid: Optional[str] = None
 ) -> schemas.FamUserRoleAssignmentGet:
     """
     Create fam_user_role_xref Association
@@ -42,6 +46,9 @@ def create_user_role(
         request.user_type_code,
         request.user_name,
         requester
+    )
+    fam_user = crud_user.update_user_business_guid(
+        db, fam_user.user_id, target_user_business_guid, requester
     )
 
     # Verify if role exists.
@@ -94,7 +101,10 @@ def create_user_role(
             error_msg = (
                 "Invalid role assignment request. Forest Client is not in Active status: " +
                 f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
-            raise_http_exception(HTTPStatus.BAD_REQUEST, error_msg)
+            raise_http_exception(
+                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=error_msg
+            )
 
         # Note: current FSA design in the 'request body' contains a
         #     'forest_client_number' if it requires a child role.
@@ -296,5 +306,3 @@ class UserRoleValidator:
 
     def get_forest_client(self):
         return self.fc[0] if self.forest_client_number_exists() else None
-
-

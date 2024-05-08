@@ -1,14 +1,20 @@
 import logging.config
 import os.path
 
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+from pydantic import ValidationError
+from requests import HTTPError
+from starlette.responses import RedirectResponse
+
+from api.app.exception_handlers import (requests_http_error_handler,
+                                        unhandled_exception_handler,
+                                        validation_exception_handler)
 from api.app.routers import (router_access_control_privilege,
                              router_admin_user_accesses, router_application,
                              router_application_admin, router_smoke_test)
 from api.config.config import get_allow_origins, get_root_path
-from fastapi import APIRouter, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
-from starlette.responses import RedirectResponse
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -61,6 +67,10 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+app.add_exception_handler(HTTPError, requests_http_error_handler)
+app.add_exception_handler(Exception, unhandled_exception_handler)
+app.add_exception_handler(ValidationError, validation_exception_handler)
+
 
 app.include_router(
     router_smoke_test.router, prefix=apiPrefix + "/smoke_test", tags=["Smoke Test"]
