@@ -40,6 +40,11 @@ COGNITO_USERNAME_KEY = "username"
 IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
 
 
+class IdimSearchUserParamType(str, Enum):
+    USER_GUID = "userGuid"
+    USER_ID = "userId"
+
+
 # ------- Error/Exception Code Constant -------
 
 # Note, this is default error code but better use specific code category if possible.

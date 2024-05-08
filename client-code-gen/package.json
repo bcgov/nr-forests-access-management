@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "OpenAPI Generation for API Client Code",
   "scripts": {
-    "dockergen-admin-management-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/admin-management-openapi.json -g typescript-axios --config local/api.json -o /local/gen/admin-management-api",
-    "dockergen-app-access-control-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/app-access-control-openapi.json -g typescript-axios --config local/api.json -o /local/gen/app-access-control-api",
-    "dockergen-admin-management-api-win": "docker run --rm -v %cd%:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/admin-management-openapi.json -g typescript-axios --config local/api.json -o local/gen/admin-management-api",
-    "dockergen-app-access-control-api-win": "docker run --rm -v %cd%:/local openapitools/openapi-generator-cli:v7.0.1 generate -i local/app-access-control-openapi.json -g typescript-axios --config local/api.json -o local/gen/app-access-control-api",
+    "dockergen-admin-management-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.5.0 generate -i local/admin-management-openapi.json -g typescript-axios --config local/api.json -o /local/gen/admin-management-api",
+    "dockergen-app-access-control-api-bash": "docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v7.5.0 generate -i local/app-access-control-openapi.json -g typescript-axios --config local/api.json -o /local/gen/app-access-control-api",
+    "dockergen-admin-management-api-win": "docker run --rm -v %cd%:/local openapitools/openapi-generator-cli:v7.5.0 generate -i local/admin-management-openapi.json -g typescript-axios --config local/api.json -o local/gen/admin-management-api",
+    "dockergen-app-access-control-api-win": "docker run --rm -v %cd%:/local openapitools/openapi-generator-cli:v7.5.0 generate -i local/app-access-control-openapi.json -g typescript-axios --config local/api.json -o local/gen/app-access-control-api",
     "gen-admin-management-api": "rm -rf gen/admin-management-api && openapi-generator-cli generate -i admin-management-openapi.json --generator-name typescript-axios -o gen/admin-management-api --config api.json",
     "gen-app-access-control-api": "rm -rf gen/app-access-control-api && openapi-generator-cli generate -i app-access-control-openapi.json --generator-name typescript-axios -o gen/app-access-control-api --config api.json"
   },
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.7.0"
+    "@openapitools/openapi-generator-cli": "^2.13.4"
   }
 }

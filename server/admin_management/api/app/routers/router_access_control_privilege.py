@@ -8,6 +8,7 @@ from api.app.routers.router_guards import (
     authorize_by_application_role,
     enforce_self_grant_guard,
     get_current_requester,
+    target_user_bceid_search,
     validate_param_access_control_privilege_id,
 )
 from api.app.routers.router_utils import (
@@ -15,13 +16,15 @@ from api.app.routers.router_utils import (
     role_service_instance,
     user_service_instance,
 )
-from api.app.schemas import Requester
+from api.app.schemas import Requester, TargetUser
 from api.app.services.access_control_privilege_service import (
     AccessControlPrivilegeService,
 )
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.utils.audit_util import (
+    AuditEventLog, AuditEventOutcome, AuditEventType
+)
 from fastapi import APIRouter, Depends, Request, Response
 
 LOGGER = logging.getLogger(__name__)
@@ -45,6 +48,7 @@ def create_access_control_privilege_many(
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    target_user: TargetUser = Depends(target_user_bceid_search),
     user_service: UserService = Depends(user_service_instance),
     role_service: RoleService = Depends(role_service_instance),
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
@@ -87,7 +91,8 @@ def create_access_control_privilege_many(
         )
 
         return access_control_privilege_service.create_access_control_privilege_many(
-            access_control_privilege_request, requester.cognito_user_id
+            access_control_privilege_request, requester.cognito_user_id,
+            target_user
         )
 
     except Exception as e:

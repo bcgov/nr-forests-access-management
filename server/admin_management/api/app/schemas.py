@@ -16,14 +16,27 @@ LOGGER = logging.getLogger(__name__)
 #   Requester, TargetUser and some "Base" class, such as "FamApplicationBase"
 
 
-# -------------------------------------- Requester --------------------------------------- #
-# Schema classes Requester and TargetUser are for backend system used and
-# NOT intended as part of the request/respoinse body in the endpoint. Logged
-# on user with jwt token is parsed into Requester (before route handler).
-# Same as other Schema classes, it can be transformed from db model.
+# -------------------------------------- Requester and TargetUser --------------------------------------- #
+"""
+The "Requester" and "TargetUser" schema objects are internal backend system
+wide objects.
+They are "NOT" intended as part of the request/respoinse body for endponts.
+The "Requester" means "who" is issueing the request for one of FAM endpoints.
+The "TargetUser" means "who" is the user this endpoint request is targeting
+for.
+    - The exsiting endpoints so far only target on one target user. It might be
+      possible some endpoints will target on multiple users. In such case,
+      further design or refactoring might be needed.
+"""
+
+
 class Requester(BaseModel):
     """
-    Class holding information for user who access FAM system after authenticated.
+    Class holding information for user who access FAM system after being
+    authenticated. Logged on user with jwt token is parsed into Requester.
+    It is transformed from db model "FamUser". Most endpoints will need this
+    Requester instance, and can be available for router handler and passed to
+    service layer.
     """
 
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
@@ -33,7 +46,9 @@ class Requester(BaseModel):
     # "cognito_user_id" (external linking piece for logged on user to AWS Cognito) This "Requester" is retrieved
     # from datbase and the user record will contain this user_id; and also is the reference-id from other database
     # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
-    user_id: Optional[int] = None
+    user_id: int
+    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
@@ -45,7 +60,18 @@ class Requester(BaseModel):
 
 
 class TargetUser(Requester):
-    pass
+    """
+    Inherit from the class "Requester". Same as Requester, the TargetUser can
+    be transformed from FamUser db model. However, for new user, the
+    information will not be available from db model. In such case, some
+    properties will be set from the request parameters or request body.
+    Meethod that relys on TargetUser might need to check if it is a new user by
+    checking "is_new_user()".
+    """
+    user_id: Optional[int] = None
+
+    def is_new_user(self):
+        return self.user_id is None
 
 
 # -------------------------------------- FAM Application --------------------------------------- #
@@ -158,7 +184,7 @@ class FamRoleWithClientDto(BaseModel):
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_guid: Annotated[str, StringConstraints(max_length=32)]
-    user_type_code: famConstants.UserType
+    user_type_code: Annotated[famConstants.UserType, StringConstraints(max_length=2)]
     application_id: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -280,3 +306,34 @@ class ForestClientIntegrationFindResponse(BaseModel):
     clientName: str
     clientStatusCode: str
     clientTypeCode: str
+
+
+# ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
+class IdimProxySearchParam(BaseModel):
+    userId: Annotated[
+        str, StringConstraints(max_length=20)
+    ]  # param for Idim-Proxy search of this form (not snake case)
+
+
+class IdimProxyBceidSearchParam(BaseModel):
+    searchUserBy: famConstants.IdimSearchUserParamType
+    searchValue: str
+
+
+class IdimProxyIdirInfo(BaseModel):
+    # property returned from Idim-Proxy search of this form (not snake case)
+    found: bool
+    userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+
+
+class IdimProxyBceidInfo(BaseModel):
+    found: bool
+    userId: Annotated[str, StringConstraints(max_length=20)]
+    guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessGuid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None

@@ -1,15 +1,13 @@
 import logging
 from http import HTTPStatus
-import os
-import pytest
 from fastapi.testclient import TestClient
 
-
-from api.app.constants import UserType
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import get_current_requester, no_requester_exception
+from api.app.constants import ERROR_CODE_REQUESTER_NOT_EXISTS
+from api.app.routers.router_guards import get_current_requester
 from api.app.schemas import Requester
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED, ERROR_GROUPS_REQUIRED
+from api.app.utils.utils import raise_http_exception
 import testspg.jwt_utils as jwt_utils
 from testspg.conftest import test_client_fixture
 from testspg.constants import (
@@ -47,7 +45,11 @@ async def mock_get_current_requester_user_not_exists():
     """
     A mock for router dependency, for requester who does not exists.
     """
-    raise no_requester_exception
+    raise_http_exception(
+        status_code=HTTPStatus.FORBIDDEN,
+        error_code=ERROR_CODE_REQUESTER_NOT_EXISTS,
+        error_msg="Requester does not exist, action is not allowed."
+    )
 
 
 # -------------------- Test search for IDIR ---------------------------- #

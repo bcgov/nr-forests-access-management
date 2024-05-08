@@ -10,8 +10,9 @@ from api.app.routers.router_guards import (
     enforce_self_grant_guard,
     enforce_bceid_by_same_org_guard,
     get_current_requester,
+    target_user_bceid_search,
 )
-from api.app.schemas import Requester
+from api.app.schemas import Requester, TargetUser
 from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
@@ -49,6 +50,7 @@ def create_user_role_assignment(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
     requester: Requester = Depends(get_current_requester),
+    target_user: TargetUser = Depends(target_user_bceid_search)
 ):
     """
     Create FAM user_role_xref association.
@@ -75,7 +77,8 @@ def create_user_role_assignment(
         audit_event_log.requesting_user = requesting_user
 
         return crud_user_role.create_user_role(
-            db, role_assignment_request, requesting_user.cognito_user_id
+            db, role_assignment_request, requesting_user.cognito_user_id,
+            target_user.business_guid
         )
 
     except Exception as e:
