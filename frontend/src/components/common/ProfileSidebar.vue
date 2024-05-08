@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
@@ -14,10 +13,6 @@ const initials = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
 const organization = LoginUserState.state.value.famLoginUser!.organization;
-const userType =
-    FamLoginUserState.getUserType() === IdpProvider.IDIR
-        ? IdpProvider.IDIR
-        : IdpProvider.BCEIDBUSINESS;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -70,7 +65,7 @@ const adminRoles = computed(() => {
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-userid">{{ userType }}: {{ userName }}</p>
+                    <p class="profile-userid">{{ FamLoginUserState.getUserType() }}: {{ userName }}</p>
                     <p class="profile-organization" v-if="organization">
                         Organization: {{ organization }}
                     </p>
