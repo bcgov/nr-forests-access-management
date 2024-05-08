@@ -59,9 +59,9 @@ async def get_current_requester(
     LOGGER.debug(f"Debug router_guard get_current_requester, current fam_user: {fam_user}")
     if fam_user is None:
         raise_http_exception(
-            status_code=HTTPStatus.FORBIDDEN,
+            error_msg="Requester does not exist, action is not allowed.",
             error_code=ERROR_CODE_REQUESTER_NOT_EXISTS,
-            error_msg="Requester does not exist, action is not allowed."
+            status_code=HTTPStatus.FORBIDDEN,
         )
 
     requester = Requester.model_validate(fam_user)
