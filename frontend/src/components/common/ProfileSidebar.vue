@@ -6,7 +6,6 @@ import { IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import FamLoginUserState from '@/store/FamLoginUserState';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -65,7 +64,7 @@ const adminRoles = computed(() => {
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-userid">{{ FamLoginUserState.getUserType() }}: {{ userName }}</p>
+                    <p class="profile-userid">{{ LoginUserState.getUserType() }}: {{ userName }}</p>
                     <p class="profile-organization" v-if="organization">
                         Organization: {{ organization }}
                     </p>
