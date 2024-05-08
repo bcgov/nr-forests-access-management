@@ -15,7 +15,7 @@ const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
 const organization = LoginUserState.state.value.famLoginUser!.organization;
 const userType =
-    FamLoginUserState.userType === IdpProvider.IDIR
+    FamLoginUserState.getUserType() === IdpProvider.IDIR
         ? IdpProvider.IDIR
         : IdpProvider.BCEIDBUSINESS;
 

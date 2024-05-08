@@ -26,7 +26,7 @@ import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
 
 const defaultFormData = {
-    domain: FamLoginUserState.userType,
+    domain: FamLoginUserState.getUserType(),
     userId: '',
     userGuid: '',
     verifiedForestClients: [],
@@ -192,7 +192,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
             <form id="grantAccessForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
-                        v-if="FamLoginUserState.userType === IdpProvider.IDIR"
+                        v-if="FamLoginUserState.getUserType() === IdpProvider.IDIR"
                         :domain="formData.domain"
                         @change="userDomainChange"
                     />
