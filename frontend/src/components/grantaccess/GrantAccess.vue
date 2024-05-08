@@ -15,7 +15,7 @@ import {
     selectedApplicationDisplayText,
     selectedApplicationId,
 } from '@/store/ApplicationState';
-import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import { type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
@@ -26,7 +26,7 @@ import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
 
 const defaultFormData = {
-    domain: UserType.I,
+    domain: FamLoginUserState.userType,
     userId: '',
     userGuid: '',
     verifiedForestClients: [],
