@@ -15,7 +15,7 @@ import {
     selectedApplicationDisplayText,
     selectedApplicationId,
 } from '@/store/ApplicationState';
-import { type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';

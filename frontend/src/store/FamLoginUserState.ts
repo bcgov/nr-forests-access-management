@@ -29,10 +29,10 @@ export interface FamLoginUser {
 }
 
 interface IMyPermission {
-    application: string,
-    env: string,
-    clientId: number,
-    role: string,
+    application: string;
+    env: string;
+    clientId: number;
+    role: string;
 }
 
 const state = ref({
@@ -44,22 +44,20 @@ const state = ref({
         : undefined,
 });
 
+// --- getters
+
 const getUserType = () => {
-    let userType = IdpProvider.IDIR
-    if(state.value.famLoginUser!.idpProvider) {
+    let userType = IdpProvider.IDIR;
+    if (state.value.famLoginUser!.idpProvider) {
         // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
-        const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1]
-        if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
+        const idpProvider =
+            state.value.famLoginUser!.idpProvider!.split('-')[1];
+        if (idpProvider == 'BCEIDBUSINESS')
+            userType = IdpProvider.BCEIDBUSINESS;
     }
 
-    return userType
-}
-// the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
-// const idpProvider =
-//     state.value.famLoginUser!.idpProvider!.split('-')[1];
-// const userType = idpProvider == 'IDIR' ? IdpProvider.IDIR : IdpProvider.BCEIDBUSINESS
-
-// --- getters
+    return userType;
+};
 
 const getAuthToken = () => {
     return state.value.famLoginUser?.authToken;
@@ -282,7 +280,6 @@ const getMyAdminPermission = () => {
     });
 
     return myPermissions.map((permission: IMyPermission) => {
-
         permission.application = permission.application.replace(/\([^()]*\)/g, '')
         return permission
     });
