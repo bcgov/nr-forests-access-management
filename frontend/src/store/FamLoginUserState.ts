@@ -4,6 +4,8 @@ import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
 import {
     AdminRoleAuthGroup,
+    type AppEnv,
+    type FamGrantDetailDto,
     type FamApplicationDto,
     type FamAuthGrantDto,
     type FamRoleDto,
@@ -29,10 +31,10 @@ export interface FamLoginUser {
 }
 
 interface IMyPermission {
-    application: string;
-    env: string;
-    clientId: number;
+    application: string | null | undefined;
+    env: AppEnv | null | undefined;
     role: string;
+    clientId?: number;
 }
 
 const state = ref({
@@ -226,61 +228,88 @@ const getCachedAppRolesForDelegatedAdmin = (
             : 1;
     });
 };
+//--------- get my permissions
+const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
+    const famGrant = access.grants.find(
+        (grant: FamGrantDetailDto) =>
+            grant.application.name === FAM_APPLICATION_NAME
+    );
+    if (!famGrant) return [];
 
-const getMyAdminPermission = () => {
-    let myPermissions: any = [];
-    getUserAccess()?.forEach((item) => {
-        if (item.auth_key === AdminRoleAuthGroup.FamAdmin) {
-            const famGrant = item.grants.find((grant) => {
-                return grant.application.name === FAM_APPLICATION_NAME;
-            });
-            myPermissions.push({
-                application: famGrant?.application.description,
-                env: famGrant?.application.env,
-                role: 'Admin',
-            });
-        }
+    return [
+        {
+            application: famGrant.application.description,
+            env: famGrant.application.env,
+            role: 'Admin',
+        },
+    ];
+};
 
-        if (item.auth_key === AdminRoleAuthGroup.AppAdmin) {
-            item.grants.forEach((grant) => {
-                myPermissions.push({
-                    role: 'Admin',
+const getMyAppAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
+    return access.grants.map((grant: FamGrantDetailDto) => ({
+        application: grant.application.description,
+        env: grant.application.env,
+        role: 'Admin',
+    }));
+};
+
+const getMyDelegatedAdminPermission = (
+    access: FamAuthGrantDto
+): IMyPermission[] => {
+    const permissions: IMyPermission[] = [];
+    access.grants.forEach((grant: FamGrantDetailDto) => {
+        grant.roles?.forEach((role: FamRoleDto) => {
+            const roleDescription = 'Delegated Admin, ' + role.name;
+            if (!role.forest_clients) {
+                permissions.push({
                     application: grant.application.description,
                     env: grant.application.env,
+                    role: roleDescription,
                 });
-            });
-        }
+            } else {
+                role.forest_clients.forEach((clientId: any) => {
+                    permissions.push({
+                        application: grant.application.description,
+                        env: grant.application.env,
+                        clientId: clientId,
+                        role: roleDescription,
+                    });
+                });
+            }
+        });
+    });
 
-        if (item.auth_key === AdminRoleAuthGroup.DelegatedAdmin) {
-            item.grants.forEach((grant) => {
-                grant.roles?.forEach((role) => {
-                    if(!role.forest_clients) {
-                        myPermissions.push({
-                            application: grant.application.description,
-                            env: grant.application.env,
-                            clientId: null,
-                            role: 'Delegated Admin, ' + role.name,
-                        });
-                    } else {
-                        role.forest_clients?.forEach((clientId) => {
-                            myPermissions.push({
-                                application: grant.application.description,
-                                env: grant.application.env,
-                                clientId: clientId,
-                                role: 'Delegated Admin, ' + role.name,
-                            });
-                        });
-                    }
-                });
-            });
+    return permissions;
+};
+
+const getMyAdminPermission = (): IMyPermission[] => {
+    const myPermissions: IMyPermission[] = [];
+
+    getUserAccess()?.forEach((access: FamAuthGrantDto) => {
+        switch (access.auth_key) {
+            case AdminRoleAuthGroup.FamAdmin:
+                myPermissions.push(...getMyFamAdminPermission(access));
+                break;
+            case AdminRoleAuthGroup.AppAdmin:
+                myPermissions.push(...getMyAppAdminPermission(access));
+                break;
+            case AdminRoleAuthGroup.DelegatedAdmin:
+                myPermissions.push(...getMyDelegatedAdminPermission(access));
+                break;
+            default:
+                break;
         }
     });
 
     return myPermissions.map((permission: IMyPermission) => {
-        permission.application = permission.application.replace(/\([^()]*\)/g, '')
-        return permission
+        permission.application = permission.application!.replace(
+            /\([^()]*\)/g,
+            ''
+        );
+        return permission;
     });
 };
+
 // --- export
 
 export default {
