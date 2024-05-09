@@ -30,7 +30,7 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
-    let forestNumbers = forestClientNumbers.split(/[ ,]+/);
+    let forestNumbers = forestClientNumbers.split(/\s*,\s*|\s+/);
 
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
