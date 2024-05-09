@@ -30,6 +30,7 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
+    // regex to match commas with optional space
     let forestNumbers = forestClientNumbers.split(/\s*,\s*|\s+/);
 
     for (const item of forestNumbers) {
