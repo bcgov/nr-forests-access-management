@@ -46,13 +46,14 @@ const state = ref({
 
 // --- getters
 
+// FAM currently supports IDIR/BCeID Business login.
 const getUserIdpProvider = () => {
-    let userType = IdpProvider.IDIR;
     // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
     const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
-    if (idpProvider == 'BCEIDBUSINESS') userType = IdpProvider.BCEIDBUSINESS;
-
-    return userType;
+    if (IdpProvider.IDIR == idpProvider)
+        return IdpProvider.IDIR
+    else
+        return IdpProvider.BCEIDBUSINESS
 };
 
 const getAuthToken = () => {
