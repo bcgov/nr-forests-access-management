@@ -31,7 +31,8 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
     // regex to match commas with optional space
-    let forestNumbers = forestClientNumbers.split(/\s*,\s*|\s+(?=\d)/);
+    let regex = /\s*,\s*|\s+/
+    let forestNumbers = forestClientNumbers.split(regex);
 
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
