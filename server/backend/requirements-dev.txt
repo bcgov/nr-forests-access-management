@@ -12,7 +12,7 @@ pytest-emoji==0.2.0
 # deployment so putting as a dev dependency
 sqlacodegen==3.0.0rc1
 
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 
 # used to mock out sqlalchemy for testing
 mock==5.1.0
