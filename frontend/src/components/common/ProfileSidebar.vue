@@ -64,7 +64,10 @@ const adminRoles = computed(() => {
                 />
                 <div class="profile-info">
                     <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-userid">{{ LoginUserState.getUserType() }}: {{ userName }}</p>
+                    <p class="profile-userid">
+                        {{ LoginUserState.getUserIdpProvider() }}:
+                        {{ userName }}
+                    </p>
                     <p class="profile-organization" v-if="organization">
                         Organization: {{ organization }}
                     </p>

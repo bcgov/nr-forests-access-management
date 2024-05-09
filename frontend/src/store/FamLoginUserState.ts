@@ -46,7 +46,7 @@ const state = ref({
 
 // --- getters
 
-const getUserType = () => {
+const getUserIdpProvider = () => {
     let userType = IdpProvider.IDIR;
     // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
     const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
@@ -284,7 +284,7 @@ const getMyAdminPermission = () => {
 
 export default {
     state: readonly(state), // readonly to prevent direct state change; force it through functions if needed to.
-    getUserType,
+    getUserIdpProvider,
     getAuthToken,
     getUserAccess,
     getUserAdminRoleGroups,
