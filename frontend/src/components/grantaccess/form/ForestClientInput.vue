@@ -141,6 +141,7 @@ watch(
                         v-bind="field"
                         class="w-100 custom-height"
                         @input="cleanupForestClientNumberInput()"
+                        @keypress.enter="verifyForestClientNumber(forestClientNumbersInput)"
                         :class="{
                             'is-invalid':
                                 errorMessage ||
