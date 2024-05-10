@@ -22,17 +22,20 @@ class TestIdimProxyServiceClass(object):
     Testing IdimProxyService class with real remote API calls (TEST environment).
     """
 
-    search_params = IdimProxySearchParam(
+    # Valid test IDIR user.
+    search_params_idir = IdimProxySearchParam(
         **{"userId": "ianliu"}
-    )  # Valid test IDIR user.
+    )
+    # Valid test Business Bceid user.
     search_params_business_bceid_same_org = IdimProxyBceidSearchParam(
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
             "searchValue": TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}
-    )  # Valid test Business Bceid user.
+    )
+    # Valid test Business Bceid user.
     search_params_business_bceid_diff_org = IdimProxyBceidSearchParam(
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
             "searchValue": TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}
-    )  # Valid test Business Bceid user.
+    )
 
     def setup_class(self):
         # local valid mock requester
@@ -52,23 +55,25 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         idim_proxy_api.session.headers.update({"X-API-KEY": "Not-A-Valid-Key"})
         with pytest.raises(Exception) as excinfo:
-            idim_proxy_api.search_idir(self.search_params)
+            idim_proxy_api.search_idir(self.search_params_idir)
 
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
+
+    # --- IDIR requester performs IDIM-Proxy search
 
     def test_invalid_requester_error_rasied(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
-            idim_proxy_api.search_idir(self.search_params)
+            idim_proxy_api.search_idir(self.search_params_idir)
 
         assert excinfo.type == HTTPError
         assert excinfo.match("400 Client Error: Bad Request")
 
     def test_valid_idir_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
-        search_params = copy.deepcopy(self.search_params)
+        search_params = copy.deepcopy(self.search_params_idir)
         valid_idir_user = "CMENG"
         search_params.userId = valid_idir_user
         search_result = idim_proxy_api.search_idir(search_params)
@@ -80,12 +85,14 @@ class TestIdimProxyServiceClass(object):
 
     def test_idir_search_user_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
-        search_params = copy.deepcopy(self.search_params)
+        search_params = copy.deepcopy(self.search_params_idir)
         not_exists_idir_user = "USERNOTEXISTS"
         search_params.userId = not_exists_idir_user
         search_result = idim_proxy_api.search_idir(search_params)
 
         assert search_result["found"] == False
+
+    # --- BCeID requester performs IDIM-Proxy search
 
     def test_bceid_search_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
@@ -95,8 +102,6 @@ class TestIdimProxyServiceClass(object):
         search_result = idim_proxy_api.search_business_bceid(search_params)
 
         assert search_result["found"] == False
-
-    # TODO add search with guid tests for BCEID search
 
     def test_valid_bceid_search_pass(self):
         # we use test bceid account for this test, cause we need user's guid, and we don't want to use any IDIR's guid
@@ -123,3 +128,5 @@ class TestIdimProxyServiceClass(object):
 
         assert excinfo.type == HTTPException
         assert excinfo.match(ERROR_PERMISSION_REQUIRED)
+
+    # TODO add search with guid tests for BCEID search
