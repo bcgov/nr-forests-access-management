@@ -32,9 +32,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
 
     // split by commas and spaces
-    let forestNumbers = forestClientNumbers
-        .split(',')
-        .flatMap((clientNum) => clientNum.trim().split(' '));
+    let forestNumbers = forestClientNumbers.split(',').map(num => num.trim());
 
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
