@@ -15,17 +15,23 @@ import {
     selectedApplicationDisplayText,
     selectedApplicationId,
 } from '@/store/ApplicationState';
-import { UserType, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { UserType, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
+import { IdpProvider } from '@/enum/IdpEnum';
+
+const defaultDomain =
+    FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
+        ? UserType.I
+        : UserType.B;
 
 const defaultFormData = {
-    domain: UserType.I,
+    domain: defaultDomain,
     userId: '',
     userGuid: '',
     verifiedForestClients: [],
@@ -191,6 +197,10 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
             <form id="grantAccessForm" class="form-container">
                 <StepContainer title="User information">
                     <UserDomainSelect
+                        v-if="
+                            FamLoginUserState.getUserIdpProvider() ===
+                            IdpProvider.IDIR
+                        "
                         :domain="formData.domain"
                         @change="userDomainChange"
                     />
