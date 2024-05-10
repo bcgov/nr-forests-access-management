@@ -234,7 +234,6 @@ const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
         (grant: FamGrantDetailDto) =>
             grant.application.name === FAM_APPLICATION_NAME
     );
-    if (!famGrant) return [];
 
     return [
         {
@@ -283,18 +282,18 @@ const getMyDelegatedAdminPermission = (
 };
 
 const getMyAdminPermission = (): IMyPermission[] => {
-    const myPermissions: IMyPermission[] = [];
+    let myPermissions: IMyPermission[] = [];
 
     getUserAccess()?.forEach((access: FamAuthGrantDto) => {
         switch (access.auth_key) {
             case AdminRoleAuthGroup.FamAdmin:
-                myPermissions.push(...getMyFamAdminPermission(access));
+                myPermissions = myPermissions.concat(getMyFamAdminPermission(access));
                 break;
             case AdminRoleAuthGroup.AppAdmin:
-                myPermissions.push(...getMyAppAdminPermission(access));
+                myPermissions = myPermissions.concat(getMyAppAdminPermission(access));
                 break;
             case AdminRoleAuthGroup.DelegatedAdmin:
-                myPermissions.push(...getMyDelegatedAdminPermission(access));
+                myPermissions = myPermissions.concat(getMyDelegatedAdminPermission(access));
                 break;
             default:
                 break;
