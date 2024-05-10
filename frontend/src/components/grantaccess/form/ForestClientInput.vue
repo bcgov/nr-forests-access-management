@@ -30,9 +30,11 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
-    // regex to match commas with optional space
-    let regex = /\s*,\s*|\s+/
-    let forestNumbers = forestClientNumbers.split(regex);
+
+    // split by commas and spaces
+    let forestNumbers = forestClientNumbers
+        .split(',')
+        .flatMap((clientNum) => clientNum.trim().split(' '));
 
     for (const item of forestNumbers) {
         if (isNaN(parseInt(item))) {
@@ -200,4 +202,3 @@ watch(
         @remove-item="removeForestClientFromList"
     />
 </template>
-<style lang="scss" scoped></style>
