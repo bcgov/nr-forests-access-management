@@ -69,7 +69,7 @@ describe('GrantApplicationAdmin', () => {
         expect(breadcrumb.props('model')).toEqual(breadcrumbItems);
 
         // assert that the text is the same as the breacrumbItems label
-        breadcrumb.findAll('span').forEach((breadcrumbItem, i) => {
+        breadcrumb.findAll('p-breadcrumb-list span').forEach((breadcrumbItem, i) => {
             expect(breadcrumbItem.isVisible()).toBe(true);
             expect(breadcrumbItem.element.textContent).toBe(
                 breadcrumbItems[i].label
@@ -150,7 +150,7 @@ describe('GrantApplicationAdmin', () => {
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
-    it('Should render submit btn and desabled by default', () => {
+    it('Should render submit btn and disabled by default', () => {
         const submitBtn = wrapper.find('#grantAdminSubmit');
         expect(submitBtn.isVisible()).toBe(true);
         expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true);

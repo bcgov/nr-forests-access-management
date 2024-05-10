@@ -46,13 +46,12 @@ class UserService:
         return fam_user
 
     def update_user_business_guid(
-        self, user_id: int, business_guid: str,
-        requester: str  # cognito_user_id
+        self, user_id: int, business_guid: str, requester: str  # cognito_user_id
     ):
         """
         The method only updates business_guid for user if necessary.
         The calling method should make sure "business_guid" is correct for the
-        user (e.g.,searched from IDIM). This method does not do BCeID user 
+        user (e.g.,searched from IDIM). This method does not do BCeID user
         search.
         :param user_id: The user to be updated on.
         :param business_id: The business_guid value to updated for the user.
@@ -65,7 +64,7 @@ class UserService:
         if business_guid is not None:
             user = self.user_repo.get_user(user_id)
             if (
-                user.business_guid is None 
+                user.business_guid is None
                 or business_guid != user.business_guid
             ):
                 # update user when necessary.

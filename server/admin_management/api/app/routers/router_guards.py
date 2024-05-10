@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 from http import HTTPStatus
@@ -183,7 +184,7 @@ async def get_target_user_from_id(
 
 async def target_user_bceid_search(
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(get_target_user_from_id)
+    _target_user: TargetUser = Depends(get_target_user_from_id)
 ) -> TargetUser:
     """
     BCeID user search for target_user.
@@ -192,12 +193,10 @@ async def target_user_bceid_search(
         parsed from the request. It's business_guid will be updated to the
         target_user after user is searched through IDIM Proxy.
     """
+    target_user = copy.deepcopy(_target_user)
     if (
         target_user.user_type_code == UserType.BCEID and
-        (
-            target_user.is_new_user() or
-            target_user.business_guid is None
-        )
+        target_user.business_guid is None
     ):
         user_guid = target_user.user_guid  # will be used by search using user_guid
         LOGGER.debug(

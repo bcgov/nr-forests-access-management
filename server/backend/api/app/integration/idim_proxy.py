@@ -1,12 +1,12 @@
 import logging
-import requests
 from http import HTTPStatus
-from fastapi import HTTPException
-from api.app.schemas import IdimProxyBceidSearchParam, IdimProxySearchParam, Requester
-from api.config import config
+
+import requests
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-
+from api.app.schemas import IdimProxyBceidSearchParam, Requester
+from api.config import config
+from fastapi import HTTPException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class IdimProxyService:
         LOGGER.debug(f"API result: {api_result}")
         return api_result
 
-    def search_business_bceid(self, search_params: IdimProxySearchParam):
+    def search_business_bceid(self, search_params: IdimProxyBceidSearchParam):
         """
         Search on Business BCEID user.
         """
@@ -87,7 +87,7 @@ class IdimProxyService:
                 status_code=HTTPStatus.FORBIDDEN,
                 detail={
                     "code": ERROR_PERMISSION_REQUIRED,
-                    "description": f"Operation requires business bceid users to be within the same organization",
+                    "description": "Operation requires business bceid users to be within the same organization",
                 },
                 headers={"WWW-Authenticate": "Bearer"},
             )
