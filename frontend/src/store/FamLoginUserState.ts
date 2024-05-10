@@ -141,6 +141,66 @@ const getApplicationsUserAdministers = () => {
     return applicationList;
 };
 
+const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.AppAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
+
+    return grantAppData!.roles!.sort((first, second) => {
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
+            ? -1
+            : 1;
+    });
+};
+
+const getCachedAppRolesForDelegatedAdmin = (
+    application_id: number
+): FamRoleDto[] => {
+    const grantAppData = getUserAccess()!
+        .find((key) => key.auth_key === AdminRoleAuthGroup.DelegatedAdmin)
+        ?.grants.find((item) => {
+            return item.application.id === application_id;
+        });
+
+    return grantAppData!.roles!.sort((first, second) => {
+        return first.name.toLocaleLowerCase() <
+            second.name.toLocaleLowerCase()
+            ? -1
+            : 1;
+    });
+};
+
+const getMyAdminPermission = (): IMyPermission[] => {
+    let myPermissions: IMyPermission[] = [];
+
+    getUserAccess()?.forEach((access: FamAuthGrantDto) => {
+        switch (access.auth_key) {
+            case AdminRoleAuthGroup.FamAdmin:
+                myPermissions = myPermissions.concat(getMyFamAdminPermission(access));
+                break;
+            case AdminRoleAuthGroup.AppAdmin:
+                myPermissions = myPermissions.concat(getMyAppAdminPermission(access));
+                break;
+            case AdminRoleAuthGroup.DelegatedAdmin:
+                myPermissions = myPermissions.concat(getMyDelegatedAdminPermission(access));
+                break;
+            default:
+                break;
+        }
+    });
+
+    return myPermissions.map((permission: IMyPermission) => {
+        permission.application = permission.application!.replace(
+            /\([^()]*\)/g,
+            ''
+        );
+        return permission;
+    });
+};
+
 const isAdminOfSelectedApplication = () => {
     const userAdminAccess = getUserAccess()?.find(
         (access) => access.auth_key == AdminRoleAuthGroup.AppAdmin
@@ -197,38 +257,8 @@ const cacheUserAccess = async () => {
     }
 };
 
-const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
-    const grantAppData = getUserAccess()!
-        .find((key) => key.auth_key === AdminRoleAuthGroup.AppAdmin)
-        ?.grants.find((item) => {
-            return item.application.id === application_id;
-        });
-
-    return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
-            ? -1
-            : 1;
-    });
-};
-
-const getCachedAppRolesForDelegatedAdmin = (
-    application_id: number
-): FamRoleDto[] => {
-    const grantAppData = getUserAccess()!
-        .find((key) => key.auth_key === AdminRoleAuthGroup.DelegatedAdmin)
-        ?.grants.find((item) => {
-            return item.application.id === application_id;
-        });
-
-    return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
-            ? -1
-            : 1;
-    });
-};
 //--------- get my permissions
+
 const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
     const famGrant = access.grants.find(
         (grant: FamGrantDetailDto) =>
@@ -237,8 +267,8 @@ const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
 
     return [
         {
-            application: famGrant.application.description,
-            env: famGrant.application.env,
+            application: famGrant!.application.description,
+            env: famGrant!.application.env,
             role: 'Admin',
         },
     ];
@@ -279,34 +309,6 @@ const getMyDelegatedAdminPermission = (
     });
 
     return permissions;
-};
-
-const getMyAdminPermission = (): IMyPermission[] => {
-    let myPermissions: IMyPermission[] = [];
-
-    getUserAccess()?.forEach((access: FamAuthGrantDto) => {
-        switch (access.auth_key) {
-            case AdminRoleAuthGroup.FamAdmin:
-                myPermissions = myPermissions.concat(getMyFamAdminPermission(access));
-                break;
-            case AdminRoleAuthGroup.AppAdmin:
-                myPermissions = myPermissions.concat(getMyAppAdminPermission(access));
-                break;
-            case AdminRoleAuthGroup.DelegatedAdmin:
-                myPermissions = myPermissions.concat(getMyDelegatedAdminPermission(access));
-                break;
-            default:
-                break;
-        }
-    });
-
-    return myPermissions.map((permission: IMyPermission) => {
-        permission.application = permission.application!.replace(
-            /\([^()]*\)/g,
-            ''
-        );
-        return permission;
-    });
 };
 
 // --- export
