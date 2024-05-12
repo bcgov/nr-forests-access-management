@@ -57,6 +57,11 @@ class IdimProxyService:
     def search_business_bceid(self, search_params: IdimProxyBceidSearchParam):
         """
         Search on Business BCEID user.
+        This search can be perfomed by IDIR requester or BCeID requester by passing "user_guid" to
+        "requesterUserGuid".
+        search_param: is of type "IdimProxyBceidSearchParam" and can be 'searchUserBy'
+            - "userId" or
+            - "userGuid" (preferred)
         """
         # query_params to request to idim-proxy, vars(search_params) returns a dict of the search_params
         query_params = vars(search_params)
