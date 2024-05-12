@@ -36,10 +36,17 @@ class TestIdimProxyServiceClass(object):
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
             "searchValue": TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}
     )
+    # IDIR test user_guid. Note, do not use it in other place.
+    # This is only for real integration test.
+    # TODO: read this from environment variable or db setup (might still need to be read from github environment)
+    IDIR_TEST_USER_GUID = "E72A12C916A44A9581CF39E5DCDFFAE7"
 
     def setup_class(self):
         # local valid mock requester
         self.requester_idir = Requester(**TEST_IDIR_REQUESTER_DICT)
+        self.requester_idir.user_guid = self.IDIR_TEST_USER_GUID
+
+        # This tester uses "LOAD-3-TEST"
         self.requester_business_bceid = Requester(**TEST_BCEID_REQUESTER_DICT)
 
     def test_verify_init(self):
@@ -60,9 +67,9 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
 
-    # --- IDIR requester performs IDIM-Proxy search
+    # --- Performs search_idir user (This is only for IDIR requester) ---
 
-    def test_invalid_requester_error_rasied(self):
+    def test_search_idir__invalid_idir_requester_error_rasied(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
@@ -71,7 +78,7 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("400 Client Error: Bad Request")
 
-    def test_valid_idir_search_pass(self):
+    def test_search_idir__valid_idir_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         search_params = copy.deepcopy(self.search_params_idir)
         valid_idir_user = "CMENG"
@@ -83,7 +90,7 @@ class TestIdimProxyServiceClass(object):
         assert search_result["firstName"] is not None
         assert search_result["lastName"] is not None
 
-    def test_idir_search_user_not_exist_no_user_found(self):
+    def test_search_idir__user_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         search_params = copy.deepcopy(self.search_params_idir)
         not_exists_idir_user = "USERNOTEXISTS"
@@ -92,10 +99,10 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    # --- BCeID requester performs IDIM-Proxy search
+    # --- Performs search_business_bceid user (IDIR requester/BCeID requester) ---
 
-    def test_bceid_search_not_exist_no_user_found(self):
-        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
+    def test_search_bceid__user_not_exist_not_found(self):
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         not_exists_idir_user = "USERNOTEXISTS"
         search_params.searchValue = not_exists_idir_user
@@ -103,10 +110,10 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    def test_valid_bceid_search_pass(self):
-        # we use test bceid account for this test, cause we need user's guid, and we don't want to use any IDIR's guid
-        # test bceid search for bceid within the same organization
-        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
+    def test_search_bceid__idir_requester_by_userid_search_pass(self):
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
+
+        # for IDIR requester, it does not matter the "business organization"
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         search_result = idim_proxy_api.search_business_bceid(search_params)
 
@@ -118,7 +125,24 @@ class TestIdimProxyServiceClass(object):
         assert search_result["firstName"] is not None
         assert search_result["lastName"] is not None
 
-    def test_valid_bceid_diff_org_search_not_allow(self):
+    def test_search_bceid__bceid_requester_by_userid_same_org_search_pass(self):
+        # we use test bceid account for this test, cause we need user's guid, and we don't want to use any IDIR's guid
+        # test bceid search for bceid within the same organization
+        idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
+
+        # This search_params uses "TEST-3-LOAD-CHILD-1", same org with "LOAD-3-TEST"
+        search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
+        search_result = idim_proxy_api.search_business_bceid(search_params)
+
+        assert search_result["found"] == True
+        assert search_result["userId"] == TEST_VALID_BUSINESS_BCEID_USERNAME_ONE
+        assert search_result["guid"] is not None
+        assert search_result["businessGuid"] is not None
+        assert search_result["businessLegalName"] is not None
+        assert search_result["firstName"] is not None
+        assert search_result["lastName"] is not None
+
+    def test_search_bceid__bceid_requester_by_userid_diff_org_search_not_allow(self):
         # test bceid search for bceid from a different organization
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_business_bceid))
         search_params = copy.deepcopy(self.search_params_business_bceid_diff_org)
