@@ -39,7 +39,7 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
                         .transform((curr, orig) => (orig === '' ? null : curr)) // Accept either null or value
                         .matches(
                             //string of eight digits separeted by commas and optional whitespace
-                            /^\d{8}(\s*,\s*\d{8})*$/,
+                            /^\s*\d{8}(\s*,\s*\d{8})*\s*$/,
                             'Please enter a Forest Client ID with 8 digits long'
                         ),
             })
