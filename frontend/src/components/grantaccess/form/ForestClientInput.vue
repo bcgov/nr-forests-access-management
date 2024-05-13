@@ -35,12 +35,6 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     let forestNumbers = forestClientNumbers.split(',').map(num => num.trim());
 
     for (const item of forestNumbers) {
-        if (isNaN(parseInt(item))) {
-            forestClientNumberVerifyErrors.value.push(
-                `Client ID ${item} is invalid and cannot be added.`
-            );
-        }
-
         await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
