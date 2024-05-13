@@ -11,11 +11,10 @@ from fastapi import HTTPException
 from requests import HTTPError
 from testspg.constants import (TEST_BCEID_REQUESTER_DICT,
                                TEST_IDIR_REQUESTER_DICT,
-                               TEST_VALID_BUSINESS_BCEID_USERNAME_ONE,
-                               TEST_VALID_BUSINESS_BCEID_USERNAME_TWO,
                                USER_GUID_BCEID_LOAD_2_TEST,
                                USER_GUID_BCEID_LOAD_3_TEST,
                                USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+                               USER_NAME_BCEID_LOAD_2_TEST,
                                USER_NAME_BCEID_LOAD_3_TEST,
                                USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
@@ -34,12 +33,12 @@ class TestIdimProxyServiceClass(object):
     # Valid test Business Bceid user
     search_params_business_bceid_same_org = IdimProxyBceidSearchParam(
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
-            "searchValue": TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}
+            "searchValue": USER_NAME_BCEID_LOAD_3_TEST_CHILD_1}
     )
     # Valid test Business Bceid user.
     search_params_business_bceid_diff_org = IdimProxyBceidSearchParam(
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
-            "searchValue": TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}
+            "searchValue": USER_NAME_BCEID_LOAD_2_TEST}
     )
     # IDIR test user_guid. Note, do not use it in other place.
     # This is only for real integration test.
@@ -123,7 +122,7 @@ class TestIdimProxyServiceClass(object):
         )
 
         assert search_result["found"]
-        assert search_result["userId"] == TEST_VALID_BUSINESS_BCEID_USERNAME_ONE
+        assert search_result["userId"] == USER_NAME_BCEID_LOAD_3_TEST_CHILD_1
         assert search_result["guid"] is not None
         assert search_result["businessGuid"] is not None
         assert search_result["businessLegalName"] is not None
@@ -141,7 +140,7 @@ class TestIdimProxyServiceClass(object):
         )
 
         assert search_result["found"]
-        assert search_result["userId"] == TEST_VALID_BUSINESS_BCEID_USERNAME_ONE
+        assert search_result["userId"] == USER_NAME_BCEID_LOAD_3_TEST_CHILD_1
         assert search_result["guid"] is not None
         assert search_result["businessGuid"] is not None
         assert search_result["businessLegalName"] is not None
