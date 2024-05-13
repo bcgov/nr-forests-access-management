@@ -145,10 +145,8 @@ watch(
                         @input="cleanupForestClientNumberInput()"
                         @keypress.enter="
                             field.value &&
-                                !errorMessage &&
-                                verifyForestClientNumber(
-                                    forestClientNumbersInput
-                                )
+                            !errorMessage &&
+                            verifyForestClientNumber(forestClientNumbersInput)
                         "
                         :class="{
                             'is-invalid':
