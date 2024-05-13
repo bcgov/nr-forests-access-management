@@ -22,9 +22,9 @@
         "bootstrap": "^5.2.3",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
-        "primevue": "^3.47.0",
+        "primevue": "3.46.0",
         "vee-validate": "^4.12.6",
-        "vue": "^3.4.23",
+        "vue": "^3.4.21",
         "vue-router": "^4.3.2",
         "wait-for-expect": "^3.0.2"
     },
