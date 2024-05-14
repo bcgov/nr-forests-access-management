@@ -4,7 +4,8 @@ from http import HTTPStatus
 import requests
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import IdimProxyBceidSearchParam, Requester
+from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
+                             Requester)
 from api.config import config
 from fastapi import HTTPException
 
@@ -30,7 +31,7 @@ class IdimProxyService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search_idir(self, search_params: IdimProxyBceidSearchParam):
+    def search_idir(self, search_params: IdimProxySearchParam):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
