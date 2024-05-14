@@ -78,7 +78,6 @@ const adminRoles = computed(() => {
                 </div>
             </div>
             <Divider class="profile-divider" />
-            <p class="options">Options</p>
             <div class="sign-out-wrapper">
                 <Icon
                     title="Sign out"
