@@ -232,6 +232,7 @@ async def authorize_by_privilege(
                 error_msg="Requester has no privilege to grant this access."
             )
 
+
 # Note!!
 # currently to take care of different scenarios (id or fields needed in
 # path/param/body) to find target user, will only consider request

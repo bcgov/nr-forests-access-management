@@ -1,3 +1,4 @@
+from asyncio import run
 import copy
 import logging
 from http import HTTPStatus
@@ -14,6 +15,8 @@ from api.app.constants import (
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
+from api.app.routers.router_guards import target_user_bceid_search
+from api.app.schemas import TargetUser
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
@@ -39,7 +42,16 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 
+
+async def mock_target_user_bceid_search(mocked_data):
+    """
+    A mock for router dependency, for BCeID search for TargetUser.
+    """
+    return TargetUser(**mocked_data)
+
+
 # ------------------ test create user role assignment ----------------------- #
+
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
@@ -356,6 +368,7 @@ async def test_create_user_role_assignment_with_abstract_role(
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
+
 @pytest.mark.asyncio
 async def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
@@ -602,6 +615,63 @@ def test_self_grant_fail(
     assert row is None, "Expected user role assignment not to be created"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
+
+
+@pytest.mark.asyncio
+async def test_assign_new_bceid_user_role_save_business_guid(
+    test_client_fixture: starlette.testclient.TestClient,
+    db_pg_session: Session,
+    fom_dev_access_admin_token
+):
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
+        "user_name": "TESTUSER_NOTIN_DB",
+        "user_guid": "somerandomguid23AE535428F171BF13",
+        "user_type_code": UserType.BCEID,
+        "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+    }
+
+    # verify user does not exist before creation.
+    user = crud_user.get_user_by_domain_and_name(
+        db=db_pg_session,
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"]
+    )
+    assert user is None
+
+    # override router dependency for "target_user_bceid_search"
+    mocked_searched_business_guid = "mockedguid5D4ACA9FA901EE2C91CB3B"
+    mocked_data = {
+        "user_name": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        "user_type_code": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
+        "user_id": None,
+        "user_guid": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_guid"],
+        "business_guid": mocked_searched_business_guid,
+    }
+
+    # TODO refactor this into fixture.
+    app = test_client_fixture.app
+    app.dependency_overrides[target_user_bceid_search] = (
+        lambda: run(mock_target_user_bceid_search(mocked_data))
+    )
+
+    # create BCeID user/role assignment.
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    # new user created
+    user = crud_user.get_user_by_domain_and_name(
+        db=db_pg_session,
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"]
+    )
+    assert user is not None
+    # verify business_guid is saved to the user.
+    assert user.business_guid == mocked_data["business_guid"]
 
 
 # ---------------- Test delete user role assignment ------------ #
@@ -867,6 +937,3 @@ def test_self_remove_grant_fail(
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
-
-
-# TODO add test to test create assignment for BCEID new user (not exists in db, and update business_guid)
