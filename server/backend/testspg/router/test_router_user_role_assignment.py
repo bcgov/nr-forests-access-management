@@ -15,8 +15,6 @@ from api.app.constants import (
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import target_user_bceid_search
-from api.app.schemas import TargetUser
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
@@ -41,13 +39,6 @@ LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
-
-
-async def mock_target_user_bceid_search(mocked_data):
-    """
-    A mock for router dependency, for BCeID search for TargetUser.
-    """
-    return TargetUser(**mocked_data)
 
 
 # ------------------ test create user role assignment ----------------------- #
@@ -617,10 +608,10 @@ def test_self_grant_fail(
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
-@pytest.mark.asyncio
-async def test_assign_new_bceid_user_role_save_business_guid(
+def test_assign_new_bceid_user_role_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
+    override_target_user_bceid_search,
     fom_dev_access_admin_token
 ):
     ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
@@ -648,13 +639,11 @@ async def test_assign_new_bceid_user_role_save_business_guid(
         "business_guid": mocked_searched_business_guid,
     }
 
-    # TODO refactor this into fixture.
-    app = test_client_fixture.app
-    app.dependency_overrides[target_user_bceid_search] = (
-        lambda: run(mock_target_user_bceid_search(mocked_data))
-    )
+    # override it for test to avoid calling external idim-proxy.
+    override_target_user_bceid_search(mocked_data)
 
-    # create BCeID user/role assignment.
+    # create BCeID user/role assignment. Expecting it will save business_guid
+    # from mocked_data.business_guid
     response = test_client_fixture.post(
         f"{endPoint}",
         json=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
