@@ -215,7 +215,6 @@ def test_assign_new_bceid_user_role_save_business_guid(
         },
         headers=jwt_utils.headers(token),
     )
-
     assert response.status_code == HTTPStatus.OK
 
     # new user created

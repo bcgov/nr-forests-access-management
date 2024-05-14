@@ -632,10 +632,7 @@ def test_assign_new_bceid_user_role_save_business_guid(
     # override router dependency for "target_user_bceid_search"
     mocked_searched_business_guid = "mockedguid5D4ACA9FA901EE2C91CB3B"
     mocked_data = {
-        "user_name": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
-        "user_type_code": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
-        "user_id": None,
-        "user_guid": ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_guid"],
+        **ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
         "business_guid": mocked_searched_business_guid,
     }
 
@@ -649,7 +646,6 @@ def test_assign_new_bceid_user_role_save_business_guid(
         json=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-
     assert response.status_code == HTTPStatus.OK
 
     # new user created
