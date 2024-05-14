@@ -50,7 +50,7 @@ const adminRoles = computed(() => {
                 <button
                     class="btn-icon"
                     @click="profileSidebarState.toggleVisible()"
-                    aria-label="Close"
+                    aria-label="Close profile sidebar"
                 >
                     <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
@@ -110,12 +110,14 @@ const adminRoles = computed(() => {
     border-left: 0.0625rem solid #dfdfe1;
     color: #000;
     height: calc(100vh - 3rem);
-    inset: 0 0 0 0;
-    margin: 3rem 0 0;
+    width: 25rem;
+    margin: 3rem 0 0 0;
     padding: 0 1rem 0;
     position: fixed;
     overflow: hidden;
     z-index: 9999;
+    right: 0;
+    left: auto;
 }
 
 .profile-header {
@@ -142,6 +144,7 @@ const adminRoles = computed(() => {
     .profile-avatar {
         margin-right: 2rem;
         margin-top: 0.5rem;
+        flex-shrink: 0;
         background: $light-background-brand;
         color: $dark-text-primary;
     }
@@ -241,33 +244,10 @@ const adminRoles = computed(() => {
     background-color: rgba($color: #131315, $alpha: 0);
 }
 
-@media (min-width: 425px) {
+@media (max-width: 400px) {
     .profile-container {
-        inset: 0 0 0 30%;
+        width: 100vw;
     }
 }
 
-@media (min-width: 600px) {
-    .profile-container {
-        inset: 0 0 0 50%;
-    }
-}
-
-@media (min-width: 790px) {
-    .profile-container {
-        inset: 0 0 0 60%;
-    }
-}
-
-@media (min-width: 900px) {
-    .profile-container {
-        inset: 0 0 0 60%;
-    }
-}
-
-@media (min-width: 1366px) {
-    .profile-container {
-        inset: 0 0 0 70%;
-    }
-}
 </style>

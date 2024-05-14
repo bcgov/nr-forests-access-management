@@ -47,6 +47,7 @@ const props = defineProps({
             </span>
 
             <Button
+                aria-label="open profile sidebar"
                 :class="
                     `btn-toggle-profile
                     ${profileSidebarState.isVisible &&
