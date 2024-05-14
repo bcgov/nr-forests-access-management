@@ -29,7 +29,7 @@ const props = defineProps({
     <header class="header" id="header">
         <nav class="navbar justify-content-start">
             <Button
-                class="btn-toggleSideNav"
+                class="btn-toggle-sideNav"
                 @click="sideNavState.toggleSideNavVisible()"
                 aria-label="Toggle Side Navigation"
             >
@@ -46,13 +46,21 @@ const props = defineProps({
                 >
             </span>
 
-            <a
+            <Button
+                :class="
+                    `btn-toggle-profile
+                    ${profileSidebarState.isVisible &&
+                    'btn-toggle-profile-active'}`"
                 title="Profile"
                 v-if="authService.isLoggedIn()"
                 @click="profileSidebarState.toggleVisible()"
             >
-                <Icon icon="user--avatar" :size="IconSize.medium" />
-            </a>
+                <Icon
+
+                    icon="user--avatar"
+                    :size="IconSize.medium"
+                />
+            </Button>
         </nav>
         <teleport to=".modals">
             <ProfileSidebar />
@@ -67,18 +75,25 @@ li {
     list-style: none;
 }
 
-.btn-toggleSideNav {
+a > svg {
+    cursor: pointer;
+}
+
+.btn-toggle-sideNav {
     margin-right: 0.5rem;
     padding: 0.88rem;
     border: none;
     border-radius: 0;
+
     .label {
         display: none !important;
     }
 }
+
 .subtitle {
     display: none;
 }
+
 .header {
     @extend %heading-compact-01;
     position: fixed;
@@ -94,9 +109,6 @@ li {
     color: $text-on-color;
     .header-title {
         margin: 0 auto 0 0;
-        a i {
-            cursor: pointer;
-        }
     }
 
     i {
@@ -105,7 +117,7 @@ li {
 
     .navbar {
         margin: 0;
-        padding: 0 1rem 0 0;
+        padding: 0 1px 0 1rem;
         height: 3rem;
         vertical-align: middle;
     }
@@ -115,20 +127,32 @@ li {
     }
 }
 
-a > svg {
-    cursor: pointer;
+.btn-toggle-profile {
+    border-radius: 0;
+    border-bottom: 1px;
 }
 
+.btn-toggle-profile-active {
+    color: #000;
+    background-color: #fff;
+}
+
+.btn-toggle-profile:hover {
+    color: #fff;
+}
+
+.btn-toggle-profile:active {
+    color: #000;
+}
+
+
 @media (min-width: 1024px) {
-    .navbar {
-        padding: 0 1rem 0 1rem !important;
-    }
 
     .subtitle {
         display: inline;
     }
 
-    .btn-toggleSideNav {
+    .btn-toggle-sideNav {
         display: none;
     }
 }
