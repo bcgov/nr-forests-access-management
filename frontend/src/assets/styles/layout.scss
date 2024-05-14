@@ -88,6 +88,19 @@ input[type='number'] {
 
 //------ media queries
 
+@media (max-width: 320px) {
+    .custom-data-table {
+        border-radius: 0 0;
+    }
+}
+
+@media (max-width: 390px) {
+    .data-table-container {
+        margin: 0;
+        padding: 0;
+    }
+}
+
 @media (min-width: 768px) {
     .main {
         padding: 2.5rem 2.5rem 0 2.5rem;
@@ -119,13 +132,6 @@ input[type='number'] {
     .main {
         left: 16rem;
         width: calc(100vw - 16rem);
-    }
-}
-
-@media (max-width: 390px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
     }
 }
 

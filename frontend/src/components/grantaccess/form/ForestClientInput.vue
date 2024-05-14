@@ -30,15 +30,11 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
-    let forestNumbers = forestClientNumbers.split(/[ ,]+/);
+
+    // split by commas and spaces
+    let forestNumbers = forestClientNumbers.split(',').map(num => num.trim());
 
     for (const item of forestNumbers) {
-        if (isNaN(parseInt(item))) {
-            forestClientNumberVerifyErrors.value.push(
-                `Client ID ${item} is invalid and cannot be added.`
-            );
-        }
-
         await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
@@ -141,6 +137,11 @@ watch(
                         v-bind="field"
                         class="w-100 custom-height"
                         @input="cleanupForestClientNumberInput()"
+                        @keypress.enter="
+                            field.value &&
+                            !errorMessage &&
+                            verifyForestClientNumber(forestClientNumbersInput)
+                        "
                         :class="{
                             'is-invalid':
                                 errorMessage ||
@@ -197,4 +198,3 @@ watch(
         @remove-item="removeForestClientFromList"
     />
 </template>
-<style lang="scss" scoped></style>
