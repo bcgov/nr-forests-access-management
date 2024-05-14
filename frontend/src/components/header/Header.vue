@@ -76,10 +76,6 @@ li {
     list-style: none;
 }
 
-a > svg {
-    cursor: pointer;
-}
-
 .btn-toggle-sideNav {
     margin-right: 0.5rem;
     padding: 0.88rem;
@@ -130,7 +126,12 @@ a > svg {
 
 .btn-toggle-profile {
     border-radius: 0;
-    border-bottom: 1px;
+    border: none;
+    padding-bottom: 0.93rem;
+
+    svg {
+        margin-top: 0.125rem;
+    }
 }
 
 .btn-toggle-profile-active {
@@ -138,14 +139,10 @@ a > svg {
     background-color: #fff;
 }
 
-.btn-toggle-profile:hover {
+.btn-toggle-profile:hover,
+.btn-toggle-profile:focus  {
     color: #fff;
 }
-
-.btn-toggle-profile:active {
-    color: #000;
-}
-
 
 @media (min-width: 1024px) {
 

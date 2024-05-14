@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
-import { IconSize } from '@/enum/IconEnum';
+import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
@@ -78,26 +78,23 @@ const adminRoles = computed(() => {
                 </div>
             </div>
             <Divider class="profile-divider" />
-            <div class="sign-out-wrapper">
-                <Icon
-                    title="Sign out"
-                    icon="user--follow"
-                    :size="IconSize.small"
-                    class="custom-carbon-icon-user--follow"
-                    @click="logout"
-                    :disabled="loading ? true : false"
-                />
                 <Button
                     class="sign-out"
                     title="Sign out"
                     aria-expanded="false"
                     aria-label="sign out"
+                    :iconPosition="IconPosition.left"
                     :label="buttonLabel"
                     @click="logout"
                     :disabled="loading ? true : false"
                 >
+                    <Icon
+                        title="Sign out"
+                        icon="user--follow"
+                        :size="IconSize.small"
+                        class="custom-carbon-icon-user--follow"
+                    />
                 </Button>
-            </div>
         </div>
     </Transition>
 </template>
@@ -105,6 +102,7 @@ const adminRoles = computed(() => {
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
 @import '@/assets/styles/base.scss';
+
 .profile-container {
     background-color: #fff;
     border-left: 0.0625rem solid #dfdfe1;
@@ -112,7 +110,7 @@ const adminRoles = computed(() => {
     height: calc(100vh - 3rem);
     width: 25rem;
     margin: 3rem 0 0 0;
-    padding: 0 1rem 0;
+    padding: 0 1rem;
     position: fixed;
     overflow: hidden;
     z-index: 9999;
@@ -163,12 +161,8 @@ const adminRoles = computed(() => {
     }
 }
 
-.sign-out-wrapper {
-    display: flex;
-}
-
 .custom-carbon-icon-user--follow {
-    margin: 0 1.2rem 0 0;
+    margin: 0;
     cursor: pointer;
 }
 
@@ -178,15 +172,24 @@ const adminRoles = computed(() => {
     font-weight: 700;
     display: flex;
     border: none;
-    cursor: pointer;
     padding: 0;
 }
 
-.sign-out,
-.sign-out:hover:focus {
-    background-color: transparent;
-    background-color: #ffffff !important;
+.sign-out {
+    cursor: pointer;
+    width: calc(100% + 2rem);
+    height: 3rem;
+    border-radius: 0;
+    padding-left: 1rem;
+    margin-left: -1rem;
+    background-color: #ffffff;
     color: $light-text-secondary !important;
+}
+
+.sign-out:hover,
+.sign-out:active,
+.sign-out:focus {
+    background-color: $light-border-subtle-00 !important;
     box-shadow: none !important;
     outline: none !important;
 }
@@ -251,3 +254,4 @@ const adminRoles = computed(() => {
 }
 
 </style>
+
