@@ -181,6 +181,20 @@ def get_current_requester_by_token(db_pg_session):
 
 
 @pytest.fixture(scope="function")
+def override_target_user_bceid_search(
+    test_client_fixture
+):
+    def _override_target_user_bceid_search(
+        mocked_data
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[target_user_bceid_search] = (
+            lambda: TargetUser(**mocked_data)
+        )
+    return _override_target_user_bceid_search
+
+
+@pytest.fixture(scope="function")
 def create_test_user_role_assignments(
     test_client_fixture
 ):
@@ -222,16 +236,3 @@ def create_test_user_role_assignment(
     data = response.json()
     return data["user_role_xref_id"]
 
-
-@pytest.fixture(scope="function")
-def override_target_user_bceid_search(
-    test_client_fixture
-):
-    def _override_target_user_bceid_search(
-        mocked_data
-    ):
-        app = test_client_fixture.app
-        app.dependency_overrides[target_user_bceid_search] = (
-            lambda: TargetUser(**mocked_data)
-        )
-    return _override_target_user_bceid_search
