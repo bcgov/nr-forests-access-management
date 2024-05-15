@@ -1,3 +1,4 @@
+import os
 import copy
 import logging
 
@@ -11,7 +12,6 @@ from fastapi import HTTPException
 from requests import HTTPError
 from testspg.constants import (TEST_BCEID_REQUESTER_DICT,
                                TEST_IDIR_REQUESTER_DICT,
-                               USER_GUID_BCEID_LOAD_2_TEST,
                                USER_GUID_BCEID_LOAD_3_TEST,
                                USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
                                USER_NAME_BCEID_LOAD_2_TEST,
@@ -19,6 +19,8 @@ from testspg.constants import (TEST_BCEID_REQUESTER_DICT,
                                USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
 LOGGER = logging.getLogger(__name__)
+
+TEST_IDIR_USER_GUID = os.environ.get("TEST_IDIR_USER_GUID")
 
 
 class TestIdimProxyServiceClass(object):
@@ -40,14 +42,11 @@ class TestIdimProxyServiceClass(object):
         **{"searchUserBy": IdimSearchUserParamType.USER_ID,
             "searchValue": USER_NAME_BCEID_LOAD_2_TEST}
     )
-    # IDIR test user_guid. Note, do not use it in other place.
-    # This is only for real integration test.
-    TEST_IDIR_USER_GUID = "E72A12C916A44A9581CF39E5DCDFFAE7"
 
     def setup_class(self):
         # local valid mock requester
         self.requester_idir = Requester(**TEST_IDIR_REQUESTER_DICT)
-        self.requester_idir.user_guid = self.TEST_IDIR_USER_GUID
+        self.requester_idir.user_guid = TEST_IDIR_USER_GUID
 
         # This tester uses "LOAD-3-TEST"
         self.requester_business_bceid = Requester(**TEST_BCEID_REQUESTER_DICT)
