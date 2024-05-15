@@ -198,20 +198,3 @@ class TestIdimProxyServiceClass(object):
         assert search_result["businessLegalName"] is not None
         assert search_result["firstName"] is not None
         assert search_result["lastName"] is not None
-
-    @pytest.mark.skip(
-        reason="Search BCeID by user_guid is not enabled. Enable this test when ready."
-    )
-    def test_search_bceid__bceid_requester_by_user_guid_diff_org_search_not_allow(self):
-        # test bceid search for bceid from a different organization
-        idim_proxy_api = IdimProxyService(self.requester_business_bceid)
-        search_params = IdimProxyBceidSearchParam(
-            **{"searchUserBy": IdimSearchUserParamType.USER_GUID,
-                "searchValue": USER_GUID_BCEID_LOAD_2_TEST}
-        )
-
-        with pytest.raises(HTTPException) as excinfo:
-            idim_proxy_api.search_business_bceid(search_params)
-
-        assert excinfo.type == HTTPException
-        assert excinfo.match(ERROR_PERMISSION_REQUIRED)
