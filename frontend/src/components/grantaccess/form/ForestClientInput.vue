@@ -27,14 +27,22 @@ const emit = defineEmits([
 const forestClientNumbersInput = ref('');
 const forestClientData = ref<FamForestClient[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
+const verifiedNumbers: Set<string> = new Set();
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
 
     // split by commas and spaces
-    let forestNumbers = forestClientNumbers.split(',').map(num => num.trim());
+    let forestNumbers = forestClientNumbers.split(',').map((num) => num.trim());
 
     for (const item of forestNumbers) {
+        if (verifiedNumbers.has(item)) {
+            forestClientNumberVerifyErrors.value.push(
+                `Client ID ${item} has already been added.`
+            );
+
+            continue;
+        }
         await AppActlApiService.forestClientsApi
             .search(item)
             .then((result) => {
@@ -66,17 +74,14 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                     forestNumbers = forestNumbers.filter(
                         (number) => number !== item
                     ); //Remove successfully added numbers so the user can edit in the input only errored ones
-                } else {
-                    forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${item} has already been added.`
-                    );
                 }
             })
             .catch(() => {
                 forestClientNumberVerifyErrors.value.push(
-                    `An error has occured. Client ID ${item} could not be added.`
+                    `An error has occurred. Client ID ${item} could not be added.`
                 );
             });
+        verifiedNumbers.add(item);
     }
 
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
@@ -139,7 +144,7 @@ watch(
                         @input="cleanupForestClientNumberInput()"
                         @keypress.enter="
                             field.value &&
-                            !errorMessage &&
+                                !errorMessage &&
                             verifyForestClientNumber(forestClientNumbersInput)
                         "
                         :class="{
