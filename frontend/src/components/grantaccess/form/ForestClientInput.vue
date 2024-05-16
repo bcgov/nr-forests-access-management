@@ -27,7 +27,6 @@ const emit = defineEmits([
 const forestClientNumbersInput = ref('');
 const forestClientData = ref<FamForestClient[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
-const verifiedNumbers: Set<string> = new Set();
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumberVerifyErrors.value = [];
@@ -35,20 +34,20 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     // split by commas and spaces
     let forestNumbers = forestClientNumbers.split(',').map((num) => num.trim());
 
-    for (const item of forestNumbers) {
-        if (verifiedNumbers.has(item)) {
+    for (const forestClientNumber of forestNumbers) {
+        if (!isForestClientNumberNotAdded(forestClientNumber)) {
             forestClientNumberVerifyErrors.value.push(
-                `Client ID ${item} has already been added.`
+                `Client ID ${forestClientNumber} has already been added.`
             );
 
             continue;
         }
         await AppActlApiService.forestClientsApi
-            .search(item)
+            .search(forestClientNumber)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${item} is invalid and cannot be added.`
+                        `Client ID ${forestClientNumber} is invalid and cannot be added.`
                     );
                     return;
                 }
@@ -57,31 +56,25 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                     FamForestClientStatusType.A
                 ) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${item} is inactive and cannot be added.`
+                        `Client ID ${forestClientNumber} is inactive and cannot be added.`
                     );
                     return;
                 }
-                if (
-                    isForestClientNumberNotAdded(
-                        result.data[0].forest_client_number
-                    )
-                ) {
-                    forestClientData.value.push(result.data[0]);
-                    emit(
-                        'setVerifiedForestClients',
-                        result.data[0].forest_client_number
-                    );
-                    forestNumbers = forestNumbers.filter(
-                        (number) => number !== item
-                    ); //Remove successfully added numbers so the user can edit in the input only errored ones
-                }
+
+                forestClientData.value.push(result.data[0]);
+                emit(
+                    'setVerifiedForestClients',
+                    result.data[0].forest_client_number
+                );
+                forestNumbers = forestNumbers.filter(
+                    (number) => number !== forestClientNumber
+                ); //Remove successfully added numbers so the user can edit in the input only errored ones
             })
             .catch(() => {
                 forestClientNumberVerifyErrors.value.push(
-                    `An error has occurred. Client ID ${item} could not be added.`
+                    `An error has occurred. Client ID ${forestClientNumber} could not be added.`
                 );
             });
-        verifiedNumbers.add(item);
     }
 
     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
@@ -145,7 +138,9 @@ watch(
                         @keypress.enter="
                             field.value &&
                                 !errorMessage &&
-                            verifyForestClientNumber(forestClientNumbersInput)
+                                verifyForestClientNumber(
+                                    forestClientNumbersInput
+                                )
                         "
                         :class="{
                             'is-invalid':
@@ -190,7 +185,10 @@ watch(
                         isLoading()
                     "
                 >
-                    <Icon icon="add" :size="IconSize.small" />
+                    <Icon
+                        icon="add"
+                        :size="IconSize.small"
+                    />
                 </Button>
             </div>
         </Field>
