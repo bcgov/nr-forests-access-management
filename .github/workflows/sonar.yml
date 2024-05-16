@@ -151,6 +151,7 @@ jobs:
           commands: |
             npm run install-frontend
             npm run test-coverage
+            npm run build
           dir: frontend
           node_version: "18"
           sonar_args: >
