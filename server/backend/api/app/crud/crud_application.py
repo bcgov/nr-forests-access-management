@@ -11,23 +11,6 @@ from . import crud_utils as crud_utils
 LOGGER = logging.getLogger(__name__)
 
 
-def get_applications(db: Session):
-    """runs query to return all the community health service areas and the
-    metadata about how many times they have been queried and when
-
-    :param db: database session
-    :type db: Session
-    :return: list of sql alchemy data objects
-    :rtype: list
-    """
-    LOGGER.debug("running get_applications")
-    LOGGER.debug(f"db: {type(db)}")
-    # LOGGER.debug(f"db parameters {db.parameters}")
-    fam_apps = db.query(models.FamApplication).all()
-    LOGGER.debug(f"famApplications: {fam_apps}, {type(fam_apps)}")
-    return fam_apps
-
-
 def get_applications_by_granted_apps(db: Session, access_roles: List[str]) -> List[models.FamApplication]:
     """ Get applications based on access roles that are associated with.
         Note, this isn't to find the applications that the 'roles belong to'.
