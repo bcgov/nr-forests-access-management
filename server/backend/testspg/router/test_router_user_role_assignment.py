@@ -608,7 +608,7 @@ def test_self_grant_fail(
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
-def test_assign_new_bceid_user_role_save_business_guid(
+def test_create_user_role_assignment_new_bceid_user_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     override_target_user_bceid_search,
