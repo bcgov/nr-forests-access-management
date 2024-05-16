@@ -35,7 +35,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     let forestNumbers = forestClientNumbers.split(',').map((num) => num.trim());
 
     for (const forestClientNumber of forestNumbers) {
-        if (!isForestClientNumberNotAdded(forestClientNumber)) {
+        if (!isForestClientNumberAdded(forestClientNumber)) {
             forestClientNumberVerifyErrors.value.push(
                 `Client ID ${forestClientNumber} has already been added.`
             );
@@ -81,7 +81,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     forestClientNumbersInput.value = forestNumbers.toString();
 };
 
-const isForestClientNumberNotAdded = (forestClientNumber: string) => {
+const isForestClientNumberAdded = (forestClientNumber: string) => {
     return !forestClientData.value.find(
         (item) => forestClientNumber === item.forest_client_number
     );
