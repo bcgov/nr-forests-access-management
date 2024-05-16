@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 from typing import List
+
 import pytest
 import starlette
 import testcontainers.compose
@@ -18,9 +19,10 @@ import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import COGNITO_USERNAME_KEY
-from api.app.main import app, apiPrefix
-from api.app.routers.router_guards import get_current_requester
-from api.app.schemas import Requester
+from api.app.main import apiPrefix, app
+from api.app.routers.router_guards import (get_current_requester,
+                                           target_user_bceid_search)
+from api.app.schemas import Requester, TargetUser
 from testspg.constants import FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE
 
 LOGGER = logging.getLogger(__name__)
@@ -179,6 +181,20 @@ def get_current_requester_by_token(db_pg_session):
 
 
 @pytest.fixture(scope="function")
+def override_target_user_bceid_search(
+    test_client_fixture
+):
+    def _override_target_user_bceid_search(
+        mocked_data
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[target_user_bceid_search] = (
+            lambda: TargetUser(**mocked_data)
+        )
+    return _override_target_user_bceid_search
+
+
+@pytest.fixture(scope="function")
 def create_test_user_role_assignments(
     test_client_fixture
 ):
@@ -219,3 +235,4 @@ def create_test_user_role_assignment(
     )
     data = response.json()
     return data["user_role_xref_id"]
+
