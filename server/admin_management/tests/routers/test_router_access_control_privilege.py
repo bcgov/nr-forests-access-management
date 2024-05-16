@@ -173,7 +173,7 @@ def test_get_access_control_privileges_by_application_id(
     )
 
 
-def test_assign_new_bceid_user_delegated_admin_save_business_guid(
+def test_create_access_control_privilege_for_bceid_user_should_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_target_user_bceid_search,
