@@ -108,3 +108,33 @@ def test_find_or_create(db_pg_session: Session):
     users = crud_user.get_users(db_pg_session)
     # verify no user created
     assert len(users) == len(after_add_users)
+
+
+def test_update(db_pg_session: Session):
+    # create new user
+    new_user_request = schemas.FamUser(**TEST_NEW_USER)
+    created_user = crud_user.create_user(fam_user=new_user_request, db=db_pg_session)
+    assert created_user.user_id is not None
+    assert created_user.user_name == created_user.user_name
+    assert created_user.user_type_code == created_user.user_type_code
+    assert created_user.create_user == TEST_NEW_USER.get("create_user")
+    assert created_user.business_guid is None
+    assert created_user.update_user is None
+    assert created_user.update_date is None
+
+    different_requester = "OTHER_TESTER"
+    # update same user on "business_guid" from None to some value.
+    update_value = {"business_guid": "some_new_value"}
+    update_count = crud_user.update(
+        db_pg_session, created_user.user_id, update_value, different_requester
+    )
+    fam_user = crud_user.get_user_by_domain_and_name(
+        db_pg_session,
+        TEST_NEW_USER["user_type_code"],
+        TEST_NEW_USER["user_name"]
+    )
+
+    assert update_count == 1
+    assert fam_user.business_guid == update_value["business_guid"]
+    assert fam_user.update_user == different_requester
+    assert fam_user.update_date is not None

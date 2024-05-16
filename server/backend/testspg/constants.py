@@ -1,4 +1,3 @@
-import os
 from api.app import constants as fam_constants
 
 
@@ -33,11 +32,14 @@ TEST_NEW_USER = {
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
 USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
+USER_NAME_BCEID_LOAD_2_TEST = "LOAD-2-TEST"
+USER_GUID_BCEID_LOAD_2_TEST = "81069F39B35B4861BCD010582B63B112"
 USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
 USER_GUID_BCEID_LOAD_3_TEST = "532905DE0AA24923AE535428F171BF13"
+USER_NAME_BCEID_LOAD_3_TEST_CHILD_1 = "TEST-3-LOAD-CHILD-1"
+USER_GUID_BCEID_LOAD_3_TEST_CHILD_1 = "BDA2A1E212244DC2B9F9522057C58BBB"
 USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"
 USER_GUID_BCEID_LOAD_4_TEST = "B1323E832A4A4947B50367EF4A4F79DE"
-
 
 # --------------------- Testing forest client numbers ----------------- #
 FC_NUMBER_LEN_TOO_SHORT = "0001011"
@@ -172,7 +174,7 @@ TEST_IDIR_REQUESTER_DICT = {
     "user_guid": USER_GUID_IDIR,
 }
 TEST_BCEID_REQUESTER_DICT = {
-    "cognito_user_id": "test-bceidbusiness_{USER_GUID_BCEID_LOAD_3_TEST}@bceidbusiness",
+    "cognito_user_id": f"test-bceidbusiness_{USER_GUID_BCEID_LOAD_3_TEST}@bceidbusiness",
     "user_name": USER_NAME_BCEID_LOAD_3_TEST,
     "user_type_code": fam_constants.UserType.BCEID,
     "user_id": 10,  # this is a fake user id, it doesn't matter
