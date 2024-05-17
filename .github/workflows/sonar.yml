@@ -151,6 +151,7 @@ jobs:
         with:
           commands: |
             npm run install-frontend
+            npm run build
             npm run test-coverage
           dir: frontend
           node_version: "18"
