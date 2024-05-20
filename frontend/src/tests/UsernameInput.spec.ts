@@ -105,14 +105,12 @@ const idimBceidSearchMock = (
     }
 };
 
-const mockFamLoginUser = () => {
-    return {
-        username: 'usernameTEST',
-        displayName: 'displayNameTest',
-        email: 'email_test@test.com',
-        idpProvider: UserType.I,
-        organization: 'organizationTest',
-    };
+const mockFamLoginUser =  {
+    username: 'usernameTEST',
+    displayName: 'displayNameTest',
+    email: 'email_test@test.com',
+    idpProvider: UserType.I,
+    organization: 'organizationTest',
 };
 
 describe('UserNameInput', () => {
@@ -139,7 +137,7 @@ describe('UserNameInput', () => {
 
     beforeAll(() => {
         // we need to set the FamLoginUser as the error message uses famLoginUser.organization
-        FamLoginUserState.storeFamUser(mockFamLoginUser());
+        FamLoginUserState.storeFamUser(mockFamLoginUser);
     });
 
     beforeEach(() => {
