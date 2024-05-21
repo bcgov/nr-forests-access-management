@@ -48,7 +48,7 @@ async def get_application_admins(
     response_model=schemas.FamAppAdminGetResponse,
     dependencies=[
         Depends(authorize_by_fam_admin),
-        # Depends(enforce_self_grant_guard),
+        Depends(enforce_self_grant_guard),
         Depends(validate_param_application_id),
         Depends(validate_param_user_type),
     ],
