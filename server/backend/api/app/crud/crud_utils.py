@@ -78,17 +78,6 @@ def get_next(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int
         return query_result[0] + 1
 
 
-def get_application_id_from_name(db, application_name):
-    # TODO: define types
-    # TODO: define docstring
-    application = (
-        db.query(models.FamApplication)
-        .filter(models.FamApplication.application_name == application_name)
-        .one_or_none()
-    )
-    return application.application_id if application else None
-
-
 def is_app_admin(
     application_id: int,
     db: Session,

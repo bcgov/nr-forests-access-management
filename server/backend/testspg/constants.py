@@ -3,6 +3,7 @@ from api.app import constants as fam_constants
 
 
 # --------------------- Testing application  ---------------------------- #
+FAM_APPLICATION_ID = 1
 FOM_DEV_APPLICATION_ID = 2
 FOM_TEST_APPLICATION_ID = 3
 NOT_EXIST_APPLICATION_ID = 0
