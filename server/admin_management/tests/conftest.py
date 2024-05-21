@@ -30,6 +30,7 @@ from api.app.repositories.forest_client_repository import \
     ForestClientRepository
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.user_repository import UserRepository
+from api.app.routers.router_guards import target_user_bceid_search
 from api.app.schemas import (FamAccessControlPrivilegeCreateDto, FamUserDto,
                              TargetUser)
 from api.app.services.access_control_privilege_service import \
@@ -259,6 +260,20 @@ def setup_new_fom_delegated_admin(
             return delegated_admin_privileges
 
     return __setup_new_fom_delegated_admin
+
+
+@pytest.fixture(scope="function")
+def override_target_user_bceid_search(
+    test_client_fixture
+):
+    def _override_target_user_bceid_search(
+        mocked_data
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[target_user_bceid_search] = (
+            lambda: TargetUser(**mocked_data)
+        )
+    return _override_target_user_bceid_search
 
 
 def to_mocked_target_user(rbody: dict):

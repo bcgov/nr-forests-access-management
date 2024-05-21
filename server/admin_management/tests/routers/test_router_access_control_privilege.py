@@ -2,6 +2,7 @@ import logging
 from http import HTTPStatus
 import starlette.testclient
 
+from api.app.constants import UserType
 from api.app.main import apiPrefix
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.routers.router_guards import (
@@ -10,6 +11,7 @@ from api.app.routers.router_guards import (
     ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
 )
 from tests.constants import (
+    TEST_FOM_DEV_REVIEWER_ROLE_ID,
     TEST_FOREST_CLIENT_NUMBER,
     TEST_FOREST_CLIENT_NUMBER_TWO,
     TEST_INACTIVE_FOREST_CLIENT_NUMBER,
@@ -169,6 +171,60 @@ def test_get_access_control_privileges_by_application_id(
         )
         != -1
     )
+
+
+def test_create_access_control_privilege_for_bceid_user_should_save_business_guid(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    override_target_user_bceid_search,
+    user_service
+):
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
+        "user_name": "TESTUSER_NOTIN_DB",
+        "user_guid": "somerandomguid23AE535428F171BF13",
+        "user_type_code": UserType.BCEID,
+        "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    }
+
+    # verify user does not exist before creation.
+    user = user_service.get_user_by_domain_and_name(
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"]
+    )
+    assert user is None
+
+    # override router dependency for "target_user_bceid_search"
+    mocked_searched_business_guid = "mockedguid5D4ACA9FA901EE2C91CB3B"
+    mocked_data = {
+        **ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
+        "business_guid": mocked_searched_business_guid,
+    }
+
+    # override it for test to avoid calling external idim-proxy.
+    override_target_user_bceid_search(mocked_data)
+
+    # create BCeID user/role assignment. Expecting it will save business_guid
+    # from mocked_data.business_guid
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE]
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json={
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER
+        },
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+
+    # new user created
+    user = user_service.get_user_by_domain_and_name(
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"]
+    )
+    assert user is not None
+    # verify business_guid is saved to the user.
+    assert user.business_guid == mocked_data["business_guid"]
 
 
 def test_delete_application_admin(
