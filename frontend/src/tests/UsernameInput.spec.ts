@@ -105,7 +105,7 @@ const idimBceidSearchMock = (
     }
 };
 
-const mockFamLoginUser =  {
+const mockFamLoginUser = {
     username: 'usernameTEST',
     displayName: 'displayNameTest',
     email: 'email_test@test.com',
@@ -179,16 +179,38 @@ describe('UserNameInput', () => {
             return idimIdirSearchMock(false);
         });
 
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'bceidSearch'
+        ).mockImplementation(async () => {
+            return idimIdirSearchMock(false);
+        });
+
+
         // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ userId: USER_ID });
+        await wrapper.setProps({userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
         // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
-        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
-        expect(emitSetVerifyResult).not.toBeTruthy();
+        let emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeFalsy();
 
         const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(cardEl.textContent).toContain('Username');
+        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(
+            'User does not exist'
+        );
+
+        // triggers username and domain change
+        await wrapper.setProps({ domain: newProps.domain, userId: USER_ID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
+        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult![0][0]).toBeFalsy();
         expect(cardEl.textContent).toContain('Username');
         expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
         expect(wrapper.find('#userNotExist').element.textContent).toContain(
