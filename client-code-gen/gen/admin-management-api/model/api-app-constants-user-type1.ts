@@ -14,8 +14,18 @@
 
 
 
-export * from './api/admin-user-accesses-api';
-export * from './api/famaccess-control-privileges-api';
-export * from './api/famapplication-admin-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ApiAppConstantsUserType1 = {
+    I: 'I',
+    B: 'B'
+} as const;
+
+export type ApiAppConstantsUserType1 = typeof ApiAppConstantsUserType1[keyof typeof ApiAppConstantsUserType1];
+
+
 
