@@ -20,6 +20,7 @@ const BUSINESS_LEGAL_NAME = 'TestBusinessLegalName';
 const TEST_USER_GUID = '00000000000000000000000000000000';
 const NOT_SAME_ORG_ERROR_MSG =
     'Operation requires business bceid users to be within the same organization';
+const USER_NOT_EXIST = 'User does not exist';
 
 const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
     if (isUserFound) {
@@ -128,7 +129,7 @@ describe('UserNameInput', () => {
         helperText: 'Text helper',
     };
 
-    const newProps = {
+    const bceidProps = {
         domain: UserType.B,
         userId: USER_ID,
         fieldId: 'testNewFiledId',
@@ -166,8 +167,8 @@ describe('UserNameInput', () => {
         // default props
         expect(wrapper.props()).toEqual(props);
 
-        await wrapper.setProps(newProps);
-        expect(wrapper.props()).toEqual(newProps);
+        await wrapper.setProps(bceidProps);
+        expect(wrapper.props()).toEqual(bceidProps);
         expect(wrapper.props()).not.toEqual(props);
     });
 
@@ -199,12 +200,10 @@ describe('UserNameInput', () => {
         const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
         expect(cardEl.textContent).toContain('Username');
         expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
-        expect(wrapper.find('#userNotExist').element.textContent).toContain(
-            'User does not exist'
-        );
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(USER_NOT_EXIST);
 
         // triggers username and domain change to BCeID
-        await wrapper.setProps({ domain: newProps.domain, userId: USER_ID });
+        await wrapper.setProps({ domain: bceidProps.domain, userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
@@ -213,9 +212,7 @@ describe('UserNameInput', () => {
         expect(emitSetVerifyResult![0][0]).toBeFalsy();
         expect(cardEl.textContent).toContain('Username');
         expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
-        expect(wrapper.find('#userNotExist').element.textContent).toContain(
-            'User does not exist'
-        );
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(USER_NOT_EXIST);
     });
 
     it('Should remove card and emit different value when domain changes', async () => {
