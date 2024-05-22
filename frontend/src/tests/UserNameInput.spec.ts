@@ -340,8 +340,7 @@ describe('UserNameInput', () => {
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
 
         // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ domain: UserType.B });
-        await wrapper.setProps({ userId: USER_ID });
+        await wrapper.setProps({ domain: UserType.B, userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
@@ -363,49 +362,6 @@ describe('UserNameInput', () => {
         expect(cardEl.textContent).toContain('Last Name');
         expect(cardEl.textContent).toContain('Organization Name');
         // verify identity card user info
-        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
-        expect(wrapper.find('#firstName').element.textContent).toContain(
-            FIRST_NAME
-        );
-        expect(wrapper.find('#lastName').element.textContent).toContain(
-            LAST_NAME
-        );
-        expect(wrapper.find('#organizationName').element.textContent).toContain(
-            BUSINESS_LEGAL_NAME
-        );
-    });
-
-    it('should BCeID user able to verify other BCeID users and display info on card', async () => {
-        // Mock successful BCeID user search
-        vi.spyOn(
-            AppActlApiService.idirBceidProxyApi,
-            'bceidSearch'
-        ).mockImplementation(async () => {
-            return idimBceidSearchMock(true) as AxiosResponse;
-        });
-
-        // Set initial props for a Business BCeID user
-        await wrapper.setProps({ domain: UserType.B, userId: USER_ID });
-
-        // Verify the button is enabled
-        expect(verifyButtonEl.disabled).toBe(false);
-        expect(verifyButton.classes('p-disabled')).toBe(false);
-
-        // Click the verify button and wait for promises to resolve
-        await verifyButton.trigger('click');
-        await flushPromises();
-
-        // Verify the UserIdentityCard component is displayed with correct user info
-        expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
-        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
-
-        // Verify identity card details
-        expect(cardEl.textContent).toContain('Username');
-        expect(cardEl.textContent).toContain('First Name');
-        expect(cardEl.textContent).toContain('Last Name');
-        expect(cardEl.textContent).toContain('Organization Name');
-
-        // Verify user info in the card
         expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
         expect(wrapper.find('#firstName').element.textContent).toContain(
             FIRST_NAME
