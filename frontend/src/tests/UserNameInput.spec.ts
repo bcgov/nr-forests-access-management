@@ -203,12 +203,12 @@ describe('UserNameInput', () => {
             'User does not exist'
         );
 
-        // triggers username and domain change
+        // triggers username and domain change to BCeID
         await wrapper.setProps({ domain: newProps.domain, userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
-        // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
+        // emit setVerifyResult for BCeID should be false
         emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         expect(emitSetVerifyResult![0][0]).toBeFalsy();
         expect(cardEl.textContent).toContain('Username');
