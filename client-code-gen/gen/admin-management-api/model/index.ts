@@ -1,6 +1,5 @@
 export * from './admin-role-auth-group';
 export * from './admin-user-access-response';
-export * from './api-app-constants-user-type1';
 export * from './app-env';
 export * from './fam-access-control-privilege-create-request';
 export * from './fam-access-control-privilege-create-response';
@@ -20,5 +19,5 @@ export * from './fam-user-type-dto';
 export * from './httpvalidation-error';
 export * from './location-inner';
 export * from './role-type';
-export * from './user-type-output';
+export * from './user-type';
 export * from './validation-error';
