@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserType } from './user-type';
+import { ApiAppConstantsUserType1 } from './api-app-constants-user-type1';
 
 /**
  * 
@@ -37,10 +37,10 @@ export interface FamAppAdminCreateRequest {
     'user_guid': string;
     /**
      * 
-     * @type {UserType}
+     * @type {ApiAppConstantsUserType1}
      * @memberof FamAppAdminCreateRequest
      */
-    'user_type_code': UserType;
+    'user_type_code': ApiAppConstantsUserType1;
     /**
      * 
      * @type {number}

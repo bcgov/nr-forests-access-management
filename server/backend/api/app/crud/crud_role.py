@@ -1,9 +1,8 @@
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session
-import api.app.constants as constants
 
 from .. import schemas
 from . import crud_forest_client
@@ -17,18 +16,6 @@ def get_role(db: Session, role_id: int) -> Optional[models.FamRole]:
     return (
         db.query(models.FamRole).filter(models.FamRole.role_id == role_id).one_or_none()
     )
-
-
-def get_roles(db: Session) -> List[models.FamRole]:
-    """gets all the existing FAM roles
-
-    :param db: _description_
-    :type db: Session
-    :return: _description_
-    :rtype: _type_
-    """
-    LOGGER.debug(f"db session: {db}")
-    return db.query(models.FamRole).all()
 
 
 def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:

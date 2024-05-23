@@ -13,35 +13,19 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { RoleType } from './role-type';
 
 /**
  * 
  * @export
- * @interface FamRoleMinDto
+ * @enum {string}
  */
-export interface FamRoleMinDto {
-    /**
-     * 
-     * @type {string}
-     * @memberof FamRoleMinDto
-     */
-    'role_name': string;
-    /**
-     * 
-     * @type {RoleType}
-     * @memberof FamRoleMinDto
-     */
-    'role_type_code': RoleType;
-    /**
-     * 
-     * @type {number}
-     * @memberof FamRoleMinDto
-     */
-    'application_id': number;
-}
+
+export const ApiAppConstantsUserType1 = {
+    I: 'I',
+    B: 'B'
+} as const;
+
+export type ApiAppConstantsUserType1 = typeof ApiAppConstantsUserType1[keyof typeof ApiAppConstantsUserType1];
 
 
 

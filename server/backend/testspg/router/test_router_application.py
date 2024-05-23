@@ -35,107 +35,6 @@ TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
 TEST_APPLICATION_ID_NOT_FOUND = 0
 
 
-def test_get_applications(
-    test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
-):
-    # Test Accss Roles: FAM_ADMIN only
-    access_roles_fam_only = ["FAM_ADMIN"]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fam_only)
-    response = test_client_fixture.get(f"{end_point}", headers=jwt_utils.headers(token))
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["application_name"] == "FAM"
-
-    # Test Accss Roles: FOM_DEV_ADMIN only
-    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
-    response = test_client_fixture.get(f"{end_point}", headers=jwt_utils.headers(token))
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["application_name"] == "FOM_DEV"
-
-    # Test Accss Roles: both FAM_ADMIN and FOM_DEV_ADMIN
-    access_roles_fam_fom_dev = ["FAM_ADMIN", "FOM_DEV_ADMIN"]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fam_fom_dev)
-    response = test_client_fixture.get(f"{end_point}", headers=jwt_utils.headers(token))
-    data = response.json()
-    assert len(data) == 2
-    assert data[0]["application_name"] == "FAM"
-    assert data[1]["application_name"] == "FOM_DEV"
-    # verify it got all attributes
-    for app in data:
-        assert "application_id" in app
-        assert "application_name" in app
-        assert "application_description" in app
-        assert "create_user" in app
-        assert "create_date" in app
-        assert "update_user" in app
-        assert "update_date" in app
-        assert "app_environment" in app
-
-    # Test Accss Roles: on NO_APP_ADMIN
-    access_roles_no_app = ["NO_APP_ADMIN"]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_no_app)
-    response = test_client_fixture.get(f"{end_point}", headers=jwt_utils.headers(token))
-    data = response.json()
-    assert len(data) == 0
-
-
-def test_get_fam_application_roles(
-    test_client_fixture: starlette.testclient.TestClient,
-    test_rsa_key
-):
-    # create a concrete role with an abstract role as parent
-    # this role won't be returned
-    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
-
-    response = test_client_fixture.post(
-        f"{apiPrefix}/user_role_assignment",
-        json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == 200
-
-    role_end_point = end_point + f"/{FOM_DEV_APPLICATION_ID}/fam_roles"
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
-    response = test_client_fixture.get(role_end_point, headers=jwt_utils.headers(token))
-    data = response.json()
-    # only return roles without a parent role
-    assert len(data) == 2
-
-    for app_role in data:
-        assert "role_id" in app_role
-        assert "role_name" in app_role
-        assert "role_purpose" in app_role
-        assert "parent_role_id" in app_role
-        assert "application_id" in app_role
-        assert "forest_client_number" in app_role
-        assert "client_number" in app_role
-        assert "role_type_code" in app_role
-
-    fom_reviewer_role_found = False
-    fom_submitter_role_found = False
-
-    for datum in data:
-        if (
-            datum["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[0]
-            and datum["application_id"] == FOM_DEV_APPLICATION_ID
-            and datum["role_type_code"] == "A"
-        ):
-            fom_submitter_role_found = True
-        elif (
-            datum["role_name"] == TEST_APPLICATION_ROLES_FOM_DEV[1]
-            and datum["application_id"] == FOM_DEV_APPLICATION_ID
-            and datum["role_type_code"] == "C"
-        ):
-            fom_reviewer_role_found = True
-
-    assert fom_submitter_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[0]} in results"
-    assert fom_reviewer_role_found, f"Expected role {TEST_APPLICATION_ROLES_FOM_DEV[1]} in results"
-
-
 def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key
@@ -239,15 +138,6 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
     # endpoint path /{application_id} should be int type, provided as invalid str type.
     invalid_path_param = "not-int-str-application-id"
     invalid_path_router_msg = "Input should be a valid integer"
-
-    # endpont GET: /{application_id}/fam_roles
-    application_role_endpoint = end_point + f"/{invalid_path_param}/fam_roles"
-    response = test_client_fixture.get(
-        application_role_endpoint,
-        headers=jwt_utils.headers(token)
-    )
-    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    assert invalid_path_router_msg in response.text
 
     # endpont GET: /{application_id}/user_role_assignment
     application_role_assignment_endpoint = end_point + \

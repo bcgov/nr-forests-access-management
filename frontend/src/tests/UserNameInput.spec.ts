@@ -9,7 +9,7 @@ import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosRequestHeaders, AxiosResponse, AxiosError } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import { UserType } from 'fam-admin-mgmt-api/model';
+import { UserType } from 'fam-app-acsctl-api';
 
 fixJsdomCssErr();
 

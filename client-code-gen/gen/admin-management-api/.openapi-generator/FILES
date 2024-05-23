@@ -5,7 +5,6 @@ api.ts
 api/admin-user-accesses-api.ts
 api/famaccess-control-privileges-api.ts
 api/famapplication-admin-api.ts
-api/famapplications-api.ts
 api/smoke-test-api.ts
 base.ts
 common.ts
@@ -14,6 +13,7 @@ git_push.sh
 index.ts
 model/admin-role-auth-group.ts
 model/admin-user-access-response.ts
+model/api-app-constants-user-type1.ts
 model/app-env.ts
 model/fam-access-control-privilege-create-request.ts
 model/fam-access-control-privilege-create-response.ts
@@ -22,7 +22,6 @@ model/fam-app-admin-create-request.ts
 model/fam-app-admin-get-response.ts
 model/fam-application-base.ts
 model/fam-application-dto.ts
-model/fam-application-get-response.ts
 model/fam-auth-grant-dto.ts
 model/fam-forest-client-base.ts
 model/fam-grant-detail-dto.ts
@@ -35,7 +34,7 @@ model/httpvalidation-error.ts
 model/index.ts
 model/location-inner.ts
 model/role-type.ts
-model/user-type.ts
+model/user-type-output.ts
 model/validation-error.ts
 package.json
 tsconfig.esm.json
