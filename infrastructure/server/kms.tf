@@ -5,6 +5,10 @@ resource "aws_kms_key" "bcsc_key" {
   is_enabled               = "true"
   key_usage                = "ENCRYPT_DECRYPT"
   multi_region             = "false"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -27,5 +31,9 @@ resource "aws_kms_key_policy" "bcsc_key_policy" {
     ]
     Version = "2012-10-17"
   })
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
