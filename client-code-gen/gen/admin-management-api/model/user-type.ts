@@ -20,12 +20,12 @@
  * @enum {string}
  */
 
-export const UserTypeOutput = {
+export const UserType = {
     I: 'I',
     B: 'B'
 } as const;
 
-export type UserTypeOutput = typeof UserTypeOutput[keyof typeof UserTypeOutput];
+export type UserType = typeof UserType[keyof typeof UserType];
 
 
 
