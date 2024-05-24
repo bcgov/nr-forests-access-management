@@ -51,7 +51,7 @@ class Requester(BaseModel):
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
-    user_type_code: Union[famConstants.UserType, None] = None
+    user_type_code: famConstants.UserType
     access_roles: Union[
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
@@ -68,6 +68,7 @@ class TargetUser(Requester):
     Meethod that relys on TargetUser might need to check if it is a new user by
     checking "is_new_user()".
     """
+
     user_id: Optional[int] = None
 
 
@@ -95,6 +96,7 @@ class FamUserBase(BaseModel):
 
 class FamUserDto(FamUserBase):
     user_type_code: famConstants.UserType
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)

@@ -33,7 +33,7 @@ def test_get_user_by_domain_and_name(user_repo: UserRepository):
 
     # get user with username lower case
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_IDIR_USER.user_type_code, "test_user"
+        TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_name
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name

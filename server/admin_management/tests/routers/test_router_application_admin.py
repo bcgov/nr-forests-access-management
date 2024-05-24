@@ -3,23 +3,33 @@ from http import HTTPStatus
 
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
-from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               AdminRoleAuthGroup, UserType)
+from api.app.constants import (
+    ERROR_CODE_INVALID_REQUEST_PARAMETER,
+    AdminRoleAuthGroup,
+    UserType,
+)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
-                                           ERROR_NOT_ALLOWED_USER_TYPE)
-from tests.constants import (TEST_APPLICATION_NAME_FAM,
-                             TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
-                             TEST_NEW_APPLICATION_ADMIN,
-                             TEST_NOT_EXIST_APPLICATION_ID)
+from api.app.routers.router_guards import (
+    ERROR_INVALID_APPLICATION_ID,
+    ERROR_NOT_ALLOWED_USER_TYPE,
+)
+from tests.constants import (
+    TEST_APPLICATION_NAME_FAM,
+    TEST_FOM_DEV_ADMIN_ROLE,
+    TEST_INVALID_USER_TYPE,
+    TEST_NEW_APPLICATION_ADMIN,
+    TEST_NOT_EXIST_APPLICATION_ID,
+)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/application_admins"
 
 
 def test_create_application_admin(
-    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    override_get_verified_target_user_for_IDIR,
 ):
     # test create with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
@@ -29,6 +39,9 @@ def test_create_application_admin(
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() is not None
     assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
+
+    # override router guard dependencies
+    override_get_verified_target_user_for_IDIR()
 
     # test create application admin
     token = jwt_utils.create_jwt_token(
@@ -93,8 +106,13 @@ def test_create_application_admin(
 
 
 def test_delete_application_admin(
-    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    override_get_verified_target_user_for_IDIR,
 ):
+    # override router guard dependencies
+    override_get_verified_target_user_for_IDIR()
+
     # create an application admin first
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.post(
