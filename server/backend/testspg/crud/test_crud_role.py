@@ -30,11 +30,6 @@ TEST_ROLE_CREATE = {
 }
 
 
-def test_get_roles(db_pg_session: Session):
-    roles = crud_role.get_roles(db_pg_session)
-    assert len(roles) > 1
-
-
 def test_get_role(db_pg_session: Session):
     # get non exists role
     found_role = crud_role.get_role(db_pg_session, NOT_EXIST_ROLE_ID)

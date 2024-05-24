@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserType } from './user-type';
+import { UserTypeOutput } from './user-type-output';
 
 /**
  * 
@@ -25,10 +25,10 @@ import { UserType } from './user-type';
 export interface FamUserTypeDto {
     /**
      * 
-     * @type {UserType}
+     * @type {UserTypeOutput}
      * @memberof FamUserTypeDto
      */
-    'code': UserType;
+    'code': UserTypeOutput;
     /**
      * 
      * @type {string}

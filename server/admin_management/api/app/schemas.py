@@ -68,6 +68,7 @@ class TargetUser(Requester):
     Meethod that relys on TargetUser might need to check if it is a new user by
     checking "is_new_user()".
     """
+
     user_id: Optional[int] = None
 
     def is_new_user(self):
@@ -79,12 +80,6 @@ class FamApplicationBase(BaseModel):
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
     app_environment: Optional[famConstants.AppEnv] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationGetResponse(FamApplicationBase):
-    application_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -127,20 +122,6 @@ class FamForestClientBase(BaseModel):
 
 class FamForestClientCreateDto(FamForestClientBase):
     create_user: Annotated[str, StringConstraints(max_length=100)]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamForestClientStatusDto(BaseModel):
-    status_code: famConstants.FamForestClientStatusType
-    description: Annotated[str, StringConstraints(max_length=10)]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamForestClientDto(FamForestClientBase):
-    client_name: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
-    status: Optional[FamForestClientStatusDto] = None
 
     model_config = ConfigDict(from_attributes=True)
 

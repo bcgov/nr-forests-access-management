@@ -14,13 +14,13 @@
 
 
 import type { Configuration } from '../configuration';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import { AdminUserAccessResponse } from '../model';
 /**
@@ -35,7 +35,7 @@ export const AdminUserAccessesApiAxiosParamCreator = function (configuration?: C
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminUserAccessPrivilege: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        adminUserAccessPrivilege: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/admin-user-accesses`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -79,9 +79,11 @@ export const AdminUserAccessesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminUserAccessPrivilege(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminUserAccessResponse>> {
+        async adminUserAccessPrivilege(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminUserAccessResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminUserAccessPrivilege(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminUserAccessesApi.adminUserAccessPrivilege']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -118,7 +120,7 @@ export interface AdminUserAccessesApiInterface {
      * @throws {RequiredError}
      * @memberof AdminUserAccessesApiInterface
      */
-    adminUserAccessPrivilege(options?: AxiosRequestConfig): AxiosPromise<AdminUserAccessResponse>;
+    adminUserAccessPrivilege(options?: RawAxiosRequestConfig): AxiosPromise<AdminUserAccessResponse>;
 
 }
 
@@ -136,7 +138,7 @@ export class AdminUserAccessesApi extends BaseAPI implements AdminUserAccessesAp
      * @throws {RequiredError}
      * @memberof AdminUserAccessesApi
      */
-    public adminUserAccessPrivilege(options?: AxiosRequestConfig) {
+    public adminUserAccessPrivilege(options?: RawAxiosRequestConfig) {
         return AdminUserAccessesApiFp(this.configuration).adminUserAccessPrivilege(options).then((request) => request(this.axios, this.basePath));
     }
 }
