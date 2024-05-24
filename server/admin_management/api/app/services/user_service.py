@@ -58,7 +58,6 @@ class UserService:
             # or found user by domain and username, but user guid does not match (this is the edge case that could happen when username changed from IDP provider)
             # create a new user
             else:
-                print('"019jiofalslfnaqr', user_name, user_guid)
                 request_user = FamUserDto(
                     **{
                         "user_type_code": user_type_code,

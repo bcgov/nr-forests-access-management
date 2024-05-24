@@ -190,6 +190,9 @@ async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     _target_user: TargetUser = Depends(get_target_user_from_id),
 ) -> TargetUser:
+    """
+    Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
+    """
     target_user = copy.deepcopy(_target_user)
     idim_validator_service = IdimValidator(requester, target_user)
     search_result = idim_validator_service.verify_user_exist()
