@@ -47,9 +47,9 @@ class Requester(BaseModel):
     # from datbase and the user record will contain this user_id; and also is the reference-id from other database
     # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
     user_id: int
-    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    user_name: Annotated[str, StringConstraints(max_length=20)]
+    user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
     access_roles: Union[
@@ -69,9 +69,6 @@ class TargetUser(Requester):
     checking "is_new_user()".
     """
     user_id: Optional[int] = None
-
-    def is_new_user(self):
-        return self.user_id is None
 
 
 # -------------------------------------- FAM Application --------------------------------------- #
@@ -183,7 +180,7 @@ class FamRoleWithClientDto(BaseModel):
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
-    user_guid: Annotated[str, StringConstraints(max_length=32)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     user_type_code: Annotated[famConstants.UserType, StringConstraints(max_length=2)]
     application_id: int
 
@@ -211,7 +208,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     """
 
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
-    user_guid: Annotated[str, StringConstraints(max_length=32)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_numbers: Union[
