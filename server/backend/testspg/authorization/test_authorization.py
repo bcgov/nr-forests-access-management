@@ -1,7 +1,6 @@
 import logging
 import starlette.testclient
 from api.app.main import apiPrefix
-from sqlalchemy.orm import Session
 from testspg.jwt_utils import (
     create_jwt_token,
     create_jwt_claims,
