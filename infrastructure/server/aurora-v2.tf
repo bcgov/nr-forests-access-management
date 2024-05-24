@@ -231,6 +231,10 @@ resource "aws_secretsmanager_secret" "famdb_auth_lambda_creds_secret" {
   tags = {
     managed-by = "terraform"
   }
+
+  lifecycle {
+    ignore_changes = [ "id", "name", "tags", "tags_all"]
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "famdb_auth_lambda_creds_secret_version" {
@@ -241,6 +245,9 @@ resource "aws_secretsmanager_secret_version" "famdb_auth_lambda_creds_secret_ver
     "password": "${random_password.famdb_auth_lambda_password.result}"
    }
 EOF
+  lifecycle {
+    ignore_changes = [ "id", "secret_id", "secret_string", "version_id", "version_stages"]
+  }
 }
 
 
