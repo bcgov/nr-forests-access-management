@@ -7,6 +7,7 @@ from api.app.routers.router_guards import (
     authorize_by_fam_admin,
     enforce_self_grant_guard,
     get_current_requester,
+    get_verified_target_user,
     validate_param_application_admin_id,
     validate_param_application_id,
     validate_param_user_type,
@@ -16,7 +17,7 @@ from api.app.routers.router_utils import (
     application_service_instance,
     user_service_instance,
 )
-from api.app.schemas import Requester
+from api.app.schemas import Requester, TargetUser
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
@@ -58,6 +59,7 @@ def create_application_admin(
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    target_user: TargetUser = Depends(get_verified_target_user),  # validate target user
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
     ),
