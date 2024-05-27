@@ -128,7 +128,7 @@ def find_or_create(
                 }
             )
 
-            fam_user_new = create_user(db, request_user)
+            fam_user_new = create_user(request_user, db)
             LOGGER.debug(f"User created: {fam_user_new.user_id}.")
             return fam_user_new
 
