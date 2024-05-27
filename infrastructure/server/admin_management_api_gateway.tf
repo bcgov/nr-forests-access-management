@@ -49,15 +49,15 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
     aws_api_gateway_integration.admin_management_api_gateway_integration_proxy
   ]
 
-  # triggers = {
-  #   redeployment = sha1(jsonencode([
-  #     aws_api_gateway_resource.admin_management_api_gateway_resource_proxy.id,
-  #     aws_api_gateway_method.admin_management_api_gateway_method_proxy.id,
-  #     aws_api_gateway_integration.admin_management_api_gateway_integration_proxy.id
-  #   ]))
-  #   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment mentioned
-  #   # using whole resouce with filesha1() that may be consider in the future.
-  # }
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.admin_management_api_gateway_resource_proxy.id,
+      aws_api_gateway_method.admin_management_api_gateway_method_proxy.id,
+      aws_api_gateway_integration.admin_management_api_gateway_integration_proxy.id
+    ]))
+    # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment mentioned
+    # using whole resouce with filesha1() that may be consider in the future.
+  }
 
   lifecycle {
     create_before_destroy = true
