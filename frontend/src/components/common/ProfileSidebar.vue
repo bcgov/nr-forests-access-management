@@ -78,7 +78,7 @@ const adminRoles = computed(() => {
                         Granted: <strong>{{ adminRoles }}</strong>
                     </p>
                     <p>
-                        <!-- Environment: <strong> {{ environmentSettings.getEnvironmentDisplayName().toUpperCase() }}</strong> -->
+                        Environment: <strong> {{ environmentSettings.getEnvironmentDisplayName().toUpperCase() }}</strong>
                     </p>
                 </div>
             </div>
