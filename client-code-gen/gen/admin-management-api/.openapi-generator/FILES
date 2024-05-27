@@ -13,7 +13,6 @@ git_push.sh
 index.ts
 model/admin-role-auth-group.ts
 model/admin-user-access-response.ts
-model/api-app-constants-user-type1.ts
 model/app-env.ts
 model/fam-access-control-privilege-create-request.ts
 model/fam-access-control-privilege-create-response.ts
@@ -34,7 +33,7 @@ model/httpvalidation-error.ts
 model/index.ts
 model/location-inner.ts
 model/role-type.ts
-model/user-type-output.ts
+model/user-type.ts
 model/validation-error.ts
 package.json
 tsconfig.esm.json

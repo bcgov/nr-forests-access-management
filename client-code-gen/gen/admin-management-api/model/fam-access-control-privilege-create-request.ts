@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ApiAppConstantsUserType1 } from './api-app-constants-user-type1';
+import { UserType } from './user-type';
 
 /**
  * This is used at router level, the data we receive from frontend. Use username and user_type_code to get user_id, and for concrete role, can use its role_id directly, but for abstract role, need to create/get child role_id based on the forest client number, and then use schema FamAccessControlPrivilegeCreateDto to insert into the database
@@ -37,10 +37,10 @@ export interface FamAccessControlPrivilegeCreateRequest {
     'user_guid': string;
     /**
      * 
-     * @type {ApiAppConstantsUserType1}
+     * @type {UserType}
      * @memberof FamAccessControlPrivilegeCreateRequest
      */
-    'user_type_code': ApiAppConstantsUserType1;
+    'user_type_code': UserType;
     /**
      * 
      * @type {number}
