@@ -84,10 +84,6 @@ def create_application_admin(
         audit_event_log.application = application_service.get_application(
             application_admin_request.application_id
         )
-        audit_event_log.target_user = user_service.get_user_by_domain_and_name(
-            application_admin_request.user_type_code,
-            application_admin_request.user_name,
-        )
 
         return application_admin_service.create_application_admin(
             application_admin_request, requester.cognito_user_id
@@ -99,6 +95,10 @@ def create_application_admin(
         raise e
 
     finally:
+        audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
+            application_admin_request.user_type_code,
+            application_admin_request.user_guid,
+        )
         if audit_event_log.target_user is None:
             audit_event_log.target_user = models.FamUser(
                 user_type_code=application_admin_request.user_type_code,
