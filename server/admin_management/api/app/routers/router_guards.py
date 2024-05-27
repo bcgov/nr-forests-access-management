@@ -7,10 +7,8 @@ from typing import Union
 from api.app.constants import (
     ERROR_CODE_INVALID_REQUEST_PARAMETER,
     AdminRoleAuthGroup,
-    IdimSearchUserParamType,
     UserType,
 )
-from api.app.integration.idim_proxy import IdimProxyService
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     get_access_roles,
@@ -28,7 +26,6 @@ from api.app.routers.router_utils import (
 )
 from api.app.schemas import (
     FamAppAdminCreateRequest,
-    IdimProxyBceidSearchParam,
     Requester,
     TargetUser,
 )
@@ -214,7 +211,10 @@ async def enforce_self_grant_guard(
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
 
-    if requester.user_guid == target_user.user_guid:
+    if (
+        requester.user_type_code == target_user.user_type_code
+        and requester.user_guid == target_user.user_guid
+    ):
         LOGGER.debug(
             f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."

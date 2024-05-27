@@ -2,7 +2,6 @@ import logging
 from http import HTTPStatus
 import starlette.testclient
 
-from api.app.constants import UserType
 from api.app.main import apiPrefix
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.routers.router_guards import (
@@ -34,7 +33,7 @@ endPoint = f"{apiPrefix}/access_control_privileges"
 def test_create_access_control_privilege_many(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user_for_IDIR,
+    override_get_verified_target_user,
 ):
     # test create with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FAM_ADMIN_ROLE])
@@ -64,7 +63,7 @@ def test_create_access_control_privilege_many(
     assert str(response.json()["detail"]).find(ERROR_INVALID_ROLE_ID) != -1
 
     # override router guard dependencies
-    override_get_verified_target_user_for_IDIR()
+    override_get_verified_target_user()
 
     # test create access control privilege with abstract role and one forest client number
     response = test_client_fixture.post(
@@ -119,7 +118,7 @@ def test_create_access_control_privilege_many(
 def test_get_access_control_privileges_by_application_id(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user_for_IDIR,
+    override_get_verified_target_user,
 ):
     # test get with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -142,7 +141,7 @@ def test_get_access_control_privileges_by_application_id(
     origin_admins_length = len(response.json())
 
     # override router guard dependencies
-    override_get_verified_target_user_for_IDIR()
+    override_get_verified_target_user()
 
     # create an access control privilege with abstract role and one forest client number
     response = test_client_fixture.post(
@@ -189,7 +188,7 @@ def test_get_access_control_privileges_by_application_id(
 def test_create_access_control_privilege_for_bceid_user_should_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user_for_BCEID,
+    override_get_verified_target_user,
     user_service,
 ):
     # verify user does not exist before creation.
@@ -200,7 +199,11 @@ def test_create_access_control_privilege_for_bceid_user_should_save_business_gui
     assert user is None
 
     # override router guard dependencies
-    override_get_verified_target_user_for_BCEID()
+    mocked_target_bceid_user = {
+        **TEST_ACP_CREATE_CONCRETE_BCEID,
+        "business_guid": TEST_USER_BUSINESS_GUID_BCEID,
+    }
+    override_get_verified_target_user(mocked_target_bceid_user)
 
     # create BCeID user/role assignment. Expecting it will save business_guid
     # from mocked_data.business_guid
@@ -225,10 +228,10 @@ def test_create_access_control_privilege_for_bceid_user_should_save_business_gui
 def test_delete_access_control_privilege(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user_for_IDIR,
+    override_get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user_for_IDIR()
+    override_get_verified_target_user()
 
     # create an access control privilege with abstract role and one forest client number
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])

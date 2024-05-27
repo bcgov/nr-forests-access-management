@@ -43,9 +43,7 @@ from tests.constants import (
     TEST_FOM_DEV_SUBMITTER_ROLE_ID,
     TEST_FOM_TEST_REVIEWER_ROLE_ID,
     TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE,
-    TEST_ACP_CREATE_CONCRETE_BCEID,
-    TEST_USER_BUSINESS_GUID_BCEID,
+    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -272,27 +270,15 @@ def setup_new_fom_delegated_admin(
 
 
 @pytest.fixture(scope="function")
-def override_get_verified_target_user_for_IDIR(test_client_fixture):
+def override_get_verified_target_user(test_client_fixture):
     # mock the return result for idim validation of an IDIR user
-    def _override_get_verified_target_user():
+
+    def _override_get_verified_target_user(
+        mocked_data=TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+    ):
         app = test_client_fixture.app
         app.dependency_overrides[get_verified_target_user] = lambda: TargetUser(
-            **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
-        )
-
-    return _override_get_verified_target_user
-
-
-@pytest.fixture(scope="function")
-def override_get_verified_target_user_for_BCEID(test_client_fixture):
-    # mock the return result for idim validation of a BCeID user
-    def _override_get_verified_target_user():
-        app = test_client_fixture.app
-        app.dependency_overrides[get_verified_target_user] = lambda: TargetUser(
-            **{
-                **TEST_ACP_CREATE_CONCRETE_BCEID,
-                "business_guid": TEST_USER_BUSINESS_GUID_BCEID,
-            }
+            **mocked_data
         )
 
     return _override_get_verified_target_user
