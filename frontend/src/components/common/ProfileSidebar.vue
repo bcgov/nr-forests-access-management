@@ -6,12 +6,14 @@ import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
 const displayName = LoginUserState.state.value.famLoginUser!.displayName;
 const email = LoginUserState.state.value.famLoginUser!.email;
 const organization = LoginUserState.state.value.famLoginUser!.organization;
+const environmentSettings = new EnvironmentSettings();
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -74,6 +76,9 @@ const adminRoles = computed(() => {
                     <p class="profile-email">Email: {{ email }}</p>
                     <p class="profile-admin-level">
                         Granted: <strong>{{ adminRoles }}</strong>
+                    </p>
+                    <p>
+                        Environment: <strong> {{ environmentSettings.getEnvironmentDisplayName().toUpperCase() }}</strong>
                     </p>
                 </div>
             </div>
