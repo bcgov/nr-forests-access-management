@@ -45,6 +45,7 @@ def create_user_role(
         db,
         request.user_type_code,
         request.user_name,
+        request.user_guid,
         requester
     )
     fam_user = crud_user.update_user_business_guid(

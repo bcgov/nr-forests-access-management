@@ -13,15 +13,17 @@ from api.app.constants import (
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_MISSING_KEY_ATTRIBUTE,
     IdimSearchUserParamType,
-    UserType, RoleType
+    UserType,
+    RoleType,
 )
 from api.app.crud import (
     crud_role,
     crud_user,
     crud_user_role,
     crud_access_control_privilege,
-    crud_utils
+    crud_utils,
 )
+from api.app.crud.validator.idim_validator import IdimValidator
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     ERROR_GROUPS_REQUIRED,
@@ -51,12 +53,18 @@ async def get_current_requester(
     access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
 ):
-    LOGGER.debug(f"Debug router_guard get_current_requester, current request_cognito_user_id: {request_cognito_user_id}")
-    LOGGER.debug(f"Debug router_guard get_current_requester, current db connection: {db}")
+    LOGGER.debug(
+        f"Debug router_guard get_current_requester, current request_cognito_user_id: {request_cognito_user_id}"
+    )
+    LOGGER.debug(
+        f"Debug router_guard get_current_requester, current db connection: {db}"
+    )
     fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
         db, request_cognito_user_id
     )
-    LOGGER.debug(f"Debug router_guard get_current_requester, current fam_user: {fam_user}")
+    LOGGER.debug(
+        f"Debug router_guard get_current_requester, current fam_user: {fam_user}"
+    )
     if fam_user is None:
         utils.raise_http_exception(
             error_msg="Requester does not exist, action is not allowed.",
@@ -65,7 +73,9 @@ async def get_current_requester(
         )
 
     requester = Requester.model_validate(fam_user)
-    LOGGER.debug(f"Debug router_guard get_current_requester, current requester: {requester}")
+    LOGGER.debug(
+        f"Debug router_guard get_current_requester, current requester: {requester}"
+    )
     requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
@@ -92,7 +102,7 @@ def authorize(
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_GROUPS_REQUIRED,
-                error_msg="At least one access group is required."
+                error_msg="At least one access group is required.",
             )
 
 
@@ -107,7 +117,8 @@ def authorize_by_app_id(
     we require user to be the app admin or delegated admin of the application
     """
     requester_is_app_admin = crud_utils.is_app_admin(
-        db=db, application_id=application_id, access_roles=access_roles)
+        db=db, application_id=application_id, access_roles=access_roles
+    )
 
     # if user is not application admin
     if not requester_is_app_admin:
@@ -122,7 +133,7 @@ def authorize_by_app_id(
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Requester has no admin or delegated admin access to the application."
+                error_msg="Requester has no admin or delegated admin access to the application.",
             )
 
 
@@ -152,7 +163,7 @@ async def get_request_role_from_id(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_INVALID_ROLE_ID,
-            error_msg="Role does not exist or failed to get the role_id from request."
+            error_msg="Role does not exist or failed to get the role_id from request.",
         )
     return role
 
@@ -176,7 +187,7 @@ def authorize_by_application_role(
         application_id=role.application_id,
         db=db,
         access_roles=access_roles,
-        requester=requester
+        requester=requester,
     )
     return role
 
@@ -193,7 +204,9 @@ async def authorize_by_privilege(
     :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
                  for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
     """
-    requester_is_app_admin = crud_utils.is_app_admin(role.application_id, db, access_roles)
+    requester_is_app_admin = crud_utils.is_app_admin(
+        role.application_id, db, access_roles
+    )
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
     if not requester_is_app_admin:
@@ -229,7 +242,7 @@ async def authorize_by_privilege(
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Requester has no privilege to grant this access."
+                error_msg="Requester has no privilege to grant this access.",
             )
 
 
@@ -251,8 +264,10 @@ async def get_target_user_from_id(
     # from path_param - "user_role_xref_id"; should exists already in db.
     if "user_role_xref_id" in request.path_params:
         urxid = request.path_params["user_role_xref_id"]
-        LOGGER.debug("Dependency 'get_target_user_from_id' called with " +
-                     f"request containing user_role_xref_id path param {urxid}.")
+        LOGGER.debug(
+            "Dependency 'get_target_user_from_id' called with "
+            + f"request containing user_role_xref_id path param {urxid}."
+        )
         user_role = crud_user_role.find_by_id(db, urxid)
         if user_role is not None:
             found_target_user = TargetUser.model_validate(user_role.user)
@@ -260,40 +275,24 @@ async def get_target_user_from_id(
         else:
             error_msg = "Parameter 'user_role_xref_id' is missing or invalid."
             utils.raise_http_exception(
-                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
 
     else:
         # from request body - {user_name/user_type_code}
         rbody = await request.json()
-        LOGGER.debug("Dependency 'get_target_user_from_id' called with " +
-                     f"request body {rbody}.")
-        rb_user_name = rbody["user_name"]
-        rb_user_type_code = rbody["user_type_code"]
-        # user_guid is searched from IDIM search and passed from frontend.
-        rb_user_guid = rbody["user_guid"]
-
-        user = crud_user.get_user_by_domain_and_name(
-            db,
-            rb_user_type_code,
-            rb_user_name,
+        LOGGER.debug(
+            "Dependency 'get_target_user_from_id' called with "
+            + f"request body {rbody}."
         )
-        if user is not None:
-            found_target_user = TargetUser.model_validate(user)
-            # old data might not have user_guid.
-            if found_target_user.user_guid is None:
-                found_target_user.user_guid = rb_user_guid
-            return found_target_user
-
-        # user not found, case of new user.
-        else:
-            target_new_user = TargetUser.model_validate({
-                "user_name": rb_user_name,
-                "user_type_code": rb_user_type_code,
-                "user_guid": rb_user_guid
-            })
-            return target_new_user
+        target_new_user = TargetUser.model_validate(
+            {
+                "user_name": rbody["user_name"],
+                "user_type_code": rbody["user_type_code"],
+                "user_guid": rbody["user_guid"],
+            }
+        )
+        return target_new_user
 
 
 async def authorize_by_user_type(
@@ -311,14 +310,14 @@ async def authorize_by_user_type(
             utils.raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg
+                error_msg=error_msg,
             )
 
         if target_user_type_code == UserType.IDIR:
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user."
+                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
             )
 
 
@@ -327,7 +326,7 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-            error_msg="Action is not allowed for external user."
+            error_msg="Action is not allowed for external user.",
         )
 
 
@@ -341,10 +340,11 @@ async def enforce_self_grant_guard(
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
-    is_same_user_name = requester.user_name == target_user.user_name
-    is_same_user_type_code = requester.user_type_code == target_user.user_type_code
 
-    if is_same_user_name and is_same_user_type_code:
+    if (
+        requester.user_type_code == target_user.user_type_code
+        and requester.user_guid == target_user.user_guid
+    ):
         LOGGER.debug(
             f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."
@@ -352,49 +352,24 @@ async def enforce_self_grant_guard(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
-            error_msg="Altering permission privilege to self is not allowed."
+            error_msg="Altering permission privilege to self is not allowed.",
         )
 
 
-async def target_user_bceid_search(
+async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
-    _target_user: TargetUser = Depends(get_target_user_from_id)
+    _target_user: TargetUser = Depends(get_target_user_from_id),
 ) -> TargetUser:
     """
-    BCeID user search for target_user.
-    :param target_user "Depends(get_target_user_from_id)": the initial
-        dependency with "get_target_user_from_id" has initial target_user
-        parsed from the request. It's business_guid will be updated after
-        user is searched through IDIM Proxy.
+    Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
     target_user = copy.deepcopy(_target_user)
-    if (
-        target_user.user_type_code == UserType.BCEID and
-        target_user.business_guid is None
-    ):
-        user_guid = target_user.user_guid
-        LOGGER.debug(
-            f"Searching business guid for target_user: {target_user}, with requester {requester}"
-        )
-        idim_proxy_api = IdimProxyService(requester)
-        search_result = idim_proxy_api.search_business_bceid(
-            IdimProxyBceidSearchParam(**{
-                "searchUserBy": IdimSearchUserParamType.USER_GUID,
-                "searchValue": user_guid
-            })
-        )
-        if search_result.get("found"):
-            business_guid = search_result.get("businessGuid")
-            LOGGER.debug(
-                f"business_guid result: {business_guid} is updated to target_user."
-            )
-            target_user.business_guid = business_guid
-        else:
-            LOGGER.debug(
-                f"IDIM look up user guid:`{user_guid}` returns no result. " +
-                "business_guid will NOT be updated to target_user."
-            )
+    idim_validator_service = IdimValidator(requester, target_user)
+    search_result = idim_validator_service.verify_user_exist()
 
+    # add business_guid for BCeID user
+    if search_result.get("found") and search_result.get("businessGuid"):
+        target_user.business_guid = search_result.get("businessGuid")
     return target_user
 
 
@@ -402,7 +377,7 @@ async def enforce_bceid_by_same_org_guard(
     # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(target_user_bceid_search),
+    target_user: TargetUser = Depends(get_verified_target_user),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage target
@@ -425,13 +400,14 @@ async def enforce_bceid_by_same_org_guard(
             utils.raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg
+                error_msg=error_msg,
             )
 
         elif requester_business_guid.upper() != target_user_business_guid.upper():
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                error_msg="Managing for different organization is not allowed."
+                error_msg="Managing for different organization is not allowed.",
             )
 
+    return target_user

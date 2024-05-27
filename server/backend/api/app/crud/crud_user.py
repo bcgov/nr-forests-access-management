@@ -56,6 +56,19 @@ def get_user_by_domain_and_name(
     return fam_user
 
 
+def get_user_by_domain_and_guid(
+    db: Session, user_type_code: str, user_guid: str
+) -> models.FamUser:
+    return (
+        db.query(models.FamUser)
+        .filter(
+            models.FamUser.user_type_code == user_type_code,
+            models.FamUser.user_guid == user_guid,
+        )
+        .one_or_none()
+    )
+
+
 def create_user(fam_user: schemas.FamUser, db: Session):
     """used to add a new FAM user to the database
 
@@ -76,40 +89,59 @@ def create_user(fam_user: schemas.FamUser, db: Session):
 
 
 def find_or_create(
-        db: Session,
-        user_type_code: str,
-        user_name: str,
-        requester: str):
+    db: Session, user_type_code: str, user_name: str, user_guid: str, requester: str
+):
     LOGGER.debug(
-        f"User - 'find_or_create' with user_type: {user_type_code}, " +
-        f"user_name: {user_name}."
+        f"User - 'find_or_create' with user_type: {user_type_code}, "
+        + f"user_name: {user_name}."
     )
 
-    fam_user = get_user_by_domain_and_name(db, user_type_code, user_name)
+    fam_user = get_user_by_domain_and_guid(db, user_type_code, user_guid)
     if not fam_user:
-        request_user = schemas.FamUser(
-            **{
-                "user_type_code": user_type_code,
-                "user_name": user_name,
-                "create_user": requester,
-            }
+        fam_user_by_domain_and_name = get_user_by_domain_and_name(
+            db, user_type_code, user_name
         )
-        fam_user = create_user(request_user, db)
-        LOGGER.debug(f"User created: {fam_user.user_id}.")
-        return fam_user
+        # if not found user by user_guid, but found user by domain and name
+        # in the case of historical FAM user that has no user_guid stored
+        # add their user_guid
+        if fam_user_by_domain_and_name and not fam_user_by_domain_and_name.user_guid:
+            update(
+                db,
+                fam_user_by_domain_and_name.user_id,
+                {models.FamUser.user_guid: user_guid},
+                requester,
+            )
+            LOGGER.debug(
+                f"User {fam_user_by_domain_and_name.user_id} found, updated to store their user_guid."
+            )
+            return fam_user_by_domain_and_name
+        # if not found user by user_guid, and not found user by domain and username,
+        # or found user by domain and username, but user guid does not match (this is the edge case that could happen when username changed from IDP provider)
+        # create a new user
+        else:
+            request_user = schemas.FamUser(
+                **{
+                    "user_type_code": user_type_code,
+                    "user_name": user_name,
+                    "user_guid": user_guid,
+                    "create_user": requester,
+                }
+            )
+
+            fam_user_new = create_user(db, request_user)
+            LOGGER.debug(f"User created: {fam_user_new.user_id}.")
+            return fam_user_new
 
     LOGGER.debug(f"User {fam_user.user_id} found.")
+    # update user_name if needs
+    fam_user = update_user_name(db, fam_user, user_name, requester)
     return fam_user
 
 
-def get_user_by_cognito_user_id(
-    db: Session, cognito_user_id: str
-) -> models.FamUser:
+def get_user_by_cognito_user_id(db: Session, cognito_user_id: str) -> models.FamUser:
     user = (
         db.query(models.FamUser)
-        .filter(
-            models.FamUser.cognito_user_id == cognito_user_id
-        )
+        .filter(models.FamUser.cognito_user_id == cognito_user_id)
         .one_or_none()
     )
     return user
@@ -119,8 +151,8 @@ def update(
     db: Session, user_id: int, update_values: dict, requester: str  # cognito_user_id
 ) -> int:
     LOGGER.debug(
-        f"Update on FamUser {user_id} with values: {update_values} " +
-        f"for requester {requester}"
+        f"Update on FamUser {user_id} with values: {update_values} "
+        + f"for requester {requester}"
     )
     update_count = (
         db.query(models.FamUser)
@@ -131,9 +163,28 @@ def update(
     return update_count
 
 
+def update_user_name(
+    db: Session,
+    user: models.FamUser,
+    user_name_from_request: str,
+    requester: str,  # cognito_user_id
+):
+    if user.user_name.lower() != user_name_from_request.lower():
+        update(
+            db,
+            user.user_id,
+            {models.FamUser.user_name: user_name_from_request},
+            requester,
+        )
+        LOGGER.debug(
+            f"Updated the username of user {user.user_id} to {user_name_from_request}."
+        )
+        return get_user(db, user.user_id)
+    return user
+
+
 def update_user_business_guid(
-    db: Session, user_id: int, business_guid: str,
-    requester: str  # cognito_user_id
+    db: Session, user_id: int, business_guid: str, requester: str  # cognito_user_id
 ):
     """
     The method only updates business_guid for user if necessary.
@@ -146,16 +197,14 @@ def update_user_business_guid(
         record from the 'update_user'.
     """
     LOGGER.debug(
-        f"update_user_business_guid() with: user_id: {user_id} " +
-        f"business_guid: {business_guid} from requester: {requester}")
+        f"update_user_business_guid() with: user_id: {user_id} "
+        + f"business_guid: {business_guid} from requester: {requester}"
+    )
     if business_guid is not None:
         user = get_user(db, user_id)
-        if (
-            user.business_guid is None
-            or business_guid != user.business_guid
-        ):
+        if user.business_guid is None or business_guid != user.business_guid:
             # update user when necessary.
-            update(db, user_id, {
-                models.FamUser.business_guid: business_guid
-            }, requester)
+            update(
+                db, user_id, {models.FamUser.business_guid: business_guid}, requester
+            )
     return get_user(db, user_id)
