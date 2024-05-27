@@ -271,7 +271,7 @@ def setup_new_fom_delegated_admin(
 
 @pytest.fixture(scope="function")
 def override_get_verified_target_user(test_client_fixture):
-    # mock the return result for idim validation of an IDIR user
+    # mock the return result for idim validation of the target user
 
     def _override_get_verified_target_user(
         mocked_data=TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
