@@ -19,10 +19,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class IdimValidator:
-    def __init__(self, requester: Requester, targetUser: TargetUser):
-        self.user_type_code = targetUser.user_type_code
-        self.user_name = targetUser.user_name
-        self.user_guid = targetUser.user_guid
+    def __init__(self, requester: Requester, target_user: TargetUser):
+        self.user_type_code = target_user.user_type_code
+        self.user_name = target_user.user_name
+        self.user_guid = target_user.user_guid
         self.idim_proxy_service = IdimProxyService(requester)
 
     def verify_user_exist(self):
