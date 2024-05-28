@@ -166,18 +166,18 @@ def update(
 def update_user_name(
     db: Session,
     user: models.FamUser,
-    user_name_from_request: str,
+    user_name_for_update: str,
     requester: str,  # cognito_user_id
 ):
-    if user.user_name.lower() != user_name_from_request.lower():
+    if user.user_name.lower() != user_name_for_update.lower():
         update(
             db,
             user.user_id,
-            {models.FamUser.user_name: user_name_from_request},
+            {models.FamUser.user_name: user_name_for_update},
             requester,
         )
         LOGGER.debug(
-            f"Updated the username of user {user.user_id} to {user_name_from_request}."
+            f"Updated the username of user {user.user_id} to {user_name_for_update}."
         )
         return get_user(db, user.user_id)
     return user
