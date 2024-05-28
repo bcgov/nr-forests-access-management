@@ -29,6 +29,7 @@ $light-link-primary-hover: map.get(
     lightTheme.$light-theme,
     'link-primary-hover'
 );
+$light-background-inverse: map.get(lightTheme.$light-theme, 'background-inverse');
 
 //border
 $light-border-interactive: map.get(

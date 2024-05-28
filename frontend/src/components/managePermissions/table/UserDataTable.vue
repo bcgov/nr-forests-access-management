@@ -5,6 +5,7 @@ import type { PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Tag from 'primevue/tag';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
@@ -125,8 +126,18 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
-                <Column header="User Name" sortable field="user.user_name">
+                <Column
+                    header="User Name"
+                    field="user.user_name"
+                    sortable
+                >
                     <template #body="{ data }">
+                    <Tag
+                        class="custom-tag"
+                        rounded
+                    >
+                        New
+                    </Tag>
                         <span>
                             {{ data.user.user_name }}
                         </span>
@@ -192,4 +203,9 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+.custom-tag {
+    background-color: $light-background-inverse;
+    padding: 3px 8px 3.5px;
+    margin-right: 5px;
+}
 </style>
