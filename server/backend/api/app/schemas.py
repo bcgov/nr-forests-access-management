@@ -37,7 +37,7 @@ class FamUser(BaseModel):
         None  # temporarily optional
     )
     user_name: Annotated[str, StringConstraints(max_length=20)]
-    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)] = None
     create_user: Annotated[str, StringConstraints(max_length=100)]
     update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
 
@@ -276,7 +276,7 @@ class Requester(BaseModel):
     user_name: Annotated[str, StringConstraints(max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[famConstants.UserType, None] = None
-    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_id: int
     access_roles: Union[
