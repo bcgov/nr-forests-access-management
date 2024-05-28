@@ -18,7 +18,7 @@ from api.app.utils import utils
 LOGGER = logging.getLogger(__name__)
 
 
-class IdimValidator:
+class UserValidator:
     def __init__(self, requester: Requester, target_user: TargetUser):
         self.user_type_code = target_user.user_type_code
         self.user_name = target_user.user_name
