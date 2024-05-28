@@ -14,7 +14,7 @@ TEST_APP_ROLE_NAME_FOM_SUBMITTER = "FOM_SUBMITTER"
 
 # ---------------------- test user data ----------------------------- #
 TEST_USER_NAME_IDIR = "TEST_USER"
-TEST_USER_GUID_IDIR = "mockedguid5D4ACA9FA901EE2C91CB3B"  # this is a faked business guid
+TEST_USER_GUID_IDIR = "mockedguid5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
 
 TEST_USER_NAME_BCEID = "LOAD-2-TEST"
 TEST_USER_GUID_BCEID = "81069F39B35B4861BCD010582B63B112"
