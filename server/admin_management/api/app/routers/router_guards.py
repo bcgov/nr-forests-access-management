@@ -185,19 +185,13 @@ async def get_target_user_from_id(
 
 async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
-    _target_user: TargetUser = Depends(get_target_user_from_id),
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ) -> TargetUser:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    target_user = copy.deepcopy(_target_user)
-    idim_validator_service = UserValidator(requester, target_user)
-    verified_result = idim_validator_service.verify_user_exist()
-
-    # add business_guid for BCeID user
-    if verified_result.get("found") and verified_result.get("businessGuid"):
-        target_user.business_guid = verified_result.get("businessGuid")
-    return target_user
+    user_validator = UserValidator(requester, target_user)
+    return user_validator.verify_user_exist()
 
 
 async def enforce_self_grant_guard(

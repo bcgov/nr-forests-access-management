@@ -59,7 +59,7 @@ def create_application_admin(
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(get_verified_target_user),  # validate target user
+    _target_user: TargetUser = Depends(get_verified_target_user),  # validate target user
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
     ),
