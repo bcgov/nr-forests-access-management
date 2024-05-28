@@ -165,7 +165,7 @@ class FamRoleWithClientDto(BaseModel):
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_guid: Annotated[str, StringConstraints(max_length=32)]
-    user_type_code: Annotated[famConstants.UserType, StringConstraints(max_length=2)]
+    user_type_code: famConstants.UserType
     application_id: int
 
     model_config = ConfigDict(from_attributes=True)
