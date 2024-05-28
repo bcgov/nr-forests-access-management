@@ -12,7 +12,6 @@ from api.app.constants import (
     ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-    IdimSearchUserParamType,
     UserType,
     RoleType,
 )
@@ -23,7 +22,9 @@ from api.app.crud import (
     crud_access_control_privilege,
     crud_utils,
 )
-from api.app.crud.validator.idim_validator import IdimValidator
+
+from api.app.crud.validator.user_validator import UserValidator
+
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     ERROR_GROUPS_REQUIRED,
@@ -32,9 +33,8 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
-from api.app.integration.idim_proxy import IdimProxyService
 from api.app.models.model import FamRole, FamUser
-from api.app.schemas import IdimProxyBceidSearchParam, Requester, TargetUser
+from api.app.schemas import Requester, TargetUser
 from api.app.utils import utils
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
@@ -259,6 +259,7 @@ async def get_target_user_from_id(
 ) -> TargetUser:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
+    Please note that the TargetUser inputs hasn't been validated yet. Need to call get_verified_target_user to validate the TargetUser.
     For requester, use "get_current_requester()" above.
     """
     # from path_param - "user_role_xref_id"; should exists already in db.
@@ -364,12 +365,12 @@ async def get_verified_target_user(
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
     target_user = copy.deepcopy(_target_user)
-    idim_validator_service = IdimValidator(requester, target_user)
-    search_result = idim_validator_service.verify_user_exist()
+    idim_validator_service = UserValidator(requester, target_user)
+    verified_result = idim_validator_service.verify_user_exist()
 
     # add business_guid for BCeID user
-    if search_result.get("found") and search_result.get("businessGuid"):
-        target_user.business_guid = search_result.get("businessGuid")
+    if verified_result.get("found") and verified_result.get("businessGuid"):
+        target_user.business_guid = verified_result.get("businessGuid")
     return target_user
 
 
