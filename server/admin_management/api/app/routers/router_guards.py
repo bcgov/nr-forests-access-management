@@ -36,9 +36,7 @@ from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from server.admin_management.api.app.services.validator.user_validator import (
-    UserValidator,
-)
+from api.app.services.validator.user_validator import UserValidator
 from api.app.utils import utils
 from fastapi import Depends, HTTPException, Request
 
