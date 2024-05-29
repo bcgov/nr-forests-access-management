@@ -59,23 +59,25 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   }
 
   default_cache_behavior {
+    # Using the CachingOptimized managed policy ID:
+    cache_policy_id  = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "web_distribution_origin"
 
-    forwarded_values {
-      query_string = true
-      cookies {
-        forward = "none"
-      }
-      headers = ["Origin"]
-    }
+    # forwarded_values {
+    #   query_string = true
+    #   cookies {
+    #     forward = "none"
+    #   }
+    #   headers = ["Origin"]
+    # }
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
-
+    # min_ttl                = 0
+    # default_ttl            = 3600
+    # max_ttl                = 86400
 
   }
 

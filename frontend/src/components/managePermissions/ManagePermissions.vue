@@ -177,10 +177,8 @@ const getCurrentTab = () => {
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
-            <p>
-                Testing Caching.
-            </p>
             <label for="application-dropdown-id">
+                Testing Caching.
                 You are modifying access in this application:
             </label>
             <Dropdown
