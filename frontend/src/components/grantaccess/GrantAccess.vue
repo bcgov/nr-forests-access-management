@@ -16,11 +16,12 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import { UserType } from 'fam-app-acsctl-api/model';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import { UserType, type FamRoleDto } from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';

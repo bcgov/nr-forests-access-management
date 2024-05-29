@@ -19,6 +19,7 @@ def test_find_or_create(user_service: UserService):
     new_user = user_service.find_or_create(
         TEST_NEW_IDIR_USER.user_type_code,
         TEST_NEW_IDIR_USER.user_name,
+        TEST_NEW_IDIR_USER.user_guid,
         TEST_NEW_IDIR_USER.create_user,
     )
     assert new_user.user_name == TEST_NEW_IDIR_USER.user_name
@@ -37,6 +38,7 @@ def test_find_or_create(user_service: UserService):
     user_service.find_or_create(
         TEST_NEW_IDIR_USER.user_type_code,
         TEST_NEW_IDIR_USER.user_name,
+        TEST_NEW_IDIR_USER.user_guid,
         TEST_NEW_IDIR_USER.create_user,
     )
     users = user_service.get_users()

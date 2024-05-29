@@ -2,13 +2,12 @@
 import { computed } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import Dropdown from 'primevue/dropdown';
-import type { FamApplicationRole } from 'fam-app-acsctl-api';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 
 const props = defineProps({
     roleId: { type: Number, default: 0 },
     roleOptions: {
-        type: [Array<FamApplicationRole>, Array<FamRoleDto>],
+        type: [Array<FamRoleDto>],
         default: [],
     },
     label: { type: String, default: 'Assign a role to the user' },
@@ -25,7 +24,6 @@ const computedRoleId = computed({
         emit('change', newRoleId);
     },
 });
-
 </script>
 
 <template>

@@ -8,7 +8,6 @@ export * from './fam-app-admin-create-request';
 export * from './fam-app-admin-get-response';
 export * from './fam-application-base';
 export * from './fam-application-dto';
-export * from './fam-application-get-response';
 export * from './fam-auth-grant-dto';
 export * from './fam-forest-client-base';
 export * from './fam-grant-detail-dto';

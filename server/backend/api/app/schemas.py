@@ -10,35 +10,7 @@ from typing_extensions import Annotated
 LOGGER = logging.getLogger(__name__)
 
 
-class FamGroupPost(BaseModel):
-    group_name: Annotated[str, StringConstraints(max_length=100)]
-    purpose: Annotated[str, StringConstraints(max_length=200)]
-    create_user: Annotated[str, StringConstraints(max_length=100)]
-    parent_group_id: int
-    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamGroupGet(FamGroupPost):
-    group_id: int
-    create_date: datetime
-    update_date: Optional[datetime] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationClient(BaseModel):
-    application_client_id: int
-    cognito_client_id: Annotated[str, StringConstraints(max_length=32)]
-    create_user: Annotated[str, StringConstraints(max_length=100)]
-    create_date: datetime
-    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
-    update_date: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
+# --------------------------------- FAM Application --------------------------------- #
 class FamApplicationCreate(BaseModel):
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
@@ -58,6 +30,7 @@ class FamApplication(FamApplicationCreate):
     model_config = ConfigDict(from_attributes=True)
 
 
+# --------------------------------- FAM User --------------------------------- #
 class FamUser(BaseModel):
     user_type_code: famConstants.UserType
     cognito_user_id: Optional[Annotated[str, StringConstraints(max_length=100)]] = (
@@ -71,40 +44,30 @@ class FamUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleTypeGet(BaseModel):
-    role_type_code: famConstants.RoleType
-    description: Annotated[str, StringConstraints(max_length=100)]
-    effective_date: datetime
-    expiry_date: Optional[datetime] = None
-    update_date: Optional[datetime] = None
+class FamUserType(BaseModel):
+    user_type_code: famConstants.UserType = Field(alias="code")
+    description: Annotated[str, StringConstraints(max_length=35)]
 
-    model_config = ConfigDict(from_attributes=True)
+    # required to set populate_by_name for alias fields
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-# Role assignment with one role at a time for the user.
-class FamUserRoleAssignmentCreate(BaseModel):
-    user_name: Annotated[
-        str, StringConstraints(min_length=3, max_length=20)
-    ]  # IDIM search max length
-    user_guid: Annotated[str, StringConstraints(max_length=32)]
-    user_type_code: famConstants.UserType
-    role_id: int
-    forest_client_number: Union[
-        Annotated[str, StringConstraints(min_length=1, max_length=8)], None
-    ] = None
+class FamUserOnlyName(FamUser):
+    user_type_relation: FamUserType = Field(alias="user_type")
 
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamUserRoleAssignmentGet(BaseModel):
-    user_role_xref_id: int
-    user_id: int
-    role_id: int
-    application_id: int
-
-    model_config = ConfigDict(from_attributes=True)
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(
+        from_attributes=True,
+        fields={
+            "user_guid": {"exclude": True},
+            "create_user": {"exclude": True},
+            "update_user": {"exclude": True},
+        },
+        populate_by_name=True,
+    )
 
 
+# --------------------------------- FAM Forest Client--------------------------------- #
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
@@ -112,53 +75,6 @@ class FamForestClientCreate(BaseModel):
     create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class FamRoleCreate(BaseModel):
-    role_name: Annotated[str, StringConstraints(max_length=100)]
-    role_purpose: Union[Annotated[str, StringConstraints(max_length=300)], None] = None
-    parent_role_id: Union[int, None] = Field(
-        default=None, title="Reference role_id to higher role"
-    )
-    application_id: int = Field(title="Application this role is associated with")
-    forest_client_number: Union[
-        Annotated[str, StringConstraints(max_length=8)], None
-    ] = Field(default=None, title="Forest Client this role is associated with")
-    create_user: Annotated[str, StringConstraints(max_length=100)]
-    role_type_code: famConstants.RoleType
-    client_number: Optional[FamForestClientCreate] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamRoleGet(FamRoleCreate):
-    role_id: int
-    update_user: Union[Annotated[str, StringConstraints(max_length=100)], None] = None
-    create_date: Union[datetime, None] = None
-    update_date: Union[datetime, None] = None
-
-    application: Union[FamApplication, None] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamUserGet(FamUser):
-    user_id: int
-    create_date: datetime
-    update_date: Optional[datetime] = None
-
-    role: Union[FamRoleCreate, None] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationRole(FamRoleCreate):
-    role_id: int
-
-    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(
-        from_attributes=True, fields={"create_user": {"exclude": True}}
-    )
 
 
 # This is not an object from FAM model. It is an helper class to map Forest Client API
@@ -207,6 +123,24 @@ class FamForestClient(BaseModel):
         return fc
 
 
+# --------------------------------- FAM Role--------------------------------- #
+class FamRoleCreate(BaseModel):
+    role_name: Annotated[str, StringConstraints(max_length=100)]
+    role_purpose: Union[Annotated[str, StringConstraints(max_length=300)], None] = None
+    parent_role_id: Union[int, None] = Field(
+        default=None, title="Reference role_id to higher role"
+    )
+    application_id: int = Field(title="Application this role is associated with")
+    forest_client_number: Union[
+        Annotated[str, StringConstraints(max_length=8)], None
+    ] = Field(default=None, title="Forest Client this role is associated with")
+    create_user: Annotated[str, StringConstraints(max_length=100)]
+    role_type_code: famConstants.RoleType
+    client_number: Optional[FamForestClientCreate] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class FamRoleMin(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     role_type_code: famConstants.RoleType
@@ -235,27 +169,29 @@ class FamRoleWithClient(FamRoleCreate):
     )
 
 
-class FamUserType(BaseModel):
-    user_type_code: famConstants.UserType = Field(alias="code")
-    description: Annotated[str, StringConstraints(max_length=35)]
+# --------------------------------- FAM User Role Assignment--------------------------------- #
+# Role assignment with one role at a time for the user.
+class FamUserRoleAssignmentCreate(BaseModel):
+    user_name: Annotated[
+        str, StringConstraints(min_length=3, max_length=20)
+    ]  # IDIM search max length
+    user_guid: Annotated[str, StringConstraints(max_length=32)]
+    user_type_code: famConstants.UserType
+    role_id: int
+    forest_client_number: Union[
+        Annotated[str, StringConstraints(min_length=1, max_length=8)], None
+    ] = None
 
-    # required to set populate_by_name for alias fields
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
-class FamUserOnlyName(FamUser):
-    user_type_relation: FamUserType = Field(alias="user_type")
+class FamUserRoleAssignmentGet(BaseModel):
+    user_role_xref_id: int
+    user_id: int
+    role_id: int
+    application_id: int
 
-    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(
-        from_attributes=True,
-        fields={
-            "user_guid": {"exclude": True},
-            "create_user": {"exclude": True},
-            "update_user": {"exclude": True},
-        },
-        populate_by_name=True,
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
@@ -274,6 +210,7 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
     )
 
 
+# ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 class IdimProxySearchParam(BaseModel):
     userId: Annotated[
         str, StringConstraints(max_length=20)
@@ -304,13 +241,14 @@ class IdimProxyBceidInfo(BaseModel):
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
 
 
+# ------------------------------------- GC Notify Integraion ---------------------------------------- #
 class GCNotifyGrantAccessEmailParam(BaseModel):
     user_name: Annotated[str, StringConstraints(max_length=20)]
     application_name: Annotated[str, StringConstraints(max_length=35)]
     send_to_email: EmailStr
 
 
-# ---------- System schema objects ----------
+# ---------- System schema objects ---------- #
 """
 The "Requester" and "TargetUser" schema objects are internal backend system
 wide objects.
@@ -357,8 +295,8 @@ class TargetUser(Requester):
     Meethod that relys on TargetUser might need to check if it is a new user by
     checking "is_new_user()".
     """
+
     user_id: Optional[int] = None
 
     def is_new_user(self):
         return self.user_id is None
-
