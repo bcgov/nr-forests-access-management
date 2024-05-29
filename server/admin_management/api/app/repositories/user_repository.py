@@ -44,6 +44,18 @@ class UserRepository:
             .one_or_none()
         )
 
+    def get_user_by_domain_and_guid(
+        self, user_type_code: str, user_guid: str
+    ) -> models.FamUser:
+        return (
+            self.db.query(models.FamUser)
+            .filter(
+                models.FamUser.user_type_code == user_type_code,
+                models.FamUser.user_guid == user_guid,
+            )
+            .one_or_none()
+        )
+
     # --- Create ---
 
     def create_user(self, fam_user: schemas.FamUserDto) -> models.FamUser:
@@ -57,8 +69,8 @@ class UserRepository:
 
     def update(self, user_id, update_values: dict, requester: str) -> int:
         LOGGER.debug(
-            f"Update on FamUser {user_id} with values: {update_values} " +
-            f"for requester {requester}"
+            f"Update on FamUser {user_id} with values: {update_values} "
+            + f"for requester {requester}"
         )
         update_count = (
             self.db.query(models.FamUser)
