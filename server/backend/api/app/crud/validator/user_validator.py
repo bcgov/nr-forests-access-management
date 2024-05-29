@@ -50,11 +50,21 @@ class UserValidator:
                 )
 
         elif self.verified_target_user.user_type_code == UserType.BCEID:
+            # search_result = self.idim_proxy_service.search_business_bceid(
+            #     IdimProxyBceidSearchParam(
+            #         **{
+            #             "searchUserBy": IdimSearchUserParamType.USER_GUID,
+            #             "searchValue": self.verified_target_user.user_guid,
+            #         }
+            #     )
+            # )
+
+            # currently bceid cannot search bceid by user guid in TEST env, we just search by user name for now
             search_result = self.idim_proxy_service.search_business_bceid(
                 IdimProxyBceidSearchParam(
                     **{
-                        "searchUserBy": IdimSearchUserParamType.USER_GUID,
-                        "searchValue": self.verified_target_user.user_guid,
+                        "searchUserBy": IdimSearchUserParamType.USER_ID,
+                        "searchValue": self.verified_target_user.user_name,
                     }
                 )
             )

@@ -38,7 +38,6 @@ router = APIRouter()
         Depends(
             authorize_by_user_type
         ),  # check business bceid user cannot grant idir user access
-        Depends(enforce_bceid_by_same_org_guard),
     ],
 )
 def create_user_role_assignment(
