@@ -133,6 +133,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 >
                     <template #body="{ data }">
                     <Tag
+                        v-if="data.isNew"
                         class="custom-tag"
                         rounded
                     >

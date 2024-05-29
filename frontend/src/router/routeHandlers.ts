@@ -10,6 +10,7 @@ import { asyncWrap } from '@/services/utils';
 import {
     isApplicationSelected,
     selectedApplicationId,
+    newUserAdded,
 } from '@/store/ApplicationState';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
@@ -52,7 +53,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
         );
     }
     Object.assign(to.meta, {
-        userRoleAssignments: userRolesFetchResult?.data,
+        userRoleAssignments: newUserAdded.compareTable(userRolesFetchResult?.data),
         applicationAdmins: applicationAdmins?.data,
         delegatedAdmins: delegatedAdmins?.data,
     });

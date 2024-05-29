@@ -1,5 +1,6 @@
 import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import { computed, ref } from 'vue';
+import type { FamApplicationUserRoleAssignmentGet, FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api/model';
+import { computed, reactive, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 
@@ -45,3 +46,22 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
+
+interface FamApplicationUserRoleAssignmentGetExtended extends FamApplicationUserRoleAssignmentGet {
+    isNew?: boolean;
+}
+
+export const newUserAdded = reactive({
+    isNewUser: [] as FamUserRoleAssignmentCreate[],
+    compareTable: (userRoles: FamApplicationUserRoleAssignmentGet[] = []): FamApplicationUserRoleAssignmentGet[] => {
+      return userRoles.map(userRoleAssignment => {
+        const isNewUser = newUserAdded.isNewUser.some(
+          testItem =>  {
+            return testItem.user_name.toLocaleUpperCase() == userRoleAssignment.user.user_name
+          }
+        );
+        return { ...userRoleAssignment, isNewUser };
+      });
+    }
+  });
+
