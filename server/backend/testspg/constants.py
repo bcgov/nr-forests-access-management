@@ -27,13 +27,6 @@ TEST_USER_ID = 1
 TEST_USER_NAME_IDIR = "TEST_USER"
 TEST_USER_GUID_IDIR = "MOCKEDGUID5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
 
-TEST_NEW_USER = {
-    "user_type_code": "I",
-    "user_name": TEST_USER_NAME_IDIR,
-    "user_guid": TEST_USER_GUID_IDIR,
-    "create_user": TEST_CREATOR,
-}
-
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
 USER_NAME_BCEID_LOAD_2_TEST = "LOAD-2-TEST"
@@ -46,6 +39,21 @@ USER_GUID_BCEID_LOAD_3_TEST_CHILD_1 = "BDA2A1E212244DC2B9F9522057C58BBB"
 USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"
 USER_GUID_BCEID_LOAD_4_TEST = "B1323E832A4A4947B50367EF4A4F79DE"
 BUSINESS_GUID_BCEID_LOAD_4_TEST = "B1323E832A4A4947B50367EF4A4F79DE"
+
+
+TEST_NEW_USER = {
+    "user_type_code": fam_constants.UserType.IDIR,
+    "user_name": TEST_USER_NAME_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
+    "create_user": TEST_CREATOR,
+}
+
+TEST_NEW_BCEID_USER = {
+    "user_type_code": fam_constants.UserType.BCEID,
+    "user_name": USER_NAME_BCEID_LOAD_2_TEST,
+    "user_guid": USER_GUID_BCEID_LOAD_2_TEST,
+    "create_user": TEST_CREATOR,
+}
 
 # --------------------- Testing forest client numbers ----------------- #
 FC_NUMBER_LEN_TOO_SHORT = "0001011"
