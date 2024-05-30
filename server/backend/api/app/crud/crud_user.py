@@ -115,20 +115,6 @@ def get_user_by_cognito_user_id(
     return user
 
 
-def get_user_by_user_role_xref_id(
-    db: Session, user_role_xref_id: int
-) -> models.FamUser:
-    user = (
-        db.query(models.FamUser)
-        .join(models.FamUserRoleXref)
-        .filter(
-            models.FamUserRoleXref.user_role_xref_id == user_role_xref_id,
-        )
-        .one_or_none()
-    )
-    return user
-
-
 def update(
     db: Session, user_id: int, update_values: dict, requester: str  # cognito_user_id
 ) -> int:

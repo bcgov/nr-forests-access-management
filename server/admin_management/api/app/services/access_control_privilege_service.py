@@ -51,8 +51,10 @@ class AccessControlPrivilegeService:
         )
 
     def create_access_control_privilege_many(
-        self, request: schemas.FamAccessControlPrivilegeCreateRequest, 
-        requester: str, target_user: schemas.TargetUser
+        self,
+        request: schemas.FamAccessControlPrivilegeCreateRequest,
+        requester: str,
+        target_user: schemas.TargetUser,
     ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
@@ -60,11 +62,11 @@ class AccessControlPrivilegeService:
 
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
-            request.user_type_code, request.user_name, requester
+            request.user_type_code, request.user_name, request.user_guid, requester
         )
         fam_user = self.user_service.update_user_business_guid(
-            fam_user.user_id, target_user.business_guid,
-            requester)
+            fam_user.user_id, target_user.business_guid, requester
+        )
 
         # Verify if role exists
         fam_role = self.role_service.get_role_by_id(request.role_id)
@@ -72,7 +74,7 @@ class AccessControlPrivilegeService:
             error_msg = f"Role id {request.role_id} does not exist."
             utils.raise_http_exception(
                 error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
+                error_msg=error_msg,
             )
 
         # Role is a 'Abstract' type, create access control privilege with forst client child role
@@ -96,14 +98,16 @@ class AccessControlPrivilegeService:
                 error_msg = "Invalid access control privilege request, missing forest client number."
                 utils.raise_http_exception(
                     error_code=famConstants.ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                    error_msg=error_msg
+                    error_msg=error_msg,
                 )
 
             forest_client_integration_service = ForestClientIntegrationService()
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
                 forest_client_validator_return = (
-                    forest_client_integration_service.find_by_client_number(forest_client_number)
+                    forest_client_integration_service.find_by_client_number(
+                        forest_client_number
+                    )
                 )
                 if not forest_client_number_exists(forest_client_validator_return):
                     error_msg = (
@@ -112,7 +116,7 @@ class AccessControlPrivilegeService:
                     )
                     utils.raise_http_exception(
                         error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                        error_msg=error_msg
+                        error_msg=error_msg,
                     )
 
                 if not forest_client_active(forest_client_validator_return):
@@ -123,7 +127,7 @@ class AccessControlPrivilegeService:
                     )
                     utils.raise_http_exception(
                         error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                        error_msg=error_msg
+                        error_msg=error_msg,
                     )
 
                 # Check if child role exists or add a new child role

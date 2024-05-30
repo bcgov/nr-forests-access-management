@@ -47,11 +47,11 @@ class Requester(BaseModel):
     # from datbase and the user record will contain this user_id; and also is the reference-id from other database
     # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
     user_id: int
-    user_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    user_name: Annotated[str, StringConstraints(max_length=20)]
+    user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
-    user_type_code: Union[famConstants.UserType, None] = None
+    user_type_code: famConstants.UserType
     access_roles: Union[
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
@@ -70,21 +70,12 @@ class TargetUser(Requester):
     """
     user_id: Optional[int] = None
 
-    def is_new_user(self):
-        return self.user_id is None
-
 
 # -------------------------------------- FAM Application --------------------------------------- #
 class FamApplicationBase(BaseModel):
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
     app_environment: Optional[famConstants.AppEnv] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationGetResponse(FamApplicationBase):
-    application_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -98,6 +89,7 @@ class FamUserBase(BaseModel):
 
 class FamUserDto(FamUserBase):
     user_type_code: famConstants.UserType
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     create_user: Annotated[str, StringConstraints(max_length=100)]
 
     model_config = ConfigDict(from_attributes=True)
@@ -127,20 +119,6 @@ class FamForestClientBase(BaseModel):
 
 class FamForestClientCreateDto(FamForestClientBase):
     create_user: Annotated[str, StringConstraints(max_length=100)]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamForestClientStatusDto(BaseModel):
-    status_code: famConstants.FamForestClientStatusType
-    description: Annotated[str, StringConstraints(max_length=10)]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamForestClientDto(FamForestClientBase):
-    client_name: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
-    status: Optional[FamForestClientStatusDto] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -183,8 +161,8 @@ class FamRoleWithClientDto(BaseModel):
 # Application Admin assignment with one application at a time for the user.
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
-    user_guid: Annotated[str, StringConstraints(max_length=32)]
-    user_type_code: Annotated[famConstants.UserType, StringConstraints(max_length=2)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    user_type_code: famConstants.UserType
     application_id: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -211,7 +189,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     """
 
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
-    user_guid: Annotated[str, StringConstraints(max_length=32)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
     forest_client_numbers: Union[

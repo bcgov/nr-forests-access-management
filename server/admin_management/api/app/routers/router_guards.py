@@ -4,26 +4,39 @@ import logging
 from http import HTTPStatus
 from typing import Union
 
-from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               AdminRoleAuthGroup, IdimSearchUserParamType,
-                               UserType)
-from api.app.integration.idim_proxy import IdimProxyService
+from api.app.constants import (
+    ERROR_CODE_INVALID_REQUEST_PARAMETER,
+    AdminRoleAuthGroup,
+    UserType,
+)
 from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED, get_access_roles, get_request_cognito_user_id,
-    get_request_cognito_user_id_without_access_check, validate_token)
+    ERROR_PERMISSION_REQUIRED,
+    get_access_roles,
+    get_request_cognito_user_id,
+    get_request_cognito_user_id_without_access_check,
+    validate_token,
+)
 from api.app.models.model import FamRole, FamUser
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance,
-    application_admin_service_instance, application_service_instance,
-    role_service_instance, user_service_instance)
-from api.app.schemas import (FamAppAdminCreateRequest,
-                             IdimProxyBceidSearchParam, Requester, TargetUser)
-from api.app.services.access_control_privilege_service import \
-    AccessControlPrivilegeService
+    application_admin_service_instance,
+    application_service_instance,
+    role_service_instance,
+    user_service_instance,
+)
+from api.app.schemas import (
+    FamAppAdminCreateRequest,
+    Requester,
+    TargetUser,
+)
+from api.app.services.access_control_privilege_service import (
+    AccessControlPrivilegeService,
+)
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
+from api.app.services.validator.user_validator import UserValidator
 from api.app.utils import utils
 from fastapi import Depends, HTTPException, Request
 
@@ -57,7 +70,7 @@ def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_PERMISSION_REQUIRED,
-            error_msg=error_msg
+            error_msg=error_msg,
         )
 
 
@@ -109,7 +122,6 @@ async def get_current_requester_without_access_check(
 # Very likely in future might have "cognito_user_id" case.
 async def get_target_user_from_id(
     request: Request,
-    user_service: UserService = Depends(user_service_instance),
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
     ),
@@ -119,109 +131,67 @@ async def get_target_user_from_id(
 ) -> TargetUser:
     """
     This is used as FastAPI sub-dependency to find target_user for guard purpose.
+    Please note that the TargetUser inputs hasn't been validated yet. Need to call get_verified_target_user to validate the TargetUser.
     For requester, use "get_current_requester()".
     """
     # from path_param - application_admin_id, when remove admin access for a user
     if "application_admin_id" in request.path_params:
         raaid = request.path_params["application_admin_id"]
-        LOGGER.debug("Dependency 'get_target_user_from_id': 'application_admin_id' " +
-                     f"path param found: {raaid}.")
-        application_admin = application_admin_service.get_application_admin_by_id(
-            raaid
+        LOGGER.debug(
+            "Dependency 'get_target_user_from_id': 'application_admin_id' "
+            + f"path param found: {raaid}."
         )
+        application_admin = application_admin_service.get_application_admin_by_id(raaid)
         if application_admin is not None:
             return TargetUser.model_validate(application_admin.user)
         else:
-            error_msg = "Parameter 'application_admin_id' {raaid} is missing or invalid."
+            error_msg = (
+                "Parameter 'application_admin_id' {raaid} is missing or invalid."
+            )
             utils.raise_http_exception(
-                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
 
     elif "access_control_privilege_id" in request.path_params:
         acpid = request.path_params["access_control_privilege_id"]
-        LOGGER.debug("Dependency 'get_target_user_from_id': 'access_control_privilege_id' " +
-                     f"path param found: {acpid}.")
-        access_control_privilege = access_control_privilege_service.get_acp_by_id(
-            acpid
+        LOGGER.debug(
+            "Dependency 'get_target_user_from_id': 'access_control_privilege_id' "
+            + f"path param found: {acpid}."
         )
+        access_control_privilege = access_control_privilege_service.get_acp_by_id(acpid)
         if access_control_privilege is not None:
             return TargetUser.model_validate(access_control_privilege.user)
         else:
-            error_msg = "Parameter 'access_control_privilege_id' {acpid} is missing or invalid."
+            error_msg = (
+                "Parameter 'access_control_privilege_id' {acpid} is missing or invalid."
+            )
             utils.raise_http_exception(
-                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
     else:
-        # from body - {user_name/user_type_code}, when grant admin access
+        # from body - {user_name/user_type_code/user_guid}, when grant admin access
         rbody = await request.json()
         LOGGER.debug(f"Dependency 'get_target_user_from_id' request body {rbody}.")
-        rb_user_name = rbody["user_name"]
-        rb_user_type_code = rbody["user_type_code"]
-        # user_guid is searched from IDIM search and passed from frontend.
-        rb_user_guid = rbody["user_guid"]
 
-        user = user_service.get_user_by_domain_and_name(
-            rb_user_type_code,
-            rb_user_name,
+        target_new_user = TargetUser.model_validate(
+            {
+                "user_name": rbody["user_name"],
+                "user_type_code": rbody["user_type_code"],
+                "user_guid": rbody["user_guid"],
+            }
         )
-        if user is not None:
-            found_target_user = TargetUser.model_validate(user)
-            # old data might not have user_guid.
-            if found_target_user.user_guid is None:
-                found_target_user.user_guid = rb_user_guid
-            return found_target_user
-        # user not found, case of new user.
-        else:
-            target_new_user = TargetUser.model_validate({
-                "user_name": rb_user_name,
-                "user_type_code": rb_user_type_code,
-                "user_guid": rb_user_guid
-            })
-            return target_new_user
+        return target_new_user
 
 
-async def target_user_bceid_search(
+async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
-    _target_user: TargetUser = Depends(get_target_user_from_id)
+    target_user: TargetUser = Depends(get_target_user_from_id),
 ) -> TargetUser:
     """
-    BCeID user search for target_user.
-    :param target_user "Depends(get_target_user_from_id)": the initial
-        dependency with "get_target_user_from_id" has initial target_user
-        parsed from the request. It's business_guid will be updated to the
-        target_user after user is searched through IDIM Proxy.
+    Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    target_user = copy.deepcopy(_target_user)
-    if (
-        target_user.user_type_code == UserType.BCEID and
-        target_user.business_guid is None
-    ):
-        user_guid = target_user.user_guid  # will be used by search using user_guid
-        LOGGER.debug(
-            f"Searching business guid for target_user: {target_user}, with requester {requester}"
-        )
-        idim_proxy_api = IdimProxyService(requester)
-        search_result = idim_proxy_api.search_business_bceid(
-            IdimProxyBceidSearchParam(**{
-                "searchUserBy": IdimSearchUserParamType.USER_GUID,
-                "searchValue": user_guid
-            })
-        )
-        if search_result.get("found"):
-            business_guid = search_result.get("businessGuid")
-            LOGGER.debug(
-                f"business_guid result: {business_guid} is updated to target_user."
-            )
-            target_user.business_guid = business_guid
-        else:
-            LOGGER.debug(
-                f"IDIM look up user guid:`{user_guid}` returns no result. " +
-                "business_guid will NOT be updated to target_user."
-            )
-
-    return target_user
+    user_validator = UserValidator(requester, target_user)
+    return user_validator.verify_user_exist()
 
 
 async def enforce_self_grant_guard(
@@ -234,10 +204,11 @@ async def enforce_self_grant_guard(
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
-    is_same_user_name = requester.user_name == target_user.user_name
-    is_same_user_type_code = requester.user_type_code == target_user.user_type_code
 
-    if is_same_user_name and is_same_user_type_code:
+    if (
+        requester.user_type_code == target_user.user_type_code
+        and requester.user_guid == target_user.user_guid
+    ):
         LOGGER.debug(
             f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."
@@ -246,7 +217,7 @@ async def enforce_self_grant_guard(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_SELF_GRANT_PROHIBITED,
-            error_msg=error_msg
+            error_msg=error_msg,
         )
 
 
@@ -300,8 +271,7 @@ def authorize_by_application_role(
     if not role:
         error_msg = "Requester has no appropriate role."
         utils.raise_http_exception(
-            error_code=ERROR_INVALID_ROLE_ID,
-            error_msg=error_msg
+            error_code=ERROR_INVALID_ROLE_ID, error_msg=error_msg
         )
 
     authorize_by_app_id(role.application_id, claims, application_service)
@@ -317,8 +287,7 @@ def authorize_by_app_id(
     if not application:
         error_msg = f"Application ID {application_id} not found."
         utils.raise_http_exception(
-            error_code=ERROR_INVALID_APPLICATION_ID,
-            error_msg=error_msg
+            error_code=ERROR_INVALID_APPLICATION_ID, error_msg=error_msg
         )
 
     required_role = f"{application.application_name.upper()}_ADMIN"
@@ -329,7 +298,7 @@ def authorize_by_app_id(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_PERMISSION_REQUIRED,
-            error_msg=error_msg
+            error_msg=error_msg,
         )
 
 
@@ -345,8 +314,7 @@ async def validate_param_application_admin_id(
     if not application_admin:
         error_msg = f"Application Admin ID {application_admin_id} not found."
         utils.raise_http_exception(
-            error_code=ERROR_INVALID_APPLICATION_ADMIN_ID,
-            error_msg=error_msg
+            error_code=ERROR_INVALID_APPLICATION_ADMIN_ID, error_msg=error_msg
         )
 
 
@@ -358,10 +326,11 @@ async def validate_param_application_id(
         application_admin_request.application_id
     )
     if not application:
-        error_msg = f"Application ID {application_admin_request.application_id} not found."
+        error_msg = (
+            f"Application ID {application_admin_request.application_id} not found."
+        )
         utils.raise_http_exception(
-            error_code=ERROR_INVALID_APPLICATION_ID,
-            error_msg=error_msg
+            error_code=ERROR_INVALID_APPLICATION_ID, error_msg=error_msg
         )
 
 
@@ -370,10 +339,11 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
         not application_admin_request.user_type_code
         or application_admin_request.user_type_code != UserType.IDIR
     ):
-        error_msg = f"User type {application_admin_request.user_type_code} is not allowed."
+        error_msg = (
+            f"User type {application_admin_request.user_type_code} is not allowed."
+        )
         utils.raise_http_exception(
-            error_code=ERROR_NOT_ALLOWED_USER_TYPE,
-            error_msg=error_msg
+            error_code=ERROR_NOT_ALLOWED_USER_TYPE, error_msg=error_msg
         )
 
 
@@ -387,8 +357,9 @@ async def validate_param_access_control_privilege_id(
         access_control_privilege_id
     )
     if not access_control_privilege:
-        error_msg = f"Access control privilege ID {access_control_privilege_id} not found."
+        error_msg = (
+            f"Access control privilege ID {access_control_privilege_id} not found."
+        )
         utils.raise_http_exception(
-            error_code=ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
-            error_msg=error_msg
+            error_code=ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, error_msg=error_msg
         )
