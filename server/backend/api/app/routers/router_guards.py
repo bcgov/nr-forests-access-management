@@ -404,5 +404,3 @@ async def enforce_bceid_by_same_org_guard(
                 error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                 error_msg="Managing for different organization is not allowed.",
             )
-
-    return target_user

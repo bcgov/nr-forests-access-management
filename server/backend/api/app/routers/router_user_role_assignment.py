@@ -10,6 +10,7 @@ from api.app.routers.router_guards import (
     enforce_self_grant_guard,
     enforce_bceid_by_same_org_guard,
     get_current_requester,
+    get_verified_target_user,
 )
 from api.app.schemas import Requester, TargetUser
 from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
@@ -38,6 +39,9 @@ router = APIRouter()
         Depends(
             authorize_by_user_type
         ),  # check business bceid user cannot grant idir user access
+        Depends(
+            enforce_bceid_by_same_org_guard
+        ),  # check business bceid user can only grant access for the user from same organization
     ],
 )
 def create_user_role_assignment(
@@ -46,9 +50,7 @@ def create_user_role_assignment(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(
-        enforce_bceid_by_same_org_guard
-    ),  # check business bceid user can only grant access for the user from same organization
+    target_user: TargetUser = Depends(get_verified_target_user),
 ):
     """
     Create FAM user_role_xref association.
