@@ -84,6 +84,7 @@ def test_find_or_create(db_pg_session: Session):
         db_pg_session,
         TEST_NEW_USER["user_type_code"],
         TEST_NEW_USER["user_name"],
+        TEST_NEW_USER["user_guid"],
         TEST_NEW_USER["create_user"]
     )
     assert new_user.user_name == TEST_NEW_USER["user_name"]
@@ -103,6 +104,7 @@ def test_find_or_create(db_pg_session: Session):
         db_pg_session,
         TEST_NEW_USER["user_type_code"],
         TEST_NEW_USER["user_name"],
+        TEST_NEW_USER["user_guid"],
         TEST_NEW_USER["create_user"]
     )
     users = crud_user.get_users(db_pg_session)

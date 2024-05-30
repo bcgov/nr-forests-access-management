@@ -163,13 +163,32 @@ def populate_user_if_necessary(db_connection, event) -> None:
     else:
         user_name = event["request"]["userAttributes"]["custom:idp_username"]
 
+    cursor = db_connection.cursor()
+
+    # in the case of historical FAM user that has no user_guid stored, add their user_guid
+    # if user does not exist or user has a user_guid already, this update query will do nothing
+    query_add_guid= """
+        UPDATE app_fam.fam_user SET
+        user_guid={user_guid}
+        WHERE user_type_code={user_type_code}
+        and LOWER(user_name)={user_name}
+        and user_guid is null
+    """
+    sql_query_query_add_guid = sql.SQL(query_add_guid).format(
+        user_guid=sql.Literal(user_guid),
+        user_type_code=sql.Literal(user_type_code),
+        user_name=sql.Literal(user_name.lower()),
+    )
+    cursor.execute(sql_query_query_add_guid)
+
+    # insert new user, or update user information
     raw_query = """INSERT INTO app_fam.fam_user
         (user_type_code, user_guid, cognito_user_id, user_name, business_guid,
         create_user, create_date, update_user, update_date)
         VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
-        ON CONFLICT (user_type_code, lower(user_name)) DO
-        UPDATE SET user_guid = {user_guid},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""
+        ON CONFLICT (user_type_code, user_guid) DO
+        UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""
 
     sql_query = sql.SQL(raw_query).format(
         user_type_code=sql.Literal(user_type_code),
@@ -179,7 +198,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
         business_guid=sql.Literal(business_guid),
     )
 
-    db_connection.cursor().execute(sql_query)
+    cursor.execute(sql_query)
 
 
 def handle_event(db_connection, event) -> event_type.Event:
