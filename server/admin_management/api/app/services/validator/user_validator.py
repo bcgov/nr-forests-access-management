@@ -37,12 +37,11 @@ class UserValidator:
             # but could happen if make backend api call directly
             if (
                 search_result.get("found")
-                and search_result.get("guid").lower()
-                != self.verified_target_user.user_guid.lower()
+                and search_result.get("guid") != self.verified_target_user.user_guid
             ):
                 error_msg = (
                     f"Invalid request, found user {self.verified_target_user.user_name} with user type {self.verified_target_user.user_type_code}, "
-                    f"but found user guid {search_result.get('guid').lower()} does not match the user guid in request {self.verified_target_user.user_guid.lower()}"
+                    f"but found user guid {search_result.get('guid')} does not match the user guid in request {self.verified_target_user.user_guid}"
                 )
                 utils.raise_http_exception(
                     error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
