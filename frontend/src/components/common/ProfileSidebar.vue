@@ -77,9 +77,9 @@ const adminRoles = computed(() => {
                     <p class="profile-admin-level">
                         Granted: <strong>{{ adminRoles }}</strong>
                     </p>
-                    <p>
+                    <!-- <p>
                         Environment: <strong> {{ environmentSettings.getEnvironmentDisplayName().toUpperCase() }}</strong>
-                    </p>
+                    </p> -->
                 </div>
             </div>
             <Divider class="profile-divider" />
