@@ -5,8 +5,8 @@ from fastapi import HTTPException
 
 from api.app.crud.validator.user_validator import UserValidator
 from api.app.schemas import Requester, TargetUser
-from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER
-from testspg.constants import TEST_IDIR_REQUESTER_DICT
+from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType
+from testspg.constants import TEST_IDIR_REQUESTER_DICT, USER_NAME_BCEID_LOAD_2_TEST, USER_GUID_BCEID_LOAD_2_TEST
 
 
 LOGGER = logging.getLogger(__name__)
@@ -24,9 +24,9 @@ TEST_USER_IDIR = {
 }
 
 TEST_TARGET_USER_BCEID_LOAD_2 = {
-    "user_type_code": "B",
-    "user_name": "LOAD-2-TEST",
-    "user_guid": "81069F39B35B4861BCD010582B63B112",
+    "user_type_code": UserType.BCEID,
+    "user_name": USER_NAME_BCEID_LOAD_2_TEST,
+    "user_guid": USER_GUID_BCEID_LOAD_2_TEST,
 }
 
 
