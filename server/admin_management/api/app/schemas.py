@@ -47,7 +47,7 @@ class Requester(BaseModel):
     # from datbase and the user record will contain this user_id; and also is the reference-id from other database
     # entities (e.g., app_fam.fam_application_admin, app_fam.fam_access_control_privilege)
     user_id: int
-    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)] = None
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
