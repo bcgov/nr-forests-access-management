@@ -219,6 +219,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                     title="Organization information"
                     subtitle="Associate one or more Client IDs to this user"
                     :divider="false"
+                    class="invalid"
                 >
                     The client API is down and this role cannot be assigned. We
                     are working on fixing the issue. Please try again tomorrow.
