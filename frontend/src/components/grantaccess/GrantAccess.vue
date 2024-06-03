@@ -219,8 +219,12 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                     title="Organization information"
                     subtitle="Associate one or more Client IDs to this user"
                     :divider="false"
+                    class="invalid"
                 >
-                    <ForestClientInput
+                    The client API is down and this role cannot be assigned. We
+                    are working on fixing the issue. Please try again tomorrow.
+                    Thank you!
+                    <!-- <ForestClientInput
                         :userId="formData.userId"
                         :roleId="formData.roleId"
                         @setVerifiedForestClients="setVerifiedForestClients"
@@ -228,7 +232,7 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                             removeVerifiedForestClients
                         "
                         @resetVerifiedForestClients="resetVerifiedForestClients"
-                    />
+                    /> -->
                 </StepContainer>
 
                 <div class="button-stack">
