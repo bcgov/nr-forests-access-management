@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.0...v1.16.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Disable adding forest client, and hide delegated admin features ([#1422](https://github.com/bcgov/nr-forests-access-management/issues/1422)) ([57780aa](https://github.com/bcgov/nr-forests-access-management/commit/57780aa953fa13ec677eb5da04324cbd89e8dd5b))
+
 ## [1.16.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.15.0...v1.16.0) (2024-05-03)
 
 
