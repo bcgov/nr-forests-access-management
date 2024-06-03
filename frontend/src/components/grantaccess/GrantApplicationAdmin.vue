@@ -15,6 +15,7 @@ import { computed, ref } from 'vue';
 import { UserType } from 'fam-app-acsctl-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
+import { newUsers } from '@/store/newUserComparatorState';
 
 const defaultFormData = {
     userId: '',
@@ -74,6 +75,7 @@ const handleSubmit = async () => {
         await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
             data
         );
+        newUsers.value.admin.push(data)
         setNotificationMsg(
             Severity.Success,
             `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${

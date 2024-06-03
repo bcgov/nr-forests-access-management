@@ -49,3 +49,29 @@ export const compareUserTable = (userRoleAssignments: FamApplicationUserRoleAssi
         return first.isNewUser ? -1 : 1;
     });
 };
+
+export const compareAdminTable = (userRoleAssignments: FamAppAdminGetResponse[] = []) => {
+    // Map over the user role assignments
+    const updatedUserRoles = userRoleAssignments.map(userRoleAssignment => {
+        // Check if the user is new
+        const isNewUser = newUsers.value.admin.some(userData => {
+            return (
+                userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                userData.application_id === userRoleAssignment.application_id
+            );
+        });
+        // Extend the user role assignment object with the isNewUser property
+        return { ...userRoleAssignment, isNewUser };
+    });
+
+    // Sort the updated user roles array
+    return updatedUserRoles.sort((first, second) => {
+        // Sort first by isNewUser
+        if (first.isNewUser === second.isNewUser) {
+            // If isNewUser is the same, sort alphabetically by user name
+            return first.user.user_name.localeCompare(second.user.user_name);
+        }
+        // Sort new users first
+        return first.isNewUser ? -1 : 1;
+    });
+};

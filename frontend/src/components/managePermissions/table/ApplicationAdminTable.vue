@@ -17,6 +17,8 @@ import {
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import { compareAdminTable } from '@/store/newUserComparatorState';
+import Tag from 'primevue/tag';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 
@@ -94,7 +96,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
             />
             <DataTable
                 v-model:filters="adminFilters"
-                :value="props.applicationAdmins"
+                :value="compareAdminTable(props.applicationAdmins)"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -115,6 +117,13 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
+                        <Tag
+                        v-if="data.isNewUser"
+                        class="custom-tag"
+                        rounded
+                    >
+                        New
+                    </Tag>
                         <span>
                             {{ data.user.user_name }}
                         </span>
