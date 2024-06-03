@@ -14,7 +14,6 @@ import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
-    newUserAdded,
 } from '@/store/ApplicationState';
 import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
@@ -26,6 +25,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
+import { newUsers } from '../../store/newUserComparatorState';
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -140,7 +140,7 @@ const handleSubmit = async () => {
             await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
                 data
             );
-            newUserAdded.isNewUser.push(data)
+            newUsers.value.user.push(data)
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {

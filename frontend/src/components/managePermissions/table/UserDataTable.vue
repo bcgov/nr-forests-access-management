@@ -20,6 +20,7 @@ import {
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import { compareUserTable } from '@/store/newUserComparatorState';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -107,7 +108,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             />
             <DataTable
                 v-model:filters="userRoleAssignmentsFilters"
-                :value="props.userRoleAssignments"
+                :value="compareUserTable(props.userRoleAssignments)"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -133,7 +134,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 >
                     <template #body="{ data }">
                     <Tag
-                        v-if="data.isNew"
+                        v-if="data.isNewUser"
                         class="custom-tag"
                         rounded
                     >
