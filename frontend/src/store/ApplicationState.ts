@@ -46,22 +46,3 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
-
-interface FamApplicationUserRoleAssignmentGetExtended extends FamApplicationUserRoleAssignmentGet {
-    isNew?: boolean;
-}
-
-export const newUserAdded = reactive({
-    isNewUser: [] as FamUserRoleAssignmentCreate[],
-    compareTable: (userRoles: FamApplicationUserRoleAssignmentGet[] = []): FamApplicationUserRoleAssignmentGet[] => {
-      return userRoles.map(userRoleAssignment => {
-        const isNewUser = newUserAdded.isNewUser.some(
-          testItem =>  {
-            return testItem.user_name.toLocaleUpperCase() == userRoleAssignment.user.user_name
-          }
-        );
-        return { ...userRoleAssignment, isNewUser };
-      });
-    }
-  });
-
