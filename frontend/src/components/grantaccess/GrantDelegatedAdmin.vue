@@ -23,6 +23,7 @@ import type {
 } from 'fam-admin-mgmt-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
+import { newUsers } from '@/store/newUserComparatorState';
 
 const confirm = useConfirm();
 
@@ -120,6 +121,7 @@ const confirmSubmit = async () => {
             await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
                 data
             );
+            newUsers.value.delegatedAdmin.push(data)
         returnResponse.data.forEach((response) => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;

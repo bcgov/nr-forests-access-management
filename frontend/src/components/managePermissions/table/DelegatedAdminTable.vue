@@ -15,6 +15,8 @@ import {
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
+import Tag from 'primevue/tag';
+import { compareDelTable } from '@/store/newUserComparatorState';
 
 type emit = (
     e: 'deleteDelegatedAdminAssignment',
@@ -107,7 +109,7 @@ const deleteDelegatedAdmin = (
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
-                :value="props.delegatedAdmins"
+                :value="compareDelTable(props.delegatedAdmins)"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -128,6 +130,13 @@ const deleteDelegatedAdmin = (
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
+                        <Tag
+                        v-if="data.isNewUser"
+                        class="custom-tag"
+                        rounded
+                    >
+                        New
+                    </Tag>
                         <span>
                             {{ data.user.user_name }}
                         </span>
