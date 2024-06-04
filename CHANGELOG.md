@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.1...v1.16.2) (2024-06-04)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Enable verifying forest client number as API problem solved ([#1426](https://github.com/bcgov/nr-forests-access-management/issues/1426)) ([12f5785](https://github.com/bcgov/nr-forests-access-management/commit/12f5785e64daebedeadd28f0b90bf185d27a88ef))
+
 ## [1.16.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.0...v1.16.1) (2024-06-03)
 
 
