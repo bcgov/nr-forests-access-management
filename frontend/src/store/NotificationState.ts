@@ -27,12 +27,21 @@ export const setNotificationMsg = (
     msg: string = '',
     fullMsg: string = ''
 ) => {
-    notifications.value.push({
-        severity: severity,
-        fullMsg: fullMsg,
-        msg: msg,
-        showAll: fullMsg !== '',
-    });
+    const existingNotification = notifications.value.find(
+        (notification) => notification.severity === severity
+    );
+    if (existingNotification) {
+        existingNotification.msg = msg;
+        existingNotification.fullMsg = fullMsg;
+        existingNotification.showAll = fullMsg !== '';
+    } else {
+        notifications.value.push({
+            severity: severity,
+            msg: msg,
+            fullMsg: fullMsg,
+            showAll: fullMsg !== '',
+        });
+    }
 };
 
 export const showFullNotificationMsg = (severity: Severity) => {
