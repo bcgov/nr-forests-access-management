@@ -113,51 +113,51 @@ class TestUserValidatorClass(object):
         assert verified_target_user.user_name == target_user.user_name
         assert verified_target_user.business_guid is not None
 
-    # @patch.object(IdimProxyService, "search_business_bceid")
-    # def test_verify_user_exist_bceid_not_found(self, mock_search_business_bceid):
-    #     mock_search_business_bceid.return_value = {
-    #         **MOCK_SERACH_BCEID_RETURN,
-    #         "found": False,
-    #     }
-    #     target_user = TargetUser(
-    #         **{
-    #             **TEST_TARGET_USER_BCEID_LOAD_2,
-    #             "user_guid": "USERGUIDNOTEXISTSPOJHSLEJFNSEKSL",
-    #         }
-    #     )
-    #     user_validaor = UserValidator(self.requester_idir, target_user)
+    @patch.object(IdimProxyService, "search_business_bceid")
+    def test_verify_user_exist_bceid_not_found(self, mock_search_business_bceid):
+        mock_search_business_bceid.return_value = {
+            **MOCK_SERACH_BCEID_RETURN,
+            "found": False,
+        }
+        target_user = TargetUser(
+            **{
+                **TEST_TARGET_USER_BCEID_LOAD_2,
+                "user_guid": "USERGUIDNOTEXISTSPOJHSLEJFNSEKSL",
+            }
+        )
+        user_validaor = UserValidator(self.requester_idir, target_user)
 
-    #     with pytest.raises(HTTPException) as e:
-    #         user_validaor.verify_user_exist()
-    #     assert (
-    #         str(e.value.detail.get("code")).find(ERROR_CODE_INVALID_REQUEST_PARAMETER)
-    #         != -1
-    #     )
-    #     assert (
-    #         str(e.value.detail.get("description")).find(
-    #             "Invalid request, cannot find user"
-    #         )
-    #         != -1
-    #     )
+        with pytest.raises(HTTPException) as e:
+            user_validaor.verify_user_exist()
+        assert (
+            str(e.value.detail.get("code")).find(ERROR_CODE_INVALID_REQUEST_PARAMETER)
+            != -1
+        )
+        assert (
+            str(e.value.detail.get("description")).find(
+                "Invalid request, cannot find user"
+            )
+            != -1
+        )
 
-    # @patch.object(IdimProxyService, "search_business_bceid")
-    # def test_verify_user_exist_bceid_mismatch_info(self, mock_search_business_bceid):
-    #     mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
-    #     target_user = TargetUser(
-    #         **{
-    #             **TEST_TARGET_USER_BCEID_LOAD_2,
-    #             "user_name": "USER_NOT_EXISTS",
-    #         }
-    #     )
-    #     user_validaor = UserValidator(self.requester_idir, target_user)
+    @patch.object(IdimProxyService, "search_business_bceid")
+    def test_verify_user_exist_bceid_mismatch_info(self, mock_search_business_bceid):
+        mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+        target_user = TargetUser(
+            **{
+                **TEST_TARGET_USER_BCEID_LOAD_2,
+                "user_name": "USER_NOT_EXISTS",
+            }
+        )
+        user_validaor = UserValidator(self.requester_idir, target_user)
 
-    #     with pytest.raises(HTTPException) as e:
-    #         user_validaor.verify_user_exist()
-    #     assert (
-    #         str(e.value.detail.get("code")).find(ERROR_CODE_INVALID_REQUEST_PARAMETER)
-    #         != -1
-    #     )
-    #     assert (
-    #         str(e.value.detail.get("description")).find("does not match the username")
-    #         != -1
-    #     )
+        with pytest.raises(HTTPException) as e:
+            user_validaor.verify_user_exist()
+        assert (
+            str(e.value.detail.get("code")).find(ERROR_CODE_INVALID_REQUEST_PARAMETER)
+            != -1
+        )
+        assert (
+            str(e.value.detail.get("description")).find("does not match the username")
+            != -1
+        )
