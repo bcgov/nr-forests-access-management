@@ -1,4 +1,6 @@
 <script setup>
+import Tag from 'primevue/tag';
+
 const props = defineProps({
     isNew: {
         type: Boolean,
@@ -9,7 +11,7 @@ const props = defineProps({
 
 <template>
     <Tag
-        v-if="props.isNewUser"
+        v-if="props.isNew"
         class="custom-tag"
         rounded
     >
@@ -22,6 +24,6 @@ const props = defineProps({
 .custom-tag {
     background-color: $light-background-inverse;
     padding: 0.18rem 0.5rem 0.2rem;
-    margin-right: 0.3px;
+    margin-right: 0.3rem;
 }
 </style>
