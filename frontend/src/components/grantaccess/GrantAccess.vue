@@ -219,7 +219,6 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                     title="Organization information"
                     subtitle="Associate one or more Client IDs to this user"
                     :divider="false"
-                    class="invalid"
                 >
                     <ForestClientInput
                         :userId="formData.userId"
