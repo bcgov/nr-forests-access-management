@@ -3,7 +3,8 @@ import pytest
 from fastapi import HTTPException
 from mock import patch
 
-from api.app.crud.validator.user_validator import UserValidator, IdimProxyService
+from api.app.crud.validator.user_validator import UserValidator
+from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import Requester, TargetUser
 from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType
 from testspg.constants import (
@@ -39,7 +40,7 @@ MOCK_SERACH_BCEID_RETURN = {
 
 class TestUserValidatorClass(object):
     """
-    Testing UserValidator class with real remote API calls (TEST environment).
+    Testing UserValidator class with mocked IDIM API calls.
     """
 
     def setup_class(self):
