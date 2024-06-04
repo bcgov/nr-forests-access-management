@@ -9,19 +9,36 @@ import type {
     FamAppAdminCreateRequest,
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
+import { TabKey } from '@/enum/TabEnum';
+
+interface NewUsersValue {
+    userAccess: FamUserRoleAssignmentCreate[];
+    adminAccess: FamAppAdminCreateRequest[];
+    delegatedAdminAccess: FamAccessControlPrivilegeCreateRequest[];
+}
 
 // Initialize an array to store new users
-export const newUsers = ref({
-    user: [] as FamUserRoleAssignmentCreate[],
-    admin: [] as FamAppAdminCreateRequest[],
-    delegatedAdmin: [] as FamAccessControlPrivilegeCreateRequest[],
+const newUsers = ref<NewUsersValue>({
+    userAccess: [],
+    adminAccess: [],
+    delegatedAdminAccess: [],
 });
 
 export const clearNewUserTag = () => newUsers.value = {
-    user: [] as FamUserRoleAssignmentCreate[],
-    admin: [] as FamAppAdminCreateRequest[],
-    delegatedAdmin: [] as FamAccessControlPrivilegeCreateRequest[]
+    userAccess: [],
+    adminAccess: [],
+    delegatedAdminAccess: []
 }
+
+export const setNewUsers = (
+    newItem: FamUserRoleAssignmentCreate | FamAppAdminCreateRequest | FamAccessControlPrivilegeCreateRequest,
+    arrayToUpdate: TabKey
+) => {
+    newUsers.value = {
+        ...newUsers.value,
+        [arrayToUpdate]: [...newUsers.value[arrayToUpdate], newItem]
+    };
+};
 
 /**
  * Compares a list of user role assignments and identifies new users.
@@ -33,8 +50,8 @@ export const compareUserTable = (
 ) => {
     const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
-        if(newUsers.value.user) {
-            const isNewUser = newUsers.value.user.some((userData) => {
+        if(newUsers.value.userAccess) {
+            const isNewUser = newUsers.value.userAccess.some((userData) => {
                 if (!userData.forest_client_number) {
                     return (
                         userData.user_name.toLocaleUpperCase() ===
@@ -76,7 +93,7 @@ export const compareAdminTable = (
 ) => {
     // Map over the user role assignments
     const updatedUserRoles = applicationAdmins.map((applicationAdmin) => {
-        const isNewUser = newUsers.value.admin.some((userData) => {
+        const isNewUser = newUsers.value.adminAccess.some((userData) => {
             return (
                 userData.user_name.toLocaleUpperCase() ===
                 applicationAdmin.user.user_name.toLocaleUpperCase() &&
@@ -104,7 +121,7 @@ export const compareDelegatedAdminTable = (
     delegatedAdmins: FamAccessControlPrivilegeGetResponse[] = []
 ) => {
     const updatedUserRoles = delegatedAdmins.map((delegatedAdmin) => {
-        const isNewUser = newUsers.value.delegatedAdmin.some((userData) => {
+        const isNewUser = newUsers.value.delegatedAdminAccess.some((userData) => {
             console.log(userData);
             console.log(delegatedAdmin);
             if (userData.forest_client_numbers) {
@@ -138,13 +155,4 @@ export const compareDelegatedAdminTable = (
         // Sort new users first
         return first.isNewUser ? -1 : 1;
     });
-};
-
-/**
- * Resets the table formatters by removing the `isNewUser` property from each object in the array.
- * @param tableData An array of objects representing user role assignments, admin role assignments, or delegated admin role assignments.
- * @returns A new array with the `isNewUser` property removed from each object.
- */
-export const resetTable = <T extends { isNewUser?: boolean }>(tableData: T[] = []): Omit<T, 'isNewUser'>[] => {
-    return tableData.map(({ isNewUser, ...rest }) => rest);
 };

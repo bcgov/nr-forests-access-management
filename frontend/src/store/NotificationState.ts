@@ -10,7 +10,7 @@ import {
     Severity,
     GrantPermissionType,
 } from '@/enum/SeverityEnum';
-import { clearNewUserTag } from './newUserComparatorState';
+import { clearNewUserTag } from '@/store/newUserComparatorState';
 
 interface Notification {
     severity: Severity;

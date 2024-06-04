@@ -25,7 +25,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
-import { newUsers } from '../../store/newUserComparatorState';
+import { setNewUsers } from '@/store/newUserComparatorState';
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -140,7 +140,7 @@ const handleSubmit = async () => {
             await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
                 data
             );
-            newUsers.value.user.push(data)
+            setNewUsers(data, TabKey.UserAccess)
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
