@@ -26,7 +26,6 @@ export const newUsers = ref({
 export const compareUserTable = (
     userRoleAssignments: FamApplicationUserRoleAssignmentGet[] = []
 ) => {
-    // Map over the user role assignments
     const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
         const isNewUser = newUsers.value.user.some((userData) => {
@@ -46,15 +45,11 @@ export const compareUserTable = (
                 );
             }
         });
-        // Extend the user role assignment object with the isNewUser property
         return { ...userRoleAssignment, isNewUser };
     });
 
-    // Sort the updated user roles array
     return updatedUserRoles.sort((first, second) => {
-        // Sort first by isNewUser
         if (first.isNewUser === second.isNewUser) {
-            // If isNewUser is the same, sort alphabetically by user name
             return first.user.user_name.localeCompare(second.user.user_name);
         }
         // Sort new users first
@@ -62,28 +57,28 @@ export const compareUserTable = (
     });
 };
 
+/**
+ * Compares a list of user role assignments and identifies new users.
+ * @param applicationAdmins An array of app admin role assignments.
+ * @returns A sorted array of app admin role assignments with an additional property indicating if the admin is new.
+ */
 export const compareAdminTable = (
-    userRoleAssignments: FamAppAdminGetResponse[] = []
+    applicationAdmins: FamAppAdminGetResponse[] = []
 ) => {
     // Map over the user role assignments
-    const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
-        // Check if the user is new
+    const updatedUserRoles = applicationAdmins.map((applicationAdmin) => {
         const isNewUser = newUsers.value.admin.some((userData) => {
             return (
                 userData.user_name.toLocaleUpperCase() ===
-                    userRoleAssignment.user.user_name.toLocaleUpperCase() &&
-                userData.application_id === userRoleAssignment.application_id
+                applicationAdmin.user.user_name.toLocaleUpperCase() &&
+                userData.application_id === applicationAdmin.application_id
             );
         });
-        // Extend the user role assignment object with the isNewUser property
-        return { ...userRoleAssignment, isNewUser };
+        return { ...applicationAdmin, isNewUser };
     });
 
-    // Sort the updated user roles array
     return updatedUserRoles.sort((first, second) => {
-        // Sort first by isNewUser
         if (first.isNewUser === second.isNewUser) {
-            // If isNewUser is the same, sort alphabetically by user name
             return first.user.user_name.localeCompare(second.user.user_name);
         }
         // Sort new users first
@@ -91,24 +86,27 @@ export const compareAdminTable = (
     });
 };
 
-export const compareDelTable = (
-    userRoleAssignments: FamAccessControlPrivilegeGetResponse[] = []
+/**
+ * Compares a list of user role assignments and identifies new users.
+ * @param delegatedAdmins An array of delegated admin role assignments.
+ * @returns A sorted array of app delegated role assignments with an additional property indicating if the delegated admin is new.
+ */
+export const compareDelegatedAdminTable = (
+    delegatedAdmins: FamAccessControlPrivilegeGetResponse[] = []
 ) => {
-    // Map over the user role assignments
-    const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
-        // Check if the user is new
+    const updatedUserRoles = delegatedAdmins.map((delegatedAdmin) => {
         const isNewUser = newUsers.value.delegatedAdmin.some((userData) => {
             console.log(userData);
-            console.log(userRoleAssignment);
+            console.log(delegatedAdmin);
             if (userData.forest_client_numbers) {
                 return (
                     userData.user_name.toLocaleUpperCase() ===
-                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
-                    userData.role_id === userRoleAssignment.role_id &&
+                    delegatedAdmin.user.user_name.toLocaleUpperCase() &&
+                    userData.role_id === delegatedAdmin.role_id &&
                     userData.forest_client_numbers.some((number) => {
                         return (
                             number ===
-                            userRoleAssignment.role.client_number
+                            delegatedAdmin.role.client_number
                                 ?.forest_client_number
                         );
                     })
@@ -116,20 +114,16 @@ export const compareDelTable = (
             } else {
                 return (
                     userData.user_name.toLocaleUpperCase() ===
-                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
-                    userData.role_id === userRoleAssignment.role_id
+                    delegatedAdmin.user.user_name.toLocaleUpperCase() &&
+                    userData.role_id === delegatedAdmin.role_id
                 );
             }
         });
-        // Extend the user role assignment object with the isNewUser property
-        return { ...userRoleAssignment, isNewUser };
+        return { ...delegatedAdmin, isNewUser };
     });
 
-    // Sort the updated user roles array
     return updatedUserRoles.sort((first, second) => {
-        // Sort first by isNewUser
         if (first.isNewUser === second.isNewUser) {
-            // If isNewUser is the same, sort alphabetically by user name
             return first.user.user_name.localeCompare(second.user.user_name);
         }
         // Sort new users first

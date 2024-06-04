@@ -13,15 +13,15 @@ import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
 import NewUserTag from '@/components/common/NewUserTag.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import { compareUserTable } from '@/store/newUserComparatorState';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
     e: 'deleteUserRoleAssignment',

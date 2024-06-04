@@ -8,6 +8,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
+import { compareDelegatedAdminTable } from '@/store/newUserComparatorState';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -16,7 +17,6 @@ import {
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
-import { compareDelTable } from '@/store/newUserComparatorState';
 
 type emit = (
     e: 'deleteDelegatedAdminAssignment',
@@ -109,7 +109,7 @@ const deleteDelegatedAdmin = (
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
-                :value="compareDelTable(props.delegatedAdmins)"
+                :value="compareDelegatedAdminTable(props.delegatedAdmins)"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"

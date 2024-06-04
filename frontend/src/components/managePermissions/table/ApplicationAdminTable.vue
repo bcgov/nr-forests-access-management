@@ -9,16 +9,16 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import { compareAdminTable } from '@/store/newUserComparatorState';
+import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 
