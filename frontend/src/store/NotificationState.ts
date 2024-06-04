@@ -10,6 +10,7 @@ import {
     Severity,
     GrantPermissionType,
 } from '@/enum/SeverityEnum';
+import { clearNewUserTag } from './newUserComparatorState';
 
 interface Notification {
     severity: Severity;
@@ -20,7 +21,7 @@ interface Notification {
 
 export const notifications = ref<Notification[]>([]);
 
-export const resetNotification = () => (notifications.value = []);
+export const resetNotification = () => (notifications.value = [], clearNewUserTag());
 
 export const setNotificationMsg = (
     severity: Severity,
