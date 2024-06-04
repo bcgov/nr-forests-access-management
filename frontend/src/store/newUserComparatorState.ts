@@ -1,14 +1,21 @@
-import { ref } from "vue";
-import type { FamApplicationUserRoleAssignmentGet, FamUserRoleAssignmentCreate } from "fam-app-acsctl-api/model";
-import type { FamAccessControlPrivilegeCreateRequest, FamAccessControlPrivilegeGetResponse, FamAppAdminCreateRequest, FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import { ref } from 'vue';
+import type {
+    FamApplicationUserRoleAssignmentGet,
+    FamUserRoleAssignmentCreate,
+} from 'fam-app-acsctl-api/model';
+import type {
+    FamAccessControlPrivilegeCreateRequest,
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminCreateRequest,
+    FamAppAdminGetResponse,
+} from 'fam-admin-mgmt-api/model';
 
-    // Initialize an array to store new users
+// Initialize an array to store new users
 export const newUsers = ref({
     user: [] as FamUserRoleAssignmentCreate[],
     admin: [] as FamAppAdminCreateRequest[],
-    delegatedAdmin: [] as FamAccessControlPrivilegeCreateRequest[]
+    delegatedAdmin: [] as FamAccessControlPrivilegeCreateRequest[],
 });
-
 
 /**
  * Compares a list of user role assignments and identifies new users.
@@ -16,23 +23,27 @@ export const newUsers = ref({
  * @returns A sorted array of user role assignments with an additional property indicating if the user is new.
  */
 
-export const compareUserTable = (userRoleAssignments: FamApplicationUserRoleAssignmentGet[] = []) => {
+export const compareUserTable = (
+    userRoleAssignments: FamApplicationUserRoleAssignmentGet[] = []
+) => {
     // Map over the user role assignments
-    const updatedUserRoles = userRoleAssignments.map(userRoleAssignment => {
+    const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
-        const isNewUser = newUsers.value.user.some(userData => {
-            if(!userData.forest_client_number) {
+        const isNewUser = newUsers.value.user.some((userData) => {
+            if (!userData.forest_client_number) {
                 return (
-                    userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                    userData.user_name.toLocaleUpperCase() ===
+                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
                     userData.role_id === userRoleAssignment.role_id
                 );
             } else {
                 return (
-                    userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                    userData.user_name.toLocaleUpperCase() ===
+                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
                     userData.role_id === userRoleAssignment.role_id &&
-                    userData.forest_client_number === userRoleAssignment.role.forest_client_number
+                    userData.forest_client_number ===
+                        userRoleAssignment.role.forest_client_number
                 );
-
             }
         });
         // Extend the user role assignment object with the isNewUser property
@@ -51,13 +62,16 @@ export const compareUserTable = (userRoleAssignments: FamApplicationUserRoleAssi
     });
 };
 
-export const compareAdminTable = (userRoleAssignments: FamAppAdminGetResponse[] = []) => {
+export const compareAdminTable = (
+    userRoleAssignments: FamAppAdminGetResponse[] = []
+) => {
     // Map over the user role assignments
-    const updatedUserRoles = userRoleAssignments.map(userRoleAssignment => {
+    const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
-        const isNewUser = newUsers.value.admin.some(userData => {
+        const isNewUser = newUsers.value.admin.some((userData) => {
             return (
-                userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                userData.user_name.toLocaleUpperCase() ===
+                    userRoleAssignment.user.user_name.toLocaleUpperCase() &&
                 userData.application_id === userRoleAssignment.application_id
             );
         });
@@ -77,34 +91,39 @@ export const compareAdminTable = (userRoleAssignments: FamAppAdminGetResponse[] 
     });
 };
 
-export const compareDelTable = (userRoleAssignments: FamAccessControlPrivilegeGetResponse[] = []) => {
+export const compareDelTable = (
+    userRoleAssignments: FamAccessControlPrivilegeGetResponse[] = []
+) => {
     // Map over the user role assignments
-    const updatedUserRoles = userRoleAssignments.map(userRoleAssignment => {
+    const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
-        const isNewUser = newUsers.value.delegatedAdmin.some(userData => {
-            console.log(userData)
-            console.log(userRoleAssignment)
-            if(userData.forest_client_numbers) {
+        const isNewUser = newUsers.value.delegatedAdmin.some((userData) => {
+            console.log(userData);
+            console.log(userRoleAssignment);
+            if (userData.forest_client_numbers) {
                 return (
-                    userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                    userData.user_name.toLocaleUpperCase() ===
+                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
                     userData.role_id === userRoleAssignment.role_id &&
                     userData.forest_client_numbers.some((number) => {
-                        return number === userRoleAssignment.role.client_number?.forest_client_number
+                        return (
+                            number ===
+                            userRoleAssignment.role.client_number
+                                ?.forest_client_number
+                        );
                     })
                 );
             } else {
                 return (
-                    userData.user_name.toLocaleUpperCase() === userRoleAssignment.user.user_name.toLocaleUpperCase() &&
+                    userData.user_name.toLocaleUpperCase() ===
+                        userRoleAssignment.user.user_name.toLocaleUpperCase() &&
                     userData.role_id === userRoleAssignment.role_id
                 );
-
             }
         });
         // Extend the user role assignment object with the isNewUser property
         return { ...userRoleAssignment, isNewUser };
     });
-
-    console.log(updatedUserRoles)
 
     // Sort the updated user roles array
     return updatedUserRoles.sort((first, second) => {

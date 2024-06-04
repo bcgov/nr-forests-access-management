@@ -11,36 +11,38 @@ import {
     GrantPermissionType,
 } from '@/enum/SeverityEnum';
 
-const defaultNotification = {
-    success: { msg: '', fullMsg: '' },
-    warn: { msg: '', fullMsg: '' },
-    error: { msg: '', fullMsg: '' },
-};
+interface Notification {
+    severity: Severity;
+    msg: string;
+    fullMsg: string;
+    showAll: boolean;
+}
 
-export const notifications = ref(
-    JSON.parse(JSON.stringify(defaultNotification))
-);
+export const notifications = ref<Notification[]>([]);
 
-export const clearNotification = (severity: string) => {
-    notifications.value[severity].msg = '';
-    notifications.value[severity].fullMsg = '';
-};
-
-export const resetNotification = () => {
-    notifications.value = JSON.parse(JSON.stringify(defaultNotification));
-};
+export const resetNotification = () => (notifications.value = []);
 
 export const setNotificationMsg = (
     severity: Severity,
     msg: string = '',
     fullMsg: string = ''
 ) => {
-    notifications.value[severity].msg = msg;
-    notifications.value[severity].fullMsg = fullMsg;
+    notifications.value.push({
+        severity: severity,
+        fullMsg: fullMsg,
+        msg: msg,
+        showAll: fullMsg !== '',
+    });
 };
 
 export const showFullNotificationMsg = (severity: Severity) => {
-    notifications.value[severity].msg = notifications.value[severity].fullMsg;
+    const notification = notifications.value.find(
+        (notification) => notification.severity === severity
+    );
+    if (notification) {
+        notification.msg = notification.fullMsg;
+        notification.showAll = false;
+    }
 };
 
 export interface CommonObjectType {
