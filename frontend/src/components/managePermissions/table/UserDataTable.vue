@@ -12,6 +12,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -133,13 +134,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     sortable
                 >
                     <template #body="{ data }">
-                    <Tag
-                        v-if="data.isNewUser"
-                        class="custom-tag"
-                        rounded
-                    >
-                        New
-                    </Tag>
+                    <NewUserTag :isNew="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>
@@ -205,9 +200,4 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
-.custom-tag {
-    background-color: $light-background-inverse;
-    padding: 3px 8px 3.5px;
-    margin-right: 5px;
-}
 </style>

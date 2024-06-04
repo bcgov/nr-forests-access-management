@@ -7,6 +7,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
+import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -15,7 +16,6 @@ import {
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
-import Tag from 'primevue/tag';
 import { compareDelTable } from '@/store/newUserComparatorState';
 
 type emit = (
@@ -130,13 +130,7 @@ const deleteDelegatedAdmin = (
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
-                        <Tag
-                        v-if="data.isNewUser"
-                        class="custom-tag"
-                        rounded
-                    >
-                        New
-                    </Tag>
+                        <NewUserTag :isNew="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>

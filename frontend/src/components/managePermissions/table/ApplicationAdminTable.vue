@@ -9,6 +9,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -18,7 +19,6 @@ import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 import { compareAdminTable } from '@/store/newUserComparatorState';
-import Tag from 'primevue/tag';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 
@@ -117,13 +117,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
-                        <Tag
-                        v-if="data.isNewUser"
-                        class="custom-tag"
-                        rounded
-                    >
-                        New
-                    </Tag>
+                        <NewUserTag :isNew="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>
