@@ -9,7 +9,7 @@ import type {
     FamAppAdminCreateRequest,
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
-import { TabKey } from '@/enum/TabEnum';
+import type { TabKey } from '@/enum/TabEnum';
 
 interface NewUsersValue {
     userAccess: FamUserRoleAssignmentCreate[];
