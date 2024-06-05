@@ -8,8 +8,8 @@ COGNITO_USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID")
 COGNITO_CLIENT_ID = os.environ.get("COGNITO_CLIENT_ID")
 COGNITO_USER_POOL_DOMAIN = os.environ.get("COGNITO_USER_POOL_DOMAIN")
 
-IDP_USER_GUID = "b5ecdb094dfb4149a6a8445a0mangled"
-COGNITO_USERNAME = f"test-idir_{IDP_USER_GUID}@idir"
+IDP_USER_GUID = "B5ECDB094DFB4149A6A8445A0MANGLED"
+COGNITO_USERNAME = "test-idir_b5ecdb094dfb4149a6a8445a0mangled@idir"
 IDIR_USERNAME = "COGUSTAF"
 
 # Users setup (key identifier: cognito_user_id) for testing purpose.

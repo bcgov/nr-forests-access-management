@@ -14,13 +14,13 @@
 
 
 import type { Configuration } from '../configuration';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 /**
  * SmokeTestApi - axios parameter creator
  * @export
@@ -33,7 +33,7 @@ export const SmokeTestApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        smokeTest: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        smokeTest: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/smoke_test`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -77,9 +77,11 @@ export const SmokeTestApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async smokeTest(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+        async smokeTest(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.smokeTest(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SmokeTestApi.smokeTest']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -116,7 +118,7 @@ export interface SmokeTestApiInterface {
      * @throws {RequiredError}
      * @memberof SmokeTestApiInterface
      */
-    smokeTest(options?: AxiosRequestConfig): AxiosPromise<any>;
+    smokeTest(options?: RawAxiosRequestConfig): AxiosPromise<any>;
 
 }
 
@@ -134,7 +136,7 @@ export class SmokeTestApi extends BaseAPI implements SmokeTestApiInterface {
      * @throws {RequiredError}
      * @memberof SmokeTestApi
      */
-    public smokeTest(options?: AxiosRequestConfig) {
+    public smokeTest(options?: RawAxiosRequestConfig) {
         return SmokeTestApiFp(this.configuration).smokeTest(options).then((request) => request(this.axios, this.basePath));
     }
 }

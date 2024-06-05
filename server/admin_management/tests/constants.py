@@ -13,17 +13,24 @@ TEST_APP_ROLE_NAME_FOM_REVIEWER = "FOM_REVIEWER"
 TEST_APP_ROLE_NAME_FOM_SUBMITTER = "FOM_SUBMITTER"
 
 # ---------------------- test user data ----------------------------- #
+TEST_USER_NAME_IDIR = "TEST_USER"
+TEST_USER_GUID_IDIR = "MOCKEDGUID5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
+
+TEST_USER_NAME_BCEID = "LOAD-2-TEST"
+TEST_USER_GUID_BCEID = "81069F39B35B4861BCD010582B63B112"
+TEST_USER_BUSINESS_GUID_BCEID = "MOCKEDBUSINESSGUID5D4ACA9FA901EE"  # this is a faked business guid
+
 TEST_NON_EXIST_USER_ID = 0
 TEST_USER_ID = 1
 TEST_INVALID_USER_TYPE = "NS"
 TEST_NON_EXISTS_COGNITO_USER_ID = f"dev-idir_nonexists@idir"
 TEST_DUMMY_COGNITO_USER_ID = f"dev-idir_dummyid@idir"
-TEST_USER_NAME = "TEST_USER"
 
 TEST_NEW_IDIR_USER = schemas.FamUserDto(
     **{
         "user_type_code": famConstants.UserType.IDIR,
-        "user_name": TEST_USER_NAME,
+        "user_name": TEST_USER_NAME_IDIR,
+        "user_guid": TEST_USER_GUID_IDIR,
         "create_user": TEST_CREATOR,
     }
 )
@@ -31,12 +38,11 @@ TEST_NEW_IDIR_USER = schemas.FamUserDto(
 TEST_NEW_BCEID_USER = schemas.FamUserDto(
     **{
         "user_type_code": famConstants.UserType.BCEID,
-        "user_name": TEST_USER_NAME,
+        "user_name": TEST_USER_NAME_BCEID,
+        "user_guid": TEST_USER_GUID_BCEID,
         "create_user": TEST_CREATOR,
     }
 )
-
-TEST_USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
 
 # ---------------------- test application data ---------------------- #
 TEST_NOT_EXIST_APPLICATION_ID = 0
@@ -50,7 +56,7 @@ TEST_APPLICATION_ADMIN_APPLICATION_ID = 3
 TEST_NEW_APPLICATION_ADMIN_USER_ID = 1
 TEST_NEW_APPLICATION_ADMIN = {
     "user_type_code": famConstants.UserType.IDIR,
-    "user_name": TEST_USER_NAME,
+    "user_name": TEST_USER_NAME_IDIR,
     "user_guid": TEST_USER_GUID_IDIR,
     "application_id": TEST_APPLICATION_ADMIN_APPLICATION_ID,
 }
@@ -119,7 +125,7 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE = schemas.FamAccessControlPrivilegeCreateDt
     }
 )
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST = {
-    "user_name": TEST_USER_NAME,
+    "user_name": TEST_USER_NAME_IDIR,
     "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_SUBMITTER_ROLE_ID,
@@ -127,11 +133,18 @@ TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST = {
 }
 
 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE = {
-    "user_name": TEST_USER_NAME,
+    "user_name": TEST_USER_NAME_IDIR,
     "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": famConstants.UserType.IDIR,
     "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
 }
+TEST_ACP_CREATE_CONCRETE_BCEID = {
+    "user_name": TEST_USER_NAME_BCEID,
+    "user_guid": TEST_USER_GUID_BCEID,
+    "user_type_code": famConstants.UserType.BCEID,
+    "role_id": TEST_FOM_DEV_REVIEWER_ROLE_ID,
+}
+
 
 # -------------------------- error messages ------------------------- #
 ERROR_VOLIATE_UNIQUE_CONSTRAINT = "duplicate key value violates unique constraint"

@@ -14,13 +14,13 @@
 
 
 import type { Configuration } from '../configuration';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import { FamAppAdminCreateRequest } from '../model';
 // @ts-ignore
@@ -40,7 +40,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createApplicationAdmin: async (famAppAdminCreateRequest: FamAppAdminCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createApplicationAdmin: async (famAppAdminCreateRequest: FamAppAdminCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famAppAdminCreateRequest' is not null or undefined
             assertParamExists('createApplicationAdmin', 'famAppAdminCreateRequest', famAppAdminCreateRequest)
             const localVarPath = `/application_admins`;
@@ -80,7 +80,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteApplicationAdmin: async (applicationAdminId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deleteApplicationAdmin: async (applicationAdminId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationAdminId' is not null or undefined
             assertParamExists('deleteApplicationAdmin', 'applicationAdminId', applicationAdminId)
             const localVarPath = `/application_admins/{application_admin_id}`
@@ -117,7 +117,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getApplicationAdmins: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getApplicationAdmins: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/application_admins`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -162,9 +162,11 @@ export const FAMApplicationAdminApiFp = function(configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamAppAdminGetResponse>> {
+        async createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamAppAdminGetResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createApplicationAdmin(famAppAdminCreateRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMApplicationAdminApi.createApplicationAdmin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -173,9 +175,11 @@ export const FAMApplicationAdminApiFp = function(configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteApplicationAdmin(applicationAdminId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteApplicationAdmin(applicationAdminId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteApplicationAdmin(applicationAdminId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMApplicationAdminApi.deleteApplicationAdmin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -183,9 +187,11 @@ export const FAMApplicationAdminApiFp = function(configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getApplicationAdmins(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAppAdminGetResponse>>> {
+        async getApplicationAdmins(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAppAdminGetResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getApplicationAdmins(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMApplicationAdminApi.getApplicationAdmins']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -243,7 +249,7 @@ export interface FAMApplicationAdminApiInterface {
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApiInterface
      */
-    createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: AxiosRequestConfig): AxiosPromise<FamAppAdminGetResponse>;
+    createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<FamAppAdminGetResponse>;
 
     /**
      * 
@@ -253,7 +259,7 @@ export interface FAMApplicationAdminApiInterface {
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApiInterface
      */
-    deleteApplicationAdmin(applicationAdminId: number, options?: AxiosRequestConfig): AxiosPromise<void>;
+    deleteApplicationAdmin(applicationAdminId: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -262,7 +268,7 @@ export interface FAMApplicationAdminApiInterface {
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApiInterface
      */
-    getApplicationAdmins(options?: AxiosRequestConfig): AxiosPromise<Array<FamAppAdminGetResponse>>;
+    getApplicationAdmins(options?: RawAxiosRequestConfig): AxiosPromise<Array<FamAppAdminGetResponse>>;
 
 }
 
@@ -281,7 +287,7 @@ export class FAMApplicationAdminApi extends BaseAPI implements FAMApplicationAdm
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApi
      */
-    public createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: AxiosRequestConfig) {
+    public createApplicationAdmin(famAppAdminCreateRequest: FamAppAdminCreateRequest, options?: RawAxiosRequestConfig) {
         return FAMApplicationAdminApiFp(this.configuration).createApplicationAdmin(famAppAdminCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -293,7 +299,7 @@ export class FAMApplicationAdminApi extends BaseAPI implements FAMApplicationAdm
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApi
      */
-    public deleteApplicationAdmin(applicationAdminId: number, options?: AxiosRequestConfig) {
+    public deleteApplicationAdmin(applicationAdminId: number, options?: RawAxiosRequestConfig) {
         return FAMApplicationAdminApiFp(this.configuration).deleteApplicationAdmin(applicationAdminId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -304,7 +310,7 @@ export class FAMApplicationAdminApi extends BaseAPI implements FAMApplicationAdm
      * @throws {RequiredError}
      * @memberof FAMApplicationAdminApi
      */
-    public getApplicationAdmins(options?: AxiosRequestConfig) {
+    public getApplicationAdmins(options?: RawAxiosRequestConfig) {
         return FAMApplicationAdminApiFp(this.configuration).getApplicationAdmins(options).then((request) => request(this.axios, this.basePath));
     }
 }
