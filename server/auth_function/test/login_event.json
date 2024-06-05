@@ -16,15 +16,15 @@
             "cognito:user_status": "EXTERNAL_PROVIDER",
             "custom:idp_display_name": "Gustafson, Conrad CITZ:IN",
             "custom:idp_name": "idir",
-            "custom:idp_user_id": "B5ECDB094DFB4149A6A8445A0MANGLED",
+            "custom:idp_user_id": "B5ECDB094DFB4149A6A8445AMANGLED0",
             "custom:idp_username": "COGUSTAQ",
             "email": "c.gustafson@cgi.com",
             "email_verified": "false",
             "family_name": "Gustafson",
             "given_name": "Conrad",
-            "identities": "[{\"userId\":\"b5ecdb094dfb4149a6a8445a0mangled@idir\",\"providerName\":\"IDIR\",\"providerType\":\"OIDC\",\"issuer\":null,\"primary\":true,\"dateCreated\":1664399277929}]",
+            "identities": "[{\"userId\":\"b5ecdb094dfb4149a6a8445amangled0@idir\",\"providerName\":\"IDIR\",\"providerType\":\"OIDC\",\"issuer\":null,\"primary\":true,\"dateCreated\":1664399277929}]",
             "name": "Conrad Gustafson",
-            "preferred_username": "b5ecdb094dfb4149a6a8445a0mangled@idir",
+            "preferred_username": "b5ecdb094dfb4149a6a8445amangled0@idir",
             "sub": "f7e49325-3796-4663-8745-4161745e358c"
         }
     },

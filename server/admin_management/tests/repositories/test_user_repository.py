@@ -29,6 +29,7 @@ def test_get_user_by_domain_and_name(user_repo: UserRepository):
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name
+    assert new_user.user_guid == fam_user.user_guid
     assert new_user.user_type_code == fam_user.user_type_code
 
     # get user with username lower case
@@ -37,6 +38,26 @@ def test_get_user_by_domain_and_name(user_repo: UserRepository):
     )
     assert new_user.user_id == fam_user.user_id
     assert new_user.user_name == fam_user.user_name
+    assert new_user.user_guid == fam_user.user_guid
+    assert new_user.user_type_code == fam_user.user_type_code
+
+
+def test_get_user_by_domain_and_guid(user_repo: UserRepository):
+    # test not found
+    fam_user = user_repo.get_user_by_domain_and_name(
+        TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_name
+    )
+    assert fam_user is None
+
+    # create a new user
+    new_user = user_repo.create_user(TEST_NEW_IDIR_USER)
+    # verify the user can be found by domain and guid
+    fam_user = user_repo.get_user_by_domain_and_guid(
+        TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_guid
+    )
+    assert new_user.user_id == fam_user.user_id
+    assert new_user.user_name == fam_user.user_name
+    assert new_user.user_guid == fam_user.user_guid
     assert new_user.user_type_code == fam_user.user_type_code
 
 
@@ -63,6 +84,7 @@ def test_get_users(user_repo: UserRepository):
 def test_create_user(user_repo: UserRepository):
     new_user = user_repo.create_user(TEST_NEW_IDIR_USER)
     assert new_user.user_name == TEST_NEW_IDIR_USER.user_name
+    assert new_user.user_guid == TEST_NEW_IDIR_USER.user_guid
     assert new_user.user_type_code == TEST_NEW_IDIR_USER.user_type_code
     fam_user = user_repo.get_user_by_domain_and_name(
         TEST_NEW_IDIR_USER.user_type_code, TEST_NEW_IDIR_USER.user_name
@@ -82,6 +104,7 @@ def test_update(user_repo: UserRepository):
     new_user = user_repo.create_user(TEST_NEW_BCEID_USER)
     assert new_user.user_id is not None
     assert new_user.user_name == TEST_NEW_BCEID_USER.user_name
+    assert new_user.user_guid == TEST_NEW_BCEID_USER.user_guid
     assert new_user.user_type_code == TEST_NEW_BCEID_USER.user_type_code
     assert new_user.create_user == TEST_NEW_BCEID_USER.create_user
     assert new_user.business_guid is None
@@ -91,12 +114,9 @@ def test_update(user_repo: UserRepository):
     different_requester = "OTHER_TESTER"
     # update same user on "business_guid" from None to some value.
     update_value = {"business_guid": "some_new_value"}
-    update_count = user_repo.update(
-        new_user.user_id, update_value, different_requester
-    )
+    update_count = user_repo.update(new_user.user_id, update_value, different_requester)
     fam_user = user_repo.get_user_by_domain_and_name(
-        TEST_NEW_BCEID_USER.user_type_code,
-        TEST_NEW_BCEID_USER.user_name
+        TEST_NEW_BCEID_USER.user_type_code, TEST_NEW_BCEID_USER.user_name
     )
 
     assert update_count == 1

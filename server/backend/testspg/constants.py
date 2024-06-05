@@ -24,23 +24,37 @@ ROLE_NAME_FOM_SUBMITTER_00000001 = "FOM_SUBMITTER_00000001"
 
 TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
+TEST_USER_NAME_IDIR = "TEST_USER"
+TEST_USER_GUID_IDIR = "MOCKEDGUID5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
 
-TEST_NEW_USER = {
-    "user_type_code": "I",
-    "user_name": "TEST_USER",
-    "create_user": TEST_CREATOR,
-}
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
-USER_GUID_IDIR = ""  # once we implement the user validation in backend, this might need change to a real guid
 USER_NAME_BCEID_LOAD_2_TEST = "LOAD-2-TEST"
 USER_GUID_BCEID_LOAD_2_TEST = "81069F39B35B4861BCD010582B63B112"
+BUSINESS_GUID_BCEID_LOAD_2_TEST = "MOCKEDBUSINESSGUID5D4ACA9FA901EE"  # this is a faked business guid
 USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
 USER_GUID_BCEID_LOAD_3_TEST = "532905DE0AA24923AE535428F171BF13"
+BUSINESS_GUID_BCEID_LOAD_3_TEST = "E7C0431DA55D4ACA9FA901EE2C91CB3B"
 USER_NAME_BCEID_LOAD_3_TEST_CHILD_1 = "TEST-3-LOAD-CHILD-1"
 USER_GUID_BCEID_LOAD_3_TEST_CHILD_1 = "BDA2A1E212244DC2B9F9522057C58BBB"
 USER_NAME_BCEID_LOAD_4_TEST = "LOAD-4-TEST"
 USER_GUID_BCEID_LOAD_4_TEST = "B1323E832A4A4947B50367EF4A4F79DE"
+BUSINESS_GUID_BCEID_LOAD_4_TEST = "B1323E832A4A4947B50367EF4A4F79DE"
+
+
+TEST_NEW_USER = {
+    "user_type_code": fam_constants.UserType.IDIR,
+    "user_name": TEST_USER_NAME_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
+    "create_user": TEST_CREATOR,
+}
+
+TEST_NEW_BCEID_USER = {
+    "user_type_code": fam_constants.UserType.BCEID,
+    "user_name": USER_NAME_BCEID_LOAD_2_TEST,
+    "user_guid": USER_GUID_BCEID_LOAD_2_TEST,
+    "create_user": TEST_CREATOR,
+}
 
 # --------------------- Testing forest client numbers ----------------- #
 FC_NUMBER_LEN_TOO_SHORT = "0001011"
@@ -91,14 +105,14 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 
 ACCESS_GRANT_FOM_DEV_CR_IDIR = {
     "user_name": "fom_user_test",
-    "user_guid": USER_GUID_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }
 
 ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR = {
     "user_name": "fom_user_test",
-    "user_guid": USER_GUID_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
@@ -106,7 +120,7 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR = {
 
 ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR = {
     "user_name": "fom_user_test",
-    "user_guid": USER_GUID_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
     "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
@@ -114,7 +128,7 @@ ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR = {
 
 ACCESS_GRANT_FOM_TEST_CR_IDIR = {
     "user_name": "fom_user_test",
-    "user_guid": USER_GUID_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_TEST_REVIEWER_ROLE_ID,
 }
@@ -172,7 +186,7 @@ TEST_IDIR_REQUESTER_DICT = {
     "user_name": "IANLIU",
     "user_type_code": fam_constants.UserType.IDIR,
     "user_id": 4,
-    "user_guid": USER_GUID_IDIR,
+    "user_guid": TEST_USER_GUID_IDIR,
 }
 TEST_BCEID_REQUESTER_DICT = {
     "cognito_user_id": f"test-bceidbusiness_{USER_GUID_BCEID_LOAD_3_TEST}@bceidbusiness",
@@ -180,7 +194,7 @@ TEST_BCEID_REQUESTER_DICT = {
     "user_type_code": fam_constants.UserType.BCEID,
     "user_id": 10,  # this is a fake user id, it doesn't matter
     "user_guid": USER_GUID_BCEID_LOAD_3_TEST,
-    "business_guid": "E7C0431DA55D4ACA9FA901EE2C91CB3B",
+    "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
 }
 TEST_VALID_BUSINESS_BCEID_USERNAME_ONE = "TEST-3-LOAD-CHILD-1"
 TEST_VALID_BUSINESS_BCEID_USERNAME_TWO = "LOAD-2-TEST"
