@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.3](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.2...v1.16.3) (2024-06-05)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Remove invalid class from forest client verification ([#1428](https://github.com/bcgov/nr-forests-access-management/issues/1428)) ([9283f23](https://github.com/bcgov/nr-forests-access-management/commit/9283f23c2df59368754c39c8befe0a62dd7e7d36))
+
 ## [1.16.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.1...v1.16.2) (2024-06-04)
 
 
