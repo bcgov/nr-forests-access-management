@@ -1,6 +1,5 @@
 import { it, describe, beforeAll, beforeEach, afterEach, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { UserType } from 'fam-app-acsctl-api';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
@@ -10,24 +9,28 @@ import type { DOMWrapper } from '@vue/test-utils/dist/domWrapper';
 import type { AxiosRequestHeaders, AxiosResponse, AxiosError } from 'axios';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 import FamLoginUserState from '@/store/FamLoginUserState';
+import { UserType } from 'fam-app-acsctl-api';
 
 fixJsdomCssErr();
 
-const USERID = 'TestUser';
-const FIRSTNAME = 'TestUserFirstName';
-const LASTNAME = 'TestUserLastName';
-const BUSINESSLEGALNAME = 'TestBusinessLegalName';
-const TESTUSERGUID = '00000000000000000000000000000000';
+const USER_ID = 'TestUser';
+const FIRST_NAME = 'TestUserFirstName';
+const LAST_NAME = 'TestUserLastName';
+const BUSINESS_LEGAL_NAME = 'TestBusinessLegalName';
+const TEST_USER_GUID = '00000000000000000000000000000000';
+const NOT_SAME_ORG_ERROR_MSG =
+    'Operation requires business bceid users to be within the same organization';
+const USER_NOT_EXIST = 'User does not exist';
 
 const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
     if (isUserFound) {
         return {
             data: {
-                firstName: FIRSTNAME,
+                firstName: FIRST_NAME,
                 found: true,
-                lastName: LASTNAME,
-                userId: USERID,
-                guid: TESTUSERGUID, // no need to pass a real guid here
+                lastName: LAST_NAME,
+                userId: USER_ID,
+                guid: TEST_USER_GUID, // no need to pass a real guid here
             },
             status: 200,
             statusText: 'Ok',
@@ -40,7 +43,7 @@ const idimIdirSearchMock = (isUserFound: boolean): AxiosResponse => {
         return {
             data: {
                 found: false,
-                userId: USERID,
+                userId: USER_ID,
             },
             status: 200,
             statusText: 'Ok',
@@ -60,12 +63,12 @@ const idimBceidSearchMock = (
         return {
             data: {
                 found: true,
-                userId: USERID,
-                firstName: FIRSTNAME,
-                lastName: LASTNAME,
-                businessLegalName: BUSINESSLEGALNAME,
+                userId: USER_ID,
+                firstName: FIRST_NAME,
+                lastName: LAST_NAME,
+                businessLegalName: BUSINESS_LEGAL_NAME,
                 businessGuid: '', // no need to pass a real guid here
-                guid: TESTUSERGUID, // no need to pass a real guid here
+                guid: TEST_USER_GUID, // no need to pass a real guid here
             },
             status: 200,
             statusText: 'Ok',
@@ -77,32 +80,21 @@ const idimBceidSearchMock = (
     } else if (isPermissionError) {
         throw {
             code: 'ERR_BAD_REQUEST',
-            config: { headers: {} as AxiosRequestHeaders },
-            message: 'Request failed with status code 403',
-            name: 'AxiosError',
             response: {
-                config: { headers: {} as AxiosRequestHeaders },
                 data: {
                     detail: {
                         code: 'permission_required_for_operation',
-                        description:
-                            'Operation requires business bceid users to be within the same organization',
+                        description: NOT_SAME_ORG_ERROR_MSG,
                     },
                 },
-                headers: {},
                 status: 403,
-                statusText: 'Forbidden',
-            },
-            isAxiosError: true,
-            toJSON: () => {
-                return {};
             },
         };
     } else {
         return {
             data: {
                 found: false,
-                userId: USERID,
+                userId: USER_ID,
             },
             status: 200,
             statusText: 'Ok',
@@ -112,6 +104,14 @@ const idimBceidSearchMock = (
             },
         };
     }
+};
+
+const mockFamLoginUser = {
+    username: 'usernameTEST',
+    displayName: 'displayNameTest',
+    email: 'email_test@test.com',
+    idpProvider: UserType.I,
+    organization: 'organizationTest',
 };
 
 describe('UserNameInput', () => {
@@ -129,18 +129,11 @@ describe('UserNameInput', () => {
         helperText: 'Text helper',
     };
 
-    const newProps = {
+    const bceidProps = {
         domain: UserType.B,
-        userId: USERID,
+        userId: USER_ID,
         fieldId: 'testNewFiledId',
         helperText: 'New text helper',
-    };
-    const mockFamLoginUser = {
-        username: 'usernameTEST',
-        displayName: 'displayNameTest',
-        email: 'email_test@test.com',
-        idpProvider: 'idpProviderTest',
-        organization: 'organizationTest',
     };
 
     beforeAll(() => {
@@ -166,25 +159,92 @@ describe('UserNameInput', () => {
 
     it('Should change username input get correct value', async () => {
         expect(usernameInputTextEl.value).toBe('');
-        await usernameInputText.setValue(USERID);
-        expect(usernameInputTextEl.value).toBe(USERID);
+        await usernameInputText.setValue(USER_ID);
+        expect(usernameInputTextEl.value).toBe(USER_ID);
     });
 
     it('Should receive the correct props', async () => {
         // default props
         expect(wrapper.props()).toEqual(props);
 
-        await wrapper.setProps(newProps);
-        expect(wrapper.props()).toEqual(newProps);
+        await wrapper.setProps(bceidProps);
+        expect(wrapper.props()).toEqual(bceidProps);
         expect(wrapper.props()).not.toEqual(props);
     });
 
+    it('Should show not found on card when user is not found', async () => {
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'idirSearch'
+        ).mockImplementation(async () => {
+            return idimIdirSearchMock(false);
+        });
+
+        vi.spyOn(
+            AppActlApiService.idirBceidProxyApi,
+            'bceidSearch'
+        ).mockImplementation(async () => {
+            return idimIdirSearchMock(false);
+        });
+
+
+        // triggers username input change to enable the verify button and click
+        await wrapper.setProps({userId: USER_ID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
+        let emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult).toBeFalsy();
+
+        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
+        expect(cardEl.textContent).toContain('Username');
+        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(USER_NOT_EXIST);
+
+        // triggers username and domain change to BCeID
+        await wrapper.setProps({ domain: bceidProps.domain, userId: USER_ID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+
+        // emit setVerifyResult for BCeID should be false
+        emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult![0][0]).toBeFalsy();
+        expect(cardEl.textContent).toContain('Username');
+        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
+        expect(wrapper.find('#userNotExist').element.textContent).toContain(USER_NOT_EXIST);
+    });
+
+    it('Should remove card and emit different value when domain changes', async () => {
+        // show user identity card to prepare for the test
+        await wrapper.setProps({ userId: USER_ID });
+        await verifyButton.trigger('click');
+        await flushPromises();
+        const cardUsernameEl = wrapper.find('.custom-card')
+            .element as HTMLSpanElement;
+        expect(cardUsernameEl).toBeTruthy();
+
+        // change the domain to be B
+        await wrapper.setProps({ domain: UserType.B });
+        // for BCeID should emit false
+        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
+        expect(emitSetVerifyResult![0][0]).toEqual(false);
+        // UserIdentityCard not on page anymore
+        expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
+
+        // change the domain to be I
+        await wrapper.setProps({ domain: UserType.I });
+        // for IDIR should emit false
+        expect(emitSetVerifyResult![1][0]).toEqual(false);
+    });
+
+    //-------- idir domain tests
     it('Should call emit change and setVerifyResult when input change', async () => {
         // when username input value change, emit change with new value
-        await usernameInputText.setValue(USERID);
+        await usernameInputText.setValue(USER_ID);
         const emitChange = wrapper.emitted('change');
         expect(emitChange).toBeTruthy();
-        expect(emitChange![0][0]).toEqual(USERID);
+        expect(emitChange![0][0]).toEqual(USER_ID);
         const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         expect(emitSetVerifyResult).toBeTruthy();
         // default prop domain is I, emit setVerifyResult with false
@@ -198,7 +258,7 @@ describe('UserNameInput', () => {
         expect(verifyButton.classes('p-disabled')).toBe(true);
 
         // triggers username input change
-        await wrapper.setProps({ userId: USERID });
+        await wrapper.setProps({ userId: USER_ID });
         // verify button is enabled
         expect(verifyButtonEl.disabled).toBe(false);
         expect(verifyButton.classes('p-disabled')).toBe(false);
@@ -217,7 +277,7 @@ describe('UserNameInput', () => {
         expect(verifyButtonEl.textContent).toBe('Verify');
 
         // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ userId: USERID });
+        await wrapper.setProps({ userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
         expect(verifyButtonEl.textContent).toContain('Loading');
@@ -238,7 +298,7 @@ describe('UserNameInput', () => {
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
 
         // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ userId: USERID });
+        await wrapper.setProps({ userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
@@ -246,7 +306,7 @@ describe('UserNameInput', () => {
         const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
         expect(emitSetVerifyResult).toBeTruthy();
         expect(emitSetVerifyResult![0][0]).toEqual(true);
-        expect(emitSetVerifyResult![0][1]).toEqual(TESTUSERGUID);
+        expect(emitSetVerifyResult![0][1]).toEqual(TEST_USER_GUID);
 
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
         const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
@@ -255,15 +315,16 @@ describe('UserNameInput', () => {
         expect(cardEl.textContent).toContain('First Name');
         expect(cardEl.textContent).toContain('Last Name');
         // verify identity card user info
-        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
+        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
         expect(wrapper.find('#firstName').element.textContent).toContain(
-            FIRSTNAME
+            FIRST_NAME
         );
         expect(wrapper.find('#lastName').element.textContent).toContain(
-            LASTNAME
+            LAST_NAME
         );
     });
 
+    //-------- BCEID domain tests
     it('Should show the user identity card with correct info when BCEID user is found', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
@@ -276,8 +337,7 @@ describe('UserNameInput', () => {
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(false);
 
         // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ domain: UserType.B });
-        await wrapper.setProps({ userId: USERID });
+        await wrapper.setProps({ domain: UserType.B, userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
@@ -289,7 +349,7 @@ describe('UserNameInput', () => {
         // the inner array indicates how many parameters it has
         // when we call wrapper.setProps({ domain: UserType.B }) above, the emitSetVerifyResult already be called once with parameter false
         expect(emitSetVerifyResult![1][0]).toEqual(true);
-        expect(emitSetVerifyResult![1][1]).toEqual(TESTUSERGUID);
+        expect(emitSetVerifyResult![1][1]).toEqual(TEST_USER_GUID);
 
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
         const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
@@ -299,19 +359,19 @@ describe('UserNameInput', () => {
         expect(cardEl.textContent).toContain('Last Name');
         expect(cardEl.textContent).toContain('Organization Name');
         // verify identity card user info
-        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
+        expect(wrapper.find('#userId').element.textContent).toContain(USER_ID);
         expect(wrapper.find('#firstName').element.textContent).toContain(
-            FIRSTNAME
+            FIRST_NAME
         );
         expect(wrapper.find('#lastName').element.textContent).toContain(
-            LASTNAME
+            LAST_NAME
         );
         expect(wrapper.find('#organizationName').element.textContent).toContain(
-            BUSINESSLEGALNAME
+            BUSINESS_LEGAL_NAME
         );
     });
 
-    it('Should show the user identity card with permission when BCEID user is not allowed to search', async () => {
+    it('Should show the user identity card error msg when BCEID user is not the same org', async () => {
         vi.spyOn(
             AppActlApiService.idirBceidProxyApi,
             'bceidSearch'
@@ -324,7 +384,7 @@ describe('UserNameInput', () => {
 
         // triggers username input change to enable the verify button and click
         await wrapper.setProps({ domain: UserType.B });
-        await wrapper.setProps({ userId: USERID });
+        await wrapper.setProps({ userId: USER_ID });
         await verifyButton.trigger('click');
         await flushPromises();
 
@@ -336,55 +396,9 @@ describe('UserNameInput', () => {
         expect(emitSetVerifyResult!.length).toEqual(1);
 
         expect(wrapper.findComponent(UserIdentityCard).exists()).toBe(true);
-        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
         expect(wrapper.find('#errorMsg').exists()).toBe(true);
-    });
-
-    it('Should show not found on card when user is not found', async () => {
-        vi.spyOn(
-            AppActlApiService.idirBceidProxyApi,
-            'idirSearch'
-        ).mockImplementation(async () => {
-            return idimIdirSearchMock(false);
-        });
-
-        // triggers username input change to enable the verify button and click
-        await wrapper.setProps({ userId: USERID });
-        await verifyButton.trigger('click');
-        await flushPromises();
-
-        // emit setVerifyResult will not be called, when prop domain is I, mock api returns user not found
-        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
-        expect(emitSetVerifyResult).not.toBeTruthy();
-
-        const cardEl = wrapper.find('.custom-card').element as HTMLSpanElement;
-        expect(cardEl.textContent).toContain('Username');
-        expect(wrapper.find('#userId').element.textContent).toContain(USERID);
-        expect(wrapper.find('#userNotExist').element.textContent).toContain(
-            'User does not exist'
+        expect(wrapper.find('#errorMsg').element.textContent).toContain(
+            NOT_SAME_ORG_ERROR_MSG
         );
-    });
-
-    it('Should remove card and emit different value when domain changes', async () => {
-        // show user identity card to prepare for the test
-        await wrapper.setProps({ userId: USERID });
-        await verifyButton.trigger('click');
-        await flushPromises();
-        const cardUsernameEl = wrapper.find('.custom-card')
-            .element as HTMLSpanElement;
-        expect(cardUsernameEl).toBeTruthy();
-
-        // change the domain to be B
-        await wrapper.setProps({ domain: UserType.B });
-        // for BCeID should emit false
-        const emitSetVerifyResult = wrapper.emitted('setVerifyResult');
-        expect(emitSetVerifyResult![0][0]).toEqual(false);
-        // UserIdentityCard not on page anymore
-        expect(wrapper.findAll('#UserIdentityCard')).toHaveLength(0);
-
-        // change the domain to be I
-        await wrapper.setProps({ domain: UserType.I });
-        // for IDIR should emit false
-        expect(emitSetVerifyResult![1][0]).toEqual(false);
     });
 });
