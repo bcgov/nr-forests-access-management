@@ -140,7 +140,7 @@ const handleSubmit = async () => {
             await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
                 data
             );
-            setNewUsers(data, TabKey.UserAccess)
+            setNewUsers(data, TabKey.UserAccess);
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {

@@ -24,19 +24,23 @@ const newUsers = ref<NewUsersValue>({
     delegatedAdminAccess: [],
 });
 
-export const clearNewUserTag = () => newUsers.value = {
-    userAccess: [],
-    adminAccess: [],
-    delegatedAdminAccess: []
-}
+export const clearNewUserTag = () =>
+    (newUsers.value = {
+        userAccess: [],
+        adminAccess: [],
+        delegatedAdminAccess: [],
+    });
 
 export const setNewUsers = (
-    newItem: FamUserRoleAssignmentCreate | FamAppAdminCreateRequest | FamAccessControlPrivilegeCreateRequest,
+    newItem:
+        | FamUserRoleAssignmentCreate
+        | FamAppAdminCreateRequest
+        | FamAccessControlPrivilegeCreateRequest,
     arrayToUpdate: TabKey
 ) => {
     newUsers.value = {
         ...newUsers.value,
-        [arrayToUpdate]: [...newUsers.value[arrayToUpdate], newItem]
+        [arrayToUpdate]: [...newUsers.value[arrayToUpdate], newItem],
     };
 };
 
@@ -50,7 +54,7 @@ export const compareUserTable = (
 ) => {
     const updatedUserRoles = userRoleAssignments.map((userRoleAssignment) => {
         // Check if the user is new
-        if(newUsers.value.userAccess) {
+        if (newUsers.value.userAccess) {
             const isNewUser = newUsers.value.userAccess.some((userData) => {
                 if (!userData.forest_client_number) {
                     return (
@@ -70,7 +74,7 @@ export const compareUserTable = (
             });
             return { ...userRoleAssignment, isNewUser };
         } else {
-            return { ...userRoleAssignment, isNewUser: false }
+            return { ...userRoleAssignment, isNewUser: false };
         }
     });
 
@@ -93,14 +97,18 @@ export const compareAdminTable = (
 ) => {
     // Map over the user role assignments
     const updatedUserRoles = applicationAdmins.map((applicationAdmin) => {
-        const isNewUser = newUsers.value.adminAccess.some((userData) => {
-            return (
-                userData.user_name.toLocaleUpperCase() ===
-                applicationAdmin.user.user_name.toLocaleUpperCase() &&
-                userData.application_id === applicationAdmin.application_id
-            );
-        });
-        return { ...applicationAdmin, isNewUser };
+        if (newUsers.value.adminAccess) {
+            const isNewUser = newUsers.value.adminAccess.some((userData) => {
+                return (
+                    userData.user_name.toLocaleUpperCase() ===
+                        applicationAdmin.user.user_name.toLocaleUpperCase() &&
+                    userData.application_id === applicationAdmin.application_id
+                );
+            });
+            return { ...applicationAdmin, isNewUser };
+        } else {
+            return { ...applicationAdmin, isNewUser: false };
+        }
     });
 
     return updatedUserRoles.sort((first, second) => {
@@ -121,31 +129,35 @@ export const compareDelegatedAdminTable = (
     delegatedAdmins: FamAccessControlPrivilegeGetResponse[] = []
 ) => {
     const updatedUserRoles = delegatedAdmins.map((delegatedAdmin) => {
-        const isNewUser = newUsers.value.delegatedAdminAccess.some((userData) => {
-            console.log(userData);
-            console.log(delegatedAdmin);
-            if (userData.forest_client_numbers) {
-                return (
-                    userData.user_name.toLocaleUpperCase() ===
-                    delegatedAdmin.user.user_name.toLocaleUpperCase() &&
-                    userData.role_id === delegatedAdmin.role_id &&
-                    userData.forest_client_numbers.some((number) => {
+        if (newUsers.value.delegatedAdminAccess) {
+            const isNewUser = newUsers.value.delegatedAdminAccess.some(
+                (userData) => {
+                    if (userData.forest_client_numbers) {
                         return (
-                            number ===
-                            delegatedAdmin.role.client_number
-                                ?.forest_client_number
+                            userData.user_name.toLocaleUpperCase() ===
+                                delegatedAdmin.user.user_name.toLocaleUpperCase() &&
+                            userData.role_id === delegatedAdmin.role_id &&
+                            userData.forest_client_numbers.some((number) => {
+                                return (
+                                    number ===
+                                    delegatedAdmin.role.client_number
+                                        ?.forest_client_number
+                                );
+                            })
                         );
-                    })
-                );
-            } else {
-                return (
-                    userData.user_name.toLocaleUpperCase() ===
-                    delegatedAdmin.user.user_name.toLocaleUpperCase() &&
-                    userData.role_id === delegatedAdmin.role_id
-                );
-            }
-        });
-        return { ...delegatedAdmin, isNewUser };
+                    } else {
+                        return (
+                            userData.user_name.toLocaleUpperCase() ===
+                                delegatedAdmin.user.user_name.toLocaleUpperCase() &&
+                            userData.role_id === delegatedAdmin.role_id
+                        );
+                    }
+                }
+            );
+            return { ...delegatedAdmin, isNewUser };
+        } else {
+            return { ...delegatedAdmin, isNewUser: false };
+        }
     });
 
     return updatedUserRoles.sort((first, second) => {

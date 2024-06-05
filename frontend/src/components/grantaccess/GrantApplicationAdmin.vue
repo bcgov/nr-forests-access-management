@@ -75,7 +75,7 @@ const handleSubmit = async () => {
         await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
             data
         );
-        setNewUsers(data, TabKey.AdminAccess)
+        setNewUsers(data, TabKey.AdminAccess);
         setNotificationMsg(
             Severity.Success,
             `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${

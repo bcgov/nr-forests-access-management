@@ -121,7 +121,7 @@ const confirmSubmit = async () => {
             await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
                 data
             );
-            setNewUsers(data, TabKey.DelegatedAdminAccess)
+        setNewUsers(data, TabKey.DelegatedAdminAccess);
         returnResponse.data.forEach((response) => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
