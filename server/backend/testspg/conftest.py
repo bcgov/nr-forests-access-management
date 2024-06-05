@@ -20,10 +20,16 @@ import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import COGNITO_USERNAME_KEY
 from api.app.main import apiPrefix, app
-from api.app.routers.router_guards import (get_current_requester,
-                                           target_user_bceid_search)
+from api.app.routers.router_guards import (
+    get_current_requester,
+    get_verified_target_user,
+)
 from api.app.schemas import Requester, TargetUser
-from testspg.constants import FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE
+from testspg.constants import (
+    FOM_DEV_ADMIN_ROLE,
+    FOM_TEST_ADMIN_ROLE,
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -101,9 +107,9 @@ def test_rsa_key():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[
-        jwt_validation.get_rsa_key_method
-    ] = override_get_rsa_key_method
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = (
+        override_get_rsa_key_method
+    )
 
     return new_key.exportKey("PEM")
 
@@ -115,9 +121,9 @@ def test_rsa_key_missing():
     global public_rsa_key
     public_rsa_key = new_key.publickey().exportKey("PEM")
 
-    app.dependency_overrides[
-        jwt_validation.get_rsa_key_method
-    ] = override_get_rsa_key_method_none
+    app.dependency_overrides[jwt_validation.get_rsa_key_method] = (
+        override_get_rsa_key_method_none
+    )
 
     return new_key.exportKey("PEM")
 
@@ -165,13 +171,14 @@ def get_current_requester_by_token(db_pg_session):
         (Although it is strange the outer function is not async but it is
          currently how Pytest can work with async from fixture.)
     """
+
     async def _get_current_requester_by_token(access_token: str) -> Requester:
 
         claims = jwt.get_unverified_claims(access_token)
         requester = await get_current_requester(
             db=db_pg_session,
             access_roles=jwt_validation.get_access_roles(claims),
-            request_cognito_user_id=claims[COGNITO_USERNAME_KEY]
+            request_cognito_user_id=claims[COGNITO_USERNAME_KEY],
         )
         LOGGER.debug(f"requester: {requester}")
 
@@ -181,22 +188,20 @@ def get_current_requester_by_token(db_pg_session):
 
 
 @pytest.fixture(scope="function")
-def override_target_user_bceid_search(
-    test_client_fixture
-):
-    def _override_target_user_bceid_search(
-        mocked_data
-    ):
+def override_get_verified_target_user(test_client_fixture):
+    # mock the return result for idim validation of the target user, to avoid calling external idim-proxy
+    def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
-        app.dependency_overrides[target_user_bceid_search] = (
-            lambda: TargetUser(**mocked_data)
+        app.dependency_overrides[get_verified_target_user] = lambda: TargetUser(
+            **mocked_data
         )
-    return _override_target_user_bceid_search
+
+    return _override_get_verified_target_user
 
 
 @pytest.fixture(scope="function")
 def create_test_user_role_assignments(
-    test_client_fixture
+    test_client_fixture, override_get_verified_target_user
 ):
     """
     Convenient function to assign multipe users to an application.
@@ -205,17 +210,18 @@ def create_test_user_role_assignments(
                             create the users to.
     :param request_bodies: request content to create the users.
     """
-    def _create_test_user_role_assignments(
-            requester_token,
-            request_bodies: List[dict]
-    ):
+
+    def _create_test_user_role_assignments(requester_token, request_bodies: List[dict]):
         created_users = []
         for request_body in request_bodies:
-            created_users.append(create_test_user_role_assignment(
-                test_client_fixture=test_client_fixture,
-                token=requester_token,
-                request_body=request_body
-            ))
+            override_get_verified_target_user(request_body)
+            created_users.append(
+                create_test_user_role_assignment(
+                    test_client_fixture=test_client_fixture,
+                    token=requester_token,
+                    request_body=request_body,
+                )
+            )
         return created_users
 
     return _create_test_user_role_assignments
@@ -224,9 +230,7 @@ def create_test_user_role_assignments(
 # helper method
 # create a user role assignment used for testing
 def create_test_user_role_assignment(
-    test_client_fixture: starlette.testclient.TestClient,
-    token,
-    request_body
+    test_client_fixture: starlette.testclient.TestClient, token, request_body
 ):
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
@@ -235,4 +239,3 @@ def create_test_user_role_assignment(
     )
     data = response.json()
     return data["user_role_xref_id"]
-

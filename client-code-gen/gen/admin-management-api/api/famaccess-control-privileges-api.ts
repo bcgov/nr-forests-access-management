@@ -14,13 +14,13 @@
 
 
 import type { Configuration } from '../configuration';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import { FamAccessControlPrivilegeCreateRequest } from '../model';
 // @ts-ignore
@@ -42,7 +42,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccessControlPrivilegeMany: async (famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createAccessControlPrivilegeMany: async (famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famAccessControlPrivilegeCreateRequest' is not null or undefined
             assertParamExists('createAccessControlPrivilegeMany', 'famAccessControlPrivilegeCreateRequest', famAccessControlPrivilegeCreateRequest)
             const localVarPath = `/access_control_privileges`;
@@ -82,7 +82,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteAccessControlPrivilege: async (accessControlPrivilegeId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deleteAccessControlPrivilege: async (accessControlPrivilegeId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'accessControlPrivilegeId' is not null or undefined
             assertParamExists('deleteAccessControlPrivilege', 'accessControlPrivilegeId', accessControlPrivilegeId)
             const localVarPath = `/access_control_privileges/{access_control_privilege_id}`
@@ -120,7 +120,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccessControlPrivilegesByApplicationId: async (applicationId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccessControlPrivilegesByApplicationId: async (applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getAccessControlPrivilegesByApplicationId', 'applicationId', applicationId)
             const localVarPath = `/access_control_privileges`;
@@ -171,9 +171,11 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>> {
+        async createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.createAccessControlPrivilegeMany']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -182,9 +184,11 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAccessControlPrivilege(accessControlPrivilegeId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.deleteAccessControlPrivilege']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Get Delegated Admin Privileges For an Application
@@ -193,9 +197,11 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccessControlPrivilegesByApplicationId(applicationId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>> {
+        async getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccessControlPrivilegesByApplicationId(applicationId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.getAccessControlPrivilegesByApplicationId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -254,7 +260,7 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
-    createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: AxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>;
+    createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>;
 
     /**
      * 
@@ -264,7 +270,7 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
-    deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig): AxiosPromise<void>;
+    deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * Get Delegated Admin Privileges For an Application
@@ -274,7 +280,7 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
-    getAccessControlPrivilegesByApplicationId(applicationId: number, options?: AxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>;
+    getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>;
 
 }
 
@@ -293,7 +299,7 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApi
      */
-    public createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: AxiosRequestConfig) {
+    public createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig) {
         return FAMAccessControlPrivilegesApiFp(this.configuration).createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -305,7 +311,7 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApi
      */
-    public deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: AxiosRequestConfig) {
+    public deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig) {
         return FAMAccessControlPrivilegesApiFp(this.configuration).deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -317,7 +323,7 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApi
      */
-    public getAccessControlPrivilegesByApplicationId(applicationId: number, options?: AxiosRequestConfig) {
+    public getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig) {
         return FAMAccessControlPrivilegesApiFp(this.configuration).getAccessControlPrivilegesByApplicationId(applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 }

@@ -84,19 +84,3 @@ def test_get_next(db_pg_session: Session):
 
     next_value_after = crud_utils.get_next(db=db_pg_session, model=fam_user_model)
     assert next_value_after > next_value_before
-
-
-def test_get_application_id_from_name(db_pg_session: Session):
-    # get non exists application
-    application_id = crud_utils.get_application_id_from_name(
-        db_pg_session,
-        "TEST"
-    )
-    assert application_id is None
-
-    # get FAM application id
-    application_id = crud_utils.get_application_id_from_name(
-        db_pg_session,
-        "FAM"
-    )
-    assert application_id == 1

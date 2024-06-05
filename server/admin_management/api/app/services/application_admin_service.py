@@ -38,7 +38,7 @@ class ApplicationAdminService:
 
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
-            request.user_type_code, request.user_name, requester
+            request.user_type_code, request.user_name, request.user_guid, requester
         )
 
         # Verify if user is admin already
