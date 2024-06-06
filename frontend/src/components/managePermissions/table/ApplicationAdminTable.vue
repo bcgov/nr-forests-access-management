@@ -17,7 +17,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { compareAdminTable } from '@/store/newUserComparatorState';
+import { compareAdminTable, highlightNewUserRow } from '@/store/newUserComparatorState';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
@@ -112,6 +112,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewUserRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>

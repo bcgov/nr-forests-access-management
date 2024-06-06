@@ -8,7 +8,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
-import { compareDelegatedAdminTable } from '@/store/newUserComparatorState';
+import { compareDelegatedAdminTable, highlightNewUserRow } from '@/store/newUserComparatorState';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -125,6 +125,7 @@ const deleteDelegatedAdmin = (
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewUserRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
