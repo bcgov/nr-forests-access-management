@@ -12,7 +12,7 @@ from api.app.exception_handlers import (requests_http_error_handler,
                                         unhandled_exception_handler,
                                         validation_exception_handler)
 from api.app.routers import (router_access_control_privilege,
-                             router_admin_user_accesses, router_application,
+                             router_admin_user_accesses,
                              router_application_admin, router_smoke_test)
 from api.config.config import get_allow_origins, get_root_path
 
@@ -79,11 +79,6 @@ app.include_router(
     router_application_admin.router,
     prefix=apiPrefix + "/application_admins",
     tags=["FAM Application Admin"],
-)
-app.include_router(
-    router_application.router,
-    prefix=apiPrefix + "/applications",
-    tags=["FAM Applications"],
 )
 app.include_router(
     router_access_control_privilege.router,

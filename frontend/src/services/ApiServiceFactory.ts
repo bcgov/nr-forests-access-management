@@ -5,18 +5,17 @@ import {
     AdminUserAccessesApi,
     FAMAccessControlPrivilegesApi,
     FAMApplicationAdminApi,
-    FAMApplicationsApi
 } from 'fam-admin-mgmt-api/api';
 import {
     Configuration,
-    FAMApplicationsApi as FAMAppsApi, // give alias so name does not clash with fam-admin-mgmt-api's FAMApplicationsApi
+    FAMApplicationsApi,
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
 } from 'fam-app-acsctl-api';
 
 type AppAccessControlApiType = {
-    applicationsApi: FAMAppsApi;
+    applicationsApi: FAMApplicationsApi;
     userRoleAssignmentApi: FAMUserRoleAssignmentApi;
     forestClientsApi: FAMForestClientsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
@@ -24,7 +23,6 @@ type AppAccessControlApiType = {
 
 type AdminManagementApiType = {
     applicationAdminApi: FAMApplicationAdminApi;
-    applicationsApi: FAMApplicationsApi;
     delegatedAdminApi: FAMAccessControlPrivilegesApi;
     adminUserAccessesApi: AdminUserAccessesApi;
 };
@@ -49,7 +47,7 @@ export default class ApiServiceFactory {
         // App Access Control API service
         this.appAccessControlApiService = {
             applicationsApi: this.createApiInstance(
-                FAMAppsApi,
+                FAMApplicationsApi,
                 appAccessControlBaseURL
             ),
             userRoleAssignmentApi: this.createApiInstance(
@@ -71,10 +69,6 @@ export default class ApiServiceFactory {
                 FAMApplicationAdminApi,
                 adminManagementBaseURL
             ),
-            applicationsApi: this.createApiInstance(
-                FAMApplicationsApi,
-                adminManagementBaseURL
-            ),
             delegatedAdminApi: this.createApiInstance(
                 FAMAccessControlPrivilegesApi,
                 adminManagementBaseURL
@@ -82,7 +76,7 @@ export default class ApiServiceFactory {
             adminUserAccessesApi: this.createApiInstance(
                 AdminUserAccessesApi,
                 adminManagementBaseURL
-            )
+            ),
         };
     }
 

@@ -8,7 +8,7 @@ from api.app.routers.router_guards import (
     authorize_by_application_role,
     enforce_self_grant_guard,
     get_current_requester,
-    target_user_bceid_search,
+    get_verified_target_user,
     validate_param_access_control_privilege_id,
 )
 from api.app.routers.router_utils import (
@@ -22,9 +22,7 @@ from api.app.services.access_control_privilege_service import (
 )
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import (
-    AuditEventLog, AuditEventOutcome, AuditEventType
-)
+from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 
 LOGGER = logging.getLogger(__name__)
@@ -48,7 +46,7 @@ def create_access_control_privilege_many(
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(target_user_bceid_search),
+    target_user: TargetUser = Depends(get_verified_target_user),
     user_service: UserService = Depends(user_service_instance),
     role_service: RoleService = Depends(role_service_instance),
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
@@ -85,14 +83,9 @@ def create_access_control_privilege_many(
             access_control_privilege_request.role_id
         )
         audit_event_log.application = audit_event_log.role.application
-        audit_event_log.target_user = user_service.get_user_by_domain_and_name(
-            access_control_privilege_request.user_type_code,
-            access_control_privilege_request.user_name,
-        )
 
         return access_control_privilege_service.create_access_control_privilege_many(
-            access_control_privilege_request, requester.cognito_user_id,
-            target_user
+            access_control_privilege_request, requester.cognito_user_id, target_user
         )
 
     except Exception as e:
@@ -101,6 +94,10 @@ def create_access_control_privilege_many(
         raise e
 
     finally:
+        audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
+            access_control_privilege_request.user_type_code,
+            access_control_privilege_request.user_guid,
+        )
         if audit_event_log.target_user is None:
             audit_event_log.target_user = models.FamUser(
                 user_type_code=access_control_privilege_request.user_type_code,

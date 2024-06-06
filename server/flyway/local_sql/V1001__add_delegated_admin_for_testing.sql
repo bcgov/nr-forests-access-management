@@ -13,6 +13,11 @@ VALUES
 ('LOAD-3-TEST', 'B', 'test-bceidbusiness_532905de0aa24923ae535428mangledf171bf13@bceidbusiness', 'E7C0431DA55D4ACA9FA901EE2C91CB3B', CURRENT_USER),
 ('LOAD-4-TEST', 'B', 'test-bceidbusiness_b5251dbe95724894aa698043mangled099a4de2@bceidbusiness ', 'B1323E832A4A4947B50367EF4A4F79DE', CURRENT_USER);
 
+-- add user_guid for TEST-3-LOAD-CHILD-1, as we use it as requester for tests
+UPDATE app_fam.fam_user
+SET user_guid = 'BDA2A1E212244DC2B9F9522057C58BBB'
+WHERE user_name = 'TEST-3-LOAD-CHILD-1';
+
 
 -- add PTOLLEST as delegated admin to manage FOM DEV role FOM_REVIEWER
 -- add TEST-3-LOAD-CHILD-1 as delegated admin to manage FOM DEV role FOM_REVIEWER
