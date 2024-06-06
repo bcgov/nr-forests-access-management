@@ -7,6 +7,7 @@ from api.app.routers.router_guards import (
     authorize_by_fam_admin,
     enforce_self_grant_guard,
     get_current_requester,
+    get_verified_target_user,
     validate_param_application_admin_id,
     validate_param_application_id,
     validate_param_user_type,
@@ -16,7 +17,7 @@ from api.app.routers.router_utils import (
     application_service_instance,
     user_service_instance,
 )
-from api.app.schemas import Requester
+from api.app.schemas import Requester, TargetUser
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
@@ -58,6 +59,7 @@ def create_application_admin(
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
+    _target_user: TargetUser = Depends(get_verified_target_user),  # validate target user
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
     ),
@@ -82,10 +84,6 @@ def create_application_admin(
         audit_event_log.application = application_service.get_application(
             application_admin_request.application_id
         )
-        audit_event_log.target_user = user_service.get_user_by_domain_and_name(
-            application_admin_request.user_type_code,
-            application_admin_request.user_name,
-        )
 
         return application_admin_service.create_application_admin(
             application_admin_request, requester.cognito_user_id
@@ -97,6 +95,10 @@ def create_application_admin(
         raise e
 
     finally:
+        audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
+            application_admin_request.user_type_code,
+            application_admin_request.user_guid,
+        )
         if audit_event_log.target_user is None:
             audit_event_log.target_user = models.FamUser(
                 user_type_code=application_admin_request.user_type_code,

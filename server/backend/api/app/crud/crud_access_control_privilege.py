@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from api.app.models.model import FamAccessControlPrivilege, FamRole
 from sqlalchemy.orm import Session

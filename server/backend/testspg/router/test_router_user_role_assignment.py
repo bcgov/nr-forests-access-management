@@ -1,3 +1,4 @@
+from asyncio import run
 import copy
 import logging
 from http import HTTPStatus
@@ -9,7 +10,7 @@ import testspg.jwt_utils as jwt_utils
 from api.app.constants import (
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_SELF_GRANT_PROHIBITED,
-    UserType
+    UserType,
 )
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
@@ -29,9 +30,12 @@ from testspg.constants import (
     ACCESS_GRANT_FOM_DEV_CR_IDIR,
     ACCESS_GRANT_FOM_TEST_CR_IDIR,
     ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
     ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
     ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR
+    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+    BUSINESS_GUID_BCEID_LOAD_3_TEST,
+    BUSINESS_GUID_BCEID_LOAD_4_TEST,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -39,7 +43,10 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
 
+
 # ------------------ test create user role assignment ----------------------- #
+
+
 def test_create_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
@@ -57,12 +64,16 @@ def test_create_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
+    assert (
+        data["detail"]["description"]
+        == "Requester has no admin or delegated admin access to the application."
+    )
 
 
 def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -71,6 +82,14 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     test if business bceid user is delegated admin of FOM DEV for FOM_REVIEWER role,
     able to grant FOM_REVIEWER access to a business bceid user from same org
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
+        }
+    )
+
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
@@ -93,6 +112,7 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
 def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -102,6 +122,14 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     able to grant FOM_SUBMITTER_00001018 access for business bceid user from same org,
     will not be able to grant access with other forest client numbers like FOM_SUBMITTER_00001011
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
+        }
+    )
+
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
@@ -133,20 +161,29 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     data = response.json()
     # business bceid user has no privilege to grant FOM_SUBMITTER access with forest client number 00001011
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Requester has no privilege to grant this access."
+    assert (
+        data["detail"]["description"]
+        == "Requester has no privilege to grant this access."
+    )
 
 
 def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test business bceid user cannnot grant idir user access
     """
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
     )
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -158,27 +195,38 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     data = response.json()
     # business bceid user cannot grant idir user access
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
+    assert (
+        data["detail"]["description"]
+        == "Business BCEID requester has no privilege to grant this access to IDIR user."
+    )
 
 
 def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
+        }
+    )
+
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
     )
     response = test_client_fixture.post(
         f"{endPoint}",
-        json={
-            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-            "user_name": "LOAD-4-TEST",  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid
-        },
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -186,7 +234,10 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     data = response.json()
     # business bceid user cannot grant business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
-    assert data["detail"]["description"] == "Managing for different organization is not allowed."
+    assert (
+        data["detail"]["description"]
+        == "Managing for different organization is not allowed."
+    )
 
 
 @pytest.mark.asyncio
@@ -194,11 +245,15 @@ async def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
-    get_current_requester_by_token
+    get_current_requester_by_token,
+    override_get_verified_target_user,
 ):
     """
     test assign a concrete role to a user
     """
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     response = test_client_fixture.post(
         f"{endPoint}",
         json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
@@ -246,11 +301,16 @@ async def test_create_user_role_assignment_with_concrete_role(
 
 
 def test_create_user_role_assignment_with_concrete_role_duplicate(
-    test_client_fixture: starlette.testclient.TestClient, fom_dev_access_admin_token
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    override_get_verified_target_user,
 ):
     """
     test assign same role for the same user
     """
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create user role assignment the first time
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -267,7 +327,7 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == 409
-    assert response.json()["detail"] .get("description")== ERROR_DUPLICATE_USER_ROLE
+    assert response.json()["detail"].get("description") == ERROR_DUPLICATE_USER_ROLE
 
     # cleanup
     response = test_client_fixture.delete(
@@ -278,11 +338,16 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
 
 
 def test_create_user_role_assignment_with_abstract_role_without_forestclient(
-    test_client_fixture: starlette.testclient.TestClient, fom_dev_access_admin_token
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_dev_access_admin_token,
+    override_get_verified_target_user,
 ):
     """
     test assign an abscrate role to a user without forest client number
     """
+    # override router guard dependencies
+    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = copy.deepcopy(
         ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID
     )
@@ -307,11 +372,15 @@ async def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
-    get_current_requester_by_token
+    get_current_requester_by_token,
+    override_get_verified_target_user,
 ):
     """
     test assign an abscrate role to a user
     """
+    # override router guard dependencies
+    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+
     response = test_client_fixture.post(
         f"{endPoint}",
         json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
@@ -356,13 +425,18 @@ async def test_create_user_role_assignment_with_abstract_role(
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
+
 @pytest.mark.asyncio
 async def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
-    get_current_requester_by_token
+    get_current_requester_by_token,
+    override_get_verified_target_user,
 ):
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -393,7 +467,9 @@ async def test_create_user_role_assignment_with_same_username(
     # retrieved requester for current request.
     requester = await get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=assignment_one["application_id"], requester=requester
+        db=db_pg_session,
+        application_id=assignment_one["application_id"],
+        requester=requester,
     )
     assert len(assignment_user_role_items) == 3
 
@@ -423,8 +499,12 @@ async def test_assign_same_application_roles_for_different_environments(
     db_pg_session: Session,
     fom_dev_access_admin_token,
     fom_test_access_admin_token,
-    get_current_requester_by_token
+    get_current_requester_by_token,
+    override_get_verified_target_user,
 ):
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -457,9 +537,7 @@ async def test_assign_same_application_roles_for_different_environments(
 
     # verify application id
     assert fom_dev_user_role_assignment["application_id"] == FOM_DEV_APPLICATION_ID
-    assert (
-        fom_test_user_role_assignment["application_id"] == FOM_TEST_APPLICATION_ID
-    )
+    assert fom_test_user_role_assignment["application_id"] == FOM_TEST_APPLICATION_ID
 
     # verify assignment did get created for fom_dev
     # retrieved requester for current request.
@@ -469,7 +547,7 @@ async def test_assign_same_application_roles_for_different_environments(
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
-        requester=fom_dev_access_admin_requester
+        requester=fom_dev_access_admin_requester,
     )
     assert len(assignment_user_role_items) == 1
     assert (
@@ -485,7 +563,7 @@ async def test_assign_same_application_roles_for_different_environments(
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
-        requester=fom_test_access_admin_requester
+        requester=fom_test_access_admin_requester,
     )
     assert len(assignment_user_role_items) == 1
     assert (
@@ -504,13 +582,13 @@ async def test_assign_same_application_roles_for_different_environments(
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
-        requester=fom_dev_access_admin_requester
+        requester=fom_dev_access_admin_requester,
     )
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
-        requester=fom_test_access_admin_requester
+        requester=fom_test_access_admin_requester,
     )
     assert len(assignment_user_role_items) == 1
 
@@ -525,18 +603,23 @@ async def test_assign_same_application_roles_for_different_environments(
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
-        requester=fom_test_access_admin_requester
+        requester=fom_test_access_admin_requester,
     )
     assert len(assignment_user_role_items) == 0
 
 
 def test_user_role_forest_client_number_not_exist_bad_request(
-    test_client_fixture: TestClient, fom_dev_access_admin_token
+    test_client_fixture: TestClient,
+    fom_dev_access_admin_token,
+    override_get_verified_target_user,
 ):
     """
     Test assign user role with none-existing forest client number should be
     rejected.
     """
+    # override router guard dependencies
+    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+
     client_number_not_exists = FC_NUMBER_NOT_EXISTS
     invalid_request = {
         **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
@@ -556,12 +639,16 @@ def test_user_role_forest_client_number_not_exist_bad_request(
 
 
 def test_user_role_forest_client_number_inactive_bad_request(
-    test_client_fixture: TestClient, fom_dev_access_admin_token
+    test_client_fixture: TestClient,
+    fom_dev_access_admin_token,
+    override_get_verified_target_user,
 ):
     """
     Test assign user role with inactive forest client number should be
     rejected.
     """
+    # override router guard dependencies
+    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
     invalid_request = {
         **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         "forest_client_number": FC_NUMBER_EXISTS_DEACTIVATED,
@@ -580,6 +667,7 @@ def test_self_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     db_pg_session: Session,
+    override_get_verified_target_user,
 ):
     # Setup challenge: The user in the json sent to the service must match the user
     # in the JWT security token.
@@ -587,8 +675,11 @@ def test_self_grant_fail(
         "user_name": jwt_utils.IDIR_USERNAME,
         "user_type_code": UserType.IDIR,
         "role_id": FOM_DEV_REVIEWER_ROLE_ID,
-        "user_guid": jwt_utils.IDP_USER_GUID
+        "user_guid": jwt_utils.IDP_USER_GUID,
     }
+
+    # override router guard dependencies
+    override_get_verified_target_user(user_role_assignment_request_data)
 
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -604,6 +695,58 @@ def test_self_grant_fail(
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
+def test_create_user_role_assignment_new_bceid_user_save_business_guid(
+    test_client_fixture: starlette.testclient.TestClient,
+    db_pg_session: Session,
+    override_get_verified_target_user,
+    fom_dev_access_admin_token,
+):
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
+        "user_name": "TESTUSER_NOTIN_DB",
+        "user_guid": "somerandomguid23AE535428F171BF13",
+        "user_type_code": UserType.BCEID,
+        "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+    }
+
+    # override router guard dependencies
+    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER)
+
+    # verify user does not exist before creation.
+    user = crud_user.get_user_by_domain_and_name(
+        db=db_pg_session,
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
+    )
+    assert user is None
+
+    # override router guard dependencies
+    mocked_data = {
+        **ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
+        "business_guid": "mockedbusinessguid5D4ACA9FA901EE",
+    }
+    # override it for test to avoid calling external idim-proxy
+    override_get_verified_target_user(mocked_data)
+
+    # create BCeID user/role assignment. Expecting it will save business_guid
+    # from mocked_data.business_guid
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER,
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+    assert response.status_code == HTTPStatus.OK
+
+    # new user created
+    user = crud_user.get_user_by_domain_and_name(
+        db=db_pg_session,
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
+    )
+    assert user is not None
+    # verify business_guid is saved to the user.
+    assert user.business_guid == mocked_data["business_guid"]
+
+
 # ---------------- Test delete user role assignment ------------ #
 
 
@@ -611,6 +754,7 @@ def test_delete_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test if user is not app admin, and not app delegated admin, can not remove user role assginments of the application
@@ -618,6 +762,9 @@ def test_delete_user_role_assignment_not_authorized(
     this test case uses FOM DEV as example
     test if user is not app admin and not delegated admin of FOM DEV, cannot remove FOM DEV user role assginments
     """
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a user role assignment
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
@@ -635,13 +782,17 @@ def test_delete_user_role_assignment_not_authorized(
     assert response.json() is not None
     data = response.json()
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Requester has no admin or delegated admin access to the application."
+    assert (
+        data["detail"]["description"]
+        == "Requester has no admin or delegated admin access to the application."
+    )
 
 
 def test_delete_user_role_assignment_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -650,6 +801,14 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     test if business bceid user is delegated admin of FOM DEV for FOM_REVIEWER role,
     able to remove FOM_REVIEWER access for business bceid user from same org
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
+        }
+    )
+
     # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
@@ -660,7 +819,9 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     # create a token for business bceid user COGNITO_USERNAME_BCEID without any app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -674,6 +835,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -683,6 +845,14 @@ def test_delete_user_role_assignment_with_forest_client_number(
     able to remove FOM_SUBMITTER_00001018 access for business bceid user from same org,
     will not be able to remove access with other forest client numbers like FOM_SUBMITTER_00001011
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
+        }
+    )
+
     # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
     # with abstract role FOM_SUBMITTER and forest client number 00001018
     user_role_xref_id = create_test_user_role_assignment(
@@ -722,17 +892,24 @@ def test_delete_user_role_assignment_with_forest_client_number(
     data = response.json()
     # business bceid user has no privilege to delete role with forest client number 00001011
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Requester has no privilege to grant this access."
+    assert (
+        data["detail"]["description"]
+        == "Requester has no privilege to grant this access."
+    )
 
 
 def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test business bceid user cannnot delete idir user access
     """
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a user role assignment for IDIR user
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
@@ -743,7 +920,9 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -754,42 +933,57 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     data = response.json()
     # business bceid user cannot delete idir user access
     assert data["detail"]["code"] == ERROR_PERMISSION_REQUIRED
-    assert data["detail"]["description"] == "Business BCEID requester has no privilege to grant this access to IDIR user."
+    assert (
+        data["detail"]["description"]
+        == "Business BCEID requester has no privilege to grant this access to IDIR user."
+    )
 
 
 def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
+    override_get_verified_target_user,
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
     """
+    # override router guard dependencies
+    override_get_verified_target_user(
+        {
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
+        }
+    )
+
     # create a user role assignment for a business bceid user from diff organization as the user COGNITO_USERNAME_BCEID
     user_role_xref_id = create_test_user_role_assignment(
         test_client_fixture,
         fom_dev_access_admin_token,
-        {
-            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-            "user_name": "LOAD-4-TEST",  # we created this user with business_guid in local_sql
-        },
+        ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,  # we created this user with business_guid in local_sql
     )
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
-        test_rsa_key, roles=[], username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
         headers=jwt_utils.headers(token),
     )
+
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() is not None
     data = response.json()
     # business bceid user cannot delete business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
-    assert data["detail"]["description"] == "Managing for different organization is not allowed."
+    assert (
+        data["detail"]["description"]
+        == "Managing for different organization is not allowed."
+    )
 
 
 @pytest.mark.asyncio
@@ -797,8 +991,12 @@ async def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
-    get_current_requester_by_token
+    get_current_requester_by_token,
+    override_get_verified_target_user,
 ):
+    # override router guard dependencies
+    override_get_verified_target_user()
+
     # create a user role assignment
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -811,13 +1009,9 @@ async def test_delete_user_role_assignment(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(
-        fom_dev_access_admin_token
-    )
+    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db=db_pg_session,
-        application_id=data["application_id"],
-        requester=requester
+        db=db_pg_session, application_id=data["application_id"], requester=requester
     )
     assert len(assignment_user_role_items) == 1
     assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
@@ -831,9 +1025,7 @@ async def test_delete_user_role_assignment(
 
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db=db_pg_session,
-        application_id=data["application_id"],
-        requester=requester
+        db=db_pg_session, application_id=data["application_id"], requester=requester
     )
     assert len(assignment_user_role_items) == 0
 
@@ -867,6 +1059,3 @@ def test_self_remove_grant_fail(
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
-
-
-# TODO add test to test create assignment for BCEID new user (not exists in db, and update business_guid)

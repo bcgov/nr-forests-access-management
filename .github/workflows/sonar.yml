@@ -74,6 +74,7 @@ jobs:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
           IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
           GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+          TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
         run: |
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
@@ -150,6 +151,7 @@ jobs:
         with:
           commands: |
             npm run install-frontend
+            npm run build
             npm run test-coverage
           dir: frontend
           node_version: "18"
