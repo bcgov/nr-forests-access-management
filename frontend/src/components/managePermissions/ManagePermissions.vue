@@ -242,7 +242,7 @@ const getCurrentTab = () => {
                     />
                 </TabPanel>
 
-                <TabPanel
+                <!-- <TabPanel
                     :key="TabKey.DelegatedAdminAccess"
                     v-if="
                         LoginUserState.isAdminOfSelectedApplication() &&
@@ -261,7 +261,7 @@ const getCurrentTab = () => {
                             deleteDelegatedAdminAssignment
                         "
                     />
-                </TabPanel>
+                </TabPanel> -->
             </TabView>
         </div>
     </div>

@@ -8,7 +8,7 @@ import {
     isApplicationSelected,
     selectedApplicationId,
 } from '@/store/ApplicationState';
-import LoginUserState from '@/store/FamLoginUserState';
+// import LoginUserState from '@/store/FamLoginUserState';
 
 const navigationData = ref<[ISideNavItem]>(sideNavData as any);
 
@@ -17,16 +17,16 @@ const setSideNavOptions = () => {
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
         disableSideNavOption('Add user permission', true);
         disableSideNavOption('Add application admin', false);
-        disableSideNavOption('Add delegated admin', true);
+        // disableSideNavOption('Add delegated admin', true);
     } else {
         disableSideNavOption('Add application admin', true);
         disableSideNavOption('Add user permission', false);
 
-        if (LoginUserState.isAdminOfSelectedApplication()) {
-            disableSideNavOption('Add delegated admin', false);
-        } else {
-            disableSideNavOption('Add delegated admin', true);
-        }
+        // if (LoginUserState.isAdminOfSelectedApplication()) {
+        //     disableSideNavOption('Add delegated admin', false);
+        // } else {
+        //     disableSideNavOption('Add delegated admin', true);
+        // }
     }
 };
 
