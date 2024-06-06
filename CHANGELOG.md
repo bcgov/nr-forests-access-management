@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.16.3](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.2...v1.16.3) (2024-06-05)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Remove invalid class from forest client verification ([#1428](https://github.com/bcgov/nr-forests-access-management/issues/1428)) ([9283f23](https://github.com/bcgov/nr-forests-access-management/commit/9283f23c2df59368754c39c8befe0a62dd7e7d36))
+
+## [1.16.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.1...v1.16.2) (2024-06-04)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Enable verifying forest client number as API problem solved ([#1426](https://github.com/bcgov/nr-forests-access-management/issues/1426)) ([12f5785](https://github.com/bcgov/nr-forests-access-management/commit/12f5785e64daebedeadd28f0b90bf185d27a88ef))
+
+## [1.16.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.0...v1.16.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* [#1421](https://github.com/bcgov/nr-forests-access-management/issues/1421) Disable adding forest client, and hide delegated admin features ([#1422](https://github.com/bcgov/nr-forests-access-management/issues/1422)) ([57780aa](https://github.com/bcgov/nr-forests-access-management/commit/57780aa953fa13ec677eb5da04324cbd89e8dd5b))
+
 ## [1.16.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.15.0...v1.16.0) (2024-05-03)
 
 
