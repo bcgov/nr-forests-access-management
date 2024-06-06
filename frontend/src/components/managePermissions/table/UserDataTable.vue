@@ -5,7 +5,6 @@ import type { PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Tag from 'primevue/tag';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 
@@ -20,7 +19,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { compareUserTable } from '@/store/newUserComparatorState';
+import { compareUserTable, highlightNewUserRow } from '@/store/newUserComparatorState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -125,6 +124,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewUserRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>

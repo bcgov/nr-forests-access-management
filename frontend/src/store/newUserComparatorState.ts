@@ -44,6 +44,16 @@ export const setNewUsers = (
     };
 };
 
+export const highlightNewUserRow = (rowData: any) => {
+    console.log('row', rowData)
+    if(rowData.isNewUser) {
+        return {
+            'background-color': '#C2E0FF',
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
+        }
+    }
+}
+
 /**
  * Compares a list of user role assignments and identifies new users.
  * @param userRoleAssignments An array of user role assignments.
