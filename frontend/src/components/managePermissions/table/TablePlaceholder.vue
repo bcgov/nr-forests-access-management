@@ -1,8 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { IconSize } from '@/enum/IconEnum';
+</script>
 
 <template>
     <div class="no-app-selected">
-        <IconCapitol role="presentation" title="Icon Capitol" />
+        <Icon
+            role="presentation"
+            icon="search--locate"
+            :size="IconSize.small"
+            class="icon-color"
+            title="Search-locate Icon"
+        />
         <p class="no-app-selected-title">Nothing to show yet!</p>
         <p class="no-app-selected-text">
             Choose an application to show a list of users with access to it. The
@@ -40,5 +48,9 @@
     font-size: 0.875rem;
     color: $light-text-secondary;
     margin-bottom: 0 !important;
+}
+
+.icon-color {
+    color: $light-background-brand;
 }
 </style>
