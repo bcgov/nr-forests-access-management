@@ -7,8 +7,8 @@ import { IconSize } from '@/enum/IconEnum';
         <Icon
             role="presentation"
             icon="search--locate"
-            :size="IconSize.small"
-            class="icon-color"
+            :size="IconSize.xLarge"
+            class="placeholder-icon"
             title="Search-locate Icon"
         />
         <p class="no-app-selected-title">Nothing to show yet!</p>
@@ -50,7 +50,7 @@ import { IconSize } from '@/enum/IconEnum';
     margin-bottom: 0 !important;
 }
 
-.icon-color {
+.placeholder-icon {
     color: $light-background-brand;
 }
 </style>

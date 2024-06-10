@@ -36,3 +36,6 @@ declare module '@carbon/icons-vue/es/misuse/24';
 declare module '@carbon/icons-vue/es/trash-can/16';
 declare module '@carbon/icons-vue/es/edit/16';
 declare module '@carbon/icons-vue/es/menu/20';
+
+// xLarge
+declare module '@carbon/icons-vue/es/search--locate/32';
