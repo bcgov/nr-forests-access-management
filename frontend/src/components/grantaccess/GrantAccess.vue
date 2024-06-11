@@ -26,6 +26,8 @@ import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
 import { setNewUsers } from '@/store/newUserComparatorState';
+import { useRoute } from 'vue-router';
+import { routeItems } from '../../router/routeItem';
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -121,11 +123,14 @@ const areVerificationsPassed = () => {
     );
 };
 
+const route = useRoute()
+
 const handleSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
     const errorList: string[] = [];
+    const newlyAddedList: number[] = [];
     let errorCode = ErrorCode.Default;
 
     // when we assign a concrete a role to the user, there is no forest client number,
@@ -137,10 +142,11 @@ const handleSubmit = async () => {
         const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
         try {
-            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+            const test = await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
                 data
             );
-            setNewUsers(data, TabKey.UserAccess);
+
+            newlyAddedList.push(test.data.user_role_xref_id);
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
@@ -154,6 +160,12 @@ const handleSubmit = async () => {
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
+        const paramListString = newlyAddedList.join(',');
+        // Set the param here
+        await router.push({
+            name: routeItems.dashboard.name,
+            params: { newUserInTable: paramListString }
+        });
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.Regular,
         username,

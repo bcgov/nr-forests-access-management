@@ -40,6 +40,8 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
+import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
+import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -54,6 +56,10 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
+    newUserInTable: {
+        type: String,
+        default: '',
+    }
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
@@ -175,6 +181,13 @@ const getCurrentTab = () => {
         .indexOf(getCurrentTabState());
     return tabIndex > 0 ? tabIndex : 0;
 };
+
+const newUserInTableArr = props.newUserInTable.split(',')
+
+console.log(props.applicationAdmins)
+console.log(props.delegatedAdmins)
+console.log(props.userRoleAssignments)
+
 </script>
 
 <template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import type { PropType } from 'vue';
 
 import { FilterMatchMode } from 'primevue/api';
@@ -21,6 +22,7 @@ import {
 } from '@/store/Constants';
 import { compareUserTable, highlightNewUserRow } from '@/store/newUserComparatorState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -40,6 +42,10 @@ const props = defineProps({
         >,
         required: true,
     },
+    newUserInTable: {
+        type: Array as PropType<FamUserRoleAssignmentGet[]>,
+        default: [],
+    }
 });
 
 const userRoleAssignmentsFilters = ref({
@@ -87,6 +93,10 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
+// const route = useRoute()
+// const newUserRoute = ref(route.params.newUserInTable)
+// console.log(newUserRoute)
+// console.log(props.newUserInTable)
 </script>
 
 <template>

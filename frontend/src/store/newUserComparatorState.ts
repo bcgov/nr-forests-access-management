@@ -45,7 +45,7 @@ export const setNewUsers = (
 };
 
 export const highlightNewUserRow = (rowData: any) => {
-    console.log('row', rowData)
+    // console.log('row', rowData)
     if(rowData.isNewUser) {
         return {
             'background-color': '#C2E0FF',
