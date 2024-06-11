@@ -48,7 +48,7 @@ const icons = {
     checkmark16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark/16')
     ),
-    'misuse16': defineAsyncComponent(
+    misuse16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/misuse/16')
     ),
     add16: defineAsyncComponent(() => import('@carbon/icons-vue/es/add/16')),
@@ -62,10 +62,8 @@ const icons = {
     'group--access16': defineAsyncComponent(
         () => import('@carbon/icons-vue/es/group--access/16')
     ),
-    'user16': defineAsyncComponent(
-        () => import('@carbon/icons-vue/es/user/16')
-    ),
-    'enterprise16': defineAsyncComponent(
+    user16: defineAsyncComponent(() => import('@carbon/icons-vue/es/user/16')),
+    enterprise16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/enterprise/16')
     ),
     'user--profile16': defineAsyncComponent(
@@ -79,7 +77,7 @@ const icons = {
     checkmark: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/checkmark/20')
     ),
-    'misuse20': defineAsyncComponent(
+    misuse20: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/misuse/20')
     ),
     'warning--filled20': defineAsyncComponent(
@@ -100,10 +98,15 @@ const icons = {
     ),
 
     // large icons
-    'misuse24': defineAsyncComponent(
+    misuse24: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/misuse/24')
     ),
     menu20: defineAsyncComponent(() => import('@carbon/icons-vue/es/menu/20')),
+
+    // xlarge
+    'search--locate32': defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/search--locate/32')
+    ),
 } as any;
 </script>
 
