@@ -1,4 +1,3 @@
-import copy
 import logging
 from http import HTTPStatus
 from typing import List
@@ -10,6 +9,7 @@ from api.app.constants import (
     ERROR_CODE_INVALID_ROLE_ID,
     ERROR_CODE_REQUESTER_NOT_EXISTS,
     ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+    ERROR_CODE_ACTION_NOT_NEEDED,
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_MISSING_KEY_ATTRIBUTE,
     UserType,
@@ -22,9 +22,7 @@ from api.app.crud import (
     crud_access_control_privilege,
     crud_utils,
 )
-
 from api.app.crud.validator.user_validator import UserValidator
-
 from api.app.jwt_validation import (
     ERROR_PERMISSION_REQUIRED,
     ERROR_GROUPS_REQUIRED,
@@ -328,6 +326,29 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
             error_msg="Action is not allowed for external user.",
+        )
+
+
+async def requester_is_external_delegated_admin(
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester),
+):
+    if (
+        requester.user_type_code is UserType.BCEID
+        and crud_access_control_privilege.is_delegated_admin(db, requester.user_id)
+    ):
+        return True
+    return False
+
+
+async def external_delegated_admin_only_action(
+    is_external_delegated_admin: bool = Depends(requester_is_external_delegated_admin),
+):
+    if not is_external_delegated_admin:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_ACTION_NOT_NEEDED,
+            error_msg="Action is not needed",
         )
 
 
