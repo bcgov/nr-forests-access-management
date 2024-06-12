@@ -16,13 +16,13 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get(
-    "/check",
+@router.post(
+    "/user:validate",
     response_model=bool,
     status_code=HTTPStatus.OK,
 )
 def if_user_needs_accept_terms_and_conditions(
-    version_id: int = 1,
+    version: int = 1,
     is_external_delegated_admin: bool = Depends(requester_is_external_delegated_admin),
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
@@ -32,12 +32,12 @@ def if_user_needs_accept_terms_and_conditions(
     If no version id is provided, we check the 1st version of the terms and conditions
     """
     LOGGER.debug(
-        f"Check if user {requester.user_id} needs to accept terms and conditions of version {version_id}"
+        f"Check if user {requester.user_id} needs to accept terms and conditions of version {version}"
     )
 
     if is_external_delegated_admin:
         return crud_user_terms_conditions.if_needs_accept_terms_and_conditions(
-            db, requester.user_id, version_id
+            db, requester.user_id, version
         )
     else:
         return False
@@ -52,7 +52,7 @@ def if_user_needs_accept_terms_and_conditions(
     ],
 )
 def create_user_terms_and_conditions(
-    version_id: int = 1,
+    version: int = 1,
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
@@ -61,9 +61,9 @@ def create_user_terms_and_conditions(
     If no version id is provided, we store the 1st version of the terms and conditions
     """
     LOGGER.debug(
-        f"Create terms and conditions acceptance record for user {requester.user_id} and version {version_id}"
+        f"Create terms and conditions acceptance record for user {requester.user_id} and version {version}"
     )
 
     return crud_user_terms_conditions.create_user_terms_conditions(
-        db, requester.user_id, version_id, requester.cognito_user_id
+        db, requester.user_id, version, requester.cognito_user_id
     )

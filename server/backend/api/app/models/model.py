@@ -698,7 +698,7 @@ class FamUserTermsConditions(Base):
         PrimaryKeyConstraint(
             "user_terms_conditions_id", name="fam_user_terms_conditions_pk"
         ),
-        UniqueConstraint("user_id", "version_id", name="fam_tc_user_version_uk"),
+        UniqueConstraint("user_id", "version", name="fam_tc_user_version_uk"),
         Index("ix_app_fam_fam_user_terms_conditions_user_id", "user_id"),
         {
             "comment": "User Terms Conditions records identify the users who accept the "
@@ -724,7 +724,7 @@ class FamUserTermsConditions(Base):
         nullable=False,
         comment="Unique ID to reference and identify the user within FAM system.",
     )
-    version_id = Column(
+    version = Column(
         Integer,
         nullable=False,
         comment="Number to identity the version of the terms and conditions the user accepted.",
