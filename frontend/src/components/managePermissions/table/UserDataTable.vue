@@ -20,7 +20,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { highlightNewUserRow } from '@/store/newUserComparatorState';
+import { highlightNewUserRow } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
 
@@ -93,6 +93,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
+console.log(props.userRoleAssignments)
 </script>
 
 <template>

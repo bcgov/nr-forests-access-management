@@ -17,7 +17,8 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { highlightNewUserRow } from '@/store/newUserComparatorState';
+import { highlightNewUserRow } from '@/services/utils';
+
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
@@ -118,7 +119,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
-                        <NewUserTag :isNew="data.isNewUser" />
+                        <NewUserTag v-if="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>

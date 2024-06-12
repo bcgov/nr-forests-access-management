@@ -57,34 +57,53 @@ const props = defineProps({
     newUserInTable: {
         type: String,
         default: '',
-    }
+    },
 });
 
-const newUserInTableArr = props.newUserInTable.split(',')
-// Convert newUserInTableArr from array of strings to array of numbers
-const newUserInTableNumbers = newUserInTableArr.map(Number);
+type UserRoleOrAppAdminOrAccessControlPrivilege =
+  | FamApplicationUserRoleAssignmentGet
+  | FamAppAdminGetResponse
+  | FamAccessControlPrivilegeGetResponse;
+
+type UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew = UserRoleOrAppAdminOrAccessControlPrivilege & {
+  isNewUser: boolean;
+};
+const newUserInTable = props.newUserInTable.split(',').map(Number);
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments.map((userRole) => {
-        // Check if user_role_xref_id exists in newUserInTableNumbers
-        const isNewUser = newUserInTableNumbers.includes(userRole.user_role_xref_id);
+        // Check if user_role_xref_id exists in newUserInTable
+        const isNewUser = newUserInTable.includes(
+            userRole.user_role_xref_id
+        );
 
         // Add the isNewUser key to userRole
-        console.log(userRole);
-        console.log(newUserInTableArr);
-        console.log(isNewUser);
-
         return { ...userRole, isNewUser };
-    })
+    }).sort(sortByNewUserAndUserName)
 );
 
-
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
-    props.applicationAdmins
+    props.applicationAdmins.map((admin) => {
+        // Check if application_admin_id exists in newUserInTable
+        const isNewUser = newUserInTable.includes(
+            admin.application_admin_id
+        );
+
+        // Add the isNewUser key to admin
+        return { ...admin, isNewUser };
+    }).sort(sortByNewUserAndUserName)
 );
 
 const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
-    props.delegatedAdmins
+    props.delegatedAdmins.map((DelegatedAdmin) => {
+        // Check if access_control_privilege_id exists in newUserInTable
+        const isNewUser = newUserInTable.includes(
+            DelegatedAdmin.access_control_privilege_id
+        );
+
+        // Add the isNewUser key to DelegatedAdmin
+        return { ...DelegatedAdmin, isNewUser };
+    }).sort(sortByNewUserAndUserName)
 );
 
 const applicationsUserAdministers = computed(() => {
@@ -97,9 +116,38 @@ onUnmounted(() => {
     resetNotification();
 });
 
+function sortByNewUserAndUserName(first: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew, second: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew) {
+    // First, sort by isNewUser (true first)
+    if (first.isNewUser && !second.isNewUser) return -1;
+    if (!first.isNewUser && second.isNewUser) return 1;
+
+    // If both have the same isNewUser value, sort alphabetically by userName
+    if (first.user.user_name < second.user.user_name) return -1;
+    if (first.user.user_name > second.user.user_name) return 1;
+    return 0;
+}
+
+const resetNewAddedTag = () => {
+    userRoleAssignments.value = userRoleAssignments.value.map((userRole) => ({
+        ...userRole,
+        isNewUser: false,
+    }));
+
+    applicationAdmins.value = applicationAdmins.value.map((admin) => ({
+        ...admin,
+        isNewUser: false,
+    }));
+
+    delegatedAdmins.value = delegatedAdmins.value.map((delegatedAdmin) => ({
+        ...delegatedAdmin,
+        isNewUser: false,
+    }));
+};
+
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     resetNotification();
+    resetNewAddedTag();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -183,6 +231,7 @@ const deleteDelegatedAdminAssignment = async (
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
     resetNotification();
+    resetNewAddedTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
@@ -194,26 +243,6 @@ const getCurrentTab = () => {
         .indexOf(getCurrentTabState());
     return tabIndex > 0 ? tabIndex : 0;
 };
-
-const compareUserRoleAssignments = () => {
-    props.userRoleAssignments.forEach((userRole) => {
-        // Check if user_role_xref_id exists in newUserInTableNumbers
-        const isNewUser = newUserInTableNumbers.includes(userRole.user_role_xref_id);
-
-        // Add the isNewUser key to userRole
-        console.log(userRole)
-        console.log(newUserInTableArr)
-        console.log(isNewUser)
-        return { ...userRole, isNewUser };
-    })
-}
-
-compareUserRoleAssignments()
-
-// console.log(props.applicationAdmins)
-// console.log(props.delegatedAdmins)
-// console.log(props.userRoleAssignments)
-
 </script>
 
 <template>

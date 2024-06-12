@@ -8,7 +8,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
-import { compareDelegatedAdminTable, highlightNewUserRow } from '@/store/newUserComparatorState';
+import { highlightNewUserRow } from '@/services/utils';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -131,7 +131,7 @@ const deleteDelegatedAdmin = (
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
-                        <NewUserTag :isNew="data.isNewUser" />
+                        <NewUserTag v-if="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>

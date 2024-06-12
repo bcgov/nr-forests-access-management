@@ -6,6 +6,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import router from '@/router';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { TabKey } from '@/enum/TabEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { isLoading } from '@/store/LoadingState';
 import LoginUserState from '@/store/FamLoginUserState';
@@ -13,7 +14,9 @@ import { composeAndPushGrantPermissionNotification } from '@/store/NotificationS
 import {
     selectedApplicationId,
     selectedApplicationDisplayText,
-} from '@/store/ApplicationState';
+    } from '@/store/ApplicationState';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { routeItems } from '@/router/routeItem';
 import { formValidationSchema } from '@/services/utils';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { UserType } from 'fam-app-acsctl-api';
@@ -21,9 +24,6 @@ import type {
     FamRoleDto,
     FamAccessControlPrivilegeCreateRequest,
 } from 'fam-admin-mgmt-api/model';
-import { setCurrentTabState } from '@/store/CurrentTabState';
-import { TabKey } from '@/enum/TabEnum';
-import { setNewUsers } from '@/store/newUserComparatorState';
 
 const confirm = useConfirm();
 
@@ -112,6 +112,7 @@ const confirmSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
+    const newlyAddedList: number[] = [];
     let errorList: string[] = [];
     let errorCode = ErrorCode.Default;
     const data = toRequestPayload(formData.value);
@@ -121,11 +122,11 @@ const confirmSubmit = async () => {
             await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
                 data
             );
-        setNewUsers(data, TabKey.DelegatedAdminAccess);
         returnResponse.data.forEach((response) => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
+                newlyAddedList.push(response.detail.access_control_privilege_id);
                 successList.push(forestClientNumber ?? '');
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
@@ -144,6 +145,13 @@ const confirmSubmit = async () => {
                 ? formData.value.verifiedForestClients
                 : [''];
     }
+
+    const paramListString = newlyAddedList.join(',');
+    await router.push({
+        name: routeItems.dashboard.name,
+        params: { newUserInTable: paramListString }
+    });
+
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.DelegatedAdmin,
         username,

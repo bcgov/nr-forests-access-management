@@ -1,21 +1,21 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+import router from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { object, string } from 'yup';
-import router from '@/router';
 import Dropdown from 'primevue/dropdown';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import type { FamAppAdminCreateRequest } from 'fam-admin-mgmt-api/model/fam-app-admin-create-request';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { Severity, ErrorDescription } from '@/enum/SeverityEnum';
+import { TabKey } from '@/enum/TabEnum';
 import { isLoading } from '@/store/LoadingState';
 import { setNotificationMsg } from '@/store/NotificationState';
 import LoginUserState from '@/store/FamLoginUserState';
-import { computed, ref } from 'vue';
-import { UserType } from 'fam-app-acsctl-api/model';
 import { setCurrentTabState } from '@/store/CurrentTabState';
-import { TabKey } from '@/enum/TabEnum';
-import { setNewUsers } from '@/store/newUserComparatorState';
+import { routeItems } from '@/router/routeItem';
+import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultFormData = {
     userId: '',
@@ -72,10 +72,13 @@ const handleSubmit = async () => {
         : '';
 
     try {
-        await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
+        const returnResponse = await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
             data
         );
-        setNewUsers(data, TabKey.AdminAccess);
+        await router.push({
+            name: routeItems.dashboard.name,
+            params: { newUserInTable: returnResponse.data.application_admin_id }
+        });
         setNotificationMsg(
             Severity.Success,
             `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
