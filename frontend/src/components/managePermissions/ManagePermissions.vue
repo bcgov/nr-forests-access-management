@@ -120,10 +120,6 @@ function sortByNewUserAndUserName(first: UserRoleOrAppAdminOrAccessControlPrivil
     // First, sort by isNewUser (true first)
     if (first.isNewUser && !second.isNewUser) return -1;
     if (!first.isNewUser && second.isNewUser) return 1;
-
-    // If both have the same isNewUser value, sort alphabetically by userName
-    if (first.user.user_name < second.user.user_name) return -1;
-    if (first.user.user_name > second.user.user_name) return 1;
     return 0;
 }
 
