@@ -40,8 +40,6 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
-import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
-import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -62,9 +60,24 @@ const props = defineProps({
     }
 });
 
+const newUserInTableArr = props.newUserInTable.split(',')
+// Convert newUserInTableArr from array of strings to array of numbers
+const newUserInTableNumbers = newUserInTableArr.map(Number);
+
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
-    props.userRoleAssignments
+    props.userRoleAssignments.map((userRole) => {
+        // Check if user_role_xref_id exists in newUserInTableNumbers
+        const isNewUser = newUserInTableNumbers.includes(userRole.user_role_xref_id);
+
+        // Add the isNewUser key to userRole
+        console.log(userRole);
+        console.log(newUserInTableArr);
+        console.log(isNewUser);
+
+        return { ...userRole, isNewUser };
+    })
 );
+
 
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
@@ -182,11 +195,24 @@ const getCurrentTab = () => {
     return tabIndex > 0 ? tabIndex : 0;
 };
 
-const newUserInTableArr = props.newUserInTable.split(',')
+const compareUserRoleAssignments = () => {
+    props.userRoleAssignments.forEach((userRole) => {
+        // Check if user_role_xref_id exists in newUserInTableNumbers
+        const isNewUser = newUserInTableNumbers.includes(userRole.user_role_xref_id);
 
-console.log(props.applicationAdmins)
-console.log(props.delegatedAdmins)
-console.log(props.userRoleAssignments)
+        // Add the isNewUser key to userRole
+        console.log(userRole)
+        console.log(newUserInTableArr)
+        console.log(isNewUser)
+        return { ...userRole, isNewUser };
+    })
+}
+
+compareUserRoleAssignments()
+
+// console.log(props.applicationAdmins)
+// console.log(props.delegatedAdmins)
+// console.log(props.userRoleAssignments)
 
 </script>
 

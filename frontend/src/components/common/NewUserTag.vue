@@ -1,17 +1,10 @@
 <script setup>
 import Tag from 'primevue/tag';
 
-const props = defineProps({
-    isNew: {
-        type: Boolean,
-        required: true,
-    },
-});
 </script>
 
 <template>
     <Tag
-        v-if="props.isNew"
         class="custom-tag"
         rounded
     >

@@ -20,7 +20,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { compareUserTable, highlightNewUserRow } from '@/store/newUserComparatorState';
+import { highlightNewUserRow } from '@/store/newUserComparatorState';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
 
@@ -93,10 +93,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
-// const route = useRoute()
-// const newUserRoute = ref(route.params.newUserInTable)
-// console.log(newUserRoute)
-// console.log(props.newUserInTable)
 </script>
 
 <template>
@@ -118,7 +114,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             />
             <DataTable
                 v-model:filters="userRoleAssignmentsFilters"
-                :value="compareUserTable(props.userRoleAssignments)"
+                :value="props.userRoleAssignments"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -144,7 +140,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     sortable
                 >
                     <template #body="{ data }">
-                    <NewUserTag :isNew="data.isNewUser" />
+                    <NewUserTag v-if="data.isNewUser" />
                         <span>
                             {{ data.user.user_name }}
                         </span>

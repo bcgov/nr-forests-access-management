@@ -17,7 +17,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { compareAdminTable, highlightNewUserRow } from '@/store/newUserComparatorState';
+import { highlightNewUserRow } from '@/store/newUserComparatorState';
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
@@ -96,7 +96,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
             />
             <DataTable
                 v-model:filters="adminFilters"
-                :value="compareAdminTable(props.applicationAdmins)"
+                :value="props.applicationAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"

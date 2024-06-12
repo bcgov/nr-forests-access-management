@@ -109,7 +109,7 @@ const deleteDelegatedAdmin = (
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
-                :value="compareDelegatedAdminTable(props.delegatedAdmins)"
+                :value="props.delegatedAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
