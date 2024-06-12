@@ -61,49 +61,56 @@ const props = defineProps({
 });
 
 type UserRoleOrAppAdminOrAccessControlPrivilege =
-  | FamApplicationUserRoleAssignmentGet
-  | FamAppAdminGetResponse
-  | FamAccessControlPrivilegeGetResponse;
+    | FamApplicationUserRoleAssignmentGet
+    | FamAppAdminGetResponse
+    | FamAccessControlPrivilegeGetResponse;
 
-type UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew = UserRoleOrAppAdminOrAccessControlPrivilege & {
-  isNewUser: boolean;
-};
+type UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew =
+    UserRoleOrAppAdminOrAccessControlPrivilege & {
+        isNewUser: boolean;
+    };
 const newUserInTable = props.newUserInTable.split(',').map(Number);
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
-    props.userRoleAssignments.map((userRole) => {
-        // Check if user_role_xref_id exists in newUserInTable
-        const isNewUser = newUserInTable.includes(
-            userRole.user_role_xref_id
-        );
+    props.userRoleAssignments
+        .map((userRole) => {
+            // Check if user_role_xref_id exists in newUserInTable
+            const isNewUser = newUserInTable.includes(
+                userRole.user_role_xref_id
+            );
 
-        // Add the isNewUser key to userRole
-        return { ...userRole, isNewUser };
-    }).sort(sortByNewUserAndUserName)
+            // Add the isNewUser key to userRole
+            return { ...userRole, isNewUser };
+        })
+        .sort(sortByNewUserAndUserName)
 );
 
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
-    props.applicationAdmins.map((admin) => {
-        // Check if application_admin_id exists in newUserInTable
-        const isNewUser = newUserInTable.includes(
-            admin.application_admin_id
-        );
+    props.applicationAdmins
+        .map((admin) => {
+            // Check if application_admin_id exists in newUserInTable
+            const isNewUser = newUserInTable.includes(
+                admin.application_admin_id
+            );
 
-        // Add the isNewUser key to admin
-        return { ...admin, isNewUser };
-    }).sort(sortByNewUserAndUserName)
+            // Add the isNewUser key to admin
+            return { ...admin, isNewUser };
+        })
+        .sort(sortByNewUserAndUserName)
 );
 
 const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
-    props.delegatedAdmins.map((DelegatedAdmin) => {
-        // Check if access_control_privilege_id exists in newUserInTable
-        const isNewUser = newUserInTable.includes(
-            DelegatedAdmin.access_control_privilege_id
-        );
+    props.delegatedAdmins
+        .map((DelegatedAdmin) => {
+            // Check if access_control_privilege_id exists in newUserInTable
+            const isNewUser = newUserInTable.includes(
+                DelegatedAdmin.access_control_privilege_id
+            );
 
-        // Add the isNewUser key to DelegatedAdmin
-        return { ...DelegatedAdmin, isNewUser };
-    }).sort(sortByNewUserAndUserName)
+            // Add the isNewUser key to DelegatedAdmin
+            return { ...DelegatedAdmin, isNewUser };
+        })
+        .sort(sortByNewUserAndUserName)
 );
 
 const applicationsUserAdministers = computed(() => {
@@ -116,7 +123,10 @@ onUnmounted(() => {
     resetNotification();
 });
 
-function sortByNewUserAndUserName(first: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew, second: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew) {
+function sortByNewUserAndUserName(
+    first: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew,
+    second: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew
+) {
     // First, sort by isNewUser (true first)
     if (first.isNewUser && !second.isNewUser) return -1;
     if (!first.isNewUser && second.isNewUser) return 1;
