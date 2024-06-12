@@ -28,10 +28,10 @@ def if_pass_user_terms_and_conditions_check(
     requester: Requester = Depends(get_current_requester),
 ):
     """
-    Check if user pass the terms and conditions check
-    Return True (pass) if user is not external delgated admin
-    Return False (not pass) if user is external delegated admin and did not accpet the terms and conditions in the past
-    If no version id is provided, we check the 1st version of the terms and conditions
+    Check if user pass the terms and conditions check. \n
+    Return True (pass) if user is not external delgated admin. \n
+    Return False (not pass) if user is external delegated admin and did not accpet the terms and conditions in the past. \n
+    If no version is provided, we check the 1st version of the terms and conditions.
     """
     LOGGER.debug(
         f"Check if user {requester.user_id} needs to accept terms and conditions of version {version}"
@@ -59,8 +59,8 @@ def create_user_terms_and_conditions(
     requester: Requester = Depends(get_current_requester),
 ):
     """
-    Create a record for terms and conditions acceptance
-    If no version id is provided, we store the 1st version of the terms and conditions
+    Create a record for terms and conditions acceptance. \n
+    If no version is provided, we store the 1st version of the terms and conditions.
     """
     LOGGER.debug(
         f"Create terms and conditions acceptance record for user {requester.user_id} and version {version}"
