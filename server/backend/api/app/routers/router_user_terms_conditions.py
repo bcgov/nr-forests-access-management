@@ -22,7 +22,7 @@ router = APIRouter()
     status_code=HTTPStatus.OK,
 )
 def if_user_needs_accept_terms_and_conditions(
-    version: int = 1,
+    version: str = '1',
     is_external_delegated_admin: bool = Depends(requester_is_external_delegated_admin),
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
@@ -52,7 +52,7 @@ def if_user_needs_accept_terms_and_conditions(
     ],
 )
 def create_user_terms_and_conditions(
-    version: int = 1,
+    version: str = '1',
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):

@@ -725,7 +725,7 @@ class FamUserTermsConditions(Base):
         comment="Unique ID to reference and identify the user within FAM system.",
     )
     version = Column(
-        Integer,
+        String(30),
         nullable=False,
         comment="Number to identity the version of the terms and conditions the user accepted.",
     )

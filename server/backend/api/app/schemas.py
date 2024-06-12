@@ -216,7 +216,7 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 class FamUserTermsConditionsGet(BaseModel):
     user_terms_conditions_id: int
     user_id: int
-    version: int
+    version: str
 
     model_config = ConfigDict(from_attributes=True)
 

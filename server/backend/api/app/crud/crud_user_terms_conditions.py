@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def if_needs_accept_terms_and_conditions(
-    db: Session, user_id: int, version: int
+    db: Session, user_id: int, version: str
 ) -> bool:
     return (
         False
@@ -23,7 +23,7 @@ def if_needs_accept_terms_and_conditions(
 
 
 def create_user_terms_conditions(
-    db: Session, user_id: int, version: int, requester: str
+    db: Session, user_id: int, version: str, requester: str
 ) -> FamUserTermsConditions:
     LOGGER.debug(
         f"Creating user terms conditions acceptance record for user {user_id} and version {version}"
