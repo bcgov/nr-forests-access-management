@@ -11,14 +11,14 @@ def if_needs_accept_terms_and_conditions(
     db: Session, user_id: int, version_id: int
 ) -> bool:
     return (
-        True
+        False
         if db.query(FamUserTermsConditions)
         .filter(
             FamUserTermsConditions.user_id == user_id,
             FamUserTermsConditions.version_id == version_id,
         )
         .one_or_none()
-        else False
+        else True
     )
 
 
