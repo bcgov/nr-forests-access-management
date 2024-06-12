@@ -9,7 +9,7 @@ from api.app.constants import (
     ERROR_CODE_INVALID_ROLE_ID,
     ERROR_CODE_REQUESTER_NOT_EXISTS,
     ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-    ERROR_CODE_ACTION_NOT_NEEDED,
+    ERROR_CODE_INVALID_OPERATION,
     ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
     ERROR_CODE_MISSING_KEY_ATTRIBUTE,
     UserType,
@@ -329,7 +329,7 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
         )
 
 
-async def requester_is_external_delegated_admin(
+def is_requester_external_delegated_admin(
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
@@ -341,13 +341,13 @@ async def requester_is_external_delegated_admin(
     return False
 
 
-async def external_delegated_admin_only_action(
-    is_external_delegated_admin: bool = Depends(requester_is_external_delegated_admin),
+def external_delegated_admin_only_action(
+    is_external_delegated_admin: bool = Depends(is_requester_external_delegated_admin),
 ):
     if not is_external_delegated_admin:
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
-            error_code=ERROR_CODE_ACTION_NOT_NEEDED,
+            error_code=ERROR_CODE_INVALID_OPERATION,
             error_msg="Action is not needed",
         )
 

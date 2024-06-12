@@ -212,15 +212,6 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
     )
 
 
-# ------------------------------------ FAM User Terms Conditions --------------------------------------- #
-class FamUserTermsConditionsGet(BaseModel):
-    user_terms_conditions_id: int
-    user_id: int
-    version: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 class IdimProxySearchParam(BaseModel):
     userId: Annotated[
