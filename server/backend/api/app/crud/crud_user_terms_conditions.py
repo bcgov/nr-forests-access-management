@@ -12,6 +12,10 @@ LOGGER = logging.getLogger(__name__)
 def require_accept_terms_and_conditions(
     db: Session, user_id: int, version: str
 ) -> bool:
+    """
+    Return False if found record (means user already accepted terms and conditions)
+    Return True if not found (means user needs to accept terms and conditions)
+    """
     return (
         False
         if db.query(FamUserTermsConditions)

@@ -29,8 +29,8 @@ def validate_user_requires_accept_terms_and_conditions(
 ):
     """
     Check if user pass the terms and conditions check. \n
-    Return False if user is not external delgated admin or already accepted terms and conditions in the past. \n
-    Return True if user is external delegated admin and did not accpet the terms and conditions in the past. \n
+    Return False if user is not external delgated admin or already accepted terms and conditions. \n
+    Return True if user is external delegated admin and did not accpet the terms and conditions. \n
     If no version is provided, we check the 1st version of the terms and conditions.
     """
     LOGGER.debug(
