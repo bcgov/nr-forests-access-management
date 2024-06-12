@@ -171,7 +171,7 @@ console.log(props.userRoleAssignments)
                      -->
                 <Column
                     field="role.client_number.forest_client_number"
-                    header="Client ID"
+                    header="Client Number"
                     sortable
                 ></Column>
                 <Column field="role.role_name" header="Role" sortable>

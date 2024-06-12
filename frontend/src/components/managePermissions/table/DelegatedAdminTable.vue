@@ -144,7 +144,7 @@ const deleteDelegatedAdmin = (
                 ></Column>
                 <Column
                     field="role.client_number.forest_client_number"
-                    header="Client ID"
+                    header="Client Number"
                     sortable
                 >
                 </Column>

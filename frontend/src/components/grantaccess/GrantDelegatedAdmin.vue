@@ -248,7 +248,6 @@ function handleSubmit() {
                 <StepContainer
                     v-if="isAbstractRoleSelected()"
                     title="Organization information"
-                    subtitle="Associate one or more Client IDs to this user"
                     :divider="false"
                 >
                     <ForestClientInput
