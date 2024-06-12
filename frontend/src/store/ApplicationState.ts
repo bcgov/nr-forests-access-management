@@ -1,6 +1,5 @@
 import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import type { FamApplicationUserRoleAssignmentGet, FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api/model';
-import { computed, reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 

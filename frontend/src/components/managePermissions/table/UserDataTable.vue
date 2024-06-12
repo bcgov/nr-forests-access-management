@@ -22,7 +22,6 @@ import {
 } from '@/store/Constants';
 import { highlightNewUserRow } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type { FamUserRoleAssignmentGet } from 'fam-app-acsctl-api/model';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -41,10 +40,6 @@ const props = defineProps({
             FamApplicationUserRoleAssignmentGet[] | undefined
         >,
         required: true,
-    },
-    newUserInTable: {
-        type: Array as PropType<FamUserRoleAssignmentGet[]>,
-        default: [],
     }
 });
 
@@ -93,7 +88,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
-console.log(props.userRoleAssignments)
 </script>
 
 <template>
