@@ -125,7 +125,7 @@ const handleSubmit = async () => {
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
     const errorList: string[] = [];
-    const newlyAddedList: number[] = [];
+    const newUserAccessIdList: number[] = [];
     let errorCode = ErrorCode.Default;
 
     // when we assign a concrete a role to the user, there is no forest client number,
@@ -141,7 +141,7 @@ const handleSubmit = async () => {
                 data
             );
 
-            newlyAddedList.push(returnResponse.data.user_role_xref_id);
+            newUserAccessIdList.push(returnResponse.data.user_role_xref_id);
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
@@ -155,10 +155,10 @@ const handleSubmit = async () => {
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
-    const paramListString = newlyAddedList.join(',');
+    const paramListString = newUserAccessIdList.join(',');
     await router.push({
         name: routeItems.dashboard.name,
-        params: { newUserInTable: paramListString }
+        params: { newUserAccessId: paramListString }
     });
 
     composeAndPushGrantPermissionNotification(

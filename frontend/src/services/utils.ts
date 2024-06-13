@@ -47,8 +47,9 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
     });
 };
 
-export const highlightNewUserRow = (rowData: any) => {
-    if(rowData.isNewUser) {
+export const highlightNewUserRow = (rowData: any, newAccessType: string) => {
+    console.log(rowData.access_control_privilege_id)
+    if(rowData) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'

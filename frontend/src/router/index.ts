@@ -51,7 +51,7 @@ const routes = [
         component: LandingView,
     },
     {
-        path: `${routeItems.dashboard.path}/:newUserInTable?`,
+        path: `${routeItems.dashboard.path}/:newUserAccessId?/:newAppAdminId?/:newDelegatedAdminId?`,
         name: routeItems.dashboard.name,
         meta: {
             requiresAuth: true,
@@ -67,7 +67,9 @@ const routes = [
                 userRoleAssignments: route.meta.userRoleAssignments,
                 applicationAdmins: route.meta.applicationAdmins,
                 delegatedAdmins: route.meta.delegatedAdmins,
-                newUserInTable: route.params.newUserInTable
+                newUserAccessId: route.params.newUserAccessId,
+                newAppAdminId: route.params.newAppAdminId,
+                newDelegatedAdminId: route.params.newDelegatedAdminId
             };
         },
     },

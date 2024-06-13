@@ -32,6 +32,10 @@ const props = defineProps({
         type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
     },
+    newAppAdminId: {
+        type: Array,
+        default: [],
+    },
 });
 
 const adminFilters = ref({
@@ -76,6 +80,11 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
         },
     });
 };
+const isNewAppAdminAccess = (applicationAdminId: number | null) => {
+    const test = props.newAppAdminId.includes(applicationAdminId);
+    console.log(test);
+    return test;
+};
 </script>
 
 <template>
@@ -119,7 +128,13 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
-                        <NewUserTag v-if="data.isNewUser" />
+                        <NewUserTag
+                            v-if="
+                                isNewAppAdminAccess(
+                                    data.application_admin_id
+                                ) && props.newAppAdminId.length > 0
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>

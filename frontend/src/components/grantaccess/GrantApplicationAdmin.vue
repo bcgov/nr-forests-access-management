@@ -74,10 +74,10 @@ const handleSubmit = async () => {
     try {
         const returnResponse = await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
             data
-        );
+        )
         await router.push({
             name: routeItems.dashboard.name,
-            params: { newUserInTable: returnResponse.data.application_admin_id }
+            params: { newAppAdminId: returnResponse.data.application_admin_id }
         });
         setNotificationMsg(
             Severity.Success,

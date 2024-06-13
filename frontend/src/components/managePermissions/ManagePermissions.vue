@@ -54,63 +54,38 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
-    newUserInTable: {
+    newUserAccessId: {
         type: String,
         default: '',
     },
+    newAppAdminId: {
+        type: String,
+        default: '',
+    },
+    newDelegatedAdminId: {
+        type: String,
+        default: ''
+    }
 });
-
 type UserRoleOrAppAdminOrAccessControlPrivilege =
     | FamApplicationUserRoleAssignmentGet
     | FamAppAdminGetResponse
     | FamAccessControlPrivilegeGetResponse;
 
-type UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew =
-    UserRoleOrAppAdminOrAccessControlPrivilege & {
-        isNewUser: boolean;
-    };
-const newUserInTable = props.newUserInTable.split(',').map(Number);
 
+const newAppAdminId = shallowRef(props.newAppAdminId)
+const newUserAccessId = shallowRef(props.newUserAccessId.split(',').map(Number))
+const newDelegatedAdminId= shallowRef(props.newDelegatedAdminId.split(',').map(Number))
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
-        .map((userRole) => {
-            // Check if user_role_xref_id exists in newUserInTable
-            const isNewUser = newUserInTable.includes(
-                userRole.user_role_xref_id
-            );
-
-            // Add the isNewUser key to userRole
-            return { ...userRole, isNewUser };
-        })
-        .sort(sortByNewUserAndUserName)
 );
 
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
-        .map((admin) => {
-            // Check if application_admin_id exists in newUserInTable
-            const isNewUser = newUserInTable.includes(
-                admin.application_admin_id
-            );
-
-            // Add the isNewUser key to admin
-            return { ...admin, isNewUser };
-        })
-        .sort(sortByNewUserAndUserName)
 );
 
 const delegatedAdmins = shallowRef<FamAccessControlPrivilegeGetResponse[]>(
     props.delegatedAdmins
-        .map((DelegatedAdmin) => {
-            // Check if access_control_privilege_id exists in newUserInTable
-            const isNewUser = newUserInTable.includes(
-                DelegatedAdmin.access_control_privilege_id
-            );
-
-            // Add the isNewUser key to DelegatedAdmin
-            return { ...DelegatedAdmin, isNewUser };
-        })
-        .sort(sortByNewUserAndUserName)
 );
 
 const applicationsUserAdministers = computed(() => {
@@ -123,37 +98,9 @@ onUnmounted(() => {
     resetNotification();
 });
 
-function sortByNewUserAndUserName(
-    first: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew,
-    second: UserRoleOrAppAdminOrAccessControlPrivilegeWithIsNew
-) {
-    // First, sort by isNewUser (true first)
-    if (first.isNewUser && !second.isNewUser) return -1;
-    if (!first.isNewUser && second.isNewUser) return 1;
-    return 0;
-}
-
-const resetNewAddedTag = () => {
-    userRoleAssignments.value = userRoleAssignments.value.map((userRole) => ({
-        ...userRole,
-        isNewUser: false,
-    }));
-
-    applicationAdmins.value = applicationAdmins.value.map((admin) => ({
-        ...admin,
-        isNewUser: false,
-    }));
-
-    delegatedAdmins.value = delegatedAdmins.value.map((delegatedAdmin) => ({
-        ...delegatedAdmin,
-        isNewUser: false,
-    }));
-};
-
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     resetNotification();
-    resetNewAddedTag();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -237,7 +184,6 @@ const deleteDelegatedAdminAssignment = async (
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
     resetNotification();
-    resetNewAddedTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
@@ -298,6 +244,7 @@ const getCurrentTab = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
+                        :newAppAdminId="newAppAdminId.split(',').map(Number) || []"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -309,6 +256,7 @@ const getCurrentTab = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
+                        :newUserAccessId="newUserAccessId || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -328,6 +276,7 @@ const getCurrentTab = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
+                        :newDelegatedAdminId="newDelegatedAdminId || []"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "

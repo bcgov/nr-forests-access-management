@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, type PropType } from 'vue';
+import { ref, reactive, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -8,7 +8,6 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
-import { highlightNewUserRow } from '@/services/utils';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
@@ -34,6 +33,29 @@ const props = defineProps({
         >,
         required: true,
     },
+    newDelegatedAdminId: {
+        type: Array,
+        default: [],
+    }
+});
+
+const delegatedAdmins = computed(() => {
+    if (props.newDelegatedAdminId.length === 0) {
+        return props.delegatedAdmins;
+    } else {
+        return props.delegatedAdmins?.slice().sort((a, b) => {
+            const aIsNew = props.newDelegatedAdminId.includes(a.access_control_privilege_id);
+            const bIsNew = props.newDelegatedAdminId.includes(b.access_control_privilege_id);
+
+            if (aIsNew && !bIsNew) {
+                return -1;
+            } else if (!aIsNew && bIsNew) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
 });
 
 const delegatedAdminFilters = ref({
@@ -87,6 +109,21 @@ const deleteDelegatedAdmin = (
         },
     });
 };
+
+const isNewAppAdminAccess = (accessControlPrivilegeId: number | null) => {
+    const test = props.newDelegatedAdminId.includes(accessControlPrivilegeId);
+    return test;
+};
+
+const highlightNewAppAdminRow = (rowData: any) => {
+    if(isNewAppAdminAccess(rowData.access_control_privilege_id)) {
+        return {
+            'background-color': '#C2E0FF',
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
+        }
+    }
+}
+
 </script>
 
 <template>
@@ -109,7 +146,7 @@ const deleteDelegatedAdmin = (
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
-                :value="props.delegatedAdmins"
+                :value="delegatedAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -125,13 +162,18 @@ const deleteDelegatedAdmin = (
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewUserRow"
+                :rowStyle="highlightNewAppAdminRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
-                        <NewUserTag v-if="data.isNewUser" />
+                        <NewUserTag v-if="
+                                isNewAppAdminAccess(
+                                    data.access_control_privilege_id
+                                ) && props.newDelegatedAdminId.length > 0
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>

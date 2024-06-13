@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { reactive, ref, computed } from 'vue';
 import type { PropType } from 'vue';
 
 import { FilterMatchMode } from 'primevue/api';
@@ -40,8 +39,13 @@ const props = defineProps({
             FamApplicationUserRoleAssignmentGet[] | undefined
         >,
         required: true,
-    }
+    },
+    newUserAccessId: {
+        type: Array,
+        default: [],
+    },
 });
+
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -88,6 +92,13 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
+const isNewAppAdminAccess = (userRoleId: number | null) => {
+    console.log(props.newUserAccessId);
+    console.log(userRoleId);
+    const test = props.newUserAccessId.includes(userRoleId);
+    console.log(test);
+    return test;
+};
 </script>
 
 <template>
@@ -125,7 +136,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewUserRow"
+
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
@@ -135,7 +146,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     sortable
                 >
                     <template #body="{ data }">
-                    <NewUserTag v-if="data.isNewUser" />
+                        <NewUserTag
+                            v-if="
+                                isNewAppAdminAccess(data.user_role_xref_id) &&
+                                props.newUserAccessId.length > 0
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>
@@ -168,7 +184,11 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                     header="Client Number"
                     sortable
                 ></Column>
-                <Column field="role.role_name" header="Role" sortable>
+                <Column
+                    field="role.role_name"
+                    header="Role"
+                    sortable
+                >
                     <template #body="{ data }">
                         {{
                             data.role.parent_role
@@ -190,7 +210,10 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
                         >
-                            <Icon icon="trash-can" :size="IconSize.small" />
+                            <Icon
+                                icon="trash-can"
+                                :size="IconSize.small"
+                            />
                         </button>
                     </template>
                 </Column>
