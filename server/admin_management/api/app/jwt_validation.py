@@ -163,8 +163,6 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # claims = jwt.get_unverified_claims(token)
-
     if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(
             status_code=401,
