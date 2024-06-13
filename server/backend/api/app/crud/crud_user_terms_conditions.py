@@ -49,7 +49,7 @@ def create_user_terms_conditions(
 
     if get_user_terms_conditions_by_user_id_and_version(db, user_id, version):
         error_msg = "User already accepted terms and conditions."
-        raise_http_exception(status_code=HTTPStatus.CONFLICT, error_msg=error_msg)
+        raise_http_exception(error_msg=error_msg, status_code=HTTPStatus.CONFLICT)
 
     new_user_terms_conditions = FamUserTermsConditions(
         **{
