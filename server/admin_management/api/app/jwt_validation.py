@@ -1,19 +1,14 @@
 import json
 import logging
 from urllib.request import urlopen
+
+import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
-from jose import jwt
-
-from api.config.config import (
-    get_aws_region,
-    get_oidc_client_id,
-    get_user_pool_domain_name,
-    get_user_pool_id,
-)
 
 from api.app.constants import COGNITO_USERNAME_KEY
-
+from api.config.config import (get_aws_region, get_oidc_client_id,
+                               get_user_pool_domain_name, get_user_pool_id)
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -95,7 +90,7 @@ def validate_token(
 
     try:
         unverified_header = jwt.get_unverified_header(token)
-    except jwt.JWTError:
+    except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=401,
             detail={
@@ -141,7 +136,7 @@ def validate_token(
     user_pool_id = get_user_pool_id()
 
     try:
-        jwt.decode(
+        claims = jwt.decode(
             token,
             rsa_key,
             algorithms="RS256",
@@ -155,7 +150,7 @@ def validate_token(
             detail={"code": ERROR_EXPIRED_TOKEN, "description": "Token has expired"},
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.JWTClaimsError as err:
+    except jwt.InvalidTokenError as err:
         raise HTTPException(
             status_code=401,
             detail={"code": ERROR_CLAIMS, "description": err.args[0]},
@@ -168,7 +163,7 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    claims = jwt.get_unverified_claims(token)
+    # claims = jwt.get_unverified_claims(token)
 
     if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(
