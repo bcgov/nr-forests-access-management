@@ -16,7 +16,7 @@ const props = defineProps({
         <Card class="custom-card">
             <template #header>
                 <Icon icon="checkmark--filled" :size="IconSize.small" />
-                <p>Verified Client ID information</p>
+                <p>Verified Client Number information</p>
             </template>
             <template #content>
                 <div class="w-100">
@@ -45,19 +45,19 @@ const props = defineProps({
                             v-if="!props.forestClientData"
                             style="margin-top: 0.75rem"
                         >
-                            Please enter an active Forest Client ID
+                            Please enter an active Forest Client Number
                         </p>
 
                         <p
                             class="flex-grow-0 client-id-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label for="forest-client-id">
-                                Client ID:
+                            <label for="forest-client-number">
+                                Client Number:
                             </label>
                             <span
-                                id="forest-client-id"
-                                name="forest-client-id"
+                                id="forest-client-number"
+                                name="forest-client-number"
                             >
                                 {{ forestItem.forest_client_number }}
                             </span>
@@ -81,10 +81,7 @@ const props = defineProps({
                             class="org-status-wrapper"
                             v-if="props.forestClientData"
                         >
-                            <label
-                                for="forest-client-status"
-                                class="status"
-                            >
+                            <label for="forest-client-status" class="status">
                                 Organization status:
                             </label>
                             <Tag
