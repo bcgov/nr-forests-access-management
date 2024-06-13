@@ -37,7 +37,9 @@ class FamUser(BaseModel):
         None  # temporarily optional
     )
     user_name: Annotated[str, StringConstraints(max_length=20)]
-    user_guid: Union[Annotated[str, StringConstraints(min_length=32, max_length=32)], None]
+    user_guid: Union[
+        Annotated[str, StringConstraints(min_length=32, max_length=32)], None
+    ]
     create_user: Annotated[str, StringConstraints(max_length=100)]
     update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
 
