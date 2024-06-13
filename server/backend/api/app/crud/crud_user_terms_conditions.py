@@ -3,29 +3,41 @@ from sqlalchemy.orm import Session
 from http import HTTPStatus
 
 from api.app.models.model import FamUserTermsConditions
+from api.app.schemas import Requester
 from api.app.utils.utils import raise_http_exception
+from api.app.crud.crud_utils import is_requester_external_delegated_admin
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-def require_accept_terms_and_conditions(
+def get_user_terms_conditions_by_user_id_and_version(
     db: Session, user_id: int, version: str
-) -> bool:
-    """
-    Return False if found record (means user already accepted terms and conditions)
-    Return True if not found (means user needs to accept terms and conditions)
-    """
+):
     return (
-        False
-        if db.query(FamUserTermsConditions)
+        db.query(FamUserTermsConditions)
         .filter(
             FamUserTermsConditions.user_id == user_id,
             FamUserTermsConditions.version == version,
         )
         .one_or_none()
-        else True
     )
+
+
+def require_accept_terms_and_conditions(
+    db: Session, requester: Requester, version: str
+) -> bool:
+    """
+    Return False if found record (means user already accepted terms and conditions)
+    Return True if not found (means user needs to accept terms and conditions)
+    """
+    if is_requester_external_delegated_admin(
+        db, requester
+    ) and not get_user_terms_conditions_by_user_id_and_version(
+        db, requester.user_id, version
+    ):
+        return True
+    return False
 
 
 def create_user_terms_conditions(
@@ -35,7 +47,7 @@ def create_user_terms_conditions(
         f"Creating user terms conditions acceptance record for user {user_id} and version {version}"
     )
 
-    if not require_accept_terms_and_conditions(db, user_id, version):
+    if get_user_terms_conditions_by_user_id_and_version(db, user_id, version):
         error_msg = "User already accepted terms and conditions."
         raise_http_exception(status_code=HTTPStatus.CONFLICT, error_msg=error_msg)
 

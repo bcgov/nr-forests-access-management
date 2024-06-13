@@ -126,6 +126,7 @@ app.include_router(
 app.include_router(
     router_user_terms_conditions.router,
     prefix=apiPrefix + "/user_terms_conditions",
+    dependencies=[Depends(router_guards.authorize)],
     tags=["FAM User Terms and Conditions"],
 )
 

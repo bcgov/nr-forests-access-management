@@ -8,7 +8,6 @@ from api.app.crud import crud_user_terms_conditions
 from api.app.routers.router_guards import (
     get_current_requester,
     external_delegated_admin_only_action,
-    is_requester_external_delegated_admin,
 )
 
 
@@ -23,7 +22,6 @@ router = APIRouter()
 )
 def validate_user_requires_accept_terms_and_conditions(
     version: str = "1",
-    is_external_delegated_admin: bool = Depends(is_requester_external_delegated_admin),
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
@@ -34,15 +32,12 @@ def validate_user_requires_accept_terms_and_conditions(
     If no version is provided, we check the 1st version of the terms and conditions.
     """
     LOGGER.debug(
-        f"Check if user {requester.user_id} needs to accept terms and conditions of version {version}"
+        f"Check if user {requester} needs to accept terms and conditions of version {version}"
     )
 
-    if is_external_delegated_admin:
-        return crud_user_terms_conditions.require_accept_terms_and_conditions(
-            db, requester.user_id, version
-        )
-    else:
-        return False
+    return crud_user_terms_conditions.require_accept_terms_and_conditions(
+        db, requester, version
+    )
 
 
 @router.post(
