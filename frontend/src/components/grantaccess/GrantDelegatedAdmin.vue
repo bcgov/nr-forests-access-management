@@ -112,7 +112,7 @@ const confirmSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
-    const newDelegatedAdminIdList: number[] = [];
+    const newDelegatedAdminAccessIds: number[] = [];
     let errorList: string[] = [];
     let errorCode = ErrorCode.Default;
     const data = toRequestPayload(formData.value);
@@ -126,7 +126,7 @@ const confirmSubmit = async () => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
-                newDelegatedAdminIdList.push(response.detail.access_control_privilege_id);
+                newDelegatedAdminAccessIds.push(response.detail.access_control_privilege_id);
                 successList.push(forestClientNumber ?? '');
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
@@ -146,7 +146,7 @@ const confirmSubmit = async () => {
                 : [''];
     }
 
-    const paramListString = newDelegatedAdminIdList.join(',');
+    const paramListString = newDelegatedAdminAccessIds.join(',');
     console.log(paramListString)
     await router.push({
         name: routeItems.dashboard.name,
