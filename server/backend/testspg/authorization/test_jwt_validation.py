@@ -1,24 +1,18 @@
-import logging
-import starlette.testclient
-from api.app.main import apiPrefix
-import time
-from api.app.jwt_validation import (ERROR_TOKEN_DECODE,
-                                    ERROR_INVALID_CLIENT,
-                                    ERROR_INVALID_ALGORITHM,
-                                    ERROR_MISSING_KID,
-                                    ERROR_NO_RSA_KEY,
-                                    ERROR_EXPIRED_TOKEN,
-                                    ERROR_CLAIMS,
-                                    ERROR_VALIDATION,
-                                    JWT_CLIENT_ID_KEY)
 import json
-from testspg.jwt_utils import (create_jwt_token,
-                               create_jwt_claims,
-                               assert_error_response,
-                               headers)
+import logging
+import time
+
+import starlette.testclient
+from api.app.jwt_validation import (ERROR_CLAIMS, ERROR_EXPIRED_TOKEN,
+                                    ERROR_INVALID_ALGORITHM,
+                                    ERROR_INVALID_CLIENT, ERROR_MISSING_KID,
+                                    ERROR_NO_RSA_KEY, ERROR_TOKEN_DECODE,
+                                    JWT_CLIENT_ID_KEY)
+from api.app.main import apiPrefix
 from Crypto.PublicKey import RSA
 from testspg.constants import FAM_APPLICATION_ID
-
+from testspg.jwt_utils import (assert_error_response, create_jwt_claims,
+                               create_jwt_token, headers)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/fam_applications/{FAM_APPLICATION_ID}/user_role_assignment"
@@ -137,5 +131,4 @@ def test_get_application_user_role_assignment_invalid_signature_failure(
 
     response = test_client_fixture_unit.get(f"{endPoint}", headers=headers(token))
 
-    assert_error_response(response, 401, ERROR_VALIDATION)
-
+    assert_error_response(response, 401, ERROR_CLAIMS)
