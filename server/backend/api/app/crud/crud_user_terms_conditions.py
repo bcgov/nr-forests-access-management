@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 def get_user_terms_conditions_by_user_id_and_version(
     db: Session, user_id: int, version: str
-):
+) -> FamUserTermsConditions:
     return (
         db.query(FamUserTermsConditions)
         .filter(
