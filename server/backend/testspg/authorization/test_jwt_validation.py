@@ -53,7 +53,17 @@ def test_get_application_user_role_assignment_wrong_alg_failure(
         test_rsa_key):
 
     invalid_algorithm = 'HS256'
-    token = create_jwt_token(test_rsa_key, test_algorithm=invalid_algorithm)
+    '''
+    FAM uese RS256 (asymmetric keys) for signing.
+    The test trys to test using different algorithm should fail.
+    Unlike RS256, "HS256" is a is a symmetric keyed hashing algorithm.
+    To test that it requires to suply a 'secret' not private key.
+    '''
+    HS256_fake_secret = "fake_secret"
+    token = create_jwt_token(
+        HS256_fake_secret,
+        test_algorithm=invalid_algorithm
+    )
 
     response = test_client_fixture_unit.get(f"{endPoint}", headers=headers(token))
 
