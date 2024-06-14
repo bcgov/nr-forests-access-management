@@ -5,42 +5,45 @@ import {
 } from '@/store/NotificationState';
 import { IconSize } from '@/enum/IconEnum';
 import Message from 'primevue/message';
+
 </script>
 
 <template>
-    <Message
-        v-for="(value, key) in notifications"
-        :key="value.severity"
-        :class="`${value.severity} notification-stack `"
-        :severity="value.severity"
-        :sticky="true"
-    >
-        <Icon
-            :icon="
-                value.severity === 'success'
-                    ? 'checkmark--filled'
-                    : key.toString() === 'error'
-                    ? 'misuse'
-                    : 'warning--filled'
-            "
-            :size="IconSize.medium"
-        />
-        <span class="custom-message-text">
-            <strong>{{ value.severity }}</strong>
-            {{ value.msg }}
-            <button
-                v-if="value.showAll"
-                class="btn-see-all"
-                @click="
-                    () => {
-                        showFullNotificationMsg(value.severity);
-                    }
+    <transition-group name="fade" tag="div">
+        <Message
+            v-for="(value, key) in notifications"
+            :key="value.severity"
+            :class="`${value.severity} notification-stack `"
+            :severity="value.severity"
+            :sticky="true"
+        >
+            <Icon
+                :icon="
+                    value.severity === 'success'
+                        ? 'checkmark--filled'
+                        : key.toString() === 'error'
+                        ? 'misuse'
+                        : 'warning--filled'
                 "
-            >
-                See all
-            </button>
-        </span>
-    </Message>
+                :size="IconSize.medium"
+            />
+            <span class="custom-message-text">
+                <strong>{{ value.severity }}</strong>
+                {{ value.msg }}
+                <button
+                    v-if="value.showAll"
+                    class="btn-see-all"
+                    @click="
+                        () => {
+                            showFullNotificationMsg(value.severity);
+                        }
+                    "
+                >
+                    See all
+                </button>
+            </span>
+        </Message>
+    </transition-group>
 </template>
 
 <style lang="scss" scoped>
@@ -68,4 +71,13 @@ import Message from 'primevue/message';
 .btn-see-all:hover {
     color: $light-link-primary-hover;
 }
+
+/* ----- fade animation styles ----- */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
 </style>

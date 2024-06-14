@@ -67,13 +67,8 @@ const props = defineProps({
         default: ''
     }
 });
-type UserRoleOrAppAdminOrAccessControlPrivilege =
-    | FamApplicationUserRoleAssignmentGet
-    | FamAppAdminGetResponse
-    | FamAccessControlPrivilegeGetResponse;
 
-
-const newAppAdminId = shallowRef(props.newAppAdminId)
+const newAppAdminId = shallowRef(props.newAppAdminId.split(',').map(Number))
 const newUserAccessId = shallowRef(props.newUserAccessId.split(',').map(Number))
 const newDelegatedAdminId= shallowRef(props.newDelegatedAdminId.split(',').map(Number))
 
@@ -204,7 +199,7 @@ const getCurrentTab = () => {
 };
 
 const resetNewTag = () => {
-    newAppAdminId.value = ''
+    newAppAdminId.value = []
     newUserAccessId.value = []
     newDelegatedAdminId.value = []
 }
@@ -257,7 +252,7 @@ const resetNewTag = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
-                        :newAppAdminId="newAppAdminId.split(',').map(Number) || []"
+                        :newAppAdminId="newAppAdminId || []"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
