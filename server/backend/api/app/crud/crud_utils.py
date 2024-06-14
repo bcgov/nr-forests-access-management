@@ -7,9 +7,10 @@ from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
-from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID
-from api.app.crud import crud_application
+from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, UserType
+from api.app.crud import crud_application, crud_access_control_privilege
 from api.app.utils.utils import raise_http_exception
+from api.app.schemas import Requester
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,8 +19,14 @@ def to_upper(elements: List[str]) -> List[str]:
     return [x.upper() for x in elements] if elements else None
 
 
-def replace_str_list(elements: List[str], str_to_replace: str, replace_with: str) -> List[str]:
-    return list(map(lambda r: r.replace(str_to_replace, replace_with), elements)) if elements else None
+def replace_str_list(
+    elements: List[str], str_to_replace: str, replace_with: str
+) -> List[str]:
+    return (
+        list(map(lambda r: r.replace(str_to_replace, replace_with), elements))
+        if elements
+        else None
+    )
 
 
 def get_primary_key(model: models) -> str:
@@ -87,12 +94,23 @@ def is_app_admin(
     if not application:
         error_msg = f"Application ID {application_id} not found"
         raise_http_exception(
-            error_msg=error_msg,
-            error_code=ERROR_CODE_INVALID_APPLICATION_ID
+            error_msg=error_msg, error_code=ERROR_CODE_INVALID_APPLICATION_ID
         )
 
     admin_role = f"{application.application_name.upper()}_ADMIN"
 
     if access_roles and admin_role in access_roles:
+        return True
+    return False
+
+
+def is_requester_external_delegated_admin(
+    db: Session,
+    requester: Requester,
+):
+    if (
+        requester.user_type_code == UserType.BCEID
+        and crud_access_control_privilege.is_delegated_admin(db, requester.user_id)
+    ):
         return True
     return False
