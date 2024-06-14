@@ -54,7 +54,7 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
-    newUserAccessId: {
+    newUserAccessIds: {
         type: String,
         default: '',
     },
@@ -62,16 +62,21 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    newDelegatedAdminId: {
+    newDelegatedAdminIds: {
         type: String,
-        default: ''
-    }
+        default: '',
+    },
 });
 
-const newAppAdminId = shallowRef(props.newAppAdminId.split(',').map(Number))
-const newUserAccessId = shallowRef(props.newUserAccessId.split(',').map(Number))
-const newDelegatedAdminId= shallowRef(props.newDelegatedAdminId.split(',').map(Number))
-
+const newAppAdminId = shallowRef<number | undefined>(
+    !props.newAppAdminId ? undefined : Number(props.newAppAdminId)
+);
+const newUserAccessIds = shallowRef(
+    props.newUserAccessIds.split(',').map(Number)
+);
+const newDelegatedAdminIds = shallowRef(
+    props.newDelegatedAdminIds.split(',').map(Number)
+);
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -199,10 +204,10 @@ const getCurrentTab = () => {
 };
 
 const resetNewTag = () => {
-    newAppAdminId.value = []
-    newUserAccessId.value = []
-    newDelegatedAdminId.value = []
-}
+    newAppAdminId.value = undefined;
+    newUserAccessIds.value = [];
+    newDelegatedAdminIds.value = [];
+};
 </script>
 
 <template>
@@ -252,7 +257,7 @@ const resetNewTag = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
-                        :newAppAdminId="newAppAdminId || []"
+                        :newAppAdminId="newAppAdminId || undefined"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -264,7 +269,7 @@ const resetNewTag = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
-                        :newUserAccessId="newUserAccessId || []"
+                        :newUserAccessIds="newUserAccessIds || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -284,7 +289,7 @@ const resetNewTag = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
-                        :newDelegatedAdminId="newDelegatedAdminId || []"
+                        :newDelegatedAdminIds="newDelegatedAdminIds || []"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "

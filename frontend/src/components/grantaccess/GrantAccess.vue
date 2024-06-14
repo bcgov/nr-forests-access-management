@@ -125,7 +125,7 @@ const handleSubmit = async () => {
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
     const errorList: string[] = [];
-    const newUserAccessIdList: number[] = [];
+    const newUserAccessIds: number[] = [];
     let errorCode = ErrorCode.Default;
 
     // when we assign a concrete a role to the user, there is no forest client number,
@@ -137,11 +137,12 @@ const handleSubmit = async () => {
         const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
         try {
-            const returnResponse = await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
-                data
-            );
+            const returnResponse =
+                await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+                    data
+                );
 
-            newUserAccessIdList.push(returnResponse.data.user_role_xref_id);
+            newUserAccessIds.push(returnResponse.data.user_role_xref_id);
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
@@ -155,10 +156,9 @@ const handleSubmit = async () => {
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
-    const paramListString = newUserAccessIdList.join(',');
     await router.push({
         name: routeItems.dashboard.name,
-        params: { newUserAccessId: paramListString }
+        params: { newUserAccessIds: newUserAccessIds.join(',') },
     });
 
     composeAndPushGrantPermissionNotification(

@@ -31,10 +31,6 @@ $light-link-primary-hover: map.get(
     'link-primary-hover'
 );
 $light-background-inverse: map.get(lightTheme.$light-theme, 'background-inverse');
-$light-notification-background-info: map.get(
-    lightNotifications.$light-notification-token-overrides,
-    'notification-background-info'
-);
 
 //border
 $light-border-interactive: map.get(

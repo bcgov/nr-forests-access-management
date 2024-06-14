@@ -14,7 +14,7 @@ import { composeAndPushGrantPermissionNotification } from '@/store/NotificationS
 import {
     selectedApplicationId,
     selectedApplicationDisplayText,
-    } from '@/store/ApplicationState';
+} from '@/store/ApplicationState';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { routeItems } from '@/router/routeItem';
 import { formValidationSchema } from '@/services/utils';
@@ -126,7 +126,9 @@ const confirmSubmit = async () => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
-                newDelegatedAdminAccessIds.push(response.detail.access_control_privilege_id);
+                newDelegatedAdminAccessIds.push(
+                    response.detail.access_control_privilege_id
+                );
                 successList.push(forestClientNumber ?? '');
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
@@ -146,11 +148,9 @@ const confirmSubmit = async () => {
                 : [''];
     }
 
-    const paramListString = newDelegatedAdminAccessIds.join(',');
-    console.log(paramListString)
     await router.push({
         name: routeItems.dashboard.name,
-        params: { newDelegatedAdminId: paramListString }
+        params: { newDelegatedAdminIds: newDelegatedAdminAccessIds.join(',') },
     });
 
     composeAndPushGrantPermissionNotification(

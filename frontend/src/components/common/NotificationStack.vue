@@ -5,7 +5,6 @@ import {
 } from '@/store/NotificationState';
 import { IconSize } from '@/enum/IconEnum';
 import Message from 'primevue/message';
-
 </script>
 
 <template>
@@ -73,11 +72,12 @@ import Message from 'primevue/message';
 }
 
 /* ----- fade animation styles ----- */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
     opacity: 0;
 }
-
 </style>

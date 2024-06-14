@@ -33,27 +33,24 @@ const props = defineProps({
         >,
         required: true,
     },
-    newDelegatedAdminId: {
+    newDelegatedAdminIds: {
         type: Array,
         default: [],
     }
 });
 
+// newDelegatedAdminIds goes to the top of the array
 const delegatedAdmins = computed(() => {
-    if (props.newDelegatedAdminId.length === 0) {
+    if (props.newDelegatedAdminIds.length === 0) {
         return props.delegatedAdmins;
     } else {
-        return props.delegatedAdmins?.slice().sort((a, b) => {
-            const aIsNew = props.newDelegatedAdminId.includes(a.access_control_privilege_id);
-            const bIsNew = props.newDelegatedAdminId.includes(b.access_control_privilege_id);
+        return props.delegatedAdmins?.slice().sort((first, second) => {
+            const firstIsNew = isNewDelegatedAdminAccess(first.access_control_privilege_id);
+            const secondIsNew = isNewDelegatedAdminAccess(second.access_control_privilege_id);
 
-            if (aIsNew && !bIsNew) {
-                return -1;
-            } else if (!aIsNew && bIsNew) {
-                return 1;
-            } else {
-                return 0;
-            }
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
         });
     }
 });
@@ -110,13 +107,12 @@ const deleteDelegatedAdmin = (
     });
 };
 
-const isNewAppAdminAccess = (accessControlPrivilegeId: number | null) => {
-    const test = props.newDelegatedAdminId.includes(accessControlPrivilegeId);
-    return test;
+const isNewDelegatedAdminAccess = (accessControlPrivilegeId: number | null) => {
+    return props.newDelegatedAdminIds.includes(accessControlPrivilegeId);
 };
 
-const highlightNewAppAdminAccessRow = (rowData: any) => {
-    if(isNewAppAdminAccess(rowData.access_control_privilege_id)) {
+const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
+    if(isNewDelegatedAdminAccess(rowData.access_control_privilege_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
@@ -162,16 +158,16 @@ const highlightNewAppAdminAccessRow = (rowData: any) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewAppAdminAccessRow"
+                :rowStyle="highlightNewDelegatedAdminAccessRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
                         <NewUserTag v-if="
-                                isNewAppAdminAccess(
+                                isNewDelegatedAdminAccess(
                                     data.access_control_privilege_id
-                                ) && props.newDelegatedAdminId.length > 0
+                                ) && props.newDelegatedAdminIds.length > 0
                             "
                         />
                         <span>

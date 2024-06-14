@@ -39,27 +39,23 @@ const props = defineProps({
         >,
         required: true,
     },
-    newUserAccessId: {
+    newUserAccessIds: {
         type: Array,
         default: [],
     },
 });
 
+// newUserAccessIds goes to the top of the array
 const userRoleAssignments = computed(() => {
-    if (props.newUserAccessId.length === 0) {
+    if (props.newUserAccessIds.length === 0) {
         return props.userRoleAssignments;
     } else {
-        return props.userRoleAssignments?.slice().sort((a, b) => {
-            const aIsNew = props.newUserAccessId.includes(a.user_role_xref_id);
-            const bIsNew = props.newUserAccessId.includes(b.user_role_xref_id);
-
-            if (aIsNew && !bIsNew) {
-                return -1;
-            } else if (!aIsNew && bIsNew) {
-                return 1;
-            } else {
-                return 0;
-            }
+        return props.userRoleAssignments?.slice().sort((first, second) => {
+            const firstIsNew = isNewUserAccess(first.user_role_xref_id);
+            const secondIsNew = isNewUserAccess(second.user_role_xref_id);
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
         });
     }
 });
@@ -110,13 +106,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
-const isNewAppAdminAccess = (userRoleId: number | null) => {
-    const test = props.newUserAccessId.includes(userRoleId);
-    return test;
+const isNewUserAccess = (userRoleId: number | null) => {
+    return props.newUserAccessIds.includes(userRoleId);
 };
 
-const highlightNewUserAccesRow = (rowData: any) => {
-    if(isNewAppAdminAccess(rowData.user_role_xref_id)) {
+const highlightNewUserAccessRow = (rowData: any) => {
+    if(isNewUserAccess(rowData.user_role_xref_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
@@ -160,7 +155,7 @@ const highlightNewUserAccesRow = (rowData: any) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewUserAccesRow"
+                :rowStyle="highlightNewUserAccessRow"
 
             >
                 <template #empty> No user found. </template>
@@ -173,8 +168,8 @@ const highlightNewUserAccesRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                                isNewAppAdminAccess(data.user_role_xref_id) &&
-                                props.newUserAccessId.length > 0
+                            isNewUserAccess(data.user_role_xref_id) &&
+                                props.newUserAccessIds.length > 0
                             "
                         />
                         <span>
@@ -235,10 +230,7 @@ const highlightNewUserAccesRow = (rowData: any) => {
                             class="btn btn-icon"
                             @click="deleteAssignment(data)"
                         >
-                            <Icon
-                                icon="trash-can"
-                                :size="IconSize.small"
-                            />
+                            <Icon icon="trash-can" :size="IconSize.small" />
                         </button>
                     </template>
                 </Column>

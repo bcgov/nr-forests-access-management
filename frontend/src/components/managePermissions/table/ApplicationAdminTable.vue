@@ -32,26 +32,23 @@ const props = defineProps({
         required: true,
     },
     newAppAdminId: {
-        type: Array,
-        default: [],
+        type: Number || undefined,
+        default: undefined,
     },
 });
 
+// newAppAdminId goes to the top of the array
 const applicationAdmins = computed(() => {
-    if (props.newAppAdminId.length === 0) {
+    if (!props.newAppAdminId) {
         return props.applicationAdmins;
     } else {
-        return props.applicationAdmins?.slice().sort((a, b) => {
-            const aIsNew = props.newAppAdminId.includes(a.application_admin_id);
-            const bIsNew = props.newAppAdminId.includes(b.application_admin_id);
+        return props.applicationAdmins?.slice().sort((first, second) => {
+            const firstIsNew = isNewAppAdminAccess(first.application_admin_id);
+            const secondIsNew = isNewAppAdminAccess(second.application_admin_id);
 
-            if (aIsNew && !bIsNew) {
-                return -1;
-            } else if (!aIsNew && bIsNew) {
-                return 1;
-            } else {
-                return 0;
-            }
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
         });
     }
 });
@@ -100,9 +97,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
 };
 
 const isNewAppAdminAccess = (applicationAdminId: number | null) => {
-    const test = props.newAppAdminId.includes(applicationAdminId);
-    console.log(test);
-    return test;
+    return props.newAppAdminId === (applicationAdminId);
 };
 
 const highlightNewAppAdminAccesRow = (rowData: any) => {
@@ -160,7 +155,7 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                             v-if="
                                 isNewAppAdminAccess(
                                     data.application_admin_id
-                                ) && props.newAppAdminId.length > 0
+                                ) && props.newAppAdminId
                             "
                         />
                         <span>
