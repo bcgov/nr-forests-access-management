@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import \
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from jose.utils import base64url_decode
+from jwt.utils import base64url_decode
 
 from .. import bcsc_decryption, kms_lookup
 
