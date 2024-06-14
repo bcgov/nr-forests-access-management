@@ -115,7 +115,7 @@ const isNewAppAdminAccess = (accessControlPrivilegeId: number | null) => {
     return test;
 };
 
-const highlightNewAppAdminRow = (rowData: any) => {
+const highlightNewAppAdminAccessRow = (rowData: any) => {
     if(isNewAppAdminAccess(rowData.access_control_privilege_id)) {
         return {
             'background-color': '#C2E0FF',
@@ -162,7 +162,7 @@ const highlightNewAppAdminRow = (rowData: any) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewAppAdminRow"
+                :rowStyle="highlightNewAppAdminAccessRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>

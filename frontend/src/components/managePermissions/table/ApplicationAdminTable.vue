@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType } from 'vue';
+import { computed, reactive, ref, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -17,7 +17,6 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { highlightNewUserRow } from '@/services/utils';
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
@@ -36,6 +35,25 @@ const props = defineProps({
         type: Array,
         default: [],
     },
+});
+
+const applicationAdmins = computed(() => {
+    if (props.newAppAdminId.length === 0) {
+        return props.applicationAdmins;
+    } else {
+        return props.applicationAdmins?.slice().sort((a, b) => {
+            const aIsNew = props.newAppAdminId.includes(a.application_admin_id);
+            const bIsNew = props.newAppAdminId.includes(b.application_admin_id);
+
+            if (aIsNew && !bIsNew) {
+                return -1;
+            } else if (!aIsNew && bIsNew) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
 });
 
 const adminFilters = ref({
@@ -80,11 +98,21 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
         },
     });
 };
+
 const isNewAppAdminAccess = (applicationAdminId: number | null) => {
     const test = props.newAppAdminId.includes(applicationAdminId);
     console.log(test);
     return test;
 };
+
+const highlightNewAppAdminAccesRow = (rowData: any) => {
+    if(isNewAppAdminAccess(rowData.application_admin_id)) {
+        return {
+            'background-color': '#C2E0FF',
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
+        }
+    }
+}
 </script>
 
 <template>
@@ -106,7 +134,7 @@ const isNewAppAdminAccess = (applicationAdminId: number | null) => {
             />
             <DataTable
                 v-model:filters="adminFilters"
-                :value="props.applicationAdmins"
+                :value="applicationAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -122,7 +150,7 @@ const isNewAppAdminAccess = (applicationAdminId: number | null) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
-                :rowStyle="highlightNewUserRow"
+                :rowStyle="highlightNewAppAdminAccesRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>

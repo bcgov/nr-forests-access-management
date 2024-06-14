@@ -19,7 +19,6 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { highlightNewUserRow } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -44,6 +43,25 @@ const props = defineProps({
         type: Array,
         default: [],
     },
+});
+
+const userRoleAssignments = computed(() => {
+    if (props.newUserAccessId.length === 0) {
+        return props.userRoleAssignments;
+    } else {
+        return props.userRoleAssignments?.slice().sort((a, b) => {
+            const aIsNew = props.newUserAccessId.includes(a.user_role_xref_id);
+            const bIsNew = props.newUserAccessId.includes(b.user_role_xref_id);
+
+            if (aIsNew && !bIsNew) {
+                return -1;
+            } else if (!aIsNew && bIsNew) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
 });
 
 
@@ -93,12 +111,18 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     });
 }
 const isNewAppAdminAccess = (userRoleId: number | null) => {
-    console.log(props.newUserAccessId);
-    console.log(userRoleId);
     const test = props.newUserAccessId.includes(userRoleId);
-    console.log(test);
     return test;
 };
+
+const highlightNewUserAccesRow = (rowData: any) => {
+    if(isNewAppAdminAccess(rowData.user_role_xref_id)) {
+        return {
+            'background-color': '#C2E0FF',
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
+        }
+    }
+}
 </script>
 
 <template>
@@ -120,7 +144,7 @@ const isNewAppAdminAccess = (userRoleId: number | null) => {
             />
             <DataTable
                 v-model:filters="userRoleAssignmentsFilters"
-                :value="props.userRoleAssignments"
+                :value="userRoleAssignments"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -136,6 +160,7 @@ const isNewAppAdminAccess = (userRoleId: number | null) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewUserAccesRow"
 
             >
                 <template #empty> No user found. </template>
