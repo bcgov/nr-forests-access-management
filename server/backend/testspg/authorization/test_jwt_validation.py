@@ -55,7 +55,8 @@ def test_get_application_user_role_assignment_wrong_alg_failure(
     invalid_algorithm = 'HS256'
     '''
     FAM uese RS256 (asymmetric keys) for signing.
-    The test trys to test using different algorithm should fail.
+    The test trys to test: using different algorithm (HS256) should expect
+    fail response.
     Unlike RS256, "HS256" is a is a symmetric keyed hashing algorithm.
     To test that it requires to suply a 'secret' not private key.
     '''
