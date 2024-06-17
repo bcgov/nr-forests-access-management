@@ -15,7 +15,7 @@ import { isNewAccessId } from './utils';
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined,
-    newUsersAccessId: string | string[] = []
+    newUsersAccessId: string[] | string = ''
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
     const convertedNewAppAdminId = newUsersAccessId
         ? Number(newUsersAccessId)
@@ -74,7 +74,7 @@ export const deleteAndRefreshUserRoleAssignments = async (
 };
 
 export const fetchApplicationAdmins = async (
-    newAppAdminId: any = undefined
+    newAppAdminId: string[] | string = ''
 ): Promise<FamAppAdminGetResponse[]> => {
     const convertedNewAppAdminId = newAppAdminId
         ? Number(newAppAdminId)
@@ -127,7 +127,7 @@ export const deleteAndRefreshApplicationAdmin = async (
 
 export const fetchDelegatedAdmins = async (
     applicationId: number | undefined,
-    newDelegatedAdminsAccessId: string | string[] = []
+    newDelegatedAdminsAccessId: string[] | string = ''
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     if (!applicationId || !FamLoginUserState.isAdminOfSelectedApplication()) {
         return [];
