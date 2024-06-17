@@ -52,14 +52,3 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
 export const isNewAccess = (newAccessIds: string[], accessId: number) => {
     return newAccessIds.includes(accessId.toString());
 };
-
-export const resetNewTag = () => {
-    router.push({
-        name: routeItems.dashboard.name,
-        params: {
-            newUserAccessIds: '',
-            newAppAdminId: '',
-            newDelegatedAdminIds: '',
-        },
-    });
-};

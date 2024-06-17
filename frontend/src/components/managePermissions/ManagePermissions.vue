@@ -60,9 +60,9 @@ const props = defineProps({
 
 // get user access ids from router query parameters
 const { query } = useRoute();
-const newAppAdminId = (query.newAppAdminId as string) || '';
-const newUserAccessIds = (query.newUserAccessIds as string) || '';
-const newDelegatedAdminIds = (query.newDelegatedAdminIds as string) || '';
+const newAppAdminId = ref((query.newAppAdminId as string) || '');
+const newUserAccessIds = ref((query.newUserAccessIds as string) || '');
+const newDelegatedAdminIds = ref((query.newDelegatedAdminIds as string) || '');
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -82,13 +82,24 @@ const applicationsUserAdministers = computed(() => {
 
 const tabViewRef = ref();
 
-onUnmounted(() => {
+const resetNewTag = () => {
+    newAppAdminId.value = '';
+    newUserAccessIds.value = '';
+    newDelegatedAdminIds.value = '';
+};
+
+const resetNotificationAndNewRowTag = () => {
     resetNotification();
+    resetNewTag();
+};
+
+onUnmounted(() => {
+    resetNotificationAndNewRowTag();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    resetNotification();
+    resetNotificationAndNewRowTag();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -109,7 +120,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
 
     try {
         userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
@@ -130,7 +141,7 @@ const deleteUserRoleAssignment = async (
 };
 
 const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id
@@ -151,7 +162,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 const deleteDelegatedAdminAssignment = async (
     delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
 ) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
     try {
         delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
             delegatedAdminAssignment.access_control_privilege_id
@@ -171,8 +182,7 @@ const deleteDelegatedAdminAssignment = async (
 
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
-    resetNotification();
-    resetNewTag();
+    resetNotificationAndNewRowTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
