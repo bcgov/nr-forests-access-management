@@ -9,7 +9,7 @@ import {
 } from '@/services/ApiServiceFactory';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { selectedApplicationId } from '@/store/ApplicationState';
-import { isNewAppAdminAccess } from './utils';
+import { isNewAccessId } from './utils';
 
 // --- Fetching data (from backend)
 
@@ -38,11 +38,11 @@ export const fetchUserRoleAssignments = async (
     const newUserAccessSorted = alphabeticallySortedUsers
         .slice()
         .sort((first, second) => {
-            const firstIsNew = isNewAppAdminAccess(
+            const firstIsNew = isNewAccessId(
                 convertedNewAppAdminId!,
                 first.user_role_xref_id
             );
-            const secondIsNew = isNewAppAdminAccess(
+            const secondIsNew = isNewAccessId(
                 convertedNewAppAdminId!,
                 second.user_role_xref_id
             );
@@ -93,11 +93,11 @@ export const fetchApplicationAdmins = async (
     const newAdminsAccesSorted = alphabeticallySortedAdmins
         .slice()
         .sort((first, second) => {
-            const firstIsNew = isNewAppAdminAccess(
+            const firstIsNew = isNewAccessId(
                 convertedNewAppAdminId!,
                 first.application_admin_id
             );
-            const secondIsNew = isNewAppAdminAccess(
+            const secondIsNew = isNewAccessId(
                 convertedNewAppAdminId!,
                 second.application_admin_id
             );
@@ -134,9 +134,8 @@ export const fetchDelegatedAdmins = async (
     }
 
     const convertedDelegatedAdminsAccessId = newDelegatedAdminsAccessId
-    ? Number(newDelegatedAdminsAccessId)
-    : undefined;
-
+        ? Number(newDelegatedAdminsAccessId)
+        : undefined;
 
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
@@ -152,11 +151,11 @@ export const fetchDelegatedAdmins = async (
     const newDelegatedAdminsSorted = alphabeticallySortedDelegatedAdmins
         .slice()
         .sort((first, second) => {
-            const firstIsNew = isNewAppAdminAccess(
+            const firstIsNew = isNewAccessId(
                 convertedDelegatedAdminsAccessId!,
                 first.access_control_privilege_id
             );
-            const secondIsNew = isNewAppAdminAccess(
+            const secondIsNew = isNewAccessId(
                 convertedDelegatedAdminsAccessId!,
                 second.access_control_privilege_id
             );

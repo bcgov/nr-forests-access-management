@@ -1,4 +1,6 @@
 import { number, object, string } from 'yup';
+import router from '@/router';
+import { routeItems } from '@/router/routeItem';
 
 type AsyncWrapType = {
     data: any;
@@ -47,6 +49,20 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
     });
 };
 
-export const isNewAppAdminAccess = (accessesData: number, newAccessId: number | null) => {
+export const isNewAccessId = (
+    accessesData: number,
+    newAccessId: number | null
+) => {
     return accessesData === newAccessId;
+};
+
+export const resetNewTag = () => {
+    router.push({
+        name: routeItems.dashboard.name,
+        params: {
+            newUserAccessIds: '',
+            newAppAdminId: '',
+            newDelegatedAdminIds: '',
+        },
+    });
 };

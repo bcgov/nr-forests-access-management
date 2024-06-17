@@ -18,7 +18,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { isNewAppAdminAccess } from '@/services/utils'
+import { isNewAccessId } from '@/services/utils';
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
@@ -32,8 +32,12 @@ const props = defineProps({
     applicationAdmins: {
         type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
-    }
+    },
 });
+
+const { params } = useRoute();
+
+const newAppAdminId = ref(Number(params.newAppAdminId));
 
 const adminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -78,18 +82,14 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     });
 };
 
-const { params } = useRoute()
-
-const convertedNewAppAdminId = Number(params.newAppAdminId)
-
 const highlightNewAppAdminAccesRow = (rowData: any) => {
-    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.application_admin_id)) {
+    if (isNewAccessId(newAppAdminId.value, rowData.application_admin_id)) {
         return {
             'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
-        }
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
+        };
     }
-}
+};
 </script>
 
 <template>
@@ -135,9 +135,10 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                                isNewAppAdminAccess(
-                                    convertedNewAppAdminId, data.application_admin_id
-                                ) && convertedNewAppAdminId
+                                isNewAccessId(
+                                    newAppAdminId,
+                                    data.application_admin_id
+                                ) && newAppAdminId
                             "
                         />
                         <span>

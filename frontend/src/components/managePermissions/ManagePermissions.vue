@@ -40,6 +40,7 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
+import { resetNewTag } from '@/services/utils';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -53,7 +54,7 @@ const props = defineProps({
     delegatedAdmins: {
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
-    }
+    },
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
@@ -164,6 +165,7 @@ const deleteDelegatedAdminAssignment = async (
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
     resetNotification();
+    resetNewTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 

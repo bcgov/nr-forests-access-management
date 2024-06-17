@@ -51,6 +51,7 @@ const routes = [
         component: LandingView,
     },
     {
+        // a param can be made optional by adding "?"
         path: `${routeItems.dashboard.path}/:newUserAccessIds?/:newAppAdminId?/:newDelegatedAdminIds?`,
         name: routeItems.dashboard.name,
         meta: {

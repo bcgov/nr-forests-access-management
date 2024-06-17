@@ -21,8 +21,8 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
+import { isNewAccessId } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import { isNewAppAdminAccess } from '../../../services/utils';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -41,8 +41,12 @@ const props = defineProps({
             FamApplicationUserRoleAssignmentGet[] | undefined
         >,
         required: true,
-    }
+    },
 });
+
+const { params } = useRoute();
+
+const newUserRoleAccessIds = ref(Number(params.newUserAccessIds));
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -90,18 +94,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     });
 }
 
-const { params } = useRoute()
-
-const convertedNewAppAdminId = Number(params.newUserAccessIds)
-
 const highlightNewUserAccessRow = (rowData: any) => {
-    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.user_role_xref_id)) {
+    if (isNewAccessId(newUserRoleAccessIds.value, rowData.user_role_xref_id)) {
         return {
             'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
-        }
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
+        };
     }
-}
+};
 </script>
 
 <template>
@@ -140,7 +140,6 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
                 :rowStyle="highlightNewUserAccessRow"
-
             >
                 <template #empty> No user found. </template>
                 <template #loading> Loading users data. Please wait. </template>
@@ -152,8 +151,10 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                            isNewAppAdminAccess(convertedNewAppAdminId, data.user_role_xref_id) &&
-                            convertedNewAppAdminId
+                                isNewAccessId(
+                                    newUserRoleAccessIds,
+                                    data.user_role_xref_id
+                                ) && newUserRoleAccessIds
                             "
                         />
                         <span>

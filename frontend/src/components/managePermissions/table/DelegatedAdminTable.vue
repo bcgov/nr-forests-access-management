@@ -5,7 +5,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
-import { isNewAppAdminAccess } from '../../../services/utils';
+import { isNewAccessId } from '@/services/utils';
 import { useRoute } from 'vue-router';
 
 import { routeItems } from '@/router/routeItem';
@@ -34,9 +34,12 @@ const props = defineProps({
             FamAccessControlPrivilegeGetResponse[] | undefined
         >,
         required: true,
-    }
+    },
 });
 
+const { params } = useRoute();
+
+const newAppAdminId = Number(params.newDelegatedAdminIds);
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -89,18 +92,15 @@ const deleteDelegatedAdmin = (
         },
     });
 };
-const { params } = useRoute()
 
-const convertedNewAppAdminId = Number(params.newDelegatedAdminIds)
 const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
-    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.access_control_privilege_id)) {
+    if (isNewAccessId(newAppAdminId, rowData.access_control_privilege_id)) {
         return {
             'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
-        }
+            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
+        };
     }
-}
-
+};
 </script>
 
 <template>
@@ -145,10 +145,12 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                 <template #loading> Loading users data. Please wait. </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
-                        <NewUserTag v-if="
-                        isNewAppAdminAccess(convertedNewAppAdminId,
+                        <NewUserTag
+                            v-if="
+                                isNewAccessId(
+                                    newAppAdminId,
                                     data.access_control_privilege_id
-                                ) && convertedNewAppAdminId
+                                ) && newAppAdminId
                             "
                         />
                         <span>
