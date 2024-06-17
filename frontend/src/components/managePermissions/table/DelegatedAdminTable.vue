@@ -7,6 +7,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { isNewAccessId } from '@/services/utils';
 import { useRoute } from 'vue-router';
+import ProgressSpinner from 'primevue/progressspinner';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
@@ -142,7 +143,9 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                 :rowStyle="highlightNewDelegatedAdminAccessRow"
             >
                 <template #empty> No user found. </template>
-                <template #loading> Loading users data. Please wait. </template>
+                <template #loading>
+                    <ProgressSpinner aria-label="Loading" />
+                </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
                         <NewUserTag
