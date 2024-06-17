@@ -14,8 +14,13 @@ import { isNewAppAdminAccess } from './utils';
 // --- Fetching data (from backend)
 
 export const fetchUserRoleAssignments = async (
-    applicationId: number | undefined
+    applicationId: number | undefined,
+    newUsersAceessId: string | string[] = []
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
+    const convertedNewAppAdminId = newUsersAceessId
+        ? Number(newUsersAceessId)
+        : undefined;
+
     if (!applicationId) return [];
 
     const userRoleAssignments = (
@@ -24,19 +29,30 @@ export const fetchUserRoleAssignments = async (
         )
     ).data;
 
-    // Default sorting
-    userRoleAssignments.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
-        );
-        // By role_name
-        const roleNameCompare = first.role.role_name.localeCompare(
-            second.role.role_name
-        );
-        return userNameCompare != 0 ? userNameCompare : roleNameCompare;
-    });
-    return userRoleAssignments;
+    const alphabeticallySortedUsers = userRoleAssignments
+        .slice()
+        .sort((first, second) => {
+            return first.user.user_name.localeCompare(second.user.user_name);
+        });
+
+    const newUserAccessSorted = alphabeticallySortedUsers
+        .slice()
+        .sort((first, second) => {
+            const firstIsNew = isNewAppAdminAccess(
+                convertedNewAppAdminId!,
+                first.user_role_xref_id
+            );
+            const secondIsNew = isNewAppAdminAccess(
+                convertedNewAppAdminId!,
+                second.user_role_xref_id
+            );
+
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
+        });
+
+    return newUserAccessSorted;
 };
 
 /**
@@ -63,6 +79,7 @@ export const fetchApplicationAdmins = async (
     const convertedNewAppAdminId = newAppAdminId
         ? Number(newAppAdminId)
         : undefined;
+
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
@@ -89,6 +106,7 @@ export const fetchApplicationAdmins = async (
             if (!firstIsNew && secondIsNew) return 1;
             return 0;
         });
+
     return newAdminsAccesSorted;
 };
 

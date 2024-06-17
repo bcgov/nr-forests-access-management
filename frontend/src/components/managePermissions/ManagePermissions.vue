@@ -54,19 +54,13 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
-    newUserAccessIds: {
-        type: String,
-        default: '',
-    },
     newDelegatedAdminIds: {
         type: String,
         default: '',
     },
 });
 
-const newUserAccessIds = shallowRef(
-    props.newUserAccessIds.split(',').map(Number)
-);
+
 const newDelegatedAdminIds = shallowRef(
     props.newDelegatedAdminIds.split(',').map(Number)
 );
@@ -250,7 +244,6 @@ const getCurrentTab = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
-                        :newUserAccessIds="newUserAccessIds || []"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>

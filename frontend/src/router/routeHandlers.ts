@@ -45,7 +45,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
         applicationAdmins = await asyncWrap(fetchApplicationAdmins(to.params.newAppAdminId));
     } else {
         userRolesFetchResult = await asyncWrap(
-            fetchUserRoleAssignments(selectedApplicationId.value)
+            fetchUserRoleAssignments(selectedApplicationId.value, to.params.newUserAccessIds)
         );
         delegatedAdmins = await asyncWrap(
             fetchDelegatedAdmins(selectedApplicationId.value)

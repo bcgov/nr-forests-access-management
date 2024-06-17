@@ -67,7 +67,6 @@ const routes = [
                 userRoleAssignments: route.meta.userRoleAssignments,
                 applicationAdmins: route.meta.applicationAdmins,
                 delegatedAdmins: route.meta.delegatedAdmins,
-                newUserAccessIds: route.params.newUserAccessIds,
                 newDelegatedAdminIds: route.params.newDelegatedAdminIds,
             };
         },

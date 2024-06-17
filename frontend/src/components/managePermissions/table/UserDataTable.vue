@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
+
 import type { PropType } from 'vue';
 
 import { FilterMatchMode } from 'primevue/api';
@@ -20,6 +22,7 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import { isNewAppAdminAccess } from '../../../services/utils';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -38,28 +41,8 @@ const props = defineProps({
             FamApplicationUserRoleAssignmentGet[] | undefined
         >,
         required: true,
-    },
-    newUserAccessIds: {
-        type: Array,
-        default: [],
-    },
-});
-
-// newUserAccessIds goes to the top of the array
-const userRoleAssignments = computed(() => {
-    if (props.newUserAccessIds.length === 0) {
-        return props.userRoleAssignments;
-    } else {
-        return props.userRoleAssignments?.slice().sort((first, second) => {
-            const firstIsNew = isNewUserAccess(first.user_role_xref_id);
-            const secondIsNew = isNewUserAccess(second.user_role_xref_id);
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
-            return 0;
-        });
     }
 });
-
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -106,12 +89,13 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
-const isNewUserAccess = (userRoleId: number | null) => {
-    return props.newUserAccessIds.includes(userRoleId);
-};
+
+const { params } = useRoute()
+
+const convertedNewAppAdminId = Number(params.newUserAccessIds)
 
 const highlightNewUserAccessRow = (rowData: any) => {
-    if(isNewUserAccess(rowData.user_role_xref_id)) {
+    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.user_role_xref_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
@@ -168,8 +152,8 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                            isNewUserAccess(data.user_role_xref_id) &&
-                                props.newUserAccessIds.length > 0
+                            isNewAppAdminAccess(convertedNewAppAdminId, data.user_role_xref_id) &&
+                            params.newUserAccessIds
                             "
                         />
                         <span>
