@@ -4,9 +4,6 @@ import time
 
 import mock
 import starlette.testclient
-from Crypto.PublicKey import RSA
-from mock_alchemy.mocking import UnifiedAlchemyMagicMock
-
 from api.app import database
 from api.app.jwt_validation import (ERROR_CLAIMS, ERROR_EXPIRED_TOKEN,
                                     ERROR_INVALID_ALGORITHM,
@@ -15,6 +12,8 @@ from api.app.jwt_validation import (ERROR_CLAIMS, ERROR_EXPIRED_TOKEN,
                                     JWT_CLIENT_ID_KEY)
 from api.app.main import apiPrefix
 from api.app.models import model as models
+from Crypto.PublicKey import RSA
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from tests.jwt_utils import (assert_error_response, create_jwt_claims,
                              create_jwt_token, headers)
 
@@ -70,7 +69,7 @@ def test_get_application_wrong_alg_failure(
     invalid_algorithm = "HS256"
     '''
     FAM uese RS256 (asymmetric keys) for signing.
-    The test trys to test using different algorithm should fail.
+    The test trys to test: using different algorithm (HS256) should expect fail.
     Unlike RS256, "HS256" is a is a symmetric keyed hashing algorithm.
     To test that it requires to suply a 'secret' not private key.
     '''
