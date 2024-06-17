@@ -131,11 +131,11 @@ export const fetchDelegatedAdmins = async (
         .slice()
         .sort((first, second) => {
             const firstIsNew = isNewAccess(
-                newDelegatedAdminIdsList!,
+                newDelegatedAdminIdsList,
                 first.access_control_privilege_id
             );
             const secondIsNew = isNewAccess(
-                newDelegatedAdminIdsList!,
+                newDelegatedAdminIdsList,
                 second.access_control_privilege_id
             );
 

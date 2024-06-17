@@ -70,13 +70,14 @@ const handleSubmit = async () => {
     const appEnv = formData.value.application.env
         ? ` ${formData.value.application.env}`
         : '';
-    let newAppAdminReturn = null;
+    let newAppAdminId = null;
 
     try {
-        newAppAdminReturn =
+        const newAppAdminReturn =
             await AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(
                 data
             );
+        newAppAdminId = newAppAdminReturn.data.application_admin_id;
         setNotificationMsg(
             Severity.Success,
             `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
@@ -115,12 +116,10 @@ const handleSubmit = async () => {
 
     setCurrentTabState(TabKey.AdminAccess);
 
-    if (newAppAdminReturn?.data.application_admin_id) {
+    if (newAppAdminId) {
         router.push({
             path: `/${routeItems.dashboard.name}`,
-            query: {
-                newAppAdminId: newAppAdminReturn?.data.application_admin_id,
-            },
+            query: { newAppAdminId },
         });
     } else {
         router.push(`/${routeItems.dashboard.name}`);
