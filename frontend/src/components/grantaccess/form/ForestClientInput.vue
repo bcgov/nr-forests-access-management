@@ -37,7 +37,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
     for (const forestClientNumber of forestNumbers) {
         if (isForestClientNumberAdded(forestClientNumber)) {
             forestClientNumberVerifyErrors.value.push(
-                `Client ID ${forestClientNumber} has already been added.`
+                `Client Number ${forestClientNumber} has already been added.`
             );
 
             continue;
@@ -47,7 +47,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${forestClientNumber} is invalid and cannot be added.`
+                        `Client Number ${forestClientNumber} is invalid and cannot be added.`
                     );
                     return;
                 }
@@ -56,7 +56,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
                     FamForestClientStatusType.A
                 ) {
                     forestClientNumberVerifyErrors.value.push(
-                        `Client ID ${forestClientNumber} is inactive and cannot be added.`
+                        `Client Number ${forestClientNumber} is inactive and cannot be added.`
                     );
                     return;
                 }
@@ -72,7 +72,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             })
             .catch(() => {
                 forestClientNumberVerifyErrors.value.push(
-                    `An error has occurred. Client ID ${forestClientNumber} could not be added.`
+                    `An error has occurred. Client Number ${forestClientNumber} could not be added.`
                 );
             });
     }
@@ -121,7 +121,9 @@ watch(
 
 <template>
     <div>
-        <label for="forestClientInput">User’s Client ID (8 digits) </label>
+        <label for="forestClientInput"
+            >Add one or more client numbers (8 digits)
+        </label>
         <Field
             :name="props.fieldId"
             v-slot="{ field, errorMessage }"
@@ -131,11 +133,11 @@ watch(
                 <div>
                     <InputText
                         id="forestClientInput"
-                        placeholder="Enter and verify the client ID"
+                        placeholder="Enter and verify the client number"
                         v-bind="field"
                         class="w-100 custom-height"
                         @input="cleanupForestClientNumberInput()"
-                        @keypress.enter="
+                        @keydown.enter.prevent="
                             field.value &&
                                 !errorMessage &&
                                 verifyForestClientNumber(
@@ -155,8 +157,8 @@ watch(
                             !errorMessage &&
                             forestClientNumberVerifyErrors.length === 0
                         "
-                        >Add and verify the Client IDs. Add multiple numbers by
-                        separating them with commas</small
+                        >Add and verify the Client Numbers. Add multiple numbers
+                        by separating them with commas</small
                     >
                     <ErrorMessage
                         class="invalid-feedback"
@@ -185,10 +187,7 @@ watch(
                         isLoading()
                     "
                 >
-                    <Icon
-                        icon="add"
-                        :size="IconSize.small"
-                    />
+                    <Icon icon="add" :size="IconSize.small" />
                 </Button>
             </div>
         </Field>

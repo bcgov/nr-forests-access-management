@@ -112,6 +112,7 @@ watch(
                         maxlength="20"
                         v-bind="field"
                         :class="{ 'is-invalid': errorMessage }"
+                        @keydown.enter.prevent="verifyUserId()"
                     />
                     <small
                         id="userIdInput-helper"

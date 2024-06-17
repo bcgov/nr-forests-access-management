@@ -74,12 +74,12 @@ describe('ForestClientInput', () => {
     });
 
     it('should render forest client number input field', () => {
-        expect(wrapper.html().includes('User’s Client ID (8 digits)')).toBe(
+        expect(wrapper.html().includes('Add one or more client numbers (8 digits)')).toBe(
             true
         );
         expect(wrapper.find('#forestClientInput').exists()).toBe(true);
         // no forest client card is displayed initially
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(
+        expect(wrapper.html().includes('Verified Client Number information')).toBe(
             false
         );
         // Verify if the Add button is rendered and it is disabled
@@ -109,12 +109,12 @@ describe('ForestClientInput', () => {
         // the inner array indicates how many parameters it has
         expect(setVerifiedForestClients![0][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // the forest client information card shows and verify the information
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(
+        expect(wrapper.html().includes('Verified Client Number information')).toBe(
             true
         );
         expect(
             wrapper
-                .find('#forest-client-id')
+                .find('#forest-client-number')
                 .text()
                 .includes(TEST_SUCCESS_FOREST_CLIENT_NUMBER)
         ).toBe(true);
@@ -137,7 +137,7 @@ describe('ForestClientInput', () => {
 
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
-        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client ID ${TEST_INVALID_FOREST_CLIENT_NUMBER} is invalid and cannot be added.`);
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client Number ${TEST_INVALID_FOREST_CLIENT_NUMBER} is invalid and cannot be added.`);
     });
 
     it('should raise error for inactive forest client number', async () => {
@@ -147,7 +147,7 @@ describe('ForestClientInput', () => {
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
 
-        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client ID ${TEST_INACTIVE_FOREST_CLIENT_NUMBER} is inactive and cannot be added.`);
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client Number ${TEST_INACTIVE_FOREST_CLIENT_NUMBER} is inactive and cannot be added.`);
     });
 
     it('should raise error for duplicate user input', async () => {
@@ -159,7 +159,7 @@ describe('ForestClientInput', () => {
         await flushPromises();
 
         // Check if the forest client number has been added to the card
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(true);
+        expect(wrapper.html().includes('Verified Client Number information')).toBe(true);
 
         // Try to add the same client number again
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
@@ -168,7 +168,7 @@ describe('ForestClientInput', () => {
         await verifyButton.trigger('click');
         await flushPromises();
 
-        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client ID ${TEST_SUCCESS_FOREST_CLIENT_NUMBER} has already been added.`);
+        expect(wrapper.find('#forestClientInputValidationError').element.textContent).contain(`Client Number ${TEST_SUCCESS_FOREST_CLIENT_NUMBER} has already been added.`);
         // The input field should still display the duplicate input
         expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER);
         // Expect the card to have just one entry
@@ -194,10 +194,10 @@ describe('ForestClientInput', () => {
         // The third entry in the forest client card should be equal to the third active input
         expect(setVerifiedForestClients![2][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_3);
         // the forest client information card shows and verify the information
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(
+        expect(wrapper.html().includes('Verified Client Number information')).toBe(
             true
         );
-        const clientIdCardList = wrapper.findAll('#forest-client-id');
+        const clientIdCardList = wrapper.findAll('#forest-client-number');
         const clientNameCardList = wrapper.findAll('#forest-client-name');
         const clientStatusCardList = wrapper.findAll('#forest-client-status');
 
@@ -242,12 +242,12 @@ describe('ForestClientInput', () => {
         // The second entry in the forest client card should be equal to the second active input
         expect(setVerifiedForestClients![1][0]).toEqual(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
         // the forest client information card shows and verify the information
-        expect(wrapper.html().includes('Verified Client ID information')).toBe(
+        expect(wrapper.html().includes('Verified Client Number information')).toBe(
             true
         );
         expect(
             wrapper
-                .find('#forest-client-id')
+                .find('#forest-client-number')
                 .text()
                 .includes(TEST_SUCCESS_FOREST_CLIENT_NUMBER)
         ).toBe(true);
@@ -264,7 +264,7 @@ describe('ForestClientInput', () => {
         expect(inputField.value).toContain(TEST_INACTIVE_FOREST_CLIENT_NUMBER);
         expect(inputField.value).toContain(TEST_INVALID_FOREST_CLIENT_NUMBER);
 
-        const clientIdCardList = wrapper.findAll('#forest-client-id');
+        const clientIdCardList = wrapper.findAll('#forest-client-number');
 
         expect(clientIdCardList).toHaveLength(2);
 
@@ -305,13 +305,13 @@ describe('ForestClientInput', () => {
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
 
-        expect(wrapper.findAll('#forest-client-id')).toHaveLength(1);
+        expect(wrapper.findAll('#forest-client-number')).toHaveLength(1);
 
         const deleteButton = wrapper.find('#btn-trash-can');
         deleteButton.trigger('click');
         await flushPromises();
 
-        expect(wrapper.findAll('#forest-client-id')).toHaveLength(0);
+        expect(wrapper.findAll('#forest-client-number')).toHaveLength(0);
 
         // removeVerifiedForestClients has been called when delete is clicked
         expect(wrapper.emitted()).toHaveProperty('removeVerifiedForestClients');
@@ -340,7 +340,7 @@ describe('ForestClientInput', () => {
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
 
-        const clientIdCardList = wrapper.findAll('#forest-client-id');
+        const clientIdCardList = wrapper.findAll('#forest-client-number');
         expect(clientIdCardList).toHaveLength(1);
 
         // Changing the userId prop should cleanUp Forest Client Card
@@ -349,7 +349,7 @@ describe('ForestClientInput', () => {
         expect(wrapper.emitted()).toHaveProperty('resetVerifiedForestClients');
 
         // The forest client card should be cleared
-        expect(wrapper.findAll('#forest-client-id')).toHaveLength(0);
+        expect(wrapper.findAll('#forest-client-number')).toHaveLength(0);
 
         await input.setValue(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
         expect(inputField.value).toBe(TEST_SUCCESS_FOREST_CLIENT_NUMBER_2);
@@ -357,14 +357,14 @@ describe('ForestClientInput', () => {
         await wrapper.find("[aria-label='Add Client Numbers']").trigger('click');
         await flushPromises();
 
-        expect(wrapper.findAll('#forest-client-id')).toHaveLength(1);
+        expect(wrapper.findAll('#forest-client-number')).toHaveLength(1);
 
         // Changing the roleId prop should cleanUp Forest Client Card
         await wrapper.setProps({ roleId: 1 });
 
         expect(wrapper.emitted()).toHaveProperty('resetVerifiedForestClients');
 
-        expect(wrapper.findAll('#forest-client-id')).toHaveLength(0);
+        expect(wrapper.findAll('#forest-client-number')).toHaveLength(0);
 
     });
 
