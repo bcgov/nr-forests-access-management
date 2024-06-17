@@ -9,19 +9,17 @@ import {
 } from '@/services/ApiServiceFactory';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { selectedApplicationId } from '@/store/ApplicationState';
-import { isNewAccessId } from './utils';
+import { isNewAccess } from './utils';
 
 // --- Fetching data (from backend)
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined,
-    newUsersAccessId: string[] | string = ''
+    newUsersAccessIds: string = ''
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
-    const convertedNewAppAdminId = newUsersAccessId
-        ? Number(newUsersAccessId)
-        : undefined;
-
     if (!applicationId) return [];
+
+    const newUsersAccessIdsList = newUsersAccessIds.split(',');
 
     const userRoleAssignments = (
         await AppActlApiService.applicationsApi.getFamApplicationUserRoleAssignment(
@@ -29,30 +27,25 @@ export const fetchUserRoleAssignments = async (
         )
     ).data;
 
-    const alphabeticallySortedUsers = userRoleAssignments
+    const sortedUserAccesses = userRoleAssignments
         .slice()
         .sort((first, second) => {
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
-
-    const newUserAccessSorted = alphabeticallySortedUsers
-        .slice()
-        .sort((first, second) => {
-            const firstIsNew = isNewAccessId(
-                convertedNewAppAdminId!,
+            const firstIsNew = isNewAccess(
+                newUsersAccessIdsList,
                 first.user_role_xref_id
             );
-            const secondIsNew = isNewAccessId(
-                convertedNewAppAdminId!,
+            const secondIsNew = isNewAccess(
+                newUsersAccessIdsList,
                 second.user_role_xref_id
             );
 
             if (firstIsNew && !secondIsNew) return -1;
             if (!firstIsNew && secondIsNew) return 1;
-            return 0;
+
+            return first.user.user_name.localeCompare(second.user.user_name);
         });
 
-    return newUserAccessSorted;
+    return sortedUserAccesses;
 };
 
 /**
@@ -74,40 +67,33 @@ export const deleteAndRefreshUserRoleAssignments = async (
 };
 
 export const fetchApplicationAdmins = async (
-    newAppAdminId: string[] | string = ''
+    newAppAdminIds: string = ''
 ): Promise<FamAppAdminGetResponse[]> => {
-    const convertedNewAppAdminId = newAppAdminId
-        ? Number(newAppAdminId)
-        : undefined;
+    const newAppAdminIdsList = newAppAdminIds.split(',');
 
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
-    const alphabeticallySortedAdmins = applicationAdmins
+    const sortedApplicationAdmins = applicationAdmins
         .slice()
         .sort((first, second) => {
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
-
-    const newAdminsAccesSorted = alphabeticallySortedAdmins
-        .slice()
-        .sort((first, second) => {
-            const firstIsNew = isNewAccessId(
-                convertedNewAppAdminId!,
+            const firstIsNew = isNewAccess(
+                newAppAdminIdsList,
                 first.application_admin_id
             );
-            const secondIsNew = isNewAccessId(
-                convertedNewAppAdminId!,
+            const secondIsNew = isNewAccess(
+                newAppAdminIdsList,
                 second.application_admin_id
             );
 
             if (firstIsNew && !secondIsNew) return -1;
             if (!firstIsNew && secondIsNew) return 1;
-            return 0;
+
+            return first.user.user_name.localeCompare(second.user.user_name);
         });
 
-    return newAdminsAccesSorted;
+    return sortedApplicationAdmins;
 };
 
 /**
@@ -127,45 +113,39 @@ export const deleteAndRefreshApplicationAdmin = async (
 
 export const fetchDelegatedAdmins = async (
     applicationId: number | undefined,
-    newDelegatedAdminsAccessId: string[] | string = ''
+    newDelegatedAdminIds: string = ''
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     if (!applicationId || !FamLoginUserState.isAdminOfSelectedApplication()) {
         return [];
     }
 
-    const convertedDelegatedAdminsAccessId = newDelegatedAdminsAccessId
-        ? Number(newDelegatedAdminsAccessId)
-        : undefined;
+    const newDelegatedAdminIdsList = newDelegatedAdminIds.split(',');
 
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
             applicationId!
         )
     ).data;
-    const alphabeticallySortedDelegatedAdmins = delegatedAdmins
-        .slice()
-        .sort((first, second) => {
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
 
-    const newDelegatedAdminsSorted = alphabeticallySortedDelegatedAdmins
+    const sortedDelegatedAdmins = delegatedAdmins
         .slice()
         .sort((first, second) => {
-            const firstIsNew = isNewAccessId(
-                convertedDelegatedAdminsAccessId!,
+            const firstIsNew = isNewAccess(
+                newDelegatedAdminIdsList!,
                 first.access_control_privilege_id
             );
-            const secondIsNew = isNewAccessId(
-                convertedDelegatedAdminsAccessId!,
+            const secondIsNew = isNewAccess(
+                newDelegatedAdminIdsList!,
                 second.access_control_privilege_id
             );
 
             if (firstIsNew && !secondIsNew) return -1;
             if (!firstIsNew && secondIsNew) return 1;
-            return 0;
+
+            return first.user.user_name.localeCompare(second.user.user_name);
         });
 
-    return newDelegatedAdminsSorted;
+    return sortedDelegatedAdmins;
 };
 
 /**

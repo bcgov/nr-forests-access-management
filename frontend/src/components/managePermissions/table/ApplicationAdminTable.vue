@@ -19,11 +19,13 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { isNewAccessId } from '@/services/utils';
+import { isNewAccess } from '@/services/utils';
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
+const confirm = useConfirm();
+const emit = defineEmits<emit>();
 
 const props = defineProps({
     loading: {
@@ -37,8 +39,9 @@ const props = defineProps({
 });
 
 const { params } = useRoute();
-
-const newAppAdminId = ref(Number(params.newAppAdminId));
+const newAppAdminIds = params.newAppAdminIds
+    ? params.newAppAdminIds.split(',')
+    : [];
 
 const adminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -57,18 +60,14 @@ const adminFilters = ref({
     },
 });
 
-const confirm = useConfirm();
-
-const emit = defineEmits<emit>();
+const adminSearchChange = (newvalue: string) => {
+    adminFilters.value.global.value = newvalue;
+};
 
 const confirmDeleteData = reactive({
     adminName: '',
     role: 'ADMIN',
 });
-
-const adminSearchChange = (newvalue: string) => {
-    adminFilters.value.global.value = newvalue;
-};
 
 const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     confirmDeleteData.adminName = admin.user.user_name;
@@ -84,7 +83,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
 };
 
 const highlightNewAppAdminAccesRow = (rowData: any) => {
-    if (isNewAccessId(newAppAdminId.value, rowData.application_admin_id)) {
+    if (isNewAccess(newAppAdminIds, rowData.application_admin_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
@@ -138,10 +137,10 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                                isNewAccessId(
-                                    newAppAdminId,
+                                isNewAccess(
+                                    newAppAdminIds,
                                     data.application_admin_id
-                                ) && newAppAdminId
+                                )
                             "
                         />
                         <span>

@@ -49,11 +49,8 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
     });
 };
 
-export const isNewAccessId = (
-    accessesData: number,
-    newAccessId: number | null
-) => {
-    return accessesData === newAccessId;
+export const isNewAccess = (newAccessIds: string[], accessId: number) => {
+    return newAccessIds.includes(accessId.toString());
 };
 
 export const resetNewTag = () => {

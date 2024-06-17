@@ -5,7 +5,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
-import { isNewAccessId } from '@/services/utils';
+import { isNewAccess } from '@/services/utils';
 import { useRoute } from 'vue-router';
 import ProgressSpinner from 'primevue/progressspinner';
 
@@ -39,8 +39,9 @@ const props = defineProps({
 });
 
 const { params } = useRoute();
-
-const newAppAdminId = Number(params.newDelegatedAdminIds);
+const newDelegatedAdminIds = params.newDelegatedAdminIds
+    ? params.newDelegatedAdminIds.split(',')
+    : [];
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -95,7 +96,9 @@ const deleteDelegatedAdmin = (
 };
 
 const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
-    if (isNewAccessId(newAppAdminId, rowData.access_control_privilege_id)) {
+    if (
+        isNewAccess(newDelegatedAdminIds, rowData.access_control_privilege_id)
+    ) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
@@ -150,10 +153,10 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                                isNewAccessId(
-                                    newAppAdminId,
+                                isNewAccess(
+                                    newDelegatedAdminIds,
                                     data.access_control_privilege_id
-                                ) && newAppAdminId
+                                )
                             "
                         />
                         <span>

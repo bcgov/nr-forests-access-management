@@ -22,7 +22,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import { isNewAccessId } from '@/services/utils';
+import { isNewAccess } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -31,6 +31,7 @@ type emit = (
 ) => void;
 
 const confirm = useConfirm();
+const emit = defineEmits<emit>();
 
 const props = defineProps({
     loading: {
@@ -46,8 +47,9 @@ const props = defineProps({
 });
 
 const { params } = useRoute();
-
-const newUserRoleAccessIds = ref(Number(params.newUserAccessIds));
+const newUserAccessIds = params.newUserAccessIds
+    ? params.newUserAccessIds.split(',')
+    : [];
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -70,16 +72,14 @@ const userRoleAssignmentsFilters = ref({
     },
 });
 
-const emit = defineEmits<emit>();
+const userSearchChange = (newValue: string) => {
+    userRoleAssignmentsFilters.value.global.value = newValue;
+};
 
 const confirmDeleteData = reactive({
     userName: '',
     role: '',
 });
-
-const userSearchChange = (newValue: string) => {
-    userRoleAssignmentsFilters.value.global.value = newValue;
-};
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
@@ -96,7 +96,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 
 const highlightNewUserAccessRow = (rowData: any) => {
-    if (isNewAccessId(newUserRoleAccessIds.value, rowData.user_role_xref_id)) {
+    if (isNewAccess(newUserAccessIds, rowData.user_role_xref_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
@@ -150,10 +150,10 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     <template #body="{ data }">
                         <NewUserTag
                             v-if="
-                                isNewAccessId(
-                                    newUserRoleAccessIds,
+                                isNewAccess(
+                                    newUserAccessIds,
                                     data.user_role_xref_id
-                                ) && newUserRoleAccessIds
+                                )
                             "
                         />
                         <span>
@@ -188,11 +188,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     header="Client Number"
                     sortable
                 ></Column>
-                <Column
-                    field="role.role_name"
-                    header="Role"
-                    sortable
-                >
+                <Column field="role.role_name" header="Role" sortable>
                     <template #body="{ data }">
                         {{
                             data.role.parent_role
