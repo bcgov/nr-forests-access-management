@@ -7,6 +7,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
+import ProgressSpinner from 'primevue/progressspinner';
 
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
@@ -124,7 +125,9 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 stripedRows
             >
                 <template #empty> No user found. </template>
-                <template #loading> Loading users data. Please wait. </template>
+                <template #loading>
+                    <ProgressSpinner aria-label="Loading" />
+                </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
                         <span>
