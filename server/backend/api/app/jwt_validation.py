@@ -13,7 +13,6 @@ from api.config.config import (get_aws_region, get_oidc_client_id,
                                get_user_pool_domain_name, get_user_pool_id)
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
-from sqlalchemy.orm import Session
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
