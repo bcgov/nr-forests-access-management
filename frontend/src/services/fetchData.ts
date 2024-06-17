@@ -15,10 +15,10 @@ import { isNewAppAdminAccess } from './utils';
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined,
-    newUsersAceessId: string | string[] = []
+    newUsersAccessId: string | string[] = []
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
-    const convertedNewAppAdminId = newUsersAceessId
-        ? Number(newUsersAceessId)
+    const convertedNewAppAdminId = newUsersAccessId
+        ? Number(newUsersAccessId)
         : undefined;
 
     if (!applicationId) return [];
@@ -126,29 +126,47 @@ export const deleteAndRefreshApplicationAdmin = async (
 };
 
 export const fetchDelegatedAdmins = async (
-    applicationId: number | undefined
+    applicationId: number | undefined,
+    newDelegatedAdminsAccessId: string | string[] = []
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     if (!applicationId || !FamLoginUserState.isAdminOfSelectedApplication()) {
         return [];
     }
+
+    const convertedDelegatedAdminsAccessId = newDelegatedAdminsAccessId
+    ? Number(newDelegatedAdminsAccessId)
+    : undefined;
+
 
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
             applicationId!
         )
     ).data;
+    const alphabeticallySortedDelegatedAdmins = delegatedAdmins
+        .slice()
+        .sort((first, second) => {
+            return first.user.user_name.localeCompare(second.user.user_name);
+        });
 
-    // Default sorting
-    delegatedAdmins.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
-        );
+    const newDelegatedAdminsSorted = alphabeticallySortedDelegatedAdmins
+        .slice()
+        .sort((first, second) => {
+            const firstIsNew = isNewAppAdminAccess(
+                convertedDelegatedAdminsAccessId!,
+                first.access_control_privilege_id
+            );
+            const secondIsNew = isNewAppAdminAccess(
+                convertedDelegatedAdminsAccessId!,
+                second.access_control_privilege_id
+            );
 
-        return userNameCompare;
-    });
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
+        });
 
-    return delegatedAdmins;
+    return newDelegatedAdminsSorted;
 };
 
 /**

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, computed, type PropType } from 'vue';
+import { ref, reactive, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
+import { isNewAppAdminAccess } from '../../../services/utils';
+import { useRoute } from 'vue-router';
 
 import { routeItems } from '@/router/routeItem';
 import NewUserTag from '@/components/common/NewUserTag.vue';
@@ -32,28 +34,9 @@ const props = defineProps({
             FamAccessControlPrivilegeGetResponse[] | undefined
         >,
         required: true,
-    },
-    newDelegatedAdminIds: {
-        type: Array,
-        default: [],
     }
 });
 
-// newDelegatedAdminIds goes to the top of the array
-const delegatedAdmins = computed(() => {
-    if (props.newDelegatedAdminIds.length === 0) {
-        return props.delegatedAdmins;
-    } else {
-        return props.delegatedAdmins?.slice().sort((first, second) => {
-            const firstIsNew = isNewDelegatedAdminAccess(first.access_control_privilege_id);
-            const secondIsNew = isNewDelegatedAdminAccess(second.access_control_privilege_id);
-
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
-            return 0;
-        });
-    }
-});
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -106,13 +89,11 @@ const deleteDelegatedAdmin = (
         },
     });
 };
+const { params } = useRoute()
 
-const isNewDelegatedAdminAccess = (accessControlPrivilegeId: number | null) => {
-    return props.newDelegatedAdminIds.includes(accessControlPrivilegeId);
-};
-
+const convertedNewAppAdminId = Number(params.newDelegatedAdminIds)
 const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
-    if(isNewDelegatedAdminAccess(rowData.access_control_privilege_id)) {
+    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.access_control_privilege_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
@@ -165,9 +146,9 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
                         <NewUserTag v-if="
-                                isNewDelegatedAdminAccess(
+                        isNewAppAdminAccess(convertedNewAppAdminId,
                                     data.access_control_privilege_id
-                                ) && props.newDelegatedAdminIds.length > 0
+                                ) && convertedNewAppAdminId
                             "
                         />
                         <span>

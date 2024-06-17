@@ -153,7 +153,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                         <NewUserTag
                             v-if="
                             isNewAppAdminAccess(convertedNewAppAdminId, data.user_role_xref_id) &&
-                            params.newUserAccessIds
+                            convertedNewAppAdminId
                             "
                         />
                         <span>

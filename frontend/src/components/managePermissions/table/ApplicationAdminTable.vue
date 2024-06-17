@@ -137,7 +137,7 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                             v-if="
                                 isNewAppAdminAccess(
                                     convertedNewAppAdminId, data.application_admin_id
-                                ) && params.newAppAdminId
+                                ) && convertedNewAppAdminId
                             "
                         />
                         <span>
