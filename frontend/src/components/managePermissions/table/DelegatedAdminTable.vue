@@ -6,7 +6,6 @@ import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { isNewAccess } from '@/services/utils';
-import { useRoute } from 'vue-router';
 import ProgressSpinner from 'primevue/progressspinner';
 
 import { routeItems } from '@/router/routeItem';
@@ -36,12 +35,13 @@ const props = defineProps({
         >,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
 });
 
-const { params } = useRoute();
-const newDelegatedAdminIds = params.newDelegatedAdminIds
-    ? params.newDelegatedAdminIds.split(',')
-    : [];
+const newDelegatedAdminIds = props.newIds.split(',');
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },

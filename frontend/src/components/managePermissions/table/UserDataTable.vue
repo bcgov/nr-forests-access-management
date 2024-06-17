@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
-
 import type { PropType } from 'vue';
-
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -44,12 +41,12 @@ const props = defineProps({
         >,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
 });
-
-const { params } = useRoute();
-const newUserAccessIds = params.newUserAccessIds
-    ? params.newUserAccessIds.split(',')
-    : [];
+const newUserAccessIds = props.newIds.split(',');
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },

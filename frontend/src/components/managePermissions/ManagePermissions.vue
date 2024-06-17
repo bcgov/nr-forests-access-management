@@ -55,6 +55,9 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
+    newAppAdminId: String || undefined,
+    newDelegatedAdminIds: String || undefined,
+    newUserAccessIds: String || undefined,
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
@@ -226,6 +229,7 @@ const getCurrentTab = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
+                        :newIds="props.newAppAdminId || ''"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -256,6 +260,7 @@ const getCurrentTab = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
+                        :newIds="props.newDelegatedAdminIds || ''"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, ref, type PropType } from 'vue';
-import { useRoute } from 'vue-router';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -22,6 +21,7 @@ import {
 import { isNewAccess } from '@/services/utils';
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import { string } from 'yup';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 const confirm = useConfirm();
@@ -36,12 +36,12 @@ const props = defineProps({
         type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
 });
-
-const { params } = useRoute();
-const newAppAdminIds = params.newAppAdminIds
-    ? params.newAppAdminIds.split(',')
-    : [];
+const newAppAdminIds = props.newIds.split(',');
 
 const adminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },

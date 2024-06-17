@@ -156,10 +156,6 @@ const handleSubmit = async () => {
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
-    await router.push({
-        name: routeItems.dashboard.name,
-        params: { newUserAccessIds: newUserAccessIds.join(',') },
-    });
 
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.Regular,
@@ -169,8 +165,13 @@ const handleSubmit = async () => {
         errorCode,
         role
     );
+
     setCurrentTabState(TabKey.UserAccess);
-    router.push('/dashboard');
+
+    router.push({
+        name: routeItems.dashboard.name,
+        params: { newUserAccessIds: newUserAccessIds.join(',') },
+    });
 };
 
 function toRequestPayload(formData: any, forestClientNumber: string) {

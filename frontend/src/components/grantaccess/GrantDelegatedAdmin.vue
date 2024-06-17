@@ -148,11 +148,6 @@ const confirmSubmit = async () => {
                 : [''];
     }
 
-    await router.push({
-        name: routeItems.dashboard.name,
-        params: { newDelegatedAdminIds: newDelegatedAdminAccessIds.join(',') },
-    });
-
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.DelegatedAdmin,
         username,
@@ -161,8 +156,13 @@ const confirmSubmit = async () => {
         errorCode,
         role
     );
+
     setCurrentTabState(TabKey.DelegatedAdminAccess);
-    router.push('/dashboard');
+
+    router.push({
+        name: routeItems.dashboard.name,
+        params: { newDelegatedAdminIds: newDelegatedAdminAccessIds.join(',') },
+    });
 };
 
 function toRequestPayload(formData: any) {
