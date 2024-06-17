@@ -1,7 +1,6 @@
 import json
 import logging
 
-import jwt
 import requests
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives import \
@@ -9,7 +8,8 @@ from cryptography.hazmat.primitives import \
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from jwt.utils import base64url_decode
+from jose import jwt
+from jose.utils import base64url_decode
 
 from .. import bcsc_decryption, kms_lookup
 
@@ -114,28 +114,8 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
     LOGGER.debug(f"decrypted_id_token: [{decrypted_id_token}]")
 
-    """
-    TODO:
-    The above code `bcsc_decryption.decrypt()` is using library 'python-jose' which has
-    security vulnerability and it looks won't be maintained. The entire code at
-    `bcsc_decryption.decrypt()` seems to be a copy-paste to FAM from 'python-jose' library
-    itself (not sure if there is custom adjustment for FAM). Due to the complexity and
-    difficulty on testing/verifying BCSC we will creat another ticket to address this
-    `bcsc_decryption.decrypt()` part for security vulnerability.
-
-    Below code is what might be working to decrypt jwe using `authlib`'s jwe library.
-    Will use the new ticket to add below code and validate decryption correctness.
-
-    # from authlib.jose import JsonWebEncryption
-    #
-    # jwe = JsonWebEncryption()
-    # decrypted_id_token = jwe.deserialize_compact(
-    #     jwe_token, decrypted_key
-    # )['payload']
-    """
-
     decoded_id_token = jwt.decode(
-        decrypted_id_token, None, options={"verify_signature": False}
+        decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
     )
     LOGGER.debug(f"decoded_id_token: [{decoded_id_token}]")
 
@@ -182,4 +162,3 @@ def bcsc_jwks(request: Request):
     }
 
     return JSONResponse(content=jwks_dict)
-
