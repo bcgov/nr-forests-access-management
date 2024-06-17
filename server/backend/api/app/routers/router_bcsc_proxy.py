@@ -3,7 +3,7 @@ import logging
 
 import jwt
 import requests
-from authlib.jose import JsonWebKey
+from authlib.jose import JsonWebEncryption, JsonWebKey
 from cryptography.hazmat.primitives import \
     serialization as crypto_serialization
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -11,7 +11,9 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from jwt.utils import base64url_decode
 
-from .. import bcsc_decryption, kms_lookup
+from .. import kms_lookup
+
+# from .. import bcsc_decryption, kms_lookup
 
 LOGGER = logging.getLogger(__name__)
 
@@ -111,7 +113,15 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
 
     # Use the symmetric public key to decrypt the payload
-    decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
+    jwe = JsonWebEncryption()
+    decrypted_id_token = jwe.deserialize_compact(
+        jwe_token, decrypted_key
+    )['payload']
+
+    # TODO: remove this if new code tested and works. Current `bcsc_decryption.decrypt()`
+    # seems to be copy-past from python-jose (shich is having security vulnerability and
+    # needs to be replaced.)
+    # decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
     LOGGER.debug(f"decrypted_id_token: [{decrypted_id_token}]")
 
     decoded_id_token = jwt.decode(
