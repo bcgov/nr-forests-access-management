@@ -41,7 +41,6 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
-import { resetNewTag } from '@/services/utils';
 
 const props = defineProps({
     userRoleAssignments: {

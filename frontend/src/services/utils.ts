@@ -1,6 +1,4 @@
 import { number, object, string } from 'yup';
-import router from '@/router';
-import { routeItems } from '@/router/routeItem';
 
 type AsyncWrapType = {
     data: any;
