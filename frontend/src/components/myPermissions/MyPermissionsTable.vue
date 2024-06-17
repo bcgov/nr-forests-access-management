@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import ProgressSpinner from 'primevue/progressspinner';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { FilterMatchMode } from 'primevue/api';
 import {
@@ -15,19 +16,19 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 
 const myPermissiosFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
-    'application': {
+    application: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'env': {
+    env: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'clientId': {
+    clientId: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    'role': {
+    role: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -62,40 +63,23 @@ const myPermissionsSearchChange = (newvalue: string) => {
             :pt="{
                 table: {
                     class: 'custom-table',
-                }
+                },
             }"
         >
             <template #empty> You have no accesses in FAM. </template>
             <template #loading>
-                Loading permissions data. Please wait.
+                <ProgressSpinner aria-label="Loading" />
             </template>
-            <Column
-                header="Application"
-                field="application"
-                sortable
-            >
+            <Column header="Application" field="application" sortable>
                 <template #body="{ data }">
                     <span>
                         {{ data.application }}
                     </span>
                 </template>
             </Column>
-            <Column
-                field="env"
-                header="Environment"
-                sortable
-            ></Column>
-            <Column
-                field="clientId"
-                header="Client Number"
-                sortable
-            >
-            </Column>
-            <Column
-                header="Role"
-                field="role"
-                sortable
-            >
+            <Column field="env" header="Environment" sortable></Column>
+            <Column field="clientId" header="Client Number" sortable> </Column>
+            <Column header="Role" field="role" sortable>
                 <template #body="{ data }">
                     {{ data.role }}
                 </template>
@@ -112,5 +96,4 @@ const myPermissionsSearchChange = (newvalue: string) => {
 .custom-table {
     table-layout: fixed;
 }
-
 </style>
