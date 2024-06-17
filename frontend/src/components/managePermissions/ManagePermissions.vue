@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import router from '@/router';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
@@ -59,9 +60,10 @@ const props = defineProps({
 
 // get user access ids from router query parameters
 const { query } = useRoute();
-const newAppAdminId = (query.newAppAdminId as string) || '';
-const newUserAccessIds = (query.newUserAccessIds as string) || '';
-const newDelegatedAdminIds = (query.newDelegatedAdminIds as string) || '';
+
+const newAppAdminId = ref((query.newAppAdminId as string) || '');
+const newUserAccessIds = ref((query.newUserAccessIds as string) || '');
+const newDelegatedAdminIds = ref((query.newDelegatedAdminIds as string) || '');
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -82,9 +84,10 @@ const applicationsUserAdministers = computed(() => {
 const tabViewRef = ref();
 
 const resetNewTag = () => {
-    query.newAppAdminId = '';
-    query.newUserAccessIds = '';
-    query.newDelegatedAdminIds = '';
+    router.push({ query: {} });
+    newAppAdminId.value = '';
+    newUserAccessIds.value = '';
+    newDelegatedAdminIds.value = '';
 };
 
 const resetNotificationAndNewRowTag = () => {

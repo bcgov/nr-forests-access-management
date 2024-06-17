@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType } from 'vue';
+import { reactive, ref, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -17,6 +17,7 @@ import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
 import { isNewAccess } from '@/services/utils';
 
@@ -40,7 +41,9 @@ const props = defineProps({
         default: '',
     },
 });
-const newAppAdminIds = props.newIds.split(',');
+const newAppAdminIds = computed(() => {
+    return props.newIds.split(',');
+});
 
 const adminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -82,11 +85,8 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
 };
 
 const highlightNewAppAdminAccesRow = (rowData: any) => {
-    if (isNewAccess(newAppAdminIds, rowData.application_admin_id)) {
-        return {
-            'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
-        };
+    if (isNewAccess(newAppAdminIds.value, rowData.application_admin_id)) {
+        return NEW_ACCESS_STYLE_IN_TABLE;
     }
 };
 </script>

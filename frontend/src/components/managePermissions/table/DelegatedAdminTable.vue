@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, type PropType } from 'vue';
+import { ref, reactive, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -14,6 +14,7 @@ import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -41,7 +42,9 @@ const props = defineProps({
     },
 });
 
-const newDelegatedAdminIds = props.newIds.split(',');
+const newDelegatedAdminIds = computed(() => {
+    return props.newIds.split(',');
+});
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -97,12 +100,12 @@ const deleteDelegatedAdmin = (
 
 const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
     if (
-        isNewAccess(newDelegatedAdminIds, rowData.access_control_privilege_id)
+        isNewAccess(
+            newDelegatedAdminIds.value,
+            rowData.access_control_privilege_id
+        )
     ) {
-        return {
-            'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
-        };
+        return NEW_ACCESS_STYLE_IN_TABLE;
     }
 };
 </script>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import type { PropType } from 'vue';
+import { reactive, ref, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -18,6 +17,7 @@ import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
 import { isNewAccess } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
@@ -46,7 +46,10 @@ const props = defineProps({
         default: '',
     },
 });
-const newUserAccessIds = props.newIds.split(',');
+
+const newUserAccessIds = computed(() => {
+    return props.newIds.split(',');
+});
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
@@ -93,11 +96,8 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
 }
 
 const highlightNewUserAccessRow = (rowData: any) => {
-    if (isNewAccess(newUserAccessIds, rowData.user_role_xref_id)) {
-        return {
-            'background-color': '#C2E0FF',
-            'box-shadow': 'inset 0 0 0 0.063rem #85C2FF',
-        };
+    if (isNewAccess(newUserAccessIds.value, rowData.user_role_xref_id)) {
+        return NEW_ACCESS_STYLE_IN_TABLE;
     }
 };
 </script>
