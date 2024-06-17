@@ -15,11 +15,11 @@ import { isNewAccess } from './utils';
 
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined,
-    newUsersAccessIds: string = ''
+    newUserAccessIds: string = ''
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
     if (!applicationId) return [];
 
-    const newUsersAccessIdsList = newUsersAccessIds.split(',');
+    const newUsersAccessIdsList = newUserAccessIds.split(',');
 
     const userRoleAssignments = (
         await AppActlApiService.applicationsApi.getFamApplicationUserRoleAssignment(
@@ -67,9 +67,9 @@ export const deleteAndRefreshUserRoleAssignments = async (
 };
 
 export const fetchApplicationAdmins = async (
-    newAppAdminIds: string = ''
+    newAppAdminId: string = ''
 ): Promise<FamAppAdminGetResponse[]> => {
-    const newAppAdminIdsList = newAppAdminIds.split(',');
+    const newAppAdminIdsList = newAppAdminId.split(',');
 
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()

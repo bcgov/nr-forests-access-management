@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -55,10 +56,13 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
-    newAppAdminId: String || undefined,
-    newDelegatedAdminIds: String || undefined,
-    newUserAccessIds: String || undefined,
 });
+
+// get user access ids from router query parameters
+const { query } = useRoute();
+const newAppAdminId = (query.newAppAdminId as string) || '';
+const newUserAccessIds = (query.newUserAccessIds as string) || '';
+const newDelegatedAdminIds = (query.newDelegatedAdminIds as string) || '';
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -229,7 +233,7 @@ const getCurrentTab = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
-                        :newIds="props.newAppAdminId || ''"
+                        :newIds="newAppAdminId"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -241,6 +245,7 @@ const getCurrentTab = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
+                        :newIds="newUserAccessIds"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -260,7 +265,7 @@ const getCurrentTab = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
-                        :newIds="props.newDelegatedAdminIds || ''"
+                        :newIds="newDelegatedAdminIds"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "

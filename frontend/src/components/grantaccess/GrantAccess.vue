@@ -156,7 +156,6 @@ const handleSubmit = async () => {
         }
     } while (formData.value.verifiedForestClients.length > 0);
 
-
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.Regular,
         username,
@@ -169,8 +168,10 @@ const handleSubmit = async () => {
     setCurrentTabState(TabKey.UserAccess);
 
     router.push({
-        name: routeItems.dashboard.name,
-        params: { newUserAccessIds: newUserAccessIds.join(',') },
+        path: `/${routeItems.dashboard.name}`,
+        query: {
+            newUserAccessIds: newUserAccessIds.join(','),
+        },
     });
 };
 

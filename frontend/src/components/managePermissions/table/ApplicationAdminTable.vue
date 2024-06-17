@@ -21,7 +21,6 @@ import {
 import { isNewAccess } from '@/services/utils';
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
-import { string } from 'yup';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
 const confirm = useConfirm();

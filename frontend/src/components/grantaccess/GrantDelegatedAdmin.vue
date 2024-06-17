@@ -160,8 +160,10 @@ const confirmSubmit = async () => {
     setCurrentTabState(TabKey.DelegatedAdminAccess);
 
     router.push({
-        name: routeItems.dashboard.name,
-        params: { newDelegatedAdminIds: newDelegatedAdminAccessIds.join(',') },
+        path: `/${routeItems.dashboard.name}`,
+        query: {
+            newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
+        },
     });
 };
 

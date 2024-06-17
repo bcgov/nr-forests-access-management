@@ -52,7 +52,7 @@ const routes = [
     },
     {
         // a param can be made optional by adding "?"
-        path: `${routeItems.dashboard.path}/:newUserAccessIds?/:newAppAdminId?/:newDelegatedAdminIds?`,
+        path: `${routeItems.dashboard.path}`,
         name: routeItems.dashboard.name,
         meta: {
             requiresAuth: true,

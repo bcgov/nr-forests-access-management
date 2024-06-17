@@ -114,8 +114,10 @@ const handleSubmit = async () => {
     }
     setCurrentTabState(TabKey.AdminAccess);
     router.push({
-        name: routeItems.dashboard.name,
-        params: { newAppAdminId: newAppAdminReturn?.data.application_admin_id },
+        path: `/${routeItems.dashboard.name}`,
+        query: {
+            newAppAdminId: newAppAdminReturn?.data.application_admin_id,
+        },
     });
 };
 </script>
