@@ -46,3 +46,7 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
             .nullable(),
     });
 };
+
+export const isNewAppAdminAccess = (accessesData: number, newAccessId: number | null) => {
+    return accessesData === newAccessId;
+};

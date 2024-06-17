@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref, type PropType } from 'vue';
+import { reactive, ref, type PropType } from 'vue';
+import { useRoute } from 'vue-router';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -17,6 +18,7 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
+import { isNewAppAdminAccess } from '@/services/utils'
 
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
@@ -30,26 +32,6 @@ const props = defineProps({
     applicationAdmins: {
         type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
-    },
-    newAppAdminId: {
-        type: Number || undefined,
-        default: undefined,
-    },
-});
-
-// newAppAdminId goes to the top of the array
-const applicationAdmins = computed(() => {
-    if (!props.newAppAdminId) {
-        return props.applicationAdmins;
-    } else {
-        return props.applicationAdmins?.slice().sort((first, second) => {
-            const firstIsNew = isNewAppAdminAccess(first.application_admin_id);
-            const secondIsNew = isNewAppAdminAccess(second.application_admin_id);
-
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
-            return 0;
-        });
     }
 });
 
@@ -96,12 +78,12 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     });
 };
 
-const isNewAppAdminAccess = (applicationAdminId: number | null) => {
-    return props.newAppAdminId === (applicationAdminId);
-};
+const { params } = useRoute()
+
+const convertedNewAppAdminId = Number(params.newAppAdminId)
 
 const highlightNewAppAdminAccesRow = (rowData: any) => {
-    if(isNewAppAdminAccess(rowData.application_admin_id)) {
+    if(isNewAppAdminAccess(convertedNewAppAdminId, rowData.application_admin_id)) {
         return {
             'background-color': '#C2E0FF',
             'box-shadow': 'inset 0 0 0 0.063rem #85C2FF'
@@ -129,7 +111,7 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
             />
             <DataTable
                 v-model:filters="adminFilters"
-                :value="applicationAdmins"
+                :value="props.applicationAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -154,8 +136,8 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                         <NewUserTag
                             v-if="
                                 isNewAppAdminAccess(
-                                    data.application_admin_id
-                                ) && props.newAppAdminId
+                                    convertedNewAppAdminId, data.application_admin_id
+                                ) && params.newAppAdminId
                             "
                         />
                         <span>

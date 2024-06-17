@@ -42,7 +42,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let delegatedAdmins;
 
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        applicationAdmins = await asyncWrap(fetchApplicationAdmins());
+        applicationAdmins = await asyncWrap(fetchApplicationAdmins(to.params.newAppAdminId));
     } else {
         userRolesFetchResult = await asyncWrap(
             fetchUserRoleAssignments(selectedApplicationId.value)

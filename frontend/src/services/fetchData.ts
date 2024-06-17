@@ -9,6 +9,7 @@ import {
 } from '@/services/ApiServiceFactory';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { selectedApplicationId } from '@/store/ApplicationState';
+import { isNewAppAdminAccess } from './utils';
 
 // --- Fetching data (from backend)
 
@@ -56,24 +57,39 @@ export const deleteAndRefreshUserRoleAssignments = async (
     return fetchUserRoleAssignments(applicationId);
 };
 
-export const fetchApplicationAdmins = async (): Promise<
-    FamAppAdminGetResponse[]
-> => {
+export const fetchApplicationAdmins = async (
+    newAppAdminId: any = undefined
+): Promise<FamAppAdminGetResponse[]> => {
+    const convertedNewAppAdminId = newAppAdminId
+        ? Number(newAppAdminId)
+        : undefined;
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
-    // Default sorting
-    applicationAdmins.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
-        );
+    const alphabeticallySortedAdmins = applicationAdmins
+        .slice()
+        .sort((first, second) => {
+            return first.user.user_name.localeCompare(second.user.user_name);
+        });
 
-        return userNameCompare;
-    });
+    const newAdminsAccesSorted = alphabeticallySortedAdmins
+        .slice()
+        .sort((first, second) => {
+            const firstIsNew = isNewAppAdminAccess(
+                convertedNewAppAdminId!,
+                first.application_admin_id
+            );
+            const secondIsNew = isNewAppAdminAccess(
+                convertedNewAppAdminId!,
+                second.application_admin_id
+            );
 
-    return applicationAdmins;
+            if (firstIsNew && !secondIsNew) return -1;
+            if (!firstIsNew && secondIsNew) return 1;
+            return 0;
+        });
+    return newAdminsAccesSorted;
 };
 
 /**
@@ -115,7 +131,6 @@ export const fetchDelegatedAdmins = async (
     });
 
     return delegatedAdmins;
-
 };
 
 /**

@@ -58,19 +58,12 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    newAppAdminId: {
-        type: String,
-        default: '',
-    },
     newDelegatedAdminIds: {
         type: String,
         default: '',
     },
 });
 
-const newAppAdminId = shallowRef<number | undefined>(
-    !props.newAppAdminId ? undefined : Number(props.newAppAdminId)
-);
 const newUserAccessIds = shallowRef(
     props.newUserAccessIds.split(',').map(Number)
 );
@@ -103,7 +96,6 @@ onUnmounted(() => {
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
     resetNotification();
-    resetNewTag();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -125,7 +117,6 @@ const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
     resetNotification();
-    resetNewTag();
 
     try {
         userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
@@ -147,7 +138,6 @@ const deleteUserRoleAssignment = async (
 
 const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
     resetNotification();
-    resetNewTag();
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id
@@ -169,7 +159,6 @@ const deleteDelegatedAdminAssignment = async (
     delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
 ) => {
     resetNotification();
-    resetNewTag();
     try {
         delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
             delegatedAdminAssignment.access_control_privilege_id
@@ -190,7 +179,6 @@ const deleteDelegatedAdminAssignment = async (
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
     resetNotification();
-    resetNewTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
@@ -201,12 +189,6 @@ const getCurrentTab = () => {
         })
         .indexOf(getCurrentTabState());
     return tabIndex > 0 ? tabIndex : 0;
-};
-
-const resetNewTag = () => {
-    newAppAdminId.value = undefined;
-    newUserAccessIds.value = [];
-    newDelegatedAdminIds.value = [];
 };
 </script>
 
@@ -257,7 +239,6 @@ const resetNewTag = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
-                        :newAppAdminId="newAppAdminId || undefined"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
