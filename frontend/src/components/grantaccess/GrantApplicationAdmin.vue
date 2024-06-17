@@ -112,13 +112,19 @@ const handleSubmit = async () => {
             );
         }
     }
+
     setCurrentTabState(TabKey.AdminAccess);
-    router.push({
-        path: `/${routeItems.dashboard.name}`,
-        query: {
-            newAppAdminId: newAppAdminReturn?.data.application_admin_id,
-        },
-    });
+
+    if (newAppAdminReturn?.data.application_admin_id) {
+        router.push({
+            path: `/${routeItems.dashboard.name}`,
+            query: {
+                newAppAdminId: newAppAdminReturn?.data.application_admin_id,
+            },
+        });
+    } else {
+        router.push(`/${routeItems.dashboard.name}`);
+    }
 };
 </script>
 <template>

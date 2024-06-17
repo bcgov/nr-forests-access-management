@@ -159,12 +159,16 @@ const confirmSubmit = async () => {
 
     setCurrentTabState(TabKey.DelegatedAdminAccess);
 
-    router.push({
-        path: `/${routeItems.dashboard.name}`,
-        query: {
-            newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
-        },
-    });
+    if (newDelegatedAdminAccessIds.length > 0) {
+        router.push({
+            path: `/${routeItems.dashboard.name}`,
+            query: {
+                newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
+            },
+        });
+    } else {
+        router.push(`/${routeItems.dashboard.name}`);
+    }
 };
 
 function toRequestPayload(formData: any) {

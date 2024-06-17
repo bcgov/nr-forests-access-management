@@ -167,12 +167,16 @@ const handleSubmit = async () => {
 
     setCurrentTabState(TabKey.UserAccess);
 
-    router.push({
-        path: `/${routeItems.dashboard.name}`,
-        query: {
-            newUserAccessIds: newUserAccessIds.join(','),
-        },
-    });
+    if (newUserAccessIds.length > 0) {
+        router.push({
+            path: `/${routeItems.dashboard.name}`,
+            query: {
+                newUserAccessIds: newUserAccessIds.join(','),
+            },
+        });
+    } else {
+        router.push(`/${routeItems.dashboard.name}`);
+    }
 };
 
 function toRequestPayload(formData: any, forestClientNumber: string) {

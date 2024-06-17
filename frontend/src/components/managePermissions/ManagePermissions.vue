@@ -59,9 +59,9 @@ const props = defineProps({
 
 // get user access ids from router query parameters
 const { query } = useRoute();
-const newAppAdminId = ref((query.newAppAdminId as string) || '');
-const newUserAccessIds = ref((query.newUserAccessIds as string) || '');
-const newDelegatedAdminIds = ref((query.newDelegatedAdminIds as string) || '');
+const newAppAdminId = (query.newAppAdminId as string) || '';
+const newUserAccessIds = (query.newUserAccessIds as string) || '';
+const newDelegatedAdminIds = (query.newDelegatedAdminIds as string) || '';
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -82,9 +82,9 @@ const applicationsUserAdministers = computed(() => {
 const tabViewRef = ref();
 
 const resetNewTag = () => {
-    newAppAdminId.value = '';
-    newUserAccessIds.value = '';
-    newDelegatedAdminIds.value = '';
+    query.newAppAdminId = '';
+    query.newUserAccessIds = '';
+    query.newDelegatedAdminIds = '';
 };
 
 const resetNotificationAndNewRowTag = () => {
