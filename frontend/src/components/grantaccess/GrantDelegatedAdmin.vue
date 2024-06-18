@@ -161,13 +161,13 @@ const confirmSubmit = async () => {
 
     if (newDelegatedAdminAccessIds.length > 0) {
         router.push({
-            path: `/${routeItems.dashboard.name}`,
+            path: routeItems.dashboard.path,
             query: {
                 newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
             },
         });
     } else {
-        router.push(`/${routeItems.dashboard.name}`);
+        router.push(routeItems.dashboard.path);
     }
 };
 

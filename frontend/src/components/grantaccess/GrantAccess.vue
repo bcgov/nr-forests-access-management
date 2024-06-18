@@ -169,13 +169,13 @@ const handleSubmit = async () => {
 
     if (newUserAccessIds.length > 0) {
         router.push({
-            path: `/${routeItems.dashboard.name}`,
+            path: routeItems.dashboard.path,
             query: {
                 newUserAccessIds: newUserAccessIds.join(','),
             },
         });
     } else {
-        router.push(`/${routeItems.dashboard.name}`);
+        router.push(routeItems.dashboard.path);
     }
 };
 

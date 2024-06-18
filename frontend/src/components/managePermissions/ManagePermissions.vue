@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
-import { useRoute } from 'vue-router';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -56,14 +55,20 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
+    // router query parameters
+    newAppAdminId: {
+        type: String,
+        default: '',
+    },
+    newUserAccessIds: {
+        type: String,
+        default: '',
+    },
+    newDelegatedAdminIds: {
+        type: String,
+        default: '',
+    },
 });
-
-// get user access ids from router query parameters
-const { query } = useRoute();
-
-const newAppAdminId = ref((query.newAppAdminId as string) || '');
-const newUserAccessIds = ref((query.newUserAccessIds as string) || '');
-const newDelegatedAdminIds = ref((query.newDelegatedAdminIds as string) || '');
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -85,9 +90,6 @@ const tabViewRef = ref();
 
 const resetNewTag = () => {
     router.push({ query: {} });
-    newAppAdminId.value = '';
-    newUserAccessIds.value = '';
-    newDelegatedAdminIds.value = '';
 };
 
 const resetNotificationAndNewRowTag = () => {
@@ -245,7 +247,7 @@ const getCurrentTab = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
-                        :newIds="newAppAdminId"
+                        :newIds="props.newAppAdminId"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -257,7 +259,7 @@ const getCurrentTab = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
-                        :newIds="newUserAccessIds"
+                        :newIds="props.newUserAccessIds"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -277,7 +279,7 @@ const getCurrentTab = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
-                        :newIds="newDelegatedAdminIds"
+                        :newIds="props.newDelegatedAdminIds"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "
