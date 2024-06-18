@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed, onMounted } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
+import { useConfirm } from "primevue/useconfirm";
 import LoginUserState from '@/store/FamLoginUserState';
 import {
     getCurrentTabState,
@@ -55,6 +56,8 @@ const props = defineProps({
         default: [],
     },
 });
+
+const confirm = useConfirm();
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
@@ -175,9 +178,25 @@ const getCurrentTab = () => {
         .indexOf(getCurrentTabState());
     return tabIndex > 0 ? tabIndex : 0;
 };
+
+const confirm1 = () => {
+    confirm.require({
+        group: 'templating',
+        message: 'ttttttttttttttttttt?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            console.log('test');
+        },
+        reject: () => {
+            console.log('test');
+        }
+    });
+};
 </script>
 
 <template>
+    <TermsAndConditions/>
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
