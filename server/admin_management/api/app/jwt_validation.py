@@ -38,7 +38,7 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
     auto_error=True,
 )
 
-jwk_url = f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json"
+jwks_url = f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json"
 
 _jwks = None
 
@@ -50,7 +50,7 @@ def init_jwks():
         f"Requesting aws jwks with region {aws_region} and user pood id {user_pool_id}..."
     )
     try:
-        with urlopen(jwk_url) as response:
+        with urlopen(jwks_url) as response:
             _jwks = json.loads(response.read().decode("utf-8"))
 
     except Exception as e:
@@ -68,9 +68,8 @@ def get_rsa_key(token):
     if not _jwks:
         init_jwks()
 
-    pyjwks_client = PyJWKClient(jwk_url)
+    pyjwks_client = PyJWKClient(jwks_url)
     signing_key = pyjwks_client.get_signing_key_from_jwt(token)
-    LOGGER.debug(f"Obtained signing key from jwks: {signing_key.key}")
     return signing_key.key
 
 
