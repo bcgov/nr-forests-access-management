@@ -127,7 +127,7 @@ def override_get_rsa_key_method():
     return override_get_rsa_key
 
 
-def override_get_rsa_key(kid):
+def override_get_rsa_key(token):
     global public_rsa_key
     return public_rsa_key
 
