@@ -3,12 +3,12 @@ import logging
 from urllib.request import urlopen
 
 import jwt
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2AuthorizationCodeBearer
-
 from api.app.constants import COGNITO_USERNAME_KEY
 from api.config.config import (get_aws_region, get_oidc_client_id,
                                get_user_pool_domain_name, get_user_pool_id)
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2AuthorizationCodeBearer
+from jwt import PyJWKClient
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
@@ -38,6 +38,8 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
     auto_error=True,
 )
 
+jwk_url = f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json"
+
 _jwks = None
 
 
@@ -48,8 +50,7 @@ def init_jwks():
         f"Requesting aws jwks with region {aws_region} and user pood id {user_pool_id}..."
     )
     try:
-        e = f"https://cognito-idp.{aws_region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json"
-        with urlopen(e) as response:
+        with urlopen(jwk_url) as response:
             _jwks = json.loads(response.read().decode("utf-8"))
 
     except Exception as e:
@@ -62,25 +63,15 @@ def get_rsa_key_method():
     return get_rsa_key
 
 
-def get_rsa_key(kid):
-
+def get_rsa_key(token):
     global _jwks
     if not _jwks:
         init_jwks()
 
-    """Return the matching RSA key for kid, from the jwks array."""
-    rsa_key = {}
-    for key in _jwks["keys"]:
-        if key["kid"] == kid:
-            rsa_key = {
-                "kty": key["kty"],
-                "kid": key["kid"],
-                "use": key["use"],
-                "n": key["n"],
-                "e": key["e"],
-            }
-            break
-    return rsa_key
+    pyjwks_client = PyJWKClient(jwk_url)
+    signing_key = pyjwks_client.get_signing_key_from_jwt(token)
+    LOGGER.debug(f"Obtained signing key from jwks: {signing_key.key}")
+    return signing_key.key
 
 
 def validate_token(
@@ -119,7 +110,7 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    rsa_key = get_rsa_key_method(unverified_header["kid"])
+    rsa_key = get_rsa_key_method(token)
 
     if not rsa_key:
         LOGGER.debug("Caught exception rsa key not found")
@@ -131,9 +122,6 @@ def validate_token(
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    aws_region = get_aws_region()
-    user_pool_id = get_user_pool_id()
 
     try:
         claims = jwt.decode(
@@ -156,7 +144,8 @@ def validate_token(
             detail={"code": ERROR_CLAIMS, "description": err.args[0]},
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except Exception:
+    except Exception as e:
+        LOGGER.debug(f"jwt.decode failed {e}")
         raise HTTPException(
             status_code=401,
             detail={"code": ERROR_VALIDATION, "description": "Unable to validate JWT"},
