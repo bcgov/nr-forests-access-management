@@ -119,7 +119,7 @@ const handleSubmit = async () => {
     if (newAppAdminId) {
         router.push({
             path: `/${routeItems.dashboard.name}`,
-            query: { newAppAdminId },
+            query: { newAppAdminId: newAppAdminId.toString() },
         });
     } else {
         router.push(`/${routeItems.dashboard.name}`);
