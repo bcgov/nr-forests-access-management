@@ -41,14 +41,24 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
     let userRolesFetchResult;
     let delegatedAdmins;
 
+    // to.params.newAppAdminIds, newUserAccessIds and newDelegatedAdminIds will always be string
+    // in the format of for example "1", or "1,2,3"
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        applicationAdmins = await asyncWrap(fetchApplicationAdmins());
+        applicationAdmins = await asyncWrap(
+            fetchApplicationAdmins(to.query.newAppAdminId as string)
+        );
     } else {
         userRolesFetchResult = await asyncWrap(
-            fetchUserRoleAssignments(selectedApplicationId.value)
+            fetchUserRoleAssignments(
+                selectedApplicationId.value,
+                to.query.newUserAccessIds as string
+            )
         );
         delegatedAdmins = await asyncWrap(
-            fetchDelegatedAdmins(selectedApplicationId.value)
+            fetchDelegatedAdmins(
+                selectedApplicationId.value,
+                to.query.newDelegatedAdminIds as string
+            )
         );
     }
     Object.assign(to.meta, {

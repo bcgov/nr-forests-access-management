@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import type { PropType } from 'vue';
-
+import { reactive, ref, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -12,13 +10,16 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import NewUserTag from '@/components/common/NewUserTag.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import { isNewAccess } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 
 type emit = (
@@ -27,6 +28,7 @@ type emit = (
 ) => void;
 
 const confirm = useConfirm();
+const emit = defineEmits<emit>();
 
 const props = defineProps({
     loading: {
@@ -39,6 +41,14 @@ const props = defineProps({
         >,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
+});
+
+const newUserAccessIds = computed(() => {
+    return props.newIds.split(',');
 });
 
 const userRoleAssignmentsFilters = ref({
@@ -62,16 +72,14 @@ const userRoleAssignmentsFilters = ref({
     },
 });
 
-const emit = defineEmits<emit>();
+const userSearchChange = (newValue: string) => {
+    userRoleAssignmentsFilters.value.global.value = newValue;
+};
 
 const confirmDeleteData = reactive({
     userName: '',
     role: '',
 });
-
-const userSearchChange = (newValue: string) => {
-    userRoleAssignmentsFilters.value.global.value = newValue;
-};
 
 function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
     confirmDeleteData.role = assignment.role.role_name;
@@ -86,6 +94,12 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
         },
     });
 }
+
+const highlightNewUserAccessRow = (rowData: any) => {
+    if (isNewAccess(newUserAccessIds.value, rowData.user_role_xref_id)) {
+        return NEW_ACCESS_STYLE_IN_TABLE;
+    }
+};
 </script>
 
 <template>
@@ -107,7 +121,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
             />
             <DataTable
                 v-model:filters="userRoleAssignmentsFilters"
-                :value="props.userRoleAssignments"
+                :value="userRoleAssignments"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -123,6 +137,7 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewUserAccessRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading>
@@ -130,6 +145,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
                 </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
+                        <NewUserTag
+                            v-if="
+                                isNewAccess(
+                                    newUserAccessIds,
+                                    data.user_role_xref_id
+                                )
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>

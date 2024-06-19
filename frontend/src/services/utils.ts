@@ -46,3 +46,7 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
             .nullable(),
     });
 };
+
+export const isNewAccess = (newAccessIds: string[], accessId: number) => {
+    return newAccessIds.includes(accessId.toString());
+};

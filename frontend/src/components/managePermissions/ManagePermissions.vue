@@ -3,6 +3,7 @@ import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import router from '@/router';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
@@ -54,6 +55,19 @@ const props = defineProps({
         type: Array as PropType<FamAccessControlPrivilegeGetResponse[]>,
         default: [],
     },
+    // router query parameters
+    newAppAdminId: {
+        type: String,
+        default: '',
+    },
+    newUserAccessIds: {
+        type: String,
+        default: '',
+    },
+    newDelegatedAdminIds: {
+        type: String,
+        default: '',
+    },
 });
 
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
@@ -74,13 +88,22 @@ const applicationsUserAdministers = computed(() => {
 
 const tabViewRef = ref();
 
-onUnmounted(() => {
+const resetNewTag = () => {
+    router.push({ query: {} });
+};
+
+const resetNotificationAndNewRowTag = () => {
     resetNotification();
+    resetNewTag();
+};
+
+onUnmounted(() => {
+    resetNotificationAndNewRowTag();
 });
 
 const onApplicationSelected = async (e: DropdownChangeEvent) => {
     setSelectedApplication(e.value ? JSON.stringify(e.value) : null);
-    resetNotification();
+    resetNotificationAndNewRowTag();
 
     if (e.value.id === FAM_APPLICATION_ID) {
         setCurrentTabState(TabKey.AdminAccess);
@@ -101,7 +124,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 const deleteUserRoleAssignment = async (
     assignment: FamApplicationUserRoleAssignmentGet
 ) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
 
     try {
         userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
@@ -122,7 +145,7 @@ const deleteUserRoleAssignment = async (
 };
 
 const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
     try {
         applicationAdmins.value = await deleteAndRefreshApplicationAdmin(
             admin.application_admin_id
@@ -143,7 +166,7 @@ const deleteAppAdmin = async (admin: FamAppAdminGetResponse) => {
 const deleteDelegatedAdminAssignment = async (
     delegatedAdminAssignment: FamAccessControlPrivilegeGetResponse
 ) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
     try {
         delegatedAdmins.value = await deleteAndRefreshDelegatedAdmin(
             delegatedAdminAssignment.access_control_privilege_id
@@ -163,7 +186,7 @@ const deleteDelegatedAdminAssignment = async (
 
 // Tabs methods
 const setCurrentTab = (event: TabViewChangeEvent) => {
-    resetNotification();
+    resetNotificationAndNewRowTag();
     setCurrentTabState(tabViewRef.value?.tabs[event.index].key);
 };
 
@@ -224,6 +247,7 @@ const getCurrentTab = () => {
                     <ApplicationAdminTable
                         :loading="isLoading()"
                         :applicationAdmins="applicationAdmins || []"
+                        :newIds="props.newAppAdminId"
                         @deleteAppAdmin="deleteAppAdmin"
                     />
                 </TabPanel>
@@ -235,6 +259,7 @@ const getCurrentTab = () => {
                     <UserDataTable
                         :loading="isLoading()"
                         :userRoleAssignments="userRoleAssignments || []"
+                        :newIds="props.newUserAccessIds"
                         @deleteUserRoleAssignment="deleteUserRoleAssignment"
                     />
                 </TabPanel>
@@ -254,6 +279,7 @@ const getCurrentTab = () => {
                     <DelegatedAdminTable
                         :loading="isLoading()"
                         :delegatedAdmins="delegatedAdmins || []"
+                        :newIds="props.newDelegatedAdminIds"
                         @deleteDelegatedAdminAssignment="
                             deleteDelegatedAdminAssignment
                         "

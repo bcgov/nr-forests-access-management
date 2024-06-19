@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, type PropType } from 'vue';
+import { reactive, ref, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -10,16 +10,22 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { IconSize } from '@/enum/IconEnum';
 import { routeItems } from '@/router/routeItem';
 import Button from '@/components/common/Button.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import { isNewAccess } from '@/services/utils';
+
 import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
 
 type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
+const confirm = useConfirm();
+const emit = defineEmits<emit>();
 
 const props = defineProps({
     loading: {
@@ -30,6 +36,13 @@ const props = defineProps({
         type: [Array] as PropType<FamAppAdminGetResponse[] | undefined>,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
+});
+const newAppAdminIds = computed(() => {
+    return props.newIds.split(',');
 });
 
 const adminFilters = ref({
@@ -49,18 +62,14 @@ const adminFilters = ref({
     },
 });
 
-const confirm = useConfirm();
-
-const emit = defineEmits<emit>();
+const adminSearchChange = (newvalue: string) => {
+    adminFilters.value.global.value = newvalue;
+};
 
 const confirmDeleteData = reactive({
     adminName: '',
     role: 'ADMIN',
 });
-
-const adminSearchChange = (newvalue: string) => {
-    adminFilters.value.global.value = newvalue;
-};
 
 const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     confirmDeleteData.adminName = admin.user.user_name;
@@ -73,6 +82,12 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
             emit('deleteAppAdmin', admin);
         },
     });
+};
+
+const highlightNewAppAdminAccesRow = (rowData: any) => {
+    if (isNewAccess(newAppAdminIds.value, rowData.application_admin_id)) {
+        return NEW_ACCESS_STYLE_IN_TABLE;
+    }
 };
 </script>
 
@@ -111,6 +126,7 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewAppAdminAccesRow"
             >
                 <template #empty> No user found. </template>
                 <template #loading>
@@ -118,6 +134,14 @@ const deleteAdmin = (admin: FamAppAdminGetResponse) => {
                 </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
+                        <NewUserTag
+                            v-if="
+                                isNewAccess(
+                                    newAppAdminIds,
+                                    data.application_admin_id
+                                )
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>
