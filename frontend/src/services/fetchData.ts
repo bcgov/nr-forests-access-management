@@ -27,23 +27,21 @@ export const fetchUserRoleAssignments = async (
         )
     ).data;
 
-    const sortedUserAccesses = userRoleAssignments
-        .slice()
-        .sort((first, second) => {
-            const firstIsNew = isNewAccess(
-                newUsersAccessIdsList,
-                first.user_role_xref_id
-            );
-            const secondIsNew = isNewAccess(
-                newUsersAccessIdsList,
-                second.user_role_xref_id
-            );
+    const sortedUserAccesses = userRoleAssignments.sort((first, second) => {
+        const firstIsNew = isNewAccess(
+            newUsersAccessIdsList,
+            first.user_role_xref_id
+        );
+        const secondIsNew = isNewAccess(
+            newUsersAccessIdsList,
+            second.user_role_xref_id
+        );
 
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
 
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
+        return first.user.user_name.localeCompare(second.user.user_name);
+    });
 
     return sortedUserAccesses;
 };
@@ -75,23 +73,21 @@ export const fetchApplicationAdmins = async (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
-    const sortedApplicationAdmins = applicationAdmins
-        .slice()
-        .sort((first, second) => {
-            const firstIsNew = isNewAccess(
-                newAppAdminIdsList,
-                first.application_admin_id
-            );
-            const secondIsNew = isNewAccess(
-                newAppAdminIdsList,
-                second.application_admin_id
-            );
+    const sortedApplicationAdmins = applicationAdmins.sort((first, second) => {
+        const firstIsNew = isNewAccess(
+            newAppAdminIdsList,
+            first.application_admin_id
+        );
+        const secondIsNew = isNewAccess(
+            newAppAdminIdsList,
+            second.application_admin_id
+        );
 
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
 
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
+        return first.user.user_name.localeCompare(second.user.user_name);
+    });
 
     return sortedApplicationAdmins;
 };
@@ -127,23 +123,21 @@ export const fetchDelegatedAdmins = async (
         )
     ).data;
 
-    const sortedDelegatedAdmins = delegatedAdmins
-        .slice()
-        .sort((first, second) => {
-            const firstIsNew = isNewAccess(
-                newDelegatedAdminIdsList,
-                first.access_control_privilege_id
-            );
-            const secondIsNew = isNewAccess(
-                newDelegatedAdminIdsList,
-                second.access_control_privilege_id
-            );
+    const sortedDelegatedAdmins = delegatedAdmins.sort((first, second) => {
+        const firstIsNew = isNewAccess(
+            newDelegatedAdminIdsList,
+            first.access_control_privilege_id
+        );
+        const secondIsNew = isNewAccess(
+            newDelegatedAdminIdsList,
+            second.access_control_privilege_id
+        );
 
-            if (firstIsNew && !secondIsNew) return -1;
-            if (!firstIsNew && secondIsNew) return 1;
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
 
-            return first.user.user_name.localeCompare(second.user.user_name);
-        });
+        return first.user.user_name.localeCompare(second.user.user_name);
+    });
 
     return sortedDelegatedAdmins;
 };
