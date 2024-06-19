@@ -6,3 +6,4 @@ pytest-md==0.2.0
 testcontainers==3.7.1
 testcontainers-core==0.0.1rc1
 requests>=2.32.0 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
