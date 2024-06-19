@@ -31,7 +31,7 @@ const terms = [
                             {
                                 term: 'Business BCeID Terms',
                                 definition:
-                                    `means the terms found at:  <a>https://www.bceid.ca/aboutbceid/agreements.aspx;</a>`,
+                                    `means the terms found at:  <a href="https://www.bceid.ca/aboutbceid/agreements.aspx" target="_blank">https://www.bceid.ca/aboutbceid/agreements.aspx</a>`,
                             },
                             {
                                 term: 'Delegated Administrator',
@@ -59,7 +59,7 @@ const terms = [
                                     'means individuals within the Subscriber’s organization who have been granted access to any Application by the Delegated Administrator through FAM; and',
                                 subDefinitions: [
                                     {
-                                        term: 'Works',
+                                        term: '"Works"',
                                         definition:
                                             'means, collectively, FAM, the Applications and the Documentation.',
                                     },

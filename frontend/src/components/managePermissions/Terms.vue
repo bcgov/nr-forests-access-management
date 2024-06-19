@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 const props = defineProps({
     definitions: {
-        type: Object,
-        require: false
+        type: Array,
+        required: false
     }
 });
-
-console.log(props.definitions)
 
 let currentLetterIndex = 0;
 
@@ -19,8 +17,8 @@ const resetCurrentLetterIndex = () => {
 };
 
 const renderDefinitions = (definitions: any) => {
-    if(!definitions) {
-        return
+    if (!definitions) {
+        return [];
     }
     return definitions.map((definition) => {
         return {
@@ -36,35 +34,27 @@ const renderDefinitions = (definitions: any) => {
 resetCurrentLetterIndex();
 const processedDefinitions = renderDefinitions(props.definitions);
 </script>
-<template>
-        <article>
 
-                <ul>
+<template>
+    <article>
+        <ul>
+            <li
+                v-for="(definition, index) in processedDefinitions"
+                :key="index"
+            >
+                <span v-html="`${definition.letter}. ${definition.term} ${definition.definition}`"></span>
+                <ul v-if="definition.subDefinitions">
                     <li
-                        v-for="(definition, index) in processedDefinitions"
-                        :key="index"
+                        v-for="(subDefinition, subIndex) in definition.subDefinitions"
+                        :key="subIndex"
                     >
-                        {{
-                            `${definition.letter}. ${definition.term} ${definition.definition}`
-                        }}
-                        <ul v-if="definition.subDefinitions">
-                            <li
-                                v-for="(
-                                    subDefinition, subIndex
-                                ) in definition.subDefinitions"
-                                :key="subIndex"
-                            >
-                                {{
-                                    `${subDefinition.letter}. ${subDefinition.term} ${subDefinition.definition}`
-                                }}
-                            </li>
-                        </ul>
+                        <span v-html="`${subDefinition.letter}. ${subDefinition.term} ${subDefinition.definition}`"></span>
                     </li>
                 </ul>
-
-        </article>
+            </li>
+        </ul>
+    </article>
 </template>
-
 
 <style lang="scss" scoped>
 ul {
