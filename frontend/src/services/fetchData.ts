@@ -27,7 +27,7 @@ export const fetchUserRoleAssignments = async (
         )
     ).data;
 
-    const sortedUserAccesses = userRoleAssignments.sort((first, second) => {
+    userRoleAssignments.sort((first, second) => {
         const firstIsNew = isNewAccess(
             newUsersAccessIdsList,
             first.user_role_xref_id
@@ -43,7 +43,7 @@ export const fetchUserRoleAssignments = async (
         return first.user.user_name.localeCompare(second.user.user_name);
     });
 
-    return sortedUserAccesses;
+    return userRoleAssignments;
 };
 
 /**
@@ -73,7 +73,7 @@ export const fetchApplicationAdmins = async (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
-    const sortedApplicationAdmins = applicationAdmins.sort((first, second) => {
+    applicationAdmins.sort((first, second) => {
         const firstIsNew = isNewAccess(
             newAppAdminIdsList,
             first.application_admin_id
@@ -89,7 +89,7 @@ export const fetchApplicationAdmins = async (
         return first.user.user_name.localeCompare(second.user.user_name);
     });
 
-    return sortedApplicationAdmins;
+    return applicationAdmins;
 };
 
 /**
@@ -119,11 +119,11 @@ export const fetchDelegatedAdmins = async (
 
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
-            applicationId!
+            applicationId
         )
     ).data;
 
-    const sortedDelegatedAdmins = delegatedAdmins.sort((first, second) => {
+    delegatedAdmins.sort((first, second) => {
         const firstIsNew = isNewAccess(
             newDelegatedAdminIdsList,
             first.access_control_privilege_id
@@ -139,7 +139,7 @@ export const fetchDelegatedAdmins = async (
         return first.user.user_name.localeCompare(second.user.user_name);
     });
 
-    return sortedDelegatedAdmins;
+    return delegatedAdmins;
 };
 
 /**
