@@ -3,34 +3,26 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    ERROR_CODE_SELF_GRANT_PROHIBITED,
-    ERROR_CODE_INVALID_ROLE_ID,
-    ERROR_CODE_REQUESTER_NOT_EXISTS,
-    ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-    ERROR_CODE_INVALID_OPERATION,
-    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-    ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-    UserType,
-    RoleType,
-)
-from api.app.crud import (
-    crud_role,
-    crud_user,
-    crud_user_role,
-    crud_access_control_privilege,
-    crud_utils,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+                               ERROR_CODE_INVALID_OPERATION,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               ERROR_CODE_INVALID_ROLE_ID,
+                               ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                               ERROR_CODE_REQUESTER_NOT_EXISTS,
+                               ERROR_CODE_SELF_GRANT_PROHIBITED,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
+                               UserType)
+from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
+                          crud_user_role, crud_user_terms_conditions,
+                          crud_utils)
 from api.app.crud.validator.user_validator import UserValidator
-from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED,
-    ERROR_GROUPS_REQUIRED,
-    JWT_GROUPS_KEY,
-    get_access_roles,
-    get_request_cognito_user_id,
-    validate_token,
-)
+from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
+                                    ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
+                                    get_access_roles,
+                                    get_request_cognito_user_id,
+                                    validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import Requester, TargetUser
 from api.app.utils import utils
@@ -414,3 +406,20 @@ async def enforce_bceid_by_same_org_guard(
                 error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                 error_msg="Managing for different organization is not allowed.",
             )
+
+
+def enforce_bceid_terms_conditions_guard(
+    db: Session = Depends(database.get_db),
+    requester: Requester = Depends(get_current_requester),
+    require_accept_terms_and_conditions: callable = Depends(
+        crud_user_terms_conditions.require_accept_terms_and_conditions
+    ),
+):
+    tc_accepted = not require_accept_terms_and_conditions(
+        db, requester, version=CURRENT_TERMS_AND_CONDITIONS_VERSION
+    )
+    if not tc_accepted:
+        utils.raise_http_exception(
+            error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+            error_msg="Requires to accept terms and conditions.",
+        )
