@@ -1,15 +1,14 @@
 import logging
 from http import HTTPStatus
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+
 from api.app import database
-from api.app.schemas import Requester
+from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION
 from api.app.crud import crud_user_terms_conditions
 from api.app.routers.router_guards import (
-    get_current_requester,
-    external_delegated_admin_only_action,
-)
-
+    external_delegated_admin_only_action, get_current_requester)
+from api.app.schemas import Requester
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
@@ -21,7 +20,7 @@ router = APIRouter()
     status_code=HTTPStatus.OK,
 )
 def validate_user_requires_accept_terms_and_conditions(
-    version: str = "1",
+    version: str = CURRENT_TERMS_AND_CONDITIONS_VERSION,
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
@@ -48,7 +47,7 @@ def validate_user_requires_accept_terms_and_conditions(
     ],
 )
 def create_user_terms_and_conditions(
-    version: str = "1",
+    version: str = CURRENT_TERMS_AND_CONDITIONS_VERSION,
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
