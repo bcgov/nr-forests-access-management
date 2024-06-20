@@ -1,16 +1,17 @@
+import json
 import logging
-from fastapi import APIRouter, Request, Response, Depends
+
+import requests
+from authlib.jose import JsonWebKey
+from cryptography.hazmat.primitives import \
+    serialization as crypto_serialization
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-import requests
 from jose import jwt
-from fastapi import HTTPException
-from .. import kms_lookup
-import json
 from jose.utils import base64url_decode
-from .. import bcsc_decryption
-from authlib.jose import JsonWebKey
-from cryptography.hazmat.primitives import serialization as crypto_serialization
+
+from .. import bcsc_decryption, kms_lookup
 
 LOGGER = logging.getLogger(__name__)
 
@@ -161,4 +162,3 @@ def bcsc_jwks(request: Request):
     }
 
     return JSONResponse(content=jwks_dict)
-
