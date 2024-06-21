@@ -1,27 +1,50 @@
+<script lang="ts" setup>
+import Dialog from 'primevue/dialog';
+import { onMounted, ref } from 'vue';
 
+const visible = ref(false);
+
+onMounted(() => {
+    visible.value = true;
+});
+</script>
 <template>
-        <ol class="terms-list">
-            <p>
-                This Forest Access Management application (“FAM”) terms of use
-                agreement (the "Agreement") is entered into between the legal
-                entity that has received approval for Delegated Administrator
-                access to FAM (the “Subscriber”) and His Majesty the King in
-                right of the Province of British Columbia as represented by the
-                Minister of Forests (the “Province").
-            </p>
-            <p>
-                By clicking the “I Accept” button (or any similar button or
-                mechanism), and in consideration of the Province granting the
-                Delegated Administrator access to FAM, the Subscriber, and the
-                Delegated Administrator on behalf of the Subscriber, agree (and
-                will be conclusively deemed to have agreed) to the following:
-            </p>
+            <Dialog
+        v-model:visible="visible"
+        header="FAM Terms of use"
+        :style="{ width: '50rem' }"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        :pt="{
+            title: {
+                style: {
+                    'font-size': '20px',
+                },
+            },
+        }"
+    >
+    <ol class="terms">
+        <p>
+            This Forest Access Management application (“FAM”) terms of use
+            agreement (the "Agreement") is entered into between the legal entity
+            that has received approval for Delegated Administrator access to FAM
+            (the “Subscriber”) and His Majesty the King in right of the Province
+            of British Columbia as represented by the Minister of Forests (the
+            “Province").
+        </p>
+        <p>
+            By clicking the “I Accept” button (or any similar button or
+            mechanism), and in consideration of the Province granting the
+            Delegated Administrator access to FAM, the Subscriber, and the
+            Delegated Administrator on behalf of the Subscriber, agree (and will
+            be conclusively deemed to have agreed) to the following:
+        </p>
 
+        <ol type="1" class="terms-list">
             <h3>Definitions</h3>
-            <p>
-                1. In this Agreement the following words have the following
+            <li>
+                In this Agreement the following words have the following
                 meanings:
-            </p>
+            </li>
             <ol type="a">
                 <li>
                     "Applications” means any applications to which Users may be
@@ -65,19 +88,18 @@
                 </li>
                 <ol type="i">
                     <li>
-                    “Works” means, collectively, FAM, the Applications and the
-                    Documentation.
+                        “Works” means, collectively, FAM, the Applications and
+                        the Documentation.
                     </li>
                 </ol>
-
             </ol>
 
             <h3>Authority and Ability to Accept Terms</h3>
-            <p>
-                2. The Delegated Administrator accepting the terms of this
+            <li>
+                The Delegated Administrator accepting the terms of this
                 Agreement on behalf of the Subscriber represents and warrants
                 that:
-            </p>
+            </li>
             <ol
                 class="subsection"
                 type="a"
@@ -90,10 +112,10 @@
             </ol>
 
             <h3>Responsibilities of Subscriber</h3>
-            <p>
-                3. The Subscriber acknowledges and agrees that it is responsible
+            <li>
+                The Subscriber acknowledges and agrees that it is responsible
                 for ensuring that:
-            </p>
+            </li>
             <ol
                 class="subsection"
                 type="a"
@@ -136,11 +158,11 @@
             </ol>
 
             <h3>Agreement applicable to them.</h3>
-            <p>Responsibilities of Delegated Administrator</p>
-            <p>
-                4. The Delegated Administrator is responsible for managing User
+            <li>Responsibilities of Delegated Administrator</li>
+            <li>
+                The Delegated Administrator is responsible for managing User
                 access to the Applications, including:
-            </p>
+            </li>
             <ol
                 class="subsection"
                 type="a"
@@ -175,7 +197,7 @@
             </ol>
 
             <h3>Authentication</h3>
-            <p>5. The Subscriber acknowledges and agrees that:</p>
+            <li>The Subscriber acknowledges and agrees that:</li>
             <ol
                 type="a"
                 class="subsection"
@@ -198,8 +220,8 @@
             </ol>
 
             <h3>Collection of Information</h3>
-            <p>
-                6. Contact information (as defined in FOIPPA) consisting of
+            <li>
+                Contact information (as defined in FOIPPA) consisting of
                 first and last name and business email address is collected from
                 the Delegated Administrator and Users in connection with the use
                 of FAM and the Applications. This information is used for the
@@ -209,28 +231,28 @@
                 website through which FAM and the Applications are accessed is
                 collected in accordance with the Province’s general Privacy
                 Policy.
-            </p>
+            </li>
 
             <h3>Ownership and License</h3>
-            <p>
-                7. The Works are owned by the Province or its licensors and are
+            <li>
+                The Works are owned by the Province or its licensors and are
                 protected by copyright, trademark and other laws protecting
                 intellectual property rights. Use of the Works except as
                 expressly permitted under this Agreement or as otherwise
                 approved by the Province in writing is prohibited
-            </p>
-            <p>
-                8. The Province grants to the Delegated Administrator a
+            </li>
+            <li>
+                The Province grants to the Delegated Administrator a
                 non-exclusive, revocable, limited license to access and use FAM,
                 and to allow Users to access and use the Applications and the
                 Documentation, in accordance with the terms of this Agreement.
-            </p>
-            <p>
-                9. A User’s right to access and use the Applications and the
+            </li>
+            <li>
+                A User’s right to access and use the Applications and the
                 Documentation automatically terminates if the User’s access is
                 revoked by the Delegated Administrator pursuant to section 4.
                 The Delegated Administrator’s right to access and use FAM is:
-            </p>
+            </li>
             <ol type="a">
                 <li>
                     automatically suspended if the Delegated Administrator’s
@@ -244,12 +266,12 @@
             </ol>
 
             <h3>Acceptable Use</h3>
-            <p>
-                10. The Subscriber must not take, and must ensure that the
+            <li>
+                The Subscriber must not take, and must ensure that the
                 Delegated Administrator and Users do not take, any action that
                 would jeopardize the security, integrity and/or availability of
                 FAM or any Application, including:
-            </p>
+            </li>
             <ol
                 type="a"
                 class="subsection"
@@ -285,7 +307,7 @@
             </ol>
 
             <h3>Suspension and Termination</h3>
-            <p>11. The Province may, in its sole discretion:</p>
+            <li>The Province may, in its sole discretion:</li>
             <ol class="subsection">
                 <li>
                     immediately suspend the Delegated Administrator’s access to
@@ -325,8 +347,9 @@
             </ol>
 
             <h3>Indemnification</h3>
-            <p>
-                12. The Subscriber must indemnify and save harmless the Province
+            <div class="terms-list ">
+            <li>
+                The Subscriber must indemnify and save harmless the Province
                 and the Province’s employees and agents from any loss, claim
                 (including any claim of infringement of third-party intellectual
                 property rights), damage award, action, cause of action, cost or
@@ -338,11 +361,11 @@
                 Delegated Administrator, any User or any other employee,
                 officer, agent or director of the Subscriber in connection with
                 this Agreement.
-            </p>
+            </li>
 
             <h3>Disclaimer</h3>
-            <p>
-                13. The Works are provided “as is”, and the Province disclaims
+            <li>
+                The Works are provided “as is”, and the Province disclaims
                 all representations, warranties, conditions, obligations and
                 liabilities of any kind, whether express or implied, in relation
                 to the Works, including but not limited to implied warranties
@@ -356,11 +379,11 @@
                 meet the Subscriber’s expectations or requirements. This
                 disclaimer applies in addition to the Province’s general
                 Warranty Disclaimer.
-            </p>
+            </li>
 
             <h3>Limitation of Liability</h3>
-            <p>
-                14. To the maximum extent permitted by applicable law, under no
+            <li>
+                To the maximum extent permitted by applicable law, under no
                 circumstances will the Province be liable to any person or
                 entity for any direct, indirect, special, incidental,
                 consequential or other loss, claim, injury or damage, whether
@@ -375,11 +398,11 @@
                 specifically advised of the possibility of any such loss, claim,
                 injury or damage. This limitation of liability applies in
                 addition to the Province’s general Limitation of Liabilities.
-            </p>
+            </li>
 
             <h3>Changes to FAM and/or this Agreement</h3>
-            <p>
-                15. The Province may at any time, in its sole discretion, make
+            <li>
+                The Province may at any time, in its sole discretion, make
                 changes to the Works and/or the terms and conditions of this
                 Agreement. The Delegated Administrator will be notified upon
                 sign in to FAM if changes have been made to the terms and
@@ -389,10 +412,10 @@
                 Subscriber, and the Delegated Administrator on behalf of the
                 Subscriber, will be conclusively deemed to have accepted the
                 updated terms and conditions.
-            </p>
+            </li>
 
             <h3>General</h3>
-            <p>16. In this Agreement:</p>
+            <li>In this Agreement:</li>
             <ol
                 type="a"
                 class="subsection"
@@ -403,55 +426,94 @@
                 </li>
                 <li>“including” is not intended to be limiting.</li>
             </ol>
-            <p>
-                17. This Agreement, and any terms for which links are provided
+            <li>
+                This Agreement, and any terms for which links are provided
                 in this Agreement, is the entire agreement between the
                 Subscriber and the Province with respect to the use of the
                 Works.
-            </p>
-            <p>
-                18. If any provision of this Agreement is invalid, illegal or
+            </li>
+            <li>
+                If any provision of this Agreement is invalid, illegal or
                 unenforceable, that provision will be severed from this
                 Agreement and all other provisions will remain in full force and
                 effect.
-            </p>
-            <p>
-                19. This Agreement is governed by and is to be construed in
+            </li>
+            <li>
+                This Agreement is governed by and is to be construed in
                 accordance with the laws of British Columbia and the applicable
                 laws of Canada.
-            </p>
-            <p>
-                20. The Subscriber agrees to the exclusive jurisdiction and
+            </li>
+            <li>
+                The Subscriber agrees to the exclusive jurisdiction and
                 venue of the courts of the province of British Columbia, sitting
                 in Victoria, for the hearing of any dispute arising from or
                 related to this Agreement or its subject matter.
-            </p>
-        </ol>
+            </li>
+        </div>
 
+        </ol>
+    </ol>
+    <template #footer>
+            <Button
+                class="btn"
+                label="Cancel and logout"
+                severity="secondary"
+                @click="visible = false"
+            />
+            <Button
+                label="I accept the terms of use"
+                @click="visible = false"
+                autofocus
+            />
+        </template>
+    </Dialog>
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+
 h3,
 p {
-    font-size: 14px !important;
+    font-size: 14px;
+}
+
+p, li {
+    line-height: 20px;
 }
 
 h3 {
     font-weight: bold;
     margin-top: 1.5rem;
+    margin-left: 0 ;
+    padding-left: 0 ;
 }
 
 span {
-    font-size: 20px !important;
+    font-size: 20px ;
+}
+
+.terms {
+    margin: 1rem 0 0;
+    padding: 0;
+
+}
+
+ol {
+    padding-left: 1.2rem;
 }
 
 .terms-list {
-    margin: 1rem 0 0 ;
-    padding: 0;
+    padding-left: 0;
+    margin: 0;
+    list-style-position: inside;
 }
 
-.tes {
-    margin-right: 8px;
+li {
+    margin-top: .5rem;
+}
+
+.btn {
+    margin-right: 1rem;
+    color: #FFF;
 }
 </style>

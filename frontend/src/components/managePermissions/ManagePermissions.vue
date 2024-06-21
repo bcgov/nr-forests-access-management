@@ -42,14 +42,6 @@ import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
 
-import Dialog from 'primevue/dialog';
-
-const visible = ref(false);
-
-onMounted(() => {
-    visible.value = true;
-});
-
 const props = defineProps({
     userRoleAssignments: {
         type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
@@ -189,34 +181,9 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-        <Dialog
-        v-model:visible="visible"
-        header="FAM Terms of use"
-        :style="{ width: '50rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-        :pt="{
-            title: {
-                style: {
-                    'font-size': '20px',
-                },
-            },
-        }"
-    >
+
         <TermsAndConditions/>
-        <template #footer>
-            <Button
-                class="tes"
-                label="Cancel and logout"
-                severity="secondary"
-                @click="visible = false"
-            />
-            <Button
-                label="I accept the terms of use"
-                @click="visible = false"
-                autofocus
-            />
-        </template>
-    </Dialog>
+
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
