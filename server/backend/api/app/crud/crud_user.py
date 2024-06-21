@@ -1,7 +1,8 @@
 import logging
 
 from api.app.models import model as models
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session, joinedload
 
 from .. import schemas
 
@@ -208,3 +209,28 @@ def update_user_business_guid(
                 db, user_id, {models.FamUser.business_guid: business_guid}, requester
             )
     return get_user(db, user_id)
+
+
+def fetch_initial_requester_info(
+    db: Session,
+    cognito_user_id: str
+):
+    """
+    Note!
+    The purpose: only to be used to find out initial essential requester information
+    for endpoint's checks before endpoint handler being called. Not intended for
+    individual crud functions to fetch on this user.
+
+    The quering `user` join other tables for esential information.
+    Use orm `joinedload` to join due to the relationship with user is a `lazy`.
+    """
+    q_stm = (
+        select(models.FamUser)
+        .options(
+            joinedload(models.FamUser.fam_access_control_privilege),
+            joinedload(models.FamUser.fam_user_terms_conditions)
+        )
+        .filter(models.FamUser.cognito_user_id == cognito_user_id)
+    )
+    user = db.scalars(q_stm).one_or_none()
+    return user

@@ -1,19 +1,10 @@
 import datetime
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    ForeignKeyConstraint,
-    Identity,
-    Integer,
-    PrimaryKeyConstraint,
-    String,
-    Index,
-    UniqueConstraint,
-    func,
-    text,
-)
+
+from sqlalchemy import (BigInteger, Column, ForeignKeyConstraint, Identity,
+                        Index, Integer, PrimaryKeyConstraint, String,
+                        UniqueConstraint, func, text)
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import Mapped, declarative_base, relationship
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -192,6 +183,150 @@ class FamUserType(Base):
     )
 
 
+class FamAccessControlPrivilege(Base):
+    __tablename__ = "fam_access_control_privilege"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["role_id"],
+            ["app_fam.fam_role.role_id"],
+            name="reffam_access_control_privilege_role",
+        ),
+        ForeignKeyConstraint(
+            ["user_id"],
+            ["app_fam.fam_user.user_id"],
+            name="reffam_access_control_privilege_user",
+        ),
+        PrimaryKeyConstraint(
+            "access_control_privilege_id", name="fam_access_control_privilege_pk"
+        ),
+        UniqueConstraint("user_id", "role_id", name="fam_access_control_usr_rle_uk"),
+        Index("ix_app_fam_fam_access_control_privilege_role_id", "role_id"),
+        Index("ix_app_fam_fam_access_control_privilege_user_id", "user_id"),
+        {
+            "comment": "Access Control Privilege is a cross-reference object that allows "
+            "for the identification of who are the delegated "
+            "administrators(User) for an Application for a particular role.",
+            "schema": "app_fam",
+        },
+    )
+    access_control_privilege_id = Column(
+        BigInteger,
+        Identity(
+            start=1,
+            increment=1,
+            minvalue=1,
+            maxvalue=9223372036854775807,
+            cycle=False,
+            cache=1,
+        ),
+        primary_key=True,
+        comment="Automatically generated key used to identify the uniqueness of a User administers the Application role.",
+    )
+    user_id = Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the user within FAM system.",
+    )
+    role_id = Column(
+        BigInteger,
+        comment="Unique ID to reference and identify the application role within FAM system.",
+    )
+    create_user = Column(
+        String(100), comment="The user or proxy account that created the record."
+    )
+    create_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the record was created.",
+    )
+    update_user = Column(
+        String(100),
+        comment="The user or proxy account that created or last updated the record.",
+    )
+    update_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        onupdate=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+    role = relationship(
+        "FamRole", back_populates="fam_access_control_privilege", lazy="joined"
+    )
+    user = relationship(
+        "FamUser", back_populates="fam_access_control_privilege", lazy="joined"
+    )
+
+    def __repr__(self):
+        return (
+            f"FamAccessControlPrivilege(user_id={self.user_id}, role_id={self.role_id})"
+        )
+
+
+class FamUserTermsConditions(Base):
+    __tablename__ = "fam_user_terms_conditions"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_id"],
+            ["app_fam.fam_user.user_id"],
+            name="reffam_user_terms_conditions_user",
+        ),
+        PrimaryKeyConstraint(
+            "user_terms_conditions_id", name="fam_user_terms_conditions_pk"
+        ),
+        UniqueConstraint("user_id", "version", name="fam_tc_user_version_uk"),
+        Index("ix_app_fam_fam_user_terms_conditions_user_id", "user_id"),
+        {
+            "comment": "User Terms Conditions records identify the users who accept the "
+            "terms and conditions, as well as the version of it.",
+            "schema": "app_fam",
+        },
+    )
+
+    user_terms_conditions_id = Column(
+        BigInteger,
+        Identity(
+            start=1,
+            increment=1,
+            minvalue=1,
+            maxvalue=9223372036854775807,
+            cycle=False,
+            cache=1,
+        ),
+        comment="Automatically generated key used to identify the uniqueness of a terms and conditions acceptance record.",
+    )
+    user_id = Column(
+        BigInteger,
+        nullable=False,
+        comment="Unique ID to reference and identify the user within FAM system.",
+    )
+    version = Column(
+        String(30),
+        nullable=False,
+        comment="Number to identity the version of the terms and conditions the user accepted.",
+    )
+    create_user = Column(
+        String(100),
+        nullable=False,
+        comment="The user or proxy account that created the record.",
+    )
+    create_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        comment="The date and time the record was created.",
+    )
+    update_user = Column(
+        String(100),
+        comment="The user or proxy account that created or last updated the record.",
+    )
+    update_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        default=datetime.datetime.utcnow,
+        comment="The date and time the record was created or last updated.",
+    )
+
+    user = relationship("FamUser", back_populates="fam_user_terms_conditions")
+
+
 class FamUser(Base):
     __tablename__ = "fam_user"
 
@@ -240,13 +375,13 @@ class FamUser(Base):
     )
 
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
-    user_type_relation = relationship(
+    user_type_relation: Mapped[FamUserType] = relationship(
         "FamUserType", backref="user_relation", lazy="joined"
     )
-    fam_access_control_privilege = relationship(
+    fam_access_control_privilege: Mapped[FamAccessControlPrivilege] = relationship(
         "FamAccessControlPrivilege", back_populates="user"
     )
-    fam_user_terms_conditions = relationship(
+    fam_user_terms_conditions: Mapped[FamUserTermsConditions] = relationship(
         "FamUserTermsConditions", back_populates="user"
     )
 
@@ -608,146 +743,3 @@ class FamAppEnvironment(Base):
         },
     )
 
-
-class FamAccessControlPrivilege(Base):
-    __tablename__ = "fam_access_control_privilege"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["role_id"],
-            ["app_fam.fam_role.role_id"],
-            name="reffam_access_control_privilege_role",
-        ),
-        ForeignKeyConstraint(
-            ["user_id"],
-            ["app_fam.fam_user.user_id"],
-            name="reffam_access_control_privilege_user",
-        ),
-        PrimaryKeyConstraint(
-            "access_control_privilege_id", name="fam_access_control_privilege_pk"
-        ),
-        UniqueConstraint("user_id", "role_id", name="fam_access_control_usr_rle_uk"),
-        Index("ix_app_fam_fam_access_control_privilege_role_id", "role_id"),
-        Index("ix_app_fam_fam_access_control_privilege_user_id", "user_id"),
-        {
-            "comment": "Access Control Privilege is a cross-reference object that allows "
-            "for the identification of who are the delegated "
-            "administrators(User) for an Application for a particular role.",
-            "schema": "app_fam",
-        },
-    )
-    access_control_privilege_id = Column(
-        BigInteger,
-        Identity(
-            start=1,
-            increment=1,
-            minvalue=1,
-            maxvalue=9223372036854775807,
-            cycle=False,
-            cache=1,
-        ),
-        primary_key=True,
-        comment="Automatically generated key used to identify the uniqueness of a User administers the Application role.",
-    )
-    user_id = Column(
-        BigInteger,
-        comment="Unique ID to reference and identify the user within FAM system.",
-    )
-    role_id = Column(
-        BigInteger,
-        comment="Unique ID to reference and identify the application role within FAM system.",
-    )
-    create_user = Column(
-        String(100), comment="The user or proxy account that created the record."
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(100),
-        comment="The user or proxy account that created or last updated the record.",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.utcnow,
-        comment="The date and time the record was created or last updated.",
-    )
-    role = relationship(
-        "FamRole", back_populates="fam_access_control_privilege", lazy="joined"
-    )
-    user = relationship(
-        "FamUser", back_populates="fam_access_control_privilege", lazy="joined"
-    )
-
-    def __repr__(self):
-        return (
-            f"FamAccessControlPrivilege(user_id={self.user_id}, role_id={self.role_id})"
-        )
-
-
-class FamUserTermsConditions(Base):
-    __tablename__ = "fam_user_terms_conditions"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["user_id"],
-            ["app_fam.fam_user.user_id"],
-            name="reffam_user_terms_conditions_user",
-        ),
-        PrimaryKeyConstraint(
-            "user_terms_conditions_id", name="fam_user_terms_conditions_pk"
-        ),
-        UniqueConstraint("user_id", "version", name="fam_tc_user_version_uk"),
-        Index("ix_app_fam_fam_user_terms_conditions_user_id", "user_id"),
-        {
-            "comment": "User Terms Conditions records identify the users who accept the "
-            "terms and conditions, as well as the version of it.",
-            "schema": "app_fam",
-        },
-    )
-
-    user_terms_conditions_id = Column(
-        BigInteger,
-        Identity(
-            start=1,
-            increment=1,
-            minvalue=1,
-            maxvalue=9223372036854775807,
-            cycle=False,
-            cache=1,
-        ),
-        comment="Automatically generated key used to identify the uniqueness of a terms and conditions acceptance record.",
-    )
-    user_id = Column(
-        BigInteger,
-        nullable=False,
-        comment="Unique ID to reference and identify the user within FAM system.",
-    )
-    version = Column(
-        String(30),
-        nullable=False,
-        comment="Number to identity the version of the terms and conditions the user accepted.",
-    )
-    create_user = Column(
-        String(100),
-        nullable=False,
-        comment="The user or proxy account that created the record.",
-    )
-    create_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        comment="The date and time the record was created.",
-    )
-    update_user = Column(
-        String(100),
-        comment="The user or proxy account that created or last updated the record.",
-    )
-    update_date = Column(
-        TIMESTAMP(timezone=True, precision=6),
-        default=datetime.datetime.utcnow,
-        comment="The date and time the record was created or last updated.",
-    )
-
-    user = relationship("FamUser", back_populates="fam_user_terms_conditions")
