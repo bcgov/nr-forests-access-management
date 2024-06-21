@@ -1,27 +1,6 @@
-<script lang="ts" setup>
-import Dialog from 'primevue/dialog';
-import { ref, onMounted } from 'vue';
-
-const visible = ref(false);
-
-onMounted(() => {
-    visible.value = true;
-});
-</script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        header="FAM Terms of use"
-        :style="{ width: '50rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-        :pt="{
-            header: {
-                class: 'testeeeee'
-            }
-        }"
-    >
-        <ol class="t">
+        <ol class="terms-list">
             <p>
                 This Forest Access Management application (“FAM”) terms of use
                 agreement (the "Agreement") is entered into between the legal
@@ -84,10 +63,13 @@ onMounted(() => {
                     organization who have been granted access to any Application
                     by the Delegated Administrator through FAM; and
                 </li>
-                <li>
+                <ol type="i">
+                    <li>
                     “Works” means, collectively, FAM, the Applications and the
                     Documentation.
-                </li>
+                    </li>
+                </ol>
+
             </ol>
 
             <h3>Authority and Ability to Accept Terms</h3>
@@ -306,28 +288,37 @@ onMounted(() => {
             <p>11. The Province may, in its sole discretion:</p>
             <ol class="subsection">
                 <li>
-                    immediately suspend the Delegated Administrator’s access to FAM if:
+                    immediately suspend the Delegated Administrator’s access to
+                    FAM if:
                     <ol type="i">
                         <li>
-                            the Delegated Administrator breaches any provision of this Agreement applicable to the Delegated Administrator, or
+                            the Delegated Administrator breaches any provision
+                            of this Agreement applicable to the Delegated
+                            Administrator, or
                         </li>
                         <li>
-                            the Province determines, in its sole discretion that such suspension is necessary to maintain the security, integrity, or
-                            availability of FAM or any other aspect of the Province’s systems;
+                            the Province determines, in its sole discretion that
+                            such suspension is necessary to maintain the
+                            security, integrity, or availability of FAM or any
+                            other aspect of the Province’s systems;
                         </li>
                     </ol>
                 </li>
                 <li>
-                    restore the Delegated Administrator’s access if the reason for the suspension is resolved to the Province's satisfaction; and
+                    restore the Delegated Administrator’s access if the reason
+                    for the suspension is resolved to the Province's
+                    satisfaction; and
                 </li>
                 <li>
                     terminate the Delegated Administrator’s access if:
                     <ol type="i">
                         <li>
-                            the reason for the suspension is not resolved to the Province’s satisfaction, or
+                            the reason for the suspension is not resolved to the
+                            Province’s satisfaction, or
                         </li>
                         <li>
-                            the Delegated Administrator leaves the Subscriber’s organization.
+                            the Delegated Administrator leaves the Subscriber’s
+                            organization.
                         </li>
                     </ol>
                 </li>
@@ -335,23 +326,69 @@ onMounted(() => {
 
             <h3>Indemnification</h3>
             <p>
-                12. The Subscriber must indemnify and save harmless the Province and the Province’s employees and agents from any loss, claim (including any claim of infringement of third-party intellectual property rights), damage award, action, cause of action, cost or expense that the Province or any of the Province’s employees or agents may sustain, incur, suffer or be put to at any time, either before or after this Agreement ends (each a “Loss”), to the extent the Loss is directly or indirectly caused or contributed to by any act or omission by the Subscriber, the Delegated Administrator, any User or any other employee, officer, agent or director of the Subscriber in connection with this Agreement.
+                12. The Subscriber must indemnify and save harmless the Province
+                and the Province’s employees and agents from any loss, claim
+                (including any claim of infringement of third-party intellectual
+                property rights), damage award, action, cause of action, cost or
+                expense that the Province or any of the Province’s employees or
+                agents may sustain, incur, suffer or be put to at any time,
+                either before or after this Agreement ends (each a “Loss”), to
+                the extent the Loss is directly or indirectly caused or
+                contributed to by any act or omission by the Subscriber, the
+                Delegated Administrator, any User or any other employee,
+                officer, agent or director of the Subscriber in connection with
+                this Agreement.
             </p>
 
             <h3>Disclaimer</h3>
             <p>
-                13. The Works are provided “as is”, and the Province disclaims all representations, warranties, conditions, obligations and liabilities of any kind, whether express or implied, in relation to the Works, including but not limited to implied warranties with respect to fitness for a particular purpose, merchantability, satisfactory quality, and non-infringement. Without limiting the general nature of the previous sentence, the Province does not represent or warrant the accuracy or the completeness of the Works or any information or data contained within the Works, that FAM or the Applications will function without error, failure, or interruption, or that the Works will meet the Subscriber’s expectations or requirements. This disclaimer applies in addition to the Province’s general Warranty
-                Disclaimer.
+                13. The Works are provided “as is”, and the Province disclaims
+                all representations, warranties, conditions, obligations and
+                liabilities of any kind, whether express or implied, in relation
+                to the Works, including but not limited to implied warranties
+                with respect to fitness for a particular purpose,
+                merchantability, satisfactory quality, and non-infringement.
+                Without limiting the general nature of the previous sentence,
+                the Province does not represent or warrant the accuracy or the
+                completeness of the Works or any information or data contained
+                within the Works, that FAM or the Applications will function
+                without error, failure, or interruption, or that the Works will
+                meet the Subscriber’s expectations or requirements. This
+                disclaimer applies in addition to the Province’s general
+                Warranty Disclaimer.
             </p>
 
             <h3>Limitation of Liability</h3>
             <p>
-                14. To the maximum extent permitted by applicable law, under no circumstances will the Province be liable to any person or entity for any direct, indirect, special, incidental, consequential or other loss, claim, injury or damage, whether foreseeable or unforeseeable (including without limitation claims for damages for loss of profits or business opportunities, use or misuse of, or inability to use, the Works, interruptions, deletion or corruption of files, loss of programs or information, errors, defects or delays), arising out of or in any way connected with the use of the Works and whether based on contract, tort, strict liability or any other legal theory. The previous sentence will apply even if the Province has been specifically advised of the possibility of any such loss, claim, injury or damage. This limitation of liability applies in addition to the Province’s general Limitation of Liabilities.
+                14. To the maximum extent permitted by applicable law, under no
+                circumstances will the Province be liable to any person or
+                entity for any direct, indirect, special, incidental,
+                consequential or other loss, claim, injury or damage, whether
+                foreseeable or unforeseeable (including without limitation
+                claims for damages for loss of profits or business
+                opportunities, use or misuse of, or inability to use, the Works,
+                interruptions, deletion or corruption of files, loss of programs
+                or information, errors, defects or delays), arising out of or in
+                any way connected with the use of the Works and whether based on
+                contract, tort, strict liability or any other legal theory. The
+                previous sentence will apply even if the Province has been
+                specifically advised of the possibility of any such loss, claim,
+                injury or damage. This limitation of liability applies in
+                addition to the Province’s general Limitation of Liabilities.
             </p>
 
             <h3>Changes to FAM and/or this Agreement</h3>
             <p>
-                15. The Province may at any time, in its sole discretion, make changes to the Works and/or the terms and conditions of this Agreement. The Delegated Administrator will be notified upon sign in to FAM if changes have been made to the terms and conditions of this Agreement, and must accept the updated terms and conditions by clicking the “I Accept” button (or similar button or mechanism) in order to proceed. By proceeding, the Subscriber, and the Delegated Administrator on behalf of the Subscriber, will be conclusively deemed to have accepted the updated terms and conditions.
+                15. The Province may at any time, in its sole discretion, make
+                changes to the Works and/or the terms and conditions of this
+                Agreement. The Delegated Administrator will be notified upon
+                sign in to FAM if changes have been made to the terms and
+                conditions of this Agreement, and must accept the updated terms
+                and conditions by clicking the “I Accept” button (or similar
+                button or mechanism) in order to proceed. By proceeding, the
+                Subscriber, and the Delegated Administrator on behalf of the
+                Subscriber, will be conclusively deemed to have accepted the
+                updated terms and conditions.
             </p>
 
             <h3>General</h3>
@@ -361,24 +398,36 @@ onMounted(() => {
                 class="subsection"
             >
                 <li>
-                    words expressed in the singular include the plural and vice versa; and
+                    words expressed in the singular include the plural and vice
+                    versa; and
                 </li>
                 <li>“including” is not intended to be limiting.</li>
             </ol>
             <p>
-                17. This Agreement, and any terms for which links are provided in this Agreement, is the entire agreement between the Subscriber and the Province with respect to the use of the Works.
+                17. This Agreement, and any terms for which links are provided
+                in this Agreement, is the entire agreement between the
+                Subscriber and the Province with respect to the use of the
+                Works.
             </p>
             <p>
-                18. If any provision of this Agreement is invalid, illegal or unenforceable, that provision will be severed from this Agreement and all other provisions will remain in full force and effect.
+                18. If any provision of this Agreement is invalid, illegal or
+                unenforceable, that provision will be severed from this
+                Agreement and all other provisions will remain in full force and
+                effect.
             </p>
             <p>
-                19. This Agreement is governed by and is to be construed in accordance with the laws of British Columbia and the applicable laws of Canada.
+                19. This Agreement is governed by and is to be construed in
+                accordance with the laws of British Columbia and the applicable
+                laws of Canada.
             </p>
             <p>
-                20. The Subscriber agrees to the exclusive jurisdiction and venue of the courts of the province of British Columbia, sitting in Victoria, for the hearing of any dispute arising from or related to this Agreement or its subject matter.
+                20. The Subscriber agrees to the exclusive jurisdiction and
+                venue of the courts of the province of British Columbia, sitting
+                in Victoria, for the hearing of any dispute arising from or
+                related to this Agreement or its subject matter.
             </p>
         </ol>
-    </Dialog>
+
 </template>
 
 <style lang="scss" scoped>
@@ -397,11 +446,12 @@ span {
     font-size: 20px !important;
 }
 
-.t {
-    margin: 0 !important;
+.terms-list {
+    margin: 1rem 0 0 ;
     padding: 0;
 }
-.testeeeee > span {
-    font-size: 20px !important;
+
+.tes {
+    margin-right: 8px;
 }
 </style>
