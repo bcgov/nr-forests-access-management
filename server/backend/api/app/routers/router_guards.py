@@ -411,11 +411,8 @@ async def enforce_bceid_by_same_org_guard(
 def enforce_bceid_terms_conditions_guard(
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
-    require_accept_terms_and_conditions: callable = Depends(
-        crud_user_terms_conditions.require_accept_terms_and_conditions
-    ),
 ):
-    tc_accepted = not require_accept_terms_and_conditions(
+    tc_accepted = not crud_user_terms_conditions.require_accept_terms_and_conditions(
         db, requester, version=CURRENT_TERMS_AND_CONDITIONS_VERSION
     )
     if not tc_accepted:
