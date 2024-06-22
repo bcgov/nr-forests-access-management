@@ -2,10 +2,10 @@ import logging
 from datetime import datetime
 from typing import List, Optional, Union
 
-from pydantic import StringConstraints, ConfigDict, BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
+from typing_extensions import Annotated
 
 from . import constants as famConstants
-from typing_extensions import Annotated
 
 LOGGER = logging.getLogger(__name__)
 
@@ -284,6 +284,8 @@ class Requester(BaseModel):
     access_roles: Union[
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
+    is_delegated_admin: bool  # is delegated admin of any application
+    requires_accept_tc: bool  # requires to accept terms and conditions
 
     model_config = ConfigDict(from_attributes=True)
 
