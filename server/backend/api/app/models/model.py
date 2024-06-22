@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from sqlalchemy import (BigInteger, Column, ForeignKeyConstraint, Identity,
                         Index, Integer, PrimaryKeyConstraint, String,
@@ -252,7 +253,7 @@ class FamAccessControlPrivilege(Base):
         "FamRole", back_populates="fam_access_control_privilege", lazy="joined"
     )
     user = relationship(
-        "FamUser", back_populates="fam_access_control_privilege", lazy="joined"
+        "FamUser", back_populates="fam_access_control_privileges", lazy="joined"
     )
 
     def __repr__(self):
@@ -378,7 +379,7 @@ class FamUser(Base):
     user_type_relation: Mapped[FamUserType] = relationship(
         "FamUserType", backref="user_relation", lazy="joined"
     )
-    fam_access_control_privilege: Mapped[FamAccessControlPrivilege] = relationship(
+    fam_access_control_privileges: Mapped[List[FamAccessControlPrivilege]] = relationship(
         "FamAccessControlPrivilege", back_populates="user"
     )
     fam_user_terms_conditions: Mapped[FamUserTermsConditions] = relationship(
