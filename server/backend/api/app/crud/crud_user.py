@@ -227,10 +227,10 @@ def fetch_initial_requester_info(
     q_stm = (
         select(models.FamUser)
         .options(
-            joinedload(models.FamUser.fam_access_control_privilege),
+            joinedload(models.FamUser.fam_access_control_privileges),
             joinedload(models.FamUser.fam_user_terms_conditions)
         )
         .filter(models.FamUser.cognito_user_id == cognito_user_id)
     )
-    user = db.scalars(q_stm).one_or_none()
+    user = db.scalars(q_stm).unique().one_or_none()
     return user
