@@ -42,14 +42,14 @@ async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
-):
+) -> Requester:
     LOGGER.debug(
-        f"Retrieve current requester from: request_cognito_user_id: {request_cognito_user_id}"
+        f"Retrieving current requester from: request_cognito_user_id: {request_cognito_user_id}"
     )
     fam_user: FamUser = crud_user.fetch_initial_requester_info(
         db, request_cognito_user_id
     )
-    LOGGER.info(
+    LOGGER.debug(
         f"Crrent retrieved fam_user: {fam_user}"
     )
 
@@ -60,13 +60,39 @@ async def get_current_requester(
             status_code=HTTPStatus.FORBIDDEN,
         )
 
-    requester = Requester.model_validate(fam_user)
-    LOGGER.debug(
-        f"Debug router_guard get_current_requester, current requester: {requester}"
+    requester = Requester.model_validate(
+        {
+            **fam_user.__dict__,  # base db 'user' info
+            'access_roles': access_roles,  # role from JWT
+            **_parse_custom_requester_fields(fam_user)  # build/conver custom attributes
+        }
     )
-    requester.access_roles = access_roles
     LOGGER.debug(f"Current request user (requester): {requester}")
     return requester
+
+
+def _parse_custom_requester_fields(fam_user: FamUser):
+    """
+    Conversation helper function to parse information from FamUser for some
+    custom attributes needed at Requester.
+    :fam_user: fetched FamUser from db with joined table information.
+    :return: dictionary contains custom attributes information for setting 'Requester'
+    """
+    user_type_code = fam_user.user_type_code
+    is_delegated_admin = len(fam_user.fam_access_control_privileges) > 0
+    has_current_terms_conditions_accepted = (
+        fam_user.fam_user_terms_conditions and
+        fam_user.fam_user_terms_conditions.version == CURRENT_TERMS_AND_CONDITIONS_VERSION
+    )
+    requires_accept_tc = (
+        user_type_code == UserType.BCEID and is_delegated_admin
+        and not has_current_terms_conditions_accepted
+    )
+
+    return {
+        "is_delegated_admin": is_delegated_admin,
+        "requires_accept_tc": requires_accept_tc
+    }
 
 
 def authorize(
@@ -407,13 +433,9 @@ async def enforce_bceid_by_same_org_guard(
 
 
 def enforce_bceid_terms_conditions_guard(
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
-    tc_accepted = not crud_user_terms_conditions.require_accept_terms_and_conditions(
-        db, requester, version=CURRENT_TERMS_AND_CONDITIONS_VERSION
-    )
-    if not tc_accepted:
+    if requester.requires_accept_tc:
         utils.raise_http_exception(
             error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
             error_msg="Requires to accept terms and conditions.",
