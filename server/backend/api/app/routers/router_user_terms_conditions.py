@@ -20,23 +20,9 @@ router = APIRouter()
     status_code=HTTPStatus.OK,
 )
 def validate_user_requires_accept_terms_and_conditions(
-    version: str = CURRENT_TERMS_AND_CONDITIONS_VERSION,
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
-    """
-    Check if user pass the terms and conditions check. \n
-    Return False if user is not external delgated admin or already accepted terms and conditions. \n
-    Return True if user is external delegated admin and did not accpet the terms and conditions. \n
-    If no version is provided, we check the 1st version of the terms and conditions.
-    """
-    LOGGER.debug(
-        f"Check if user {requester} needs to accept terms and conditions of version {version}"
-    )
-
-    return crud_user_terms_conditions.require_accept_terms_and_conditions(
-        db, requester, version
-    )
+    return requester.requires_accept_tc
 
 
 @router.post(
