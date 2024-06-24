@@ -6,6 +6,7 @@ import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
+import { isTermsVisible, toggleCloseble } from '@/store/TermsAndConditionsState';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -21,6 +22,12 @@ const logout = () => {
     authService.logout();
     loading.value = true;
 };
+
+const showTerms = () => {
+    toggleCloseble()
+    isTermsVisible.value = true,
+    profileSidebarState.toggleVisible()
+}
 
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
@@ -85,7 +92,7 @@ const adminRoles = computed(() => {
                 aria-label="show terms of use"
                 :iconPosition="IconPosition.left"
                 label="Terms of use"
-                @click="logout"
+                @click="showTerms()"
             >
                 <Icon
                     title="terms of use"
@@ -129,7 +136,7 @@ const adminRoles = computed(() => {
     padding: 0 1rem;
     position: fixed;
     overflow: hidden;
-    z-index: 9999;
+    z-index: 11;
     right: 0;
     left: auto;
 }
@@ -256,7 +263,7 @@ const adminRoles = computed(() => {
     position: fixed;
     width: 100%;
     inset: 3rem 0 0 0;
-    z-index: 1110;
+    z-index: 10;
 }
 
 .fade-out {

@@ -1,18 +1,16 @@
 <script lang="ts" setup>
+import AuthService from '@/services/AuthService';
+import { hideTerms, isAbleToClose, isTermsVisible } from '@/store/TermsAndConditionsState';
 import Dialog from 'primevue/dialog';
-import { onMounted, ref } from 'vue';
 
-const visible = ref(false);
-
-onMounted(() => {
-    visible.value = true;
-});
 </script>
 <template>
     <Dialog
-        v-model:visible="visible"
+        v-model:visible="isTermsVisible"
         header="FAM Terms of use"
-        :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        :closable="isAbleToClose"
+        @close="hideTerms()"
+        :style="{ width: '50vw' }"
         :pt="{
             title: {
                 style: {
@@ -472,16 +470,17 @@ onMounted(() => {
                 </div>
             </ol>
         </ol>
-        <template #footer>
+        <template #footer v-if="!isAbleToClose">
             <Button
                 class="btn"
                 label="Cancel and logout"
                 severity="secondary"
-                @click="visible = false"
+                @click="AuthService.logout()"
             />
+
             <Button
                 label="I accept the terms of use"
-                @click="visible = false"
+                @click="hideTerms()"
                 autofocus
             />
         </template>
@@ -531,7 +530,8 @@ li {
     margin-top: 0.5rem;
 }
 
-.btn {
+.btn,
+.btn:hover {
     margin-right: 1rem;
     color: #fff;
 }
