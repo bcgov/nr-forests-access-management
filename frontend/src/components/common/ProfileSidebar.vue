@@ -136,7 +136,7 @@ const adminRoles = computed(() => {
     padding: 0 1rem;
     position: fixed;
     overflow: hidden;
-    z-index: 11;
+    z-index: 1103;
     right: 0;
     left: auto;
 }
@@ -263,7 +263,7 @@ const adminRoles = computed(() => {
     position: fixed;
     width: 100%;
     inset: 3rem 0 0 0;
-    z-index: 10;
+    z-index: 1102;
 }
 
 .fade-out {

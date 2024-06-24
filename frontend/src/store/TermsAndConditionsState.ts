@@ -1,8 +1,14 @@
 import { ref } from "vue"
+import LoginUserState from '@/store/FamLoginUserState';
+import { IdpProvider } from '@/enum/IdpEnum';
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+
 
 export const isTermsVisible = ref(false);
 
 export const isAbleToClose = ref(false)
+
+// export const isBceidAndDelegatedAdmin =LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS && LoginUserState.getUserAdminRoleGroups()?.includes(AdminRoleAuthGroup.DelegatedAdmin)
 
 export const toggleCloseble = () => {
     isAbleToClose.value = true

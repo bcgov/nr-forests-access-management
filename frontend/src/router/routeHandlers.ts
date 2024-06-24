@@ -1,3 +1,4 @@
+import { IdpProvider } from '@/enum/IdpEnum';
 import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
@@ -14,6 +15,7 @@ import {
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
+import { showTerms } from '@/store/TermsAndConditionsState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -51,6 +53,16 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
             fetchDelegatedAdmins(selectedApplicationId.value)
         );
     }
+
+    if (
+        LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
+        LoginUserState.getUserAdminRoleGroups()?.includes(
+            AdminRoleAuthGroup.DelegatedAdmin
+        )
+    ) {
+        showTerms();
+    }
+
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
         applicationAdmins: applicationAdmins?.data,
