@@ -6,7 +6,7 @@ import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { isTermsVisible, toggleCloseble } from '@/store/TermsAndConditionsState';
+import { toggleCloseble } from '@/store/TermsAndConditionsState';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -24,10 +24,10 @@ const logout = () => {
 };
 
 const showTerms = () => {
-    toggleCloseble()
-    showTerms(),
-    profileSidebarState.toggleVisible()
-}
+    toggleCloseble();
+    showTerms();
+    profileSidebarState.toggleVisible();
+};
 
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
@@ -51,7 +51,10 @@ const adminRoles = computed(() => {
         @click="profileSidebarState.toggleVisible()"
     ></div>
     <Transition name="slide">
-        <div class="profile-container" v-if="profileSidebarState.isVisible">
+        <div
+            class="profile-container"
+            v-if="profileSidebarState.isVisible"
+        >
             <div class="profile-header">
                 <h2>Profile</h2>
                 <button
@@ -59,7 +62,10 @@ const adminRoles = computed(() => {
                     @click="profileSidebarState.toggleVisible()"
                     aria-label="Close profile sidebar"
                 >
-                    <Icon icon="close" :size="IconSize.small"></Icon>
+                    <Icon
+                        icon="close"
+                        :size="IconSize.small"
+                    ></Icon>
                 </button>
             </div>
             <div class="sidebar-body">
@@ -75,7 +81,10 @@ const adminRoles = computed(() => {
                         {{ LoginUserState.getUserIdpProvider() }}:
                         {{ userName }}
                     </p>
-                    <p class="profile-organization" v-if="organization">
+                    <p
+                        class="profile-organization"
+                        v-if="organization"
+                    >
                         Organization: {{ organization }}
                     </p>
                     <p class="profile-email">Email: {{ email }}</p>
@@ -199,17 +208,6 @@ const adminRoles = computed(() => {
     padding: 0;
 }
 
-.profile-sidebar-btn {
-    cursor: pointer;
-    width: calc(100% + 2rem);
-    height: 3rem;
-    border-radius: 0;
-    padding-left: 1rem;
-    margin-left: -1rem;
-    background-color: #ffffff;
-    color: $light-text-secondary !important;
-}
-
 .profile-sidebar-btn:hover,
 .profile-sidebar-btn:active,
 .profile-sidebar-btn:focus {
@@ -232,10 +230,17 @@ const adminRoles = computed(() => {
 }
 
 .profile-sidebar-btn {
+    cursor: pointer;
     border: none;
     background-color: transparent;
     color: #000;
-    cursor: pointer;
+    width: calc(100% + 2rem);
+    height: 3rem;
+    border-radius: 0;
+    padding-left: 1rem;
+    margin-left: -1rem;
+    background-color: #ffffff;
+    color: $light-text-secondary !important;
 
     i {
         margin-right: 1.125rem;

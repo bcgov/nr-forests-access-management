@@ -1,8 +1,4 @@
 import { ref } from "vue"
-import LoginUserState from '@/store/FamLoginUserState';
-import { IdpProvider } from '@/enum/IdpEnum';
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-
 
 export const isTermsVisible = ref(false);
 
