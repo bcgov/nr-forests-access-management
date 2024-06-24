@@ -1,30 +1,21 @@
+import json
 import logging
-import starlette.testclient
+import time
+
 import mock
+import starlette.testclient
+from api.app import database
+from api.app.jwt_validation import (ERROR_CLAIMS, ERROR_EXPIRED_TOKEN,
+                                    ERROR_INVALID_ALGORITHM,
+                                    ERROR_INVALID_CLIENT, ERROR_MISSING_KID,
+                                    ERROR_NO_RSA_KEY, ERROR_TOKEN_DECODE,
+                                    JWT_CLIENT_ID_KEY)
 from api.app.main import apiPrefix
 from api.app.models import model as models
-from api.app import database
-import time
-from api.app.jwt_validation import (
-    ERROR_TOKEN_DECODE,
-    ERROR_INVALID_CLIENT,
-    ERROR_INVALID_ALGORITHM,
-    ERROR_MISSING_KID,
-    ERROR_NO_RSA_KEY,
-    ERROR_EXPIRED_TOKEN,
-    ERROR_CLAIMS,
-    ERROR_VALIDATION,
-    JWT_CLIENT_ID_KEY,
-)
-import json
-from tests.jwt_utils import (
-    create_jwt_token,
-    create_jwt_claims,
-    assert_error_response,
-    headers,
-)
 from Crypto.PublicKey import RSA
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
+from tests.jwt_utils import (assert_error_response, create_jwt_claims,
+                             create_jwt_token, headers)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/smoke_test"  # todo: update this to a real endpoint later
@@ -72,11 +63,22 @@ def test_get_application_bad_token_failure(
 
 
 def test_get_application_wrong_alg_failure(
-    test_client_fixture_unit: starlette.testclient.TestClient, test_rsa_key
+    test_client_fixture_unit: starlette.testclient.TestClient
 ):
 
     invalid_algorithm = "HS256"
-    token = create_jwt_token(test_rsa_key, test_algorithm=invalid_algorithm)
+    '''
+    FAM uese RS256 (asymmetric keys) for signing.
+    The test trys to test: using different algorithm (HS256) should expect
+    fail response.
+    Unlike RS256, "HS256" is a is a symmetric keyed hashing algorithm.
+    To test that it requires to suply a 'secret' not private key.
+    '''
+    HS256_fake_secret = "fake_secret"
+    token = create_jwt_token(
+        HS256_fake_secret,
+        test_algorithm=invalid_algorithm
+    )
 
     response = test_client_fixture_unit.get(f"{endPoint}", headers=headers(token))
 
@@ -155,4 +157,4 @@ def test_get_application_invalid_signature_failure(
 
     response = test_client_fixture_unit.get(f"{endPoint}", headers=headers(token))
 
-    assert_error_response(response, 401, ERROR_VALIDATION)
+    assert_error_response(response, 401, ERROR_CLAIMS)

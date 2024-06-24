@@ -1,7 +1,8 @@
-import os
-from jose import jws
-import time
 import json
+import os
+import time
+
+import jwt
 
 COGNITO_REGION = os.environ.get("COGNITO_REGION")
 COGNITO_USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID")
@@ -55,7 +56,7 @@ def create_jwt_token(
     if roles is not None:
         claims["cognito:groups"] = roles
     claims["username"] = username
-    return jws.sign(
+    return jwt.encode(
         claims, test_rsa_key, algorithm=test_algorithm, headers=test_headers
     )
 

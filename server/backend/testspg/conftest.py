@@ -3,12 +3,12 @@ import os
 import sys
 from typing import List
 
+import jwt
 import pytest
 import starlette
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
-from jose import jwt
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -130,7 +130,7 @@ def override_get_rsa_key_method():
     return override_get_rsa_key
 
 
-def override_get_rsa_key(kid):
+def override_get_rsa_key(token):
     global public_rsa_key
     return public_rsa_key
 
@@ -172,7 +172,7 @@ def get_current_requester_by_token(db_pg_session):
 
     async def _get_current_requester_by_token(access_token: str) -> Requester:
 
-        claims = jwt.get_unverified_claims(access_token)
+        claims = jwt.decode(access_token, options={"verify_signature": False})
         requester = await get_current_requester(
             db=db_pg_session,
             access_roles=jwt_validation.get_access_roles(claims),

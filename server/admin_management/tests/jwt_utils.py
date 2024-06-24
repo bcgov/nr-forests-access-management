@@ -2,8 +2,9 @@ import json
 import os
 import time
 
+import jwt
+
 from api.app.constants import AdminRoleAuthGroup
-from jose import jws
 
 COGNITO_REGION = os.environ.get("COGNITO_REGION")
 COGNITO_USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID")
@@ -42,9 +43,10 @@ def create_jwt_token(
 ):
     if len(roles) > 0:
         claims["cognito:groups"] = roles
-    return jws.sign(
+    token = jwt.encode(
         claims, test_rsa_key, algorithm=test_algorithm, headers=test_headers
     )
+    return token
 
 
 def assert_error_response(response, http_error_code, error_code_string):

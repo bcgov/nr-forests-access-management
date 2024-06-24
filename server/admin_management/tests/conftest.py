@@ -16,35 +16,35 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 from api.app.constants import AppEnv, RoleType, UserType
-from api.app.integration.forest_client_integration import ForestClientIntegrationService
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from api.app.main import app
-from api.app.models.model import FamAccessControlPrivilege, FamApplicationAdmin, FamUser
-from api.app.repositories.access_control_privilege_repository import (
-    AccessControlPrivilegeRepository,
-)
-from api.app.repositories.application_admin_repository import ApplicationAdminRepository
+from api.app.models.model import (FamAccessControlPrivilege,
+                                  FamApplicationAdmin, FamUser)
+from api.app.repositories.access_control_privilege_repository import \
+    AccessControlPrivilegeRepository
+from api.app.repositories.application_admin_repository import \
+    ApplicationAdminRepository
 from api.app.repositories.application_repository import ApplicationRepository
-from api.app.repositories.forest_client_repository import ForestClientRepository
+from api.app.repositories.forest_client_repository import \
+    ForestClientRepository
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.user_repository import UserRepository
 from api.app.routers.router_guards import get_verified_target_user
-from api.app.schemas import FamAccessControlPrivilegeCreateDto, FamUserDto, TargetUser
-from api.app.services.access_control_privilege_service import (
-    AccessControlPrivilegeService,
-)
+from api.app.schemas import (FamAccessControlPrivilegeCreateDto, FamUserDto,
+                             TargetUser)
+from api.app.services.access_control_privilege_service import \
+    AccessControlPrivilegeService
 from api.app.services.admin_user_access_service import AdminUserAccessService
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.forest_client_service import ForestClientService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from tests.constants import (
-    TEST_CREATOR,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_FOM_TEST_REVIEWER_ROLE_ID,
-    TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-)
+from tests.constants import (TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                             TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                             TEST_FOM_TEST_REVIEWER_ROLE_ID,
+                             TEST_FOM_TEST_SUBMITTER_ROLE_ID)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -292,7 +292,7 @@ def override_get_rsa_key_method():
     return override_get_rsa_key
 
 
-def override_get_rsa_key(kid):
+def override_get_rsa_key(token):
     global public_rsa_key
     return public_rsa_key
 
