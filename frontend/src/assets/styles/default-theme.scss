@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@bcgov-nr/nr-theme/design-tokens/light-theme.scss' as lightTheme;
 @use '@bcgov-nr/nr-theme/design-tokens/dark-theme.scss' as darkTheme;
+@use '@bcgov-nr/nr-theme/design-tokens/light-notifications.scss' as lightNotifications;
 // need to use type family first, and then use stylesheet, so the body type tokens can get the font path correctly
 @use '@bcgov-nr/nr-theme/design-tokens/type-family.scss';
 @use '@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss';
@@ -29,6 +30,7 @@ $light-link-primary-hover: map.get(
     lightTheme.$light-theme,
     'link-primary-hover'
 );
+$light-background-inverse: map.get(lightTheme.$light-theme, 'background-inverse');
 
 //border
 $light-border-interactive: map.get(

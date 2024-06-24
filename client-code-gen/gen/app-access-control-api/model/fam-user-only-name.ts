@@ -49,7 +49,7 @@ export interface FamUserOnlyName {
      * @type {string}
      * @memberof FamUserOnlyName
      */
-    'user_guid'?: string | null;
+    'user_guid': string | null;
     /**
      * 
      * @type {string}

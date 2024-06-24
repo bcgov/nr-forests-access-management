@@ -18,6 +18,10 @@ UPDATE app_fam.fam_user
 SET user_guid = 'BDA2A1E212244DC2B9F9522057C58BBB'
 WHERE user_name = 'TEST-3-LOAD-CHILD-1';
 
+-- add user_guid for LOAD-3-TEST, as we use it as requester for tests, and requester should have user_guid
+UPDATE app_fam.fam_user
+SET user_guid = '532905DE0AA24923AE535428F171BF13'
+WHERE user_name = 'LOAD-3-TEST';
 
 -- add PTOLLEST as delegated admin to manage FOM DEV role FOM_REVIEWER
 -- add TEST-3-LOAD-CHILD-1 as delegated admin to manage FOM DEV role FOM_REVIEWER

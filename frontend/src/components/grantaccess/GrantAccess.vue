@@ -25,6 +25,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import { TabKey } from '@/enum/TabEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
+import { routeItems } from '@/router/routeItem';
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -119,12 +120,12 @@ const areVerificationsPassed = () => {
                 formData.value.verifiedForestClients.length > 0))
     );
 };
-
 const handleSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
     const errorList: string[] = [];
+    const newUserAccessIds: number[] = [];
     let errorCode = ErrorCode.Default;
 
     // when we assign a concrete a role to the user, there is no forest client number,
@@ -136,9 +137,12 @@ const handleSubmit = async () => {
         const forestClientNumber = formData.value.verifiedForestClients.pop();
         const data = toRequestPayload(formData.value, forestClientNumber);
         try {
-            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
-                data
-            );
+            const returnResponse =
+                await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
+                    data
+                );
+
+            newUserAccessIds.push(returnResponse.data.user_role_xref_id);
             successList.push(forestClientNumber ?? '');
         } catch (error: any) {
             if (error.response?.status === 409) {
@@ -160,8 +164,19 @@ const handleSubmit = async () => {
         errorCode,
         role
     );
+
     setCurrentTabState(TabKey.UserAccess);
-    router.push('/dashboard');
+
+    if (newUserAccessIds.length > 0) {
+        router.push({
+            path: routeItems.dashboard.path,
+            query: {
+                newUserAccessIds: newUserAccessIds.join(','),
+            },
+        });
+    } else {
+        router.push(routeItems.dashboard.path);
+    }
 };
 
 function toRequestPayload(formData: any, forestClientNumber: string) {

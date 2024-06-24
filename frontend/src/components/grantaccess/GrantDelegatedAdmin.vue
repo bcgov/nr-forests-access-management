@@ -6,6 +6,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import router from '@/router';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { TabKey } from '@/enum/TabEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { isLoading } from '@/store/LoadingState';
 import LoginUserState from '@/store/FamLoginUserState';
@@ -14,6 +15,8 @@ import {
     selectedApplicationId,
     selectedApplicationDisplayText,
 } from '@/store/ApplicationState';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import { routeItems } from '@/router/routeItem';
 import { formValidationSchema } from '@/services/utils';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { UserType } from 'fam-app-acsctl-api';
@@ -21,8 +24,6 @@ import type {
     FamRoleDto,
     FamAccessControlPrivilegeCreateRequest,
 } from 'fam-admin-mgmt-api/model';
-import { setCurrentTabState } from '@/store/CurrentTabState';
-import { TabKey } from '@/enum/TabEnum';
 
 const confirm = useConfirm();
 
@@ -111,6 +112,7 @@ const confirmSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
+    const newDelegatedAdminAccessIds: number[] = [];
     let errorList: string[] = [];
     let errorCode = ErrorCode.Default;
     const data = toRequestPayload(formData.value);
@@ -124,6 +126,9 @@ const confirmSubmit = async () => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
+                newDelegatedAdminAccessIds.push(
+                    response.detail.access_control_privilege_id
+                );
                 successList.push(forestClientNumber ?? '');
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
@@ -142,6 +147,7 @@ const confirmSubmit = async () => {
                 ? formData.value.verifiedForestClients
                 : [''];
     }
+
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.DelegatedAdmin,
         username,
@@ -150,8 +156,19 @@ const confirmSubmit = async () => {
         errorCode,
         role
     );
+
     setCurrentTabState(TabKey.DelegatedAdminAccess);
-    router.push('/dashboard');
+
+    if (newDelegatedAdminAccessIds.length > 0) {
+        router.push({
+            path: routeItems.dashboard.path,
+            query: {
+                newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
+            },
+        });
+    } else {
+        router.push(routeItems.dashboard.path);
+    }
 };
 
 function toRequestPayload(formData: any) {

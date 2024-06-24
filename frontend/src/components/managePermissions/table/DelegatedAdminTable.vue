@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { ref, reactive, type PropType } from 'vue';
+import { ref, reactive, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
+import { isNewAccess } from '@/services/utils';
+import ProgressSpinner from 'primevue/progressspinner';
 
 import { routeItems } from '@/router/routeItem';
+import NewUserTag from '@/components/common/NewUserTag.vue';
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
@@ -32,6 +36,14 @@ const props = defineProps({
         >,
         required: true,
     },
+    newIds: {
+        type: String,
+        default: '',
+    },
+});
+
+const newDelegatedAdminIds = computed(() => {
+    return props.newIds.split(',');
 });
 
 const delegatedAdminFilters = ref({
@@ -85,6 +97,17 @@ const deleteDelegatedAdmin = (
         },
     });
 };
+
+const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
+    if (
+        isNewAccess(
+            newDelegatedAdminIds.value,
+            rowData.access_control_privilege_id
+        )
+    ) {
+        return NEW_ACCESS_STYLE_IN_TABLE;
+    }
+};
 </script>
 
 <template>
@@ -107,7 +130,7 @@ const deleteDelegatedAdmin = (
             />
             <DataTable
                 v-model:filters="delegatedAdminFilters"
-                :value="props.delegatedAdmins"
+                :value="delegatedAdmins"
                 paginator
                 :rows="50"
                 :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
@@ -123,11 +146,22 @@ const deleteDelegatedAdmin = (
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 stripedRows
+                :rowStyle="highlightNewDelegatedAdminAccessRow"
             >
                 <template #empty> No user found. </template>
-                <template #loading> Loading users data. Please wait. </template>
+                <template #loading>
+                    <ProgressSpinner aria-label="Loading" />
+                </template>
                 <Column header="User Name" field="user.user_name" sortable>
                     <template #body="{ data }">
+                        <NewUserTag
+                            v-if="
+                                isNewAccess(
+                                    newDelegatedAdminIds,
+                                    data.access_control_privilege_id
+                                )
+                            "
+                        />
                         <span>
                             {{ data.user.user_name }}
                         </span>

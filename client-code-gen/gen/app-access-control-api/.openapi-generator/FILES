@@ -6,6 +6,7 @@ api/bcscproxy-api.ts
 api/famapplications-api.ts
 api/famforest-clients-api.ts
 api/famuser-role-assignment-api.ts
+api/famuser-terms-and-conditions-api.ts
 api/idirbce-idproxy-api.ts
 api/smoke-test-api.ts
 base.ts

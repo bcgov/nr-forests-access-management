@@ -9,13 +9,17 @@ import {
 } from '@/services/ApiServiceFactory';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { selectedApplicationId } from '@/store/ApplicationState';
+import { isNewAccess } from './utils';
 
 // --- Fetching data (from backend)
 
 export const fetchUserRoleAssignments = async (
-    applicationId: number | undefined
+    applicationId: number | undefined,
+    newUserAccessIds: string = ''
 ): Promise<FamApplicationUserRoleAssignmentGet[]> => {
     if (!applicationId) return [];
+
+    const newUsersAccessIdsList = newUserAccessIds.split(',');
 
     const userRoleAssignments = (
         await AppActlApiService.applicationsApi.getFamApplicationUserRoleAssignment(
@@ -23,18 +27,22 @@ export const fetchUserRoleAssignments = async (
         )
     ).data;
 
-    // Default sorting
     userRoleAssignments.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
+        const firstIsNew = isNewAccess(
+            newUsersAccessIdsList,
+            first.user_role_xref_id
         );
-        // By role_name
-        const roleNameCompare = first.role.role_name.localeCompare(
-            second.role.role_name
+        const secondIsNew = isNewAccess(
+            newUsersAccessIdsList,
+            second.user_role_xref_id
         );
-        return userNameCompare != 0 ? userNameCompare : roleNameCompare;
+
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
+
+        return first.user.user_name.localeCompare(second.user.user_name);
     });
+
     return userRoleAssignments;
 };
 
@@ -56,21 +64,29 @@ export const deleteAndRefreshUserRoleAssignments = async (
     return fetchUserRoleAssignments(applicationId);
 };
 
-export const fetchApplicationAdmins = async (): Promise<
-    FamAppAdminGetResponse[]
-> => {
+export const fetchApplicationAdmins = async (
+    newAppAdminId: string = ''
+): Promise<FamAppAdminGetResponse[]> => {
+    const newAppAdminIdsList = newAppAdminId.split(',');
+
     const applicationAdmins = (
         await AdminMgmtApiService.applicationAdminApi.getApplicationAdmins()
     ).data;
 
-    // Default sorting
     applicationAdmins.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
+        const firstIsNew = isNewAccess(
+            newAppAdminIdsList,
+            first.application_admin_id
+        );
+        const secondIsNew = isNewAccess(
+            newAppAdminIdsList,
+            second.application_admin_id
         );
 
-        return userNameCompare;
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
+
+        return first.user.user_name.localeCompare(second.user.user_name);
     });
 
     return applicationAdmins;
@@ -92,30 +108,38 @@ export const deleteAndRefreshApplicationAdmin = async (
 };
 
 export const fetchDelegatedAdmins = async (
-    applicationId: number | undefined
+    applicationId: number | undefined,
+    newDelegatedAdminIds: string = ''
 ): Promise<FamAccessControlPrivilegeGetResponse[]> => {
     if (!applicationId || !FamLoginUserState.isAdminOfSelectedApplication()) {
         return [];
     }
 
+    const newDelegatedAdminIdsList = newDelegatedAdminIds.split(',');
+
     const delegatedAdmins = (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
-            applicationId!
+            applicationId
         )
     ).data;
 
-    // Default sorting
     delegatedAdmins.sort((first, second) => {
-        // By user_name
-        const userNameCompare = first.user.user_name.localeCompare(
-            second.user.user_name
+        const firstIsNew = isNewAccess(
+            newDelegatedAdminIdsList,
+            first.access_control_privilege_id
+        );
+        const secondIsNew = isNewAccess(
+            newDelegatedAdminIdsList,
+            second.access_control_privilege_id
         );
 
-        return userNameCompare;
+        if (firstIsNew && !secondIsNew) return -1;
+        if (!firstIsNew && secondIsNew) return 1;
+
+        return first.user.user_name.localeCompare(second.user.user_name);
     });
 
     return delegatedAdmins;
-
 };
 
 /**
