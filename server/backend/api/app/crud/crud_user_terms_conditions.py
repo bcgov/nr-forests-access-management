@@ -1,9 +1,7 @@
 import logging
 from http import HTTPStatus
 
-from api.app.crud.crud_utils import is_requester_external_delegated_admin
 from api.app.models.model import FamUserTermsConditions
-from api.app.schemas import Requester
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
@@ -21,22 +19,6 @@ def get_user_terms_conditions_by_user_id_and_version(
         )
         .one_or_none()
     )
-
-
-def require_accept_terms_and_conditions(
-    db: Session, requester: Requester, version: str
-) -> bool:
-    """
-    Return False if found record (means user already accepted terms and conditions)
-    Return True if not found (means user needs to accept terms and conditions)
-    """
-    if is_requester_external_delegated_admin(
-        db, requester
-    ) and not get_user_terms_conditions_by_user_id_and_version(
-        db, requester.user_id, version
-    ):
-        return True
-    return False
 
 
 def create_user_terms_conditions(
