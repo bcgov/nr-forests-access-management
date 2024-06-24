@@ -281,11 +281,13 @@ class Requester(BaseModel):
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_id: int
+
+    # belows are custom Requester information attributes.
     access_roles: Union[
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
-    is_delegated_admin: bool  # is delegated admin of any application
-    requires_accept_tc: bool  # requires to accept terms and conditions
+    is_delegated_admin: bool = False  # is delegated admin of any application
+    requires_accept_tc: bool = False  # requires to accept terms and conditions
 
     model_config = ConfigDict(from_attributes=True)
 
