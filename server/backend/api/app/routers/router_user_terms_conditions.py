@@ -33,7 +33,6 @@ def validate_user_requires_accept_terms_and_conditions(
     ],
 )
 def create_user_terms_and_conditions(
-    version: str = CURRENT_TERMS_AND_CONDITIONS_VERSION,
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
@@ -42,9 +41,9 @@ def create_user_terms_and_conditions(
     If no version is provided, we store the 1st version of the terms and conditions.
     """
     LOGGER.debug(
-        f"Create terms and conditions acceptance record for user {requester.user_id} and version {version}"
+        f"Create terms and conditions acceptance record for user {requester.user_id}"
     )
 
     crud_user_terms_conditions.create_user_terms_conditions(
-        db, requester.user_id, version, requester.cognito_user_id
+        db, requester.user_id, requester.cognito_user_id
     )
