@@ -18,18 +18,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import COGNITO_USERNAME_KEY
+from api.app.constants import (COGNITO_USERNAME_KEY,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED)
+from api.app.crud import crud_utils
 from api.app.main import apiPrefix, app
 from api.app.routers.router_guards import (
-    get_current_requester,
-    get_verified_target_user,
-)
+    enforce_bceid_terms_conditions_guard, get_current_requester,
+    get_verified_target_user)
 from api.app.schemas import Requester, TargetUser
-from testspg.constants import (
-    FOM_DEV_ADMIN_ROLE,
-    FOM_TEST_ADMIN_ROLE,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -239,3 +237,19 @@ def create_test_user_role_assignment(
     )
     data = response.json()
     return data["user_role_xref_id"]
+
+
+@pytest.fixture(scope="function")
+def override_enforce_bceid_terms_conditions_guard(test_client_fixture):
+    # Override T&C checks based on test cases scenarios.
+    def _override_enforce_bceid_terms_conditions_guard(mocked_tc_accepted=True):
+        app = test_client_fixture.app
+        app.dependency_overrides[
+            enforce_bceid_terms_conditions_guard
+        ] = lambda: (None if mocked_tc_accepted else crud_utils.raise_http_exception(
+                error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+                error_msg="Requires to accept terms and conditions.",
+            )
+        )
+
+    return _override_enforce_bceid_terms_conditions_guard

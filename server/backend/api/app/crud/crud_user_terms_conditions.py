@@ -1,12 +1,11 @@
 import logging
-from sqlalchemy.orm import Session
 from http import HTTPStatus
 
+from api.app.crud.crud_utils import is_requester_external_delegated_admin
 from api.app.models.model import FamUserTermsConditions
 from api.app.schemas import Requester
 from api.app.utils.utils import raise_http_exception
-from api.app.crud.crud_utils import is_requester_external_delegated_admin
-
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 

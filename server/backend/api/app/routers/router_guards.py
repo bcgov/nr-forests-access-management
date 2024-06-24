@@ -15,8 +15,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
                                UserType)
 from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
-                          crud_user_role, crud_user_terms_conditions,
-                          crud_utils)
+                          crud_user_role, crud_utils)
 from api.app.crud.validator.user_validator import UserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
