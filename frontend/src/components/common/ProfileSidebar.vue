@@ -25,7 +25,7 @@ const logout = () => {
 
 const showTerms = () => {
     toggleCloseble()
-    isTermsVisible.value = true,
+    showTerms(),
     profileSidebarState.toggleVisible()
 }
 
@@ -98,7 +98,7 @@ const adminRoles = computed(() => {
                     title="terms of use"
                     icon="document"
                     :size="IconSize.small"
-                    class="custom-carbon-icon-user--follow"
+                    class="custom-carbon-icon-document"
                 />
             </Button>
             <Button

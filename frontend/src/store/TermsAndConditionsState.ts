@@ -8,8 +8,6 @@ export const isTermsVisible = ref(false);
 
 export const isAbleToClose = ref(false)
 
-// export const isBceidAndDelegatedAdmin =LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS && LoginUserState.getUserAdminRoleGroups()?.includes(AdminRoleAuthGroup.DelegatedAdmin)
-
 export const toggleCloseble = () => {
     isAbleToClose.value = true
 }

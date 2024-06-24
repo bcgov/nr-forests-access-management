@@ -14,7 +14,7 @@ import Dialog from 'primevue/dialog';
         :pt="{
             title: {
                 style: {
-                    'font-size': '20px',
+                    'font-size': '1.25rem',
                 },
             },
         }"
@@ -492,12 +492,12 @@ import Dialog from 'primevue/dialog';
 
 h3,
 p {
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 p,
 li {
-    line-height: 20px;
+    line-height: 1.25rem;
 }
 
 h3 {
@@ -505,10 +505,6 @@ h3 {
     margin-top: 1.5rem;
     margin-left: 0;
     padding-left: 0;
-}
-
-span {
-    font-size: 20px;
 }
 
 .terms {
