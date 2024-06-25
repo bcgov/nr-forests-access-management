@@ -9,6 +9,7 @@ import Dialog from 'primevue/dialog';
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
         :closable="isAbleToClose"
+        :modal="true"
         @close="hideTerms()"
         :style="{ width: '50vw' }"
         :pt="{
