@@ -6,7 +6,7 @@ import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { toggleCloseble } from '@/store/TermsAndConditionsState';
+import { toggleCloseble, showTerms } from '@/store/TermsAndConditionsState';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -23,7 +23,7 @@ const logout = () => {
     loading.value = true;
 };
 
-const showTerms = () => {
+const showTermsBtn = () => {
     toggleCloseble();
     showTerms();
     profileSidebarState.toggleVisible();
@@ -101,7 +101,7 @@ const adminRoles = computed(() => {
                 aria-label="show terms of use"
                 :iconPosition="IconPosition.left"
                 label="Terms of use"
-                @click="showTerms()"
+                @click="showTermsBtn()"
             >
                 <Icon
                     title="terms of use"
