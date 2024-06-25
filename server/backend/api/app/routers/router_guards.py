@@ -343,7 +343,6 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
 
 
 def external_delegated_admin_only_action(
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
     if not requester.is_external_delegated_admin():
