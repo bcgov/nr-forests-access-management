@@ -376,7 +376,7 @@ class FamUser(Base):
     )
 
     fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
-    user_type_relation: Mapped[FamUserType] = relationship(
+    user_type_relation = relationship(
         "FamUserType", backref="user_relation", lazy="joined"
     )
     fam_access_control_privileges: Mapped[List[FamAccessControlPrivilege]] = relationship(

@@ -65,7 +65,7 @@ async def get_current_requester(
             {
                 **fam_user.__dict__,  # base db 'user' info
                 'access_roles': access_roles,  # role from JWT
-                **custom_fields  # build/conver custom attributes
+                **custom_fields  # build/convert to custom attributes
             }
         )
         LOGGER.debug(f"Current request user (requester): {requester}")
