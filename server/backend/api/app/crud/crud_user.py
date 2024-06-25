@@ -221,7 +221,7 @@ def fetch_initial_requester_info(
     for endpoint's checks before endpoint handler being called. Not intended for
     individual crud functions to fetch on this user.
 
-    The quering `user` join other tables for esential information.
+    The quering `user` join other tables for essential information.
     Use orm `joinedload` to join due to the relationship with user is a `lazy`.
     """
     q_stm = (
