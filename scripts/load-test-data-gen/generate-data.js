@@ -6,6 +6,7 @@ Design: this script generates a 1-year realistic volume of data under a fake tes
 Record Counts
 Application: 1
 
+Users: 10,500
 Concrete Roles: 5100 (based on a pool of 1000+ forest clients)
 Role Assignments: 10,200
 
@@ -52,7 +53,7 @@ function generateForestClients() {
 
     var clientNumberId = minId;
 
-    const forestClientCount = 5;
+    const forestClientCount = 1000;
     for (var i = 0; i < forestClientCount; i++) {
         prefix = ',';
         if (i == 0) {
@@ -73,7 +74,9 @@ function generateRoles() {
     var roleId = minId;
 
     var abstractRoles = []
-    const abstractRoleCount = 2;
+    const totalRoles = 5100;
+    const abstractRoleCount = (totalRoles / clientNumbers.length);
+
     for (var i = 0; i < abstractRoleCount; i++) {
         prefix = ',';
         if (i == 0) {
@@ -85,13 +88,13 @@ function generateRoles() {
         roleId++;
     }
 
-    const concreteRoleCount = 5;
-    for (var i = 0; i < concreteRoleCount; i++) {
-        var abstractRole = abstractRoles[i%abstractRoles.length];
-        var clientNumber = clientNumbers[i%clientNumbers.length];
-        console.log(`,( ${roleId}, '${abstractRole}_${clientNumber}', 'Fake concrete role for load testing', ${appId}, 'C', '${createUser}')`);
-        roles.push(roleId);
-        roleId++;
+    for (var r = 0; r < abstractRoles.length; r++) {
+        for (var i = 0; i < clientNumbers.length; i++) {
+            var clientNumber = clientNumbers[i];
+            console.log(`,( ${roleId}, '${abstractRoles[r]}_${clientNumber}', 'Fake concrete role for load testing', ${appId}, 'C', '${createUser}')`);
+            roles.push(roleId);
+            roleId++;
+        }
     }
 
     console.log(`;`);
@@ -102,7 +105,7 @@ function generateUsers() {
 
     var userId = minId;
 
-    const userCount = 5;
+    const userCount = 10500;
     for (var i = 0; i < userCount; i++) {
         prefix = ',';
         if (i == 0) {
@@ -123,14 +126,14 @@ function generateAssignments() {
 
     var xrefId = minId;
 
-    const assignmentsCount = 5;
+    const assignmentsCount = 10200;
     for (var i = 0; i < assignmentsCount; i++) {
         prefix = ',';
         if (i == 0) {
             prefix = '';
         }
         var userId = users[i % users.length];
-        var roleId = roles[i & roles.length];
+        var roleId = roles[i % roles.length];
         console.log(`${prefix}( ${xrefId}, '${userId}', '${roleId}', '${createUser}')`);
         xrefId++;
     }
