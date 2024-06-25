@@ -346,7 +346,7 @@ def external_delegated_admin_only_action(
     db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
-    if not crud_utils.is_requester_external_delegated_admin(db, requester):
+    if not requester.is_external_delegated_admin():
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_INVALID_OPERATION,

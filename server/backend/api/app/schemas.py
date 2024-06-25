@@ -289,6 +289,12 @@ class Requester(BaseModel):
     is_delegated_admin: bool = False  # is delegated admin of any application
     requires_accept_tc: bool = False  # requires to accept terms and conditions
 
+    def is_external_delegated_admin(self):
+        return (
+            self.user_type_code == famConstants.UserType.BCEID
+            and self.is_delegated_admin
+        )
+
     model_config = ConfigDict(from_attributes=True)
 
 
