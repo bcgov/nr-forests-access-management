@@ -7,6 +7,7 @@ import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 import { toggleCloseble, showTerms } from '@/store/TermsAndConditionsState';
+import { IdpProvider } from '@/enum/IdpEnum';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -95,6 +96,7 @@ const adminRoles = computed(() => {
             </div>
             <Divider class="profile-divider" />
             <Button
+                v-if="LoginUserState.getUserIdpProvider() === IdpProvider.BCEIDBUSINESS"
                 class="profile-sidebar-btn"
                 title="Terms of use"
                 aria-expanded="false"
