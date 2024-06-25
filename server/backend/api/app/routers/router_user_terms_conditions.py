@@ -2,7 +2,6 @@ import logging
 from http import HTTPStatus
 
 from api.app import database
-from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION
 from api.app.crud import crud_user_terms_conditions
 from api.app.routers.router_guards import (
     external_delegated_admin_only_action, get_current_requester)

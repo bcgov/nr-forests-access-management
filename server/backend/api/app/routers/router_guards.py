@@ -59,16 +59,17 @@ async def get_current_requester(
             status_code=HTTPStatus.FORBIDDEN,
         )
 
-    custom_fields = _parse_custom_requester_fields(fam_user)
-    requester = Requester.model_validate(
-        {
-            **fam_user.__dict__,  # base db 'user' info
-            'access_roles': access_roles,  # role from JWT
-            **custom_fields  # build/conver custom attributes
-        }
-    )
-    LOGGER.debug(f"Current request user (requester): {requester}")
-    return requester
+    else:
+        custom_fields = _parse_custom_requester_fields(fam_user)
+        requester = Requester.model_validate(
+            {
+                **fam_user.__dict__,  # base db 'user' info
+                'access_roles': access_roles,  # role from JWT
+                **custom_fields  # build/conver custom attributes
+            }
+        )
+        LOGGER.debug(f"Current request user (requester): {requester}")
+        return requester
 
 
 def _parse_custom_requester_fields(fam_user: FamUser):
