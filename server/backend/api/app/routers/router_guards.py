@@ -98,7 +98,6 @@ def _parse_custom_requester_fields(fam_user: FamUser):
 
 def authorize(
     claims: dict = Depends(validate_token),
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
     """
