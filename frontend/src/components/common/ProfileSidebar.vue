@@ -239,8 +239,6 @@ const adminRoles = computed(() => {
     border-radius: 0;
     padding-left: 1rem;
     margin-left: -1rem;
-    background-color: #ffffff;
-    color: $light-text-secondary !important;
 
     i {
         margin-right: 1.125rem;
