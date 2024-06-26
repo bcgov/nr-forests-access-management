@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed, onMounted } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -7,7 +7,6 @@ import router from '@/router';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
 import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-import { useConfirm } from "primevue/useconfirm";
 import LoginUserState from '@/store/FamLoginUserState';
 import {
     getCurrentTabState,
@@ -25,11 +24,13 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
+import { showTerms } from '@/store/TermsAndConditionsState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import type {
-    FamAccessControlPrivilegeGetResponse,
-    FamAppAdminGetResponse,
+import {
+    AdminRoleAuthGroup,
+    type FamAccessControlPrivilegeGetResponse,
+    type FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
 import {
     deleteAndRefreshUserRoleAssignments,
@@ -42,6 +43,7 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
+import { IdpProvider } from '@/enum/IdpEnum';
 
 const props = defineProps({
     userRoleAssignments: {
@@ -97,6 +99,17 @@ const resetNotificationAndNewRowTag = () => {
     resetNotification();
     resetNewTag();
 };
+
+onMounted(() => {
+    if (
+        LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
+        LoginUserState.getUserAdminRoleGroups()?.includes(
+            AdminRoleAuthGroup.DelegatedAdmin
+        )
+    ) {
+        showTerms();
+    }
+});
 
 onUnmounted(() => {
     resetNotificationAndNewRowTag();
@@ -202,7 +215,7 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-    <TermsAndConditions/>
+    <TermsAndConditions />
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
