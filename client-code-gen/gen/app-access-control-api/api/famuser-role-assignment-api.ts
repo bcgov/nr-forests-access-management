@@ -34,7 +34,7 @@ import { HTTPValidationError } from '../model';
 export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Create FAM user_role_xref association.
+         * Grant User Access to an application\'s role.
          * @summary Create User Role Assignment
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
@@ -74,7 +74,7 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
             };
         },
         /**
-         * Delete FAM user_role_xref association.
+         * Remove a specific application\'s role from user\'s access.
          * @summary Delete User Role Assignment
          * @param {number} userRoleXrefId 
          * @param {*} [options] Override http request option.
@@ -122,7 +122,7 @@ export const FAMUserRoleAssignmentApiFp = function(configuration?: Configuration
     const localVarAxiosParamCreator = FAMUserRoleAssignmentApiAxiosParamCreator(configuration)
     return {
         /**
-         * Create FAM user_role_xref association.
+         * Grant User Access to an application\'s role.
          * @summary Create User Role Assignment
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
@@ -135,7 +135,7 @@ export const FAMUserRoleAssignmentApiFp = function(configuration?: Configuration
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Delete FAM user_role_xref association.
+         * Remove a specific application\'s role from user\'s access.
          * @summary Delete User Role Assignment
          * @param {number} userRoleXrefId 
          * @param {*} [options] Override http request option.
@@ -158,7 +158,7 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
     const localVarFp = FAMUserRoleAssignmentApiFp(configuration)
     return {
         /**
-         * Create FAM user_role_xref association.
+         * Grant User Access to an application\'s role.
          * @summary Create User Role Assignment
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
@@ -168,7 +168,7 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
             return localVarFp.createUserRoleAssignment(famUserRoleAssignmentCreate, options).then((request) => request(axios, basePath));
         },
         /**
-         * Delete FAM user_role_xref association.
+         * Remove a specific application\'s role from user\'s access.
          * @summary Delete User Role Assignment
          * @param {number} userRoleXrefId 
          * @param {*} [options] Override http request option.
@@ -187,7 +187,7 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
  */
 export interface FAMUserRoleAssignmentApiInterface {
     /**
-     * Create FAM user_role_xref association.
+     * Grant User Access to an application\'s role.
      * @summary Create User Role Assignment
      * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
      * @param {*} [options] Override http request option.
@@ -197,7 +197,7 @@ export interface FAMUserRoleAssignmentApiInterface {
     createUserRoleAssignment(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig): AxiosPromise<FamUserRoleAssignmentGet>;
 
     /**
-     * Delete FAM user_role_xref association.
+     * Remove a specific application\'s role from user\'s access.
      * @summary Delete User Role Assignment
      * @param {number} userRoleXrefId 
      * @param {*} [options] Override http request option.
@@ -216,7 +216,7 @@ export interface FAMUserRoleAssignmentApiInterface {
  */
 export class FAMUserRoleAssignmentApi extends BaseAPI implements FAMUserRoleAssignmentApiInterface {
     /**
-     * Create FAM user_role_xref association.
+     * Grant User Access to an application\'s role.
      * @summary Create User Role Assignment
      * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
      * @param {*} [options] Override http request option.
@@ -228,7 +228,7 @@ export class FAMUserRoleAssignmentApi extends BaseAPI implements FAMUserRoleAssi
     }
 
     /**
-     * Delete FAM user_role_xref association.
+     * Remove a specific application\'s role from user\'s access.
      * @summary Delete User Role Assignment
      * @param {number} userRoleXrefId 
      * @param {*} [options] Override http request option.

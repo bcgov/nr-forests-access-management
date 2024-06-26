@@ -1,4 +1,3 @@
-from asyncio import run
 import copy
 import logging
 from http import HTTPStatus
@@ -7,36 +6,30 @@ import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (
-    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-    ERROR_CODE_SELF_GRANT_PROHIBITED,
-    UserType,
-)
+from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_SELF_GRANT_PROHIBITED, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
-from testspg.constants import (
-    FC_NUMBER_EXISTS_ACTIVE_00001011,
-    FC_NUMBER_EXISTS_DEACTIVATED,
-    FC_NUMBER_NOT_EXISTS,
-    FOM_DEV_APPLICATION_ID,
-    FOM_DEV_REVIEWER_ROLE_ID,
-    FOM_DEV_SUBMITTER_ROLE_ID,
-    FOM_TEST_APPLICATION_ID,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    ACCESS_GRANT_FOM_TEST_CR_IDIR,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-    BUSINESS_GUID_BCEID_LOAD_3_TEST,
-    BUSINESS_GUID_BCEID_LOAD_4_TEST,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               ACCESS_GRANT_FOM_TEST_CR_IDIR,
+                               BUSINESS_GUID_BCEID_LOAD_3_TEST,
+                               BUSINESS_GUID_BCEID_LOAD_4_TEST,
+                               FC_NUMBER_EXISTS_ACTIVE_00001011,
+                               FC_NUMBER_EXISTS_DEACTIVATED,
+                               FC_NUMBER_NOT_EXISTS, FOM_DEV_APPLICATION_ID,
+                               FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID,
+                               FOM_TEST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -74,6 +67,7 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -83,6 +77,7 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     able to grant FOM_REVIEWER access to a business bceid user from same org
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
@@ -113,6 +108,7 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -123,6 +119,7 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     will not be able to grant access with other forest client numbers like FOM_SUBMITTER_00001011
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
@@ -171,11 +168,13 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test business bceid user cannnot grant idir user access
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user()
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
@@ -205,11 +204,13 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
@@ -793,6 +794,7 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -802,6 +804,7 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     able to remove FOM_REVIEWER access for business bceid user from same org
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
@@ -836,6 +839,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -846,6 +850,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     will not be able to remove access with other forest client numbers like FOM_SUBMITTER_00001011
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
@@ -903,11 +908,13 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test business bceid user cannnot delete idir user access
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user()
 
     # create a user role assignment for IDIR user
@@ -944,11 +951,13 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
+    override_enforce_bceid_terms_conditions_guard
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
     """
     # override router guard dependencies
+    override_enforce_bceid_terms_conditions_guard()
     override_get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,

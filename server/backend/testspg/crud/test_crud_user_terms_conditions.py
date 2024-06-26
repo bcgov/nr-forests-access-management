@@ -1,11 +1,10 @@
 import logging
+
 import pytest
+from api.app.crud import crud_user_terms_conditions
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from api.app.crud import crud_user_terms_conditions
-from testspg.constants import TEST_USER_ID, TEST_CREATOR
-
+from testspg.constants import TEST_CREATOR, TEST_USER_ID
 
 LOGGER = logging.getLogger(__name__)
 TERMS_CONSITIONS_VERSION = "1"
@@ -23,7 +22,7 @@ def test_get_user_terms_conditions_by_user_id_and_version(db_pg_session: Session
 
     # create user terms and conditions acceptance record
     crud_user_terms_conditions.create_user_terms_conditions(
-        db_pg_session, TEST_USER_ID, TERMS_CONSITIONS_VERSION, TEST_CREATOR
+        db_pg_session, TEST_USER_ID, TEST_CREATOR
     )
 
     # verify the user terms conditions record is created
@@ -42,7 +41,7 @@ def test_create_user_terms_conditions(db_pg_session: Session):
     # create user terms and conditions acceptance record
     new_fam_user_temrs_conditions = (
         crud_user_terms_conditions.create_user_terms_conditions(
-            db_pg_session, TEST_USER_ID, TERMS_CONSITIONS_VERSION, TEST_CREATOR
+            db_pg_session, TEST_USER_ID, TEST_CREATOR
         )
     )
     # verify the user terms conditions record is created
@@ -60,6 +59,6 @@ def test_create_user_terms_conditions(db_pg_session: Session):
     # create duplicate user terms condtidions acceptance record will raise error
     with pytest.raises(HTTPException) as e:
         crud_user_terms_conditions.create_user_terms_conditions(
-            db_pg_session, TEST_USER_ID, TERMS_CONSITIONS_VERSION, TEST_CREATOR
+            db_pg_session, TEST_USER_ID, TEST_CREATOR
         )
     assert str(e._excinfo).find(ERROR_DUPLICATION) != -1

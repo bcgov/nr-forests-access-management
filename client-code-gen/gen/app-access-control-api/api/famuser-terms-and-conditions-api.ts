@@ -21,8 +21,6 @@ import globalAxios from 'axios';
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../model';
 /**
  * FAMUserTermsAndConditionsApi - axios parameter creator
  * @export
@@ -32,11 +30,10 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
         /**
          * Create a record for terms and conditions acceptance.   If no version is provided, we store the 1st version of the terms and conditions.
          * @summary Create User Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserTermsAndConditions: async (version?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createUserTermsAndConditions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/user_terms_conditions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -53,10 +50,6 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
             // oauth required
             await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
 
-            if (version !== undefined) {
-                localVarQueryParameter['version'] = version;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -69,13 +62,12 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
             };
         },
         /**
-         * Check if user pass the terms and conditions check.   Return False if user is not external delgated admin or already accepted terms and conditions.   Return True if user is external delegated admin and did not accpet the terms and conditions.   If no version is provided, we check the 1st version of the terms and conditions.
+         * 
          * @summary Validate User Requires Accept Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        validateUserRequiresAcceptTermsAndConditions: async (version?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        validateUserRequiresAcceptTermsAndConditions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/user_terms_conditions/user:validate`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -91,10 +83,6 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
             // authentication 6jfveou69mgford233or30hmta required
             // oauth required
             await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
-
-            if (version !== undefined) {
-                localVarQueryParameter['version'] = version;
-            }
 
 
     
@@ -120,25 +108,23 @@ export const FAMUserTermsAndConditionsApiFp = function(configuration?: Configura
         /**
          * Create a record for terms and conditions acceptance.   If no version is provided, we store the 1st version of the terms and conditions.
          * @summary Create User Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUserTermsAndConditions(version?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserTermsAndConditions(version, options);
+        async createUserTermsAndConditions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserTermsAndConditions(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMUserTermsAndConditionsApi.createUserTermsAndConditions']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Check if user pass the terms and conditions check.   Return False if user is not external delgated admin or already accepted terms and conditions.   Return True if user is external delegated admin and did not accpet the terms and conditions.   If no version is provided, we check the 1st version of the terms and conditions.
+         * 
          * @summary Validate User Requires Accept Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async validateUserRequiresAcceptTermsAndConditions(version?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.validateUserRequiresAcceptTermsAndConditions(version, options);
+        async validateUserRequiresAcceptTermsAndConditions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.validateUserRequiresAcceptTermsAndConditions(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMUserTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -156,22 +142,20 @@ export const FAMUserTermsAndConditionsApiFactory = function (configuration?: Con
         /**
          * Create a record for terms and conditions acceptance.   If no version is provided, we store the 1st version of the terms and conditions.
          * @summary Create User Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserTermsAndConditions(version?: string, options?: any): AxiosPromise<any> {
-            return localVarFp.createUserTermsAndConditions(version, options).then((request) => request(axios, basePath));
+        createUserTermsAndConditions(options?: any): AxiosPromise<any> {
+            return localVarFp.createUserTermsAndConditions(options).then((request) => request(axios, basePath));
         },
         /**
-         * Check if user pass the terms and conditions check.   Return False if user is not external delgated admin or already accepted terms and conditions.   Return True if user is external delegated admin and did not accpet the terms and conditions.   If no version is provided, we check the 1st version of the terms and conditions.
+         * 
          * @summary Validate User Requires Accept Terms And Conditions
-         * @param {string} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        validateUserRequiresAcceptTermsAndConditions(version?: string, options?: any): AxiosPromise<boolean> {
-            return localVarFp.validateUserRequiresAcceptTermsAndConditions(version, options).then((request) => request(axios, basePath));
+        validateUserRequiresAcceptTermsAndConditions(options?: any): AxiosPromise<boolean> {
+            return localVarFp.validateUserRequiresAcceptTermsAndConditions(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -185,22 +169,20 @@ export interface FAMUserTermsAndConditionsApiInterface {
     /**
      * Create a record for terms and conditions acceptance.   If no version is provided, we store the 1st version of the terms and conditions.
      * @summary Create User Terms And Conditions
-     * @param {string} [version] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserTermsAndConditionsApiInterface
      */
-    createUserTermsAndConditions(version?: string, options?: RawAxiosRequestConfig): AxiosPromise<any>;
+    createUserTermsAndConditions(options?: RawAxiosRequestConfig): AxiosPromise<any>;
 
     /**
-     * Check if user pass the terms and conditions check.   Return False if user is not external delgated admin or already accepted terms and conditions.   Return True if user is external delegated admin and did not accpet the terms and conditions.   If no version is provided, we check the 1st version of the terms and conditions.
+     * 
      * @summary Validate User Requires Accept Terms And Conditions
-     * @param {string} [version] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserTermsAndConditionsApiInterface
      */
-    validateUserRequiresAcceptTermsAndConditions(version?: string, options?: RawAxiosRequestConfig): AxiosPromise<boolean>;
+    validateUserRequiresAcceptTermsAndConditions(options?: RawAxiosRequestConfig): AxiosPromise<boolean>;
 
 }
 
@@ -214,25 +196,23 @@ export class FAMUserTermsAndConditionsApi extends BaseAPI implements FAMUserTerm
     /**
      * Create a record for terms and conditions acceptance.   If no version is provided, we store the 1st version of the terms and conditions.
      * @summary Create User Terms And Conditions
-     * @param {string} [version] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserTermsAndConditionsApi
      */
-    public createUserTermsAndConditions(version?: string, options?: RawAxiosRequestConfig) {
-        return FAMUserTermsAndConditionsApiFp(this.configuration).createUserTermsAndConditions(version, options).then((request) => request(this.axios, this.basePath));
+    public createUserTermsAndConditions(options?: RawAxiosRequestConfig) {
+        return FAMUserTermsAndConditionsApiFp(this.configuration).createUserTermsAndConditions(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Check if user pass the terms and conditions check.   Return False if user is not external delgated admin or already accepted terms and conditions.   Return True if user is external delegated admin and did not accpet the terms and conditions.   If no version is provided, we check the 1st version of the terms and conditions.
+     * 
      * @summary Validate User Requires Accept Terms And Conditions
-     * @param {string} [version] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserTermsAndConditionsApi
      */
-    public validateUserRequiresAcceptTermsAndConditions(version?: string, options?: RawAxiosRequestConfig) {
-        return FAMUserTermsAndConditionsApiFp(this.configuration).validateUserRequiresAcceptTermsAndConditions(version, options).then((request) => request(this.axios, this.basePath));
+    public validateUserRequiresAcceptTermsAndConditions(options?: RawAxiosRequestConfig) {
+        return FAMUserTermsAndConditionsApiFp(this.configuration).validateUserRequiresAcceptTermsAndConditions(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
