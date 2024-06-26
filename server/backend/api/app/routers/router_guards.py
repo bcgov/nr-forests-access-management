@@ -3,34 +3,25 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    ERROR_CODE_SELF_GRANT_PROHIBITED,
-    ERROR_CODE_INVALID_ROLE_ID,
-    ERROR_CODE_REQUESTER_NOT_EXISTS,
-    ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-    ERROR_CODE_INVALID_OPERATION,
-    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-    ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-    UserType,
-    RoleType,
-)
-from api.app.crud import (
-    crud_role,
-    crud_user,
-    crud_user_role,
-    crud_access_control_privilege,
-    crud_utils,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+                               ERROR_CODE_INVALID_OPERATION,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               ERROR_CODE_INVALID_ROLE_ID,
+                               ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                               ERROR_CODE_REQUESTER_NOT_EXISTS,
+                               ERROR_CODE_SELF_GRANT_PROHIBITED,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
+                               UserType)
+from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
+                          crud_user_role, crud_utils)
 from api.app.crud.validator.user_validator import UserValidator
-from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED,
-    ERROR_GROUPS_REQUIRED,
-    JWT_GROUPS_KEY,
-    get_access_roles,
-    get_request_cognito_user_id,
-    validate_token,
-)
+from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
+                                    ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
+                                    get_access_roles,
+                                    get_request_cognito_user_id,
+                                    validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import Requester, TargetUser
 from api.app.utils import utils
@@ -50,19 +41,17 @@ async def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
-):
+) -> Requester:
     LOGGER.debug(
-        f"Debug router_guard get_current_requester, current request_cognito_user_id: {request_cognito_user_id}"
+        f"Retrieving current requester from: request_cognito_user_id: {request_cognito_user_id}"
     )
-    LOGGER.debug(
-        f"Debug router_guard get_current_requester, current db connection: {db}"
-    )
-    fam_user: FamUser = crud_user.get_user_by_cognito_user_id(
+    fam_user: FamUser = crud_user.fetch_initial_requester_info(
         db, request_cognito_user_id
     )
     LOGGER.debug(
-        f"Debug router_guard get_current_requester, current fam_user: {fam_user}"
+        f"Crrent retrieved fam_user: {fam_user}"
     )
+
     if fam_user is None:
         utils.raise_http_exception(
             error_msg="Requester does not exist, action is not allowed.",
@@ -70,18 +59,45 @@ async def get_current_requester(
             status_code=HTTPStatus.FORBIDDEN,
         )
 
-    requester = Requester.model_validate(fam_user)
-    LOGGER.debug(
-        f"Debug router_guard get_current_requester, current requester: {requester}"
+    else:
+        custom_fields = _parse_custom_requester_fields(fam_user)
+        requester = Requester.model_validate(
+            {
+                **fam_user.__dict__,  # base db 'user' info
+                'access_roles': access_roles,  # role from JWT
+                **custom_fields  # build/convert to custom attributes
+            }
+        )
+        LOGGER.debug(f"Current request user (requester): {requester}")
+        return requester
+
+
+def _parse_custom_requester_fields(fam_user: FamUser):
+    """
+    Conversation helper function to parse information from FamUser for some
+    custom attributes needed at Requester.
+    :fam_user: fetched FamUser from db with joined table information.
+    :return: dictionary contains custom attributes information for setting 'Requester'
+    """
+    user_type_code = fam_user.user_type_code
+    is_delegated_admin = len(fam_user.fam_access_control_privileges) > 0
+    has_current_terms_conditions_accepted = (
+        fam_user.fam_user_terms_conditions and
+        fam_user.fam_user_terms_conditions.version == CURRENT_TERMS_AND_CONDITIONS_VERSION
     )
-    requester.access_roles = access_roles
-    LOGGER.debug(f"Current request user (requester): {requester}")
-    return requester
+    requires_accept_tc = (
+        user_type_code == UserType.BCEID and is_delegated_admin
+        and not has_current_terms_conditions_accepted
+    )
+
+    return {
+        "is_delegated_admin": is_delegated_admin,
+        "requires_accept_tc": requires_accept_tc
+    }
 
 
 def authorize(
     claims: dict = Depends(validate_token),
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
     """
@@ -91,12 +107,9 @@ def authorize(
     if JWT_GROUPS_KEY not in claims or len(claims[JWT_GROUPS_KEY]) == 0:
         # if user has no application admin access
         # check if user has any delegated admin access
-        requester_is_delegated_admin = crud_access_control_privilege.is_delegated_admin(
-            db, requester.user_id
-        )
 
         # if user is not app admin and not delegated admin of any application, throw miss access group error
-        if not requester_is_delegated_admin:
+        if not requester.is_delegated_admin:
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_GROUPS_REQUIRED,
@@ -330,10 +343,9 @@ async def internal_only_action(requester: Requester = Depends(get_current_reques
 
 
 def external_delegated_admin_only_action(
-    db: Session = Depends(database.get_db),
     requester: Requester = Depends(get_current_requester),
 ):
-    if not crud_utils.is_requester_external_delegated_admin(db, requester):
+    if not requester.is_external_delegated_admin():
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_INVALID_OPERATION,
@@ -414,3 +426,13 @@ async def enforce_bceid_by_same_org_guard(
                 error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                 error_msg="Managing for different organization is not allowed.",
             )
+
+
+def enforce_bceid_terms_conditions_guard(
+    requester: Requester = Depends(get_current_requester),
+):
+    if requester.requires_accept_tc:
+        utils.raise_http_exception(
+            error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+            error_msg="Requires to accept terms and conditions.",
+        )
