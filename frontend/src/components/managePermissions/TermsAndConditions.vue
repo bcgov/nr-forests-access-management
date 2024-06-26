@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import AuthService from '@/services/AuthService';
-import { hideTerms, isTermsCloseble, isTermsVisible } from '@/store/TermsAndConditionsState';
+import { hideTerms, isTermsClosable, isTermsVisible,  } from '@/store/TermsAndConditionsState';
 import Dialog from 'primevue/dialog';
 
 </script>
@@ -8,7 +8,7 @@ import Dialog from 'primevue/dialog';
     <Dialog
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
-        :closable="isTermsCloseble"
+        :closable="isTermsClosable"
         :modal="true"
         @close="hideTerms()"
         :style="{ width: '50vw' }"
@@ -471,7 +471,7 @@ import Dialog from 'primevue/dialog';
                 </div>
             </ol>
         </div>
-        <template #footer v-if="!isTermsCloseble">
+        <template #footer v-if="!isTermsClosable">
             <Button
                 class="btn"
                 label="Cancel and logout"

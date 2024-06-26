@@ -1,19 +1,27 @@
-import { ref } from "vue"
+import { computed, ref } from 'vue';
 
-export const isTermsVisible = ref(false);
+const termsVisibleState = ref(false);
+const termsClosableState = ref(false);
 
-export const isTermsCloseble = ref(false)
+export const isTermsVisible = computed({
+    get: () => termsVisibleState.value,
+    set: (value) => { termsVisibleState.value = value; }
+});
+
+export const isTermsClosable = computed({
+    get: () => termsClosableState.value,
+    set: (value) => { termsClosableState.value = value; }
+});
 
 export const toggleTermsCloseble = () => {
-    isTermsCloseble.value = true
-}
+    termsClosableState.value = true;
+};
 
 export const showTerms = () => {
-    isTermsVisible.value = true;
+    termsVisibleState.value = true;
 };
 
 export const hideTerms = () => {
-    isTermsVisible.value = false;
-    isTermsCloseble.value = false;
+    termsVisibleState.value = false;
+    termsClosableState.value = false;
 };
-
