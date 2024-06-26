@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed, onMounted } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -99,17 +99,6 @@ const resetNotificationAndNewRowTag = () => {
     resetNotification();
     resetNewTag();
 };
-
-onMounted(() => {
-    if (
-        LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
-        LoginUserState.getUserAdminRoleGroups()?.includes(
-            AdminRoleAuthGroup.DelegatedAdmin
-        )
-    ) {
-        showTerms();
-    }
-});
 
 onUnmounted(() => {
     resetNotificationAndNewRowTag();

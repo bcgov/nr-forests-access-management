@@ -1,5 +1,6 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
+import { showTerms } from '@/store/TermsAndConditionsState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 
@@ -44,6 +45,7 @@ const handlePostLogin = async () => {
         // This is to update the FamLoginUser for FamLoginUser.accesses.
         // For now team decided to grab user's access only when user login and may change later.
         await LoginUserState.cacheUserAccess();
+        showTerms();
     } catch (error) {
         console.log('Not signed in');
         console.log('Authentication Error:', error);
