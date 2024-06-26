@@ -71,8 +71,6 @@ const props = defineProps({
     },
 });
 
-const confirm = useConfirm();
-
 const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
     props.userRoleAssignments
 );
@@ -204,9 +202,7 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-
-        <TermsAndConditions/>
-
+    <TermsAndConditions/>
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">

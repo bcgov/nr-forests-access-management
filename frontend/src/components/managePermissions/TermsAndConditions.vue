@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import AuthService from '@/services/AuthService';
-import { hideTerms, isAbleToClose, isTermsVisible } from '@/store/TermsAndConditionsState';
+import { hideTerms, isTermsCloseble, isTermsVisible } from '@/store/TermsAndConditionsState';
 import Dialog from 'primevue/dialog';
 
 </script>
@@ -8,7 +8,7 @@ import Dialog from 'primevue/dialog';
     <Dialog
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
-        :closable="isAbleToClose"
+        :closable="isTermsCloseble"
         :modal="true"
         @close="hideTerms()"
         :style="{ width: '50vw' }"
@@ -20,7 +20,7 @@ import Dialog from 'primevue/dialog';
             },
         }"
     >
-        <ol class="terms">
+        <div class="terms">
             <p>
                 This Forest Access Management application (“FAM”) terms of use
                 agreement (the "Agreement") is entered into between the legal
@@ -470,8 +470,8 @@ import Dialog from 'primevue/dialog';
                     </li>
                 </div>
             </ol>
-        </ol>
-        <template #footer v-if="!isAbleToClose">
+        </div>
+        <template #footer v-if="!isTermsCloseble">
             <Button
                 class="btn"
                 label="Cancel and logout"
