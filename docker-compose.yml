@@ -29,6 +29,21 @@ services:
     networks:
       - fam
 
+  fam-admin-management-api:
+    container_name: fam-admin-management-api
+    env_file: server/admin_management/local-dev.env
+    environment:
+      - POSTGRES_HOST=fam-postgres # overrides 'localhost' in local-dev.env
+    build:
+      context: server/admin_management
+      dockerfile: Dockerfile
+    depends_on:
+      - fam-flyway
+    ports:
+      - 8001:8001
+    networks:
+      - fam
+
 networks:
   fam:
     driver: bridge
