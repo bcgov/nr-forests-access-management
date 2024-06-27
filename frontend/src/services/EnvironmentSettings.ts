@@ -59,6 +59,13 @@ export class EnvironmentSettings {
         window.localStorage.setItem(this.environmentDisplayNameKey, name);
     }
 
+    isDevEnvironment() {
+        if (window.localStorage.getItem(this.environmentDisplayNameKey) == 'dev') {
+            return true
+        }
+        return false
+    }
+
     private getApiBaseUrl(useApi?: string) {
         let apiBaseUrl;
 
