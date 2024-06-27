@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed, onMounted } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -24,11 +24,9 @@ import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { showTerms } from '@/store/TermsAndConditionsState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import {
-    AdminRoleAuthGroup,
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
@@ -43,8 +41,6 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
-
 const props = defineProps({
     userRoleAssignments: {
         type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,

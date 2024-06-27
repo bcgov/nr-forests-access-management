@@ -11,7 +11,7 @@ import Dialog from 'primevue/dialog';
         :closable="isTermsClosable"
         :modal="true"
         @close="hideTerms()"
-        :style="{ width: '50vw' }"
+        :style="{ 'min-width': '50vw' }"
         :pt="{
             title: {
                 style: {
