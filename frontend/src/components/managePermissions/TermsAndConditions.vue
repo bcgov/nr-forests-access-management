@@ -1,14 +1,28 @@
 <script lang="ts" setup>
 import AuthService from '@/services/AuthService';
-import { hideTerms, isTermsClosable, isTermsVisible,  } from '@/store/TermsAndConditionsState';
+import { isTermsVisible } from '@/store/TermsAndConditionsState';
 import Dialog from 'primevue/dialog';
+import { ref } from 'vue';
 
+const props = defineProps({
+    isClosable: {
+        type: Boolean,
+        required: false,
+    },
+});
+
+const closable = ref(props.isClosable);
+
+const hideTerms = () => {
+    isTermsVisible.value = false;
+    closable.value = true;
+};
 </script>
 <template>
     <Dialog
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
-        :closable="isTermsClosable"
+        :closable="closable"
         :modal="true"
         @close="hideTerms()"
         :style="{ 'min-width': '50vw' }"
@@ -471,7 +485,10 @@ import Dialog from 'primevue/dialog';
                 </div>
             </ol>
         </div>
-        <template #footer v-if="!isTermsClosable">
+        <template
+            #footer
+            v-if="closable == false"
+        >
             <Button
                 class="btn"
                 label="Cancel and logout"

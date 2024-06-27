@@ -200,7 +200,7 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-    <TermsAndConditions />
+    <TermsAndConditions :isClosable="false" />
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">

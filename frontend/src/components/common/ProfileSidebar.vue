@@ -6,7 +6,7 @@ import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { toggleTermsCloseble, showTerms } from '@/store/TermsAndConditionsState';
+import { showTerms } from '@/store/TermsAndConditionsState';
 import { IdpProvider } from '@/enum/IdpEnum';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
@@ -25,11 +25,9 @@ const logout = () => {
 };
 
 const showTermsAndConditions = () => {
-    toggleTermsCloseble();
     showTerms();
     profileSidebarState.toggleVisible();
 };
-
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
 });
