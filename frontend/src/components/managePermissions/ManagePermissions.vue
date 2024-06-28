@@ -41,6 +41,10 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+
+const environmentSettings = new EnvironmentSettings();
+const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 const props = defineProps({
     userRoleAssignments: {
@@ -115,9 +119,10 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
         userRoleAssignments.value = await fetchUserRoleAssignments(
             selectedApplicationId.value
         );
-        delegatedAdmins.value = await fetchDelegatedAdmins(
-            selectedApplicationId.value
-        );
+        if (isDevEnvironment)
+            delegatedAdmins.value = await fetchDelegatedAdmins(
+                selectedApplicationId.value
+            );
     }
 };
 
@@ -268,6 +273,7 @@ const getCurrentTab = () => {
                 <TabPanel
                     :key="TabKey.DelegatedAdminAccess"
                     v-if="
+                        isDevEnvironment &&
                         LoginUserState.isAdminOfSelectedApplication() &&
                         selectedApplicationId !== FAM_APPLICATION_ID
                     "
