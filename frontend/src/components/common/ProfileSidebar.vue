@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import Avatar from 'primevue/avatar';
+import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import Button from '@/components/common/Button.vue';
-import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { showTerms } from '@/store/TermsAndConditionsState';
+import { showTermsForRead } from '@/store/TermsAndConditionsState';
+import { IconPosition, IconSize } from '@/enum/IconEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
@@ -25,9 +26,10 @@ const logout = () => {
 };
 
 const showTermsAndConditions = () => {
-    showTerms();
+    showTermsForRead();
     profileSidebarState.toggleVisible();
 };
+
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
 });
@@ -42,6 +44,12 @@ const adminRoles = computed(() => {
             .join(', ');
     }
 });
+
+const isExternalDelegatedAdmin =
+    LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
+    LoginUserState.getUserAdminRoleGroups()?.includes(
+        AdminRoleAuthGroup.DelegatedAdmin
+    );
 </script>
 
 <template>
@@ -50,10 +58,7 @@ const adminRoles = computed(() => {
         @click="profileSidebarState.toggleVisible()"
     ></div>
     <Transition name="slide">
-        <div
-            class="profile-container"
-            v-if="profileSidebarState.isVisible"
-        >
+        <div class="profile-container" v-if="profileSidebarState.isVisible">
             <div class="profile-header">
                 <h2>Profile</h2>
                 <button
@@ -61,10 +66,7 @@ const adminRoles = computed(() => {
                     @click="profileSidebarState.toggleVisible()"
                     aria-label="Close profile sidebar"
                 >
-                    <Icon
-                        icon="close"
-                        :size="IconSize.small"
-                    ></Icon>
+                    <Icon icon="close" :size="IconSize.small"></Icon>
                 </button>
             </div>
             <div class="sidebar-body">
@@ -80,10 +82,7 @@ const adminRoles = computed(() => {
                         {{ LoginUserState.getUserIdpProvider() }}:
                         {{ userName }}
                     </p>
-                    <p
-                        class="profile-organization"
-                        v-if="organization"
-                    >
+                    <p class="profile-organization" v-if="organization">
                         Organization: {{ organization }}
                     </p>
                     <p class="profile-email">Email: {{ email }}</p>
@@ -94,7 +93,7 @@ const adminRoles = computed(() => {
             </div>
             <Divider class="profile-divider" />
             <Button
-                v-if="LoginUserState.getUserIdpProvider() === IdpProvider.BCEIDBUSINESS"
+                v-if="isExternalDelegatedAdmin"
                 class="profile-sidebar-btn"
                 title="Terms of use"
                 aria-expanded="false"

@@ -52,10 +52,8 @@ const state = ref({
 const getUserIdpProvider = () => {
     // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
     const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
-    if (IdpProvider.IDIR == idpProvider)
-        return IdpProvider.IDIR
-    else
-        return IdpProvider.BCEIDBUSINESS
+    if (IdpProvider.IDIR == idpProvider) return IdpProvider.IDIR;
+    else return IdpProvider.BCEIDBUSINESS;
 };
 
 const getAuthToken = () => {
@@ -149,8 +147,7 @@ const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() < second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
@@ -166,8 +163,7 @@ const getCachedAppRolesForDelegatedAdmin = (
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() < second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
@@ -179,13 +175,19 @@ const getMyAdminPermission = (): IMyPermission[] => {
     getUserAccess()?.forEach((access: FamAuthGrantDto) => {
         switch (access.auth_key) {
             case AdminRoleAuthGroup.FamAdmin:
-                myPermissions = myPermissions.concat(getMyFamAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyFamAdminPermission(access)
+                );
                 break;
             case AdminRoleAuthGroup.AppAdmin:
-                myPermissions = myPermissions.concat(getMyAppAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyAppAdminPermission(access)
+                );
                 break;
             case AdminRoleAuthGroup.DelegatedAdmin:
-                myPermissions = myPermissions.concat(getMyDelegatedAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyDelegatedAdminPermission(access)
+                );
                 break;
             default:
                 break;
@@ -256,6 +258,9 @@ const cacheUserAccess = async () => {
         setRouteToastError(error);
     }
 };
+
+// todo: check if login user needs to accept terms and conditions, if need, show terms here
+const requiresAcceptTermsCondition = async () => {};
 
 //--------- get my permissions
 
@@ -329,4 +334,5 @@ export default {
     cacheUserAccess,
     isAdminOfSelectedApplication,
     getCachedAppRoles,
+    requiresAcceptTermsCondition,
 };

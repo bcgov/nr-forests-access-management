@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed, onMounted } from 'vue';
+import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -26,9 +26,9 @@ import {
 } from '@/store/NotificationState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
-import {
-    type FamAccessControlPrivilegeGetResponse,
-    type FamAppAdminGetResponse,
+import type {
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
 import {
     deleteAndRefreshUserRoleAssignments,
@@ -41,6 +41,7 @@ import {
 import { Severity } from '@/enum/SeverityEnum';
 import { IconSize } from '@/enum/IconEnum';
 import { TabKey } from '@/enum/TabEnum';
+
 const props = defineProps({
     userRoleAssignments: {
         type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
@@ -200,7 +201,7 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-    <TermsAndConditions :isClosable="false" />
+    <TermsAndConditions />
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">

@@ -1,29 +1,19 @@
 <script lang="ts" setup>
-import AuthService from '@/services/AuthService';
-import { isTermsVisible } from '@/store/TermsAndConditionsState';
 import Dialog from 'primevue/dialog';
-import { ref } from 'vue';
-
-const props = defineProps({
-    isClosable: {
-        type: Boolean,
-        required: false,
-    },
-});
-
-const closable = ref(props.isClosable);
-
-const hideTerms = () => {
-    isTermsVisible.value = false;
-    closable.value = true;
-};
+import AuthService from '@/services/AuthService';
+import {
+    isTermsVisible,
+    hideTerms,
+    isTermsCloseable,
+} from '@/store/TermsAndConditionsState';
 </script>
+
 <template>
     <Dialog
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
-        :closable="closable"
-        :modal="true"
+        :closable="isTermsCloseable"
+        modal
         @close="hideTerms()"
         :style="{ 'min-width': '50vw' }"
         :pt="{
@@ -34,7 +24,14 @@ const hideTerms = () => {
             },
         }"
     >
-        <div class="terms">
+        <div
+            class="terms"
+            :style="
+                !isTermsCloseable
+                    ? 'padding: 1rem 0;'
+                    : 'padding: 0; padding-top: 1rem;'
+            "
+        >
             <p>
                 This Forest Access Management application (“FAM”) terms of use
                 agreement (the "Agreement") is entered into between the legal
@@ -51,10 +48,7 @@ const hideTerms = () => {
                 will be conclusively deemed to have agreed) to the following:
             </p>
 
-            <ol
-                type="1"
-                class="terms-list"
-            >
+            <ol type="1" class="terms-list">
                 <h3>Definitions</h3>
                 <li>
                     In this Agreement the following words have the following
@@ -119,10 +113,7 @@ const hideTerms = () => {
                     Agreement on behalf of the Subscriber represents and
                     warrants that:
                 </li>
-                <ol
-                    class="subsection"
-                    type="a"
-                >
+                <ol class="subsection" type="a">
                     <li>they are at least 19 years of age; and</li>
                     <li>
                         they have all necessary authority to accept this
@@ -135,10 +126,7 @@ const hideTerms = () => {
                     The Subscriber acknowledges and agrees that it is
                     responsible for ensuring that:
                 </li>
-                <ol
-                    class="subsection"
-                    type="a"
-                >
+                <ol class="subsection" type="a">
                     <li>
                         the Delegated Administrator and Users have all necessary
                         hardware and software required to allow the Delegated
@@ -183,10 +171,7 @@ const hideTerms = () => {
                     The Delegated Administrator is responsible for managing User
                     access to the Applications, including:
                 </li>
-                <ol
-                    class="subsection"
-                    type="a"
-                >
+                <ol class="subsection" type="a">
                     <li>
                         managing the process for granting Users access to the
                         Applications;
@@ -218,10 +203,7 @@ const hideTerms = () => {
 
                 <h3>Authentication</h3>
                 <li>The Subscriber acknowledges and agrees that:</li>
-                <ol
-                    type="a"
-                    class="subsection"
-                >
+                <ol type="a" class="subsection">
                     <li>
                         the Delegated Administrator and Users will use the
                         Subscriber’s Business BCeID to authenticate their
@@ -294,10 +276,7 @@ const hideTerms = () => {
                     that would jeopardize the security, integrity and/or
                     availability of FAM or any Application, including:
                 </li>
-                <ol
-                    type="a"
-                    class="subsection"
-                >
+                <ol type="a" class="subsection">
                     <li>
                         using FAM or any Application for any unlawful or
                         inappropriate purpose;
@@ -448,10 +427,7 @@ const hideTerms = () => {
 
                     <h3>General</h3>
                     <li>In this Agreement:</li>
-                    <ol
-                        type="a"
-                        class="subsection"
-                    >
+                    <ol type="a" class="subsection">
                         <li>
                             words expressed in the singular include the plural
                             and vice versa; and
@@ -485,10 +461,7 @@ const hideTerms = () => {
                 </div>
             </ol>
         </div>
-        <template
-            #footer
-            v-if="closable == false"
-        >
+        <template #footer v-if="!isTermsCloseable">
             <Button
                 class="btn"
                 label="Cancel and logout"
@@ -523,11 +496,6 @@ h3 {
     margin-top: 1.5rem;
     margin-left: 0;
     padding-left: 0;
-}
-
-.terms {
-    margin: 1rem 0 0;
-    padding: 0;
 }
 
 ol {
