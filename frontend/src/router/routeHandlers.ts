@@ -66,6 +66,7 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
                 )
             );
     }
+
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
         applicationAdmins: applicationAdmins?.data,
