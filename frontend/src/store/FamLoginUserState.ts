@@ -15,6 +15,7 @@ import {
     type FamGrantDetailDto,
     type FamRoleDto,
 } from 'fam-admin-mgmt-api/model';
+import { readonly, ref } from 'vue';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -217,6 +218,13 @@ const isAdminOfSelectedApplication = () => {
     return false;
 };
 
+const isExternalDelegatedAdmin = () =>
+    getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
+    getUserAdminRoleGroups()?.includes(
+        AdminRoleAuthGroup.DelegatedAdmin
+    );
+
+
 const hasAccess = (role: string): boolean => {
     return !!getUserAccess()?.find((access) => access.auth_key === role);
 };
@@ -327,11 +335,13 @@ export default {
     getMyAdminPermission,
     getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
+    getCachedAppRoles,
     hasAccess,
+    isAdminOfSelectedApplication,
+    isExternalDelegatedAdmin,
+    requiresAcceptTermsCondition,
+
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
-    isAdminOfSelectedApplication,
-    getCachedAppRoles,
-    requiresAcceptTermsCondition,
 };

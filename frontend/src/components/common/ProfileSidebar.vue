@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Avatar from 'primevue/avatar';
-import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import Button from '@/components/common/Button.vue';
+import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
 import { showTermsForRead } from '@/store/TermsAndConditionsState';
-import { IconPosition, IconSize } from '@/enum/IconEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
+import Avatar from 'primevue/avatar';
+import { computed, ref } from 'vue';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -45,11 +43,6 @@ const adminRoles = computed(() => {
     }
 });
 
-const isExternalDelegatedAdmin =
-    LoginUserState.getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
-    LoginUserState.getUserAdminRoleGroups()?.includes(
-        AdminRoleAuthGroup.DelegatedAdmin
-    );
 </script>
 
 <template>
@@ -93,7 +86,7 @@ const isExternalDelegatedAdmin =
             </div>
             <Divider class="profile-divider" />
             <Button
-                v-if="isExternalDelegatedAdmin"
+                v-if="LoginUserState.isExternalDelegatedAdmin()"
                 class="profile-sidebar-btn"
                 title="Terms of use"
                 aria-expanded="false"

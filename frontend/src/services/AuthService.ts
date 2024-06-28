@@ -1,6 +1,5 @@
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
-import { showTerms } from '@/store/TermsAndConditionsState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 
