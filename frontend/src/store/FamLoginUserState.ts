@@ -1,21 +1,20 @@
-import { readonly, ref } from 'vue';
+import { IdpProvider } from '@/enum/IdpEnum';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
-import {
-    AdminRoleAuthGroup,
-    type AppEnv,
-    type FamGrantDetailDto,
-    type FamApplicationDto,
-    type FamAuthGrantDto,
-    type FamRoleDto,
-} from 'fam-admin-mgmt-api/model';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
 } from '@/store/ApplicationState';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { IdpProvider } from '@/enum/IdpEnum';
+import {
+    AdminRoleAuthGroup,
+    type AppEnv,
+    type FamApplicationDto,
+    type FamAuthGrantDto,
+    type FamGrantDetailDto,
+    type FamRoleDto,
+} from 'fam-admin-mgmt-api/model';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -259,7 +258,7 @@ const cacheUserAccess = async () => {
     }
 };
 
-// todo: check if login user needs to accept terms and conditions, if need, show terms here
+// TODO: check if login user needs to accept terms and conditions, if need, show terms here
 const requiresAcceptTermsCondition = async () => {};
 
 //--------- get my permissions
