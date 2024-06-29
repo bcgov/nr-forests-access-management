@@ -2,7 +2,6 @@ import copy
 import logging
 from http import HTTPStatus
 
-import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
@@ -240,9 +239,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
         == "Managing for different organization is not allowed."
     )
 
-
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_concrete_role(
+def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -271,7 +268,7 @@ async def test_create_user_role_assignment_with_concrete_role(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
@@ -368,8 +365,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     )
 
 
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_abstract_role(
+def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -397,7 +393,7 @@ async def test_create_user_role_assignment_with_abstract_role(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
@@ -427,8 +423,7 @@ async def test_create_user_role_assignment_with_abstract_role(
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_same_username(
+def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -466,7 +461,7 @@ async def test_create_user_role_assignment_with_same_username(
     assignment_three = response.json()
 
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=assignment_one["application_id"],
@@ -494,8 +489,7 @@ async def test_create_user_role_assignment_with_same_username(
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-@pytest.mark.asyncio
-async def test_assign_same_application_roles_for_different_environments(
+def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -542,7 +536,7 @@ async def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_dev
     # retrieved requester for current request.
-    fom_dev_access_admin_requester = await get_current_requester_by_token(
+    fom_dev_access_admin_requester = get_current_requester_by_token(
         fom_dev_access_admin_token
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -558,7 +552,7 @@ async def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_test
     # retrieved requester for current request.
-    fom_test_access_admin_requester = await get_current_requester_by_token(
+    fom_test_access_admin_requester = get_current_requester_by_token(
         fom_test_access_admin_token
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -995,8 +989,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     )
 
 
-@pytest.mark.asyncio
-async def test_delete_user_role_assignment(
+def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -1018,7 +1011,7 @@ async def test_delete_user_role_assignment(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
