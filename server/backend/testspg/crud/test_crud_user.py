@@ -1,14 +1,15 @@
 import logging
 
 import api.app.schemas as schemas
-from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION
+from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION, UserType
 from api.app.crud import crud_user
-from api.app.models.model import (FamAccessControlPrivilege,
-                                  FamUserTermsConditions)
+from api.app.models.model import FamUserTermsConditions
+from sqlalchemy import insert
 from sqlalchemy.orm import Session
-from testspg.constants import (FOM_DEV_REVIEWER_ROLE_ID, TEST_CREATOR,
-                               TEST_NEW_BCEID_USER, TEST_NEW_USER,
-                               TEST_NOT_EXIST_USER_TYPE)
+from testspg.constants import (TEST_CREATOR, TEST_NEW_BCEID_USER,
+                               TEST_NEW_USER, TEST_NOT_EXIST_USER_TYPE,
+                               USER_NAME_BCEID_LOAD_3_TEST,
+                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
 LOGGER = logging.getLogger(__name__)
 NEW_USERNAME = "NEW_USERNAME"
@@ -253,72 +254,61 @@ def test_update_user_business_guid(db_pg_session: Session):
     assert found_user.business_guid == new_business_guid
 
 
-def test_fetch_initial_requester_info(db_pg_session: Session):
-    # prepare a new user with "cognito_user_id"
-    created_user = crud_user.create_user(
-        schemas.FamUser(**TEST_NEW_BCEID_USER), db_pg_session
-    )
-    user_id = created_user.user_id
-    assert user_id is not None
-    cognito_user_id = "fake_cognito_user_id"
-    update_value = {"cognito_user_id": cognito_user_id}
-    crud_user.update(
-        db_pg_session, created_user.user_id, update_value, TEST_CREATOR
-    )
-    fam_user = crud_user.get_user_by_domain_and_name(
+def test_fetch_initial_requester_info_can_join_terms_conditions(
+    db_pg_session: Session
+):
+    bceid_user = crud_user.get_user_by_domain_and_name(
         db_pg_session,
-        TEST_NEW_BCEID_USER["user_type_code"],
-        TEST_NEW_BCEID_USER["user_name"])
-    assert fam_user.cognito_user_id == cognito_user_id
-    assert fam_user.user_id == user_id
+        UserType.BCEID,
+        USER_NAME_BCEID_LOAD_3_TEST,
+    )
+    assert bceid_user is not None
+    assert bceid_user.cognito_user_id is not None
+    assert bceid_user.fam_user_terms_conditions is None
 
-    found_user = crud_user.fetch_initial_requester_info(db_pg_session, cognito_user_id)
-    assert found_user.user_id == user_id
-    assert len(found_user.fam_access_control_privileges) == 0
-    assert found_user.fam_user_terms_conditions is None
-
-    new_user_terms_conditions = FamUserTermsConditions(
-        **{
-            "user_id": created_user.user_id,
+    # bceid_user accepts FamUserTermsConditions
+    db_pg_session.execute(
+        insert(FamUserTermsConditions),
+        [{
+            "user_id": bceid_user.user_id,
             "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
             "create_user": TEST_CREATOR,
-        }
+        }]
     )
-    db_pg_session.add(new_user_terms_conditions)
-    db_pg_session.commit()
-    found_user = crud_user.fetch_initial_requester_info(db_pg_session, cognito_user_id)
-    assert found_user.user_id == user_id
-    assert found_user.fam_user_terms_conditions is not None
 
-    # TODO: test environment does not have privilege for this insert.
-    new_user_delegated_admin = FamAccessControlPrivilege(
-        **{
-            "user_id": created_user.user_id,
-            "role_id": FOM_DEV_REVIEWER_ROLE_ID,
-            "create_user": TEST_CREATOR,
-        }
+    # this seems important, otherwise newly added attribute (T&C) won't
+    # reflect on the user object in db session. Cannot use 'commit()',
+    # or session won't be able to rollback after each test.
+    db_pg_session.refresh(bceid_user)
+
+    # when fetch bceid_user, T&C should be joined and return.
+    fetched_user = crud_user.fetch_initial_requester_info(
+        db_pg_session, bceid_user.cognito_user_id
     )
-    db_pg_session.add(new_user_delegated_admin)
-    db_pg_session.commit()
-    found_user = crud_user.fetch_initial_requester_info(db_pg_session, cognito_user_id)
-    assert found_user.user_id == user_id
-    user_delegated_admin = found_user.fam_access_control_privileges
-    assert len(user_delegated_admin) == 1
-    assert user_delegated_admin[0].user_id == user_id
-
-    # db_pg_session.query(models.FamUser)
-    # .filter(models.FamUser.user_id == user_id)
-    # .update({**update_values, models.FamUser.update_user: requester})
+    assert fetched_user.user_id == bceid_user.user_id
+    assert fetched_user.fam_user_terms_conditions is not None
+    assert fetched_user.fam_user_terms_conditions.user_id == bceid_user.user_id
 
 
-# INSERT INTO app_fam.fam_access_control_privilege (
-#     user_id,
-#     role_id,
-#     create_user
-# )
-# VALUES
-# (
-#     (select user_id from app_fam.fam_user where user_name='PTOLLEST' and user_type_code='I'),
-#     (select role_id from app_fam.fam_role where role_name='FOM_REVIEWER' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
-#     CURRENT_USER
-# ),
+def test_fetch_initial_requester_info_can_join_its_delegated_admin_record(
+    db_pg_session: Session
+):
+    # the db user for backend/server has no permission to insert record
+    # into `app_fam.fam_access_control_privileg` table. So use
+    # "TEST-3-LOAD-CHILD-1" to test instead, it has existing flyway setup for
+    # delegated admin.
+    bceid_user = crud_user.get_user_by_domain_and_name(
+        db_pg_session,
+        UserType.BCEID,
+        USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
+    )
+    assert bceid_user is not None
+    assert bceid_user.cognito_user_id is not None
+
+    fetched_user = crud_user.fetch_initial_requester_info(
+        db_pg_session, bceid_user.cognito_user_id
+    )
+    assert fetched_user.user_id == bceid_user.user_id
+    assert len(fetched_user.fam_access_control_privileges) > 0
+    delegated_admin_record = fetched_user.fam_access_control_privileges[0]
+    assert delegated_admin_record.user_id == bceid_user.user_id
