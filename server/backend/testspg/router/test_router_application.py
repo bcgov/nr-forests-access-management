@@ -3,8 +3,12 @@ from http import HTTPStatus
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, UserType
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_INVALID_APPLICATION_ID,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.main import apiPrefix
+from api.app.models.model import FamUserTermsConditions
+from sqlalchemy import insert
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
                                ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
@@ -16,7 +20,7 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_APPLICATION_ID, ROLE_NAME_FOM_REVIEWER,
                                ROLE_NAME_FOM_SUBMITTER_00000001,
-                               ROLE_NAME_FOM_SUBMITTER_00001018,
+                               ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
                                USER_NAME_BCEID_LOAD_3_TEST)
 
 LOGGER = logging.getLogger(__name__)
@@ -506,3 +510,48 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
         )
         == len(access_grants_able_to_see)
     ) and (len(response_data) == len(access_grants_able_to_see))
+
+
+def test_get_fam_application_user_role_assignment_enforce_bceid_terms_conditions(
+    test_client_fixture,
+    test_rsa_key,
+    db_pg_session,
+    fom_dev_access_admin_token,
+    create_test_user_role_assignments,
+    get_current_requester_by_token
+):
+    """
+    Test this endpoint can "enforce_bceid_terms_conditions" on BCeID
+    delegated admin requester when no T&C accepted (record in fam_user_terms_conditions).
+    """
+    # Use COGNITO_USERNAME_BCEID_DELEGATED_ADMIN as the requester "TEST-3-LOAD-CHILD-1"(BCEID),
+    # who is a delegated admin for FOM_REVIEWER preset at database (flyway) but no T&C record.
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+    )
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(
+        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
+    ) != -1
+
+    requester = get_current_requester_by_token(token)
+    # create T&C record as the requester accepts T&C.
+    db_pg_session.execute(
+        insert(FamUserTermsConditions),
+        [{
+            "user_id": requester.user_id,
+            "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
+            "create_user": TEST_CREATOR,
+        }]
+    )
+
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == HTTPStatus.OK

@@ -239,6 +239,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
         == "Managing for different organization is not allowed."
     )
 
+
 def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
