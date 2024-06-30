@@ -15,7 +15,7 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
-        "@bcgov-nr/nr-theme": "^1.8.8",
+        "@bcgov-nr/nr-theme": "^1.8.9",
         "@carbon/icons-vue": "^10.89.0",
         "aws-amplify": "^5.3.18",
         "bootstrap": "^5.3.3",

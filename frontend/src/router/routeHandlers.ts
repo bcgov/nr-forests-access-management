@@ -17,6 +17,10 @@ import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+
+const environmentSettings = new EnvironmentSettings();
+const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 /**
  * This file should contain only the Vue router handler and necessary
@@ -54,13 +58,15 @@ const beforeEnterDashboardRoute = async (to: RouteLocationNormalized) => {
                 to.query.newUserAccessIds as string
             )
         );
-        delegatedAdmins = await asyncWrap(
-            fetchDelegatedAdmins(
-                selectedApplicationId.value,
-                to.query.newDelegatedAdminIds as string
-            )
-        );
+        if (isDevEnvironment)
+            delegatedAdmins = await asyncWrap(
+                fetchDelegatedAdmins(
+                    selectedApplicationId.value,
+                    to.query.newDelegatedAdminIds as string
+                )
+            );
     }
+
     Object.assign(to.meta, {
         userRoleAssignments: userRolesFetchResult?.data,
         applicationAdmins: applicationAdmins?.data,

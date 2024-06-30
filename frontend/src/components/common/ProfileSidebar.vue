@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Avatar from 'primevue/avatar';
 import Button from '@/components/common/Button.vue';
 import { IconPosition, IconSize } from '@/enum/IconEnum';
 import authService from '@/services/AuthService';
 import LoginUserState from '@/store/FamLoginUserState';
 import { profileSidebarState } from '@/store/ProfileSidebarState';
+import { showTermsForRead } from '@/store/TermsAndConditionsState';
+import Avatar from 'primevue/avatar';
+import { computed, ref } from 'vue';
 
 const userName = LoginUserState.state.value.famLoginUser!.username;
 const initials = userName ? userName.slice(0, 2) : '';
@@ -22,6 +23,11 @@ const logout = () => {
     loading.value = true;
 };
 
+const showTermsAndConditions = () => {
+    showTermsForRead();
+    profileSidebarState.toggleVisible();
+};
+
 const buttonLabel = computed(() => {
     return loading.value ? 'Signing out...' : 'Sign out';
 });
@@ -36,6 +42,7 @@ const adminRoles = computed(() => {
             .join(', ');
     }
 });
+
 </script>
 
 <template>
@@ -78,23 +85,40 @@ const adminRoles = computed(() => {
                 </div>
             </div>
             <Divider class="profile-divider" />
-                <Button
-                    class="sign-out"
+            <Button
+                v-if="LoginUserState.isExternalDelegatedAdmin()"
+                class="profile-sidebar-btn"
+                title="Terms of use"
+                aria-expanded="false"
+                aria-label="show terms of use"
+                :iconPosition="IconPosition.left"
+                label="Terms of use"
+                @click="showTermsAndConditions()"
+            >
+                <Icon
+                    title="terms of use"
+                    icon="document"
+                    :size="IconSize.small"
+                    class="custom-carbon-icon-document"
+                />
+            </Button>
+            <Button
+                class="profile-sidebar-btn"
+                title="Sign out"
+                aria-expanded="false"
+                aria-label="sign out"
+                :iconPosition="IconPosition.left"
+                :label="buttonLabel"
+                @click="logout"
+                :disabled="loading ? true : false"
+            >
+                <Icon
                     title="Sign out"
-                    aria-expanded="false"
-                    aria-label="sign out"
-                    :iconPosition="IconPosition.left"
-                    :label="buttonLabel"
-                    @click="logout"
-                    :disabled="loading ? true : false"
-                >
-                    <Icon
-                        title="Sign out"
-                        icon="user--follow"
-                        :size="IconSize.small"
-                        class="custom-carbon-icon-user--follow"
-                    />
-                </Button>
+                    icon="user--follow"
+                    :size="IconSize.small"
+                    class="custom-carbon-icon-user--follow"
+                />
+            </Button>
         </div>
     </Transition>
 </template>
@@ -113,7 +137,7 @@ const adminRoles = computed(() => {
     padding: 0 1rem;
     position: fixed;
     overflow: hidden;
-    z-index: 9999;
+    z-index: 1103;
     right: 0;
     left: auto;
 }
@@ -161,13 +185,14 @@ const adminRoles = computed(() => {
     }
 }
 
-.custom-carbon-icon-user--follow {
+.custom-carbon-icon-user--follow,
+.custom-carbon-icon-document {
     margin: 0;
     cursor: pointer;
 }
 
 .profile-name,
-.sign-out {
+.profile-sidebar-btn {
     font-size: 0.875rem;
     font-weight: 700;
     display: flex;
@@ -175,20 +200,9 @@ const adminRoles = computed(() => {
     padding: 0;
 }
 
-.sign-out {
-    cursor: pointer;
-    width: calc(100% + 2rem);
-    height: 3rem;
-    border-radius: 0;
-    padding-left: 1rem;
-    margin-left: -1rem;
-    background-color: #ffffff;
-    color: $light-text-secondary !important;
-}
-
-.sign-out:hover,
-.sign-out:active,
-.sign-out:focus {
+.profile-sidebar-btn:hover,
+.profile-sidebar-btn:active,
+.profile-sidebar-btn:focus {
     background-color: $light-border-subtle-00 !important;
     box-shadow: none !important;
     outline: none !important;
@@ -207,11 +221,16 @@ const adminRoles = computed(() => {
     margin: 1rem 0 !important;
 }
 
-.sign-out {
+.profile-sidebar-btn {
+    cursor: pointer;
     border: none;
     background-color: transparent;
     color: #000;
-    cursor: pointer;
+    width: calc(100% + 2rem);
+    height: 3rem;
+    border-radius: 0;
+    padding-left: 1rem;
+    margin-left: -1rem;
 
     i {
         margin-right: 1.125rem;
@@ -239,7 +258,7 @@ const adminRoles = computed(() => {
     position: fixed;
     width: 100%;
     inset: 3rem 0 0 0;
-    z-index: 1110;
+    z-index: 1102;
 }
 
 .fade-out {
@@ -252,6 +271,4 @@ const adminRoles = computed(() => {
         width: 100vw;
     }
 }
-
 </style>
-
