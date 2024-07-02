@@ -6,6 +6,17 @@ import {
     hideTerms,
     isTermsCloseable,
 } from '@/store/TermsAndConditionsState';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
+
+const acceptTermsAndConditions = async () => {
+    try {
+        await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
+        hideTerms()
+    } catch (error) {
+        //need better error
+        console.error('Error accepting', error);
+    }
+}
 </script>
 
 <template>
@@ -471,7 +482,7 @@ import {
 
             <Button
                 label="I accept the terms of use"
-                @click="hideTerms()"
+                @click="acceptTermsAndConditions()"
                 autofocus
             />
         </template>

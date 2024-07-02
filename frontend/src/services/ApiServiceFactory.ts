@@ -12,6 +12,7 @@ import {
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
+    FAMUserTermsAndConditionsApi,
 } from 'fam-app-acsctl-api';
 
 type AppAccessControlApiType = {
@@ -19,6 +20,7 @@ type AppAccessControlApiType = {
     userRoleAssignmentApi: FAMUserRoleAssignmentApi;
     forestClientsApi: FAMForestClientsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
+    userTermsAndConditionsApi: FAMUserTermsAndConditionsApi;
 };
 
 type AdminManagementApiType = {
@@ -60,6 +62,10 @@ export default class ApiServiceFactory {
             ),
             idirBceidProxyApi: this.createApiInstance(
                 IDIRBCeIDProxyApi,
+                appAccessControlBaseURL
+            ),
+            userTermsAndConditionsApi: this.createApiInstance(
+                FAMUserTermsAndConditionsApi,
                 appAccessControlBaseURL
             ),
         };
@@ -105,8 +111,8 @@ export default class ApiServiceFactory {
      * @returns API class instantiated.
      */
     private createApiInstance<C>(
-        // Class Types in Generics: see Typscript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
-        // Obey the constructor signiture of the BaseAPI.
+        // Class Types in Generics: see Typescript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
+        // Obey the constructor signature of the BaseAPI.
         c: new (
             configuration?: Configuration,
             basePath?: string,

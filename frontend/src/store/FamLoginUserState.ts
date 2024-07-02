@@ -1,11 +1,12 @@
 import { IdpProvider } from '@/enum/IdpEnum';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFactory';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
+import { showTermsForAcceptance } from '@/store/TermsAndConditionsState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import {
     AdminRoleAuthGroup,
@@ -266,8 +267,12 @@ const cacheUserAccess = async () => {
     }
 };
 
-// TODO: check if login user needs to accept terms and conditions, if need, show terms here
-const requiresAcceptTermsCondition = async () => {};
+const requiresAcceptTermsCondition = async () => {
+    const needsToAccept = await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions();
+    if (needsToAccept.data) {
+        showTermsForAcceptance();
+    }
+};
 
 //--------- get my permissions
 
