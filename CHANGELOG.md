@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.18.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.17.0...v1.18.0) (2024-07-02)
+
+
+### Features
+
+* [#1372](https://github.com/bcgov/nr-forests-access-management/issues/1372) terms and conditions component ([#1462](https://github.com/bcgov/nr-forests-access-management/issues/1462)) ([ac95030](https://github.com/bcgov/nr-forests-access-management/commit/ac950300ccc3ec20ccc65e04b46ed86ebb71e0db))
+* [#1382](https://github.com/bcgov/nr-forests-access-management/issues/1382) Add tests for storing terms condition record apis ([#1449](https://github.com/bcgov/nr-forests-access-management/issues/1449)) ([b5fabd9](https://github.com/bcgov/nr-forests-access-management/commit/b5fabd9a6e5be1d2292a0bc7d9f4b5783096ac91))
+* [#1382](https://github.com/bcgov/nr-forests-access-management/issues/1382) Store terms and conditions acceptance record ([#1447](https://github.com/bcgov/nr-forests-access-management/issues/1447)) ([56d3db6](https://github.com/bcgov/nr-forests-access-management/commit/56d3db6c29f608637d14ee1920bc402276132be0))
+* [#1425](https://github.com/bcgov/nr-forests-access-management/issues/1425) add backend endpoint checks for bceid user accept terms and conditions ([#1463](https://github.com/bcgov/nr-forests-access-management/issues/1463)) ([d924295](https://github.com/bcgov/nr-forests-access-management/commit/d9242950d47ecc246e932b7ac0c4997689ad6269))
+* [#1425](https://github.com/bcgov/nr-forests-access-management/issues/1425) backend check bceid user accept tc tests ([#1470](https://github.com/bcgov/nr-forests-access-management/issues/1470)) ([baece1e](https://github.com/bcgov/nr-forests-access-management/commit/baece1edecc3f29ce8f04c678560497cf4d91968))
+
+
+### Bug Fixes
+
+* [#1190](https://github.com/bcgov/nr-forests-access-management/issues/1190) 'enter' behaviour on grant access form ([#1448](https://github.com/bcgov/nr-forests-access-management/issues/1448)) ([e050a51](https://github.com/bcgov/nr-forests-access-management/commit/e050a512aa93c094e0b88ec00cdd6f0810cd7dca))
+* [#1226](https://github.com/bcgov/nr-forests-access-management/issues/1226) update icon on "nothing to display yet" page ([#1439](https://github.com/bcgov/nr-forests-access-management/issues/1439)) ([afea0f7](https://github.com/bcgov/nr-forests-access-management/commit/afea0f7bd54ed3a54eb7aecb0e3ae6e0dbf92d40))
+* [#1334](https://github.com/bcgov/nr-forests-access-management/issues/1334) improve user table behaviour ([#1430](https://github.com/bcgov/nr-forests-access-management/issues/1430)) ([8aaa47b](https://github.com/bcgov/nr-forests-access-management/commit/8aaa47b2dab07d5151623bacfd9f58f4d57cd334))
+* [#1402](https://github.com/bcgov/nr-forests-access-management/issues/1402) improve the loading behaviour for the frontend tables ([#1450](https://github.com/bcgov/nr-forests-access-management/issues/1450)) ([60d777f](https://github.com/bcgov/nr-forests-access-management/commit/60d777f987db86665dac418d38e3bea8fb51054e))
+* [#1420](https://github.com/bcgov/nr-forests-access-management/issues/1420) Update CloudFront default ttl to minimize down time caused by caching issue ([#1438](https://github.com/bcgov/nr-forests-access-management/issues/1438)) ([3efd561](https://github.com/bcgov/nr-forests-access-management/commit/3efd561176346b389d32766e7df37a141f77949e))
+* [#1459](https://github.com/bcgov/nr-forests-access-management/issues/1459) [#1461](https://github.com/bcgov/nr-forests-access-management/issues/1461) Add redirect urls for SPAR and SILVA ([#1468](https://github.com/bcgov/nr-forests-access-management/issues/1468)) ([1769c2b](https://github.com/bcgov/nr-forests-access-management/commit/1769c2ba93e40d0d169ac17fcfe3dbefd5cdfbae))
+* # 1464 Hide delegated admin features for non-dev environments ([#1467](https://github.com/bcgov/nr-forests-access-management/issues/1467)) ([7c5b149](https://github.com/bcgov/nr-forests-access-management/commit/7c5b1495b3d9a14f9196041b6be4a56a550a0708))
+* 1398 resolve python jose security vulnerability ([#1455](https://github.com/bcgov/nr-forests-access-management/issues/1455)) ([84cbb94](https://github.com/bcgov/nr-forests-access-management/commit/84cbb943b5b3f240175afaf7c45af7f29d4c5852))
+
 ## [1.17.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.16.0...v1.17.0) (2024-06-06)
 
 
