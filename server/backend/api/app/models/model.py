@@ -365,6 +365,9 @@ class FamUser(Base):
     user_guid = Column(String(32))
     business_guid = Column(String(32))
     cognito_user_id = Column(String(100))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
+    email = Column(String(250))
     update_user = Column(
         String(100),
         comment="The user or proxy account that created or last updated the " "record.",
