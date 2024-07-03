@@ -37,7 +37,7 @@ at crud(service) layer).
 LOGGER = logging.getLogger(__name__)
 
 
-async def get_current_requester(
+def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles: List[str] = Depends(get_access_roles),
     db: Session = Depends(database.get_db),
@@ -49,7 +49,7 @@ async def get_current_requester(
         db, request_cognito_user_id
     )
     LOGGER.debug(
-        f"Crrent retrieved fam_user: {fam_user}"
+        f"Current retrieved fam_user: {fam_user}"
     )
 
     if fam_user is None:
