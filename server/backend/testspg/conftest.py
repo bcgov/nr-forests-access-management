@@ -170,10 +170,10 @@ def get_current_requester_by_token(db_pg_session):
          currently how Pytest can work with async from fixture.)
     """
 
-    async def _get_current_requester_by_token(access_token: str) -> Requester:
+    def _get_current_requester_by_token(access_token: str) -> Requester:
 
         claims = jwt.decode(access_token, options={"verify_signature": False})
-        requester = await get_current_requester(
+        requester = get_current_requester(
             db=db_pg_session,
             access_roles=jwt_validation.get_access_roles(claims),
             request_cognito_user_id=claims[COGNITO_USERNAME_KEY],
