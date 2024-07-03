@@ -12,13 +12,13 @@ import { setRouteToastError } from '@/store/ToastState';
 const acceptTermsAndConditions = async () => {
     try {
         await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
-        hideTerms()
+        hideTerms();
     } catch (error: any) {
         // temporary error handling
-        setRouteToastError(error.message)
-        AuthService.logout()
+        setRouteToastError(error.message);
+        AuthService.logout();
     }
-}
+};
 </script>
 
 <template>
