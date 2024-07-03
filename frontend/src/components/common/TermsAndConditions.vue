@@ -7,14 +7,16 @@ import {
     isTermsCloseable,
 } from '@/store/TermsAndConditionsState';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { setRouteToastError } from '@/store/ToastState';
 
 const acceptTermsAndConditions = async () => {
     try {
         await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
         hideTerms()
-    } catch (error) {
-        // Better error handling is required
-        console.error('Error accepting terms', error);
+    } catch (error: any) {
+        // temporary error handling
+        setRouteToastError(error.message)
+        AuthService.logout()
     }
 }
 </script>
