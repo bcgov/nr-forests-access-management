@@ -13,8 +13,8 @@ const acceptTermsAndConditions = async () => {
         await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
         hideTerms()
     } catch (error) {
-        //need better error
-        console.error('Error accepting', error);
+        // Better error handling is required
+        console.error('Error accepting terms', error);
     }
 }
 </script>

@@ -268,9 +268,14 @@ const cacheUserAccess = async () => {
 };
 
 const requiresAcceptTermsCondition = async () => {
-    const needsToAccept = await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions();
-    if (needsToAccept.data) {
-        showTermsForAcceptance();
+    try {
+        const needsToAccept = await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions();
+        if (needsToAccept.data) {
+            showTermsForAcceptance();
+        }
+    } catch (error) {
+        // Better error handling is required
+        console.error('An error occurred while validating user terms and conditions:', error);
     }
 };
 
