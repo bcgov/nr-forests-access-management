@@ -1,8 +1,10 @@
+import base64
 import json
 import logging
 
+# import jwt
 import requests
-from authlib.jose import JsonWebKey
+from authlib.jose import JsonWebEncryption, JsonWebKey
 from cryptography.hazmat.primitives import \
     serialization as crypto_serialization
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -12,6 +14,9 @@ from jose import jwt
 from jose.utils import base64url_decode
 
 from .. import bcsc_decryption, kms_lookup
+
+# from .. import kms_lookup
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,13 +52,13 @@ def bcsc_token(request: Request, bcsc_token_uri, body):
     Proxy the BCSC token endpoint and decode the result
     """
 
-    LOGGER.debug(f"Request params: [{request.query_params}]")
+    LOGGER.info(f"Request params: [{request.query_params}]")
 
     response = requests.post(url=bcsc_token_uri, headers=request.headers, data=body)
 
     raw_response = response.text
 
-    LOGGER.debug(f"Raw response is: [{raw_response}]")
+    LOGGER.info(f"Raw response is: [{raw_response}]")
 
     json_response = json.loads(raw_response)
 
@@ -86,7 +91,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     """
 
     jwe_token = requests.get(url=bcsc_userinfo_uri, headers=request.headers).text
-    LOGGER.debug(f"jwe_token: [{jwe_token}]")
+    LOGGER.info(f"jwe_token: [{jwe_token}]")
 
     # When the result is a JWE, you have to get the encrypted key from the JWE
     # and then unencrypt it to be able to use it to unencrypt the payload
@@ -97,27 +102,35 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     elif not isinstance(jwe_token, bytes):
         raise TypeError(f"not expecting type '{type(jwe_token)}'")
 
-    LOGGER.debug(f"jwe_token: [{jwe_token}]")
+    LOGGER.info(f"jwe_token: [{jwe_token}]")
 
     # Get the second segment of the token to get the cek
     encrypted_key_segment = jwe_token.split(b".", 4)[1]
-    LOGGER.debug(f"encrypted_key_segment: [{encrypted_key_segment}]")
+    LOGGER.info(f"encrypted_key_segment: [{encrypted_key_segment}]")
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
+    # TODO: remove this after testing new code:
     as_bytes = base64url_decode(encrypted_key_segment)
-    LOGGER.debug(f"as_bytes: [{as_bytes}]")
+    # as_bytes = base64.urlsafe_b64decode(encrypted_key_segment)
+    LOGGER.info(f"as_bytes: [{as_bytes}]")
 
     decrypted_key = kms_lookup.decrypt(as_bytes)
-    LOGGER.debug(f"decrypted_key: [{decrypted_key}]")
+    LOGGER.info(f"decrypted_key: [{decrypted_key}]")
 
     # Use the symmetric public key to decrypt the payload
+    # TODO: remove this after testing new code:
     decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
-    LOGGER.debug(f"decrypted_id_token: [{decrypted_id_token}]")
+    # jwe = JsonWebEncryption()
+    # decrypted_id_token = jwe.deserialize_compact(
+    #     jwe_token, decrypted_key
+    # )["payload"]
+
+    LOGGER.info(f"decrypted_id_token: [{decrypted_id_token}]")
 
     decoded_id_token = jwt.decode(
         decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
     )
-    LOGGER.debug(f"decoded_id_token: [{decoded_id_token}]")
+    LOGGER.info(f"decoded_id_token: [{decoded_id_token}]")
 
     aud = decoded_id_token["aud"]
     valid_auds = [
