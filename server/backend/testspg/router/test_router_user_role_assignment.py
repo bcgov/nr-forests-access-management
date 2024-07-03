@@ -2,12 +2,12 @@ import copy
 import logging
 from http import HTTPStatus
 
-import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                               ERROR_CODE_SELF_GRANT_PROHIBITED, UserType)
+                               ERROR_CODE_SELF_GRANT_PROHIBITED,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
@@ -241,8 +241,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     )
 
 
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_concrete_role(
+def test_create_user_role_assignment_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -271,7 +270,7 @@ async def test_create_user_role_assignment_with_concrete_role(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
@@ -368,8 +367,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     )
 
 
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_abstract_role(
+def test_create_user_role_assignment_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -397,7 +395,7 @@ async def test_create_user_role_assignment_with_abstract_role(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
@@ -427,8 +425,7 @@ async def test_create_user_role_assignment_with_abstract_role(
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-@pytest.mark.asyncio
-async def test_create_user_role_assignment_with_same_username(
+def test_create_user_role_assignment_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -466,7 +463,7 @@ async def test_create_user_role_assignment_with_same_username(
     assignment_three = response.json()
 
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=assignment_one["application_id"],
@@ -494,8 +491,7 @@ async def test_create_user_role_assignment_with_same_username(
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-@pytest.mark.asyncio
-async def test_assign_same_application_roles_for_different_environments(
+def test_assign_same_application_roles_for_different_environments(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -542,7 +538,7 @@ async def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_dev
     # retrieved requester for current request.
-    fom_dev_access_admin_requester = await get_current_requester_by_token(
+    fom_dev_access_admin_requester = get_current_requester_by_token(
         fom_dev_access_admin_token
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -558,7 +554,7 @@ async def test_assign_same_application_roles_for_different_environments(
 
     # verify assignment did get created for fom_test
     # retrieved requester for current request.
-    fom_test_access_admin_requester = await get_current_requester_by_token(
+    fom_test_access_admin_requester = get_current_requester_by_token(
         fom_test_access_admin_token
     )
     assignment_user_role_items = crud_application.get_application_role_assignments(
@@ -995,8 +991,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     )
 
 
-@pytest.mark.asyncio
-async def test_delete_user_role_assignment(
+def test_delete_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -1018,7 +1013,7 @@ async def test_delete_user_role_assignment(
 
     # verify assignment did get created
     # retrieved requester for current request.
-    requester = await get_current_requester_by_token(fom_dev_access_admin_token)
+    requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session, application_id=data["application_id"], requester=requester
     )
@@ -1068,3 +1063,80 @@ def test_self_remove_grant_fail(
     assert row is not None, "Expected user role assignment not to be deleted"
 
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
+
+
+def test_create_user_role_assignment_enforce_bceid_terms_conditions(
+    test_client_fixture,
+    test_rsa_key,
+    override_get_verified_target_user
+):
+    """
+    Test this endpoint can "enforce_bceid_terms_conditions" on BCeID
+    delegated admin requester when no T&C accepted (record in fam_user_terms_conditions).
+    """
+    # Use COGNITO_USERNAME_BCEID_DELEGATED_ADMIN as the requester "TEST-3-LOAD-CHILD-1"(BCEID),
+    # who is a delegated admin preset at database (flyway) but no T&C record.
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+    )
+    # execute create should fail for T&C acceptance.
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(
+        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
+    ) != -1
+
+    # Use IDIR delegatged admin as a requester for this endpoint.
+    # IDIR delegatged admin does not need T&C accpetance.
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_IDIR_DELEGATED_ADMIN,
+    )
+    # override router guard dependencies
+    override_get_verified_target_user()
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_delete_user_role_assignment_enforce_bceid_terms_conditions(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    fom_dev_access_admin_token,
+    create_test_user_role_assignments,
+):
+    # Create users' access grants for FOM_DEV application.
+    access_grants_created = create_test_user_role_assignments(
+        fom_dev_access_admin_token, [ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T]
+    )
+    assert len(access_grants_created) == 1
+
+    user_role_xref_id = access_grants_created[0]
+    # Use COGNITO_USERNAME_BCEID_DELEGATED_ADMIN as the requester "TEST-3-LOAD-CHILD-1"(BCEID),
+    # who is a delegated admin preset at database (flyway) but no T&C record.
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+    )
+    # execute delete should fail for T&C acceptance.
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(token),
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() is not None
+    assert str(response.json()["detail"]).find(
+        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
+    ) != -1
