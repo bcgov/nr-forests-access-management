@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.18.0...v1.18.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* [#1474](https://github.com/bcgov/nr-forests-access-management/issues/1474) Remove duplicate user records in flyway ([#1475](https://github.com/bcgov/nr-forests-access-management/issues/1475)) ([b4f295f](https://github.com/bcgov/nr-forests-access-management/commit/b4f295f0571e58be4292d4b3a085d1ce9ae8fbc4))
+
 ## [1.18.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.17.0...v1.18.0) (2024-07-02)
 
 
