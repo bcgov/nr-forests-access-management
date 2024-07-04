@@ -243,7 +243,7 @@ function handleSubmit() {
                     title="Add the role a delegated admin can assign"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <RoleSelect
+                    <RoleSelectTable
                         :roleId="formData.roleId"
                         :roleOptions="delegatedRoleOptions"
                         label="Assign a role the delgated admin can manage"

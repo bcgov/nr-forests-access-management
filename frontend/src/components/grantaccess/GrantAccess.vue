@@ -229,10 +229,10 @@ function toRequestPayload(formData: any, forestClientNumber: string) {
                 </StepContainer>
 
                 <StepContainer
-                    title="Add user roles"
+                    title="User roles"
                     :divider="isAbstractRoleSelected()"
                 >
-                    <RoleSelect
+                    <RoleSelectTable
                         :roleId="formData.roleId"
                         :roleOptions="applicationRoleOptions"
                         @change="roleSelectChange"
