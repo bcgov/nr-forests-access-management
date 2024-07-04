@@ -6,7 +6,6 @@ import {
 } from '@/store/ApplicationState';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
 import { setRouteToastError } from '@/store/ToastState';
-import { showTermsForAcceptance } from '@/store/TermsAndConditionsState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import {
     AdminRoleAuthGroup,
@@ -268,10 +267,7 @@ const cacheUserAccess = async () => {
 };
 
 const requiresAcceptTermsCondition = async () => {
-    const needsToAccept = await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions();
-    if (needsToAccept.data) {
-        showTermsForAcceptance();
-    }
+    return (await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions()).data;
 };
 
 //--------- get my permissions
