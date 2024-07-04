@@ -378,8 +378,11 @@ class FamUser(Base):
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
-    business_guid = Column(String(32))
+    business_guid = Column(String(32), comment='The business guid of the user if is a business bceid user.')
     cognito_user_id = Column(String(100))
+    first_name = Column(String(50), comment='The first name of the user')
+    last_name = Column(String(50), comment='The last name of the user.')
+    email = Column(String(250), comment='The email of the user.')
     update_user = Column(
         String(100),
         comment="The user or proxy account that created or last updated the record.",

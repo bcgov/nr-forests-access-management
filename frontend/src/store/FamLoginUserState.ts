@@ -1,5 +1,5 @@
 import { IdpProvider } from '@/enum/IdpEnum';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFactory';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
@@ -266,8 +266,9 @@ const cacheUserAccess = async () => {
     }
 };
 
-// TODO: check if login user needs to accept terms and conditions, if need, show terms here
-const requiresAcceptTermsCondition = async () => {};
+const requiresAcceptTermsCondition = async () => {
+    return (await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions()).data;
+};
 
 //--------- get my permissions
 
