@@ -17,8 +17,7 @@ def init_bcsc_public_key():
     session = boto3.session.Session()
     _kms_client = session.client(service_name="kms", region_name=region_name)
 
-    # key_id = get_bcsc_key_id() temporarily disabled.
-    key_id = "433c95fc-4630-4d96-81ad-38032bb42108"
+    key_id = get_bcsc_key_id()
     LOGGER.debug(f"Looking up kms key for bcsc with key of {key_id}...")
     try:
         _bcsc_public_key = _kms_client.get_public_key(KeyId=key_id)
