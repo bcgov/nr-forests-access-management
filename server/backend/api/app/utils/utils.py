@@ -1,9 +1,9 @@
-from http import HTTPStatus
 import json
 import logging
+from http import HTTPStatus
 
-from fastapi import HTTPException
 from api.app.constants import ERROR_CODE_INVALID_OPERATION
+from fastapi import HTTPException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def raise_http_exception(
     error_code: str = ERROR_CODE_INVALID_OPERATION,  # default, please override if necessary
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST,  # default http status, please override if necessary
 ):
-    LOGGER.debug(error_msg)
+    LOGGER.debug(f"raise_http_exception: {error_msg}")
     raise HTTPException(
         status_code=status_code,
         detail={

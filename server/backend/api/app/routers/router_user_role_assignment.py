@@ -4,16 +4,13 @@ from http import HTTPStatus
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models import model as models
 from api.app.routers.router_guards import (
-    authorize_by_application_role,
-    authorize_by_privilege,
-    authorize_by_user_type,
-    enforce_self_grant_guard,
-    enforce_bceid_by_same_org_guard,
-    get_current_requester,
-    get_verified_target_user,
-)
+    authorize_by_application_role, authorize_by_privilege,
+    authorize_by_user_type, enforce_bceid_by_same_org_guard,
+    enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
+    get_current_requester, get_verified_target_user)
 from api.app.schemas import Requester, TargetUser
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -30,6 +27,7 @@ router = APIRouter()
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(enforce_self_grant_guard),
+        Depends(enforce_bceid_terms_conditions_guard),
         Depends(
             authorize_by_application_role
         ),  # requester needs to be app admin or delegated admin
@@ -43,6 +41,7 @@ router = APIRouter()
             enforce_bceid_by_same_org_guard
         ),  # check business bceid user can only grant access for the user from same organization
     ],
+    description="Grant User Access to an application's role.",
 )
 def create_user_role_assignment(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
@@ -111,11 +110,13 @@ def create_user_role_assignment(
     response_class=Response,
     dependencies=[
         Depends(enforce_self_grant_guard),
+        Depends(enforce_bceid_terms_conditions_guard),
         Depends(authorize_by_application_role),
         Depends(authorize_by_privilege),
         Depends(authorize_by_user_type),
         Depends(enforce_bceid_by_same_org_guard),
     ],
+    description="Remove a specific application's role from user's access.",
 )
 def delete_user_role_assignment(
     request: Request,

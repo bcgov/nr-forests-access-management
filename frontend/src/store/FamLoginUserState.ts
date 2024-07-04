@@ -1,21 +1,21 @@
-import { readonly, ref } from 'vue';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
-import {
-    AdminRoleAuthGroup,
-    type AppEnv,
-    type FamGrantDetailDto,
-    type FamApplicationDto,
-    type FamAuthGrantDto,
-    type FamRoleDto,
-} from 'fam-admin-mgmt-api/model';
+import { IdpProvider } from '@/enum/IdpEnum';
+import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFactory';
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
 } from '@/store/ApplicationState';
+import { FAM_APPLICATION_NAME } from '@/store/Constants';
+import { setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { IdpProvider } from '@/enum/IdpEnum';
+import {
+    AdminRoleAuthGroup,
+    type AppEnv,
+    type FamApplicationDto,
+    type FamAuthGrantDto,
+    type FamGrantDetailDto,
+    type FamRoleDto,
+} from 'fam-admin-mgmt-api/model';
+import { readonly, ref } from 'vue';
 
 const FAM_LOGIN_USER = 'famLoginUser';
 
@@ -52,10 +52,8 @@ const state = ref({
 const getUserIdpProvider = () => {
     // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
     const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
-    if (IdpProvider.IDIR == idpProvider)
-        return IdpProvider.IDIR
-    else
-        return IdpProvider.BCEIDBUSINESS
+    if (IdpProvider.IDIR == idpProvider) return IdpProvider.IDIR;
+    else return IdpProvider.BCEIDBUSINESS;
 };
 
 const getAuthToken = () => {
@@ -149,8 +147,7 @@ const getCachedAppRoles = (application_id: number): FamRoleDto[] => {
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() < second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
@@ -166,8 +163,7 @@ const getCachedAppRolesForDelegatedAdmin = (
         });
 
     return grantAppData!.roles!.sort((first, second) => {
-        return first.name.toLocaleLowerCase() <
-            second.name.toLocaleLowerCase()
+        return first.name.toLocaleLowerCase() < second.name.toLocaleLowerCase()
             ? -1
             : 1;
     });
@@ -179,13 +175,19 @@ const getMyAdminPermission = (): IMyPermission[] => {
     getUserAccess()?.forEach((access: FamAuthGrantDto) => {
         switch (access.auth_key) {
             case AdminRoleAuthGroup.FamAdmin:
-                myPermissions = myPermissions.concat(getMyFamAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyFamAdminPermission(access)
+                );
                 break;
             case AdminRoleAuthGroup.AppAdmin:
-                myPermissions = myPermissions.concat(getMyAppAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyAppAdminPermission(access)
+                );
                 break;
             case AdminRoleAuthGroup.DelegatedAdmin:
-                myPermissions = myPermissions.concat(getMyDelegatedAdminPermission(access));
+                myPermissions = myPermissions.concat(
+                    getMyDelegatedAdminPermission(access)
+                );
                 break;
             default:
                 break;
@@ -215,6 +217,13 @@ const isAdminOfSelectedApplication = () => {
     }
     return false;
 };
+
+const isExternalDelegatedAdmin = () =>
+    getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
+    getUserAdminRoleGroups()?.includes(
+        AdminRoleAuthGroup.DelegatedAdmin
+    );
+
 
 const hasAccess = (role: string): boolean => {
     return !!getUserAccess()?.find((access) => access.auth_key === role);
@@ -255,6 +264,10 @@ const cacheUserAccess = async () => {
         console.log("Unable to get user's access in FAM", error);
         setRouteToastError(error);
     }
+};
+
+const requiresAcceptTermsCondition = async () => {
+    return (await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions()).data;
 };
 
 //--------- get my permissions
@@ -323,10 +336,13 @@ export default {
     getMyAdminPermission,
     getCachedAppRolesForDelegatedAdmin,
     getApplicationsUserAdministers,
+    getCachedAppRoles,
     hasAccess,
+    isAdminOfSelectedApplication,
+    isExternalDelegatedAdmin,
+    requiresAcceptTermsCondition,
+
     storeFamUser,
     removeFamUser,
     cacheUserAccess,
-    isAdminOfSelectedApplication,
-    getCachedAppRoles,
 };
