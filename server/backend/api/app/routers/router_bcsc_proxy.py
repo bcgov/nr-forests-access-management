@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 
-# import jwt
+import jwt as pyjwt
 import requests
 from authlib.jose import JsonWebEncryption, JsonWebKey
 from cryptography.hazmat.primitives import \
@@ -14,9 +14,6 @@ from jose import jwt
 from jose.utils import base64url_decode
 
 from .. import bcsc_decryption, kms_lookup
-
-# from .. import kms_lookup
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -111,7 +108,6 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
     # TODO: remove this after testing new code:
     as_bytes = base64url_decode(encrypted_key_segment)
-    # as_bytes = base64.urlsafe_b64decode(encrypted_key_segment)
     LOGGER.info(f"as_bytes: [{as_bytes}]")
 
     decrypted_key = kms_lookup.decrypt(as_bytes)
@@ -120,17 +116,31 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # Use the symmetric public key to decrypt the payload
     # TODO: remove this after testing new code:
     decrypted_id_token = bcsc_decryption.decrypt(jwe_token, decrypted_key)
-    # jwe = JsonWebEncryption()
-    # decrypted_id_token = jwe.deserialize_compact(
-    #     jwe_token, decrypted_key
-    # )["payload"]
-
     LOGGER.info(f"decrypted_id_token: [{decrypted_id_token}]")
 
     decoded_id_token = jwt.decode(
         decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
     )
     LOGGER.info(f"decoded_id_token: [{decoded_id_token}]")
+
+    # #### ------------
+    as_bytes_urlsafe = base64.urlsafe_b64decode(encrypted_key_segment)
+    LOGGER.info(f"urlsafe: as_bytes_urlsafe: [{as_bytes_urlsafe}]")
+
+    decrypted_key_pyjwt = kms_lookup.decrypt(as_bytes_urlsafe)
+    LOGGER.info(f"pyjwt: decrypted_key_pyjwt: [{decrypted_key_pyjwt}]")
+
+    jwe = JsonWebEncryption()
+    decrypted_id_token_authlib = jwe.deserialize_compact(
+        jwe_token, decrypted_key
+    )["payload"]
+    LOGGER.info(f"authlib: decrypted_id_token: [{decrypted_id_token_authlib}]")
+
+    decoded_id_token_pyjwt = pyjwt.decode(
+        decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
+    )
+    LOGGER.info(f"pyjwt: decoded_id_token_pyjwt: [{decoded_id_token_pyjwt}]")
+    # #### ------------
 
     aud = decoded_id_token["aud"]
     valid_auds = [
