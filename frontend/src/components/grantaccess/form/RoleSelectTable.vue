@@ -23,7 +23,7 @@ const computedRoleId = computed({
     get() {
         return props.roleId;
     },
-    set(newRoleId: Number) {
+    set(newRoleId: number) {
         emit('change', newRoleId);
     },
 });
@@ -31,7 +31,7 @@ const computedRoleId = computed({
 
 <template>
     <div class="form-field">
-        <label>{{ props.label }}</label>
+        <label :for="props.fieldId">{{ props.label }}</label>
         <Field
             :name="props.fieldId"
             aria-label="Role Select"
