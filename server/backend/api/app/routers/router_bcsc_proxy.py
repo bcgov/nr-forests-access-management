@@ -1,9 +1,9 @@
-import base64
 import json
 import logging
 
 import jwt as pyjwt
 import requests
+from api.app.utils import utils
 from authlib.jose import JsonWebEncryption, JsonWebKey
 from cryptography.hazmat.primitives import \
     serialization as crypto_serialization
@@ -124,7 +124,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.info(f"decoded_id_token: [{decoded_id_token}]")
 
     # #### ------------
-    as_bytes_urlsafe = base64.urlsafe_b64decode(encrypted_key_segment)
+    as_bytes_urlsafe = utils.base64url_decode(encrypted_key_segment)
     LOGGER.info(f"urlsafe: as_bytes_urlsafe: [{as_bytes_urlsafe}]")
 
     decrypted_key_pyjwt = kms_lookup.decrypt(as_bytes_urlsafe)
