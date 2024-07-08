@@ -81,20 +81,18 @@ const computedRoleId = computed({
     </div>
 </template>
 <style lang="scss">
-label {
-    margin-bottom: 0px;
-}
 
-.role-select-data-table .p-column-header-content .p-column-title {
-    padding: 0;
-}
-
-// Only apply on PrimeVue datatable tbody columns, not on header.
+// adjust p-datatable styles
 .p-datatable {
+    .p-column-header-content .p-column-title {
+        padding: 0;
+    }
+
+    // Only apply on PrimeVue datatable tbody columns, not on header.
     tbody {
         td {
-            padding-top: 1rem !important;
-            padding-bottom: 1rem !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
         }
     }
 }
