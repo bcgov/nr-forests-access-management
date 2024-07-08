@@ -252,6 +252,9 @@ class FamRoleDto(BaseModel):
     name: Annotated[str, StringConstraints(max_length=100)] = Field(
         validation_alias="role_name"
     )
+    description: Annotated[str, StringConstraints(max_length=300)] = Field(
+        validation_alias="role_purpose"
+    )
     type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
     forest_clients: Optional[List[str]] = Field(default=None)
 
