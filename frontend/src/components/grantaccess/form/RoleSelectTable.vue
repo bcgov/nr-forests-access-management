@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { ErrorMessage, Field } from 'vee-validate';
-import RadioButton from 'primevue/radiobutton';
-import ProgressSpinner from 'primevue/progressspinner';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import ProgressSpinner from 'primevue/progressspinner';
+import RadioButton from 'primevue/radiobutton';
+import { ErrorMessage, Field } from 'vee-validate';
+import { computed } from 'vue';
 
 const props = defineProps({
     roleId: { type: Number, default: 0 },
@@ -43,7 +43,7 @@ const computedRoleId = computed({
                 <template #loading
                     ><ProgressSpinner aria-label="Loading" />
                 </template>
-                <Column class="role-section-table-column" field="roleSelect">
+                <Column field="roleSelect">
                     <template #body="{ data }">
                         <RadioButton
                             v-model="computedRoleId"
@@ -57,7 +57,6 @@ const computedRoleId = computed({
                     </template>
                 </Column>
                 <Column
-                    class="role-section-table-column"
                     field="roleName"
                     header="Role"
                     ><template #body="{ data }">
@@ -67,7 +66,6 @@ const computedRoleId = computed({
                     </template></Column
                 >
                 <Column
-                    class="role-section-table-column"
                     field="roleDescription"
                     header="Description"
                 >
@@ -92,7 +90,14 @@ label {
     padding: 0;
 }
 
-.role-section-table-column {
-    padding: 1rem !important;
+// Only apply on PrimeVue datatable tbody columns, not on header.
+.p-datatable {
+    tbody {
+        td {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+    }
 }
+
 </style>
