@@ -35,7 +35,7 @@ const computedRoleId = computed({
         <Field
             :name="props.fieldId"
             aria-label="Role Select"
-            v-slot="{ field, handleChange, errorMessage }"
+            v-slot="{ field, errorMessage }"
             v-model="computedRoleId"
         >
             <DataTable :value="roleOptions">
@@ -48,7 +48,6 @@ const computedRoleId = computed({
                         <RadioButton
                             v-model="computedRoleId"
                             :value="data.id"
-                            @update:modelValue="handleChange"
                             @change="emit('resetVerifiedForestClients')"
                             :class="{
                                 'is-invalid': errorMessage,
