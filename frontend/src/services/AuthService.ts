@@ -45,7 +45,15 @@ const handlePostLogin = async () => {
         // This is to update the FamLoginUser for FamLoginUser.accesses.
         // For now team decided to grab user's access only when user login and may change later.
         await LoginUserState.cacheUserAccess();
-        await LoginUserState.requiresAcceptTermsCondition() && showTermsForAcceptance()
+
+        if (
+            LoginUserState.state.value.famLoginUser?.accesses &&
+            LoginUserState.state.value.famLoginUser.accesses.length > 0
+        ) {
+            // only check if user needs accept terms and conditions if is a FAM user
+            (await LoginUserState.requiresAcceptTermsCondition()) &&
+                showTermsForAcceptance();
+        }
     } catch (error) {
         console.log('Not signed in');
         console.log('Authentication Error:', error);
