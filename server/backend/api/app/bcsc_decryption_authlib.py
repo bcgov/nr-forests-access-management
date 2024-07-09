@@ -30,6 +30,20 @@ class JsonWebEncryption:
         self._algorithms = algorithms
         self._private_headers = private_headers
 
+    @classmethod
+    def register_algorithm(cls, algorithm):
+        """Register an algorithm for ``alg`` or ``enc`` or ``zip`` of JWE."""
+        if not algorithm or algorithm.algorithm_type != 'JWE':
+            raise ValueError(
+                f'Invalid algorithm for JWE, {algorithm!r}')
+
+        if algorithm.algorithm_location == 'alg':
+            cls.ALG_REGISTRY[algorithm.name] = algorithm
+        elif algorithm.algorithm_location == 'enc':
+            cls.ENC_REGISTRY[algorithm.name] = algorithm
+        elif algorithm.algorithm_location == 'zip':
+            cls.ZIP_REGISTRY[algorithm.name] = algorithm
+
     def deserialize_compact(self, s, key, decode=None, sender_key=None):
         """Extract JWE Compact Serialization.
 
@@ -57,6 +71,10 @@ class JsonWebEncryption:
             raise DecodeError('Not enough segments')
 
         protected = extract_header(protected_s, DecodeError)
+        LOGGER.info(
+            "bcsc_decryption_authlib:deserialize_compact"
+            f"extract_header - {protected},"
+        )
         ek = extract_segment(ek_s, DecodeError, 'encryption key')
         iv = extract_segment(iv_s, DecodeError, 'initialization vector')
         ciphertext = extract_segment(ciphertext_s, DecodeError, 'ciphertext')
@@ -160,6 +178,14 @@ class JsonWebEncryption:
             raise MissingAlgorithmError()
 
         alg = header['alg']
+        LOGGER.info(
+            "bcsc_decryption_authlib:get_header_alg -"
+            f"header['alg']: {alg}"
+        )
+        LOGGER.info(
+            "bcsc_decryption_authlib:get_header_alg -"
+            f"self.ALG_REGISTRY: {self.ALG_REGISTRY}"
+        )
         if self._algorithms is not None and alg not in self._algorithms:
             raise UnsupportedAlgorithmError()
         if alg not in self.ALG_REGISTRY:
