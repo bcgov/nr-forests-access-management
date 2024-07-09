@@ -3,8 +3,9 @@ import logging
 
 import jwt as pyjwt
 import requests
+from api.app.bcsc_decryption_authlib import JsonWebEncryption
 from api.app.utils import utils
-from authlib.jose import JsonWebEncryption, JsonWebKey
+from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives import \
     serialization as crypto_serialization
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -124,15 +125,17 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.info(f"decoded_id_token: [{decoded_id_token}]")
 
     # #### ------------
+    LOGGER.info("************************ Using new Authlib JWE library ************************")
     as_bytes_urlsafe = utils.base64url_decode(encrypted_key_segment)
     LOGGER.info(f"urlsafe: as_bytes_urlsafe: [{as_bytes_urlsafe}]")
 
     decrypted_key_pyjwt = kms_lookup.decrypt(as_bytes_urlsafe)
     LOGGER.info(f"pyjwt: decrypted_key_pyjwt: [{decrypted_key_pyjwt}]")
 
+    # TODO: temporary class from 'server.backend.bcsc_decryption_authlib', replace with real authlib later.
     jwe = JsonWebEncryption()
     decrypted_id_token_authlib = jwe.deserialize_compact(
-        jwe_token, decrypted_key
+        jwe_token, decrypted_key_pyjwt
     )["payload"]
     LOGGER.info(f"authlib: decrypted_id_token: [{decrypted_id_token_authlib}]")
 
@@ -140,6 +143,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
         decrypted_id_token, None, options={"verify_signature": False, "verify_aud": False}
     )
     LOGGER.info(f"pyjwt: decoded_id_token_pyjwt: [{decoded_id_token_pyjwt}]")
+    LOGGER.info("************************ End Authlib JWE library decrypt/decode ************************")
     # #### ------------
 
     aud = decoded_id_token["aud"]

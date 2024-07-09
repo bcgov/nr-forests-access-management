@@ -1,11 +1,15 @@
 import binascii
 import json
+import logging
 from collections.abc import Mapping
 from struct import pack
+
 from jose import jwk
 from jose.constants import ALGORITHMS
 from jose.exceptions import JWEError, JWEParseError
 from jose.utils import base64url_decode, ensure_binary
+
+LOGGER = logging.getLogger(__name__)
 
 
 def decrypt(jwe_str, decrypted_key):
@@ -27,13 +31,24 @@ def decrypt(jwe_str, decrypted_key):
         >>> jwe.decrypt(jwe_string, 'asecret128bitkey')
         'Hello, World!'
     """
+    LOGGER.info(f"bcsc_decryption:decrypt jwe_str - {jwe_str}, decrypted_key - {decrypted_key}")
     header, encoded_header, encrypted_key, iv, cipher_text, auth_tag = _jwe_compact_deserialize(jwe_str)
+    LOGGER.info(
+        "bcsc_decryption:decrypt: after _jwe_compact_deserialize: "
+        f"header - {header}, "
+        f"encoded_header - {encoded_header}, "
+        f"encrypted_key - {encrypted_key}, "
+        f"iv - {iv}, "
+        f"cipher_text - {cipher_text}, "
+        f"auth_tag - {auth_tag}, "
+    )
 
     try:
         # Determine the Key Management Mode employed by the algorithm
         # specified by the "alg" (algorithm) Header Parameter.
         alg = header["alg"]
         enc = header["enc"]
+        LOGGER.info(f"bcsc_decryption: alg - {alg}, enc - {enc}")
         if alg not in ALGORITHMS.SUPPORTED:
             raise JWEError("Algorithm %s not supported." % alg)
         if enc not in ALGORITHMS.SUPPORTED:
@@ -106,6 +121,14 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
     Returns:
         (bytes): Decrypted data
     """
+    LOGGER.info(
+        f"bcsc_decryption:_decrypt_and_auth: "
+        f"cek_bytes - {cek_bytes}, "
+        f"enc - {enc}"
+        f"iv - {iv}, "
+        f"aad - {aad}, "
+        f"auth_tag - {auth_tag}, "
+    )
     # Decrypt the JWE Ciphertext using the CEK, the JWE Initialization
     # Vector, the Additional Authenticated Data value, and the JWE
     # Authentication Tag (which is the Authentication Tag input to the
@@ -114,14 +137,20 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
     # and validating the JWE
     # Authentication Tag in the manner specified for the algorithm,
     if enc in ALGORITHMS.HMAC_AUTH_TAG:
+        LOGGER.info("bcsc_decryption:_decrypt_and_auth: enc in ALGORITHMS.HMAC_AUTH_TAG")
         encryption_key, mac_key, key_len = _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc)
         auth_tag_check = _auth_tag(cipher_text, iv, aad, mac_key, key_len)
     elif enc in ALGORITHMS.GCM:
+        LOGGER.info("bcsc_decryption:_decrypt_and_auth: enc in ALGORITHMS.GCM")
         encryption_key = jwk.construct(cek_bytes, enc)
         auth_tag_check = auth_tag  # GCM check auth on decrypt
     else:
         raise NotImplementedError(f"enc {enc} is not implemented!")
 
+    LOGGER.info(
+        f"bcsc_decryption:_decrypt_and_auth: "
+        f"encryption_key - {encryption_key} "
+    )
     plaintext = encryption_key.decrypt(cipher_text, iv, aad, auth_tag)
     if auth_tag != auth_tag_check:
         raise JWEError("Invalid JWE Auth Tag")
