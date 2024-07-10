@@ -8,6 +8,8 @@ from authlib.jose.errors import (DecodeError, InvalidHeaderParameterNameError,
                                  UnsupportedCompressionAlgorithmError,
                                  UnsupportedEncryptionAlgorithmError)
 from authlib.jose.rfc7516.models import JWEAlgorithmWithTagAwareKeyAgreement
+from authlib.jose.rfc7518.jwe_algs import JWE_ALG_ALGORITHMS
+from authlib.jose.rfc7518.jwe_encs import JWE_ENC_ALGORITHMS
 from authlib.jose.util import extract_header, extract_segment
 
 LOGGER = logging.getLogger(__name__)
@@ -22,8 +24,10 @@ class JsonWebEncryption:
         'typ', 'cty', 'crit'
     ])
 
-    ALG_REGISTRY = {}
-    ENC_REGISTRY = {}
+    # ALG_REGISTRY = {}
+    ALG_REGISTRY = JWE_ALG_ALGORITHMS
+    # ENC_REGISTRY = {}
+    ENC_REGISTRY = JWE_ENC_ALGORITHMS
     ZIP_REGISTRY = {}
 
     def __init__(self, algorithms=None, private_headers=None):
