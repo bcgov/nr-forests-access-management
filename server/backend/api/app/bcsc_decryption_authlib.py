@@ -80,22 +80,28 @@ class JsonWebEncryption:
         ciphertext = extract_segment(ciphertext_s, DecodeError, 'ciphertext')
         tag = extract_segment(tag_s, DecodeError, 'authentication tag')
 
+        LOGGER.info(
+            "bcsc_decryption_authlib:deserialize_compact:extract_segment"
+            f"protected - {protected},"
+            f"ek - {ek},"
+            f"iv - {iv},"
+            f"ciphertext - {ciphertext},"
+            f"tag - {tag},"
+        )
+
         alg = self.get_header_alg(protected)
         enc = self.get_header_enc(protected)
         zip_alg = self.get_header_zip(protected)
 
-        self._validate_sender_key(sender_key, alg)
-        self._validate_private_headers(protected, alg)
-
         LOGGER.info(
-            "bcsc_decryption_authlib:deserialize_compact"
-            f"protected - {protected},"
-            f"ek - {ek},"
-            f"iv - {iv},"
-            f"tag - {tag},"
+            "bcsc_decryption_authlib:deserialize_compact:extract_segment"
             f"alg - {alg},"
             f"enc - {enc},"
+            f"zip_alg - {zip_alg},"
         )
+
+        self._validate_sender_key(sender_key, alg)
+        self._validate_private_headers(protected, alg)
 
         if isinstance(key, tuple) and len(key) == 2:
             LOGGER.info(
@@ -182,13 +188,10 @@ class JsonWebEncryption:
             "bcsc_decryption_authlib:get_header_alg -"
             f"header['alg']: {alg}"
         )
-        LOGGER.info(
-            "bcsc_decryption_authlib:get_header_alg -"
-            f"self.ALG_REGISTRY: {self.ALG_REGISTRY}"
-        )
         if self._algorithms is not None and alg not in self._algorithms:
             raise UnsupportedAlgorithmError()
         if alg not in self.ALG_REGISTRY:
+            LOGGER.info("raise error due to 'alg' not in self.ALG_REGISTRY")
             raise UnsupportedAlgorithmError()
         return self.ALG_REGISTRY[alg]
 
@@ -199,6 +202,7 @@ class JsonWebEncryption:
         if self._algorithms is not None and enc not in self._algorithms:
             raise UnsupportedEncryptionAlgorithmError()
         if enc not in self.ENC_REGISTRY:
+            LOGGER.info("raise error due to 'enc' not in self.ENC_REGISTRY")
             raise UnsupportedEncryptionAlgorithmError()
         return self.ENC_REGISTRY[enc]
 
