@@ -37,10 +37,10 @@ class JsonWebEncryption:
         'typ', 'cty', 'crit'
     ])
 
-    # ALG_REGISTRY = {}
-    ALG_REGISTRY = JWE_ALG_ALGORITHMS
-    # ENC_REGISTRY = {}
-    ENC_REGISTRY = JWE_ENC_ALGORITHMS
+    ALG_REGISTRY = {}
+    # ALG_REGISTRY = JWE_ALG_ALGORITHMS
+    ENC_REGISTRY = {}
+    # ENC_REGISTRY = JWE_ENC_ALGORITHMS
     ZIP_REGISTRY = {}
 
     def __init__(self, algorithms=None, private_headers=None):
