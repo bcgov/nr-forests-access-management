@@ -143,7 +143,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     # LOGGER.info(f"authlib: decrypted_id_token: [{decrypted_id_token_authlib}]")
 
     decrypted_id_token_authlib = jwe.decrypt_compact(
-        jwe_token, decrypted_key_pyjwt
+        jwe_token, decrypted_key_pyjwt, algorithms=["RSA-OAEP-256", "A256CBC-HS512"]
     )
     LOGGER.info(f"decrypted_id_token_authlib: {decrypted_id_token_authlib}")
 
