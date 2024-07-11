@@ -261,18 +261,21 @@ class JsonWebEncryption:
 
 def prepare_key(alg, header, key):
     LOGGER.info(
-        "bcsc_decryption_authlib:prepare_key:"
+        "bcsc_decryption_authlib:prepare_key: "
+        f"alg: {alg}, "
+        f"header: {header}, "
+        f"key: {key}"
     )
     if callable(key):
-        key = key(header, None)
         LOGGER.info(
             f"callable:key: {key}"
         )
+        key = key(header, None)
     elif key is None and 'jwk' in header:
-        key = header['jwk']
         LOGGER.info(
-            f"header['jwk']: {key}"
+            f"key is None and header['jwk']: {key}"
         )
+        key = header['jwk']
     prepared_key = alg.prepare_key(key)
     LOGGER.info(
         f"prepared_key: {prepared_key}"

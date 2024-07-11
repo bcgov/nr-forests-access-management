@@ -3,8 +3,8 @@ import logging
 
 # import jwt as pyjwt
 import requests
-# from api.app.bcsc_decryption_authlib import (JsonWebEncryption,
-#                                              register_bcsc_jwe_rfc7518)
+from api.app.bcsc_decryption_authlib import (JsonWebEncryption,
+                                             register_bcsc_jwe_rfc7518)
 from api.app.utils import utils
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives import \
@@ -14,9 +14,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from jose import jwt
 from jose.utils import base64url_decode
-from joserfc import jwe
 
 from .. import bcsc_decryption, kms_lookup
+
+# from joserfc import jwe
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -135,16 +137,16 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.info(f"pyjwt: decrypted_key_pyjwt: [{decrypted_key_pyjwt}]")
 
     # TODO: temporary class from 'server.backend.bcsc_decryption_authlib', replace with real authlib later.
-    # register_bcsc_jwe_rfc7518()
-    # jwe = JsonWebEncryption()
-    # decrypted_id_token_authlib = jwe.deserialize_compact(
-    #     jwe_token, decrypted_key_pyjwt
-    # )["payload"]
-    # LOGGER.info(f"authlib: decrypted_id_token: [{decrypted_id_token_authlib}]")
+    register_bcsc_jwe_rfc7518()
+    jwe_authlib = JsonWebEncryption()
+    decrypted_id_token_authlib = jwe_authlib.deserialize_compact(
+        jwe_token, decrypted_key_pyjwt
+    )["payload"]
 
-    decrypted_id_token_authlib = jwe.decrypt_compact(
-        jwe_token, decrypted_key_pyjwt, algorithms=["RSA-OAEP-256", "A256CBC-HS512"]
-    )
+    # Using joserfc package
+    # decrypted_id_token_authlib = jwe.decrypt_compact(
+    #     jwe_token, decrypted_key_pyjwt, algorithms=["RSA-OAEP-256", "A256CBC-HS512"]
+    # )
     LOGGER.info(f"decrypted_id_token_authlib: {decrypted_id_token_authlib}")
 
     # decoded_id_token_pyjwt = pyjwt.decode(
