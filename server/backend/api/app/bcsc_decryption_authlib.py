@@ -8,11 +8,24 @@ from authlib.jose.errors import (DecodeError, InvalidHeaderParameterNameError,
                                  UnsupportedCompressionAlgorithmError,
                                  UnsupportedEncryptionAlgorithmError)
 from authlib.jose.rfc7516.models import JWEAlgorithmWithTagAwareKeyAgreement
-from authlib.jose.rfc7518.jwe_algs import JWE_ALG_ALGORITHMS
-from authlib.jose.rfc7518.jwe_encs import JWE_ENC_ALGORITHMS
+from authlib.jose.rfc7518.jwe_algs import JWE_ALG_ALGORITHMS, RSAAlgorithm
+from authlib.jose.rfc7518.jwe_encs import (JWE_ENC_ALGORITHMS,
+                                           CBCHS2EncAlgorithm)
 from authlib.jose.util import extract_header, extract_segment
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 LOGGER = logging.getLogger(__name__)
+
+
+def register_bcsc_jwe_rfc7518():
+    # 'alg'
+    JsonWebEncryption.register_algorithm(RSAAlgorithm(
+            'RSA-OAEP-256', 'RSAES OAEP using SHA-256 and MGF1 with SHA-256',
+            padding.OAEP(padding.MGF1(hashes.SHA256()), hashes.SHA256(), None)
+    ))
+    # 'enc'
+    JsonWebEncryption.register_algorithm(CBCHS2EncAlgorithm(256, 512))
 
 
 class JsonWebEncryption:
