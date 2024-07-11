@@ -13,4 +13,5 @@ mangum==0.17.0
 python-jose==3.3.0
 cryptography==42.0.7
 authlib==1.3.0
+joserfc==0.12.0
 pyjwt==2.8.0
