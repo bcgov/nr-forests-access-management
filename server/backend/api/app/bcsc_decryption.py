@@ -2,10 +2,10 @@ import binascii
 import json
 from collections.abc import Mapping
 from struct import pack
+
+from api.app.utils import utils
 from jose import jwk
 from jose.constants import ALGORITHMS
-from jose.exceptions import JWEError, JWEParseError
-from jose.utils import base64url_decode, ensure_binary
 
 
 def decrypt(jwe_str, decrypted_key):
@@ -175,7 +175,7 @@ def _jwe_compact_deserialize(jwe_bytes):
         header_segment, encrypted_key_segment, iv_segment, cipher_text_segment, auth_tag_segment = jwe_bytes.split(
             b".", 4
         )
-        header_data = base64url_decode(header_segment)
+        header_data = utils.base64url_decode(header_segment)
     except ValueError:
         raise JWEParseError("Not enough segments")
     except (TypeError):
@@ -207,22 +207,22 @@ def _jwe_compact_deserialize(jwe_bytes):
         raise JWEParseError("Invalid header string: must be a json object")
 
     try:
-        encrypted_key = base64url_decode(encrypted_key_segment)
+        encrypted_key = utils.base64url_decode(encrypted_key_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid encrypted key")
 
     try:
-        iv = base64url_decode(iv_segment)
+        iv = utils.base64url_decode(iv_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid IV")
 
     try:
-        ciphertext = base64url_decode(cipher_text_segment)
+        ciphertext = utils.base64url_decode(cipher_text_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid cyphertext")
 
     try:
-        auth_tag = base64url_decode(auth_tag_segment)
+        auth_tag = utils.base64url_decode(auth_tag_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid auth tag")
 
@@ -253,3 +253,22 @@ def _auth_tag(ciphertext, iv, aad, mac_key, tag_length):
     auth_tag = signature[0:tag_length]
     return auth_tag
 
+
+def ensure_binary(s):
+    """Coerce **s** to bytes."""
+
+    if isinstance(s, bytes):
+        return s
+    if isinstance(s, str):
+        return s.encode("utf-8", "strict")
+    raise TypeError(f"not expecting type '{type(s)}'")
+
+
+class JWEError(Exception):
+    """Base error for all JWE errors"""
+    pass
+
+
+class JWEParseError(JWEError):
+    """Could not parse the JWE string provided"""
+    pass
