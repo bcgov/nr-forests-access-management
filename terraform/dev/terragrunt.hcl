@@ -46,7 +46,7 @@ generate "dev_tfvars" {
   dev_override_bcsc_userinfo_proxy_endpoint = "https://xy7pk81p4h.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
   test_override_bcsc_userinfo_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/test"
   prod_override_bcsc_userinfo_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/prod"
-  dev_override_bcsc_token_proxy_endpoint = "https://xy7pk81p4h.execute-api.ca-central-1.amazonaws.com/v1/bcsc/userinfo/dev"
+  dev_override_bcsc_token_proxy_endpoint = "https://xy7pk81p4h.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/dev"
   test_override_bcsc_token_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/test"
   prod_override_bcsc_token_proxy_endpoint = "https://6mud7781pe.execute-api.ca-central-1.amazonaws.com/v1/bcsc/token/prod"
   idim_proxy_api_base_url = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
