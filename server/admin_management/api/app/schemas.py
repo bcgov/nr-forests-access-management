@@ -1,9 +1,10 @@
 import logging
 from typing import List, Optional, Union
-from pydantic import StringConstraints, ConfigDict, BaseModel, Field
+
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from typing_extensions import Annotated
 
 from . import constants as famConstants
-from typing_extensions import Annotated
 
 LOGGER = logging.getLogger(__name__)
 
@@ -69,6 +70,9 @@ class TargetUser(Requester):
     checking "is_new_user()".
     """
     user_id: Optional[int] = None
+    first_name = Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    last_name = Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 # -------------------------------------- FAM Application --------------------------------------- #
