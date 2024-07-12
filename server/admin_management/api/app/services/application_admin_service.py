@@ -29,7 +29,8 @@ class ApplicationAdminService:
         )
 
     def create_application_admin(
-        self, request: schemas.FamAppAdminCreateRequest, requester: str
+        self, request: schemas.FamAppAdminCreateRequest,
+        target_user: schemas.TargetUser, requester: str
     ) -> schemas.FamAppAdminGetResponse:
         # Request has information: user_name, user_type_code, application_id
         LOGGER.debug(
