@@ -5,6 +5,7 @@ from collections.abc import Mapping
 from struct import pack
 
 from api.app.utils import utils
+from jose import jwk
 
 
 def decrypt(jwe_str, decrypted_key):
@@ -117,9 +118,9 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
         auth_tag_check = _auth_tag(cipher_text, iv, aad, mac_key, key_len)
     # To get rid of using `python-jose` jwk library (not maintained),
     # comment below out as BCSC enc uses algorithm in ALGORITHMS.HMAC_AUTH_TAG
-    # elif enc in ALGORITHMS.GCM:
-    #     encryption_key = jwk.construct(cek_bytes, enc)
-    #     auth_tag_check = auth_tag  # GCM check auth on decrypt
+    elif enc in ALGORITHMS.GCM:
+        encryption_key = jwk.construct(cek_bytes, enc)
+        auth_tag_check = auth_tag  # GCM check auth on decrypt
     else:
         raise NotImplementedError(f"enc {enc} is not implemented!")
 
