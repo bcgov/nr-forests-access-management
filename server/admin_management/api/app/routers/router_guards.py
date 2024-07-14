@@ -1,4 +1,3 @@
-import copy
 import json
 import logging
 from http import HTTPStatus
@@ -21,7 +20,8 @@ from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.services.validator.user_validator import TargetUserValidator
+from api.app.services.validator.target_user_validator import \
+    TargetUserValidator
 from api.app.utils import utils
 from fastapi import Depends, HTTPException, Request
 

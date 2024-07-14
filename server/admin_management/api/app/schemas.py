@@ -70,8 +70,8 @@ class TargetUser(Requester):
     checking "is_new_user()".
     """
     user_id: Optional[int] = None
-    first_name = Optional[Annotated[str, StringConstraints(max_length=50)]] = None
-    last_name = Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    first_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
     email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 

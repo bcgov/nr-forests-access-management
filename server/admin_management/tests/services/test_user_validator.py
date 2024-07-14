@@ -1,12 +1,14 @@
 import logging
 
 import pytest
+from fastapi import HTTPException
+from mock import patch
+
 from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import Requester, TargetUser
-from api.app.services.validator.user_validator import TargetUserValidator
-from fastapi import HTTPException
-from mock import patch
+from api.app.services.validator.target_user_validator import \
+    TargetUserValidator
 from tests.constants import (TEST_USER_BUSINESS_GUID_BCEID,
                              TEST_USER_GUID_BCEID, TEST_USER_GUID_IDIR,
                              TEST_USER_NAME_BCEID, TEST_USER_NAME_IDIR)
