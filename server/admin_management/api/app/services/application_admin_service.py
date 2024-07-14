@@ -41,6 +41,9 @@ class ApplicationAdminService:
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, request.user_guid, requester
         )
+        fam_user = self.user_service.update_common_user_properties(
+            fam_user.user_id, target_user, requester
+        )
 
         # Verify if user is admin already
         fam_application_admin_user = (

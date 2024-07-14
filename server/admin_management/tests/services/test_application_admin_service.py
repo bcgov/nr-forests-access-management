@@ -1,17 +1,13 @@
 import logging
+
 import pytest
-from pydantic import ValidationError
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from api.app import schemas
 from api.app.services.application_admin_service import ApplicationAdminService
-
-from tests.constants import (
-    TEST_NEW_APPLICATION_ADMIN,
-    TEST_CREATOR,
-    TEST_INVALID_USER_TYPE,
-)
-
+from tests.constants import (TEST_CREATOR, TEST_INVALID_USER_TYPE,
+                             TEST_NEW_APPLICATION_ADMIN)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,8 +28,10 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
     assert str(e.value).find("Input should be 'I' or 'B'") != -1
 
     # test create application admin
+    mocked_admin_target_user = schemas.TargetUser(**TEST_NEW_APPLICATION_ADMIN)
     new_application_admin = application_admin_service.create_application_admin(
         schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
+        mocked_admin_target_user,
         TEST_CREATOR,
     )
     assert new_application_admin.application_id == TEST_NEW_APPLICATION_ADMIN.get(
@@ -54,6 +52,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
     with pytest.raises(HTTPException) as e:
         application_admin_service.create_application_admin(
             schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
+            mocked_admin_target_user,
             TEST_CREATOR,
         )
     assert str(e._excinfo).find("User is admin already") != -1

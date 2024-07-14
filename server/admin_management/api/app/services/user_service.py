@@ -1,10 +1,9 @@
 import logging
-from sqlalchemy.orm import Session
 
 from api.app.models import model as models
-from api.app.schemas import FamUserDto
 from api.app.repositories.user_repository import UserRepository
-
+from api.app.schemas import FamUserDto, TargetUser
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -118,4 +117,28 @@ class UserService:
                 self.user_repo.update(
                     user_id, {models.FamUser.business_guid: business_guid}, requester
                 )
+        return self.user_repo.get_user(user_id)
+
+    def update_common_user_properties(
+        self, user_id: int, target_user: TargetUser, requester: str  # cognito_user_id
+    ):
+        """
+        :param user_id: The user to be updated on.
+        :param target_user: Type of TargetUser. Contains the properties' values for update.
+        :param requester: This is requester's cognito_user_id when updating
+            record from the 'update_user'.
+        """
+        self.user_repo.update(
+            user_id,
+            # first_name, last_name, email
+            {
+                models.FamUser.first_name: target_user.first_name,
+                models.FamUser.last_name: target_user.last_name,
+                models.FamUser.email: target_user.email
+            },
+            requester,
+        )
+        LOGGER.debug(
+            f"Common user properties were updated to fam_user {user_id}."
+        )
         return self.user_repo.get_user(user_id)
