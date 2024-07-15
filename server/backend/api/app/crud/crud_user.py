@@ -1,5 +1,6 @@
 import logging
 
+from api.app.constants import UserType
 from api.app.models import model as models
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -182,6 +183,54 @@ def update_user_name(
         )
         return get_user(db, user.user_id)
     return user
+
+
+def update_user_properties_from_verified_target_user(
+    db: Session, user_id: int, target_user: schemas.TargetUser, requester: str  # cognito_user_id
+):
+    """
+    This is to update fam_user's properties from verified_target_user.
+    'verified_target_user' user is searched from IDIM proxy service.
+    :param user_id: The user to be updated on.
+    :param target_user: Type of TargetUser.
+        Contains the user's latest property values for update.
+    :param requester: This is requester's cognito_user_id when updating
+        record from the 'update_user'.
+    """
+    user_type_code = target_user.user_type_code
+    # update first_name, last_name, email
+    first_name = target_user.first_name
+    last_name = target_user.last_name
+    email = target_user.email
+    LOGGER.debug(
+        f"Add first_name: {first_name}, last_name: {last_name}, "
+        f"email: {email} for fam_user update."
+    )
+    properties_to_update = {
+        models.FamUser.first_name: first_name,
+        models.FamUser.last_name: last_name,
+        models.FamUser.email: email
+    }
+    # update business_guid when necessary
+    business_guid = target_user.business_guid
+    if user_type_code == UserType.BCEID and business_guid:
+        LOGGER.debug(f"Add business_guid: {business_guid} for fam_user update.")
+        # add additional property to 'properties_to_update'
+        properties_to_update = {
+            **properties_to_update,
+            models.FamUser.business_guid: business_guid
+        }
+
+    update(
+        db,
+        user_id,
+        properties_to_update,
+        requester,
+    )
+    LOGGER.debug(
+        f"fam_user {user_id} properties were updated."
+    )
+    return get_user(db, user_id)
 
 
 def update_user_business_guid(
