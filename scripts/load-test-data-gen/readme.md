@@ -1,10 +1,10 @@
-Procedure to re-generate the data locally:
+# Procedure to re-generate the data locally
 
-node generate-data.js > data.sql
+node ./generate-data.js > data.sql
 check into git and push
 
 
-Procedure to load the data into FAM Test environment:
+# Procedure to load the data into FAM Test environment
 
 - Connect to AWS Console
 - Go to EC2 instance fam_util_ec2_host
@@ -23,6 +23,6 @@ Notes:
 - Tried to use curl to get the data.sql file but had problems with it being in dos format with special characters at start. So used git instead.
 - Have to use sysadmin user, as the fam_proxy_api user doesn't have enough permissions.
 - Could skip uploading file in git if installed node on the fam_util_ec2_host but I didn't want to go that far.
-- The data generation is designed to be rerunnable - it deletes all generated data (while avoiding deleting manually created data)
-- It will probably have issues with deleting manually-created data linking to the generated data - Need to address that.
+- The data generation is designed to be rerunnable - it deletes all generated data, and deletes manually created data linking to the generated data
+
 

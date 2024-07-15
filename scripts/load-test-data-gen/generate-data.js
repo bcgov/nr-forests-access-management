@@ -25,8 +25,13 @@ const clientNumbers = [];
 function generateDeletes() {
     console.log(`
 DELETE FROM app_fam.fam_user_role_xref where user_role_xref_id between 1000 and 99999;
+DELETE FROM app_fam.fam_user_role_xref urx where urx.role_id in (select role_id from app_fam.fam_role where application_id = ${appId});
 DELETE FROM app_fam.fam_role where application_id = ${appId};
 DELETE FROM app_fam.fam_forest_client where client_number_id between 1000 and 99999;
+
+DELETE FROM app_fam.fam_application_admin where application_id = ${appId};
+DELETE FROM app_fam.fam_access_control_privilege acp where acp.role_id in (select role_id from app_fam.fam_role where application_id = ${appId});
+
 DELETE FROM app_fam.fam_application where application_id = ${appId};
 DELETE FROM app_fam.fam_user where user_id between 1000 and 99999;
     `);
@@ -111,7 +116,12 @@ function generateUsers() {
         if (i == 0) {
             prefix = '';
         }
-        console.log(`${prefix}( ${userId}, '${userId}ABCD1234ABCD', 'test-idir_${userId}_load_test', 'FAKE_LOAD_TESTER_${i}', 'I', '${userId}ABCD1234ABCD', '${createUser}')`);
+        // User GUID must be min 32 characters
+        var userGuid = `${userId}ABCD1234ABCD1234ABCD1234ABCD1234`
+        // User name must be max 20 characters
+        var userName = `FAKE_LOAD_TEST_${i}`
+
+        console.log(`${prefix}( ${userId}, '${userGuid}', 'test-idir_${userId}_load_test', '${userName}', 'I', '${userId}ABCD1234ABCD', '${createUser}')`);
         users.push(userId);
         userId++;
     }
