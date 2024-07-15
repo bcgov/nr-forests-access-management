@@ -100,6 +100,7 @@ class UserService:
         """
         This is to update fam_user's properties from verified_target_user.
         'verified_target_user' user is searched from IDIM proxy service.
+        Currently few properties are updated. 'user_name' is left out for different update.
         :param user_id: The user to be updated on.
         :param target_user: Type of TargetUser.
             Contains the user's latest property values for update.

@@ -1,9 +1,11 @@
 import logging
 
+import pytest
+
 from api.app.repositories.user_repository import UserRepository
+from api.app.schemas import TargetUser
 from api.app.services.user_service import UserService
-from tests.constants import (TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER,
-                             TEST_USER_BUSINESS_GUID_BCEID)
+from tests.constants import TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER
 
 LOGGER = logging.getLogger(__name__)
 NEW_USERNAME = "NEW_USERNAME"
@@ -95,55 +97,50 @@ def test_update_user_name(user_service: UserService, user_repo: UserRepository):
     assert found_user.user_name == NEW_USERNAME
 
 
-# TODO: this is removed due to business_guid update is now part of
-# update_user_properties_from_verified_target_user(). Add new tests instead.
+@pytest.mark.parametrize(
+    "new_user_initial_config, update_properties",
+    [
+        (TEST_NEW_BCEID_USER, {
+            "first_name": "test", "last_name": "bceid", "email": "becid_user@test.com", "business_guid": "test_business_guid"
+        }),
+        (TEST_NEW_IDIR_USER, {  # IDIR
+            "first_name": "test", "last_name": "idir", "email": "idir_user@test.com", "business_guid": None
+        }),
+        (TEST_NEW_IDIR_USER, {
+            "first_name": None, "last_name": None, "email": None, "business_guid": None
+        })
+    ]
+)
+def test_update_user_properties_from_verified_target_user(
+    new_user_initial_config,
+    update_properties,
+    user_service: UserService,
+    user_repo: UserRepository
+):
+    # create a new user
+    new_user = user_repo.create_user(new_user_initial_config)
+    # verify new user is created with no additoinal properties set.
+    found_user = user_service.get_user_by_domain_and_name(
+        new_user_initial_config.user_type_code,
+        new_user_initial_config.user_name
+    )
+    assert new_user.user_id == found_user.user_id
+    assert new_user.first_name is None
+    assert new_user.last_name is None
+    assert new_user.email is None
+    assert new_user.business_guid is None
 
-# def test_update_user_business_guid(
-#     user_service: UserService, user_repo: UserRepository
-# ):
-#     # create a business user
-#     new_user = user_repo.create_user(TEST_NEW_BCEID_USER)
-#     # verify new user is created
-#     found_user = user_service.get_user_by_domain_and_name(
-#         TEST_NEW_BCEID_USER.user_type_code, TEST_NEW_BCEID_USER.user_name
-#     )
-#     assert new_user.user_id == found_user.user_id
-
-#     # test update business guid when no business guid stored
-#     updated_user = user_service.update_user_business_guid(
-#         found_user.user_id,
-#         TEST_USER_BUSINESS_GUID_BCEID,
-#         TEST_NEW_IDIR_USER.create_user,
-#     )
-#     assert updated_user.business_guid == TEST_USER_BUSINESS_GUID_BCEID
-#     # verify the business_guid is updated
-#     found_user = user_service.get_user_by_domain_and_name(
-#         TEST_NEW_BCEID_USER.user_type_code, TEST_NEW_BCEID_USER.user_name
-#     )
-#     assert found_user.user_id == updated_user.user_id
-#     assert found_user.business_guid == TEST_USER_BUSINESS_GUID_BCEID
-
-#     # test update business guid when business guid mismatch
-#     new_business_guid = "MOCKEDNEWBUSINESSGUID5D4ACA9FA90"
-#     updated_user = user_service.update_user_business_guid(
-#         found_user.user_id, new_business_guid, TEST_NEW_IDIR_USER.create_user
-#     )
-#     assert updated_user.business_guid == new_business_guid
-#     # verify the business guid is updated
-#     found_user = user_service.get_user_by_domain_and_name(
-#         TEST_NEW_BCEID_USER.user_type_code, TEST_NEW_BCEID_USER.user_name
-#     )
-#     assert found_user.user_id == updated_user.user_id
-#     assert found_user.business_guid == new_business_guid
-
-#     # test business no need to be updated
-#     updated_user = user_service.update_user_business_guid(
-#         found_user.user_id, new_business_guid, TEST_NEW_IDIR_USER.create_user
-#     )
-#     assert updated_user.business_guid == new_business_guid
-#     # verify the business guid is updated
-#     found_user = user_service.get_user_by_domain_and_name(
-#         TEST_NEW_BCEID_USER.user_type_code, TEST_NEW_BCEID_USER.user_name
-#     )
-#     assert found_user.user_id == updated_user.user_id
-#     assert found_user.business_guid == new_business_guid
+    target_user = TargetUser(
+        **new_user_initial_config.__dict__,
+        **update_properties
+    )
+    updated_user = user_service.update_user_properties_from_verified_target_user(
+        found_user.user_id,
+        target_user,
+        found_user.create_user
+    )
+    assert updated_user.user_id == found_user.user_id
+    assert updated_user.first_name == update_properties.get("first_name")
+    assert updated_user.last_name == update_properties.get("last_name")
+    assert updated_user.email == update_properties.get("email")
+    assert updated_user.business_guid == update_properties.get("business_guid")
