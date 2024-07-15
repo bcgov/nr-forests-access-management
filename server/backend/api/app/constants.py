@@ -37,6 +37,10 @@ FAM_PROXY_API_USER = "fam_proxy_api"
 
 COGNITO_USERNAME_KEY = "username"
 
+# The most current terms and conditions. Note, when terms and conditions gets updated
+# at frontend, this also needs to be updated and in-sync.
+CURRENT_TERMS_AND_CONDITIONS_VERSION = "1"
+
 IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
 
 
@@ -57,3 +61,4 @@ ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
 ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
+ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"

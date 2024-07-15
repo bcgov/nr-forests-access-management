@@ -5,6 +5,10 @@ import { IdpProvider } from '@/enum/IdpEnum';
 import AuthService from '@/services/AuthService';
 import logo from '@/assets/images/bc-gov-logo.png';
 import TreeLogs from '@/assets/images/tree-logs.jpg';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+
+const environmentSettings = new EnvironmentSettings();
+const isDevEnvironment = environmentSettings.isDevEnvironment();
 </script>
 
 <template>
@@ -31,6 +35,7 @@ import TreeLogs from '@/assets/images/tree-logs.jpg';
                 <Button
                     class="landing-button"
                     outlined
+                    :disabled="!isDevEnvironment"
                     :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
                     id="login-business-bceid-button"
                     @click="AuthService.loginBusinessBceid()"
