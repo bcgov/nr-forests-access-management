@@ -10,12 +10,18 @@ check into git and push
 - Go to EC2 instance fam_util_ec2_host
 - Connect -> Session Manager -> Connect to start Unix session
 
+One-time setup:
+
 cd /tmp
 sudo yum install git
+sudo yum install dos2unix
 git clone https://github.com/bcgov/nr-forests-access-management.git
-cd nr-forests*
+
+Each time:
+cd /tmp/nr-forests*
 git checkout <branch with revised data.sql>
 cd scripts/load-test-data-gen
+dos2unix data.sql
 psql -h test-fam-cluster.cluster-cbsbrkv1tjh1.ca-central-1.rds.amazonaws.com -p 5432 -U sysadmin famdb < data.sql
 (Get password from AWS SecretManager for famdb-master-creds-up-glider)
 

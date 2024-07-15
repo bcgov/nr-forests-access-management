@@ -114,12 +114,13 @@ function generateUsers() {
     for (var i = 0; i < userCount; i++) {
         prefix = ',';
         if (i == 0) {
-            prefix = '';
+            prefix = ' ';
         }
-        // User GUID must be min 32 characters
-        var userGuid = `${userId}ABCD1234ABCD1234ABCD1234ABCD1234`
+        // User GUID must be exactly 32 characters
+        var userPrefix = userId.toString().padStart(5,"0")
+        var userGuid = `${userPrefix}ABCD1234ABCD1234ABCD1234ABC`
         // User name must be max 20 characters
-        var userName = `FAKE_LOAD_TEST_${i}`
+        var userName = `FAKE_LOAD_TEST_${userPrefix}`
 
         console.log(`${prefix}( ${userId}, '${userGuid}', 'test-idir_${userId}_load_test', '${userName}', 'I', '${userId}ABCD1234ABCD', '${createUser}')`);
         users.push(userId);
