@@ -72,11 +72,20 @@ class TargetUserValidator:
                     "businessGuid"
                 )
 
-        if not search_result or not search_result.get("found"):
-            error_msg = f"Invalid request, cannot find user {self.verified_target_user.user_name} {self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
+        # Update various target_user fields from idim search if exists
+        if search_result and search_result.get("found"):
+            self.verified_target_user.business_guid = search_result.get("businessGuid")
+            self.verified_target_user.first_name = search_result.get("firstName")
+            self.verified_target_user.last_name = search_result.get("lastName")
+            self.verified_target_user.email = search_result.get("email")
+
+        else:
+            error_msg = f"Invalid request, cannot find user {self.verified_target_user.user_name} "
+            f"{self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
             utils.raise_http_exception(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
                 error_msg=error_msg,
             )
 
         return self.verified_target_user
+

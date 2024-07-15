@@ -175,8 +175,8 @@ async def get_verified_target_user(
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    user_validator = TargetUserValidator(requester, target_user)
-    return user_validator.verify_user_exist()
+    target_user_validator = TargetUserValidator(requester, target_user)
+    return target_user_validator.verify_user_exist()
 
 
 async def enforce_self_grant_guard(
