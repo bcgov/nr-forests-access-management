@@ -221,43 +221,38 @@ def update_user_properties_from_verified_target_user(
             models.FamUser.business_guid: business_guid
         }
 
-    update(
-        db,
-        user_id,
-        properties_to_update,
-        requester,
-    )
+    update(db, user_id, properties_to_update, requester)
     LOGGER.debug(
         f"fam_user {user_id} properties were updated."
     )
     return get_user(db, user_id)
 
 
-def update_user_business_guid(
-    db: Session, user_id: int, business_guid: str, requester: str  # cognito_user_id
-):
-    """
-    The method only updates business_guid for user if necessary.
-    The calling method should make sure "business_guid" is correct for the
-    user (e.g.,searched from IDIM). This method does not do BCeID user
-    search.
-    :param user_id: The user to be updated on.
-    :param business_id: The business_guid value to updated for the user.
-    :param requester: This is requester's cognito_user_id when updating
-        record from the 'update_user'.
-    """
-    LOGGER.debug(
-        f"update_user_business_guid() with: user_id: {user_id} "
-        + f"business_guid: {business_guid} from requester: {requester}"
-    )
-    if business_guid is not None:
-        user = get_user(db, user_id)
-        if user.business_guid is None or business_guid != user.business_guid:
-            # update user when necessary.
-            update(
-                db, user_id, {models.FamUser.business_guid: business_guid}, requester
-            )
-    return get_user(db, user_id)
+# def update_user_business_guid(
+#     db: Session, user_id: int, business_guid: str, requester: str  # cognito_user_id
+# ):
+#     """
+#     The method only updates business_guid for user if necessary.
+#     The calling method should make sure "business_guid" is correct for the
+#     user (e.g.,searched from IDIM). This method does not do BCeID user
+#     search.
+#     :param user_id: The user to be updated on.
+#     :param business_id: The business_guid value to updated for the user.
+#     :param requester: This is requester's cognito_user_id when updating
+#         record from the 'update_user'.
+#     """
+#     LOGGER.debug(
+#         f"update_user_business_guid() with: user_id: {user_id} "
+#         + f"business_guid: {business_guid} from requester: {requester}"
+#     )
+#     if business_guid is not None:
+#         user = get_user(db, user_id)
+#         if user.business_guid is None or business_guid != user.business_guid:
+#             # update user when necessary.
+#             update(
+#                 db, user_id, {models.FamUser.business_guid: business_guid}, requester
+#             )
+#     return get_user(db, user_id)
 
 
 def fetch_initial_requester_info(

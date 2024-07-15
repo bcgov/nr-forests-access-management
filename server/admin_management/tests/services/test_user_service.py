@@ -96,7 +96,7 @@ def test_update_user_name(user_service: UserService, user_repo: UserRepository):
 
 
 # TODO: this is removed due to business_guid update is now part of
-# update_user_properties_from_verified_target_user().
+# update_user_properties_from_verified_target_user(). Add new tests instead.
 
 # def test_update_user_business_guid(
 #     user_service: UserService, user_repo: UserRepository
