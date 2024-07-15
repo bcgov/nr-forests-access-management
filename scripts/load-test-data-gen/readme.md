@@ -20,6 +20,7 @@ git clone https://github.com/bcgov/nr-forests-access-management.git
 
 Each time:
 cd /tmp/nr-forests*
+git stash
 git checkout <branch with revised data.sql>
 git pull
 cd scripts/load-test-data-gen
