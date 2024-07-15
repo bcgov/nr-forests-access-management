@@ -1,13 +1,14 @@
 import logging
 from http import HTTPStatus
 
+from sqlalchemy.orm import Session
+
 from api.app import schemas
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
 from api.app.utils import utils
-from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class ApplicationAdminService:
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, request.user_guid, requester
         )
-        fam_user = self.user_service.update_common_user_properties(
+        fam_user = self.user_service.update_user_properties_from_verified_target_user(
             fam_user.user_id, target_user, requester
         )
 

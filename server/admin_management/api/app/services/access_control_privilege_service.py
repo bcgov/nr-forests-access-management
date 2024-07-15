@@ -2,6 +2,8 @@ import logging
 from http import HTTPStatus
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from api.app import constants as famConstants
 from api.app import schemas
 from api.app.integration.forest_client_integration import \
@@ -14,7 +16,6 @@ from api.app.services.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
 from api.app.utils import utils
-from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,11 +62,8 @@ class AccessControlPrivilegeService:
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, request.user_guid, requester
         )
-        fam_user = self.user_service.update_common_user_properties(
+        fam_user = self.user_service.update_user_properties_from_verified_target_user(
             fam_user.user_id, target_user, requester
-        )
-        fam_user = self.user_service.update_user_business_guid(
-            fam_user.user_id, target_user.business_guid, requester
         )
 
         # Verify if role exists
