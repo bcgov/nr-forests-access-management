@@ -2,25 +2,19 @@ import logging
 from http import HTTPStatus
 
 import starlette.testclient
+
 import tests.jwt_utils as jwt_utils
-from api.app.constants import (
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    AdminRoleAuthGroup,
-    UserType,
-)
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               AdminRoleAuthGroup, UserType)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
-from api.app.routers.router_guards import (
-    ERROR_INVALID_APPLICATION_ID,
-    ERROR_NOT_ALLOWED_USER_TYPE,
-)
-from tests.constants import (
-    TEST_APPLICATION_NAME_FAM,
-    TEST_FOM_DEV_ADMIN_ROLE,
-    TEST_INVALID_USER_TYPE,
-    TEST_NEW_APPLICATION_ADMIN,
-    TEST_NOT_EXIST_APPLICATION_ID,
-)
+from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
+                                           ERROR_NOT_ALLOWED_USER_TYPE)
+from api.app.services.user_service import UserService
+from tests.constants import (TEST_APPLICATION_NAME_FAM,
+                             TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
+                             TEST_NEW_APPLICATION_ADMIN,
+                             TEST_NOT_EXIST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/application_admins"
@@ -30,6 +24,7 @@ def test_create_application_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    user_service: UserService
 ):
     # test create with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
@@ -41,7 +36,13 @@ def test_create_application_admin(
     assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
 
     # override router guard dependencies
-    override_get_verified_target_user(TEST_NEW_APPLICATION_ADMIN)
+    target_user_override = {
+        **TEST_NEW_APPLICATION_ADMIN,
+        "first_name": "test",
+        "last_name": "app_admin",
+        "email": "test_app_admin@test.com"
+    }
+    override_get_verified_target_user(target_user_override)
 
     # test create application admin
     token = jwt_utils.create_jwt_token(
@@ -56,6 +57,17 @@ def test_create_application_admin(
     assert data.get("application_id") == TEST_NEW_APPLICATION_ADMIN.get(
         "application_id"
     )
+
+    # also verify fam_user gets updated for first_name, last_name, email
+    user = user_service.get_user_by_domain_and_name(
+        TEST_NEW_APPLICATION_ADMIN.get("user_type_code"),
+        TEST_NEW_APPLICATION_ADMIN.get("user_name")
+    )
+    assert user is not None
+    assert user.user_id == data.get("user_id")
+    assert user.first_name == target_user_override["first_name"]
+    assert user.last_name == target_user_override["last_name"]
+    assert user.email == target_user_override["email"]
 
     # test create duplicate application admin
     response = test_client_fixture.post(
