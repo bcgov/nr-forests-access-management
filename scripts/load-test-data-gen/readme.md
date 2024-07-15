@@ -17,9 +17,11 @@ sudo yum install git
 sudo yum install dos2unix
 git clone https://github.com/bcgov/nr-forests-access-management.git
 
+
 Each time:
 cd /tmp/nr-forests*
 git checkout <branch with revised data.sql>
+git pull
 cd scripts/load-test-data-gen
 dos2unix data.sql
 psql -h test-fam-cluster.cluster-cbsbrkv1tjh1.ca-central-1.rds.amazonaws.com -p 5432 -U sysadmin famdb < data.sql
