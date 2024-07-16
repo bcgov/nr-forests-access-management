@@ -1,7 +1,7 @@
 import copy
 import logging
 
-from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER, AppEnv,
                                IdimSearchUserParamType, UserType)
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
@@ -12,9 +12,15 @@ LOGGER = logging.getLogger(__name__)
 
 
 class TargetUserValidator:
-    def __init__(self, requester: Requester, target_user: TargetUser):
+    def __init__(
+            self,
+            requester: Requester,
+            target_user: TargetUser,
+            app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST
+    ):
+        LOGGER.debug(f"Validating target env set to: {app_env}")
         self.verified_target_user = copy.deepcopy(target_user)
-        self.idim_proxy_service = IdimProxyService(requester)
+        self.idim_proxy_service = IdimProxyService(requester, app_env)
 
     def verify_user_exist(self) -> TargetUser:
         search_result = None

@@ -2,9 +2,10 @@ import logging
 from http import HTTPStatus
 
 import requests
-from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType, AppEnv
+from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, AppEnv, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import IdimProxyBceidSearchParam, IdimProxySearchParam, Requester
+from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
+                             Requester)
 from api.config import config
 from fastapi import HTTPException
 
@@ -20,10 +21,16 @@ class IdimProxyService:
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
     def __init__(self, requester: Requester, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
+        if app_env == AppEnv.APP_ENV_TYPE_DEV:
+            self.api_instance_env = AppEnv.APP_ENV_TYPE_TEST
+        else:
+            self.api_instance_env = app_env
+        LOGGER.debug(f"IDIM search using api instance env: {self.api_instance_env.value}")
+
         self.requester = requester
         # by default use test idim proxy url if not specify the application enviornment
         self.api_idim_proxy_url = (
-            f"{config.get_idim_proxy_api_baseurl(app_env)}/api/idim-webservice"
+            f"{config.get_idim_proxy_api_baseurl(self.api_instance_env)}/api/idim-webservice"
         )
         self.API_KEY = config.get_idim_proxy_api_key()
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}
