@@ -1,4 +1,4 @@
-import type { FamApplicationDto, AppEnv } from 'fam-admin-mgmt-api/model';
+import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
@@ -30,14 +30,6 @@ export const selectedApplicationId = computed(() => {
 
 // --- Getter
 
-export const selectedApplicationShortDisplayText = computed(() => {
-    if (selectedApplication.value) {
-        return `${selectedApplication.value.name.toUpperCase()}`;
-    } else {
-        return '';
-    }
-});
-
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {
         return `${selectedApplication.value.description}`;
@@ -45,5 +37,3 @@ export const selectedApplicationDisplayText = computed(() => {
         return '';
     }
 });
-
-export const selectedApplicationEnv = selectedApplication.value?.env as AppEnv;
