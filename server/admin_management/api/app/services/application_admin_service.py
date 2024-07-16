@@ -1,13 +1,14 @@
 import logging
 from http import HTTPStatus
 
+from sqlalchemy.orm import Session
+
 from api.app import schemas
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
 from api.app.utils import utils
-from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +30,8 @@ class ApplicationAdminService:
         )
 
     def create_application_admin(
-        self, request: schemas.FamAppAdminCreateRequest, requester: str
+        self, request: schemas.FamAppAdminCreateRequest,
+        target_user: schemas.TargetUser, requester: str
     ) -> schemas.FamAppAdminGetResponse:
         # Request has information: user_name, user_type_code, application_id
         LOGGER.debug(
@@ -39,6 +41,9 @@ class ApplicationAdminService:
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
             request.user_type_code, request.user_name, request.user_guid, requester
+        )
+        fam_user = self.user_service.update_user_properties_from_verified_target_user(
+            fam_user.user_id, target_user, requester
         )
 
         # Verify if user is admin already
