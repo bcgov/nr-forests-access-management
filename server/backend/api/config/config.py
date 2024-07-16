@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import boto3
+from api.app.constants import AppEnv
 
 from api.app.constants import AppEnv
 
@@ -17,6 +18,20 @@ def get_env_var(env_var_name):
 
 def is_on_aws():
     return os.environ.get("DB_SECRET") is not None  # This key only presents on aws.
+
+
+def get_aws_target_env():
+    # target_env is assigned from gov's AWS platform, does not exist in local.
+    return os.environ.get("target_env")
+
+
+def is_aws_prod():
+    return get_aws_target_env() == "prod"
+
+
+def get_api_instance_env_by_app_env(app_env: AppEnv) -> str:
+    if is_aws_prod():
+        return TODO
 
 
 def get_db_string():
@@ -147,17 +162,17 @@ def get_allow_origins():
     return allow_origins
 
 
-def get_forest_client_api_token():
-    api_token = get_env_var("FC_API_TOKEN")
+def get_forest_client_api_token(env: str = "TEST"):
+    api_token = (
+        get_env_var("FC_API_TOKEN".jon("_", env.upper))
+    )
     return api_token
 
 
-def get_forest_client_api_baseurl():
+def get_forest_client_api_baseurl(api_env: str = "TEST"):
     forest_client_api_baseurl = (
-        get_env_var("FC_API_BASE_URL")
-        if is_on_aws()
-        else "https://nr-forest-client-api-test.api.gov.bc.ca"
-    )  # Test env.
+        get_env_var("FC_API_BASE_URL".join("_", api_env.upper()))
+    )
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
 
