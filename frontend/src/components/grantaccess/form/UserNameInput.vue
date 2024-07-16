@@ -11,7 +11,7 @@ import { UserType, AppEnv } from 'fam-app-acsctl-api';
 import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import {
-    selectedApplicationEnv,
+    selectedApplication,
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
@@ -43,7 +43,7 @@ const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
 );
 const verifyUserId = async () => {
     try {
-        let appEnv = selectedApplicationEnv;
+        let appEnv = selectedApplication.value?.env as AppEnv;
         if (!appEnv && selectedApplicationId.value == FAM_APPLICATION_ID)
             appEnv = AppEnv.Prod;
 
