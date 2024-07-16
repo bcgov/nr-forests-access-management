@@ -185,6 +185,17 @@ variable "idim_proxy_api_base_url" {
   sensitive = true
 }
 
+variable "idim_proxy_api_base_url_prod" {
+  type = string
+  sensitive = true
+  default = "no need in dev and test env"
+}
+
+variable "idim_proxy_api_base_url_test" {
+  type = string
+  sensitive = true
+}
+
 variable "idim_proxy_api_api_key" {
   type = string
   sensitive = true
