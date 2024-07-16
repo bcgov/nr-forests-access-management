@@ -129,8 +129,10 @@ resource "aws_lambda_function" "fam_admin_management_api_function" {
 
       ALLOW_ORIGIN = "${var.front_end_redirect_path}"
 
-      FC_API_TOKEN = "${var.forest_client_api_api_key}"
-      FC_API_BASE_URL = "${var.forest_client_api_base_url}"
+      FC_API_TOKEN_TEST = "${var.forest_client_api_api_key}"
+      FC_API_BASE_URL_TEST = "${var.forest_client_api_base_url.test}"
+      FC_API_TOKEN_PROD = "${var.forest_client_api_api_key}"
+      FC_API_BASE_URL_PROD = "${var.forest_client_api_base_url.prod}"
 
       IDIM_PROXY_BASE_URL = "${var.idim_proxy_api_base_url}"
       IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"

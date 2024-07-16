@@ -176,8 +176,7 @@ variable "forest_client_api_api_key" {
 }
 
 variable "forest_client_api_base_url" {
-  type = string
-  sensitive = true
+  type = map
 }
 
 variable "idim_proxy_api_base_url" {
