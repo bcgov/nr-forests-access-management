@@ -7,11 +7,10 @@ from api.app.crud import crud_role, crud_user_role
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_CREATOR, FOM_DEV_REVIEWER_ROLE_ID,
-                               FOM_DEV_SUBMITTER_ROLE_ID,
-                               NOT_EXIST_ROLE_ID,
-                               TEST_NOT_EXIST_USER_TYPE,
-                               ACCESS_GRANT_FOM_DEV_CR_IDIR)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID, NOT_EXIST_ROLE_ID,
+                               TEST_CREATOR, TEST_NOT_EXIST_USER_TYPE)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,9 +24,12 @@ def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     user_role["role_id"] = NOT_EXIST_ROLE_ID
 
     with pytest.raises(HTTPException) as e:
+
+        mocked_target_user = schemas.TargetUser(**user_role)
         assert crud_user_role.create_user_role(
             db_pg_session,
             schemas.FamUserRoleAssignmentCreate(**user_role),
+            mocked_target_user,
             TEST_CREATOR
         )
     assert str(e._excinfo).find("Role id ") != -1

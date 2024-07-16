@@ -1,6 +1,7 @@
 import logging
 
 import api.app.schemas as schemas
+import pytest
 from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION, UserType
 from api.app.crud import crud_user
 from api.app.models.model import FamUserTermsConditions
@@ -187,71 +188,56 @@ def test_update_user_name(db_pg_session: Session):
     assert found_user.user_name == NEW_USERNAME
 
 
-def test_update_user_business_guid(db_pg_session: Session):
-    # create a business user
+@pytest.mark.parametrize(
+    "new_user_initial_config, update_properties",
+    [
+        (TEST_NEW_BCEID_USER, {
+            "first_name": "test", "last_name": "bceid", "email": "becid_user@test.com", "business_guid": "test_business_guid"
+        }),
+        (TEST_NEW_USER, {  # IDIR
+            "first_name": "test", "last_name": "idir", "email": "idir_user@test.com", "business_guid": None
+        }),
+        (TEST_NEW_USER, {
+            "first_name": None, "last_name": None, "email": None, "business_guid": None
+        })
+    ]
+)
+def test_update_user_properties_from_verified_target_user(
+    new_user_initial_config,
+    update_properties,
+    db_pg_session: Session
+):
+    # create a new user
     new_user = crud_user.create_user(
-        schemas.FamUser(**TEST_NEW_BCEID_USER), db_pg_session
+        schemas.FamUser(**new_user_initial_config), db_pg_session
     )
-    # verify new user is created
+    # verify new user is created with no additoinal properties set.
     found_user = crud_user.get_user_by_domain_and_name(
         db_pg_session,
-        TEST_NEW_BCEID_USER["user_type_code"],
-        TEST_NEW_BCEID_USER["user_name"],
+        new_user_initial_config["user_type_code"],
+        new_user_initial_config["user_name"],
     )
     assert new_user.user_id == found_user.user_id
+    assert new_user.first_name is None
+    assert new_user.last_name is None
+    assert new_user.email is None
+    assert new_user.business_guid is None
 
-    # test update business guid when no business guid stored
-    business_guid = "MOCKEDBUSINESSGUID5D4ACA9FA901EE"
-    updated_user = crud_user.update_user_business_guid(
+    target_user = schemas.TargetUser(
+        **new_user_initial_config,
+        **update_properties
+    )
+    updated_user = crud_user.update_user_properties_from_verified_target_user(
         db_pg_session,
         found_user.user_id,
-        business_guid,
-        TEST_NEW_USER["create_user"],
+        target_user,
+        found_user.create_user
     )
-    assert updated_user.business_guid == business_guid
-    # verify the business_guid is updated
-    found_user = crud_user.get_user_by_domain_and_name(
-        db_pg_session,
-        TEST_NEW_BCEID_USER["user_type_code"],
-        TEST_NEW_BCEID_USER["user_name"],
-    )
-    assert found_user.user_id == updated_user.user_id
-    assert found_user.business_guid == business_guid
-
-    # test update business guid when business guid mismatch
-    new_business_guid = "MOCKEDNEWBUSINESSGUID5D4ACA9FA90"
-    updated_user = crud_user.update_user_business_guid(
-        db_pg_session,
-        found_user.user_id,
-        new_business_guid,
-        TEST_NEW_USER["create_user"],
-    )
-    assert updated_user.business_guid == new_business_guid
-    # verify the business guid is updated
-    found_user = crud_user.get_user_by_domain_and_name(
-        db_pg_session,
-        TEST_NEW_BCEID_USER["user_type_code"],
-        TEST_NEW_BCEID_USER["user_name"],
-    )
-    assert found_user.user_id == updated_user.user_id
-    assert found_user.business_guid == new_business_guid
-
-    # test business no need to be updated
-    updated_user = crud_user.update_user_business_guid(
-        db_pg_session,
-        found_user.user_id,
-        new_business_guid,
-        TEST_NEW_USER["create_user"],
-    )
-    assert updated_user.business_guid == new_business_guid
-    # verify the business guid is updated
-    found_user = crud_user.get_user_by_domain_and_name(
-        db_pg_session,
-        TEST_NEW_BCEID_USER["user_type_code"],
-        TEST_NEW_BCEID_USER["user_name"],
-    )
-    assert found_user.user_id == updated_user.user_id
-    assert found_user.business_guid == new_business_guid
+    assert updated_user.user_id == found_user.user_id
+    assert updated_user.first_name == update_properties.get("first_name")
+    assert updated_user.last_name == update_properties.get("last_name")
+    assert updated_user.email == update_properties.get("email")
+    assert updated_user.business_guid == update_properties.get("business_guid")
 
 
 def test_fetch_initial_requester_info_can_join_terms_conditions(
