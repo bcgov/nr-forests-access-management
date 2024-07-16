@@ -21,11 +21,11 @@ class IdimProxyService:
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
     def __init__(self, requester: Requester, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
-        if app_env == AppEnv.APP_ENV_TYPE_DEV:
+        if app_env is None or app_env == AppEnv.APP_ENV_TYPE_DEV:
             self.api_instance_env = AppEnv.APP_ENV_TYPE_TEST
         else:
             self.api_instance_env = app_env
-        LOGGER.debug(f"IDIM search using api instance env: {self.api_instance_env.value}")
+        LOGGER.debug(f"IDIM search using api instance env: {self.api_instance_env}")
 
         self.requester = requester
         # by default use test idim proxy url if not specify the application enviornment
