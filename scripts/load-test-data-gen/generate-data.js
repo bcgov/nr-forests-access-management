@@ -74,11 +74,12 @@ function generateForestClients() {
 }
 
 function generateRoles() {
-    console.log(`INSERT INTO app_fam.fam_role (role_id, role_name, role_purpose, application_id, role_type_code, create_user) OVERRIDING SYSTEM VALUE VALUES`);
+    console.log(`INSERT INTO app_fam.fam_role (role_id, role_name, role_purpose, application_id, parent_role_id, role_type_code, create_user) OVERRIDING SYSTEM VALUE VALUES`);
 
     var roleId = minId;
 
-    var abstractRoles = []
+    var abstractRoleNames = []
+    var abstractRoleIds = []
     const totalRoles = 5100;
     const abstractRoleCount = (totalRoles / clientNumbers.length);
 
@@ -87,16 +88,17 @@ function generateRoles() {
         if (i == 0) {
             prefix = '';
         }
-        abstractRole = `LOAD_TESTER_${i}`
-        console.log(`${prefix}( ${roleId}, '${abstractRole}', 'Fake abstract role for load testing', ${appId}, 'A', '${createUser}')`);
-        abstractRoles.push(abstractRole);
+        var abstractRoleName = `LOAD_TESTER_${i}`
+        console.log(`${prefix}( ${roleId}, '${abstractRoleName}', 'Fake abstract role for load testing', ${appId}, null, 'A', '${createUser}')`);
+        abstractRoleNames.push(abstractRoleName);
+        abstractRoleIds.push(roleId);
         roleId++;
     }
 
-    for (var r = 0; r < abstractRoles.length; r++) {
+    for (var r = 0; r < abstractRoleNames.length; r++) {
         for (var i = 0; i < clientNumbers.length; i++) {
             var clientNumber = clientNumbers[i];
-            console.log(`,( ${roleId}, '${abstractRoles[r]}_${clientNumber}', 'Fake concrete role for load testing', ${appId}, 'C', '${createUser}')`);
+            console.log(`,( ${roleId}, '${abstractRoleNames[r]}_${clientNumber}', 'Fake concrete role for load testing', ${appId}, ${abstractRoleIds[r]},'C', '${createUser}')`);
             roles.push(roleId);
             roleId++;
         }
