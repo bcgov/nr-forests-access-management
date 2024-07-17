@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
+import { AppEnv } from '../model';
+// @ts-ignore
 import { FamForestClient } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
@@ -35,10 +37,11 @@ export const FAMForestClientsApiAxiosParamCreator = function (configuration?: Co
          * Forest Client(s) search (by defined query parameter(s)).  param: \'client_number=[query_value]\'        Note! Current Forest Client API limits it to exact search for a whole 8-digits number.  return: List of found FamForestClient. However, currently only 1 exact match returns.
          * @summary Search
          * @param {string} clientNumber 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (clientNumber: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (clientNumber: string, appEnv?: AppEnv, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'clientNumber' is not null or undefined
             assertParamExists('search', 'clientNumber', clientNumber)
             const localVarPath = `/forest_clients/search`;
@@ -59,6 +62,10 @@ export const FAMForestClientsApiAxiosParamCreator = function (configuration?: Co
 
             if (clientNumber !== undefined) {
                 localVarQueryParameter['client_number'] = clientNumber;
+            }
+
+            if (appEnv !== undefined) {
+                localVarQueryParameter['app_env'] = appEnv;
             }
 
 
@@ -86,11 +93,12 @@ export const FAMForestClientsApiFp = function(configuration?: Configuration) {
          * Forest Client(s) search (by defined query parameter(s)).  param: \'client_number=[query_value]\'        Note! Current Forest Client API limits it to exact search for a whole 8-digits number.  return: List of found FamForestClient. However, currently only 1 exact match returns.
          * @summary Search
          * @param {string} clientNumber 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(clientNumber: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamForestClient>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(clientNumber, options);
+        async search(clientNumber: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamForestClient>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(clientNumber, appEnv, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMForestClientsApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -109,11 +117,12 @@ export const FAMForestClientsApiFactory = function (configuration?: Configuratio
          * Forest Client(s) search (by defined query parameter(s)).  param: \'client_number=[query_value]\'        Note! Current Forest Client API limits it to exact search for a whole 8-digits number.  return: List of found FamForestClient. However, currently only 1 exact match returns.
          * @summary Search
          * @param {string} clientNumber 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(clientNumber: string, options?: any): AxiosPromise<Array<FamForestClient>> {
-            return localVarFp.search(clientNumber, options).then((request) => request(axios, basePath));
+        search(clientNumber: string, appEnv?: AppEnv, options?: any): AxiosPromise<Array<FamForestClient>> {
+            return localVarFp.search(clientNumber, appEnv, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -128,11 +137,12 @@ export interface FAMForestClientsApiInterface {
      * Forest Client(s) search (by defined query parameter(s)).  param: \'client_number=[query_value]\'        Note! Current Forest Client API limits it to exact search for a whole 8-digits number.  return: List of found FamForestClient. However, currently only 1 exact match returns.
      * @summary Search
      * @param {string} clientNumber 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMForestClientsApiInterface
      */
-    search(clientNumber: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamForestClient>>;
+    search(clientNumber: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamForestClient>>;
 
 }
 
@@ -147,12 +157,13 @@ export class FAMForestClientsApi extends BaseAPI implements FAMForestClientsApiI
      * Forest Client(s) search (by defined query parameter(s)).  param: \'client_number=[query_value]\'        Note! Current Forest Client API limits it to exact search for a whole 8-digits number.  return: List of found FamForestClient. However, currently only 1 exact match returns.
      * @summary Search
      * @param {string} clientNumber 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMForestClientsApi
      */
-    public search(clientNumber: string, options?: RawAxiosRequestConfig) {
-        return FAMForestClientsApiFp(this.configuration).search(clientNumber, options).then((request) => request(this.axios, this.basePath));
+    public search(clientNumber: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig) {
+        return FAMForestClientsApiFp(this.configuration).search(clientNumber, appEnv, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
