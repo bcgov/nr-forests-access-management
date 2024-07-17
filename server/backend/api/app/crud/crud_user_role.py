@@ -88,7 +88,7 @@ def create_user_role(
                 error_msg=error_msg
             )
 
-        validator = UserRoleValidator(request)
+        validator = UserRoleValidator(request, fam_role.application.app_environment)
         if (not validator.forest_client_number_exists()):
             error_msg = (
                 "Invalid role assignment request. " +
@@ -279,14 +279,18 @@ class UserRoleValidator:
     """
     LOGGER = logging.getLogger(__name__)
 
-    def __init__(self, request: schemas.FamUserRoleAssignmentCreate):
+    def __init__(
+        self,
+        request: schemas.FamUserRoleAssignmentCreate,
+        app_env: famConstants.AppEnv = famConstants.AppEnv.APP_ENV_TYPE_TEST
+    ):
         LOGGER.debug(f"Validator '{self.__class__.__name__}' with input '{request}'.")
 
         self.user_role_request = request
         # Note - this value should already be validated from schema input validation.
         forest_client_number = request.forest_client_number
         if forest_client_number is not None:
-            fc_api = ForestClientService()
+            fc_api = ForestClientService(app_env)
 
             # Locally stored (if any) for later use to prevent api calls again.
             # Exact client number search - should only contain 1 result.
