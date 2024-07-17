@@ -29,6 +29,8 @@ jobs:
       test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
+      idim_proxy_api_api_key_test: "${{ secrets.IDIM_PROXY_API_API_KEY_TEST }}"
+      idim_proxy_api_api_key_prod: "${{ secrets.IDIM_PROXY_API_API_KEY_PROD }}"
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
 
   aws-prod-deployment-frontend:

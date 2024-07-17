@@ -38,6 +38,10 @@ on:
         required: true
       idim_proxy_api_api_key:
         required: true
+      idim_proxy_api_api_key_test:
+        required: true
+      idim_proxy_api_api_key_prod:
+        required: false
       gc_notify_email_api_key:
         required: true
 
@@ -172,6 +176,8 @@ jobs:
           test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           idim_proxy_api_api_key = "${{ secrets.idim_proxy_api_api_key }}"
+          idim_proxy_api_api_key_test = "${{ secrets.idim_proxy_api_api_key_test }}"
+          idim_proxy_api_api_key_prod = "${{ secrets.idim_proxy_api_api_key_prod }}"
           gc_notify_email_api_key = "${{ secrets.gc_notify_email_api_key }}"
           EOF
 

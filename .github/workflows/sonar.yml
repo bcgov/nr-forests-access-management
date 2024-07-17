@@ -73,6 +73,7 @@ jobs:
         env:
           FC_API_TOKEN: ${{ secrets.FOREST_CLIENT_API_API_KEY }}
           IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+          IDIM_PROXY_API_KEY_TEST: ${{ secrets.IDIM_PROXY_API_API_KEY }}
           GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
           TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
         run: |
