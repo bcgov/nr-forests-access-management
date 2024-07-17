@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.19.0...v1.19.1) (2024-07-17)
+
+
+### Bug Fixes
+
+* [#1481](https://github.com/bcgov/nr-forests-access-management/issues/1481) Fix target env in backend to match app env with lower case ([#1491](https://github.com/bcgov/nr-forests-access-management/issues/1491)) ([5a49e2e](https://github.com/bcgov/nr-forests-access-management/commit/5a49e2e668d1abd2b1f8ef4b0a93a0027ce8866d))
+
 ## [1.19.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.18.1...v1.19.0) (2024-07-16)
 
 
