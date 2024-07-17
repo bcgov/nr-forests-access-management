@@ -7,10 +7,6 @@ inputs = {
   idp_logout_chain_prod_url = "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
   idp_logout_chain_tools_url = "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
 
-  # IDIM Proxy API user search common configs.
-  idim_proxy_api_test_base_url = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
-  idim_proxy_api_prod_base_url = "https://nr-fam-idim-lookup-proxy-prod-backend.apps.silver.devops.gov.bc.ca"
-
   # Forest Clients API Search common configs.
   forest_client_api_test_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
   forest_client_api_prod_base_url = "https://nr-forest-client-api-prod.api.gov.bc.ca"

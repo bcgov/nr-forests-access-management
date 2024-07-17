@@ -176,7 +176,16 @@ variable "forest_client_api_api_key" {
 }
 
 variable "forest_client_api_base_url" {
-  type = map
+  type = string
+}
+
+variable "forest_client_api_base_url_test" {
+  type = string
+}
+
+variable "forest_client_api_base_url_prod" {
+  type = string
+  default = "not_available"
 }
 
 variable "idim_proxy_api_base_url" {
