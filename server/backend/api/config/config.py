@@ -166,7 +166,7 @@ def get_idim_proxy_api_baseurl(app_env: AppEnv):
     idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_TEST")
     if (
         app_env == AppEnv.APP_ENV_TYPE_PROD
-        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD
+        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD.lower()
     ):
         # only prod application integrated with FAM PROD can verify production users
         idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_PROD")
