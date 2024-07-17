@@ -1,10 +1,9 @@
 import json
 import logging
 import os
+
 import boto3
-
 from api.app.constants import AppEnv
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -174,8 +173,16 @@ def get_idim_proxy_api_baseurl(app_env: AppEnv):
     return idim_proxy_api_baseurl
 
 
-def get_idim_proxy_api_key():
-    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+def get_idim_proxy_api_key(app_env: AppEnv):
+    # idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
+    idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY_TEST")
+    LOGGER.info("Default to use key: IDIM_PROXY_API_KEY_TEST")
+    if (
+        app_env == AppEnv.APP_ENV_TYPE_PROD
+        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD
+    ):
+        idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY_PROD")
+        LOGGER.info("Use key: IDIM_PROXY_API_KEY_PROD")
     return idim_proxy_api_key
 
 

@@ -22,7 +22,7 @@ class IdimProxyService:
 
     def __init__(self, requester: Requester, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
         # TODO: get_idim_proxy_api_baseurl() already has swithcing logic based on app_env
-        # comment below by passing app_env to config; review again later.
+        # comment out below by passing app_env to config; review again later.
         # if app_env is None or app_env == AppEnv.APP_ENV_TYPE_DEV:
         #     self.api_instance_env = AppEnv.APP_ENV_TYPE_TEST
         # else:
@@ -34,7 +34,7 @@ class IdimProxyService:
         self.api_idim_proxy_url = (
             f"{config.get_idim_proxy_api_baseurl(app_env)}/api/idim-webservice"
         )
-        self.API_KEY = config.get_idim_proxy_api_key()
+        self.API_KEY = config.get_idim_proxy_api_key(app_env)
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}
 
         self.session = requests.Session()
