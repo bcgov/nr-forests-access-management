@@ -1,11 +1,9 @@
 import json
 import logging
 import os
+
 import boto3
-from api.app.constants import AppEnv
-
-from api.app.constants import AppEnv
-
+from api.app.constants import ApiInstanceEnv, AppEnv, AwsTargetEnv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,12 +24,7 @@ def get_aws_target_env():
 
 
 def is_aws_prod():
-    return get_aws_target_env() == "prod"
-
-
-def get_api_instance_env_by_app_env(app_env: AppEnv) -> str:
-    if is_aws_prod():
-        return TODO
+    return get_aws_target_env() == AwsTargetEnv.PROD.value()
 
 
 def get_db_string():
@@ -162,19 +155,34 @@ def get_allow_origins():
     return allow_origins
 
 
-def get_forest_client_api_token(env: str = "TEST"):
-    api_token = (
-        get_env_var("FC_API_TOKEN".jon("_", env.upper))
-    )
+def get_forest_client_api_token(env: ApiInstanceEnv = ApiInstanceEnv.TEST):
+    api_key = "FC_API_TOKEN".jon("_", env.value())
+    LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
+    api_token = get_env_var(api_key)
     return api_token
 
 
-def get_forest_client_api_baseurl(api_env: str = "TEST"):
+def get_forest_client_api_baseurl(env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     forest_client_api_baseurl = (
-        get_env_var("FC_API_BASE_URL".join("_", api_env.upper()))
+        get_env_var("FC_API_BASE_URL".join("_", env.value()))
     )
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
+
+
+def get_api_instance_by_app_env(app_env: AppEnv):
+    """
+    In each FAM environment (DEV/TEST/PROD), it supports applications with (DEV/TET/PROD)
+    Only FAM PROD with application(PROD) use API instance in PROD.
+    """
+    app_instance_env = ApiInstanceEnv.TEST  # default.
+    if (
+        is_aws_prod() and app_env == AppEnv.APP_ENV_TYPE_PROD
+    ):
+        app_instance_env = ApiInstanceEnv.PROD
+
+    LOGGER.info(f"Use api instance environment -- {app_instance_env}")
+    return app_instance_env
 
 
 def get_idim_proxy_api_baseurl(app_env: AppEnv):

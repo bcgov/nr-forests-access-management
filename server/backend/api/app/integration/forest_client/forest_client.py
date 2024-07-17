@@ -22,9 +22,13 @@ class ForestClientService():
     TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
 
     def __init__(self, app_env: AppEnv):
-        self.api_base_url = config.get_forest_client_api_baseurl(??)
+        self.api_base_url = config.get_forest_client_api_baseurl(
+            config.get_api_instance_by_app_env(app_env)
+        )
         self.api_clients_url = f"{self.api_base_url}/api/clients"
-        self.API_TOKEN = config.get_forest_client_api_token(??)
+        self.API_TOKEN = config.get_forest_client_api_token(
+            config.get_api_instance_by_app_env(app_env)
+        )
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 
         # See Python: https://requests.readthedocs.io/en/latest/user/advanced/
