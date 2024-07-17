@@ -13,6 +13,7 @@ class RoleType(str, Enum):
 
 
 class AppEnv(str, Enum):
+    FAM = "FAM"  # FAM is special, there is no env for FAM.
     APP_ENV_TYPE_DEV = "DEV"
     APP_ENV_TYPE_TEST = "TEST"
     APP_ENV_TYPE_PROD = "PROD"

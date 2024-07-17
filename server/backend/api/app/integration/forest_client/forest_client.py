@@ -16,18 +16,25 @@ class ForestClientService():
     Spec of API:
         test: https://nr-forest-client-api-test.api.gov.bc.ca/
         prod: https://nr-forest-client-api-prod.api.gov.bc.ca/
+
+    Note! This is external API integration and FAM supports 3 applications environments in PROD.
+          For FAM(PROD)-Application(PROD): it will connect to ForestClientAPI PROD instance.
+          For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
+          The env switching "config.get_api_instance_by_app_env()" is for above purpose.
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
 
     def __init__(self, app_env: AppEnv):
+        self.apiInstanceEnv = config.get_api_instance_by_app_env(app_env)
+        LOGGER.debug(f"ForestClientService() use API instance - {self.apiInstanceEnv}")
         self.api_base_url = config.get_forest_client_api_baseurl(
-            config.get_api_instance_by_app_env(app_env)
+            self.apiInstanceEnv
         )
         self.api_clients_url = f"{self.api_base_url}/api/clients"
         self.API_TOKEN = config.get_forest_client_api_token(
-            config.get_api_instance_by_app_env(app_env)
+            self.apiInstanceEnv
         )
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 
