@@ -2,7 +2,7 @@ import logging
 from http import HTTPStatus
 
 import requests
-from api.app.constants import AppEnv
+from api.app.constants import ApiInstanceEnv
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -27,14 +27,11 @@ class ForestClientService():
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
-    def __init__(self, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
-        # api instance to use.
-        self.apiInstanceEnv = config.use_api_instance_by_app_env(app_env)
-        LOGGER.debug(f"ForestClientService() use API instance - {self.apiInstanceEnv}")
-
-        self.api_base_url = config.get_forest_client_api_baseurl(self.apiInstanceEnv)
+    def __init__(self, api_instance_env=ApiInstanceEnv.TEST):
+        LOGGER.debug(f"ForestClientService() use API instance - {api_instance_env}")
+        self.api_base_url = config.get_forest_client_api_baseurl(api_instance_env)
         self.api_clients_url = f"{self.api_base_url}/api/clients"
-        self.API_TOKEN = config.get_forest_client_api_token(self.apiInstanceEnv)
+        self.API_TOKEN = config.get_forest_client_api_token(api_instance_env)
 
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 

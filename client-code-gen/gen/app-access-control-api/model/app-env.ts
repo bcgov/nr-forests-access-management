@@ -21,7 +21,6 @@
  */
 
 export const AppEnv = {
-    Fam: 'FAM',
     Dev: 'DEV',
     Test: 'TEST',
     Prod: 'PROD'

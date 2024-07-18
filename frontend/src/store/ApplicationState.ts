@@ -1,6 +1,4 @@
-import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import { AppEnv } from 'fam-app-acsctl-api/model/app-env';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
@@ -38,11 +36,4 @@ export const selectedApplicationDisplayText = computed(() => {
     } else {
         return '';
     }
-});
-
-export const selectedApplicationEnv = computed(() => {
-    let appEnv = selectedApplication.value?.env as AppEnv;
-    if (selectedApplicationId.value == FAM_APPLICATION_ID)
-        appEnv = AppEnv.Fam
-    return appEnv
 });

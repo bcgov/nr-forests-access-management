@@ -2,7 +2,7 @@
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { selectedApplicationEnv } from '@/store/ApplicationState';
+import { selectedApplicationId } from '@/store/ApplicationState';
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import { isLoading } from '@/store/LoadingState';
 import {
@@ -44,7 +44,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             continue;
         }
         await AppActlApiService.forestClientsApi
-            .search(forestClientNumber, selectedApplicationEnv.value)
+            .search(selectedApplicationId.value as number, forestClientNumber)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(

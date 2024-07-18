@@ -7,6 +7,7 @@ from api.app.crud import crud_forest_client, crud_role, crud_user
 from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
+from api.config import config
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -290,7 +291,8 @@ class UserRoleValidator:
         # Note - this value should already be validated from schema input validation.
         forest_client_number = request.forest_client_number
         if forest_client_number is not None:
-            fc_api = ForestClientService(app_env)
+            api_instance_env = config.use_api_instance_by_app_env(app_env)
+            fc_api = ForestClientService(api_instance_env)
 
             # Locally stored (if any) for later use to prevent api calls again.
             # Exact client number search - should only contain 1 result.

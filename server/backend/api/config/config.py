@@ -190,7 +190,7 @@ def use_api_instance_by_app_env(app_env: AppEnv):
     if (is_on_aws_prod() and (
         # either PROD app or app is FAM
         app_env == AppEnv.APP_ENV_TYPE_PROD or
-        app_env == AppEnv.FAM
+        app_env is None  # This is FAM, FAM has no app_environment.
     )):
         app_instance_env = ApiInstanceEnv.PROD
 
