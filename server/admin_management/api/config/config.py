@@ -1,7 +1,9 @@
 import json
 import logging
 import os
+
 import boto3
+from api.app.constants import ApiInstanceEnv, AppEnv, AwsTargetEnv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,8 +33,36 @@ def get_root_path():
     return root_path
 
 
+def get_aws_target_env():
+    # target_env is assigned from gov's AWS platform, does not exist in local (None).
+    return os.environ.get("target_env")
+
+
 def is_on_aws():
     return os.environ.get("DB_SECRET") is not None  # This key only presents on aws.
+
+
+def is_on_aws_prod():
+    return get_aws_target_env() == AwsTargetEnv.PROD.value
+
+
+def use_api_instance_by_app_env(app_env: AppEnv):
+    """
+    FAM PROD environment supports (DEV/TET/PROD) integrated applications.
+    Only (PROD)application at FAM PROD uses API instance in PROD.
+    Lower FAM environment uses only TEST instance.
+    Ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
+    """
+    app_instance_env = ApiInstanceEnv.TEST  # API TEST instance as default.
+    if (is_on_aws_prod() and (
+        # either PROD app or app is FAM
+        app_env == AppEnv.APP_ENV_TYPE_PROD or
+        app_env is None  # This is FAM, FAM has no app_environment.
+    )):
+        app_instance_env = ApiInstanceEnv.PROD
+
+    LOGGER.info(f"Use api instance environment -- {app_instance_env}")
+    return app_instance_env
 
 
 def get_allow_origins():
@@ -132,17 +162,22 @@ def get_user_pool_id():
     return get_env_var(env_var)
 
 
-def get_forest_client_api_token():
-    api_token = get_env_var("FC_API_TOKEN")
-    return api_token
+def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
+    """
+    :param api_env: Api Instance the caller function needs to connect to.
+    """
+    api_key = "FC_API_TOKEN" + "_" + api_env
+    LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
+    return get_env_var(api_key)
 
 
-def get_forest_client_api_baseurl():
+def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     forest_client_api_baseurl = (
-        get_env_var("FC_API_BASE_URL")
+        get_env_var("FC_API_BASE_URL" + "_" + api_env)
         if is_on_aws()
-        else "https://nr-forest-client-api-test.api.gov.bc.ca"
-    )  # Test env.
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # test
+
+    )
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
 

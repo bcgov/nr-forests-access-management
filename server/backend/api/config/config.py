@@ -161,8 +161,7 @@ def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
     api_key = "FC_API_TOKEN" + "_" + api_env
     LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
-    api_token = get_env_var(api_key)
-    return api_token
+    return get_env_var(api_key)
 
 
 def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):

@@ -10,6 +10,22 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
+class ApiInstanceEnv(str, Enum):
+    # Environment constant for connecting to external API.
+    # The integration with external API only has TEST or PROD on API instance.
+    TEST = "TEST"
+    PROD = "PROD"
+
+
+class AwsTargetEnv(str, Enum):
+    # "target_env" only exists on AWS (Injected from Gov AWS platform), for FAM.
+    # It is lower case. Locally it does not need this.
+    # Not to be confused with application environment or API instance environment.
+    DEV = "dev"
+    TEST = "test"
+    PROD = "Prod"
+
+
 class UserType(str, Enum):
     IDIR = "I"
     BCEID = "B"

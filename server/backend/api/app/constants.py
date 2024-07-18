@@ -27,7 +27,7 @@ class ApiInstanceEnv(str, Enum):
 
 class AwsTargetEnv(str, Enum):
     # "target_env" only exists on AWS (Injected from Gov AWS platform), for FAM.
-    # It's lower case, Locally does not need this.
+    # It is lower case. Locally it does not need this.
     # Not to be confused with application environment or API instance environment.
     DEV = "dev"
     TEST = "test"
