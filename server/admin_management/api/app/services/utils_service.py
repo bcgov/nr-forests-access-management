@@ -16,7 +16,7 @@ def is_on_aws_prod() -> bool:
     return get_aws_target_env() == AwsTargetEnv.PROD
 
 
-def use_api_instance_by_app_env(app_env: str | None) -> ApiInstanceEnv:
+def use_api_instance_by_app_env(app_env: str) -> ApiInstanceEnv:
     """
     FAM PROD environment supports (DEV/TET/PROD) integrated applications.
     Only PROD application at FAM PROD uses API instance in PROD.

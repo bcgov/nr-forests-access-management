@@ -43,14 +43,14 @@ const verifyUserId = async () => {
             verifiedUserIdentity.value = (
                 await AppActlApiService.idirBceidProxyApi.bceidSearch(
                     computedUserId.value,
-                    selectedApplicationId.value,
+                    selectedApplicationId.value!,
                 )
             ).data;
         } else {
             verifiedUserIdentity.value = (
                 await AppActlApiService.idirBceidProxyApi.idirSearch(
                     computedUserId.value,
-                    selectedApplicationId.value,
+                    selectedApplicationId.value!,
                 )
             ).data;
         }
