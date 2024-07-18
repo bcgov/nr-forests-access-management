@@ -48,8 +48,8 @@ ALTER SEQUENCE app_fam.fam_user_user_id_seq RESTART WITH 100000;
 }
 
 function generateApplication() {
-    console.log(`INSERT INTO app_fam.fam_application (application_id, application_name, application_description, create_user)
-    VALUES (${appId}, 'LOAD_TEST', 'Fake application for load testing with realistic data volumes', '${createUser}' );
+    console.log(`INSERT INTO app_fam.fam_application (application_id, application_name, application_description, app_environment, create_user)
+    VALUES (${appId}, 'LOAD_TEST', 'Fake application for load testing with realistic data volumes', 'TEST', '${createUser}' );
     `)
 }
 
