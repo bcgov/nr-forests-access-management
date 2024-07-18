@@ -256,6 +256,25 @@ def _auth_tag(ciphertext, iv, aad, mac_key, tag_length):
     return auth_tag
 
 
+def _jwk_construct(key_data, algorithm=None):
+    """
+    Construct a Key object for the given algorithm with the given
+    key_data.
+    """
+
+    # Allow for pulling the algorithm off of the passed in jwk.
+    if not algorithm and isinstance(key_data, dict):
+        algorithm = key_data.get("alg", None)
+
+    if not algorithm:
+        raise JWKError("Unable to find an algorithm for key: %s" % key_data)
+
+    key_class = get_key(algorithm)
+    if not key_class:
+        raise JWKError("Unable to find an algorithm for key: %s" % key_data)
+    return key_class(key_data, algorithm)
+
+
 def ensure_binary(s):
     """Coerce **s** to bytes."""
 
@@ -273,6 +292,14 @@ class JWEError(Exception):
 
 class JWEParseError(JWEError):
     """Could not parse the JWE string provided"""
+    pass
+
+
+class JOSEError(Exception):
+    pass
+
+
+class JWKError(JOSEError):
     pass
 
 
