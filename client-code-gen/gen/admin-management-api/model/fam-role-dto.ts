@@ -37,6 +37,12 @@ export interface FamRoleDto {
     'name': string;
     /**
      * 
+     * @type {string}
+     * @memberof FamRoleDto
+     */
+    'description': string;
+    /**
+     * 
      * @type {RoleType}
      * @memberof FamRoleDto
      */

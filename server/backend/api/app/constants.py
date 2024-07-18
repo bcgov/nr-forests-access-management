@@ -2,6 +2,10 @@
 from enum import Enum
 
 
+# FAM application name in database
+APPLICATION_FAM = "FAM"
+
+
 class UserType(str, Enum):
     IDIR = "I"
     BCEID = "B"
@@ -56,9 +60,6 @@ COGNITO_USERNAME_KEY = "username"
 # The most current terms and conditions. Note, when terms and conditions gets updated
 # at frontend, this also needs to be updated and in-sync.
 CURRENT_TERMS_AND_CONDITIONS_VERSION = "1"
-
-# FAM application name in database
-FAM_APPLICATION_NAME = "FAM"
 
 IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
 

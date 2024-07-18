@@ -3,7 +3,7 @@ import os
 from typing import List, Optional
 
 import sqlalchemy
-from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, AppEnv, ApiInstanceEnv, AwsTargetEnv, FAM_APPLICATION_NAME
+from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, AppEnv, ApiInstanceEnv, AwsTargetEnv, APPLICATION_FAM
 from api.app.crud import crud_application
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
@@ -112,7 +112,7 @@ def is_on_aws_prod() -> bool:
     return get_aws_target_env() == AwsTargetEnv.PROD
 
 
-def use_api_instance_by_app_env(application: models.FamApplication) -> ApiInstanceEnv:
+def use_api_instance_by_app(application: models.FamApplication) -> ApiInstanceEnv:
     """
     FAM PROD environment supports (DEV/TET/PROD) integrated applications.
     Only PROD application at FAM PROD uses API instance in PROD.
@@ -123,7 +123,7 @@ def use_api_instance_by_app_env(application: models.FamApplication) -> ApiInstan
     if (is_on_aws_prod() and (
         # either PROD app or app is FAM
         application.app_environment == AppEnv.APP_ENV_TYPE_PROD or
-        application.application_name == FAM_APPLICATION_NAME
+        application.application_name == APPLICATION_FAM
     )):
         api_instance_env = ApiInstanceEnv.PROD
 

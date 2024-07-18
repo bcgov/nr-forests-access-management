@@ -388,7 +388,7 @@ async def get_verified_target_user(
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
     LOGGER.debug(f"For application operation on: {role.application}")
-    api_instance_env = crud_utils.use_api_instance_by_app_env(role.application)
+    api_instance_env = crud_utils.use_api_instance_by_app(role.application)
     target_user_validator = TargetUserValidator(
         requester, target_user, api_instance_env
     )
@@ -447,4 +447,4 @@ def get_api_instance_env(
     application_id: int, db: Session = Depends(database.get_db)
 ) -> ApiInstanceEnv:
     application = crud_application.get_application(db, application_id)
-    return crud_utils.use_api_instance_by_app_env(application)
+    return crud_utils.use_api_instance_by_app(application)
