@@ -119,7 +119,7 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
     # To get rid of using `python-jose` jwk library (not maintained),
     # comment below out as BCSC enc uses algorithm in ALGORITHMS.HMAC_AUTH_TAG
     elif enc in ALGORITHMS.GCM:
-        encryption_key = jwk.construct(cek_bytes, enc)
+        encryption_key = _jwk_construct(cek_bytes, enc)
         auth_tag_check = auth_tag  # GCM check auth on decrypt
     else:
         raise NotImplementedError(f"enc {enc} is not implemented!")
@@ -143,7 +143,7 @@ def _get_hmac_key(enc, mac_key_bytes):
          (HMACKey): The key to perform HMAC actions
     """
     _, hash_alg = enc.split("-")
-    mac_key = jwk.construct(mac_key_bytes, hash_alg)
+    mac_key = _jwk_construct(mac_key_bytes, hash_alg)
     return mac_key
 
 
@@ -153,7 +153,7 @@ def _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc):
     mac_key = _get_hmac_key(enc, mac_key_bytes)
     encryption_key_bytes = cek_bytes[-derived_key_len:]
     encryption_alg, _ = enc.split("-")
-    encryption_key = jwk.construct(encryption_key_bytes, encryption_alg)
+    encryption_key = _jwk_construct(encryption_key_bytes, encryption_alg)
     return encryption_key, mac_key, derived_key_len
 
 
@@ -269,7 +269,7 @@ def _jwk_construct(key_data, algorithm=None):
     if not algorithm:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
 
-    key_class = get_key(algorithm)
+    key_class = jwk.get_key(algorithm)
     if not key_class:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
     return key_class(key_data, algorithm)
