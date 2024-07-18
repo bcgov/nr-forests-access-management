@@ -78,8 +78,8 @@ def create_user_role_assignment(
         return crud_user_role.create_user_role(
             db,
             role_assignment_request,
-            requesting_user.cognito_user_id,
-            target_user.business_guid,
+            target_user,
+            requesting_user.cognito_user_id
         )
 
     except Exception as e:

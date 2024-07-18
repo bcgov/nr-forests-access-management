@@ -1,11 +1,11 @@
 import logging
 from http import HTTPStatus
-from typing import Optional
 
-from api.app import constants as famConstants, schemas
+from api.app import constants as famConstants
+from api.app import schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user
-from api.app.models import model as models
 from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
@@ -15,8 +15,8 @@ LOGGER = logging.getLogger(__name__)
 def create_user_role(
     db: Session,
     request: schemas.FamUserRoleAssignmentCreate,
-    requester: str,
-    target_user_business_guid: Optional[str] = None
+    target_user: schemas.TargetUser,
+    requester: str
 ) -> schemas.FamUserRoleAssignmentGet:
     """
     Create fam_user_role_xref Association
@@ -48,8 +48,8 @@ def create_user_role(
         request.user_guid,
         requester
     )
-    fam_user = crud_user.update_user_business_guid(
-        db, fam_user.user_id, target_user_business_guid, requester
+    fam_user = crud_user.update_user_properties_from_verified_target_user(
+        db, fam_user.user_id, target_user, requester
     )
 
     # Verify if role exists.

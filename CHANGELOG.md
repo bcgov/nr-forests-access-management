@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.19.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.19.0...v1.19.1) (2024-07-17)
+
+
+### Bug Fixes
+
+* [#1481](https://github.com/bcgov/nr-forests-access-management/issues/1481) Fix target env in backend to match app env with lower case ([#1491](https://github.com/bcgov/nr-forests-access-management/issues/1491)) ([5a49e2e](https://github.com/bcgov/nr-forests-access-management/commit/5a49e2e668d1abd2b1f8ef4b0a93a0027ce8866d))
+
+## [1.19.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.18.1...v1.19.0) (2024-07-16)
+
+
+### Features
+
+* [#1365](https://github.com/bcgov/nr-forests-access-management/issues/1365) Add first, last name and email columns to fam user table ([#1472](https://github.com/bcgov/nr-forests-access-management/issues/1472)) ([0026b8c](https://github.com/bcgov/nr-forests-access-management/commit/0026b8c243e9c9b8afe1594bcc20222717ca6569))
+* [#1366](https://github.com/bcgov/nr-forests-access-management/issues/1366) Store first name, last name, and email when create user ([#1483](https://github.com/bcgov/nr-forests-access-management/issues/1483)) ([9e8b6bf](https://github.com/bcgov/nr-forests-access-management/commit/9e8b6bf3af7ec57aeb0a2335d7718f95a76a3276))
+* [#1383](https://github.com/bcgov/nr-forests-access-management/issues/1383) use user terms acceptance api on frontend ([#1473](https://github.com/bcgov/nr-forests-access-management/issues/1473)) ([5b87606](https://github.com/bcgov/nr-forests-access-management/commit/5b87606c0846e6673612abe619f9d8a1dc04331e))
+* [#1456](https://github.com/bcgov/nr-forests-access-management/issues/1456) update role selection to use radio in table ([#1478](https://github.com/bcgov/nr-forests-access-management/issues/1478)) ([3588cc0](https://github.com/bcgov/nr-forests-access-management/commit/3588cc0f98a6db8b833d5e71b622baf9dd596b58))
+
+
+### Bug Fixes
+
+* [#1383](https://github.com/bcgov/nr-forests-access-management/issues/1383) Only check if user needs accept terms and conditions if is FAM user ([#1479](https://github.com/bcgov/nr-forests-access-management/issues/1479)) ([859145d](https://github.com/bcgov/nr-forests-access-management/commit/859145def96d07561f5be904fcb316a6485b5b81))
+* [#1481](https://github.com/bcgov/nr-forests-access-management/issues/1481) Allow frontend verifying test user accounts in FAM PROD for TEST apps ([#1485](https://github.com/bcgov/nr-forests-access-management/issues/1485)) ([cf0d5b6](https://github.com/bcgov/nr-forests-access-management/commit/cf0d5b62bec6e12b47454c78f5da92ca560a99dc))
+* [#1481](https://github.com/bcgov/nr-forests-access-management/issues/1481) Fix application env parameter undefined error ([#1489](https://github.com/bcgov/nr-forests-access-management/issues/1489)) ([cb15fbe](https://github.com/bcgov/nr-forests-access-management/commit/cb15fbeb70935674dc3b27d333471e85b9f3d4a0))
+
 ## [1.18.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.18.0...v1.18.1) (2024-07-03)
 
 

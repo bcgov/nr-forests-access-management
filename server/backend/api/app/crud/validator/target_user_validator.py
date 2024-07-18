@@ -1,28 +1,26 @@
-import logging
 import copy
+import logging
 
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER, AppEnv,
+                               IdimSearchUserParamType, UserType)
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.constants import (
-    IdimSearchUserParamType,
-    UserType,
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-)
-from api.app.schemas import (
-    IdimProxySearchParam,
-    IdimProxyBceidSearchParam,
-    Requester,
-    TargetUser,
-)
+from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
+                             Requester, TargetUser)
 from api.app.utils import utils
-
 
 LOGGER = logging.getLogger(__name__)
 
 
-class UserValidator:
-    def __init__(self, requester: Requester, target_user: TargetUser):
+class TargetUserValidator:
+    def __init__(
+            self,
+            requester: Requester,
+            target_user: TargetUser,
+            app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST
+    ):
+        LOGGER.debug(f"Validating target env set to: {app_env}")
         self.verified_target_user = copy.deepcopy(target_user)
-        self.idim_proxy_service = IdimProxyService(requester)
+        self.idim_proxy_service = IdimProxyService(requester, app_env)
 
     def verify_user_exist(self) -> TargetUser:
         search_result = None
@@ -80,11 +78,20 @@ class UserValidator:
                     "businessGuid"
                 )
 
-        if not search_result or not search_result.get("found"):
-            error_msg = f"Invalid request, cannot find user {self.verified_target_user.user_name} {self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
+        # Update various target_user fields from idim search if exists
+        if search_result and search_result.get("found"):
+            self.verified_target_user.business_guid = search_result.get("businessGuid")
+            self.verified_target_user.first_name = search_result.get("firstName")
+            self.verified_target_user.last_name = search_result.get("lastName")
+            self.verified_target_user.email = search_result.get("email")
+
+        else:
+            error_msg = f"Invalid request, cannot find user {self.verified_target_user.user_name} "
+            f"{self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
             utils.raise_http_exception(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
                 error_msg=error_msg,
             )
 
         return self.verified_target_user
+

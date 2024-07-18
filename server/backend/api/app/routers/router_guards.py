@@ -16,7 +16,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                UserType)
 from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
                           crud_user_role, crud_utils)
-from api.app.crud.validator.user_validator import UserValidator
+from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
                                     get_access_roles,
@@ -382,12 +382,14 @@ async def enforce_self_grant_guard(
 async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
+    role: FamRole = Depends(get_request_role_from_id)
 ) -> TargetUser:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    user_validator = UserValidator(requester, target_user)
-    return user_validator.verify_user_exist()
+    LOGGER.debug(f"For application operation on: {role.application.app_environment}")
+    target_user_validator = TargetUserValidator(requester, target_user, role.application.app_environment)
+    return target_user_validator.verify_user_exist()
 
 
 async def enforce_bceid_by_same_org_guard(

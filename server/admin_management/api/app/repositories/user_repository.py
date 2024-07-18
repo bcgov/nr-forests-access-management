@@ -1,15 +1,16 @@
 import logging
-from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from api.app.models import model as models
-from api.app import schemas
+from sqlalchemy.orm import Session
 
+from api.app import schemas
+from api.app.models import model as models
 
 LOGGER = logging.getLogger(__name__)
 
 
 class UserRepository:
+
     def __init__(self, db: Session):
         self.db = db
 
