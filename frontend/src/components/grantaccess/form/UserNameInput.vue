@@ -7,14 +7,10 @@ import { isLoading } from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
-import { UserType, AppEnv } from 'fam-app-acsctl-api';
+import { UserType } from 'fam-app-acsctl-api';
 import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
 import FamLoginUserState from '@/store/FamLoginUserState';
-import {
-    selectedApplication,
-    selectedApplicationId,
-} from '@/store/ApplicationState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
+import { selectedApplicationId } from '@/store/ApplicationState';
 
 const props = defineProps({
     domain: { type: String, required: true },
@@ -43,22 +39,18 @@ const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
 );
 const verifyUserId = async () => {
     try {
-        let appEnv = selectedApplication.value?.env as AppEnv;
-        if (!appEnv && selectedApplicationId.value == FAM_APPLICATION_ID)
-            appEnv = AppEnv.Prod;
-
         if (props.domain == UserType.B) {
             verifiedUserIdentity.value = (
                 await AppActlApiService.idirBceidProxyApi.bceidSearch(
                     computedUserId.value,
-                    appEnv
+                    selectedApplicationId.value,
                 )
             ).data;
         } else {
             verifiedUserIdentity.value = (
                 await AppActlApiService.idirBceidProxyApi.idirSearch(
                     computedUserId.value,
-                    appEnv
+                    selectedApplicationId.value,
                 )
             ).data;
         }

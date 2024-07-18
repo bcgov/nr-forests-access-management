@@ -18,6 +18,22 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
+class ApiInstanceEnv(str, Enum):
+    # Environment constant for connecting to external API (Forest Client API and IDIM Proxy API).
+    # The integration with external API only has TEST or PROD on API instance.
+    TEST = "TEST"
+    PROD = "PROD"
+
+
+class AwsTargetEnv(str, Enum):
+    # "target_env" only exists on AWS (Injected from Gov AWS platform), for FAM web application.
+    # It's lower case, Locally does not need this.
+    # Not to be confused with application environment or API instance environment.
+    DEV = "dev"
+    TEST = "test"
+    PROD = "Prod"
+
+
 # Internal defined enum client status constants for FAM 'router_forest_client'.
 # ACTIVE/INACTIVE are mapped from Forest Client API spce.
 # See schemas.py/FamForestClientStatus class.
@@ -40,6 +56,9 @@ COGNITO_USERNAME_KEY = "username"
 # The most current terms and conditions. Note, when terms and conditions gets updated
 # at frontend, this also needs to be updated and in-sync.
 CURRENT_TERMS_AND_CONDITIONS_VERSION = "1"
+
+# FAM application name in database
+FAM_APPLICATION_NAME = "FAM"
 
 IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
 
