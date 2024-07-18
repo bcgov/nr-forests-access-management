@@ -26,7 +26,9 @@ def search(
 
     return: List of found FamForestClient. However, currently only 1 exact match returns.
     """
-    LOGGER.debug(f"Searching Forest Clients with parameter client_number: {client_number}")
+    LOGGER.debug(
+        f"Searching Forest Clients with parameter client_number: {client_number}, app_env: {app_env}"
+    )
     fc_api = ForestClientService(app_env)
     fc_json_list = fc_api.find_by_client_number(client_number)  # json object List
     forest_clients = list(map(__map_api_results, fc_json_list))

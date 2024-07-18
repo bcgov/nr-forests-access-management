@@ -1,4 +1,6 @@
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
+import { AppEnv } from 'fam-app-acsctl-api/model/app-env';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
@@ -20,6 +22,8 @@ export const setSelectedApplication = (newValue: string | null) => {
     else localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 };
 
+// --- Getter
+
 export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
 });
@@ -28,12 +32,17 @@ export const selectedApplicationId = computed(() => {
     return selectedApplication.value?.id;
 });
 
-// --- Getter
-
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {
         return `${selectedApplication.value.description}`;
     } else {
         return '';
     }
+});
+
+export const selectedApplicationEnv = computed(() => {
+    let appEnv = selectedApplication.value?.env as AppEnv;
+    if (selectedApplicationId.value == FAM_APPLICATION_ID)
+        appEnv = AppEnv.Fam
+    return appEnv
 });

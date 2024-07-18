@@ -20,14 +20,14 @@ class ForestClientService():
     Note! This is external API integration and FAM supports 3 applications environments in PROD.
           For FAM(PROD)-Application(PROD): it will connect to ForestClientAPI PROD instance.
           For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
-          The env switching "config.get_api_instance_by_app_env()" is for above purpose.
+          The env switching "config.use_api_instance_by_app_env()" is for above purpose.
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
-    TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
+    TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
-    def __init__(self, app_env: AppEnv):
-        self.apiInstanceEnv = config.get_api_instance_by_app_env(app_env)
+    def __init__(self, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
+        self.apiInstanceEnv = config.use_api_instance_by_app_env(app_env)
         LOGGER.debug(f"ForestClientService() use API instance - {self.apiInstanceEnv}")
         self.api_base_url = config.get_forest_client_api_baseurl(
             self.apiInstanceEnv

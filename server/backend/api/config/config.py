@@ -24,7 +24,7 @@ def get_aws_target_env():
 
 
 def is_on_aws_prod():
-    return get_aws_target_env() == AwsTargetEnv.PROD.value()
+    return get_aws_target_env() == AwsTargetEnv.PROD.value
 
 
 def get_db_string():
@@ -159,7 +159,7 @@ def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
     :param api_env: Api Instance caller function likes to connect to.
     """
-    api_key = "FC_API_TOKEN".jon("_", api_env.value())
+    api_key = "FC_API_TOKEN" + "_" + api_env
     LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
     api_token = get_env_var(api_key)
     return api_token
@@ -170,16 +170,16 @@ def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST)
     :param api_env: Api Instance caller function likes to connect to.
     """
     forest_client_api_baseurl = (
-        get_env_var("FC_API_BASE_URL".join("_", api_env.value()))
+        get_env_var("FC_API_BASE_URL" + "_" + api_env)
         if is_on_aws()
-        else "https://nr-forest-client-api-test.api.gov.bc.ca" # test
+        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # test
     )
 
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
 
 
-def get_api_instance_by_app_env(app_env: AppEnv):
+def use_api_instance_by_app_env(app_env: AppEnv):
     """
     In each FAM environment (DEV/TEST/PROD), it supports applications with (DEV/TET/PROD)
     Only FAM PROD with application(PROD) use API instance in PROD.
