@@ -21,6 +21,8 @@ class ForestClientService():
           For FAM(PROD)-Application(PROD): it will connect to ForestClientAPI PROD instance.
           For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
           The env switching "config.use_api_instance_by_app_env()" is for above purpose.
+          For FAM environment management relating to the use of external API,
+          see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
@@ -29,13 +31,11 @@ class ForestClientService():
     def __init__(self, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
         self.apiInstanceEnv = config.use_api_instance_by_app_env(app_env)
         LOGGER.debug(f"ForestClientService() use API instance - {self.apiInstanceEnv}")
-        self.api_base_url = config.get_forest_client_api_baseurl(
-            self.apiInstanceEnv
-        )
+
+        self.api_base_url = config.get_forest_client_api_baseurl(self.apiInstanceEnv)
         self.api_clients_url = f"{self.api_base_url}/api/clients"
-        self.API_TOKEN = config.get_forest_client_api_token(
-            self.apiInstanceEnv
-        )
+        self.API_TOKEN = config.get_forest_client_api_token(self.apiInstanceEnv)
+
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 
         # See Python: https://requests.readthedocs.io/en/latest/user/advanced/

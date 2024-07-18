@@ -19,7 +19,7 @@ def is_on_aws():
 
 
 def get_aws_target_env():
-    # target_env is assigned from gov's AWS platform, does not exist in local.
+    # target_env is assigned from gov's AWS platform, does not exist in local (None).
     return os.environ.get("target_env")
 
 
@@ -157,7 +157,7 @@ def get_allow_origins():
 
 def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
-    :param api_env: Api Instance caller function likes to connect to.
+    :param api_env: Api Instance the caller function needs to connect to.
     """
     api_key = "FC_API_TOKEN" + "_" + api_env
     LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
@@ -167,7 +167,7 @@ def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
 
 def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
-    :param api_env: Api Instance caller function likes to connect to.
+    :param api_env: Api Instance the caller function needs to connect to.
     """
     forest_client_api_baseurl = (
         get_env_var("FC_API_BASE_URL" + "_" + api_env)
@@ -181,11 +181,14 @@ def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST)
 
 def use_api_instance_by_app_env(app_env: AppEnv):
     """
-    In each FAM environment (DEV/TEST/PROD), it supports applications with (DEV/TET/PROD)
-    Only FAM PROD with application(PROD) use API instance in PROD.
+    FAM PROD environment supports (DEV/TET/PROD) integrated applications.
+    Only (PROD)application at FAM PROD uses API instance in PROD.
+    Lower FAM environment uses only TEST instance.
+    Ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
-    app_instance_env = ApiInstanceEnv.TEST  # default.
+    app_instance_env = ApiInstanceEnv.TEST  # API TEST instance as default.
     if (is_on_aws_prod() and (
+        # either PROD app or app is FAM
         app_env == AppEnv.APP_ENV_TYPE_PROD or
         app_env == AppEnv.FAM
     )):
@@ -208,6 +211,9 @@ def get_idim_proxy_api_baseurl(app_env: AppEnv):
 
 
 def get_idim_proxy_api_key():
+    # Note:
+    # Currently IDIM Proxy is configured to use the same api key value for all
+    # environments. So there is no need for different key based on environment.
     idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
     return idim_proxy_api_key
 
