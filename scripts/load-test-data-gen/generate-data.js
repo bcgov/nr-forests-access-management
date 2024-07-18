@@ -155,6 +155,15 @@ function generateAssignments() {
 
 }
 
+function generateAppAdmins() {
+
+    var admins = [ 'BVANDEGR', 'IANLIU', 'CMENG', 'OLIBERCH'];
+
+    for (var i = 0; i < admins.length; i++) {
+        console.log(`INSERT INTO app_fam.fam_application_admin (user_id, application_id, create_user) values ( (SELECT user_id FROM app_fam.fam_user WHERE user_name = '${admins[i]}' and user_type_code = 'I'), ${appId}, '${createUser}');`);
+    }
+
+}
 
 generateDeletes();
 generateUsers();
@@ -162,4 +171,5 @@ generateApplication();
 generateForestClients();
 generateRoles();
 generateAssignments();
+generateAppAdmins();
 generateSequenceUpdates();
