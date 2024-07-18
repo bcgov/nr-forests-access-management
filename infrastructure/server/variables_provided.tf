@@ -175,6 +175,17 @@ variable "forest_client_api_api_key" {
   sensitive = true
 }
 
+variable "forest_client_api_api_key_test" {
+  type = string
+  sensitive = true
+}
+
+variable "forest_client_api_api_key_prod" {
+  type = string
+  sensitive = true
+  default = "not_available"
+}
+
 variable "forest_client_api_base_url" {
   type = string
 }

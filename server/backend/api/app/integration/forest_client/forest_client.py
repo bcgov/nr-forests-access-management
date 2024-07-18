@@ -20,7 +20,6 @@ class ForestClientService():
     Note! This is external API integration and FAM supports 3 applications environments in PROD.
           For FAM(PROD)-Application(PROD): it will connect to ForestClientAPI PROD instance.
           For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
-          The env switching "config.use_api_instance_by_app_env()" is for above purpose.
           For FAM environment management relating to the use of external API,
           see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
@@ -29,6 +28,7 @@ class ForestClientService():
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
     def __init__(self, app_env: AppEnv = AppEnv.APP_ENV_TYPE_TEST):
+        # api instance to use.
         self.apiInstanceEnv = config.use_api_instance_by_app_env(app_env)
         LOGGER.debug(f"ForestClientService() use API instance - {self.apiInstanceEnv}")
 
