@@ -183,7 +183,7 @@ variable "forest_client_api_api_key_test" {
 variable "forest_client_api_api_key_prod" {
   type = string
   sensitive = true
-  default = "not_available"
+  default = "no_need_in_dev_and_test_env"
 }
 
 variable "forest_client_api_base_url" {
@@ -196,7 +196,7 @@ variable "forest_client_api_base_url_test" {
 
 variable "forest_client_api_base_url_prod" {
   type = string
-  default = "not_available"
+  default = "no_need_in_dev_and_test_env"
 }
 
 variable "idim_proxy_api_base_url" {
@@ -207,7 +207,7 @@ variable "idim_proxy_api_base_url" {
 variable "idim_proxy_api_base_url_prod" {
   type = string
   sensitive = true
-  default = "no need in dev and test env"
+  default = "no_need_in_dev_and_test_env"
 }
 
 variable "idim_proxy_api_base_url_test" {
