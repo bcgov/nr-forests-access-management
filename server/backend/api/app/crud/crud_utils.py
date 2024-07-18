@@ -104,8 +104,8 @@ def is_app_admin(
 
 
 def get_aws_target_env() -> AwsTargetEnv:
-    # target_env is assigned from gov's AWS platform, does not exist in local (None).
-    return os.environ.get("target_env")
+    # TARGET_ENV is assigned from gov's AWS platform, does not exist in local (None).
+    return os.environ.get("TARGET_ENV")
 
 
 def is_on_aws_prod() -> bool:
