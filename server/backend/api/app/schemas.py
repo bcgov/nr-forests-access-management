@@ -54,8 +54,15 @@ class FamUserType(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-class FamUserOnlyName(FamUser):
+class FamUserOnlyName(BaseModel):
+    user_name: Annotated[str, StringConstraints(max_length=20)]
+    user_guid: Union[
+        Annotated[str, StringConstraints(min_length=32, max_length=32)], None
+    ]
     user_type_relation: FamUserType = Field(alias="user_type")
+    first_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
     model_config = ConfigDict(

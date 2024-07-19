@@ -85,6 +85,7 @@ def create_user_role_assignment(
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
         audit_event_log.exception = e
+
         raise e
 
     finally:
