@@ -163,8 +163,8 @@ def get_forest_client_api_baseurl():
 
 
 def get_idim_proxy_api_baseurl(api_instance_env: ApiInstanceEnv):
-    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_TEST")
-    if api_instance_env == ApiInstanceEnv.PROD:
+    idim_proxy_api_baseurl = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
+    if is_on_aws() and api_instance_env == ApiInstanceEnv.PROD:
         idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_PROD")
     LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
     return idim_proxy_api_baseurl

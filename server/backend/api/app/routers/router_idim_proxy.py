@@ -2,7 +2,8 @@ import logging
 
 from api.app.constants import IdimSearchUserParamType, ApiInstanceEnv
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.routers.router_guards import get_current_requester, internal_only_action, get_api_instance_env
+from api.app.routers.router_guards import get_current_requester, internal_only_action
+from api.app.routers.router_utils import get_api_instance_env
 from api.app.schemas import (
     IdimProxyBceidInfo,
     IdimProxyBceidSearchParam,

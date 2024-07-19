@@ -441,10 +441,3 @@ def enforce_bceid_terms_conditions_guard(
             error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
             error_msg="Requires to accept terms and conditions.",
         )
-
-
-def get_api_instance_env(
-    application_id: int, db: Session = Depends(database.get_db)
-) -> ApiInstanceEnv:
-    application = crud_application.get_application(db, application_id)
-    return crud_utils.use_api_instance_by_app(application)
