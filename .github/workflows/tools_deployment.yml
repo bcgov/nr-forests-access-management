@@ -29,7 +29,6 @@ jobs:
       dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
       test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
       prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
-      forest_client_api_api_key: "${{ secrets.FOREST_CLIENT_API_API_KEY }}"
       forest_client_api_api_key_test: "${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}"
       dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
       test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
