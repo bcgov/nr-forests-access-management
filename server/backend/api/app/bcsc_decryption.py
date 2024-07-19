@@ -1,11 +1,14 @@
 import binascii
 import hashlib
 import json
+import logging
 from collections.abc import Mapping
 from struct import pack
 
 from api.app.utils import utils
 from jose import jwk
+
+LOGGER = logging.getLogger(__name__)
 
 
 def decrypt(jwe_str, decrypted_key):
@@ -269,7 +272,9 @@ def _jwk_construct(key_data, algorithm=None):
     if not algorithm:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
 
+    LOGGER.info(f"_jwk_construct - algorithm: {algorithm}")
     key_class = jwk.get_key(algorithm)
+    LOGGER.info(f"_jwk_construct - key_class: {key_class}")
     if not key_class:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
     return key_class(key_data, algorithm)
