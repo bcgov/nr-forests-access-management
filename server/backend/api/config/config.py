@@ -151,7 +151,6 @@ def get_forest_client_api_token(api_instance_env: ApiInstanceEnv = ApiInstanceEn
     :param api_env: Api Instance the caller function needs to connect to.
     """
     api_key = "FC_API_TOKEN" + "_" + api_instance_env
-    LOGGER.info(f"Using forest_client_api_token from environment: {api_instance_env}")
     return get_env_var(api_key)
 
 
