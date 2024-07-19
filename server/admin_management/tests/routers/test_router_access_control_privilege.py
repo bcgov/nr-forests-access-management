@@ -1,30 +1,25 @@
 import logging
 from http import HTTPStatus
+
 import starlette.testclient
 
-from api.app.main import apiPrefix
-from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.routers.router_guards import (
-    ERROR_INVALID_ROLE_ID,
-    ERROR_INVALID_APPLICATION_ID,
-    ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID,
-)
-from tests.constants import (
-    TEST_ACP_CREATE_CONCRETE_BCEID,
-    TEST_FOREST_CLIENT_NUMBER,
-    TEST_FOREST_CLIENT_NUMBER_TWO,
-    TEST_INACTIVE_FOREST_CLIENT_NUMBER,
-    TEST_FOM_DEV_ADMIN_ROLE,
-    TEST_NOT_EXIST_ROLE_ID,
-    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-    TEST_FAM_ADMIN_ROLE,
-    TEST_NOT_EXIST_APPLICATION_ID,
-    INVALID_APPLICATION_ID,
-    TEST_APPLICATION_ID_FOM_DEV,
-    TEST_USER_BUSINESS_GUID_BCEID,
-)
 import tests.jwt_utils as jwt_utils
-
+from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+from api.app.main import apiPrefix
+from api.app.routers.router_guards import (
+    ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, ERROR_INVALID_APPLICATION_ID,
+    ERROR_INVALID_ROLE_ID)
+from tests.constants import (INVALID_APPLICATION_ID,
+                             TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
+                             TEST_ACP_CREATE_CONCRETE_BCEID,
+                             TEST_APPLICATION_ID_FOM_DEV, TEST_FAM_ADMIN_ROLE,
+                             TEST_FOM_DEV_ADMIN_ROLE,
+                             TEST_FOREST_CLIENT_NUMBER,
+                             TEST_FOREST_CLIENT_NUMBER_TWO,
+                             TEST_INACTIVE_FOREST_CLIENT_NUMBER,
+                             TEST_NOT_EXIST_APPLICATION_ID,
+                             TEST_NOT_EXIST_ROLE_ID,
+                             TEST_USER_BUSINESS_GUID_BCEID)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/access_control_privileges"
@@ -185,7 +180,7 @@ def test_get_access_control_privileges_by_application_id(
     )
 
 
-def test_create_access_control_privilege_for_bceid_user_should_save_business_guid(
+def test_create_access_control_privilege_bceid_user_update_user_properties(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
@@ -202,6 +197,9 @@ def test_create_access_control_privilege_for_bceid_user_should_save_business_gui
     mocked_target_bceid_user = {
         **TEST_ACP_CREATE_CONCRETE_BCEID,
         "business_guid": TEST_USER_BUSINESS_GUID_BCEID,
+        "first_name": "test",
+        "last_name": "bceid",
+        "email": "test_bceid@test.com"
     }
     override_get_verified_target_user(mocked_target_bceid_user)
 
@@ -221,8 +219,11 @@ def test_create_access_control_privilege_for_bceid_user_should_save_business_gui
         user_type_code=TEST_ACP_CREATE_CONCRETE_BCEID["user_type_code"],
     )
     assert user is not None
-    # verify business_guid is saved to the user.
+    # verify business_guid, first_name, last_name, email are saved to the user.
     assert user.business_guid == TEST_USER_BUSINESS_GUID_BCEID
+    assert user.first_name == mocked_target_bceid_user["first_name"]
+    assert user.last_name == mocked_target_bceid_user["last_name"]
+    assert user.email == mocked_target_bceid_user["email"]
 
 
 def test_delete_access_control_privilege(

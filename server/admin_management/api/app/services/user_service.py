@@ -1,10 +1,10 @@
 import logging
-from sqlalchemy.orm import Session
 
+from api.app.constants import UserType
 from api.app.models import model as models
-from api.app.schemas import FamUserDto
 from api.app.repositories.user_repository import UserRepository
-
+from api.app.schemas import FamUserDto, TargetUser
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -94,28 +94,50 @@ class UserService:
             return self.user_repo.get_user(user.user_id)
         return user
 
-    def update_user_business_guid(
-        self, user_id: int, business_guid: str, requester: str  # cognito_user_id
+    def update_user_properties_from_verified_target_user(
+        self, user_id: int, target_user: TargetUser, requester: str  # cognito_user_id
     ):
         """
-        The method only updates business_guid for user if necessary.
-        The calling method should make sure "business_guid" is correct for the
-        user (e.g.,searched from IDIM). This method does not do BCeID user
-        search.
+        This is to update fam_user's properties from verified_target_user.
+        'verified_target_user' user is searched from IDIM proxy service.
+        Currently few properties are updated. 'user_name' is left out for different update.
         :param user_id: The user to be updated on.
-        :param business_id: The business_guid value to updated for the user.
+        :param target_user: Type of TargetUser.
+            Contains the user's latest property values for update.
         :param requester: This is requester's cognito_user_id when updating
             record from the 'update_user'.
         """
+        user_type_code = target_user.user_type_code
+        # update first_name, last_name, email
+        first_name = target_user.first_name
+        last_name = target_user.last_name
+        email = target_user.email
         LOGGER.debug(
-            f"update_user_business_guid() with: user_id: {user_id} "
-            + f"business_guid: {business_guid} from requester: {requester}"
+            f"Add first_name: {first_name}, last_name: {last_name}, "
+            f"email: {email} for fam_user update."
         )
-        if business_guid is not None:
-            user = self.user_repo.get_user(user_id)
-            if user.business_guid is None or business_guid != user.business_guid:
-                # update user when necessary.
-                self.user_repo.update(
-                    user_id, {models.FamUser.business_guid: business_guid}, requester
-                )
+        properties_to_update = {
+            models.FamUser.first_name: first_name,
+            models.FamUser.last_name: last_name,
+            models.FamUser.email: email
+        }
+        # update business_guid when necessary
+        business_guid = target_user.business_guid
+        if user_type_code == UserType.BCEID and business_guid:
+            LOGGER.debug(f"Add business_guid: {business_guid} for fam_user update.")
+            # add additional property to 'properties_to_update'
+            properties_to_update = {
+                **properties_to_update,
+                models.FamUser.business_guid: business_guid
+            }
+
+        self.user_repo.update(
+            user_id,
+            properties_to_update,
+            requester,
+        )
+
+        LOGGER.debug(
+            f"fam_user {user_id} properties were updated."
+        )
         return self.user_repo.get_user(user_id)

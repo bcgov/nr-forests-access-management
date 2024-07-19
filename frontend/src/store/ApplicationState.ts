@@ -6,8 +6,8 @@ export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
 export const selectedApplication = ref<FamApplicationDto | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
-            localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
-        )
+              localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
+          )
         : null
 );
 
@@ -25,18 +25,10 @@ export const isApplicationSelected = computed(() => {
 });
 
 export const selectedApplicationId = computed(() => {
-    return selectedApplication.value?.id
-})
+    return selectedApplication.value?.id;
+});
 
 // --- Getter
-
-export const selectedApplicationShortDisplayText = computed(() => {
-    if (selectedApplication.value) {
-        return `${selectedApplication.value.name.toUpperCase()}`;
-    } else {
-        return '';
-    }
-});
 
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {

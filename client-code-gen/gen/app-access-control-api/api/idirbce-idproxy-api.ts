@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
+import { AppEnv } from '../model';
+// @ts-ignore
 import { HTTPValidationError } from '../model';
 // @ts-ignore
 import { IdimProxyBceidInfo } from '../model';
@@ -37,10 +39,11 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @summary Bceid Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        bceidSearch: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        bceidSearch: async (userId: string, appEnv?: AppEnv, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('bceidSearch', 'userId', userId)
             const localVarPath = `/identity_search/bceid`;
@@ -63,6 +66,10 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
                 localVarQueryParameter['user_id'] = userId;
             }
 
+            if (appEnv !== undefined) {
+                localVarQueryParameter['app_env'] = appEnv;
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -78,10 +85,11 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @summary Idir Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        idirSearch: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        idirSearch: async (userId: string, appEnv?: AppEnv, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('idirSearch', 'userId', userId)
             const localVarPath = `/identity_search/idir`;
@@ -102,6 +110,10 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
 
             if (userId !== undefined) {
                 localVarQueryParameter['user_id'] = userId;
+            }
+
+            if (appEnv !== undefined) {
+                localVarQueryParameter['app_env'] = appEnv;
             }
 
 
@@ -129,11 +141,12 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * 
          * @summary Bceid Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async bceidSearch(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyBceidInfo>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.bceidSearch(userId, options);
+        async bceidSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyBceidInfo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.bceidSearch(userId, appEnv, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.bceidSearch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -142,11 +155,12 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * 
          * @summary Idir Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async idirSearch(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirInfo>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.idirSearch(userId, options);
+        async idirSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirInfo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.idirSearch(userId, appEnv, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.idirSearch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -165,21 +179,23 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          * 
          * @summary Bceid Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        bceidSearch(userId: string, options?: any): AxiosPromise<IdimProxyBceidInfo> {
-            return localVarFp.bceidSearch(userId, options).then((request) => request(axios, basePath));
+        bceidSearch(userId: string, appEnv?: AppEnv, options?: any): AxiosPromise<IdimProxyBceidInfo> {
+            return localVarFp.bceidSearch(userId, appEnv, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Idir Search
          * @param {string} userId 
+         * @param {AppEnv} [appEnv] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        idirSearch(userId: string, options?: any): AxiosPromise<IdimProxyIdirInfo> {
-            return localVarFp.idirSearch(userId, options).then((request) => request(axios, basePath));
+        idirSearch(userId: string, appEnv?: AppEnv, options?: any): AxiosPromise<IdimProxyIdirInfo> {
+            return localVarFp.idirSearch(userId, appEnv, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -194,21 +210,23 @@ export interface IDIRBCeIDProxyApiInterface {
      * 
      * @summary Bceid Search
      * @param {string} userId 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    bceidSearch(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyBceidInfo>;
+    bceidSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyBceidInfo>;
 
     /**
      * 
      * @summary Idir Search
      * @param {string} userId 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    idirSearch(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirInfo>;
+    idirSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirInfo>;
 
 }
 
@@ -223,24 +241,26 @@ export class IDIRBCeIDProxyApi extends BaseAPI implements IDIRBCeIDProxyApiInter
      * 
      * @summary Bceid Search
      * @param {string} userId 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApi
      */
-    public bceidSearch(userId: string, options?: RawAxiosRequestConfig) {
-        return IDIRBCeIDProxyApiFp(this.configuration).bceidSearch(userId, options).then((request) => request(this.axios, this.basePath));
+    public bceidSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig) {
+        return IDIRBCeIDProxyApiFp(this.configuration).bceidSearch(userId, appEnv, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Idir Search
      * @param {string} userId 
+     * @param {AppEnv} [appEnv] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApi
      */
-    public idirSearch(userId: string, options?: RawAxiosRequestConfig) {
-        return IDIRBCeIDProxyApiFp(this.configuration).idirSearch(userId, options).then((request) => request(this.axios, this.basePath));
+    public idirSearch(userId: string, appEnv?: AppEnv, options?: RawAxiosRequestConfig) {
+        return IDIRBCeIDProxyApiFp(this.configuration).idirSearch(userId, appEnv, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

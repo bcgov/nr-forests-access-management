@@ -1,8 +1,10 @@
 import json
 import logging
 import os
-
 import boto3
+
+from api.app.constants import AppEnv
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ def get_db_string():
     else:
         db_conn_string = get_local_dev_db_string()
 
-    LOGGER.debug(f"Database connection url: {db_conn_string}")
+    # LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
 
@@ -43,18 +45,18 @@ def get_aws_db_string():
     username = secret_json.get("username")
     password = secret_json.get("password")
 
-    host = get_env_var('PG_HOST')
-    port = get_env_var('PG_PORT')
-    dbname = get_env_var('PG_DATABASE')
+    host = get_env_var("PG_HOST")
+    port = get_env_var("PG_PORT")
+    dbname = get_env_var("PG_DATABASE")
     return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
 def get_local_dev_db_string():
-    username = get_env_var('POSTGRES_USER')
-    password = get_env_var('POSTGRES_PASSWORD')
-    host = get_env_var('POSTGRES_HOST')
-    port = get_env_var('POSTGRES_PORT')
-    dbname = get_env_var('POSTGRES_DB')
+    username = get_env_var("POSTGRES_USER")
+    password = get_env_var("POSTGRES_PASSWORD")
+    host = get_env_var("POSTGRES_HOST")
+    port = get_env_var("POSTGRES_PORT")
+    dbname = get_env_var("POSTGRES_DB")
     return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}"
 
 
@@ -160,8 +162,14 @@ def get_forest_client_api_baseurl():
     return forest_client_api_baseurl
 
 
-def get_idim_proxy_api_baseurl():
-    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL")
+def get_idim_proxy_api_baseurl(app_env: AppEnv):
+    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_TEST")
+    if (
+        app_env == AppEnv.APP_ENV_TYPE_PROD
+        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD.lower()
+    ):
+        # only prod application integrated with FAM PROD can verify production users
+        idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_PROD")
     LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
     return idim_proxy_api_baseurl
 
