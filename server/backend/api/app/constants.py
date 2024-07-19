@@ -2,6 +2,10 @@
 from enum import Enum
 
 
+# FAM application name in database
+APPLICATION_FAM = "FAM"
+
+
 class UserType(str, Enum):
     IDIR = "I"
     BCEID = "B"
@@ -16,6 +20,22 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_DEV = "DEV"
     APP_ENV_TYPE_TEST = "TEST"
     APP_ENV_TYPE_PROD = "PROD"
+
+
+class ApiInstanceEnv(str, Enum):
+    # Environment constant for connecting to external API (Forest Client API and IDIM Proxy API).
+    # The integration with external API only has TEST or PROD on API instance.
+    TEST = "TEST"
+    PROD = "PROD"
+
+
+class AwsTargetEnv(str, Enum):
+    # "target_env" only exists on AWS (Injected from Gov AWS platform), for FAM web application.
+    # It's lower case, Locally does not need this.
+    # Not to be confused with application environment or API instance environment.
+    DEV = "dev"
+    TEST = "test"
+    PROD = "Prod"
 
 
 # Internal defined enum client status constants for FAM 'router_forest_client'.

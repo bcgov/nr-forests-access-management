@@ -3,25 +3,36 @@ import logging
 from http import HTTPStatus
 from typing import Union
 
-from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               AdminRoleAuthGroup, UserType)
+from api.app.constants import (
+    ERROR_CODE_INVALID_REQUEST_PARAMETER,
+    AdminRoleAuthGroup,
+    UserType,
+)
 from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED, get_access_roles, get_request_cognito_user_id,
-    get_request_cognito_user_id_without_access_check, validate_token)
+    ERROR_PERMISSION_REQUIRED,
+    get_access_roles,
+    get_request_cognito_user_id,
+    get_request_cognito_user_id_without_access_check,
+    validate_token,
+)
 from api.app.models.model import FamRole, FamUser
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance,
-    application_admin_service_instance, application_service_instance,
-    role_service_instance, user_service_instance)
+    application_admin_service_instance,
+    application_service_instance,
+    role_service_instance,
+    user_service_instance,
+)
 from api.app.schemas import FamAppAdminCreateRequest, Requester, TargetUser
-from api.app.services.access_control_privilege_service import \
-    AccessControlPrivilegeService
+from api.app.services.access_control_privilege_service import (
+    AccessControlPrivilegeService,
+)
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.services.validator.target_user_validator import \
-    TargetUserValidator
+from api.app.services.validator.target_user_validator import TargetUserValidator
+from api.app.services import utils_service
 from api.app.utils import utils
 from fastapi import Depends, HTTPException, Request
 
@@ -168,14 +179,55 @@ async def get_target_user_from_id(
         return target_new_user
 
 
+async def get_request_role_from_id(
+    request: Request,
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    ),
+    role_service: RoleService = Depends(role_service_instance),
+) -> Union[FamRole, None]:
+    """
+    To get role from request
+    For deleting access control privilege method, get the role by access_control_privilege_id
+    For adding access control privilege method, get role through request data
+    """
+    access_control_privilege_id = None
+    if "access_control_privilege_id" in request.path_params:
+        access_control_privilege_id = request.path_params["access_control_privilege_id"]
+
+    if access_control_privilege_id:
+        access_control_privilege = access_control_privilege_service.get_acp_by_id(
+            access_control_privilege_id
+        )
+        return access_control_privilege.role
+    else:
+        try:
+            rbody = await request.json()
+            role_id = rbody.get("role_id")
+            role = role_service.get_role_by_id(role_id)
+            return role  # role could be None.
+
+        # When request does not contains body part.
+        except json.JSONDecodeError:
+            return None
+
+
 async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
+    role: FamRole = Depends(get_request_role_from_id),
 ) -> TargetUser:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    target_user_validator = TargetUserValidator(requester, target_user)
+    # ignore the role validation here, cause we have other router guards to do that when grant/delete delegated admin
+    # in the case that role is none, that's for granting/deleting application admin with FAM, which has no app_env
+    app_env = role.application.app_environment if role and role.application else None
+    api_instance_env = utils_service.use_api_instance_by_app_env(app_env)
+    LOGGER.debug(f"For application operation on: {api_instance_env}")
+    target_user_validator = TargetUserValidator(
+        requester, target_user, api_instance_env
+    )
     return target_user_validator.verify_user_exist()
 
 
@@ -204,39 +256,6 @@ async def enforce_self_grant_guard(
             error_code=ERROR_SELF_GRANT_PROHIBITED,
             error_msg=error_msg,
         )
-
-
-async def get_request_role_from_id(
-    request: Request,
-    access_control_privilege_service: AccessControlPrivilegeService = Depends(
-        access_control_privilege_service_instance
-    ),
-    role_service: RoleService = Depends(role_service_instance),
-) -> Union[FamRole, None]:
-    """
-    To get role from request
-    For deleting access control privilege method, get the role by access_control_privilege_id
-    For adding access control privilege method, get role through request data
-    """
-    access_control_privilege_id = None
-    if "access_control_privilege_id" in request.path_params:
-        access_control_privilege_id = request.path_params["access_control_privilege_id"]
-
-    if access_control_privilege_id:
-        access_control_privilege = access_control_privilege_service.get_acp_by_id(
-            access_control_privilege_id
-        )
-        return access_control_privilege.role
-    else:
-        try:
-            rbody = await request.json()
-            role_id = rbody["role_id"]
-            role = role_service.get_role_by_id(role_id)
-            return role  # role could be None.
-
-        # When request does not contains body part.
-        except json.JSONDecodeError:
-            return None
 
 
 def authorize_by_application_role(
