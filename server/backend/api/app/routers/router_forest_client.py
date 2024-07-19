@@ -15,7 +15,6 @@ router = APIRouter()
 
 @router.get("/search", response_model=List[schemas.FamForestClient])
 def search(
-    application_id: int,
     client_number: str = Query(min_length=3, max_length=8),
     api_instance_env=Depends(get_api_instance_env)
 ):
@@ -23,12 +22,10 @@ def search(
     Forest Client(s) search (by defined query parameter(s)).
     param: 'client_number=[query_value]'
            Note! Current Forest Client API limits it to exact search for a whole 8-digits number.
-    param: 'application_id': the application to identify which api instance to search on based on
-           the app_environment
     return: List of found FamForestClient. However, currently only 1 exact match returns.
     """
     LOGGER.debug(
-        f"Searching Forest Clients with parameter client_number: {client_number}, application_id: {application_id}"
+        f"Searching Forest Clients with parameter client_number: {client_number}"
     )
     fc_api = ForestClientService(api_instance_env)
     fc_json_list = fc_api.find_by_client_number(client_number)  # json object List

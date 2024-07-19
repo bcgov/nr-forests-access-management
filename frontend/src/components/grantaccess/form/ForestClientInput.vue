@@ -44,7 +44,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             continue;
         }
         await AppActlApiService.forestClientsApi
-            .search(selectedApplicationId.value as number, forestClientNumber)
+            .search(forestClientNumber, selectedApplicationId.value!)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(
