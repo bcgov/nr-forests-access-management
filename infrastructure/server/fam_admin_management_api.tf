@@ -134,8 +134,9 @@ resource "aws_lambda_function" "fam_admin_management_api_function" {
       FC_API_BASE_URL_PROD = "${var.forest_client_api_base_url_prod}"
       FC_API_TOKEN_PROD = "${var.forest_client_api_api_key_prod}"
 
-      IDIM_PROXY_BASE_URL = "${var.idim_proxy_api_base_url}"
+      IDIM_PROXY_BASE_URL_PROD = "${var.idim_proxy_api_base_url_prod}"
       IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"
+      TARGET_ENV = "${var.target_env}"
     }
 
   }

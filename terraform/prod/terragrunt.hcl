@@ -40,8 +40,6 @@ generate "prod_tfvars" {
   forest_client_api_base_url_test = "${local.common_vars.inputs.forest_client_api_test_base_url}"
   forest_client_api_base_url_prod = "${local.common_vars.inputs.forest_client_api_prod_base_url}"
   use_override_proxy_endpoints = false
-  idim_proxy_api_base_url = "https://nr-fam-idim-lookup-proxy-prod-backend.apps.silver.devops.gov.bc.ca"
   idim_proxy_api_base_url_prod = "https://nr-fam-idim-lookup-proxy-prod-backend.apps.silver.devops.gov.bc.ca"
-  idim_proxy_api_base_url_test = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
 EOF
 }

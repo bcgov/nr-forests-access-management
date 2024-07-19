@@ -1,8 +1,9 @@
 import logging
 
-from api.app.constants import IdimSearchUserParamType, AppEnv
+from api.app.constants import IdimSearchUserParamType, ApiInstanceEnv
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.routers.router_guards import get_current_requester, internal_only_action
+from api.app.routers.router_utils import get_api_instance_env
 from api.app.schemas import (
     IdimProxyBceidInfo,
     IdimProxyBceidSearchParam,
@@ -27,11 +28,11 @@ def idir_search(
     # It will throw pydantic.error_wrappers.ValidationError which is 500, not 422 we need.
     # known issue: https://github.com/tiangolo/fastapi/issues/4974
     # Fallback to use Query only.
-    app_env: AppEnv = None,
     requester=Depends(get_current_requester),
+    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env)
 ):
     LOGGER.debug(f"Searching IDIR user with parameter user_id: {user_id}")
-    idim_proxy_api = IdimProxyService(requester, app_env)
+    idim_proxy_api = IdimProxyService(requester, api_instance_env)
     search_result = idim_proxy_api.search_idir(
         IdimProxySearchParam(**{"userId": user_id})
     )
@@ -42,11 +43,11 @@ def idir_search(
 @router.get("/bceid", response_model=IdimProxyBceidInfo)
 def bceid_search(
     user_id: str = Query(max_length=20),
-    app_env: AppEnv = None,
     requester=Depends(get_current_requester),
+    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env)
 ):
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
-    idim_proxy_api = IdimProxyService(requester, app_env)
+    idim_proxy_api = IdimProxyService(requester, api_instance_env)
     search_result = idim_proxy_api.search_business_bceid(
         IdimProxyBceidSearchParam(
             **{"searchUserBy": IdimSearchUserParamType.USER_ID, "searchValue": user_id}

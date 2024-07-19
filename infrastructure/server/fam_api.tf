@@ -140,8 +140,6 @@ resource "aws_lambda_function" "fam-api-function" {
       FC_API_TOKEN_PROD = "${var.forest_client_api_api_key_prod}"
 
       ENABLE_BCSC_JWKS_ENDPOINT = "True"
-      IDIM_PROXY_BASE_URL = "${var.idim_proxy_api_base_url}"
-      IDIM_PROXY_BASE_URL_TEST = "${var.idim_proxy_api_base_url_test}"
       IDIM_PROXY_BASE_URL_PROD = "${var.idim_proxy_api_base_url_prod}"
       IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"
       GC_NOTIFY_EMAIL_API_KEY = "${var.gc_notify_email_api_key}"

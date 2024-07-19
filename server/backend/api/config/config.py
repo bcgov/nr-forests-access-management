@@ -3,7 +3,7 @@ import logging
 import os
 
 import boto3
-from api.app.constants import ApiInstanceEnv, AppEnv, AwsTargetEnv
+from api.app.constants import ApiInstanceEnv, AwsTargetEnv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -175,32 +175,9 @@ def get_forest_client_api_baseurl(api_instance_env: ApiInstanceEnv = ApiInstance
     return forest_client_api_baseurl
 
 
-def use_api_instance_by_app_env(app_env: AppEnv):
-    """
-    FAM PROD environment supports (DEV/TET/PROD) integrated applications.
-    Only (PROD)application at FAM PROD uses API instance in PROD.
-    Lower FAM environment uses only TEST instance.
-    Ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
-    """
-    app_instance_env = ApiInstanceEnv.TEST  # API TEST instance as default.
-    if (is_on_aws_prod() and (
-        # either PROD app or app is FAM
-        app_env == AppEnv.APP_ENV_TYPE_PROD or
-        app_env is None  # This is FAM, FAM has no app_environment.
-    )):
-        app_instance_env = ApiInstanceEnv.PROD
-
-    LOGGER.info(f"Use api instance environment -- {app_instance_env}")
-    return app_instance_env
-
-
-def get_idim_proxy_api_baseurl(app_env: AppEnv):
-    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_TEST")
-    if (
-        app_env == AppEnv.APP_ENV_TYPE_PROD
-        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD.lower()
-    ):
-        # only prod application integrated with FAM PROD can verify production users
+def get_idim_proxy_api_baseurl(api_instance_env: ApiInstanceEnv):
+    idim_proxy_api_baseurl = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
+    if is_on_aws() and api_instance_env == ApiInstanceEnv.PROD:
         idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_PROD")
     LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
     return idim_proxy_api_baseurl

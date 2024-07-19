@@ -13,9 +13,9 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_REQUESTER_NOT_EXISTS,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
-                               UserType)
+                               UserType, ApiInstanceEnv)
 from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
-                          crud_user_role, crud_utils)
+                          crud_user_role, crud_utils, crud_application)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
@@ -48,9 +48,7 @@ def get_current_requester(
     fam_user: FamUser = crud_user.fetch_initial_requester_info(
         db, request_cognito_user_id
     )
-    LOGGER.debug(
-        f"Current retrieved fam_user: {fam_user}"
-    )
+    LOGGER.debug(f"Current retrieved fam_user: {fam_user}")
 
     if fam_user is None:
         utils.raise_http_exception(
@@ -64,8 +62,8 @@ def get_current_requester(
         requester = Requester.model_validate(
             {
                 **fam_user.__dict__,  # base db 'user' info
-                'access_roles': access_roles,  # role from JWT
-                **custom_fields  # build/convert to custom attributes
+                "access_roles": access_roles,  # role from JWT
+                **custom_fields,  # build/convert to custom attributes
             }
         )
         LOGGER.debug(f"Current request user (requester): {requester}")
@@ -82,17 +80,19 @@ def _parse_custom_requester_fields(fam_user: FamUser):
     user_type_code = fam_user.user_type_code
     is_delegated_admin = len(fam_user.fam_access_control_privileges) > 0
     has_current_terms_conditions_accepted = (
-        fam_user.fam_user_terms_conditions and
-        fam_user.fam_user_terms_conditions.version == CURRENT_TERMS_AND_CONDITIONS_VERSION
+        fam_user.fam_user_terms_conditions
+        and fam_user.fam_user_terms_conditions.version
+        == CURRENT_TERMS_AND_CONDITIONS_VERSION
     )
     requires_accept_tc = (
-        user_type_code == UserType.BCEID and is_delegated_admin
+        user_type_code == UserType.BCEID
+        and is_delegated_admin
         and not has_current_terms_conditions_accepted
     )
 
     return {
         "is_delegated_admin": is_delegated_admin,
-        "requires_accept_tc": requires_accept_tc
+        "requires_accept_tc": requires_accept_tc,
     }
 
 
@@ -382,13 +382,16 @@ async def enforce_self_grant_guard(
 async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
-    role: FamRole = Depends(get_request_role_from_id)
+    role: FamRole = Depends(get_request_role_from_id),
 ) -> TargetUser:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
     """
-    LOGGER.debug(f"For application operation on: {role.application.app_environment}")
-    target_user_validator = TargetUserValidator(requester, target_user, role.application.app_environment)
+    LOGGER.debug(f"For application operation on: {role.application}")
+    api_instance_env = crud_utils.use_api_instance_by_app(role.application)
+    target_user_validator = TargetUserValidator(
+        requester, target_user, api_instance_env
+    )
     return target_user_validator.verify_user_exist()
 
 

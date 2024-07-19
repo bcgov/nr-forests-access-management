@@ -199,20 +199,10 @@ variable "forest_client_api_base_url_prod" {
   default = "no_need_in_dev_and_test_env"
 }
 
-variable "idim_proxy_api_base_url" {
-  type = string
-  sensitive = true
-}
-
 variable "idim_proxy_api_base_url_prod" {
   type = string
   sensitive = true
   default = "no_need_in_dev_and_test_env"
-}
-
-variable "idim_proxy_api_base_url_test" {
-  type = string
-  sensitive = true
 }
 
 variable "idim_proxy_api_api_key" {
