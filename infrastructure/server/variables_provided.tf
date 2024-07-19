@@ -170,11 +170,6 @@ variable "db_cluster_snapshot_identifier" {
 }
 
 # Integration - API Keys/Secrets
-variable "forest_client_api_api_key" {
-  type = string
-  sensitive = true
-}
-
 variable "forest_client_api_api_key_test" {
   type = string
   sensitive = true
