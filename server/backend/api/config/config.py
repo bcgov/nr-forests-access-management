@@ -3,7 +3,7 @@ import logging
 import os
 
 import boto3
-from api.app.constants import ApiInstanceEnv, AwsTargetEnv
+from api.app.constants import ApiInstanceEnv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,15 +16,6 @@ def get_env_var(env_var_name):
 
 def is_on_aws():
     return os.environ.get("DB_SECRET") is not None  # This key only presents on aws.
-
-
-def get_aws_target_env():
-    # target_env is assigned from gov's AWS platform, does not exist in local (None).
-    return os.environ.get("target_env")
-
-
-def is_on_aws_prod():
-    return get_aws_target_env() == AwsTargetEnv.PROD.value
 
 
 def get_db_string():
