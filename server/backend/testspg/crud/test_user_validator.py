@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType
+from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType, ApiInstanceEnv
 from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.schemas import Requester, TargetUser
@@ -48,7 +48,7 @@ class TestUserValidatorClass(object):
     def test_verify_user_exist_idir(self, mock_search_idir):
         mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
         target_user = TargetUser(**TEST_IDIR_REQUESTER_DICT)
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
         verified_target_user = target_user_validaor.verify_user_exist()
         # test the verified target user
         assert verified_target_user.user_guid == target_user.user_guid
@@ -61,7 +61,7 @@ class TestUserValidatorClass(object):
         target_user = TargetUser(
             **{**TEST_IDIR_REQUESTER_DICT, "user_name": "USER_NOT_EXISTS"}
         )
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
 
         with pytest.raises(HTTPException) as e:
             target_user_validaor.verify_user_exist()
@@ -85,7 +85,7 @@ class TestUserValidatorClass(object):
                 "user_guid": "USERGUIDNOTEXISTSPOJHSLEJFNSEKSL",
             }
         )
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
 
         with pytest.raises(HTTPException) as e:
             target_user_validaor.verify_user_exist()
@@ -102,7 +102,7 @@ class TestUserValidatorClass(object):
     def test_verify_user_exist_bceid(self, mock_search_business_bceid):
         mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
         target_user = TargetUser(**TEST_TARGET_USER_BCEID_LOAD_2)
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
         verified_target_user = target_user_validaor.verify_user_exist()
         # test the verified target user, business guid is added
         assert verified_target_user.user_guid == target_user.user_guid
@@ -122,7 +122,7 @@ class TestUserValidatorClass(object):
                 "user_guid": "USERGUIDNOTEXISTSPOJHSLEJFNSEKSL",
             }
         )
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
 
         with pytest.raises(HTTPException) as e:
             target_user_validaor.verify_user_exist()
@@ -146,7 +146,7 @@ class TestUserValidatorClass(object):
                 "user_name": "USER_NOT_EXISTS",
             }
         )
-        target_user_validaor = TargetUserValidator(self.requester_idir, target_user)
+        target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
 
         with pytest.raises(HTTPException) as e:
             target_user_validaor.verify_user_exist()

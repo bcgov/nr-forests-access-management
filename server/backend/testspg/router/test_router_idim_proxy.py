@@ -15,6 +15,7 @@ from testspg.constants import (
     TEST_BCEID_REQUESTER_DICT,
     TEST_VALID_BUSINESS_BCEID_USERNAME_ONE,
     TEST_VALID_BUSINESS_BCEID_USERNAME_TWO,
+    FOM_DEV_APPLICATION_ID
 )
 
 
@@ -23,6 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 endPoint_search_idir = f"{apiPrefix}/identity_search/idir"
 endPoint_search_bceid = f"{apiPrefix}/identity_search/bceid"
+endPoint_search_param_application_id = f"&application_id={FOM_DEV_APPLICATION_ID}"
 valid_user_id_param = "CMENG"
 valid_user_id_param_business_bceid = "LOAD-2-TEST"
 
@@ -65,7 +67,7 @@ def test_search_idir_with_valid_user_found_result(
         mock_get_current_requester_with_idir_user
     )
 
-    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}"
+    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}" + endPoint_search_param_application_id
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -92,7 +94,7 @@ def test_search_idir_with_invalid_user_return_not_found(
     )
 
     invalid_user_id_param = "USERNOTEXISTS"
-    test_end_point = endPoint_search_idir + f"?user_id={invalid_user_id_param}"
+    test_end_point = endPoint_search_idir + f"?user_id={invalid_user_id_param}" + endPoint_search_param_application_id
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -119,7 +121,7 @@ def test_none_idir_user_cannot_search_idir_user(
         mock_get_current_requester_with_business_bceid_user
     )
 
-    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}"
+    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}" + endPoint_search_param_application_id
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
         f"{test_end_point}", headers=jwt_utils.headers(token)
@@ -142,7 +144,7 @@ def test_search_idir_user_requester_not_found_error_raised(
         mock_get_current_requester_user_not_exists
     )
 
-    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}"
+    test_end_point = endPoint_search_idir + f"?user_id={valid_user_id_param}" + endPoint_search_param_application_id
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
         f"{test_end_point}", headers=jwt_utils.headers(token)
@@ -165,7 +167,7 @@ def test_search_bceid_with_valid_user_same_org_found_result(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}" + endPoint_search_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -195,7 +197,7 @@ def test_search_bceid_with_valid_user_diff_org_fail(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}" + endPoint_search_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -220,7 +222,7 @@ def test_search_bceid_with_valid_user_without_authorization_fail(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}" + endPoint_search_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key, [])
@@ -246,7 +248,7 @@ def test_search_bceid_with_invalid_user_return_not_found(
     )
 
     invalid_user_id_param = "USERNOTEXISTS"
-    test_end_point = endPoint_search_bceid + f"?user_id={invalid_user_id_param}"
+    test_end_point = endPoint_search_bceid + f"?user_id={invalid_user_id_param}" + endPoint_search_param_application_id
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -272,7 +274,7 @@ def test_search_bceid_user_requester_not_found_error_raised(
     )
 
     test_end_point = (
-        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
+        endPoint_search_bceid + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}" + endPoint_search_param_application_id
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
