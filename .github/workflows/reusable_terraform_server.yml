@@ -170,6 +170,7 @@ jobs:
           test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
           prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
           forest_client_api_api_key_test = "${{ secrets.forest_client_api_api_key_test }}"
+          forest_client_api_api_key_prod = "${{ secrets.forest_client_api_api_key_prod }}"
           dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
           test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
