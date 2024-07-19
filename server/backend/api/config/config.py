@@ -164,16 +164,13 @@ def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     return get_env_var(api_key)
 
 
-def get_forest_client_api_baseurl(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
+def get_forest_client_api_baseurl(api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
     :param api_env: Api Instance the caller function needs to connect to.
     """
-    forest_client_api_baseurl = (
-        get_env_var("FC_API_BASE_URL" + "_" + api_env)
-        if is_on_aws()
-        else "https://nr-forest-client-api-test.api.gov.bc.ca"  # test
-    )
-
+    forest_client_api_baseurl = "https://nr-forest-client-api-test.api.gov.bc.ca"
+    if is_on_aws() and api_instance_env == ApiInstanceEnv.PROD:
+        forest_client_api_baseurl = get_env_var("FC_API_BASE_URL_PROD")
     LOGGER.info(f"Using forest_client_api_baseurl -- {forest_client_api_baseurl}")
     return forest_client_api_baseurl
 
