@@ -146,11 +146,11 @@ def get_allow_origins():
     return allow_origins
 
 
-def get_forest_client_api_token(api_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
+def get_forest_client_api_token(api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
     """
     :param api_env: Api Instance the caller function needs to connect to.
     """
-    api_key = "FC_API_TOKEN" + "_" + api_env
+    api_key = "FC_API_TOKEN" + "_" + api_instance_env
     LOGGER.info(f"Using forest_client_api_token key -- {api_key}")
     return get_env_var(api_key)
 
