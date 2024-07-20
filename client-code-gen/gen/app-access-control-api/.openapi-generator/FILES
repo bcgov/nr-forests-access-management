@@ -14,7 +14,6 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
-model/app-env.ts
 model/fam-application-user-role-assignment-get.ts
 model/fam-forest-client-status-type.ts
 model/fam-forest-client-status.ts

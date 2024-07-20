@@ -10,7 +10,7 @@ from api.app.schemas import (
     IdimProxyBceidInfo,
 )
 from api.config import config
-from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType
+from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, UserType, ApiInstanceEnv
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 
 
@@ -25,10 +25,10 @@ class IdimProxyService:
 
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
-    def __init__(self, requester: Requester):
+    def __init__(self, requester: Requester,  api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
         self.requester = requester
         self.api_idim_proxy_url = (
-            f"{config.get_idim_proxy_api_baseurl()}/api/idim-webservice"
+            f"{config.get_idim_proxy_api_baseurl(api_instance_env)}/api/idim-webservice"
         )
         self.API_KEY = config.get_idim_proxy_api_key()
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_KEY}

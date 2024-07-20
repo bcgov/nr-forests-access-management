@@ -3,7 +3,7 @@ import logging
 import os
 import boto3
 
-from api.app.constants import AppEnv
+from api.app.constants import ApiInstanceEnv
 
 
 LOGGER = logging.getLogger(__name__)
@@ -162,13 +162,9 @@ def get_forest_client_api_baseurl():
     return forest_client_api_baseurl
 
 
-def get_idim_proxy_api_baseurl(app_env: AppEnv):
-    idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_TEST")
-    if (
-        app_env == AppEnv.APP_ENV_TYPE_PROD
-        and get_env_var("TARGET_ENV") == AppEnv.APP_ENV_TYPE_PROD.lower()
-    ):
-        # only prod application integrated with FAM PROD can verify production users
+def get_idim_proxy_api_baseurl(api_instance_env: ApiInstanceEnv):
+    idim_proxy_api_baseurl = "https://nr-fam-idim-lookup-proxy-test-backend.apps.silver.devops.gov.bc.ca"
+    if is_on_aws() and api_instance_env == ApiInstanceEnv.PROD:
         idim_proxy_api_baseurl = get_env_var("IDIM_PROXY_BASE_URL_PROD")
     LOGGER.info(f"Using idim_proxy_api_baseurl -- {idim_proxy_api_baseurl}")
     return idim_proxy_api_baseurl
