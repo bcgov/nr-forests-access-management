@@ -1,12 +1,12 @@
 import binascii
-import hashlib
 import json
 import logging
 from collections.abc import Mapping
 from struct import pack
 
+from api.app.integration.bcsc import bcsc_jwk
+from api.app.integration.bcsc.bcsc_constants import ALGORITHMS
 from api.app.utils import utils
-from jose import jwk
 
 LOGGER = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
         auth_tag_check = _auth_tag(cipher_text, iv, aad, mac_key, key_len)
     # BCSC enc uses algorithm in ALGORITHMS.HMAC_AUTH_TAG, below will not run.
     elif enc in ALGORITHMS.GCM:
-        encryption_key = _jwk_construct(cek_bytes, enc)
+        encryption_key = bcsc_jwk.jwk_construct(cek_bytes, enc)
         auth_tag_check = auth_tag  # GCM check auth on decrypt
     else:
         raise NotImplementedError(f"enc {enc} is not implemented!")
@@ -145,7 +145,7 @@ def _get_hmac_key(enc, mac_key_bytes):
          (HMACKey): The key to perform HMAC actions
     """
     _, hash_alg = enc.split("-")
-    mac_key = _jwk_construct(mac_key_bytes, hash_alg)
+    mac_key = bcsc_jwk.jwk_construct(mac_key_bytes, hash_alg)
     return mac_key
 
 
@@ -155,7 +155,7 @@ def _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc):
     mac_key = _get_hmac_key(enc, mac_key_bytes)
     encryption_key_bytes = cek_bytes[-derived_key_len:]
     encryption_alg, _ = enc.split("-")
-    encryption_key = _jwk_construct(encryption_key_bytes, encryption_alg)
+    encryption_key = bcsc_jwk.jwk_construct(encryption_key_bytes, encryption_alg)
     return encryption_key, mac_key, derived_key_len
 
 
@@ -258,25 +258,6 @@ def _auth_tag(ciphertext, iv, aad, mac_key, tag_length):
     return auth_tag
 
 
-def _jwk_construct(key_data, algorithm=None):
-    """
-    Construct a Key object for the given algorithm with the given
-    key_data.
-    """
-
-    # Allow for pulling the algorithm off of the passed in jwk.
-    if not algorithm and isinstance(key_data, dict):
-        algorithm = key_data.get("alg", None)
-
-    if not algorithm:
-        raise JWKError("Unable to find an algorithm for key: %s" % key_data)
-
-    key_class = jwk.get_key(algorithm)
-    if not key_class:
-        raise JWKError("Unable to find an algorithm for key: %s" % key_data)
-    return key_class(key_data, algorithm)
-
-
 def ensure_binary(s):
     """Coerce **s** to bytes."""
 
@@ -295,240 +276,3 @@ class JWEError(Exception):
 class JWEParseError(JWEError):
     """Could not parse the JWE string provided"""
     pass
-
-
-class JOSEError(Exception):
-    pass
-
-
-class JWKError(JOSEError):
-    pass
-
-
-class Algorithms:
-    # DS Algorithms
-    NONE = "none"
-    HS256 = "HS256"
-    HS384 = "HS384"
-    HS512 = "HS512"
-    RS256 = "RS256"
-    RS384 = "RS384"
-    RS512 = "RS512"
-    ES256 = "ES256"
-    ES384 = "ES384"
-    ES512 = "ES512"
-
-    # Content Encryption Algorithms
-    A128CBC_HS256 = "A128CBC-HS256"
-    A192CBC_HS384 = "A192CBC-HS384"
-    A256CBC_HS512 = "A256CBC-HS512"
-    A128GCM = "A128GCM"
-    A192GCM = "A192GCM"
-    A256GCM = "A256GCM"
-
-    # Pseudo algorithm for encryption
-    A128CBC = "A128CBC"
-    A192CBC = "A192CBC"
-    A256CBC = "A256CBC"
-
-    # CEK Encryption Algorithms
-    DIR = "dir"
-    RSA1_5 = "RSA1_5"
-    RSA_OAEP = "RSA-OAEP"
-    RSA_OAEP_256 = "RSA-OAEP-256"
-    A128KW = "A128KW"
-    A192KW = "A192KW"
-    A256KW = "A256KW"
-    ECDH_ES = "ECDH-ES"
-    ECDH_ES_A128KW = "ECDH-ES+A128KW"
-    ECDH_ES_A192KW = "ECDH-ES+A192KW"
-    ECDH_ES_A256KW = "ECDH-ES+A256KW"
-    A128GCMKW = "A128GCMKW"
-    A192GCMKW = "A192GCMKW"
-    A256GCMKW = "A256GCMKW"
-    PBES2_HS256_A128KW = "PBES2-HS256+A128KW"
-    PBES2_HS384_A192KW = "PBES2-HS384+A192KW"
-    PBES2_HS512_A256KW = "PBES2-HS512+A256KW"
-
-    # Compression Algorithms
-    DEF = "DEF"
-
-    HMAC = {HS256, HS384, HS512}
-    RSA_DS = {RS256, RS384, RS512}
-    RSA_KW = {RSA1_5, RSA_OAEP, RSA_OAEP_256}
-    RSA = RSA_DS.union(RSA_KW)
-    EC_DS = {ES256, ES384, ES512}
-    EC_KW = {ECDH_ES, ECDH_ES_A128KW, ECDH_ES_A192KW, ECDH_ES_A256KW}
-    EC = EC_DS.union(EC_KW)
-    AES_PSEUDO = {A128CBC, A192CBC, A256CBC, A128GCM, A192GCM, A256GCM}
-    AES_JWE_ENC = {A128CBC_HS256, A192CBC_HS384, A256CBC_HS512, A128GCM, A192GCM, A256GCM}
-    AES_ENC = AES_JWE_ENC.union(AES_PSEUDO)
-    AES_KW = {A128KW, A192KW, A256KW}
-    AEC_GCM_KW = {A128GCMKW, A192GCMKW, A256GCMKW}
-    AES = AES_ENC.union(AES_KW)
-    PBES2_KW = {PBES2_HS256_A128KW, PBES2_HS384_A192KW, PBES2_HS512_A256KW}
-
-    HMAC_AUTH_TAG = {A128CBC_HS256, A192CBC_HS384, A256CBC_HS512}
-    GCM = {A128GCM, A192GCM, A256GCM}
-
-    SUPPORTED = HMAC.union(RSA_DS).union(EC_DS).union([DIR]).union(AES_JWE_ENC).union(RSA_KW).union(AES_KW)
-
-    ALL = SUPPORTED.union([NONE]).union(AEC_GCM_KW).union(EC_KW).union(PBES2_KW)
-
-    HASHES = {
-        HS256: hashlib.sha256,
-        HS384: hashlib.sha384,
-        HS512: hashlib.sha512,
-        RS256: hashlib.sha256,
-        RS384: hashlib.sha384,
-        RS512: hashlib.sha512,
-        ES256: hashlib.sha256,
-        ES384: hashlib.sha384,
-        ES512: hashlib.sha512,
-    }
-
-    KEYS = {}
-
-
-ALGORITHMS = Algorithms()
-
-
-# ----------------- WIP ------------------------
-
-class Key:
-    """
-    A simple interface for implementing JWK keys.
-    """
-
-    def __init__(self, key, algorithm):
-        pass
-
-    def sign(self, msg):
-        raise NotImplementedError()
-
-    def verify(self, msg, sig):
-        raise NotImplementedError()
-
-    def public_key(self):
-        raise NotImplementedError()
-
-    def to_pem(self):
-        raise NotImplementedError()
-
-    def to_dict(self):
-        raise NotImplementedError()
-
-    def encrypt(self, plain_text, aad=None):
-        """
-        Encrypt the plain text and generate an auth tag if appropriate
-
-        Args:
-            plain_text (bytes): Data to encrypt
-            aad (bytes, optional): Authenticated Additional Data if key's algorithm supports auth mode
-
-        Returns:
-            (bytes, bytes, bytes): IV, cipher text, and auth tag
-        """
-        raise NotImplementedError()
-
-    def decrypt(self, cipher_text, iv=None, aad=None, tag=None):
-        """
-        Decrypt the cipher text and validate the auth tag if present
-        Args:
-            cipher_text (bytes): Cipher text to decrypt
-            iv (bytes): IV if block mode
-            aad (bytes): Additional Authenticated Data to verify if auth mode
-            tag (bytes): Authentication tag if auth mode
-
-        Returns:
-            bytes: Decrypted value
-        """
-        raise NotImplementedError()
-
-    def wrap_key(self, key_data):
-        """
-        Wrap the the plain text key data
-
-        Args:
-            key_data (bytes): Key data to wrap
-
-        Returns:
-            bytes: Wrapped key
-        """
-        raise NotImplementedError()
-
-    def unwrap_key(self, wrapped_key):
-        """
-        Unwrap the the wrapped key data
-
-        Args:
-            wrapped_key (bytes): Wrapped key data to unwrap
-
-        Returns:
-            bytes: Unwrapped key
-        """
-        raise NotImplementedError()
-
-
-class HMACKey(Key):
-    """
-    Performs signing and verification operations using HMAC
-    and the specified hash function.
-    """
-
-    HASHES = {ALGORITHMS.HS256: hashlib.sha256, ALGORITHMS.HS384: hashlib.sha384, ALGORITHMS.HS512: hashlib.sha512}
-
-    def __init__(self, key, algorithm):
-        if algorithm not in ALGORITHMS.HMAC:
-            raise JWKError("hash_alg: %s is not a valid hash algorithm" % algorithm)
-        self._algorithm = algorithm
-        self._hash_alg = self.HASHES.get(algorithm)
-
-        if isinstance(key, dict):
-            self.prepared_key = self._process_jwk(key)
-            return
-
-        if not isinstance(key, str) and not isinstance(key, bytes):
-            raise JWKError("Expecting a string- or bytes-formatted key.")
-
-        if isinstance(key, str):
-            key = key.encode("utf-8")
-
-        invalid_strings = [
-            b"-----BEGIN PUBLIC KEY-----",
-            b"-----BEGIN RSA PUBLIC KEY-----",
-            b"-----BEGIN CERTIFICATE-----",
-            b"ssh-rsa",
-        ]
-
-        if any(string_value in key for string_value in invalid_strings):
-            raise JWKError(
-                "The specified key is an asymmetric key or x509 certificate and"
-                " should not be used as an HMAC secret."
-            )
-
-        self.prepared_key = key
-
-    def _process_jwk(self, jwk_dict):
-        if not jwk_dict.get("kty") == "oct":
-            raise JWKError("Incorrect key type. Expected: 'oct', Received: %s" % jwk_dict.get("kty"))
-
-        k = jwk_dict.get("k")
-        k = k.encode("utf-8")
-        k = bytes(k)
-        k = base64url_decode(k)
-
-        return k
-
-    def sign(self, msg):
-        return hmac.new(self.prepared_key, msg, self._hash_alg).digest()
-
-    def verify(self, msg, sig):
-        return hmac.compare_digest(sig, self.sign(msg))
-
-    def to_dict(self):
-        return {
-            "alg": self._algorithm,
-            "kty": "oct",
-            "k": base64url_encode(self.prepared_key).decode("ASCII"),
-        }

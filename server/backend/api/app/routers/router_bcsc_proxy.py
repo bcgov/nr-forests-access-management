@@ -3,6 +3,7 @@ import logging
 
 import jwt
 import requests
+from api.app.integration.bcsc import bcsc_decryption
 from api.app.utils import utils
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives import \
@@ -11,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from .. import bcsc_decryption, kms_lookup
+from .. import kms_lookup
 
 LOGGER = logging.getLogger(__name__)
 
