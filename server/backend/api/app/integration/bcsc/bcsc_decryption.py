@@ -11,6 +11,18 @@ from api.app.utils import utils
 
 LOGGER = logging.getLogger(__name__)
 
+"""
+Note:
+# - All integration files under "integration/bcsc" path are based on previous "python-jose" package
+    and ported library code to FAM with modification in order to 1. make FAM-BCSC login flow
+    encryption-decryptoin works and 2. get rid of "python-jose" package which has security vulnerability
+    and did not have updated version and currently not maintained for years.
+# - The difficult decision for why copying library code to modify for fitting BCSC authentication can be
+    found on ticket: (#1454 - https://github.com/orgs/bcgov/projects/65/views/1?pane=issue&itemId=67731674)
+# - It would be better later if it is still possble to resolve difficulties with BCSC team to standardize
+    the JWE token decryption with common practice and not with BCSC customized token spec.
+"""
+
 
 def decrypt(jwe_str, decrypted_key):
     """Decrypts a JWE compact serialized string and returns the plaintext.

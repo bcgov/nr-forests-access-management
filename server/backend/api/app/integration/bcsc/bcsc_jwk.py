@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hmac
+import logging
 
 from api.app.integration.bcsc.bcsc_constants import (ALGORITHMS, JWEError,
                                                      JWKError)
@@ -12,10 +13,11 @@ from cryptography.hazmat.primitives.ciphers import (Cipher, aead, algorithms,
                                                     modes)
 from cryptography.hazmat.primitives.padding import PKCS7
 
-# from jose import jwk
+LOGGER = logging.getLogger(__name__)
 
 # This code partial is from "python-jose" not maintained library.
-# https://pypi.org/project/python-jose/
+# https://pypi.org/project/python-jose/, please see notes at
+# bcsc_dscryption.py.
 
 
 def jwk_construct(key_data, algorithm=None):
@@ -31,8 +33,8 @@ def jwk_construct(key_data, algorithm=None):
     if not algorithm:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
 
-    # key_class = jwk.get_key(algorithm)
     key_class = get_key(algorithm)
+    LOGGER.debug(f"key_class: {key_class}")
     if not key_class:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
     return key_class(key_data, algorithm)
