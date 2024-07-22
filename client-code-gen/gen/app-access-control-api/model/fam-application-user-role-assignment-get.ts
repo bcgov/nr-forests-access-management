@@ -18,7 +18,7 @@
 import { FamRoleWithClient } from './fam-role-with-client';
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamUserOnlyName } from './fam-user-only-name';
+import { FamUserInfo } from './fam-user-info';
 
 /**
  * 
@@ -52,10 +52,10 @@ export interface FamApplicationUserRoleAssignmentGet {
     'application_id'?: number | null;
     /**
      * 
-     * @type {FamUserOnlyName}
+     * @type {FamUserInfo}
      * @memberof FamApplicationUserRoleAssignmentGet
      */
-    'user': FamUserOnlyName;
+    'user': FamUserInfo;
     /**
      * 
      * @type {FamRoleWithClient}

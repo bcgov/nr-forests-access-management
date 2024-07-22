@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Forest Access Management - FAM - Admin Management API
- *  Forest Access Management Admin Management API used by the Forest Access Management application to define admin access to forest applications. 
+ * Forest Access Management - FAM - API
+ *  Forest Access Management API used by the Forest Access Management application to Define who has access to what apps, and what roles they will operate under  once access is granted. 
  *
  * The version of the OpenAPI document: 0.0.1
  * Contact: SIBIFSAF@victoria1.gov.bc.ca
@@ -15,42 +15,42 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamUserTypeDto } from './fam-user-type-dto';
+import { FamUserType } from './fam-user-type';
 
 /**
  * 
  * @export
- * @interface FamUserInfoDto
+ * @interface FamUserInfo
  */
-export interface FamUserInfoDto {
+export interface FamUserInfo {
     /**
      * 
      * @type {string}
-     * @memberof FamUserInfoDto
+     * @memberof FamUserInfo
      */
     'user_name': string;
     /**
      * 
-     * @type {FamUserTypeDto}
-     * @memberof FamUserInfoDto
+     * @type {FamUserType}
+     * @memberof FamUserInfo
      */
-    'user_type': FamUserTypeDto;
+    'user_type': FamUserType;
     /**
      * 
      * @type {string}
-     * @memberof FamUserInfoDto
+     * @memberof FamUserInfo
      */
     'first_name'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof FamUserInfoDto
+     * @memberof FamUserInfo
      */
     'last_name'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof FamUserInfoDto
+     * @memberof FamUserInfo
      */
     'email'?: string | null;
 }

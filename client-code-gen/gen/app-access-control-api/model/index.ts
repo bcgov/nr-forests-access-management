@@ -4,7 +4,7 @@ export * from './fam-forest-client-status';
 export * from './fam-forest-client-status-type';
 export * from './fam-role-min';
 export * from './fam-role-with-client';
-export * from './fam-user-only-name';
+export * from './fam-user-info';
 export * from './fam-user-role-assignment-create';
 export * from './fam-user-role-assignment-get';
 export * from './fam-user-type';

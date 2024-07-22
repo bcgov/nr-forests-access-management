@@ -20,7 +20,7 @@ model/fam-forest-client-status.ts
 model/fam-forest-client.ts
 model/fam-role-min.ts
 model/fam-role-with-client.ts
-model/fam-user-only-name.ts
+model/fam-user-info.ts
 model/fam-user-role-assignment-create.ts
 model/fam-user-role-assignment-get.ts
 model/fam-user-type.ts

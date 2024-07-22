@@ -393,7 +393,7 @@ class FamUser(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", name="fam_usr_pk"),
-        UniqueConstraint("user_type_code", "user_name", name="fam_usr_uk"),
+        UniqueConstraint("user_type_code", "user_guid", name="fam_usr_uk"),
         ForeignKeyConstraint(
             [user_type_code],
             ["app_fam.fam_user_type_code.user_type_code"],
