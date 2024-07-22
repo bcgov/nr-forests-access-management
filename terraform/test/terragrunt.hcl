@@ -38,7 +38,7 @@ generate "test_tfvars" {
   ]
   fam_console_idp_name = "TEST-IDIR"
   fam_console_idp_name_bceid = "TEST-BCEIDBUSINESS"
-  forest_client_api_base_url = "https://nr-forest-client-api-test.api.gov.bc.ca"
+  forest_client_api_base_url_test = "${local.common_vars.inputs.forest_client_api_test_base_url}"
   use_override_proxy_endpoints = false
 EOF
 }

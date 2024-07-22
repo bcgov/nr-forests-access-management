@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { ErrorMessage, Field } from 'vee-validate';
-import InputText from 'primevue/inputtext';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { isLoading } from '@/store/LoadingState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
 import { IconSize } from '@/enum/IconEnum';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { selectedApplicationId } from '@/store/ApplicationState';
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
+import { isLoading } from '@/store/LoadingState';
 import {
     FamForestClientStatusType,
     type FamForestClient,
 } from 'fam-app-acsctl-api';
+import InputText from 'primevue/inputtext';
+import { ErrorMessage, Field } from 'vee-validate';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     userId: { type: String, required: true },
@@ -43,7 +44,7 @@ const verifyForestClientNumber = async (forestClientNumbers: string) => {
             continue;
         }
         await AppActlApiService.forestClientsApi
-            .search(forestClientNumber)
+            .search(forestClientNumber, selectedApplicationId.value!)
             .then((result) => {
                 if (!result.data[0]) {
                     forestClientNumberVerifyErrors.value.push(

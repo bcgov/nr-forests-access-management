@@ -1,11 +1,10 @@
 import logging
-from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from api.app import database
 from api.app.constants import ApiInstanceEnv
-from api.app.crud import crud_utils, crud_application
-
+from api.app.crud import crud_application, crud_utils
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 

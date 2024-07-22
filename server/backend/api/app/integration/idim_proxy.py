@@ -15,7 +15,16 @@ LOGGER = logging.getLogger(__name__)
 class IdimProxyService:
     """
     The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
-    See environment setup (local-dev.env) for idim-proxy TEST api-docs.
+    See environment setup (local-dev.env) for idim-proxy configuration.
+    Note:
+        Currently IDIM Proxy is configured to use the same api key value.
+        So there is no need for different key based on environment.
+
+    Note! This is external API integration and FAM supports 3 applications environments in PROD.
+        For FAM(PROD)-Application(PROD): it will connect to IdimProxy API PROD instance.
+        For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
+        For FAM environment management relating to the use of external API,
+        see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
 
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.

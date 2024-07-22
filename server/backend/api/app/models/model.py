@@ -588,7 +588,7 @@ class FamRole(Base):
         + "role_type=concrete",
     )
 
-    application = relationship("FamApplication", back_populates="fam_role")
+    application: Mapped[FamApplication] = relationship("FamApplication", back_populates="fam_role")
     client_number = relationship(
         "FamForestClient", back_populates="fam_role", lazy="joined"
     )
