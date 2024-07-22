@@ -37,6 +37,8 @@ class JWKError(JOSEError):
     pass
 
 
+# BCSC uses HMAC and AES for now. Comment out others to
+# be easier to be ported.
 def get_key(algorithm):
     if algorithm in ALGORITHMS.KEYS:
         return ALGORITHMS.KEYS[algorithm]
