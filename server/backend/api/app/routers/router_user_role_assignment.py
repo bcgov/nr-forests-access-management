@@ -2,7 +2,6 @@ import logging
 from http import HTTPStatus
 
 from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.models import model as models
 from api.app.routers.router_guards import (
     authorize_by_application_role, authorize_by_privilege,
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
