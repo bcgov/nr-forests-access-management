@@ -3,8 +3,9 @@ from http import HTTPStatus
 from typing import List
 
 import requests
-from api.config import config
+from api.app.constants import ApiInstanceEnv
 from api.app.schemas import ForestClientIntegrationFindResponse
+from api.config import config
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +23,12 @@ class ForestClientIntegrationService():
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10) # Timeout (connect, read) in seconds.
 
-    def __init__(self):
-        self.api_base_url = config.get_forest_client_api_baseurl()
+    def __init__(self, api_instance_env=ApiInstanceEnv.TEST):
+        LOGGER.debug(f"ForestClientIntegrationService() use API instance - {api_instance_env}")
+        self.api_base_url = config.get_forest_client_api_baseurl(api_instance_env)
         self.api_clients_url = f"{self.api_base_url}/api/clients"
-        self.API_TOKEN = config.get_forest_client_api_token()
+        self.API_TOKEN = config.get_forest_client_api_token(api_instance_env)
+
         self.headers = {"Accept": "application/json", "X-API-KEY": self.API_TOKEN}
 
         # See Python: https://requests.readthedocs.io/en/latest/user/advanced/

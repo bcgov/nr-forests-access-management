@@ -2,20 +2,20 @@ import logging
 from http import HTTPStatus
 from typing import List
 
-from sqlalchemy.orm import Session
-
 from api.app import constants as famConstants
 from api.app import schemas
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
+from api.app.services import utils_service
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.services.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
 from api.app.utils import utils
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,7 +99,9 @@ class AccessControlPrivilegeService:
                     error_msg=error_msg,
                 )
 
-            forest_client_integration_service = ForestClientIntegrationService()
+            forest_client_integration_service = ForestClientIntegrationService(
+                utils_service.use_api_instance_by_app_env(fam_role.application.app_environment)
+            )
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
                 forest_client_validator_return = (

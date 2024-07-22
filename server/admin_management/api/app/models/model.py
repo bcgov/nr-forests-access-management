@@ -1,19 +1,10 @@
 import datetime
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    ForeignKeyConstraint,
-    Identity,
-    Integer,
-    PrimaryKeyConstraint,
-    String,
-    UniqueConstraint,
-    Index,
-    func,
-    text,
-)
+
+from sqlalchemy import (BigInteger, Column, ForeignKeyConstraint, Identity,
+                        Index, Integer, PrimaryKeyConstraint, String,
+                        UniqueConstraint, func, text)
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import Mapped, declarative_base, relationship
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -598,7 +589,7 @@ class FamRole(Base):
         + "role_type=concrete",
     )
 
-    application = relationship("FamApplication", back_populates="fam_role")
+    application: Mapped[FamApplication] = relationship("FamApplication", back_populates="fam_role")
     client_number = relationship(
         "FamForestClient", back_populates="fam_role", lazy="joined"
     )

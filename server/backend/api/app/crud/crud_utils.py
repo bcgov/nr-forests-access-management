@@ -3,7 +3,9 @@ import os
 from typing import List, Optional
 
 import sqlalchemy
-from api.app.constants import ERROR_CODE_INVALID_APPLICATION_ID, AppEnv, ApiInstanceEnv, AwsTargetEnv, APPLICATION_FAM
+from api.app.constants import (APPLICATION_FAM,
+                               ERROR_CODE_INVALID_APPLICATION_ID,
+                               ApiInstanceEnv, AppEnv, AwsTargetEnv)
 from api.app.crud import crud_application
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
