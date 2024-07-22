@@ -85,7 +85,7 @@ set -o allexport; source local-dev.env; set +o allexport
 
 FAM backend uses external services. These services genrally need some credentials or api tokens. The credentials or tokens should not be harcoded in "`local-dev.env`". For running backend locally or run tests locally, developers may find problem with connecting to these services. Developers can get the values and hardcode the value locally but should not commit these key values. If these are accidently commited, they should be rest.
 
-<b>FC_API_TOKEN</b>: \
+<b>FC_API_TOKEN_TEST</b>: \
 This is an API Token for Forest Client API external service to lookup forest client number organization information.
 
 In case it needs to be reset, use [API Service Portal](https://api.gov.bc.ca/devportal/api-directory/3179?preview=false) with your IDIR credential to login and go to "Forest Client API" service to request a reset for the token.

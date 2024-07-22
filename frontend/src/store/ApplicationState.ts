@@ -20,6 +20,8 @@ export const setSelectedApplication = (newValue: string | null) => {
     else localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
 };
 
+// --- Getter
+
 export const isApplicationSelected = computed(() => {
     return selectedApplication.value != undefined;
 });
@@ -27,8 +29,6 @@ export const isApplicationSelected = computed(() => {
 export const selectedApplicationId = computed(() => {
     return selectedApplication.value?.id;
 });
-
-// --- Getter
 
 export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {

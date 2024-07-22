@@ -1,7 +1,6 @@
 # User Type
 from enum import Enum
 
-
 # FAM application name in database
 APPLICATION_FAM = "FAM"
 
