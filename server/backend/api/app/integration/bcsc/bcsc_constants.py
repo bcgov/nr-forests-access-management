@@ -1,6 +1,24 @@
 import hashlib
 
 
+class JWEError(Exception):
+    """Base error for all JWE errors"""
+    pass
+
+
+class JWEParseError(JWEError):
+    """Could not parse the JWE string provided"""
+    pass
+
+
+class JOSEError(Exception):
+    pass
+
+
+class JWKError(JOSEError):
+    pass
+
+
 class Algorithms:
     # DS Algorithms
     NONE = "none"

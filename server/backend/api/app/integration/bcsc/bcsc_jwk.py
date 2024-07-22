@@ -2,9 +2,17 @@ import base64
 import hashlib
 import hmac
 
-from api.app.integration.bcsc.bcsc_constants import ALGORITHMS
+from api.app.integration.bcsc.bcsc_constants import (ALGORITHMS, JWEError,
+                                                     JWKError)
+from api.app.utils import utils
 from api.app.utils.utils import base64url_decode
-from jose import jwk
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import (Cipher, aead, algorithms,
+                                                    modes)
+from cryptography.hazmat.primitives.padding import PKCS7
+
+# from jose import jwk
 
 # This code partial is from "python-jose" not maintained library.
 # https://pypi.org/project/python-jose/
@@ -23,18 +31,11 @@ def jwk_construct(key_data, algorithm=None):
     if not algorithm:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
 
-    key_class = jwk.get_key(algorithm)
+    # key_class = jwk.get_key(algorithm)
+    key_class = get_key(algorithm)
     if not key_class:
         raise JWKError("Unable to find an algorithm for key: %s" % key_data)
     return key_class(key_data, algorithm)
-
-
-class JOSEError(Exception):
-    pass
-
-
-class JWKError(JOSEError):
-    pass
 
 
 # BCSC uses HMAC and AES for now. Comment out others to
@@ -200,6 +201,131 @@ class HMACKey(Key):
             "kty": "oct",
             "k": base64url_encode(self.prepared_key).decode("ASCII"),
         }
+
+
+class CryptographyAESKey(Key):
+    KEY_128 = (ALGORITHMS.A128GCM, ALGORITHMS.A128GCMKW, ALGORITHMS.A128KW, ALGORITHMS.A128CBC)
+    KEY_192 = (ALGORITHMS.A192GCM, ALGORITHMS.A192GCMKW, ALGORITHMS.A192KW, ALGORITHMS.A192CBC)
+    KEY_256 = (
+        ALGORITHMS.A256GCM,
+        ALGORITHMS.A256GCMKW,
+        ALGORITHMS.A256KW,
+        ALGORITHMS.A128CBC_HS256,
+        ALGORITHMS.A256CBC,
+    )
+    KEY_384 = (ALGORITHMS.A192CBC_HS384,)
+    KEY_512 = (ALGORITHMS.A256CBC_HS512,)
+
+    AES_KW_ALGS = (ALGORITHMS.A128KW, ALGORITHMS.A192KW, ALGORITHMS.A256KW)
+
+    MODES = {
+        ALGORITHMS.A128GCM: modes.GCM,
+        ALGORITHMS.A192GCM: modes.GCM,
+        ALGORITHMS.A256GCM: modes.GCM,
+        ALGORITHMS.A128CBC_HS256: modes.CBC,
+        ALGORITHMS.A192CBC_HS384: modes.CBC,
+        ALGORITHMS.A256CBC_HS512: modes.CBC,
+        ALGORITHMS.A128CBC: modes.CBC,
+        ALGORITHMS.A192CBC: modes.CBC,
+        ALGORITHMS.A256CBC: modes.CBC,
+        ALGORITHMS.A128GCMKW: modes.GCM,
+        ALGORITHMS.A192GCMKW: modes.GCM,
+        ALGORITHMS.A256GCMKW: modes.GCM,
+        ALGORITHMS.A128KW: None,
+        ALGORITHMS.A192KW: None,
+        ALGORITHMS.A256KW: None,
+    }
+
+    def __init__(self, key, algorithm):
+        if algorithm not in ALGORITHMS.AES:
+            raise JWKError("%s is not a valid AES algorithm" % algorithm)
+        if algorithm not in ALGORITHMS.SUPPORTED.union(ALGORITHMS.AES_PSEUDO):
+            raise JWKError("%s is not a supported algorithm" % algorithm)
+
+        self._algorithm = algorithm
+        self._mode = self.MODES.get(self._algorithm)
+
+        if algorithm in self.KEY_128 and len(key) != 16:
+            raise JWKError(f"Key must be 128 bit for alg {algorithm}")
+        elif algorithm in self.KEY_192 and len(key) != 24:
+            raise JWKError(f"Key must be 192 bit for alg {algorithm}")
+        elif algorithm in self.KEY_256 and len(key) != 32:
+            raise JWKError(f"Key must be 256 bit for alg {algorithm}")
+        elif algorithm in self.KEY_384 and len(key) != 48:
+            raise JWKError(f"Key must be 384 bit for alg {algorithm}")
+        elif algorithm in self.KEY_512 and len(key) != 64:
+            raise JWKError(f"Key must be 512 bit for alg {algorithm}")
+
+        self._key = key
+
+    def to_dict(self):
+        data = {"alg": self._algorithm, "kty": "oct", "k": base64url_encode(self._key)}
+        return data
+
+    # Commented out, no encryption is needed for FAM-BCSC.
+    # def encrypt(self, plain_text, aad=None):
+    #     plain_text = utils.ensure_binary(plain_text)
+    #     try:
+    #         iv = get_random_bytes(algorithms.AES.block_size // 8)
+    #         mode = self._mode(iv)
+    #         if mode.name == "GCM":
+    #             cipher = aead.AESGCM(self._key)
+    #             cipher_text_and_tag = cipher.encrypt(iv, plain_text, aad)
+    #             cipher_text = cipher_text_and_tag[: len(cipher_text_and_tag) - 16]
+    #             auth_tag = cipher_text_and_tag[-16:]
+    #         else:
+    #             cipher = Cipher(algorithms.AES(self._key), mode, backend=default_backend())
+    #             encryptor = cipher.encryptor()
+    #             padder = PKCS7(algorithms.AES.block_size).padder()
+    #             padded_data = padder.update(plain_text)
+    #             padded_data += padder.finalize()
+    #             cipher_text = encryptor.update(padded_data) + encryptor.finalize()
+    #             auth_tag = None
+    #         return iv, cipher_text, auth_tag
+    #     except Exception as e:
+    #         raise JWEError(e)
+
+    def decrypt(self, cipher_text, iv=None, aad=None, tag=None):
+        cipher_text = utils.ensure_binary(cipher_text)
+        try:
+            iv = utils.ensure_binary(iv)
+            mode = self._mode(iv)
+            if mode.name == "GCM":
+                if tag is None:
+                    raise ValueError("tag cannot be None")
+                cipher = aead.AESGCM(self._key)
+                cipher_text_and_tag = cipher_text + tag
+                try:
+                    plain_text = cipher.decrypt(iv, cipher_text_and_tag, aad)
+                except InvalidTag:
+                    raise JWEError("Invalid JWE Auth Tag")
+            else:
+                cipher = Cipher(algorithms.AES(self._key), mode, backend=default_backend())
+                decryptor = cipher.decryptor()
+                padded_plain_text = decryptor.update(cipher_text)
+                padded_plain_text += decryptor.finalize()
+                unpadder = PKCS7(algorithms.AES.block_size).unpadder()
+                plain_text = unpadder.update(padded_plain_text)
+                plain_text += unpadder.finalize()
+
+            return plain_text
+        except Exception as e:
+            raise JWEError(e)
+
+    # Commented out, no encryption is needed for FAM-BCSC.
+    # def wrap_key(self, key_data):
+    #     key_data = utils.ensure_binary(key_data)
+    #     cipher_text = aes_key_wrap(self._key, key_data, default_backend())
+    #     return cipher_text  # IV, cipher text, auth tag
+
+    # Commented out, no encryption is needed for FAM-BCSC.
+    # def unwrap_key(self, wrapped_key):
+    #     wrapped_key = utils.ensure_binary(wrapped_key)
+    #     try:
+    #         plain_text = aes_key_unwrap(self._key, wrapped_key, default_backend())
+    #     except InvalidUnwrap as cause:
+    #         raise JWEError(cause)
+    #     return plain_text
 
 
 def base64url_encode(input):

@@ -48,3 +48,13 @@ def base64url_decode(input):
         input += b"=" * (4 - rem)
 
     return base64.urlsafe_b64decode(input)
+
+
+def ensure_binary(s):
+    """Coerce **s** to bytes."""
+
+    if isinstance(s, bytes):
+        return s
+    if isinstance(s, str):
+        return s.encode("utf-8", "strict")
+    raise TypeError(f"not expecting type '{type(s)}'")

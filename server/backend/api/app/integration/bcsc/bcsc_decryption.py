@@ -5,7 +5,8 @@ from collections.abc import Mapping
 from struct import pack
 
 from api.app.integration.bcsc import bcsc_jwk
-from api.app.integration.bcsc.bcsc_constants import ALGORITHMS
+from api.app.integration.bcsc.bcsc_constants import (ALGORITHMS, JWEError,
+                                                     JWEParseError)
 from api.app.utils import utils
 
 LOGGER = logging.getLogger(__name__)
@@ -119,6 +120,7 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
     if enc in ALGORITHMS.HMAC_AUTH_TAG:
         encryption_key, mac_key, key_len = _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc)
         auth_tag_check = _auth_tag(cipher_text, iv, aad, mac_key, key_len)
+
     # BCSC enc uses algorithm in ALGORITHMS.HMAC_AUTH_TAG, below will not run.
     elif enc in ALGORITHMS.GCM:
         encryption_key = bcsc_jwk.jwk_construct(cek_bytes, enc)
@@ -174,7 +176,7 @@ def _jwe_compact_deserialize(jwe_bytes):
     # Vector, the JWE Ciphertext, the JWE Authentication Tag, and the
     # JWE AAD, following the restriction that no line breaks,
     # whitespace, or other additional characters have been used.
-    jwe_bytes = ensure_binary(jwe_bytes)
+    jwe_bytes = utils.ensure_binary(jwe_bytes)
     try:
         header_segment, encrypted_key_segment, iv_segment, cipher_text_segment, auth_tag_segment = jwe_bytes.split(
             b".", 4
@@ -257,22 +259,3 @@ def _auth_tag(ciphertext, iv, aad, mac_key, tag_length):
     auth_tag = signature[0:tag_length]
     return auth_tag
 
-
-def ensure_binary(s):
-    """Coerce **s** to bytes."""
-
-    if isinstance(s, bytes):
-        return s
-    if isinstance(s, str):
-        return s.encode("utf-8", "strict")
-    raise TypeError(f"not expecting type '{type(s)}'")
-
-
-class JWEError(Exception):
-    """Base error for all JWE errors"""
-    pass
-
-
-class JWEParseError(JWEError):
-    """Could not parse the JWE string provided"""
-    pass
