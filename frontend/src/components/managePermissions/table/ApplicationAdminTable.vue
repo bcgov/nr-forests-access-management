@@ -47,19 +47,6 @@ const newAppAdminIds = computed(() => {
 
 const adminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
-    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'user.user_type.description': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'application.app_environment': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
 });
 
 const adminSearchChange = (newvalue: string) => {
@@ -120,6 +107,9 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                     'user.user_name',
                     'application.application_name',
                     'user.user_type.description',
+                    'user.first_name',
+                    'user.last_name',
+                    'user.email',
                     'role.role_name',
                     'application.app_environment',
                 ]"
@@ -152,6 +142,18 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                     header="Domain"
                     sortable
                 ></Column>
+                <Column field="user.first_name" header="Full Name" sortable>
+                    <template #body="{ data }">
+                        {{
+                            data.user.first_name && data.user.last_name
+                                ? data.user.first_name +
+                                  ' ' +
+                                  data.user.last_name
+                                : ''
+                        }}
+                    </template>
+                </Column>
+                <Column field="user.email" header="Email" sortable></Column>
                 <Column
                     field="application.application_name"
                     header="Application"

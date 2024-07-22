@@ -53,23 +53,6 @@ const newUserAccessIds = computed(() => {
 
 const userRoleAssignmentsFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
-    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'role.parent_role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'user.user_type.description': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.client_number.forest_client_number': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
 });
 
 const userSearchChange = (newValue: string) => {
@@ -131,6 +114,9 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     'user.user_name',
                     'role.parent_role.role_name',
                     'user.user_type.description',
+                    'user.first_name',
+                    'user.last_name',
+                    'user.email',
                     'role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
@@ -163,23 +149,18 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     header="Domain"
                     sortable
                 ></Column>
-                <!-- Hidden until information is available
-                    <Column
-                        field="firstName"
-                        header="First Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="lastName"
-                        header="Last Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="email"
-                        header="Email"
-                        sortable
-                    ></Column>
-                     -->
+                <Column field="user.first_name" header="Full Name" sortable>
+                    <template #body="{ data }">
+                        {{
+                            data.user.first_name && data.user.last_name
+                                ? data.user.first_name +
+                                  ' ' +
+                                  data.user.last_name
+                                : ''
+                        }}
+                    </template>
+                </Column>
+                <Column field="user.email" header="Email" sortable></Column>
                 <Column
                     field="role.client_number.forest_client_number"
                     header="Client Number"

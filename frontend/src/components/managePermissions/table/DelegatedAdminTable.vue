@@ -48,23 +48,6 @@ const newDelegatedAdminIds = computed(() => {
 
 const delegatedAdminFilters = ref({
     global: { value: '', matchMode: FilterMatchMode.CONTAINS },
-    'user.user_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'user.user_type.description': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.parent_role.role_name': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
-    'role.client_number.forest_client_number': {
-        value: null,
-        matchMode: FilterMatchMode.CONTAINS,
-    },
 });
 
 const delegatedAdminSearchChange = (newvalue: string) => {
@@ -140,6 +123,9 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                     'user.user_name',
                     'user.user_type.description',
                     'role.role_name',
+                    'user.first_name',
+                    'user.last_name',
+                    'user.email',
                     'role.parent_role.role_name',
                     'role.client_number.forest_client_number',
                 ]"
@@ -172,6 +158,18 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                     header="Domain"
                     sortable
                 ></Column>
+                <Column field="user.first_name" header="Full Name" sortable>
+                    <template #body="{ data }">
+                        {{
+                            data.user.first_name && data.user.last_name
+                                ? data.user.first_name +
+                                  ' ' +
+                                  data.user.last_name
+                                : ''
+                        }}
+                    </template>
+                </Column>
+                <Column field="user.email" header="Email" sortable></Column>
                 <Column
                     field="role.client_number.forest_client_number"
                     header="Client Number"
