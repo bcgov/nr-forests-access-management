@@ -14,13 +14,17 @@ LOGGER = logging.getLogger(__name__)
 """
 Note:
 # - All integration files under "integration/bcsc" path are based on previous "python-jose" package
-    and ported library code to FAM with modification in order to 1. make FAM-BCSC login flow
-    encryption-decryptoin works and 2. get rid of "python-jose" package which has security vulnerability
-    and did not have updated version and currently not maintained for years.
+    and ported library code to FAM with modification in order to make FAM-BCSC login flow
+    encryption-decryptoin works
+  - To get rid of "python-jose" package (which has security vulnerability and did not have updated version
+    and currently is not maintained for years), attempts to use other libraries with jwe capabilities were
+    not successful (authlib and joserfc libraries), so temporary solution for now is to ported more code to
+    be able to remove dependency. This is far more than ideal and code is ugly.
 # - The difficult decision for why copying library code to modify for fitting BCSC authentication can be
     found on ticket: (#1454 - https://github.com/orgs/bcgov/projects/65/views/1?pane=issue&itemId=67731674)
-# - It would be better later if it is still possble to resolve difficulties with BCSC team to standardize
-    the JWE token decryption with common practice and not with BCSC customized token spec.
+# - It would be better later if it is still possble to resolve jwe token decryption difficulties with
+    BCSC team to standardize the JWE token encryption-decryption with common known practice and not with
+    BCSC customized internal token spec.
 """
 
 
