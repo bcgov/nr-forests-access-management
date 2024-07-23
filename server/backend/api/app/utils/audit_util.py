@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 import json
 from api.app.models import model as models
+from api.app.schemas import Requester
 from fastapi import Request, HTTPException
 
 
@@ -25,7 +26,7 @@ class AuditEventLog:
     application: models.FamApplication
     role: models.FamRole
     forest_client_number: str
-    requesting_user: models.FamUser
+    requesting_user: Requester
     target_user: models.FamUser
     exception: Exception
 
@@ -37,7 +38,7 @@ class AuditEventLog:
         application: models.FamApplication = None,
         role: models.FamRole = None,
         forest_client_number: str = None,
-        requesting_user: models.FamUser = None,
+        requesting_user: Requester = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
     ):

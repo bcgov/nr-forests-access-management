@@ -2,15 +2,19 @@ import logging
 from http import HTTPStatus
 
 from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.models import model as models
 from api.app.routers.router_guards import (
-    authorize_by_application_role, authorize_by_privilege,
-    authorize_by_user_type, enforce_bceid_by_same_org_guard,
-    enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
-    get_current_requester, get_verified_target_user)
+    authorize_by_application_role,
+    authorize_by_privilege,
+    authorize_by_user_type,
+    enforce_bceid_by_same_org_guard,
+    enforce_bceid_terms_conditions_guard,
+    enforce_self_grant_guard,
+    get_current_requester,
+    get_verified_target_user,
+)
 from api.app.schemas import Requester, TargetUser
-from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
-                                      AuditEventType)
+from api.app.models.model import FamUser
+from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -67,20 +71,23 @@ def create_user_role_assignment(
     )
 
     try:
-
-        requesting_user = get_requesting_user(db, requester.cognito_user_id)
         role = crud_role.get_role(db, role_assignment_request.role_id)
 
         audit_event_log.role = role
         audit_event_log.application = role.application
-        audit_event_log.requesting_user = requesting_user
+        audit_event_log.requesting_user = requester
 
-        return crud_user_role.create_user_role(
-            db,
-            role_assignment_request,
-            target_user,
-            requesting_user.cognito_user_id
+        response = crud_user_role.create_user_role(
+            db, role_assignment_request, target_user, requester.cognito_user_id
         )
+        # get target user from database, so for existing user, we can get the cognito user id
+        audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
+            db,
+            role_assignment_request.user_type_code,
+            role_assignment_request.user_guid,
+        )
+
+        return response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -89,19 +96,14 @@ def create_user_role_assignment(
         raise e
 
     finally:
-        audit_event_log.target_user = crud_user.get_user_by_domain_and_name(
-            db,
-            role_assignment_request.user_type_code,
-            role_assignment_request.user_name,
-        )
+        # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = models.FamUser(
-                user_type_code=role_assignment_request.user_type_code,
-                user_name=role_assignment_request.user_name,
-                user_guid="unknown",
-                cognito_user_id="unknown",
+            audit_event_log.target_user = FamUser(
+                user_type_code=target_user.user_type_code,
+                user_name=target_user.user_name,
+                user_guid=target_user.user_guid,
+                cognito_user_id=target_user.cognito_user_id,
             )
-
         audit_event_log.log_event()
 
 
@@ -144,13 +146,12 @@ def delete_user_role_assignment(
     )
 
     try:
-        requesting_user = get_requesting_user(db, requester.cognito_user_id)
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
 
         audit_event_log.role = user_role.role
         audit_event_log.target_user = user_role.user
         audit_event_log.application = user_role.role.application
-        audit_event_log.requesting_user = requesting_user
+        audit_event_log.requesting_user = requester
 
         crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
 
@@ -165,8 +166,3 @@ def delete_user_role_assignment(
                 user_role.role.client_number.forest_client_number
             )
         audit_event_log.log_event()
-
-
-def get_requesting_user(db: Session, cognito_user_id: str) -> models.FamUser:
-    requester = crud_user.get_user_by_cognito_user_id(db, cognito_user_id)
-    return requester
