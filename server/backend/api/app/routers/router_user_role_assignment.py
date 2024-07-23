@@ -98,7 +98,12 @@ def create_user_role_assignment(
     finally:
         # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = FamUser(**target_user)
+            audit_event_log.target_user = FamUser(
+                user_type_code=target_user.user_type_code,
+                user_name=target_user.user_name,
+                user_guid=target_user.user_guid,
+                cognito_user_id=target_user.cognito_user_id,
+            )
         audit_event_log.log_event()
 
 
