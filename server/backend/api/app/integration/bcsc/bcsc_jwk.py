@@ -47,7 +47,11 @@ def get_key(algorithm):
         return ALGORITHMS.KEYS[algorithm]
     elif algorithm in ALGORITHMS.HMAC:  # noqa: F811
         return HMACKey
+    elif algorithm in ALGORITHMS.AES:
+        from jose.backends import AESKey  # noqa: F811
 
+        return AESKey
+    """
     # elif algorithm in ALGORITHMS.RSA:
     #     from jose.backends import RSAKey  # noqa: F811
 
@@ -56,12 +60,6 @@ def get_key(algorithm):
     #     from jose.backends import ECKey  # noqa: F811
 
     #     return ECKey
-
-    elif algorithm in ALGORITHMS.AES:
-        from jose.backends import AESKey  # noqa: F811
-
-        return AESKey
-    """
     # elif algorithm == ALGORITHMS.DIR:
     #     from jose.backends import DIRKey  # noqa: F811
 
