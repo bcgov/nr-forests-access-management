@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from api.app import jwt_validation, schemas
-from api.app.models import model as models
+from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     authorize_by_app_id,
     authorize_by_application_role,
@@ -82,16 +82,16 @@ def create_access_control_privilege_many(
         )
         audit_event_log.application = audit_event_log.role.application
 
-        new_delegated_admin = access_control_privilege_service.create_access_control_privilege_many(
+        response = access_control_privilege_service.create_access_control_privilege_many(
             access_control_privilege_request, requester.cognito_user_id, target_user
         )
-        # get target user from database, so for existing user, we'll have get the cognito user id
+        # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
             access_control_privilege_request.user_type_code,
             access_control_privilege_request.user_guid,
         )
 
-        return  new_delegated_admin
+        return  response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -101,7 +101,7 @@ def create_access_control_privilege_many(
     finally:
         # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = target_user
+            audit_event_log.target_user = FamUser(**target_user)
 
         audit_event_log.log_event()
 
@@ -138,7 +138,6 @@ def get_access_control_privileges_by_application_id(
 def delete_access_control_privilege(
     access_control_privilege_id: int,
     request: Request,
-    user_service: UserService = Depends(user_service_instance),
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
         access_control_privilege_service_instance
     ),

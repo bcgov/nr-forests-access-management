@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from api.app import database, jwt_validation, schemas
+from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     authorize_by_fam_admin,
     enforce_self_grant_guard,
@@ -82,17 +83,17 @@ def create_application_admin(
             application_admin_request.application_id
         )
 
-        new_application_admin = application_admin_service.create_application_admin(
+        response = application_admin_service.create_application_admin(
             application_admin_request, target_user, requester.cognito_user_id
         )
 
-        # get target user from database, so for existing user, we'll have get the cognito user id
+        # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
             application_admin_request.user_type_code,
             application_admin_request.user_guid,
         )
 
-        return new_application_admin
+        return response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -102,7 +103,7 @@ def create_application_admin(
     finally:
         # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = target_user
+            audit_event_log.target_user = FamUser(**target_user)
 
         audit_event_log.log_event()
 

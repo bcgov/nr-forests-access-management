@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 import json
 from api.app.models import model as models
-from api.app.schemas import Requester, TargetUser
+from api.app.schemas import Requester
 from fastapi import Request, HTTPException
 
 
@@ -27,7 +27,7 @@ class AuditEventLog:
     role: models.FamRole
     forest_client_number: str
     requesting_user: Requester
-    target_user: TargetUser
+    target_user: models.FamUser
     exception: Exception
 
     def __init__(
@@ -39,7 +39,7 @@ class AuditEventLog:
         role: models.FamRole = None,
         forest_client_number: str = None,
         requesting_user: Requester = None,
-        target_user: TargetUser = None,
+        target_user: models.FamUser = None,
         exception: Exception = None,
     ):
         self.request = request
