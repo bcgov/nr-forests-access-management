@@ -40,13 +40,14 @@ def jwk_construct(key_data, algorithm=None):
     return key_class(key_data, algorithm)
 
 
-# BCSC uses HMAC and AES for now. Comment out others to
+# BCSC uses HMAC and AES for now. Comment out conditions to
 # be easier to be ported.
 def get_key(algorithm):
     if algorithm in ALGORITHMS.KEYS:
         return ALGORITHMS.KEYS[algorithm]
     elif algorithm in ALGORITHMS.HMAC:  # noqa: F811
         return HMACKey
+
     # elif algorithm in ALGORITHMS.RSA:
     #     from jose.backends import RSAKey  # noqa: F811
 
@@ -55,14 +56,17 @@ def get_key(algorithm):
     #     from jose.backends import ECKey  # noqa: F811
 
     #     return ECKey
+
     elif algorithm in ALGORITHMS.AES:
         from jose.backends import AESKey  # noqa: F811
 
         return AESKey
+    """
     # elif algorithm == ALGORITHMS.DIR:
     #     from jose.backends import DIRKey  # noqa: F811
 
     #     return DIRKey
+    """
     return None
 
 
@@ -72,7 +76,7 @@ class Key:
     """
 
     def __init__(self, key, algorithm):
-        pass
+        pass  # sonar fix: this is library code interface.
 
     def sign(self, msg):
         raise NotImplementedError()

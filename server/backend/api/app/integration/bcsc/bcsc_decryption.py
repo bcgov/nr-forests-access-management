@@ -47,7 +47,7 @@ def decrypt(jwe_str, decrypted_key):
         >>> jwe.decrypt(jwe_string, 'asecret128bitkey')
         'Hello, World!'
     """
-    header, encoded_header, encrypted_key, iv, cipher_text, auth_tag = _jwe_compact_deserialize(jwe_str)
+    header, encoded_header, _encrypted_key, iv, cipher_text, auth_tag = _jwe_compact_deserialize(jwe_str)
 
     try:
         # Determine the Key Management Mode employed by the algorithm
