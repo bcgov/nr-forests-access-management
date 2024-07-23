@@ -94,7 +94,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
     assert (
-        data[0]["user"]["user_type_code"]
+        data[0]["user"]["user_type"]["code"]
         == ACCESS_GRANT_FOM_DEV_CR_IDIR["user_type_code"]
     )
     assert data[0]["user"]["user_name"] == ACCESS_GRANT_FOM_DEV_CR_IDIR["user_name"]
@@ -131,7 +131,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
     assert (
-        data[0]["user"]["user_type_code"]
+        data[0]["user"]["user_type"]["code"]
         == ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["user_type_code"]
     )
     assert (
@@ -325,7 +325,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
             for data in response_data
             if (
                 data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
-                and data["user"]["user_type_code"] == UserType.IDIR
+                and data["user"]["user_type"]["code"] == UserType.IDIR
             )
         ]
     ) == len(
@@ -345,7 +345,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
             for data in response_data
             if (
                 data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
-                and data["user"]["user_type_code"] == UserType.BCEID
+                and data["user"]["user_type"]["code"]== UserType.BCEID
             )
         ]
     ) == len(
@@ -367,7 +367,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
                 for data in response_data
                 if (
                     data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
-                    and data["user"]["user_type_code"] == UserType.IDIR
+                    and data["user"]["user_type"]["code"] == UserType.IDIR
                     and data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00000001
                 )
             ]
@@ -468,7 +468,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
             data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
             or data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018
         )
-        and data["user"]["user_type_code"] == UserType.BCEID
+        and data["user"]["user_type"]["code"] == UserType.BCEID
         and data["user"]["user_name"] == USER_NAME_BCEID_LOAD_3_TEST
         for data in response_data
     )
@@ -481,7 +481,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 for data in response_data
                 if (
                     data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
-                    and data["user"]["user_type_code"] == UserType.IDIR
+                    and data["user"]["user_type"]["code"] == UserType.IDIR
                 )
             ]
         )
@@ -499,7 +499,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 for data in response_data
                 if (
                     data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
-                    and data["user"]["user_type_code"] == UserType.BCEID
+                    and data["user"]["user_type"]["code"] == UserType.BCEID
                     and (
                         data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
                         or data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018

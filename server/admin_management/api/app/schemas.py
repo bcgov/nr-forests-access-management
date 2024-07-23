@@ -109,6 +109,9 @@ class FamUserTypeDto(BaseModel):
 
 class FamUserInfoDto(FamUserBase):
     user_type_relation: FamUserTypeDto = Field(alias="user_type")
+    first_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 

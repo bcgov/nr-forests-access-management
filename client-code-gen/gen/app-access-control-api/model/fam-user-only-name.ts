@@ -16,9 +16,6 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { FamUserType } from './fam-user-type';
-// May contain unused imports in some cases
-// @ts-ignore
-import { UserType } from './user-type';
 
 /**
  * 
@@ -26,18 +23,6 @@ import { UserType } from './user-type';
  * @interface FamUserOnlyName
  */
 export interface FamUserOnlyName {
-    /**
-     * 
-     * @type {UserType}
-     * @memberof FamUserOnlyName
-     */
-    'user_type_code': UserType;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamUserOnlyName
-     */
-    'cognito_user_id'?: string | null;
     /**
      * 
      * @type {string}
@@ -52,23 +37,27 @@ export interface FamUserOnlyName {
     'user_guid': string | null;
     /**
      * 
-     * @type {string}
-     * @memberof FamUserOnlyName
-     */
-    'create_user': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamUserOnlyName
-     */
-    'update_user'?: string | null;
-    /**
-     * 
      * @type {FamUserType}
      * @memberof FamUserOnlyName
      */
     'user_type': FamUserType;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserOnlyName
+     */
+    'first_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserOnlyName
+     */
+    'last_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserOnlyName
+     */
+    'email'?: string | null;
 }
-
-
 
