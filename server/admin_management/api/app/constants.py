@@ -23,7 +23,7 @@ class AwsTargetEnv(str, Enum):
     # Not to be confused with application environment or API instance environment.
     DEV = "dev"
     TEST = "test"
-    PROD = "Prod"
+    PROD = "prod"
 
 
 class UserType(str, Enum):

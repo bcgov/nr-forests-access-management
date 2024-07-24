@@ -2,23 +2,26 @@ import logging
 from typing import List
 
 from api.app import database, jwt_validation, schemas
-from api.app.models import model as models
-from api.app.routers.router_guards import (authorize_by_fam_admin,
-                                           enforce_self_grant_guard,
-                                           get_current_requester,
-                                           get_verified_target_user,
-                                           validate_param_application_admin_id,
-                                           validate_param_application_id,
-                                           validate_param_user_type)
-from api.app.routers.router_utils import (application_admin_service_instance,
-                                          application_service_instance,
-                                          user_service_instance)
+from api.app.models.model import FamUser
+from api.app.routers.router_guards import (
+    authorize_by_fam_admin,
+    enforce_self_grant_guard,
+    get_current_requester,
+    get_verified_target_user,
+    validate_param_application_admin_id,
+    validate_param_application_id,
+    validate_param_user_type,
+)
+from api.app.routers.router_utils import (
+    application_admin_service_instance,
+    application_service_instance,
+    user_service_instance,
+)
 from api.app.schemas import Requester, TargetUser
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
-                                      AuditEventType)
+from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -75,16 +78,22 @@ def create_application_admin(
     )
 
     try:
-        audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
-            requester.cognito_user_id
-        )
+        audit_event_log.requesting_user = requester
         audit_event_log.application = application_service.get_application(
             application_admin_request.application_id
         )
 
-        return application_admin_service.create_application_admin(
+        response = application_admin_service.create_application_admin(
             application_admin_request, target_user, requester.cognito_user_id
         )
+
+        # get target user from database, so for existing user, we can get the cognito user id
+        audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
+            application_admin_request.user_type_code,
+            application_admin_request.user_guid,
+        )
+
+        return response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
@@ -92,16 +101,13 @@ def create_application_admin(
         raise e
 
     finally:
-        audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
-            application_admin_request.user_type_code,
-            application_admin_request.user_guid,
-        )
+        # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = models.FamUser(
-                user_type_code=application_admin_request.user_type_code,
-                user_name=application_admin_request.user_name,
-                user_guid="unknown",
-                cognito_user_id="unknown",
+            audit_event_log.target_user = FamUser(
+                user_type_code=target_user.user_type_code,
+                user_name=target_user.user_name,
+                user_guid=target_user.user_guid,
+                cognito_user_id=target_user.cognito_user_id,
             )
 
         audit_event_log.log_event()
@@ -134,14 +140,10 @@ def delete_application_admin(
 
     try:
         application_admin_service = ApplicationAdminService(db)
-        user_service = UserService(db)
-
         application_admin = application_admin_service.get_application_admin_by_id(
             application_admin_id
         )
-        audit_event_log.requesting_user = user_service.get_user_by_cognito_user_id(
-            requester.cognito_user_id
-        )
+        audit_event_log.requesting_user = requester
         audit_event_log.application = application_admin.application
         audit_event_log.target_user = application_admin.user
 

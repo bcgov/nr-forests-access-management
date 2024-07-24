@@ -34,7 +34,7 @@ class AwsTargetEnv(str, Enum):
     # Not to be confused with application environment or API instance environment.
     DEV = "dev"
     TEST = "test"
-    PROD = "Prod"
+    PROD = "prod"
 
 
 # Internal defined enum client status constants for FAM 'router_forest_client'.
