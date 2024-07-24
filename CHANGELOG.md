@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.20.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.19.1...v1.20.0) (2024-07-23)
+
+
+### Features
+
+* [#1115](https://github.com/bcgov/nr-forests-access-management/issues/1115) Display user information in table ([#1499](https://github.com/bcgov/nr-forests-access-management/issues/1499)) ([2a2b7e3](https://github.com/bcgov/nr-forests-access-management/commit/2a2b7e345c1ae4df9940ed16360b022d0baa4c8d))
+* [#1367](https://github.com/bcgov/nr-forests-access-management/issues/1367) Update get method to return user information ([#1497](https://github.com/bcgov/nr-forests-access-management/issues/1497)) ([39a99fc](https://github.com/bcgov/nr-forests-access-management/commit/39a99fc66bd0a64aa35f31b0d8c2d3a7a5dd1db1))
+
+
+### Bug Fixes
+
+* [#1367](https://github.com/bcgov/nr-forests-access-management/issues/1367) Fix and simplify audit log ([#1498](https://github.com/bcgov/nr-forests-access-management/issues/1498)) ([5e81ed5](https://github.com/bcgov/nr-forests-access-management/commit/5e81ed5b7b3234fdd2ce6218f7d25c5af77151ac))
+* [#1482](https://github.com/bcgov/nr-forests-access-management/issues/1482) Add roles for SILVA ([#1495](https://github.com/bcgov/nr-forests-access-management/issues/1495)) ([3d12680](https://github.com/bcgov/nr-forests-access-management/commit/3d12680d1f9f9bb33bdce0ea1d4115241bfe3ca8))
+* [#1487](https://github.com/bcgov/nr-forests-access-management/issues/1487) Fix IDIM user verification for admin management router guards ([#1493](https://github.com/bcgov/nr-forests-access-management/issues/1493)) ([e3368bf](https://github.com/bcgov/nr-forests-access-management/commit/e3368bf92f0693fa163d368d602f154efbfadb67))
+* [#1488](https://github.com/bcgov/nr-forests-access-management/issues/1488) FAM prod supports forest-client search for different app environments. ([#1496](https://github.com/bcgov/nr-forests-access-management/issues/1496)) ([46727be](https://github.com/bcgov/nr-forests-access-management/commit/46727be1db071be7f6bfe620f7861c07beed1c57))
+
+
+### Miscellaneous
+
+* [#1326](https://github.com/bcgov/nr-forests-access-management/issues/1326) Data generation script for load testing ([#1465](https://github.com/bcgov/nr-forests-access-management/issues/1465)) ([f481bd5](https://github.com/bcgov/nr-forests-access-management/commit/f481bd5a74ac1f31b70fda4860e8dd52aa117b0f))
+
 ## [1.19.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.19.0...v1.19.1) (2024-07-17)
 
 
