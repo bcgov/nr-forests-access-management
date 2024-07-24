@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.20.0...v1.20.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* [#1487](https://github.com/bcgov/nr-forests-access-management/issues/1487) Fix typo of AWS target environment variable ([#1501](https://github.com/bcgov/nr-forests-access-management/issues/1501)) ([956d1ec](https://github.com/bcgov/nr-forests-access-management/commit/956d1ec8405656c0d4ecf04292d0d78f86532bc0))
+
 ## [1.20.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.19.1...v1.20.0) (2024-07-23)
 
 
