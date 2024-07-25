@@ -5,23 +5,28 @@ from api.app import database
 from api.app.crud import crud_user
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from api.app.models.model import FamUser
+from api.app.schemas import FamUserUpdateResponse
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post(
-    "",
-    status_code=HTTPStatus.OK,
-)
+@router.post("", status_code=HTTPStatus.OK, response_model=FamUserUpdateResponse)
 def update_user_information_from_idim_source(
+    page: int = 1,
+    per_page: int = 100,
+    use_pagination: bool = False,
     db: Session = Depends(database.get_db),
 ):
     """
     Call IDIM web service to grab latest user information and update the record in FAM database
     """
-    LOGGER.debug(f"Updating datanase user information")
+    LOGGER.debug(f"Updating database user information")
 
-    crud_user.update_user_info_from_idim_source(db)
-    LOGGER.debug(f"Updating datanase user information is done")
+    response = crud_user.update_user_info_from_idim_source(
+        db, use_pagination, page, per_page
+    )
+
+    LOGGER.debug(f"Updating database user information is done")
+
+    return response

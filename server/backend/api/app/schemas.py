@@ -73,6 +73,14 @@ class FamUserInfo(BaseModel):
     )
 
 
+class FamUserUpdateResponse(BaseModel):
+    total_users_count: int
+    current_page: int
+    users_count_on_page: int
+    success_user_list: List[int]
+    failed_user_list: List[int]
+
+
 # --------------------------------- FAM Forest Client--------------------------------- #
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')

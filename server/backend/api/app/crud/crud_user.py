@@ -255,24 +255,47 @@ def fetch_initial_requester_info(db: Session, cognito_user_id: str):
     return user
 
 
-def update_user_info_from_idim_source(db: Session):
+def update_user_info_from_idim_source(
+    db: Session, use_pagination: bool, page: int, per_page: int
+) -> schemas.FamUserUpdateResponse:
     """
     Go through each user record in the database, update the user information to match the record in IDIM web service
     """
     # get a requester from the database
-    requester = db.query(models.FamUser).filter(models.FamUser.user_name == "CMENG").one_or_none()
-
+    requester = (
+        db.query(models.FamUser)
+        .filter(models.FamUser.user_name == "CMENG")
+        .one_or_none()
+    )
+    # setup IDIM web service
     api_instance_env = (
         ApiInstanceEnv.PROD if crud_utils.is_on_aws_prod() else ApiInstanceEnv.TEST
     )
     idim_proxy_service = IdimProxyService(requester, api_instance_env)
 
+    # grab fam users from user table
     fam_users = get_users(db)
+    total_users_count = len(fam_users)
+    LOGGER.debug(f"Total number of users: {total_users_count}")
+    if use_pagination:
+        fam_users = (
+            db.query(models.FamUser)
+            .order_by(models.FamUser.user_id.asc())
+            .offset((page - 1) * per_page)
+            .limit(per_page)
+            .all()
+        )
+        LOGGER.debug(
+            f"Updating information for users on page {page}, there are {per_page} users on each page"
+        )
 
-    LOGGER.debug(f"Total number of users: {len(fam_users)}")
+    success_user_list = []
+    failed_user_list = []
 
     for user in fam_users:
-        LOGGER.debug(f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}")
+        LOGGER.debug(
+            f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}"
+        )
         properties_to_update = {}
         if user.user_type_code == UserType.IDIR:
             # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
@@ -319,7 +342,6 @@ def update_user_info_from_idim_source(db: Session):
                     models.FamUser.user_guid: search_result.get("guid"),
                 }
 
-
         # Update various target_user fields from idim search if exists
         if search_result and search_result.get("found"):
             properties_to_update = {
@@ -332,7 +354,19 @@ def update_user_info_from_idim_source(db: Session):
 
             update(db, user.user_id, properties_to_update, requester.cognito_user_id)
             LOGGER.debug(f"Updating information for user {user.user_name} is done")
+            success_user_list.append(user.user_id)
         else:
             LOGGER.debug(
                 f"Invalid request, cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
             )
+            failed_user_list.append(user.user_id)
+
+    return schemas.FamUserUpdateResponse(
+        **{
+            "total_users_count": total_users_count,
+            "current_page": page,
+            "users_count_on_page": len(fam_users),
+            "success_user_list": success_user_list,
+            "failed_user_list": failed_user_list,
+        }
+    )
