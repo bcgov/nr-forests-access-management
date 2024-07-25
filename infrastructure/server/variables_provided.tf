@@ -206,6 +206,11 @@ variable "gc_notify_email_api_key" {
   sensitive = true
 }
 
+variable "fam_update_user_info_api_key" {
+  type = string
+  sensitive = true
+}
+
 
 # Variables for Cognito Client config
 
