@@ -233,8 +233,9 @@ class IdimProxyIdirInfo(BaseModel):
     found: bool
     userId: Annotated[str, StringConstraints(max_length=20)]
     guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 class IdimProxyBceidInfo(BaseModel):
@@ -243,8 +244,9 @@ class IdimProxyBceidInfo(BaseModel):
     guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     businessGuid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
-    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
