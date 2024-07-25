@@ -48,9 +48,9 @@ def get_key(algorithm):
     elif algorithm in ALGORITHMS.HMAC:  # noqa: F811
         return HMACKey
     elif algorithm in ALGORITHMS.AES:
-        from jose.backends import AESKey  # noqa: F811
-
-        return AESKey
+        # from jose.backends import AESKey  # noqa: F811
+        LOGGER.info("bcsc_jwk: return AESKey")
+        return CryptographyAESKey
     """
     # elif algorithm in ALGORITHMS.RSA:
     #     from jose.backends import RSAKey  # noqa: F811
