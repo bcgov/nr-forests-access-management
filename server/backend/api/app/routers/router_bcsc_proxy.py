@@ -1,17 +1,18 @@
 import json
 import logging
 
+import jwt
 import requests
+from api.app.integration.bcsc import bcsc_decryption
+from api.app.utils import utils
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives import \
     serialization as crypto_serialization
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from jose import jwt
-from jose.utils import base64url_decode
 
-from .. import bcsc_decryption, kms_lookup
+from .. import kms_lookup
 
 LOGGER = logging.getLogger(__name__)
 
@@ -104,7 +105,7 @@ def bcsc_userinfo(request: Request, bcsc_userinfo_uri):
     LOGGER.debug(f"encrypted_key_segment: [{encrypted_key_segment}]")
 
     # In AWS Decode and decrypt the cek (only works in AWS because kms code)
-    as_bytes = base64url_decode(encrypted_key_segment)
+    as_bytes = utils.base64url_decode(encrypted_key_segment)
     LOGGER.debug(f"as_bytes: [{as_bytes}]")
 
     decrypted_key = kms_lookup.decrypt(as_bytes)
