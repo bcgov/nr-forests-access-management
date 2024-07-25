@@ -19,14 +19,14 @@ def update_user_information_from_idim_source(
     db: Session = Depends(database.get_db),
 ):
     """
-    Call IDIM web service to grab latest user information and update the record in FAM database
+    Call IDIM web service to grab latest user information and update records in FAM database for IDIR and Business BCeID users
     """
-    LOGGER.debug(f"Updating database user information")
+    LOGGER.debug("Updating database user information")
 
     response = crud_user.update_user_info_from_idim_source(
         db, use_pagination, page, per_page
     )
 
-    LOGGER.debug(f"Updating database user information is done")
+    LOGGER.debug("Updating database user information is done")
 
     return response

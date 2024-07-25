@@ -259,7 +259,9 @@ def update_user_info_from_idim_source(
     db: Session, use_pagination: bool, page: int, per_page: int
 ) -> schemas.FamUserUpdateResponse:
     """
-    Go through each user record in the database, update the user information to match the record in IDIM web service
+    Go through each user record in the database,
+    update the user information to match the record in IDIM web service,
+    only for IDIR and Business BCeID users, ignore bc service card users
     """
     # get a requester from the database
     requester = (
@@ -291,13 +293,16 @@ def update_user_info_from_idim_source(
 
     success_user_list = []
     failed_user_list = []
+    ignored_user_list = []
 
     for user in fam_users:
         try:
             LOGGER.debug(
                 f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}"
             )
+            search_result = None
             properties_to_update = {}
+
             if user.user_type_code == UserType.IDIR:
                 # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
                 search_result = idim_proxy_service.search_idir(
@@ -342,6 +347,10 @@ def update_user_info_from_idim_source(
                     properties_to_update = {
                         models.FamUser.user_guid: search_result.get("guid"),
                     }
+            else:
+                # ignore bc service card users
+                ignored_user_list.append(user.user_id)
+                continue
 
             # Update various target_user fields from idim search if exists
             if search_result and search_result.get("found"):
@@ -373,5 +382,6 @@ def update_user_info_from_idim_source(
             "users_count_on_page": len(fam_users),
             "success_user_id_list": success_user_list,
             "failed_user_id_list": failed_user_list,
+            "ignored_user_id_list": ignored_user_list
         }
     )

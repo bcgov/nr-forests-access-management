@@ -79,6 +79,7 @@ class FamUserUpdateResponse(BaseModel):
     users_count_on_page: int
     success_user_id_list: List[int]
     failed_user_id_list: List[int]
+    ignored_user_id_list: List[int]
 
 
 # --------------------------------- FAM Forest Client--------------------------------- #
