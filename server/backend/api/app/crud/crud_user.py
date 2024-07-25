@@ -350,6 +350,7 @@ def update_user_info_from_idim_source(
             else:
                 # ignore bc service card users
                 ignored_user_list.append(user.user_id)
+                LOGGER.debug(f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID")
                 continue
 
             # Update various target_user fields from idim search if exists
