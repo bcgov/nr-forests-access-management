@@ -1,11 +1,31 @@
 import binascii
 import json
+import logging
 from collections.abc import Mapping
 from struct import pack
-from jose import jwk
-from jose.constants import ALGORITHMS
-from jose.exceptions import JWEError, JWEParseError
-from jose.utils import base64url_decode, ensure_binary
+
+from api.app.integration.bcsc import bcsc_jwk
+from api.app.integration.bcsc.bcsc_constants import (ALGORITHMS, JWEError,
+                                                     JWEParseError)
+from api.app.utils import utils
+
+LOGGER = logging.getLogger(__name__)
+
+"""
+Note:
+# - All integration files under "integration/bcsc" path are based on previous "python-jose" package
+    and ported library code to FAM with modification in order to make FAM-BCSC login flow
+    encryption-decryptoin works
+  - To get rid of "python-jose" package (which has security vulnerability and did not have updated version
+    and currently is not maintained for years), attempts to use other libraries with jwe capabilities were
+    not successful (authlib and joserfc libraries), so temporary solution for now is to ported more code to
+    be able to remove dependency. This is far more than ideal and code is ugly.
+# - The difficult decision for why copying library code to modify for fitting BCSC authentication can be
+    found on ticket: (#1454 - https://github.com/orgs/bcgov/projects/65/views/1?pane=issue&itemId=67731674)
+# - It would be better later if it is still possble to resolve jwe token decryption difficulties with
+    BCSC team to standardize the JWE token encryption-decryption with common known practice and not with
+    BCSC customized internal token spec.
+"""
 
 
 def decrypt(jwe_str, decrypted_key):
@@ -27,7 +47,7 @@ def decrypt(jwe_str, decrypted_key):
         >>> jwe.decrypt(jwe_string, 'asecret128bitkey')
         'Hello, World!'
     """
-    header, encoded_header, encrypted_key, iv, cipher_text, auth_tag = _jwe_compact_deserialize(jwe_str)
+    header, encoded_header, _encrypted_key, iv, cipher_text, auth_tag = _jwe_compact_deserialize(jwe_str)
 
     try:
         # Determine the Key Management Mode employed by the algorithm
@@ -116,8 +136,10 @@ def _decrypt_and_auth(cek_bytes, enc, cipher_text, iv, aad, auth_tag):
     if enc in ALGORITHMS.HMAC_AUTH_TAG:
         encryption_key, mac_key, key_len = _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc)
         auth_tag_check = _auth_tag(cipher_text, iv, aad, mac_key, key_len)
+
+    # BCSC enc uses algorithm in ALGORITHMS.HMAC_AUTH_TAG, below will not run.
     elif enc in ALGORITHMS.GCM:
-        encryption_key = jwk.construct(cek_bytes, enc)
+        encryption_key = bcsc_jwk.jwk_construct(cek_bytes, enc)
         auth_tag_check = auth_tag  # GCM check auth on decrypt
     else:
         raise NotImplementedError(f"enc {enc} is not implemented!")
@@ -141,7 +163,7 @@ def _get_hmac_key(enc, mac_key_bytes):
          (HMACKey): The key to perform HMAC actions
     """
     _, hash_alg = enc.split("-")
-    mac_key = jwk.construct(mac_key_bytes, hash_alg)
+    mac_key = bcsc_jwk.jwk_construct(mac_key_bytes, hash_alg)
     return mac_key
 
 
@@ -151,7 +173,7 @@ def _get_encryption_key_mac_key_and_key_length_from_cek(cek_bytes, enc):
     mac_key = _get_hmac_key(enc, mac_key_bytes)
     encryption_key_bytes = cek_bytes[-derived_key_len:]
     encryption_alg, _ = enc.split("-")
-    encryption_key = jwk.construct(encryption_key_bytes, encryption_alg)
+    encryption_key = bcsc_jwk.jwk_construct(encryption_key_bytes, encryption_alg)
     return encryption_key, mac_key, derived_key_len
 
 
@@ -170,12 +192,12 @@ def _jwe_compact_deserialize(jwe_bytes):
     # Vector, the JWE Ciphertext, the JWE Authentication Tag, and the
     # JWE AAD, following the restriction that no line breaks,
     # whitespace, or other additional characters have been used.
-    jwe_bytes = ensure_binary(jwe_bytes)
+    jwe_bytes = utils.ensure_binary(jwe_bytes)
     try:
         header_segment, encrypted_key_segment, iv_segment, cipher_text_segment, auth_tag_segment = jwe_bytes.split(
             b".", 4
         )
-        header_data = base64url_decode(header_segment)
+        header_data = utils.base64url_decode(header_segment)
     except ValueError:
         raise JWEParseError("Not enough segments")
     except (TypeError):
@@ -207,22 +229,22 @@ def _jwe_compact_deserialize(jwe_bytes):
         raise JWEParseError("Invalid header string: must be a json object")
 
     try:
-        encrypted_key = base64url_decode(encrypted_key_segment)
+        encrypted_key = utils.base64url_decode(encrypted_key_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid encrypted key")
 
     try:
-        iv = base64url_decode(iv_segment)
+        iv = utils.base64url_decode(iv_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid IV")
 
     try:
-        ciphertext = base64url_decode(cipher_text_segment)
+        ciphertext = utils.base64url_decode(cipher_text_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid cyphertext")
 
     try:
-        auth_tag = base64url_decode(auth_tag_segment)
+        auth_tag = utils.base64url_decode(auth_tag_segment)
     except (TypeError, binascii.Error):
         raise JWEParseError("Invalid auth tag")
 
