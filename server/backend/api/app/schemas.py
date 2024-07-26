@@ -74,7 +74,7 @@ class FamUserInfo(BaseModel):
 
 
 class FamUserUpdateResponse(BaseModel):
-    total_users_count: int
+    total_db_users_count: int
     current_page: int
     users_count_on_page: int
     success_user_id_list: List[int]

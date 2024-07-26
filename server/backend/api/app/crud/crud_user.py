@@ -5,8 +5,8 @@ from sqlalchemy import select
 from api.app.constants import UserType, ApiInstanceEnv, IdimSearchUserParamType
 from api.app.models import model as models
 from api.app.crud import crud_utils
-from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.integration.idim_proxy import IdimProxyService
+from api.config import config
 
 from .. import schemas
 
@@ -266,7 +266,9 @@ def update_user_info_from_idim_source(
     # get a requester from the database
     requester = (
         db.query(models.FamUser)
-        .filter(models.FamUser.user_name == "CMENG")
+        .filter(
+            models.FamUser.user_name == config.get_requester_name_for_update_user_info()
+        )
         .one_or_none()
     )
     # setup IDIM web service
@@ -277,8 +279,9 @@ def update_user_info_from_idim_source(
 
     # grab fam users from user table
     fam_users = get_users(db)
-    total_users_count = len(fam_users)
-    LOGGER.debug(f"Total number of users: {total_users_count}")
+    total_db_users_count = len(fam_users)
+    LOGGER.debug(f"Total number of users in database: {total_db_users_count}")
+
     if use_pagination:
         fam_users = (
             db.query(models.FamUser)
@@ -350,7 +353,9 @@ def update_user_info_from_idim_source(
             else:
                 # ignore bc service card users
                 ignored_user_list.append(user.user_id)
-                LOGGER.debug(f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID")
+                LOGGER.debug(
+                    f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID"
+                )
                 continue
 
             # Update various target_user fields from idim search if exists
@@ -363,12 +368,14 @@ def update_user_info_from_idim_source(
                     models.FamUser.business_guid: search_result.get("businessGuid"),
                 }
 
-                update(db, user.user_id, properties_to_update, requester.cognito_user_id)
+                update(
+                    db, user.user_id, properties_to_update, requester.cognito_user_id
+                )
                 LOGGER.debug(f"Updating information for user {user.user_name} is done")
                 success_user_list.append(user.user_id)
             else:
                 LOGGER.debug(
-                    f"Invalid request, cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
+                    f"Cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
                 )
                 failed_user_list.append(user.user_id)
 
@@ -378,11 +385,11 @@ def update_user_info_from_idim_source(
 
     return schemas.FamUserUpdateResponse(
         **{
-            "total_users_count": total_users_count,
+            "total_db_users_count": total_db_users_count,
             "current_page": page,
             "users_count_on_page": len(fam_users),
             "success_user_id_list": success_user_list,
             "failed_user_id_list": failed_user_list,
-            "ignored_user_id_list": ignored_user_list
+            "ignored_user_id_list": ignored_user_list,
         }
     )

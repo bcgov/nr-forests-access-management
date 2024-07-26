@@ -460,6 +460,6 @@ def enforce_bceid_terms_conditions_guard(
 def verify_api_key_for_update_user_info(x_api_key: str = Security(x_api_key)):
     if x_api_key != config.get_api_key_for_update_user_info():
         utils.raise_http_exception(
-            status_code=HTTPStatus.FORBIDDEN,
+            status_code=HTTPStatus.UNAUTHORIZED,
             error_msg="Request needs api key.",
         )

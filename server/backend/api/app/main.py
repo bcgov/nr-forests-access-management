@@ -132,7 +132,7 @@ app.include_router(
 )
 app.include_router(
     router_user.router,
-    prefix=apiPrefix + "/user",
+    prefix=apiPrefix + "/users",
     dependencies=[Depends(router_guards.verify_api_key_for_update_user_info)],
     tags=["FAM User"],
 )

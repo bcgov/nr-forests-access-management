@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("", status_code=HTTPStatus.OK, response_model=FamUserUpdateResponse)
+@router.put("/users-information", status_code=HTTPStatus.OK, response_model=FamUserUpdateResponse)
 def update_user_information_from_idim_source(
     page: int = 1,
     per_page: int = 100,
