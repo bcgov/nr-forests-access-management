@@ -296,7 +296,8 @@ def update_user_info_from_idim_source(
 
     success_user_list = []
     failed_user_list = []
-    ignored_user_list = []
+    ignored_user_list = []  # we ignore for bcsc users, cause IDIM does not provide bcsc users information
+    mismatch_user_list = []  # for the users whose user_guid record does not match the user_guid from IDIM
 
     for user in fam_users:
         try:
@@ -318,9 +319,15 @@ def update_user_info_from_idim_source(
                         models.FamUser.user_guid: search_result.get("guid"),
                     }
 
-                # if found user's user_guid does not match our record
-                # which is the edge case that could cause by the username change, ignore this situation
-                # our auth lambda and grant access apis will cover this situation
+                if search_result and search_result.get("found") and user.user_guid != search_result.get("guid"):
+                    # if found user's user_guid does not match our record
+                    # which is the edge case that could cause by the username change, ignore this situation
+                    # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
+                    mismatch_user_list.append(user.user_id)
+                    LOGGER.debug(
+                        f"Updating information for user {user.user_name} is ignored because the user_guid does not match"
+                    )
+                    continue
 
             elif user.user_type_code == UserType.BCEID:
                 if user.user_guid:
@@ -391,5 +398,6 @@ def update_user_info_from_idim_source(
             "success_user_id_list": success_user_list,
             "failed_user_id_list": failed_user_list,
             "ignored_user_id_list": ignored_user_list,
+            "mismatch_user_list": mismatch_user_list,
         }
     )
