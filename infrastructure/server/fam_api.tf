@@ -138,6 +138,7 @@ resource "aws_lambda_function" "fam-api-function" {
       FC_API_TOKEN_TEST = "${var.forest_client_api_api_key_test}"
       FC_API_BASE_URL_PROD = "${var.forest_client_api_base_url_prod}"
       FC_API_TOKEN_PROD = "${var.forest_client_api_api_key_prod}"
+      FAM_UPDATE_USER_INFO_API_KEY = "${var.fam_update_user_info_api_key}"
 
       ENABLE_BCSC_JWKS_ENDPOINT = "True"
       IDIM_PROXY_BASE_URL_PROD = "${var.idim_proxy_api_base_url_prod}"

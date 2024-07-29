@@ -1,9 +1,12 @@
 import logging
-
-from api.app.constants import UserType
-from api.app.models import model as models
-from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select
+
+from api.app.constants import UserType, ApiInstanceEnv, IdimSearchUserParamType
+from api.app.models import model as models
+from api.app.crud import crud_utils
+from api.app.integration.idim_proxy import IdimProxyService
+from api.config import config
 
 from .. import schemas
 
@@ -186,7 +189,10 @@ def update_user_name(
 
 
 def update_user_properties_from_verified_target_user(
-    db: Session, user_id: int, target_user: schemas.TargetUser, requester: str  # cognito_user_id
+    db: Session,
+    user_id: int,
+    target_user: schemas.TargetUser,
+    requester: str,  # cognito_user_id
 ):
     """
     This is to update fam_user's properties from verified_target_user.
@@ -210,7 +216,7 @@ def update_user_properties_from_verified_target_user(
     properties_to_update = {
         models.FamUser.first_name: first_name,
         models.FamUser.last_name: last_name,
-        models.FamUser.email: email
+        models.FamUser.email: email,
     }
     # update business_guid when necessary
     business_guid = target_user.business_guid
@@ -219,20 +225,15 @@ def update_user_properties_from_verified_target_user(
         # add additional property to 'properties_to_update'
         properties_to_update = {
             **properties_to_update,
-            models.FamUser.business_guid: business_guid
+            models.FamUser.business_guid: business_guid,
         }
 
     update(db, user_id, properties_to_update, requester)
-    LOGGER.debug(
-        f"fam_user {user_id} properties were updated."
-    )
+    LOGGER.debug(f"fam_user {user_id} properties were updated.")
     return get_user(db, user_id)
 
 
-def fetch_initial_requester_info(
-    db: Session,
-    cognito_user_id: str
-):
+def fetch_initial_requester_info(db: Session, cognito_user_id: str):
     """
     Note!
     The purpose: only to be used to find out initial essential requester information
@@ -246,9 +247,157 @@ def fetch_initial_requester_info(
         select(models.FamUser)
         .options(
             joinedload(models.FamUser.fam_access_control_privileges),
-            joinedload(models.FamUser.fam_user_terms_conditions)
+            joinedload(models.FamUser.fam_user_terms_conditions),
         )
         .filter(models.FamUser.cognito_user_id == cognito_user_id)
     )
     user = db.scalars(q_stm).unique().one_or_none()
     return user
+
+
+def update_user_info_from_idim_source(
+    db: Session, use_pagination: bool, page: int, per_page: int
+) -> schemas.FamUserUpdateResponse:
+    """
+    Go through each user record in the database,
+    update the user information to match the record in IDIM web service,
+    only for IDIR and Business BCeID users, ignore bc service card users
+    """
+    # get a requester from the database
+    requester = (
+        db.query(models.FamUser)
+        .filter(
+            models.FamUser.user_name == config.get_requester_name_for_update_user_info()
+        )
+        .one_or_none()
+    )
+    # setup IDIM web service
+    api_instance_env = (
+        ApiInstanceEnv.PROD if crud_utils.is_on_aws_prod() else ApiInstanceEnv.TEST
+    )
+    idim_proxy_service = IdimProxyService(requester, api_instance_env)
+
+    # grab fam users from user table
+    fam_users = get_users(db)
+    total_db_users_count = len(fam_users)
+    LOGGER.debug(f"Total number of users in database: {total_db_users_count}")
+
+    if use_pagination:
+        fam_users = (
+            db.query(models.FamUser)
+            .order_by(models.FamUser.user_id.asc())
+            .offset((page - 1) * per_page)
+            .limit(per_page)
+            .all()
+        )
+        LOGGER.debug(
+            f"Updating information for users on page {page}, there are {per_page} users on each page"
+        )
+
+    success_user_list = []
+    failed_user_list = []
+    ignored_user_list = []  # we ignore for bcsc users, cause IDIM does not provide bcsc users information
+    mismatch_user_list = []  # for the users whose user_guid record does not match the user_guid from IDIM
+
+    for user in fam_users:
+        try:
+            LOGGER.debug(
+                f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}"
+            )
+            search_result = None
+            properties_to_update = {}
+
+            if user.user_type_code == UserType.IDIR:
+                # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
+                search_result = idim_proxy_service.search_idir(
+                    schemas.IdimProxySearchParam(**{"userId": user.user_name})
+                )
+
+                if not user.user_guid:
+                    # if user has no user_guid in our database, add it
+                    properties_to_update = {
+                        models.FamUser.user_guid: search_result.get("guid"),
+                    }
+
+                if search_result and search_result.get("found") and user.user_guid != search_result.get("guid"):
+                    # if found user's user_guid does not match our record
+                    # which is the edge case that could cause by the username change, ignore this situation
+                    # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
+                    mismatch_user_list.append(user.user_id)
+                    LOGGER.debug(
+                        f"Updating information for user {user.user_name} is ignored because the user_guid does not match"
+                    )
+                    continue
+
+            elif user.user_type_code == UserType.BCEID:
+                if user.user_guid:
+                    # if found business bceid user by user_guid, update username if necessary
+                    search_result = idim_proxy_service.search_business_bceid(
+                        schemas.IdimProxyBceidSearchParam(
+                            **{
+                                "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                                "searchValue": user.user_guid,
+                            }
+                        )
+                    )
+                    properties_to_update = {
+                        models.FamUser.user_name: search_result.get("userId"),
+                    }
+
+                else:
+                    # if user has no user_guid in our database, find by user_name and add user_guid to database
+                    search_result = idim_proxy_service.search_business_bceid(
+                        schemas.IdimProxyBceidSearchParam(
+                            **{
+                                "searchUserBy": IdimSearchUserParamType.USER_ID,
+                                "searchValue": user.user_name,
+                            }
+                        )
+                    )
+                    properties_to_update = {
+                        models.FamUser.user_guid: search_result.get("guid"),
+                    }
+            else:
+                # ignore bc service card users
+                ignored_user_list.append(user.user_id)
+                LOGGER.debug(
+                    f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID"
+                )
+                continue
+
+            # Update various target_user fields from idim search if exists
+            if search_result and search_result.get("found"):
+                properties_to_update = {
+                    **properties_to_update,
+                    models.FamUser.first_name: search_result.get("firstName"),
+                    models.FamUser.last_name: search_result.get("lastName"),
+                    models.FamUser.email: search_result.get("email"),
+                    models.FamUser.business_guid: search_result.get("businessGuid"),
+                }
+
+                update(
+                    db, user.user_id, properties_to_update, requester.cognito_user_id
+                )
+                LOGGER.debug(f"Updating information for user {user.user_name} is done")
+                success_user_list.append(user.user_id)
+            else:
+                LOGGER.debug(
+                    f"Cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
+                )
+                failed_user_list.append(user.user_id)
+
+        except Exception as e:
+            LOGGER.debug(f"Failed to update user info: {e}")
+            failed_user_list.append(user.user_id)
+
+    return schemas.FamUserUpdateResponse(
+        **{
+            "total_db_users_count": total_db_users_count,
+            "current_page": page,
+            "users_count_on_page": len(fam_users),
+            "success_user_id_list": success_user_list,
+            "failed_user_id_list": failed_user_list,
+            "ignored_user_id_list": ignored_user_list,
+            "mismatch_user_list": mismatch_user_list,
+        }
+    )

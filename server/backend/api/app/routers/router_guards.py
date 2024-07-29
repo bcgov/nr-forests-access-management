@@ -3,30 +3,43 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
-                               ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                               ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-                               ERROR_CODE_INVALID_OPERATION,
-                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               ERROR_CODE_INVALID_ROLE_ID,
-                               ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                               ERROR_CODE_REQUESTER_NOT_EXISTS,
-                               ERROR_CODE_SELF_GRANT_PROHIBITED,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
-                               UserType, ApiInstanceEnv)
-from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
-                          crud_user_role, crud_utils, crud_application)
+from api.app.constants import (
+    CURRENT_TERMS_AND_CONDITIONS_VERSION,
+    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+    ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+    ERROR_CODE_INVALID_OPERATION,
+    ERROR_CODE_INVALID_REQUEST_PARAMETER,
+    ERROR_CODE_INVALID_ROLE_ID,
+    ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+    ERROR_CODE_REQUESTER_NOT_EXISTS,
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
+    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+    RoleType,
+    UserType,
+)
+from api.app.crud import (
+    crud_access_control_privilege,
+    crud_role,
+    crud_user,
+    crud_user_role,
+    crud_utils,
+)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
-from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
-                                    ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
-                                    get_access_roles,
-                                    get_request_cognito_user_id,
-                                    validate_token)
+from api.app.jwt_validation import (
+    ERROR_GROUPS_REQUIRED,
+    ERROR_PERMISSION_REQUIRED,
+    JWT_GROUPS_KEY,
+    get_access_roles,
+    get_request_cognito_user_id,
+    validate_token,
+)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import Requester, TargetUser
 from api.app.utils import utils
-from fastapi import Depends, Request
+from fastapi import Depends, Request, Security
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
+from api.config import config
 
 """
 This file is intended to host functions only to guard the endpoints at framework's
@@ -35,6 +48,7 @@ at crud(service) layer).
 """
 
 LOGGER = logging.getLogger(__name__)
+x_api_key = APIKeyHeader(name="X-API-Key")
 
 
 def get_current_requester(
@@ -440,4 +454,12 @@ def enforce_bceid_terms_conditions_guard(
         utils.raise_http_exception(
             error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
             error_msg="Requires to accept terms and conditions.",
+        )
+
+
+def verify_api_key_for_update_user_info(x_api_key: str = Security(x_api_key)):
+    if x_api_key != config.get_api_key_for_update_user_info():
+        utils.raise_http_exception(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            error_msg="Request needs api key.",
         )

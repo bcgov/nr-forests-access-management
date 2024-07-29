@@ -26,6 +26,7 @@ from .routers import (
     router_user_role_assignment,
     router_user_terms_conditions,
     router_guards,
+    router_user
 )
 
 logConfigFile = os.path.join(
@@ -129,6 +130,13 @@ app.include_router(
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM User Terms and Conditions"],
 )
+app.include_router(
+    router_user.router,
+    prefix=apiPrefix + "/users",
+    dependencies=[Depends(router_guards.verify_api_key_for_update_user_info)],
+    tags=["FAM User"],
+)
+
 
 
 # This router is used to proxy the BCSC userinfo endpoint

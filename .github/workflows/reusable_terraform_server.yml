@@ -42,6 +42,8 @@ on:
         required: true
       gc_notify_email_api_key:
         required: true
+      fam_update_user_info_api_key:
+        required: true
 
 env:
   TF_VERSION: 1.2.2
@@ -176,6 +178,7 @@ jobs:
           prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           idim_proxy_api_api_key = "${{ secrets.idim_proxy_api_api_key }}"
           gc_notify_email_api_key = "${{ secrets.gc_notify_email_api_key }}"
+          fam_update_user_info_api_key = "${{ secrets.fam_update_user_info_api_key }}"
           EOF
 
       - name: Terragrunt ${{ inputs.tf_subcommand }}

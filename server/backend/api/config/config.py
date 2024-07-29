@@ -191,3 +191,9 @@ def get_gc_notify_email_api_key():
 # For local development, you can override this function since it doesn't work outside AWS
 def is_bcsc_key_enabled():
     return os.environ.get("ENABLE_BCSC_JWKS_ENDPOINT", "True") == "True"
+
+def get_api_key_for_update_user_info():
+    return os.environ.get("FAM_UPDATE_USER_INFO_API_KEY")
+
+def get_requester_name_for_update_user_info():
+    return os.environ.get("FAM_UPDATE_USER_INFO_REQUESTER_NAME") or 'CMENG'

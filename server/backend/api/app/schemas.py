@@ -73,6 +73,16 @@ class FamUserInfo(BaseModel):
     )
 
 
+class FamUserUpdateResponse(BaseModel):
+    total_db_users_count: int
+    current_page: int
+    users_count_on_page: int
+    success_user_id_list: List[int]
+    failed_user_id_list: List[int]
+    ignored_user_id_list: List[int]
+    mismatch_user_list: List[int]
+
+
 # --------------------------------- FAM Forest Client--------------------------------- #
 class FamForestClientCreate(BaseModel):
     # Note, the request may contain string(with leading '0')
@@ -233,8 +243,9 @@ class IdimProxyIdirInfo(BaseModel):
     found: bool
     userId: Annotated[str, StringConstraints(max_length=20)]
     guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 class IdimProxyBceidInfo(BaseModel):
@@ -243,8 +254,9 @@ class IdimProxyBceidInfo(BaseModel):
     guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     businessGuid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
-    firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    firstName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    lastName: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
