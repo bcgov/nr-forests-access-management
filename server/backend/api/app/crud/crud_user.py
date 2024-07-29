@@ -264,13 +264,10 @@ def update_user_info_from_idim_source(
     only for IDIR and Business BCeID users, ignore bc service card users
     """
     # get a requester from the database
-    requester = (
-        db.query(models.FamUser)
-        .filter(
-            models.FamUser.user_name == config.get_requester_name_for_update_user_info()
-        )
-        .one_or_none()
+    requester = get_user_by_domain_and_name(
+        db, UserType.IDIR, config.get_requester_name_for_update_user_info()
     )
+
     # setup IDIM web service
     api_instance_env = (
         ApiInstanceEnv.PROD if crud_utils.is_on_aws_prod() else ApiInstanceEnv.TEST
@@ -296,8 +293,12 @@ def update_user_info_from_idim_source(
 
     success_user_list = []
     failed_user_list = []
-    ignored_user_list = []  # we ignore for bcsc users, cause IDIM does not provide bcsc users information
-    mismatch_user_list = []  # for the users whose user_guid record does not match the user_guid from IDIM
+    ignored_user_list = (
+        []
+    )  # we ignore for bcsc users, cause IDIM does not provide bcsc users information
+    mismatch_user_list = (
+        []
+    )  # for the users whose user_guid record does not match the user_guid from IDIM
 
     for user in fam_users:
         try:
@@ -319,7 +320,11 @@ def update_user_info_from_idim_source(
                         models.FamUser.user_guid: search_result.get("guid"),
                     }
 
-                if search_result and search_result.get("found") and user.user_guid != search_result.get("guid"):
+                if (
+                    search_result
+                    and search_result.get("found")
+                    and user.user_guid != search_result.get("guid")
+                ):
                     # if found user's user_guid does not match our record
                     # which is the edge case that could cause by the username change, ignore this situation
                     # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
