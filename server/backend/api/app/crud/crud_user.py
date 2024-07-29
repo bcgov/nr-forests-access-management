@@ -267,7 +267,8 @@ def update_user_info_from_idim_source(
     requester = (
         db.query(models.FamUser)
         .filter(
-            models.FamUser.user_name == config.get_requester_name_for_update_user_info()
+            models.FamUser.user_name == config.get_requester_name_for_update_user_info(),
+            models.FamUser.user_type_code == UserType.IDIR,
         )
         .one_or_none()
     )
