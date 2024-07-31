@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from enum import Enum
 import json
 from api.app.models import model as models
@@ -25,7 +26,7 @@ class AuditEventLog:
     event_outcome: AuditEventOutcome
     application: models.FamApplication
     role: models.FamRole
-    forest_client_number: str
+    forest_client_numbers: List[str]
     requesting_user: Requester
     target_user: models.FamUser
     exception: Exception
@@ -37,7 +38,7 @@ class AuditEventLog:
         event_outcome: AuditEventOutcome = None,
         application: models.FamApplication = None,
         role: models.FamRole = None,
-        forest_client_number: str = None,
+        forest_client_numbers: List[str] = [],
         requesting_user: Requester = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
@@ -47,7 +48,7 @@ class AuditEventLog:
         self.event_outcome = event_outcome
         self.application = application
         self.role = role
-        self.forest_client_number = forest_client_number
+        self.forest_client_numbers = forest_client_numbers
         self.requesting_user = requesting_user
         self.target_user = target_user
         self.exception = exception
@@ -71,7 +72,7 @@ class AuditEventLog:
             "roleId": self.role.role_id if self.role else None,
             "roleName": self.role.role_name if self.role else None,
             "roleType": self.role.role_type_code if self.role else None,
-            "forestClientNumber": self.forest_client_number,
+            "forestClientNumbers": self.forest_client_numbers,
             "targetUser": {
                 "userGuid": self.target_user.user_guid if self.target_user else None,
                 "userType": self.target_user.user_type_code

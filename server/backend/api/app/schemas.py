@@ -194,8 +194,8 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
-    forest_client_number: Union[
-        Annotated[str, StringConstraints(min_length=1, max_length=8)], None
+    forest_client_numbers: Union[
+        List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -224,6 +224,14 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
             "role_id": {"exclude": True},
         },
     )
+
+
+class FamUserRoleAssignmentCreateResponse(BaseModel):
+    status_code: int
+    detail: FamUserRoleAssignmentGet
+    error_message: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
@@ -264,6 +272,14 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     user_name: Annotated[str, StringConstraints(max_length=20)]
     application_name: Annotated[str, StringConstraints(max_length=35)]
     send_to_email: EmailStr
+
+
+# ------------------------------------- Forest Client API Integraion ---------------------------------------- #
+class ForestClientIntegrationFindResponse(BaseModel):
+    clientNumber: str
+    clientName: str
+    clientStatusCode: str
+    clientTypeCode: str
 
 
 # ---------- System schema objects ---------- #
