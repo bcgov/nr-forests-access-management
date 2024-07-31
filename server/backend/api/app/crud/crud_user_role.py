@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 LOGGER = logging.getLogger(__name__)
 
 
-def create_user_role_assignments(
+def create_user_role_assignment_many(
     db: Session,
     request: schemas.FamUserRoleAssignmentCreate,
     target_user: schemas.TargetUser,
@@ -134,7 +134,7 @@ def create_user_role_assignments(
             associate_role = child_role if require_child_role else fam_role
 
             # Create user/role assignment.
-            handle_create_return = create_user_role(
+            handle_create_return = create_user_role_assignment(
                 db, fam_user.user_id, associate_role, requester
             )
             create_return_list.append(handle_create_return)
@@ -143,7 +143,7 @@ def create_user_role_assignments(
     return create_return_list
 
 
-def create_user_role(db: Session, user_id: int, role: models.FamRole, requester: str):
+def create_user_role_assignment(db: Session, user_id: int, role: models.FamRole, requester: str):
     create_user_role_assginment_return = None
     role_id = role.role_id
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user_id, role_id)

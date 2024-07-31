@@ -48,7 +48,7 @@ router = APIRouter()
     ],
     description="Grant User Access to an application's role.",
 )
-def create_user_role_assignments(
+def create_user_role_assignment_many(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
@@ -78,7 +78,7 @@ def create_user_role_assignments(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        response = crud_user_role.create_user_role_assignments(
+        response = crud_user_role.create_user_role_assignment_many(
             db, role_assignment_request, target_user, requester.cognito_user_id
         )
         # get target user from database, so for existing user, we can get the cognito user id
