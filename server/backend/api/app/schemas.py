@@ -228,7 +228,7 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
 
 class FamUserRoleAssignmentCreateResponse(BaseModel):
     status_code: int
-    detail: FamUserRoleAssignmentGet
+    detail: FamApplicationUserRoleAssignmentGet
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

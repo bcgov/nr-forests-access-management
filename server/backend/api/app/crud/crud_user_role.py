@@ -135,7 +135,7 @@ def create_user_role_assignment_many(
 
             # Create user/role assignment.
             handle_create_return = create_user_role_assignment(
-                db, fam_user.user_id, associate_role, requester
+                db, fam_user, associate_role, requester
             )
             create_return_list.append(handle_create_return)
 
@@ -143,14 +143,17 @@ def create_user_role_assignment_many(
     return create_return_list
 
 
-def create_user_role_assignment(db: Session, user_id: int, role: models.FamRole, requester: str):
+def create_user_role_assignment(db: Session, user: models.FamUser, role: models.FamRole, requester: str):
     create_user_role_assginment_return = None
-    role_id = role.role_id
-    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user_id, role_id)
+    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user.user_id, role.role_id)
+    xref_dict = {
+        "application_id": role.application_id,
+        "user": user,
+        "role": role
+    }
 
     if fam_user_role_xref:
-        xref_dict = fam_user_role_xref.__dict__
-        xref_dict["application_id"] = role.application_id
+        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         error_msg = (
             f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}. "
             + f"FamUserRoleXref already exists with id: {fam_user_role_xref.user_role_xref_id}"
@@ -159,20 +162,19 @@ def create_user_role_assignment(db: Session, user_id: int, role: models.FamRole,
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.CONFLICT,
-                    "detail": schemas.FamUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
                     "error_message": error_msg,
                 }
             )
         )
     else:
-        fam_user_role_xref = create(db, user_id, role_id, requester)
-        xref_dict = fam_user_role_xref.__dict__
-        xref_dict["application_id"] = role.application_id
+        fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
+        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
                 }
             )
         )

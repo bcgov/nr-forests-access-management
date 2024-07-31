@@ -7,7 +7,6 @@ export * from './fam-role-with-client';
 export * from './fam-user-info';
 export * from './fam-user-role-assignment-create';
 export * from './fam-user-role-assignment-create-response';
-export * from './fam-user-role-assignment-get';
 export * from './fam-user-type';
 export * from './fam-user-update-response';
 export * from './httpvalidation-error';

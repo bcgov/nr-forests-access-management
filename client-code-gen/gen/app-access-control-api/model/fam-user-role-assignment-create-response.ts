@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamUserRoleAssignmentGet } from './fam-user-role-assignment-get';
+import { FamApplicationUserRoleAssignmentGet } from './fam-application-user-role-assignment-get';
 
 /**
  * 
@@ -31,10 +31,10 @@ export interface FamUserRoleAssignmentCreateResponse {
     'status_code': number;
     /**
      * 
-     * @type {FamUserRoleAssignmentGet}
+     * @type {FamApplicationUserRoleAssignmentGet}
      * @memberof FamUserRoleAssignmentCreateResponse
      */
-    'detail': FamUserRoleAssignmentGet;
+    'detail': FamApplicationUserRoleAssignmentGet;
     /**
      * 
      * @type {string}
