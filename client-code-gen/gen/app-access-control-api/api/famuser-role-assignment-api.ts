@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { FamUserRoleAssignmentCreate } from '../model';
 // @ts-ignore
-import { FamUserRoleAssignmentGet } from '../model';
+import { FamUserRoleAssignmentCreateResponse } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -35,14 +35,14 @@ export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration
     return {
         /**
          * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment
+         * @summary Create User Role Assignments
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserRoleAssignment: async (famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createUserRoleAssignments: async (famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famUserRoleAssignmentCreate' is not null or undefined
-            assertParamExists('createUserRoleAssignment', 'famUserRoleAssignmentCreate', famUserRoleAssignmentCreate)
+            assertParamExists('createUserRoleAssignments', 'famUserRoleAssignmentCreate', famUserRoleAssignmentCreate)
             const localVarPath = `/user_role_assignment`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -123,15 +123,15 @@ export const FAMUserRoleAssignmentApiFp = function(configuration?: Configuration
     return {
         /**
          * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment
+         * @summary Create User Role Assignments
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUserRoleAssignment(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserRoleAssignmentGet>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserRoleAssignment(famUserRoleAssignmentCreate, options);
+        async createUserRoleAssignments(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamUserRoleAssignmentCreateResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserRoleAssignments(famUserRoleAssignmentCreate, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['FAMUserRoleAssignmentApi.createUserRoleAssignment']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['FAMUserRoleAssignmentApi.createUserRoleAssignments']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -159,13 +159,13 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
     return {
         /**
          * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment
+         * @summary Create User Role Assignments
          * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserRoleAssignment(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: any): AxiosPromise<FamUserRoleAssignmentGet> {
-            return localVarFp.createUserRoleAssignment(famUserRoleAssignmentCreate, options).then((request) => request(axios, basePath));
+        createUserRoleAssignments(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: any): AxiosPromise<Array<FamUserRoleAssignmentCreateResponse>> {
+            return localVarFp.createUserRoleAssignments(famUserRoleAssignmentCreate, options).then((request) => request(axios, basePath));
         },
         /**
          * Remove a specific application\'s role from user\'s access.
@@ -188,13 +188,13 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
 export interface FAMUserRoleAssignmentApiInterface {
     /**
      * Grant User Access to an application\'s role.
-     * @summary Create User Role Assignment
+     * @summary Create User Role Assignments
      * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserRoleAssignmentApiInterface
      */
-    createUserRoleAssignment(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig): AxiosPromise<FamUserRoleAssignmentGet>;
+    createUserRoleAssignments(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamUserRoleAssignmentCreateResponse>>;
 
     /**
      * Remove a specific application\'s role from user\'s access.
@@ -217,14 +217,14 @@ export interface FAMUserRoleAssignmentApiInterface {
 export class FAMUserRoleAssignmentApi extends BaseAPI implements FAMUserRoleAssignmentApiInterface {
     /**
      * Grant User Access to an application\'s role.
-     * @summary Create User Role Assignment
+     * @summary Create User Role Assignments
      * @param {FamUserRoleAssignmentCreate} famUserRoleAssignmentCreate 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMUserRoleAssignmentApi
      */
-    public createUserRoleAssignment(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig) {
-        return FAMUserRoleAssignmentApiFp(this.configuration).createUserRoleAssignment(famUserRoleAssignmentCreate, options).then((request) => request(this.axios, this.basePath));
+    public createUserRoleAssignments(famUserRoleAssignmentCreate: FamUserRoleAssignmentCreate, options?: RawAxiosRequestConfig) {
+        return FAMUserRoleAssignmentApiFp(this.configuration).createUserRoleAssignments(famUserRoleAssignmentCreate, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

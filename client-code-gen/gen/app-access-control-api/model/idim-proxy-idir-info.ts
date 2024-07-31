@@ -50,5 +50,11 @@ export interface IdimProxyIdirInfo {
      * @memberof IdimProxyIdirInfo
      */
     'lastName'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyIdirInfo
+     */
+    'email'?: string | null;
 }
 

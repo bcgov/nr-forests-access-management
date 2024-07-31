@@ -15,45 +15,31 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserType } from './user-type';
+import { FamUserRoleAssignmentGet } from './fam-user-role-assignment-get';
 
 /**
  * 
  * @export
- * @interface FamUserRoleAssignmentCreate
+ * @interface FamUserRoleAssignmentCreateResponse
  */
-export interface FamUserRoleAssignmentCreate {
-    /**
-     * 
-     * @type {string}
-     * @memberof FamUserRoleAssignmentCreate
-     */
-    'user_name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamUserRoleAssignmentCreate
-     */
-    'user_guid': string;
-    /**
-     * 
-     * @type {UserType}
-     * @memberof FamUserRoleAssignmentCreate
-     */
-    'user_type_code': UserType;
+export interface FamUserRoleAssignmentCreateResponse {
     /**
      * 
      * @type {number}
-     * @memberof FamUserRoleAssignmentCreate
+     * @memberof FamUserRoleAssignmentCreateResponse
      */
-    'role_id': number;
+    'status_code': number;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof FamUserRoleAssignmentCreate
+     * @type {FamUserRoleAssignmentGet}
+     * @memberof FamUserRoleAssignmentCreateResponse
      */
-    'forest_client_numbers'?: Array<string> | null;
+    'detail': FamUserRoleAssignmentGet;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserRoleAssignmentCreateResponse
+     */
+    'error_message'?: string | null;
 }
-
-
 

@@ -62,5 +62,11 @@ export interface IdimProxyBceidInfo {
      * @memberof IdimProxyBceidInfo
      */
     'lastName'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof IdimProxyBceidInfo
+     */
+    'email'?: string | null;
 }
 
