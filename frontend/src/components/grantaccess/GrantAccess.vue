@@ -10,7 +10,6 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
 import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
