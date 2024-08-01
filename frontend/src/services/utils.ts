@@ -1,3 +1,5 @@
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { isSelectedAppProd } from '@/store/ApplicationState';
 import { number, object, string } from 'yup';
 
 type AsyncWrapType = {
@@ -49,4 +51,9 @@ export const formValidationSchema = (isAbstractRoleSelected: boolean) => {
 
 export const isNewAccess = (newAccessIds: string[], accessId: number) => {
     return newAccessIds.includes(accessId.toString());
+};
+
+export const isSelectedAppProd_OnProdEnvironment = () => {
+    const isProdEnvironment = (new EnvironmentSettings()).isProdEnvironment();
+    return isProdEnvironment && isSelectedAppProd.value;
 };

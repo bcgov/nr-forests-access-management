@@ -4,27 +4,27 @@ import { Form as VeeForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 
 import Button from '@/components/common/Button.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema } from '@/services/utils';
-import { isLoading } from '@/store/LoadingState';
-import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import {
-    selectedApplicationDisplayText,
-    selectedApplicationId,
-} from '@/store/ApplicationState';
-import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import { UserType } from 'fam-app-acsctl-api/model';
+import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
 import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
-import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-import FamLoginUserState from '@/store/FamLoginUserState';
-import { setCurrentTabState } from '@/store/CurrentTabState';
-import { TabKey } from '@/enum/TabEnum';
+import { IconSize } from '@/enum/IconEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
+import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
+import { TabKey } from '@/enum/TabEnum';
 import { routeItems } from '@/router/routeItem';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
+import { formValidationSchema, isSelectedAppProd_OnProdEnvironment } from '@/services/utils';
+import {
+    selectedApplicationDisplayText,
+    selectedApplicationId
+} from '@/store/ApplicationState';
+import { setCurrentTabState } from '@/store/CurrentTabState';
+import FamLoginUserState from '@/store/FamLoginUserState';
+import { isLoading } from '@/store/LoadingState';
+import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
+import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
+import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -37,6 +37,7 @@ const defaultFormData = {
     userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
+    sendEmail: (isSelectedAppProd_OnProdEnvironment()) as boolean
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const applicationRoleOptions = computed(() => {
@@ -261,6 +262,12 @@ function toRequestPayload(formData: any) {
                         @resetVerifiedForestClients="resetVerifiedForestClients"
                     />
                 </StepContainer>
+
+                <Divider/>
+                <BoolCheckbox
+                    v-model="formData.sendEmail"
+                    label="Send email to notify user"
+                />
 
                 <div class="button-stack">
                     <Button
