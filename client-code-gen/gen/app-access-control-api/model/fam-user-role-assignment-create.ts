@@ -53,6 +53,12 @@ export interface FamUserRoleAssignmentCreate {
      * @memberof FamUserRoleAssignmentCreate
      */
     'forest_client_numbers'?: Array<string> | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FamUserRoleAssignmentCreate
+     */
+    'requires_send_user_email'?: boolean;
 }
 
 

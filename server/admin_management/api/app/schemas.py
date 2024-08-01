@@ -202,6 +202,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
     forest_client_numbers: Union[
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
+    requires_send_user_email: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
