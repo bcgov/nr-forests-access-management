@@ -37,16 +37,10 @@ export interface FamRoleWithClient {
     'role_name': string;
     /**
      * 
-     * @type {string}
+     * @type {RoleType}
      * @memberof FamRoleWithClient
      */
-    'role_purpose'?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof FamRoleWithClient
-     */
-    'parent_role_id'?: number | null;
+    'role_type_code': RoleType;
     /**
      * 
      * @type {number}
@@ -55,34 +49,16 @@ export interface FamRoleWithClient {
     'application_id': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof FamRoleWithClient
      */
-    'forest_client_number'?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamRoleWithClient
-     */
-    'create_user': string;
-    /**
-     * 
-     * @type {RoleType}
-     * @memberof FamRoleWithClient
-     */
-    'role_type_code': RoleType;
+    'role_id': number;
     /**
      * 
      * @type {FamForestClient}
      * @memberof FamRoleWithClient
      */
     'client_number'?: FamForestClient | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof FamRoleWithClient
-     */
-    'role_id': number;
     /**
      * 
      * @type {FamRoleMin}

@@ -138,19 +138,24 @@ def create_user_role_assignment_many(
                 db, fam_user, associate_role, requester
             )
             create_return_list.append(handle_create_return)
+    else:
+        handle_create_return = create_user_role_assignment(
+            db, fam_user, fam_role, requester
+        )
+        create_return_list.append(handle_create_return)
 
     LOGGER.debug(f"User/Role assignment executed successfully: {create_return_list}")
     return create_return_list
 
 
-def create_user_role_assignment(db: Session, user: models.FamUser, role: models.FamRole, requester: str):
+def create_user_role_assignment(
+    db: Session, user: models.FamUser, role: models.FamRole, requester: str
+):
     create_user_role_assginment_return = None
-    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, user.user_id, role.role_id)
-    xref_dict = {
-        "application_id": role.application_id,
-        "user": user,
-        "role": role
-    }
+    fam_user_role_xref = get_use_role_by_user_id_and_role_id(
+        db, user.user_id, role.role_id
+    )
+    xref_dict = {"application_id": role.application_id, "user": user, "role": role}
 
     if fam_user_role_xref:
         xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}

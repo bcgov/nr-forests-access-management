@@ -147,11 +147,11 @@ class FamRoleCreate(BaseModel):
         default=None, title="Reference role_id to higher role"
     )
     application_id: int = Field(title="Application this role is associated with")
+    role_type_code: famConstants.RoleType
     forest_client_number: Union[
         Annotated[str, StringConstraints(max_length=8)], None
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=100)]
-    role_type_code: famConstants.RoleType
     client_number: Optional[FamForestClientCreate] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -165,7 +165,7 @@ class FamRoleMin(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleWithClient(FamRoleCreate):
+class FamRoleWithClient(FamRoleMin):
     role_id: int
     client_number: Optional[FamForestClient] = None
     parent_role: Optional[FamRoleMin] = None
