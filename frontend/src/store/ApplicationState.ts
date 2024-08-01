@@ -1,4 +1,4 @@
-import type { FamApplicationDto } from 'fam-admin-mgmt-api/model';
+import { AppEnv, type FamApplicationDto } from 'fam-admin-mgmt-api/model';
 import { computed, ref } from 'vue';
 
 export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
@@ -36,4 +36,8 @@ export const selectedApplicationDisplayText = computed(() => {
     } else {
         return '';
     }
+});
+
+export const isSelectedAppProd = computed(() => {
+    return selectedApplication.value?.env == AppEnv.Prod;
 });

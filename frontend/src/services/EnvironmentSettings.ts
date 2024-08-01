@@ -12,6 +12,7 @@ export class EnvironmentSettings {
         this.env = JSON.parse(
             window.localStorage.getItem('env_data') as string
         );
+        // This is deployment environment (AWS)
         const environment = this.env?.target_env.value as string;
         if (
             environment &&
@@ -64,6 +65,10 @@ export class EnvironmentSettings {
             return true
         }
         return false
+    }
+
+    isProdEnvironment() {
+        return window.localStorage.getItem(this.environmentDisplayNameKey) == ''
     }
 
     private getApiBaseUrl(useApi?: string) {
