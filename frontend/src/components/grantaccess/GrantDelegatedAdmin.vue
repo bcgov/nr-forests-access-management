@@ -33,7 +33,7 @@ const defaultFormData = {
     userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
-    sendEmail: (isSelectedAppProd_OnProdEnvironment()) as boolean
+    sendUserEmail: (isSelectedAppProd_OnProdEnvironment()) as boolean
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 
@@ -178,6 +178,7 @@ function toRequestPayload(formData: any) {
         user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
+        requires_send_user_email: formData.sendUserEmail,
         ...(formData.verifiedForestClients.length > 0
             ? {
                   forest_client_numbers: formData.verifiedForestClients,
@@ -271,7 +272,7 @@ function handleSubmit() {
 
                 <Divider/>
                 <BoolCheckbox
-                    v-model="formData.sendEmail"
+                    v-model="formData.sendUserEmail"
                     label="Send email to notify user"
                 />
 
