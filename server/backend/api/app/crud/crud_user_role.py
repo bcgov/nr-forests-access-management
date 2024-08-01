@@ -133,12 +133,13 @@ def create_user_role_assignment_many(
             # Role for associating with user
             associate_role = child_role if require_child_role else fam_role
 
-            # Create user/role assignment.
+            # Create user/role assignment
             handle_create_return = create_user_role_assignment(
                 db, fam_user, associate_role, requester
             )
             create_return_list.append(handle_create_return)
     else:
+        # Create user/role assignment
         handle_create_return = create_user_role_assignment(
             db, fam_user, fam_role, requester
         )

@@ -5,42 +5,48 @@ from http import HTTPStatus
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                               ERROR_CODE_SELF_GRANT_PROHIBITED,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
+from api.app.constants import (
+    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+    ERROR_CODE_SELF_GRANT_PROHIBITED,
+    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+    UserType,
+)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
-from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
-                               ACCESS_GRANT_FOM_TEST_CR_IDIR,
-                               BUSINESS_GUID_BCEID_LOAD_3_TEST,
-                               BUSINESS_GUID_BCEID_LOAD_4_TEST,
-                               FC_NUMBER_EXISTS_ACTIVE_00001011,
-                               FC_NUMBER_EXISTS_DEACTIVATED,
-                               FC_NUMBER_NOT_EXISTS, FOM_DEV_APPLICATION_ID,
-                               FOM_DEV_REVIEWER_ROLE_ID,
-                               FOM_DEV_SUBMITTER_ROLE_ID,
-                               FOM_TEST_APPLICATION_ID)
+from testspg.constants import (
+    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+    ACCESS_GRANT_FOM_TEST_CR_IDIR,
+    BUSINESS_GUID_BCEID_LOAD_3_TEST,
+    BUSINESS_GUID_BCEID_LOAD_4_TEST,
+    FC_NUMBER_EXISTS_ACTIVE_00001011,
+    FC_NUMBER_EXISTS_DEACTIVATED,
+    FC_NUMBER_NOT_EXISTS,
+    FOM_DEV_APPLICATION_ID,
+    FOM_DEV_REVIEWER_ROLE_ID,
+    FOM_DEV_SUBMITTER_ROLE_ID,
+    FOM_TEST_APPLICATION_ID,
+)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
-ERROR_DUPLICATE_USER_ROLE = "Role already assigned to user."
+ERROR_DUPLICATE_USER_ROLE = "FamUserRoleXref already exists"
 
 
 # ------------------ test create user role assignment ----------------------- #
 
 
-def test_create_user_role_assignment_not_authorized(
+def test_create_user_role_assignment_many_not_authorized(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
@@ -63,11 +69,11 @@ def test_create_user_role_assignment_not_authorized(
     )
 
 
-def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_admin(
+def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -98,17 +104,20 @@ def test_create_user_role_assignment_with_concrete_role_authorize_by_delegated_a
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
-    assert "user_role_xref_id" in data
-    assert "user_id" in data
-    assert "role_id" in data
-    assert "application_id" in data
+    assert len(data) == 1
+    assert data[0].get("status_code") == HTTPStatus.OK
+    detail = data[0].get("detail")
+    assert "user_role_xref_id" in detail
+    assert "user_id" in detail
+    assert "role_id" in detail
+    assert "application_id" in detail
 
 
-def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_admin(
+def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -140,16 +149,19 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
-    assert "user_role_xref_id" in data
-    assert "user_id" in data
-    assert "role_id" in data
-    assert "application_id" in data
+    assert len(data) == 1
+    assert data[0].get("status_code") == HTTPStatus.OK
+    detail = data[0].get("detail")
+    assert "user_role_xref_id" in detail
+    assert "user_id" in detail
+    assert "role_id" in detail
+    assert "application_id" in detail
 
     response = test_client_fixture.post(
         f"{endPoint}",
         json={
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-            "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001011,
+            "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00001011],
         },
         headers=jwt_utils.headers(token),
     )
@@ -164,11 +176,11 @@ def test_create_user_role_assignment_with_abstract_role_authorize_by_delegated_a
     )
 
 
-def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
+def test_create_user_role_assignment_many_bceid_cannot_grant_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot grant idir user access
@@ -200,11 +212,11 @@ def test_create_user_role_assignment_bceid_cannot_grant_idir_access(
     )
 
 
-def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
+def test_create_user_role_assignment_many_bceid_cannot_grant_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
@@ -241,7 +253,7 @@ def test_create_user_role_assignment_bceid_cannot_grant_access_from_diff_org(
     )
 
 
-def test_create_user_role_assignment_with_concrete_role(
+def test_create_user_role_assignment_many_with_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -263,20 +275,24 @@ def test_create_user_role_assignment_with_concrete_role(
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
-    assert "user_role_xref_id" in data
-    assert "user_id" in data
-    assert "role_id" in data
-    assert "application_id" in data
+    assert len(data) == 1
+    assert data[0].get("status_code") == HTTPStatus.OK
+    detail = data[0].get("detail")
+    assert "user_role_xref_id" in detail
+    assert "user_id" in detail
+    assert "role_id" in detail
+    assert "application_id" in detail
 
     # verify assignment did get created
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=data["application_id"], requester=requester
+        db=db_pg_session, application_id=detail["application_id"], requester=requester
     )
     assert len(assignment_user_role_concrete) == 1
     assert (
-        assignment_user_role_concrete[0].user_role_xref_id == data["user_role_xref_id"]
+        assignment_user_role_concrete[0].user_role_xref_id
+        == detail["user_role_xref_id"]
     )
 
     # verify assignment linking to correct user
@@ -294,13 +310,13 @@ def test_create_user_role_assignment_with_concrete_role(
 
     # cleanup
     response = test_client_fixture.delete(
-        f"{endPoint}/{data['user_role_xref_id']}",
+        f"{endPoint}/{detail['user_role_xref_id']}",
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_create_user_role_assignment_with_concrete_role_duplicate(
+def test_create_user_role_assignment_many_with_concrete_role_duplicate(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     override_get_verified_target_user,
@@ -318,7 +334,6 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    data = response.json()
 
     # create user role assignment the second time
     response = test_client_fixture.post(
@@ -326,18 +341,21 @@ def test_create_user_role_assignment_with_concrete_role_duplicate(
         json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-    assert response.status_code == 409
-    assert response.json()["detail"].get("description") == ERROR_DUPLICATE_USER_ROLE
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert len(data) == 1
+    assert data[0].get("status_code") == HTTPStatus.CONFLICT
+    assert str(data[0].get("error_message")).find(ERROR_DUPLICATE_USER_ROLE) != -1
 
     # cleanup
     response = test_client_fixture.delete(
-        f"{endPoint}/{data['user_role_xref_id']}",
+        f"{endPoint}/{data[0]['detail']['user_role_xref_id']}",
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_create_user_role_assignment_with_abstract_role_without_forestclient(
+def test_create_user_role_assignment_many_with_abstract_role_without_forestclient(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     override_get_verified_target_user,
@@ -351,7 +369,7 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = copy.deepcopy(
         ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID
     )
-    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_number")
+    COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT.pop("forest_client_numbers")
     response = test_client_fixture.post(
         f"{endPoint}",
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
@@ -360,14 +378,11 @@ def test_create_user_role_assignment_with_abstract_role_without_forestclient(
     assert response.status_code == 400
     assert (
         response.json()["detail"].get("description")
-        == "Invalid role assignment request. "
-        + "Cannot assign user "
-        + ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["user_name"]
-        + " to abstract role FOM_SUBMITTER"
+        == "Invalid user role assignment request, missing forest client number."
     )
 
 
-def test_create_user_role_assignment_with_abstract_role(
+def test_create_user_role_assignment_many_with_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -375,41 +390,51 @@ def test_create_user_role_assignment_with_abstract_role(
     override_get_verified_target_user,
 ):
     """
-    test assign an abscrate role to a user
+    test assign an abscrate role to a user with multiple forest client numbers
     """
     # override router guard dependencies
     override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     response = test_client_fixture.post(
         f"{endPoint}",
-        json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+        json={
+            **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+            "forest_client_numbers": ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID[
+                "forest_client_numbers"
+            ]
+            + [FC_NUMBER_EXISTS_ACTIVE_00001011],
+        },
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
-    assert "user_role_xref_id" in data
-    assert "user_id" in data
-    assert "role_id" in data
-    assert "application_id" in data
+    assert len(data) == 2
+    assert data[0].get("status_code") == HTTPStatus.OK
+    assert data[1].get("status_code") == HTTPStatus.OK
 
     # verify assignment did get created
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=data["application_id"], requester=requester
+        db=db_pg_session,
+        application_id=data[0]["detail"]["application_id"],
+        requester=requester,
     )
-    assert len(assignment_user_role_abstract) == 1
-    assert (
-        assignment_user_role_abstract[0].user_role_xref_id == data["user_role_xref_id"]
-    )
-
+    assert len(assignment_user_role_abstract) == 2
+    assert assignment_user_role_abstract[0].user_role_xref_id in [
+        data[0]["detail"]["user_role_xref_id"],
+        data[1]["detail"]["user_role_xref_id"],
+    ]
+    assert assignment_user_role_abstract[1].user_role_xref_id in [
+        data[0]["detail"]["user_role_xref_id"],
+        data[1]["detail"]["user_role_xref_id"],
+    ]
     # verify assignment linking to correct user
     assignment_user = crud_user.get_user(
         db_pg_session, assignment_user_role_abstract[0].user_id
     )
     assert assignment_user is not None
-
     # verify assignment linking to correct role and parent role
     assignment_role = crud_role.get_role(
         db_pg_session, assignment_user_role_abstract[0].role_id
@@ -419,13 +444,18 @@ def test_create_user_role_assignment_with_abstract_role(
 
     # cleanup
     response = test_client_fixture.delete(
-        f"{endPoint}/{data['user_role_xref_id']}",
+        f"{endPoint}/{data[0]['detail']['user_role_xref_id']}",
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+    assert response.status_code == HTTPStatus.NO_CONTENT
+    response = test_client_fixture.delete(
+        f"{endPoint}/{data[1]['detail']['user_role_xref_id']}",
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_create_user_role_assignment_with_same_username(
+def test_create_user_role_assignment_many_with_same_username(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     fom_dev_access_admin_token,
@@ -442,7 +472,7 @@ def test_create_user_role_assignment_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_one = response.json()
+    assignment_one = response.json()[0]["detail"]
 
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
@@ -451,7 +481,7 @@ def test_create_user_role_assignment_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_two = response.json()
+    assignment_two = response.json()[0]["detail"]
 
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
@@ -460,7 +490,7 @@ def test_create_user_role_assignment_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_three = response.json()
+    assignment_three = response.json()[0]["detail"]
 
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
@@ -509,7 +539,7 @@ def test_assign_same_application_roles_for_different_environments(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    fom_dev_user_role_assignment = response.json()
+    fom_dev_user_role_assignment = response.json()[0]["detail"]
     assert "user_role_xref_id" in fom_dev_user_role_assignment
 
     # create a user role assignment with same username and type, but for FOM_TEST role
@@ -519,7 +549,7 @@ def test_assign_same_application_roles_for_different_environments(
         headers=jwt_utils.headers(fom_test_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    fom_test_user_role_assignment = response.json()
+    fom_test_user_role_assignment = response.json()[0]["detail"]
     assert "user_role_xref_id" in fom_test_user_role_assignment
 
     # verify assignment id not the same
@@ -620,7 +650,7 @@ def test_user_role_forest_client_number_not_exist_bad_request(
     client_number_not_exists = FC_NUMBER_NOT_EXISTS
     invalid_request = {
         **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-        "forest_client_number": client_number_not_exists,
+        "forest_client_numbers": [client_number_not_exists],
     }
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -648,7 +678,10 @@ def test_user_role_forest_client_number_inactive_bad_request(
     override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
     invalid_request = {
         **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-        "forest_client_number": FC_NUMBER_EXISTS_DEACTIVATED,
+        "forest_client_numbers": [
+            FC_NUMBER_EXISTS_ACTIVE_00001011,
+            FC_NUMBER_EXISTS_DEACTIVATED,
+        ],
     }
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -657,7 +690,10 @@ def test_user_role_forest_client_number_inactive_bad_request(
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert "Forest Client is not in Active status"
+    assert (
+        f"Forest client number {FC_NUMBER_EXISTS_DEACTIVATED} is not in active status"
+        in response.json()["detail"].get("description")
+    )
 
 
 def test_self_grant_fail(
@@ -692,7 +728,7 @@ def test_self_grant_fail(
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
-def test_create_user_role_assignment_new_bceid_user_save_business_guid(
+def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
     override_get_verified_target_user,
@@ -790,7 +826,7 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -835,7 +871,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -881,7 +917,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
         fom_dev_access_admin_token,
         {
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-            "forest_client_number": "00001011",
+            "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00001011],
         },
     )
     response = test_client_fixture.delete(
@@ -904,7 +940,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot delete idir user access
@@ -947,7 +983,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
@@ -1009,27 +1045,34 @@ def test_delete_user_role_assignment(
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json()
-    assert "user_role_xref_id" in data
+    assert "user_role_xref_id" in data[0]["detail"]
 
     # verify assignment did get created
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=data["application_id"], requester=requester
+        db=db_pg_session,
+        application_id=data[0]["detail"]["application_id"],
+        requester=requester,
     )
     assert len(assignment_user_role_items) == 1
-    assert assignment_user_role_items[0].user_role_xref_id == data["user_role_xref_id"]
+    assert (
+        assignment_user_role_items[0].user_role_xref_id
+        == data[0]["detail"]["user_role_xref_id"]
+    )
 
     # execute Delete
     response = test_client_fixture.delete(
-        f"{endPoint}/{data['user_role_xref_id']}",
+        f"{endPoint}/{data[0]['detail']['user_role_xref_id']}",
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=data["application_id"], requester=requester
+        db=db_pg_session,
+        application_id=data[0]["detail"]["application_id"],
+        requester=requester,
     )
     assert len(assignment_user_role_items) == 0
 
@@ -1065,10 +1108,8 @@ def test_self_remove_grant_fail(
     jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
 
 
-def test_create_user_role_assignment_enforce_bceid_terms_conditions(
-    test_client_fixture,
-    test_rsa_key,
-    override_get_verified_target_user
+def test_create_user_role_assignment_many_enforce_bceid_terms_conditions(
+    test_client_fixture, test_rsa_key, override_get_verified_target_user
 ):
     """
     Test this endpoint can "enforce_bceid_terms_conditions" on BCeID
@@ -1089,9 +1130,9 @@ def test_create_user_role_assignment_enforce_bceid_terms_conditions(
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(
-        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
-    ) != -1
+    assert (
+        str(response.json()["detail"]).find(ERROR_CODE_TERMS_CONDITIONS_REQUIRED) != -1
+    )
 
     # Use IDIR delegatged admin as a requester for this endpoint.
     # IDIR delegatged admin does not need T&C accpetance.
@@ -1137,6 +1178,6 @@ def test_delete_user_role_assignment_enforce_bceid_terms_conditions(
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(
-        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
-    ) != -1
+    assert (
+        str(response.json()["detail"]).find(ERROR_CODE_TERMS_CONDITIONS_REQUIRED) != -1
+    )

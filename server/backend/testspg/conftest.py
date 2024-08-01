@@ -236,7 +236,7 @@ def create_test_user_role_assignment(
         headers=jwt_utils.headers(token),
     )
     data = response.json()
-    return data["user_role_xref_id"]
+    return data[0]["detail"]["user_role_xref_id"]
 
 
 @pytest.fixture(scope="function")

@@ -115,7 +115,7 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR = {
     "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00000001],
 }
 
 ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR = {
@@ -123,7 +123,7 @@ ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR = {
     "user_guid": TEST_USER_GUID_IDIR,
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00001018],
 }
 
 ACCESS_GRANT_FOM_TEST_CR_IDIR = {
@@ -152,7 +152,7 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID = {
     "user_guid": USER_GUID_BCEID_LOAD_3_TEST,
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00000001],
 }
 
 ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T = {
@@ -160,7 +160,7 @@ ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T = {
     "user_guid": USER_GUID_BCEID_LOAD_3_TEST,
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00000001,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00000001],
 }
 
 ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T = {
@@ -168,7 +168,7 @@ ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T = {
     "user_guid": USER_GUID_BCEID_LOAD_3_TEST,
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00001018],
 }
 
 ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T = {
@@ -176,7 +176,7 @@ ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T = {
     "user_guid": USER_GUID_BCEID_LOAD_4_TEST,
     "user_type_code": fam_constants.UserType.BCEID,
     "role_id": FOM_DEV_SUBMITTER_ROLE_ID,
-    "forest_client_number": FC_NUMBER_EXISTS_ACTIVE_00001018,
+    "forest_client_numbers": [FC_NUMBER_EXISTS_ACTIVE_00001018],
 }
 
 

@@ -84,7 +84,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    concrete_role_data = response.json()
+    concrete_role_data = response.json()[0]['detail']
 
     # check
     response = test_client_fixture.get(
@@ -121,7 +121,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    abstract_role_data = response.json()
+    abstract_role_data = response.json()[0]['detail']
 
     # check
     response = test_client_fixture.get(
@@ -143,7 +143,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
         data[0]["role"]["role_name"]
         == "FOM_SUBMITTER"
         + "_"
-        + ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["forest_client_number"]
+        + ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["forest_client_numbers"][0]
     )
     assert data[0]["role"]["parent_role"]["role_type_code"] == "A"
     assert data[0]["role"]["parent_role"]["role_name"] == "FOM_SUBMITTER"
