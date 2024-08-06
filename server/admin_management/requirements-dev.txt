@@ -1,5 +1,5 @@
 pytest==7.2.0
-testcontainers==3.7.1
+testcontainers==4.7.2
 testcontainers-core==0.0.1rc1
 
 # used to create test JWT

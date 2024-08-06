@@ -3,6 +3,6 @@ black==24.3.0
 flake8==7.0.0
 pytest-emoji==0.2.0
 pytest-md==0.2.0
-testcontainers==3.7.1
+testcontainers==4.7.2
 testcontainers-core==0.0.1rc1
 requests>=2.32.0 # not directly required, pinned by Snyk to avoid a vulnerability
