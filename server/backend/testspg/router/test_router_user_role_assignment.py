@@ -40,7 +40,7 @@ from testspg.constants import (
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
 
-ERROR_DUPLICATE_USER_ROLE = "FamUserRoleXref already exists"
+ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
 
 
 # ------------------ test create user role assignment ----------------------- #
@@ -345,7 +345,7 @@ def test_create_user_role_assignment_many_with_concrete_role_duplicate(
     data = response.json()
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.CONFLICT
-    assert str(data[0].get("error_message")).find(ERROR_DUPLICATE_USER_ROLE) != -1
+    assert str(data[0].get("error_message")).find("ERROR_DUPLICATE_USER_ROLE") != -1
 
     # cleanup
     response = test_client_fixture.delete(

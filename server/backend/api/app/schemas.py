@@ -201,16 +201,10 @@ class FamUserRoleAssignmentCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamUserRoleAssignmentGet(BaseModel):
+class FamApplicationUserRoleAssignmentGet(BaseModel):
     user_role_xref_id: int
     user_id: int
     role_id: int
-    application_id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
     user: FamUserInfo
     role: FamRoleWithClient
     application_id: Optional[Union[int, None]] = None

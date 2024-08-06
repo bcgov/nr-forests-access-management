@@ -97,12 +97,12 @@ def test_forest_client_number_exists(
     )
 
     # find forest client number
-    forest_client_validator_return = (
+    forest_client_search_return = (
         forest_client_integration_service.find_by_client_number(client_id_to_test)
     )
     # test forest_client_number_exists return true
     assert (
-        forest_client_number_exists(forest_client_validator_return)
+        forest_client_number_exists(forest_client_search_return)
         is expcted_result["exists"]
     )
 
@@ -148,12 +148,12 @@ def test_forest_client_active(
     )
 
     # find forest client number
-    forest_client_validator_return = (
+    forest_client_search_return = (
         forest_client_integration_service.find_by_client_number(client_id_to_test)
     )
 
     assert (
-        forest_client_active(forest_client_validator_return)
+        forest_client_active(forest_client_search_return)
         is expcted_result["is_active"]
     )
 
@@ -184,12 +184,12 @@ def test_get_forest_client_status(
     )
 
     # find forest client number
-    forest_client_validator_return = (
+    forest_client_search_return = (
         forest_client_integration_service.find_by_client_number(client_id_to_test)
     )
 
     # test get_forest_client_status return forest client information
     assert (
-        get_forest_client_status(forest_client_validator_return)
+        get_forest_client_status(forest_client_search_return)
         == expcted_result["api_client_status_code"]
     )
