@@ -26,7 +26,7 @@ def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     with pytest.raises(HTTPException) as e:
 
         mocked_target_user = schemas.TargetUser(**user_role)
-        assert crud_user_role.create_user_role(
+        assert crud_user_role.create_user_role_assignment_many(
             db_pg_session,
             schemas.FamUserRoleAssignmentCreate(**user_role),
             mocked_target_user,
@@ -57,13 +57,12 @@ def test_create_user_role_with_user_types_not_exists(
 
 
 def test_create(db_pg_session: Session):
-    user_role_xref = crud_user_role.create(
+    crud_user_role.create(
         db_pg_session,
         TEST_USER_ID,
         FOM_DEV_REVIEWER_ROLE_ID,
         TEST_CREATOR
     )
-    xref_dict = user_role_xref.__dict__
 
     # verify user role created
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(

@@ -78,7 +78,7 @@ export const composeAndPushGrantPermissionNotification = (
 };
 
 export const setGrantPermissionNotificationMsg = (
-    type: GrantPermissionType,
+    grantType: GrantPermissionType,
     severity: Severity,
     userId: string,
     forestClientNumberList: string[],
@@ -86,7 +86,7 @@ export const setGrantPermissionNotificationMsg = (
     errorCode: string = ErrorCode.Default
 ) => {
     const msgByType: CommonObjectType = formataAndGetMsgByGrantType(
-        type,
+        grantType,
         userId,
         role,
         forestClientNumberList
@@ -110,7 +110,7 @@ export const setGrantPermissionNotificationMsg = (
 };
 
 const formataAndGetMsgByGrantType = (
-    grantType: string,
+    grantType: GrantPermissionType,
     userId: string,
     role: string,
     forestClientNumberList: string[] = []

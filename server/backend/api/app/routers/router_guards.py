@@ -235,35 +235,43 @@ async def authorize_by_privilege(
 
     # if requester is not application admin, check if has the privilege to grant/remove access of the role
     if not requester_is_app_admin:
-        # for remove access, role is what we get above from Depends(get_request_role_from_id)
-        # for grant access, if the request params has forest_client_number, need to get the child role
-        # the child role should already exist when the delegated admin has been created
         if "user_role_xref_id" not in request.path_params:
+            # for grant access with abstract role, if the request params has forest_client_numbers, need to get the child role
+            # the child role should already exist when the delegated admin has been created
             rbody = await request.json()
-            forest_client_number = rbody.get("forest_client_number")
+            forest_client_numbers = rbody.get("forest_client_numbers")
             if (
-                forest_client_number
+                forest_client_numbers
                 and role.role_type_code == RoleType.ROLE_TYPE_ABSTRACT
             ):
                 parent_role = role
-                forest_client_role_name = (
-                    crud_user_role.construct_forest_client_role_name(
-                        parent_role.role_name, forest_client_number
+                for forest_client_number in forest_client_numbers:
+                    forest_client_role_name = (
+                        crud_user_role.construct_forest_client_role_name(
+                            parent_role.role_name, forest_client_number
+                        )
                     )
-                )
-                role = crud_role.get_role_by_role_name_and_app_id(
-                    db, forest_client_role_name, parent_role.application_id
-                )  # when role is None, means the role is not created for this delegated admin
+                    role = crud_role.get_role_by_role_name_and_app_id(
+                        db, forest_client_role_name, parent_role.application_id
+                    )  # when role is None, means the role is not created for this delegated admin
+                    if (
+                        not role
+                        or not crud_access_control_privilege.has_privilege_by_role_id(
+                            db, requester.user_id, role.role_id
+                        )
+                    ):
+                        # if user has no privilege of the role, throw permission error
+                        utils.raise_http_exception(
+                            status_code=HTTPStatus.FORBIDDEN,
+                            error_code=ERROR_PERMISSION_REQUIRED,
+                            error_msg="Requester has no privilege to grant this access.",
+                        )
 
-        requester_has_privilege = False
-        if role:
-            requester_has_privilege = (
-                crud_access_control_privilege.has_privilege_by_role_id(
-                    db, requester.user_id, role.role_id
-                )
-            )
-        # if user has no privilege of the role, throw permission error
-        if not requester_has_privilege:
+        # for remove access and grant access with concrete, role is what we get above from Depends(get_request_role_from_id)
+        if not role or not crud_access_control_privilege.has_privilege_by_role_id(
+            db, requester.user_id, role.role_id
+        ):
+            # if user has no privilege of the role, throw permission error
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,

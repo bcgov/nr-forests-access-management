@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Tests and coverage
         env:
@@ -44,7 +44,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_auth
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
+            -Dsonar.python.version=3.12
             -Dsonar.sources=.
             -Dsonar.tests=test
 
@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Tests and coverage
         env:
@@ -94,7 +94,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_backend
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
+            -Dsonar.python.version=3.12
             -Dsonar.sources=api
             -Dsonar.tests=testspg
 
@@ -116,7 +116,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Tests and coverage
         env:
@@ -140,7 +140,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=nr-forests-access-management_admin
             -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.8
+            -Dsonar.python.version=3.12
             -Dsonar.sources=api
             -Dsonar.tests=tests
 

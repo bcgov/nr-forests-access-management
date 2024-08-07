@@ -5,14 +5,12 @@ from typing import List
 from api.app import constants as famConstants
 from api.app import schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
+from api.app.crud.validator.forest_client_validator import (
+    forest_client_active, forest_client_number_exists,
+    get_forest_client_status)
 from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
-from api.app.crud.validator.forest_client_validator import (
-    forest_client_active,
-    forest_client_number_exists,
-    get_forest_client_status,
-)
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +21,7 @@ def create_user_role_assignment_many(
     request: schemas.FamUserRoleAssignmentCreate,
     target_user: schemas.TargetUser,
     requester: str,
-) -> schemas.FamUserRoleAssignmentGet:
+) -> List[schemas.FamUserRoleAssignmentCreateResponse]:
     """
     Create fam_user_role_xref Association
 
@@ -100,13 +98,13 @@ def create_user_role_assignment_many(
 
         for forest_client_number in request.forest_client_numbers:
             # validate the forest client number
-            forest_client_validator_return = (
+            forest_client_search_return = (
                 forest_client_integration_service.find_by_client_number(
                     forest_client_number
                 )
             )
 
-            if not forest_client_number_exists(forest_client_validator_return):
+            if not forest_client_number_exists(forest_client_search_return):
                 error_msg = (
                     "Invalid role assignment request. "
                     + f"Forest Client Number {forest_client_number} does not exist."
@@ -116,10 +114,10 @@ def create_user_role_assignment_many(
                     error_msg=error_msg,
                 )
 
-            if not forest_client_active(forest_client_validator_return):
+            if not forest_client_active(forest_client_search_return):
                 error_msg = (
                     f"Invalid role assignment request. Forest client number {forest_client_number} is not in active status:"
-                    + f"{get_forest_client_status(forest_client_validator_return)}"
+                    + f"{get_forest_client_status(forest_client_search_return)}"
                 )
                 raise_http_exception(
                     error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
@@ -130,15 +128,13 @@ def create_user_role_assignment_many(
             child_role = find_or_create_forest_client_child_role(
                 db, forest_client_number, fam_role, requester
             )
-            # Role for associating with user
-            associate_role = child_role if require_child_role else fam_role
-
-            # Create user/role assignment.
+            # Create user/role assignment
             handle_create_return = create_user_role_assignment(
-                db, fam_user, associate_role, requester
+                db, fam_user, child_role, requester
             )
             create_return_list.append(handle_create_return)
     else:
+        # Create user/role assignment
         handle_create_return = create_user_role_assignment(
             db, fam_user, fam_role, requester
         )
@@ -160,8 +156,7 @@ def create_user_role_assignment(
     if fam_user_role_xref:
         xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         error_msg = (
-            f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}. "
-            + f"FamUserRoleXref already exists with id: {fam_user_role_xref.user_role_xref_id}"
+            f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
         )
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
