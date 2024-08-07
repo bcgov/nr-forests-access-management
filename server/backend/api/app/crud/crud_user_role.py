@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
@@ -7,17 +8,22 @@ from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
+from api.app.crud.validator.forest_client_validator import (
+    forest_client_active,
+    forest_client_number_exists,
+    get_forest_client_status,
+)
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
 
-def create_user_role(
+def create_user_role_assignment_many(
     db: Session,
     request: schemas.FamUserRoleAssignmentCreate,
     target_user: schemas.TargetUser,
-    requester: str
-) -> schemas.FamUserRoleAssignmentGet:
+    requester: str,
+) -> List[schemas.FamUserRoleAssignmentCreateResponse]:
     """
     Create fam_user_role_xref Association
 
@@ -37,16 +43,12 @@ def create_user_role(
         error_msg = f"Invalid user type: {request.user_type_code}."
         raise_http_exception(
             error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-            error_msg=error_msg
+            error_msg=error_msg,
         )
 
     # Determine if user already exists or add a new user.
     fam_user = crud_user.find_or_create(
-        db,
-        request.user_type_code,
-        request.user_name,
-        request.user_guid,
-        requester
+        db, request.user_type_code, request.user_name, request.user_guid, requester
     )
     fam_user = crud_user.update_user_properties_from_verified_target_user(
         db, fam_user.user_id, target_user, requester
@@ -58,12 +60,12 @@ def create_user_role(
         error_msg = f"Role id {request.role_id} does not exist."
         raise_http_exception(
             error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-            error_msg=error_msg
+            error_msg=error_msg,
         )
 
     LOGGER.debug(
-        f"Role for user_role assignment found: {fam_role.role_name}" +
-        f"({fam_role.role_id})."
+        f"Role for user_role assignment found: {fam_role.role_name}"
+        + f"({fam_role.role_id})."
     )
 
     # Role is a 'Concrete' type, then create role assignment directly with the role.
@@ -72,78 +74,114 @@ def create_user_role(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
+    create_return_list: List[schemas.FamUserRoleAssignmentCreateResponse] = []
+
     if require_child_role:
         LOGGER.debug(
             f"Role {fam_role.role_name} requires child role "
             "for user/role assignment."
         )
 
-        if (not hasattr(request, "forest_client_number")
-                or request.forest_client_number is None):
+        if (
+            not hasattr(request, "forest_client_numbers")
+            or request.forest_client_numbers is None
+            or len(request.forest_client_numbers) < 1
+        ):
             error_msg = (
-                "Invalid role assignment request. Cannot assign user " +
-                f"{request.user_name} to abstract role {fam_role.role_name}")
+                "Invalid user role assignment request, missing forest client number."
+            )
             raise_http_exception(
                 error_code=famConstants.ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg
+                error_msg=error_msg,
             )
 
         api_instance_env = crud_utils.use_api_instance_by_app(fam_role.application)
-        validator = UserRoleValidator(request, api_instance_env)
-        if (not validator.forest_client_number_exists()):
-            error_msg = (
-                "Invalid role assignment request. " +
-                f"Forest Client Number {request.forest_client_number} does not exist.")
-            raise_http_exception(
-                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
+        forest_client_integration_service = ForestClientService(api_instance_env)
+
+        for forest_client_number in request.forest_client_numbers:
+            # validate the forest client number
+            forest_client_search_return = (
+                forest_client_integration_service.find_by_client_number(
+                    forest_client_number
+                )
             )
 
-        if (not validator.forest_client_active()):
-            error_msg = (
-                "Invalid role assignment request. Forest Client is not in Active status: " +
-                f"{validator.get_forest_client()[famConstants.FOREST_CLIENT_STATUS['KEY']]}")
-            raise_http_exception(
-                error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                error_msg=error_msg
-            )
+            if not forest_client_number_exists(forest_client_search_return):
+                error_msg = (
+                    "Invalid role assignment request. "
+                    + f"Forest Client Number {forest_client_number} does not exist."
+                )
+                raise_http_exception(
+                    error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                    error_msg=error_msg,
+                )
 
-        # Note: current FSA design in the 'request body' contains a
-        #     'forest_client_number' if it requires a child role.
-        child_role = find_or_create_forest_client_child_role(
-            db,
-            request.forest_client_number,
-            fam_role,
-            requester
+            if not forest_client_active(forest_client_search_return):
+                error_msg = (
+                    f"Invalid role assignment request. Forest client number {forest_client_number} is not in active status:"
+                    + f"{get_forest_client_status(forest_client_search_return)}"
+                )
+                raise_http_exception(
+                    error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                    error_msg=error_msg,
+                )
+
+            # Check if child role exists or add a new child role
+            child_role = find_or_create_forest_client_child_role(
+                db, forest_client_number, fam_role, requester
+            )
+            # Create user/role assignment
+            handle_create_return = create_user_role_assignment(
+                db, fam_user, child_role, requester
+            )
+            create_return_list.append(handle_create_return)
+    else:
+        # Create user/role assignment
+        handle_create_return = create_user_role_assignment(
+            db, fam_user, fam_role, requester
         )
+        create_return_list.append(handle_create_return)
 
-    # Role Id for associating with user
-    associate_role_id = child_role.role_id if require_child_role else fam_role.role_id
+    LOGGER.debug(f"User/Role assignment executed successfully: {create_return_list}")
+    return create_return_list
 
-    # Create user/role assignment.
-    fam_user_role_xref = get_use_role_by_user_id_and_role_id(db, fam_user.user_id, associate_role_id)
+
+def create_user_role_assignment(
+    db: Session, user: models.FamUser, role: models.FamRole, requester: str
+):
+    create_user_role_assginment_return = None
+    fam_user_role_xref = get_use_role_by_user_id_and_role_id(
+        db, user.user_id, role.role_id
+    )
+    xref_dict = {"application_id": role.application_id, "user": user, "role": role}
 
     if fam_user_role_xref:
-        LOGGER.debug(
-            "FamUserRoleXref already exists with id: " +
-            f"{fam_user_role_xref.user_role_xref_id}."
+        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
+        error_msg = (
+            f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
         )
-
-        error_msg = "Role already assigned to user."
-        raise_http_exception(
-            status_code=HTTPStatus.CONFLICT,
-            error_msg=error_msg
+        create_user_role_assginment_return = (
+            schemas.FamUserRoleAssignmentCreateResponse(
+                **{
+                    "status_code": HTTPStatus.CONFLICT,
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                    "error_message": error_msg,
+                }
+            )
         )
     else:
-        fam_user_role_xref = create(db, fam_user.user_id, associate_role_id, requester)
+        fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
+        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
+        create_user_role_assginment_return = (
+            schemas.FamUserRoleAssignmentCreateResponse(
+                **{
+                    "status_code": HTTPStatus.OK,
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                }
+            )
+        )
 
-    xref_dict = fam_user_role_xref.__dict__
-    xref_dict["application_id"] = (
-        child_role.application_id if require_child_role else fam_role.application_id
-    )
-    user_role_assignment = schemas.FamUserRoleAssignmentGet(**xref_dict)
-    LOGGER.debug(f"User/Role assignment executed successfully: {user_role_assignment}")
-    return user_role_assignment
+    return create_user_role_assginment_return
 
 
 def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
@@ -158,8 +196,7 @@ def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
 
 def create(db: Session, user_id: int, role_id: int, requester: str):
     LOGGER.debug(
-        f"FamUserRoleXref - 'create' with user_id: {user_id}, " +
-        f"role_id: {role_id}."
+        f"FamUserRoleXref - 'create' with user_id: {user_id}, " + f"role_id: {role_id}."
     )
 
     new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
@@ -215,17 +252,15 @@ def find_or_create_forest_client_child_role(
     forest_client = crud_forest_client.find_or_create(  # NOSONAR
         db, forest_client_number, requester
     )
-    LOGGER.debug(f'forest client number from db: {forest_client.forest_client_number}')
-    LOGGER.debug(f'forest client client id from db: {forest_client.client_number_id}')
+    LOGGER.debug(f"forest client number from db: {forest_client.forest_client_number}")
+    LOGGER.debug(f"forest client client id from db: {forest_client.client_number_id}")
 
     forest_client_role_name = construct_forest_client_role_name(
         parent_role.role_name, forest_client_number
     )
     # Verify if Forest Client role (child role) exist
     child_role = crud_role.get_role_by_role_name_and_app_id(
-        db,
-        forest_client_role_name,
-        parent_role.application_id
+        db, forest_client_role_name, parent_role.application_id
     )
     LOGGER.debug(
         "Forest Client child role for role_name "
@@ -243,7 +278,7 @@ def find_or_create_forest_client_child_role(
                     "role_name": forest_client_role_name,
                     "role_purpose": construct_forest_client_role_purpose(
                         parent_role_purpose=parent_role.role_purpose,
-                        forest_client_number=forest_client_number
+                        forest_client_number=forest_client_number,
                     ),
                     "create_user": requester,
                     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
@@ -258,57 +293,10 @@ def find_or_create_forest_client_child_role(
     return child_role
 
 
-def find_by_id(
-    db: Session, user_role_xref_id: int
-) -> models.FamUserRoleXref:
+def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
     user_role = (
         db.query(models.FamUserRoleXref)
-        .filter(
-            models.FamUserRoleXref.user_role_xref_id == user_role_xref_id
-        )
+        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
         .one_or_none()
     )
     return user_role
-
-
-class UserRoleValidator:
-    """
-    Purpose: More validations on inputs (other than basic validations) and
-             business rules validations (if any).
-    Cautious: Do not instantiate the class for more than one time per request.
-              It calls Forest Client API remotely if needs to.
-    """
-    LOGGER = logging.getLogger(__name__)
-
-    def __init__(
-        self,
-        request: schemas.FamUserRoleAssignmentCreate,
-        api_instance_env: famConstants.ApiInstanceEnv = famConstants.ApiInstanceEnv.TEST
-    ):
-        LOGGER.debug(f"Validator '{self.__class__.__name__}' with input '{request}'.")
-
-        self.user_role_request = request
-        # Note - this value should already be validated from schema input validation.
-        forest_client_number = request.forest_client_number
-        if forest_client_number is not None:
-            fc_api = ForestClientService(api_instance_env)
-
-            # Locally stored (if any) for later use to prevent api calls again.
-            # Exact client number search - should only contain 1 result.
-            self.fc = fc_api.find_by_client_number(forest_client_number)
-            LOGGER.debug(f"Forest Client(s) retrieved: {self.fc}")
-
-    def forest_client_number_exists(self) -> bool:
-        # Exact client number search - should only contain 1 result.
-        return len(self.fc) == 1
-
-    def forest_client_active(self) -> bool:
-        return (
-            (self.get_forest_client()[famConstants.FOREST_CLIENT_STATUS["KEY"]]
-                == famConstants.FOREST_CLIENT_STATUS["CODE_ACTIVE"])
-            if self.forest_client_number_exists()
-            else False
-        )
-
-    def get_forest_client(self):
-        return self.fc[0] if self.forest_client_number_exists() else None

@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import List
 
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.routers.router_guards import (
@@ -27,7 +28,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=schemas.FamUserRoleAssignmentGet,
+    response_model=List[schemas.FamUserRoleAssignmentCreateResponse],
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(enforce_self_grant_guard),
@@ -47,7 +48,7 @@ router = APIRouter()
     ],
     description="Grant User Access to an application's role.",
 )
-def create_user_role_assignment(
+def create_user_role_assignment_many(
     role_assignment_request: schemas.FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
@@ -66,7 +67,7 @@ def create_user_role_assignment(
     audit_event_log = AuditEventLog(
         request=request,
         event_type=AuditEventType.CREATE_USER_ROLE_ACCESS,
-        forest_client_number=role_assignment_request.forest_client_number,
+        forest_client_numbers=role_assignment_request.forest_client_numbers,
         event_outcome=AuditEventOutcome.SUCCESS,
     )
 
@@ -77,7 +78,7 @@ def create_user_role_assignment(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        response = crud_user_role.create_user_role(
+        response = crud_user_role.create_user_role_assignment_many(
             db, role_assignment_request, target_user, requester.cognito_user_id
         )
         # get target user from database, so for existing user, we can get the cognito user id

@@ -5,6 +5,7 @@ api.ts
 api/bcscproxy-api.ts
 api/famapplications-api.ts
 api/famforest-clients-api.ts
+api/famuser-api.ts
 api/famuser-role-assignment-api.ts
 api/famuser-terms-and-conditions-api.ts
 api/idirbce-idproxy-api.ts
@@ -21,9 +22,10 @@ model/fam-forest-client.ts
 model/fam-role-min.ts
 model/fam-role-with-client.ts
 model/fam-user-info.ts
+model/fam-user-role-assignment-create-response.ts
 model/fam-user-role-assignment-create.ts
-model/fam-user-role-assignment-get.ts
 model/fam-user-type.ts
+model/fam-user-update-response.ts
 model/httpvalidation-error.ts
 model/idim-proxy-bceid-info.ts
 model/idim-proxy-idir-info.ts

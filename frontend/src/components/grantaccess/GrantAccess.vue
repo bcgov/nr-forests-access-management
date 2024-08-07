@@ -10,7 +10,6 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { formValidationSchema } from '@/services/utils';
 import { isLoading } from '@/store/LoadingState';
 import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
@@ -124,37 +123,47 @@ const handleSubmit = async () => {
     const username = formData.value.userId.toUpperCase();
     const role = getSelectedRole()?.name;
     const successList: string[] = [];
-    const errorList: string[] = [];
+    let errorList: string[] = [];
     const newUserAccessIds: number[] = [];
     let errorCode = ErrorCode.Default;
+    const data = toRequestPayload(formData.value);
 
     // when we assign a concrete a role to the user, there is no forest client number,
     // we add an empty string to the success or error list,
     // so the successList or errorList will be [''] for granting concrete role,
     // or ["00001011", "00001012", ...] for granting abstract role,
     // the composeAndPushGrantPermissionNotification method will handle both cases
-    do {
-        const forestClientNumber = formData.value.verifiedForestClients.pop();
-        const data = toRequestPayload(formData.value, forestClientNumber);
-        try {
-            const returnResponse =
-                await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignment(
-                    data
-                );
+    try {
+        const returnResponse =
+            await AppActlApiService.userRoleAssignmentApi.createUserRoleAssignmentMany(
+                data
+            );
 
-            newUserAccessIds.push(returnResponse.data.user_role_xref_id);
-            successList.push(forestClientNumber ?? '');
-        } catch (error: any) {
-            if (error.response?.status === 409) {
-                errorCode = ErrorCode.Conflict;
-            } else if (
-                error.response?.data.detail.code === 'self_grant_prohibited'
-            ) {
-                errorCode = ErrorCode.SelfGrantProhibited;
+        returnResponse.data.forEach((response) => {
+            const forestClientNumber =
+                response.detail.role.client_number?.forest_client_number;
+            if (response.status_code == 200) {
+                newUserAccessIds.push(
+                    response.detail.user_role_xref_id
+                );
+                successList.push(forestClientNumber ?? '');
+            } else {
+                if (response.status_code == 409) errorCode = ErrorCode.Conflict;
+                errorList.push(forestClientNumber ?? '');
             }
-            errorList.push(forestClientNumber ?? '');
+        });
+    } catch (error: any) {
+        // error happens here will fail adding all forest client numbers
+        if (error.response?.data.detail.code === 'self_grant_prohibited') {
+            errorCode = ErrorCode.SelfGrantProhibited;
         }
-    } while (formData.value.verifiedForestClients.length > 0);
+        // if has forest clientn number, set errorList to be the verifiedForestClients list
+        // if not, set to be [''] for concrete role, the composeAndPushGrantPermissionNotification will handle both cases
+        errorList =
+            formData.value.verifiedForestClients.length > 0
+                ? formData.value.verifiedForestClients
+                : [''];
+    }
 
     composeAndPushGrantPermissionNotification(
         GrantPermissionType.Regular,
@@ -179,18 +188,15 @@ const handleSubmit = async () => {
     }
 };
 
-function toRequestPayload(formData: any, forestClientNumber: string) {
+function toRequestPayload(formData: any) {
     const request = {
         user_name: formData.userId,
         user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
-        ...(forestClientNumber
+        ...(formData.verifiedForestClients.length > 0
             ? {
-                  forest_client_number: forestClientNumber.padStart(
-                      FOREST_CLIENT_INPUT_MAX_LENGTH,
-                      '0'
-                  ),
+                  forest_client_numbers: formData.verifiedForestClients,
               }
             : {}),
     } as FamUserRoleAssignmentCreate;

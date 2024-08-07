@@ -147,11 +147,11 @@ class FamRoleCreate(BaseModel):
         default=None, title="Reference role_id to higher role"
     )
     application_id: int = Field(title="Application this role is associated with")
+    role_type_code: famConstants.RoleType
     forest_client_number: Union[
         Annotated[str, StringConstraints(max_length=8)], None
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=100)]
-    role_type_code: famConstants.RoleType
     client_number: Optional[FamForestClientCreate] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -165,7 +165,7 @@ class FamRoleMin(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleWithClient(FamRoleCreate):
+class FamRoleWithClient(FamRoleMin):
     role_id: int
     client_number: Optional[FamForestClient] = None
     parent_role: Optional[FamRoleMin] = None
@@ -194,23 +194,17 @@ class FamUserRoleAssignmentCreate(BaseModel):
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     user_type_code: famConstants.UserType
     role_id: int
-    forest_client_number: Union[
-        Annotated[str, StringConstraints(min_length=1, max_length=8)], None
+    forest_client_numbers: Union[
+        List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamUserRoleAssignmentGet(BaseModel):
+class FamApplicationUserRoleAssignmentGet(BaseModel):
     user_role_xref_id: int
     user_id: int
     role_id: int
-    application_id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
     user: FamUserInfo
     role: FamRoleWithClient
     application_id: Optional[Union[int, None]] = None
@@ -224,6 +218,14 @@ class FamApplicationUserRoleAssignmentGet(FamUserRoleAssignmentGet):
             "role_id": {"exclude": True},
         },
     )
+
+
+class FamUserRoleAssignmentCreateResponse(BaseModel):
+    status_code: int
+    detail: FamApplicationUserRoleAssignmentGet
+    error_message: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
@@ -264,6 +266,14 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     user_name: Annotated[str, StringConstraints(max_length=20)]
     application_name: Annotated[str, StringConstraints(max_length=35)]
     send_to_email: EmailStr
+
+
+# ------------------------------------- Forest Client API Integraion ---------------------------------------- #
+class ForestClientIntegrationFindResponse(BaseModel):
+    clientNumber: str
+    clientName: str
+    clientStatusCode: str
+    clientTypeCode: str
 
 
 # ---------- System schema objects ---------- #
