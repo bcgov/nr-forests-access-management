@@ -97,7 +97,7 @@ resource "aws_lambda_function" "fam_admin_management_api_function" {
 
   source_code_hash = filebase64sha256("fam-admin-management-api.zip")
 
-  runtime = "python3.8"
+  runtime = "python3.12"
 
   vpc_config {
     security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
