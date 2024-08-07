@@ -5,7 +5,6 @@
 #      These exceptions exist to avoid implicit dependencies; you always define volumes_from locally."
 #
 ---
-version: "3.8"
 services:
   fam-database:
     image: postgres:14.1-alpine
