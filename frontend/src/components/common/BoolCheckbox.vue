@@ -11,13 +11,9 @@ const model = defineModel()
 interface CheckboxProps {
     id?: string;
     label?: string;
-    lfontSize?: string;
-    lfontWeight?: string;
 }
 const props = withDefaults(defineProps<CheckboxProps>(), {
-    id: "checkbox",
-    lfontSize: "0.875rem",
-    lfontWeight: "600"
+    id: "checkbox"
 })
 
 </script>
@@ -42,8 +38,8 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
             height: 1.2rem;
         }
         label {
-            font-size: v-bind('props.lfontSize');
-            font-weight: v-bind('props.lfontWeight');
+            font-size: 0.875rem;
+            font-weight: 600;
             color: $light-text-secondary;
             margin-bottom: 0;
         }
