@@ -5,14 +5,12 @@ from typing import List
 from api.app import constants as famConstants
 from api.app import schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
+from api.app.crud.validator.forest_client_validator import (
+    forest_client_active, forest_client_number_exists,
+    get_forest_client_status)
 from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
-from api.app.crud.validator.forest_client_validator import (
-    forest_client_active,
-    forest_client_number_exists,
-    get_forest_client_status,
-)
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)

@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Form as VeeForm } from 'vee-validate';
-import { useConfirm } from 'primevue/useconfirm';
-import ConfirmDialog from 'primevue/confirmdialog';
-import router from '@/router';
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { TabKey } from '@/enum/TabEnum';
 import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
-import { isLoading } from '@/store/LoadingState';
-import LoginUserState from '@/store/FamLoginUserState';
-import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
+import { TabKey } from '@/enum/TabEnum';
+import router from '@/router';
+import { routeItems } from '@/router/routeItem';
+import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
+import { formValidationSchema, isProdAppSelectedOnProdEnv } from '@/services/utils';
 import {
-    selectedApplicationId,
     selectedApplicationDisplayText,
+    selectedApplicationId,
 } from '@/store/ApplicationState';
 import { setCurrentTabState } from '@/store/CurrentTabState';
-import { routeItems } from '@/router/routeItem';
-import { formValidationSchema } from '@/services/utils';
-import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { UserType } from 'fam-app-acsctl-api';
+import LoginUserState from '@/store/FamLoginUserState';
+import { isLoading } from '@/store/LoadingState';
+import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
 import type {
-    FamRoleDto,
     FamAccessControlPrivilegeCreateRequest,
+    FamRoleDto,
 } from 'fam-admin-mgmt-api/model';
+import { UserType } from 'fam-app-acsctl-api';
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from 'primevue/useconfirm';
+import { Form as VeeForm } from 'vee-validate';
+import { computed, ref } from 'vue';
 
 const confirm = useConfirm();
 
@@ -33,6 +33,7 @@ const defaultFormData = {
     userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
+    sendUserEmail: (isProdAppSelectedOnProdEnv()) as boolean
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 
@@ -177,6 +178,7 @@ function toRequestPayload(formData: any) {
         user_guid: formData.userGuid,
         user_type_code: formData.domain,
         role_id: formData.roleId,
+        requires_send_user_email: formData.sendUserEmail,
         ...(formData.verifiedForestClients.length > 0
             ? {
                   forest_client_numbers: formData.verifiedForestClients,
@@ -267,6 +269,12 @@ function handleSubmit() {
                         @resetVerifiedForestClients="resetVerifiedForestClients"
                     />
                 </StepContainer>
+
+                <Divider/>
+                <BoolCheckbox
+                    v-model="formData.sendUserEmail"
+                    label="Send email to notify user"
+                />
 
                 <div class="button-stack">
                     <Button
