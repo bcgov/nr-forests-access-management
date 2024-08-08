@@ -1,6 +1,6 @@
 fastapi==0.109.1
 uvicorn[standard]==0.29.0
-SQLAlchemy==2.0.30
+SQLAlchemy==2.0.32
 mangum==0.17.0
 boto3==1.28.83
 psycopg2-binary==2.9.9
