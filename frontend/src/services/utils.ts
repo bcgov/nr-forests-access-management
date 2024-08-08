@@ -53,7 +53,7 @@ export const isNewAccess = (newAccessIds: string[], accessId: number) => {
     return newAccessIds.includes(accessId.toString());
 };
 
-export const isSelectedAppProd_OnProdEnvironment = () => {
+export const isProdAppSelectedOnProdEnv = () => {
     const isProdEnvironment = (new EnvironmentSettings()).isProdEnvironment();
     return isProdEnvironment && isSelectedAppProd.value;
 };

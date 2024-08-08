@@ -6,7 +6,7 @@ import { TabKey } from '@/enum/TabEnum';
 import router from '@/router';
 import { routeItems } from '@/router/routeItem';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema, isSelectedAppProd_OnProdEnvironment } from '@/services/utils';
+import { formValidationSchema, isProdAppSelectedOnProdEnv } from '@/services/utils';
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
@@ -33,7 +33,7 @@ const defaultFormData = {
     userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
-    sendUserEmail: (isSelectedAppProd_OnProdEnvironment()) as boolean
+    sendUserEmail: (isProdAppSelectedOnProdEnv()) as boolean
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 

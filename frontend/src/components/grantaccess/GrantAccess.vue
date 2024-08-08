@@ -13,7 +13,7 @@ import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
 import { TabKey } from '@/enum/TabEnum';
 import { routeItems } from '@/router/routeItem';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema, isSelectedAppProd_OnProdEnvironment } from '@/services/utils';
+import { formValidationSchema, isProdAppSelectedOnProdEnv } from '@/services/utils';
 import {
     selectedApplicationDisplayText,
     selectedApplicationId
@@ -37,7 +37,7 @@ const defaultFormData = {
     userGuid: '',
     verifiedForestClients: [],
     roleId: null as number | null,
-    sendUserEmail: (isSelectedAppProd_OnProdEnvironment()) as boolean
+    sendUserEmail: (isProdAppSelectedOnProdEnv()) as boolean
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const applicationRoleOptions = computed(() => {
