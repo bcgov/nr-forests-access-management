@@ -53,6 +53,12 @@ export interface FamAccessControlPrivilegeCreateRequest {
      * @memberof FamAccessControlPrivilegeCreateRequest
      */
     'forest_client_numbers'?: Array<string> | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FamAccessControlPrivilegeCreateRequest
+     */
+    'requires_send_user_email'?: boolean;
 }
 
 

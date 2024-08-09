@@ -1,3 +1,11 @@
+
+export enum DeployEnv {
+    TOOLS = 'tools',
+    DEV = 'dev',
+    TEST = 'test',
+    PROD = 'prod'
+}
+
 export class EnvironmentSettings {
     env: any;
 
@@ -12,12 +20,13 @@ export class EnvironmentSettings {
         this.env = JSON.parse(
             window.localStorage.getItem('env_data') as string
         );
+        // This is deployment environment (AWS)
         const environment = this.env?.target_env.value as string;
         if (
             environment &&
-            (environment == 'dev' ||
-                environment == 'test' ||
-                environment == 'tools')
+            (environment == DeployEnv.DEV ||
+                environment == DeployEnv.TEST ||
+                environment == DeployEnv.TOOLS)
         ) {
             this.setEnvironmentDisplayName(environment);
         } else {
@@ -60,10 +69,11 @@ export class EnvironmentSettings {
     }
 
     isDevEnvironment() {
-        if (window.localStorage.getItem(this.environmentDisplayNameKey) == 'dev') {
-            return true
-        }
-        return false
+        return this.env?.target_env.value == DeployEnv.DEV
+    }
+
+    isProdEnvironment() {
+        return this.env?.target_env.value == DeployEnv.PROD
     }
 
     private getApiBaseUrl(useApi?: string) {
