@@ -320,7 +320,7 @@ def update_user_info_from_idim_source(
                         models.FamUser.user_guid: search_result.get("guid"),
                     }
 
-                if (
+                elif (
                     search_result
                     and search_result.get("found")
                     and user.user_guid != search_result.get("guid")

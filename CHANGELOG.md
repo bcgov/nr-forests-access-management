@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.21.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.20.1...v1.21.0) (2024-08-08)
+
+
+### Features
+
+* [#1386](https://github.com/bcgov/nr-forests-access-management/issues/1386) Add an api to load and update user information to match records in IDIM ([#1504](https://github.com/bcgov/nr-forests-access-management/issues/1504)) ([804a3a5](https://github.com/bcgov/nr-forests-access-management/commit/804a3a5ed929ffb98c77a1a0845bdf85b67d4edd))
+* [#1511](https://github.com/bcgov/nr-forests-access-management/issues/1511) Support grant user access with multiple forest client numbers in one api call ([#1515](https://github.com/bcgov/nr-forests-access-management/issues/1515)) ([28172e2](https://github.com/bcgov/nr-forests-access-management/commit/28172e2492582e8bf42777db5a6a9b679dc7e4c5))
+
+
+### Bug Fixes
+
+* [#1386](https://github.com/bcgov/nr-forests-access-management/issues/1386) Fix missing user type code while getting requester for load user information ([#1510](https://github.com/bcgov/nr-forests-access-management/issues/1510)) ([24e0da2](https://github.com/bcgov/nr-forests-access-management/commit/24e0da244bf30bb23acf87047f95ddf404660309))
+* [#1454](https://github.com/bcgov/nr-forests-access-management/issues/1454) Remove jose dependency ([#1506](https://github.com/bcgov/nr-forests-access-management/issues/1506)) ([e23f2dd](https://github.com/bcgov/nr-forests-access-management/commit/e23f2ddecd4381f705714106f0b228509ee5f439))
+* [#1454](https://github.com/bcgov/nr-forests-access-management/issues/1454) remove python-jose package dependency from BCSC integration. ([#1500](https://github.com/bcgov/nr-forests-access-management/issues/1500)) ([c6c7776](https://github.com/bcgov/nr-forests-access-management/commit/c6c77766eb5733f7a332d22beafd980c808f6ccd))
+* [#1503](https://github.com/bcgov/nr-forests-access-management/issues/1503) Add redirect url for spar ([#1520](https://github.com/bcgov/nr-forests-access-management/issues/1520)) ([e59d7f2](https://github.com/bcgov/nr-forests-access-management/commit/e59d7f20c39d85a95dfa1810f8058d60a6c9120f))
+* Update python version in terraform to keep consistent ([#1518](https://github.com/bcgov/nr-forests-access-management/issues/1518)) ([37464c6](https://github.com/bcgov/nr-forests-access-management/commit/37464c6bee7ac5756a56b34147ccc26c7bad2f21))
+* Upgrade test container version to fix pipeline issue ([#1517](https://github.com/bcgov/nr-forests-access-management/issues/1517)) ([1a2b3bc](https://github.com/bcgov/nr-forests-access-management/commit/1a2b3bced1d1a95c385cbcaf0f314f6028034bfd))
+
 ## [1.20.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.20.0...v1.20.1) (2024-07-24)
 
 

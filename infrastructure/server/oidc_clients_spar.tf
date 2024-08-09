@@ -6,11 +6,13 @@ resource "aws_cognito_user_pool_client" "dev_spar_oidc_client" {
   callback_urls                                 = [
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "http://localhost:3000/",
-    "http://localhost:3000/silent-check-sso"
+    "http://localhost:3000/silent-check-sso",
+    "https://nr-spar-demo.apps.silver.devops.gov.bc.ca/"
   ]
   logout_urls                                   = [
     "${var.cognito_app_client_logout_chain_url.dev}https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/",
+    "${var.cognito_app_client_logout_chain_url.dev}https://nr-spar-demo.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -44,12 +46,14 @@ resource "aws_cognito_user_pool_client" "test_spar_oidc_client" {
     "http://localhost:3000/",
     "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
     "https://nr-spar-test-frontend.apps.silver.devops.gov.bc.ca/",
-    "https://spar-tst.nrs.gov.bc.ca/"
+    "https://spar-tst.nrs.gov.bc.ca/",
+    "https://nr-spar-demo.apps.silver.devops.gov.bc.ca/"
   ], [for i in range("${var.dev_pr_url_count}") : "https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   logout_urls                                   = concat([
     "${var.cognito_app_client_logout_chain_url.test}https://spar-tst.nrs.gov.bc.ca/",
     "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-test-frontend.apps.silver.devops.gov.bc.ca/",
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/"
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-demo.apps.silver.devops.gov.bc.ca/"
   ], [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.test}https://nr-spar-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
