@@ -51,7 +51,6 @@ jobs:
           FLYWAY_PASSWORD: ${{ needs.vars.outputs.pass }}
           FLYWAY_LOCATIONS: filesystem:./server/flyway/sql
           FLYWAY_DEFAULT_SCHEMA: "app_fam"
-<<<<<<< HEAD
           FLYWAY_BASELINE_ON_MIGRATE: true
           FLYWAY_PLACEHOLDERS_api_db_username: fam_proxy_api
           FLYWAY_PLACEHOLDERS_api_db_password: test
@@ -74,8 +73,6 @@ jobs:
           FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client: KdnD2eGS3Zcx494p04yMFhDwS5
           FLYWAY_PLACEHOLDERS_auth_lambda_db_user: fam_auth_lambda
           FLYWAY_PLACEHOLDERS_auth_lambda_db_password: test
-=======
->>>>>>> 35add25a581498dd3ec8a311a1c8035eb26d90ea
         with:
           args: info migrate info
 
