@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { FamApplication } from './fam-application';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FamForestClient } from './fam-forest-client';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -43,10 +46,10 @@ export interface FamRoleWithClient {
     'role_type_code': RoleType;
     /**
      * 
-     * @type {number}
+     * @type {FamApplication}
      * @memberof FamRoleWithClient
      */
-    'application_id': number;
+    'application': FamApplication;
     /**
      * 
      * @type {number}

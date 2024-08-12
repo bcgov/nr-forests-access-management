@@ -13,38 +13,30 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FamApplication } from './fam-application';
-// May contain unused imports in some cases
-// @ts-ignore
-import { RoleType } from './role-type';
 
 /**
  * 
  * @export
- * @interface FamRoleMin
+ * @interface FamApplication
  */
-export interface FamRoleMin {
+export interface FamApplication {
+    /**
+     * 
+     * @type {number}
+     * @memberof FamApplication
+     */
+    'application_id': number;
     /**
      * 
      * @type {string}
-     * @memberof FamRoleMin
+     * @memberof FamApplication
      */
-    'role_name': string;
+    'application_name': string;
     /**
      * 
-     * @type {RoleType}
-     * @memberof FamRoleMin
+     * @type {string}
+     * @memberof FamApplication
      */
-    'role_type_code': RoleType;
-    /**
-     * 
-     * @type {FamApplication}
-     * @memberof FamRoleMin
-     */
-    'application': FamApplication;
+    'application_description': string;
 }
-
-
 

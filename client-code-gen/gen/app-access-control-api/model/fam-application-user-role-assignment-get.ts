@@ -56,11 +56,5 @@ export interface FamApplicationUserRoleAssignmentGet {
      * @memberof FamApplicationUserRoleAssignmentGet
      */
     'role': FamRoleWithClient;
-    /**
-     * 
-     * @type {number}
-     * @memberof FamApplicationUserRoleAssignmentGet
-     */
-    'application_id'?: number | null;
 }
 

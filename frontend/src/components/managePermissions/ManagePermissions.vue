@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import { onUnmounted, ref, shallowRef, type PropType, computed } from 'vue';
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
-import router from '@/router';
 import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
-import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
 import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-import LoginUserState from '@/store/FamLoginUserState';
+import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
+import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
+import { IconSize } from '@/enum/IconEnum';
+import { Severity } from '@/enum/SeverityEnum';
+import { TabKey } from '@/enum/TabEnum';
+import router from '@/router';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import {
+    deleteAndRefreshApplicationAdmin,
+    deleteAndRefreshDelegatedAdmin,
+    deleteAndRefreshUserRoleAssignments,
+    fetchApplicationAdmins,
+    fetchDelegatedAdmins,
+    fetchUserRoleAssignments,
+} from '@/services/fetchData';
+import {
+    isApplicationSelected,
+    selectedApplication,
+    selectedApplicationId,
+    setSelectedApplication,
+} from '@/store/ApplicationState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import {
     getCurrentTabState,
     setCurrentTabState,
 } from '@/store/CurrentTabState';
-import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
-import {
-    isApplicationSelected,
-    selectedApplication,
-    setSelectedApplication,
-    selectedApplicationId,
-} from '@/store/ApplicationState';
+import LoginUserState from '@/store/FamLoginUserState';
 import { isLoading } from '@/store/LoadingState';
 import {
     resetNotification,
     setNotificationMsg,
 } from '@/store/NotificationState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
 import type {
     FamAccessControlPrivilegeGetResponse,
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
-import {
-    deleteAndRefreshUserRoleAssignments,
-    deleteAndRefreshApplicationAdmin,
-    fetchUserRoleAssignments,
-    fetchApplicationAdmins,
-    fetchDelegatedAdmins,
-    deleteAndRefreshDelegatedAdmin,
-} from '@/services/fetchData';
-import { Severity } from '@/enum/SeverityEnum';
-import { IconSize } from '@/enum/IconEnum';
-import { TabKey } from '@/enum/TabEnum';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
+import TabPanel from 'primevue/tabpanel';
+import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
+import { computed, onUnmounted, ref, shallowRef, type PropType } from 'vue';
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
@@ -134,7 +134,7 @@ const deleteUserRoleAssignment = async (
     try {
         userRoleAssignments.value = await deleteAndRefreshUserRoleAssignments(
             assignment.user_role_xref_id,
-            assignment.role.application_id
+            assignment.role.application.application_id
         );
 
         setNotificationMsg(
