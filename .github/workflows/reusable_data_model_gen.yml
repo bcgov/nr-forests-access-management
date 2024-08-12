@@ -1,7 +1,8 @@
-name: Reusable Data Model Generator
+name: Data Model Generator
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   vars:
@@ -50,16 +51,38 @@ jobs:
           FLYWAY_PASSWORD: ${{ needs.vars.outputs.pass }}
           FLYWAY_LOCATIONS: filesystem:./server/flyway/sql
           FLYWAY_DEFAULT_SCHEMA: "app_fam"
+          FLYWAY_BASELINE_ON_MIGRATE: true
+          FLYWAY_PLACEHOLDERS_api_db_username: fam_proxy_api
+          FLYWAY_PLACEHOLDERS_api_db_password: test
+          FLYWAY_PLACEHOLDERS_admin_management_api_db_user: fam_admin_management_api
+          FLYWAY_PLACEHOLDERS_admin_management_api_db_password: test
+          FLYWAY_PLACEHOLDERS_client_id_fom_public: "nolongerinuse1"
+          FLYWAY_PLACEHOLDERS_client_id_fom_ministry: "nolongerinuse2"
+          FLYWAY_PLACEHOLDERS_client_id_fam_console: 26tltjjfe7ktm4bte7av998d78
+          FLYWAY_PLACEHOLDERS_client_id_dev_fom_oidc_client: 1a8pkq0psq0daj5e6ir3ppcjkj
+          FLYWAY_PLACEHOLDERS_client_id_test_fom_oidc_client: 7b6eki43nahus9ca0lhjs6m568
+          FLYWAY_PLACEHOLDERS_client_id_prod_fom_oidc_client: 1rhdfiek5ntmk2kg39d6e31p46
+          FLYWAY_PLACEHOLDERS_client_id_dev_spar_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZOt
+          FLYWAY_PLACEHOLDERS_client_id_test_spar_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAna2
+          FLYWAY_PLACEHOLDERS_client_id_prod_spar_oidc_client: KdnD2eGS3Zcx494p04yMFhDwSf
+          FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZOg
+          FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAnah
+          FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client: KdnD2eGS3Zcx494p04yMFhDwSe
+          FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client: xxqiHFmwG8j1cVAz7NgtknaZO5
+          FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client: dm5Xkmomnq0gbwBiXiN5LgAna5
+          FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client: KdnD2eGS3Zcx494p04yMFhDwS5
+          FLYWAY_PLACEHOLDERS_auth_lambda_db_user: fam_auth_lambda
+          FLYWAY_PLACEHOLDERS_auth_lambda_db_password: test
         with:
           args: info migrate info
 
       - name: Create Output Folder
         run: |
-          mkdir -p output/schema
+          mkdir -p output
           chmod a+rwx -R output
 
       - name: Run Schemaspy
-        run: docker run --network host -v "$PWD/output/schema:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db fam -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas app_fam
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db fam -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas app_fam
 
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
