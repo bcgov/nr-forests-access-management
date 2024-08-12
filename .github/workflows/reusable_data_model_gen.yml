@@ -78,11 +78,11 @@ jobs:
 
       - name: Create Output Folder
         run: |
-          mkdir -p output/schema
+          mkdir -p output
           chmod a+rwx -R output
 
       - name: Run Schemaspy
-        run: docker run --network host -v "$PWD/output/schema:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db fam -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas app_fam
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db fam -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas app_fam
 
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
