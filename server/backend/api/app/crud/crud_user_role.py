@@ -151,10 +151,8 @@ def create_user_role_assignment(
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id
     )
-    xref_dict = {"application_id": role.application_id, "user": user, "role": role}
 
     if fam_user_role_xref:
-        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         error_msg = (
             f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
         )
@@ -162,19 +160,19 @@ def create_user_role_assignment(
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.CONFLICT,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
                     "error_message": error_msg,
                 }
             )
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
+        # xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
                 }
             )
         )
