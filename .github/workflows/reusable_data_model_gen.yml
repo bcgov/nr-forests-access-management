@@ -1,4 +1,4 @@
-name: Reusable Unit Tests and Analysis
+name: Reusable Data Model Generator
 
 on:
   workflow_dispatch:
