@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="fam" schema="app_fam" type="PostgreSQL - 14.1">
+   <tables>
+      <table name="alembic_version" remarks="" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="version_num" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <primaryKey column="version_num" sequenceNumberInPK="1"/>
+         <index name="alembic_version_pkc" unique="true">
+            <column ascending="true" name="version_num"/>
+         </index>
+      </table>
+      <table name="fam_access_control_privilege" remarks="Access Control Privilege is a cross-reference object that allows for the identification of who are the delegated administrators(User) for an Application for a particular role." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="access_control_privilege_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User administers the Application role." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="Unique ID to reference and identify the user within FAM system." size="19" type="int8" typeCode="-5">
+            <parent column="user_id" foreignKey="reffam_access_control_privilege_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="role_id" nullable="false" remarks="Unique ID to reference and identify the application role within FAM system." size="19" type="int8" typeCode="-5">
+            <parent column="role_id" foreignKey="reffam_access_control_privilege_role" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="access_control_privilege_id" sequenceNumberInPK="1"/>
+         <index name="fam_access_control_privilege_pk" unique="true">
+            <column ascending="true" name="access_control_privilege_id"/>
+         </index>
+         <index name="fam_access_control_usr_rle_uk" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="ix_app_fam_fam_access_control_privilege_role_id" unique="false">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="ix_app_fam_fam_access_control_privilege_user_id" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="fam_app_environment" remarks="Used by the application to indicate its environment." schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="app_environment" nullable="false" remarks="Application environment." size="4" type="varchar" typeCode="12">
+            <child column="app_environment" foreignKey="reffam_app_env" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the app_environmentrepresents." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the record was effective." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the record expired." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="app_environment" sequenceNumberInPK="1"/>
+         <index name="fam_app_environment_pk" unique="true">
+            <column ascending="true" name="app_environment"/>
+         </index>
+      </table>
+      <table name="fam_application" remarks="An application is a digital product that fulfills a  specific user goal. It can be a front-end application, a back-end API, a combination of these, or something else entirely." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="application_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of an Application registered under FAM" size="19" type="int8" typeCode="-5">
+            <child column="application_id" foreignKey="reffam_application_admin_application" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application_admin"/>
+            <child column="application_id" foreignKey="reffam_application31" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application_client"/>
+            <child column="application_id" foreignKey="reffam_application20" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application_group_xref"/>
+            <child column="application_id" foreignKey="reffam_application22" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="application_name" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="application_description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="app_environment" nullable="true" remarks="Identifies which environment the application is for; DEV, TEST, PROD etc." size="4" type="varchar" typeCode="12">
+            <parent column="app_environment" foreignKey="reffam_app_env" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_app_environment"/>
+         </column>
+         <primaryKey column="application_id" sequenceNumberInPK="1"/>
+         <index name="fam_app_pk" unique="true">
+            <column ascending="true" name="application_id"/>
+         </index>
+         <index name="fam_app_name_uk" unique="true">
+            <column ascending="true" name="application_name"/>
+         </index>
+      </table>
+      <table name="fam_application_admin" remarks="Application Admin is a cross-reference object that allows for the identification of who are the administrators(User) for an Application, as well as which Applications the User can administer." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="application_admin_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User administers the Application." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="Unique ID to reference and identify the user within FAM system." size="19" type="int8" typeCode="-5">
+            <parent column="user_id" foreignKey="reffam_application_admin_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="application_id" nullable="false" remarks="Unique ID to reference and identify the application within FAM system." size="19" type="int8" typeCode="-5">
+            <parent column="application_id" foreignKey="reffam_application_admin_application" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="application_admin_id" sequenceNumberInPK="1"/>
+         <index name="fam_app_admin_pk" unique="true">
+            <column ascending="true" name="application_admin_id"/>
+         </index>
+         <index name="fam_app_admin_usr_app_uk" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="application_id"/>
+         </index>
+         <index name="ix_app_fam_fam_application_admin_application_id" unique="false">
+            <column ascending="true" name="application_id"/>
+         </index>
+         <index name="ix_app_fam_fam_application_admin_user_id" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="fam_application_client" remarks="FAM needs to know the OIDC client ID in order to match to an application. The relationship between OIDC client and application is many-to-one because sometimes there is more than one OIDC client for an application and it is convenient to be able to configure the authorization once (at the application level) and re-use it (at the OIDC level)." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="application_client_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness  of an OIDC as it corresponds to an identified client" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="cognito_client_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="application_id" nullable="true" remarks="Automatically generated key used to identify the uniqueness of an Application registered under FAM" size="19" type="int8" typeCode="-5">
+            <parent column="application_id" foreignKey="reffam_application31" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="application_client_id" sequenceNumberInPK="1"/>
+         <index name="fam_app_cli_pk" unique="true">
+            <column ascending="true" name="application_client_id"/>
+         </index>
+         <index name="cognito_app_uk" unique="true">
+            <column ascending="true" name="cognito_client_id"/>
+            <column ascending="true" name="application_id"/>
+         </index>
+      </table>
+      <table name="fam_application_group_xref" remarks="" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="application_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="application_id" foreignKey="reffam_application20" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="group_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="group_id" foreignKey="reffam_group19" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="application_id" sequenceNumberInPK="1"/>
+         <primaryKey column="group_id" sequenceNumberInPK="2"/>
+         <index name="fam_app_grp_xref" unique="true">
+            <column ascending="true" name="application_id"/>
+            <column ascending="true" name="group_id"/>
+         </index>
+         <index name="Ref219" unique="false">
+            <column ascending="true" name="group_id"/>
+         </index>
+         <index name="Ref720" unique="false">
+            <column ascending="true" name="application_id"/>
+         </index>
+      </table>
+      <table name="fam_forest_client" remarks="A forest client is a business, individual, or agency that is identified as an entity that a user can have a privilege &quot;on behalf of&quot;." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="client_number_id" nullable="false" remarks="Sequentially assigned number to identify a ministry client." size="19" type="int8" typeCode="-5">
+            <child column="client_number_id" foreignKey="reffam_forest_client25" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+            <child column="client_number_id" foreignKey="reffam_forest_client24" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="forest_client_number" nullable="false" remarks="Id number as String from external Forest Client source(api/table) that identifies the Forest Client." size="2147483647" type="varchar" typeCode="12"/>
+         <primaryKey column="client_number_id" sequenceNumberInPK="1"/>
+         <index name="fam_for_cli_pk" unique="true">
+            <column ascending="true" name="client_number_id"/>
+         </index>
+         <index name="fam_for_cli_num_uk" unique="true">
+            <column ascending="true" name="forest_client_number"/>
+         </index>
+         <index name="ix_app_fam_fam_forest_client_forest_client_number" unique="false">
+            <column ascending="true" name="forest_client_number"/>
+         </index>
+      </table>
+      <table name="fam_group" remarks="A group is a collection of roles. When a group is assigned to a user, the user indirectly assumes the privileges of all the roles encompassed by the group. Groups are used to defineprofiles in order to make it easier to manage common sets of roles for users. A group can contain roles from multiple applications in order to handle the case where users typically have a certain set of privileges across multiple applications." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="group_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="group_id" foreignKey="reffam_group19" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application_group_xref"/>
+            <child column="parent_group_id" foreignKey="reffam_group16" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+            <child column="group_id" foreignKey="reffam_group18" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group_role_xref"/>
+            <child column="group_id" foreignKey="reffam_group30" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_group_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="group_name" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="purpose" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="parent_group_id" nullable="true" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="group_id" foreignKey="reffam_group16" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="client_number_id" nullable="true" remarks="Sequentially assigned number to identify a ministry client." size="19" type="int8" typeCode="-5">
+            <parent column="client_number_id" foreignKey="reffam_forest_client25" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_forest_client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="8" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="group_id" sequenceNumberInPK="1"/>
+         <index name="fam_grp_pk" unique="true">
+            <column ascending="true" name="group_id"/>
+         </index>
+         <index name="fam_grp_name_uk" unique="true">
+            <column ascending="true" name="group_name"/>
+         </index>
+         <index name="Ref216" unique="false">
+            <column ascending="true" name="parent_group_id"/>
+         </index>
+         <index name="Ref425" unique="false">
+            <column ascending="true" name="client_number_id"/>
+         </index>
+      </table>
+      <table name="fam_group_role_xref" remarks="" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="group_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="group_id" foreignKey="reffam_group18" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="role_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a Role within the FAM Application" size="19" type="int8" typeCode="-5">
+            <parent column="role_id" foreignKey="reffam_role17" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="group_id" sequenceNumberInPK="1"/>
+         <primaryKey column="role_id" sequenceNumberInPK="2"/>
+         <index name="fam_grp_rle_pk" unique="true">
+            <column ascending="true" name="group_id"/>
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="Ref1217" unique="false">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="Ref218" unique="false">
+            <column ascending="true" name="group_id"/>
+         </index>
+      </table>
+      <table name="fam_role" numRows="4" remarks="A role is a qualifier that can be assigned to a user in order to identify a privilege within the context of an application." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="role_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a Role within the FAM Application" size="19" type="int8" typeCode="-5">
+            <child column="role_id" foreignKey="reffam_access_control_privilege_role" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_access_control_privilege"/>
+            <child column="role_id" foreignKey="reffam_role17" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group_role_xref"/>
+            <child column="parent_role_id" foreignKey="reffam_role23" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+            <child column="role_id" foreignKey="reffam_role12" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_role_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="role_name" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="role_purpose" nullable="true" remarks="" size="300" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="parent_role_id" nullable="true" remarks="Automatically generated key used to identify the uniqueness of a Role within the FAM Application" size="19" type="int8" typeCode="-5">
+            <parent column="role_id" foreignKey="reffam_role23" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="application_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="application_id" foreignKey="reffam_application22" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="client_number_id" nullable="true" remarks="Sequentially assigned number to identify a ministry client." size="19" type="int8" typeCode="-5">
+            <parent column="client_number_id" foreignKey="reffam_forest_client24" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_forest_client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="7" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="9" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="role_type_code" nullable="false" remarks="Identifies if the role is an abstract or concrete role. Users should only be assigned to roles where role_type=concrete" size="2" type="varchar" typeCode="12">
+            <parent column="role_type_code" foreignKey="reffam_role_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role_type"/>
+         </column>
+         <primaryKey column="role_id" sequenceNumberInPK="1"/>
+         <index name="fam_rle_pk" unique="true">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="fam_rlnm_app_uk" unique="true">
+            <column ascending="true" name="role_name"/>
+            <column ascending="true" name="application_id"/>
+         </index>
+         <index name="Ref1223" unique="false">
+            <column ascending="true" name="parent_role_id"/>
+         </index>
+         <index name="Ref424" unique="false">
+            <column ascending="true" name="client_number_id"/>
+         </index>
+         <index name="Ref722" unique="false">
+            <column ascending="true" name="application_id"/>
+         </index>
+      </table>
+      <table name="fam_role_type" remarks="A role type is a code that is associated with roles that will influence what can be associate with a role.  At time of implementation an abstract role can only have other roles related to it, while a concrete role can only have users associated with it" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="role_type_code" nullable="false" remarks="role type code" size="2" type="varchar" typeCode="12">
+            <child column="role_type_code" foreignKey="reffam_role_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the role_type_code represents" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the code was effective." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the code expired." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="role_type_code" sequenceNumberInPK="1"/>
+         <index name="fam_role_type_code_pk" unique="true">
+            <column ascending="true" name="role_type_code"/>
+         </index>
+      </table>
+      <table name="fam_user" numRows="5" remarks="A user is a person or system that can authenticate and then interact with an application." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="user_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User within the FAM Application" size="19" type="int8" typeCode="-5">
+            <child column="user_id" foreignKey="reffam_access_control_privilege_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_access_control_privilege"/>
+            <child column="user_id" foreignKey="reffam_application_admin_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application_admin"/>
+            <child column="user_id" foreignKey="reffam_user29" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_group_xref"/>
+            <child column="user_id" foreignKey="reffam_user10" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_role_xref"/>
+            <child column="user_id" foreignKey="reffam_user_terms_conditions_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_terms_conditions"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_guid" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="cognito_user_id" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="user_name" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="7" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="user_type_code" nullable="false" remarks="Identifies which type of the user it belongs to; IDIR, BCeID etc." size="2" type="varchar" typeCode="12">
+            <parent column="user_type_code" foreignKey="reffam_user_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="business_guid" nullable="true" remarks="The business guid of the user if is a business bceid user." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="first_name" nullable="true" remarks="The first name of the user" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="last_name" nullable="true" remarks="The last name of the user." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="email" nullable="true" remarks="The email of the user." size="250" type="varchar" typeCode="12"/>
+         <primaryKey column="user_id" sequenceNumberInPK="1"/>
+         <index name="fam_usr_pk" unique="true">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="fam_usr_uk" unique="true">
+            <column ascending="true" name="user_type_code"/>
+            <column ascending="true" name="user_guid"/>
+         </index>
+      </table>
+      <table name="fam_user_group_xref" remarks="User Group Xref is a cross-reference object that allows for the identification of Groups assigned to a user, as well as the users that belong to a given Group" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="user_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User within the FAM Application" size="19" type="int8" typeCode="-5">
+            <parent column="user_id" foreignKey="reffam_user29" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="group_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="group_id" foreignKey="reffam_group30" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_group"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="user_id" sequenceNumberInPK="1"/>
+         <primaryKey column="group_id" sequenceNumberInPK="2"/>
+         <index name="fam_usr_rle_pk_1" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="group_id"/>
+         </index>
+         <index name="Ref230" unique="false">
+            <column ascending="true" name="group_id"/>
+         </index>
+         <index name="Ref329" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="fam_user_role_xref" remarks="User Role Xref is a cross-reference object that allows for the identification of Roles assigned to a user, as well as the users that belong to a given Role" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="user_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User within the FAM Application" size="19" type="int8" typeCode="-5">
+            <parent column="user_id" foreignKey="reffam_user10" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="role_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a Role within the FAM Application" size="19" type="int8" typeCode="-5">
+            <parent column="role_id" foreignKey="reffam_role12" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="6" name="user_role_xref_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a FamUserRoleXref within the FAM Application" size="19" type="int8" typeCode="-5"/>
+         <primaryKey column="user_role_xref_id" sequenceNumberInPK="1"/>
+         <index name="fam_usr_rle_pk" unique="true">
+            <column ascending="true" name="user_role_xref_id"/>
+         </index>
+         <index name="fam_usr_rle_usr_id_rle_id_uk" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="Ref1212" unique="false">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="Ref310" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="fam_user_terms_conditions" remarks="User Terms Conditions records identify the users who accept the terms and conditions, as well as the version of it." schema="app_fam" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="user_terms_conditions_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a terms and conditions acceptance record." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="Unique ID to reference and identify the user within FAM system." size="19" type="int8" typeCode="-5">
+            <parent column="user_id" foreignKey="reffam_user_terms_conditions_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="version" nullable="false" remarks="Number to identity the version of the terms and conditions the user accepted." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="user_terms_conditions_id" sequenceNumberInPK="1"/>
+         <index name="fam_user_terms_conditions_pk" unique="true">
+            <column ascending="true" name="user_terms_conditions_id"/>
+         </index>
+         <index name="fam_tc_user_version_uk" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="version"/>
+         </index>
+         <index name="ix_app_fam_fam_user_terms_conditions_user_id" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="fam_user_type_code" remarks="A user type is a code that is associated with the user to indicate its identity provider." schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="user_type_code" nullable="false" remarks="user type code" size="2" type="varchar" typeCode="12">
+            <child column="user_type_code" foreignKey="reffam_user_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the user_type_code represents." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the code was effective." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the code expired." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="user_type_code" sequenceNumberInPK="1"/>
+         <index name="fam_user_type_code_pk" unique="true">
+            <column ascending="true" name="user_type_code"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="app_fam" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+   </tables>
+</database>
