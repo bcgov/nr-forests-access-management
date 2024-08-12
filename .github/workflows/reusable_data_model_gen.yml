@@ -1,7 +1,8 @@
-name: Reusable Data Model Generator
+name: Data Model Generator
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   vars:
