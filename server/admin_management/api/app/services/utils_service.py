@@ -2,18 +2,10 @@ import os
 import logging
 
 from api.app.constants import AppEnv, ApiInstanceEnv, AwsTargetEnv
+from api.config.config import is_on_aws_prod
 
 
 LOGGER = logging.getLogger(__name__)
-
-
-def get_aws_target_env() -> AwsTargetEnv:
-    # TARGET_ENV is assigned from gov's AWS platform, does not exist in local (None).
-    return os.environ.get("TARGET_ENV")
-
-
-def is_on_aws_prod() -> bool:
-    return get_aws_target_env() == AwsTargetEnv.PROD
 
 
 def use_api_instance_by_app_env(app_env: str) -> ApiInstanceEnv:

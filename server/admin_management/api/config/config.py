@@ -3,7 +3,7 @@ import logging
 import os
 
 import boto3
-from api.app.constants import ApiInstanceEnv
+from api.app.constants import ApiInstanceEnv, AwsTargetEnv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +23,11 @@ def get_env_var(env_var_name):
     return os.environ.get(env_var_name)
 
 
+def get_aws_target_env() -> AwsTargetEnv:
+    # TARGET_ENV is assigned from gov's AWS platform, does not exist in local (None).
+    return os.environ.get("TARGET_ENV")
+
+
 def get_root_path():
     root_path = ""
 
@@ -35,6 +40,10 @@ def get_root_path():
 
 def is_on_aws():
     return os.environ.get("DB_SECRET") is not None  # This key only presents on aws.
+
+
+def is_on_aws_prod() -> bool:
+    return get_aws_target_env() == AwsTargetEnv.PROD
 
 
 def get_allow_origins():
@@ -164,7 +173,14 @@ def get_idim_proxy_api_baseurl(api_instance_env: ApiInstanceEnv):
     return idim_proxy_api_baseurl
 
 
-
 def get_idim_proxy_api_key():
     idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
     return idim_proxy_api_key
+
+
+def get_gc_notify_email_api_key():
+    if is_on_aws_prod():
+        gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY_LIVE")
+    else:
+        gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY_TEAM")
+    return gc_notify_email_api_key
