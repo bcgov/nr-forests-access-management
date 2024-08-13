@@ -248,7 +248,7 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
     application_name: Annotated[str, StringConstraints(max_length=35)]
     role_list_string: Annotated[str, StringConstraints(max_length=500)]
-    application_team_contact_email: EmailStr
+    application_team_contact_email: Optional[EmailStr] = None
     send_to_email: EmailStr
 
 
