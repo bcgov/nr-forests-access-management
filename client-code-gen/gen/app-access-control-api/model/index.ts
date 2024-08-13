@@ -1,3 +1,4 @@
+export * from './fam-application';
 export * from './fam-application-user-role-assignment-get';
 export * from './fam-forest-client';
 export * from './fam-forest-client-status';

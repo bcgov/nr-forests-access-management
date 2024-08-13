@@ -9,8 +9,10 @@ from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
 from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
+from requests import HTTPError
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -151,10 +153,8 @@ def create_user_role_assignment(
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id
     )
-    xref_dict = {"application_id": role.application_id, "user": user, "role": role}
 
     if fam_user_role_xref:
-        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         error_msg = (
             f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
         )
@@ -162,19 +162,18 @@ def create_user_role_assignment(
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.CONFLICT,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
                     "error_message": error_msg,
                 }
             )
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**xref_dict),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
                 }
             )
         )
@@ -298,3 +297,45 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
         .one_or_none()
     )
     return user_role
+
+
+def send_user_access_granted_email(
+        target_user: schemas.TargetUser,
+        roles_assignment_response: List[schemas.FamUserRoleAssignmentCreateResponse]):
+    """
+    Send email using GC Notify integration service.
+    TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
+        - do not fail event when sending email fails (400/500).
+        - 'create_user_role_assignment_many' router's response schema needs to be refactored.
+        - if email sent -> include in response status/message email is sent.
+        - if email sent failed (400/500) -> include in response status/message email is not sent
+        - frontend needs to display email sent failure message.
+
+    Note
+        - FAM currently is not concerned with checking status from GC Notify (callback) to verify
+            if email is really sent from GC Notify.
+    """
+    granted_roles = ", ".join(
+        item.detail.role.role_name for item in filter(
+            lambda res: res.status_code == HTTPStatus.OK,
+            roles_assignment_response
+        )
+    )
+    email_service = GCNotifyEmailService()
+    email_params = schemas.GCNotifyGrantAccessEmailParam(**{
+        "first_name": target_user.first_name,
+        "last_name": target_user.last_name,
+        "application_name": roles_assignment_response[0].detail.role.application.application_description,
+        "role_list_string": granted_roles,
+        "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
+        "send_to_email": target_user.email
+
+    })
+    try:
+        if granted_roles == "":  # no role is granted
+            return
+        email_service.send_user_access_granted_email(email_params)
+        LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
+    except HTTPError as err:
+        LOGGER.debug(f"Failure sending email to {email_params.send_to_email}.")
+        LOGGER.debug(f"Failure reason : {err.response.text}.")
