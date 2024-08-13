@@ -167,7 +167,6 @@ def create_user_role_assignment(
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        # xref_dict = {**fam_user_role_xref.__dict__, **xref_dict}
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
