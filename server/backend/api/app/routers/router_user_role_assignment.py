@@ -3,19 +3,16 @@ from http import HTTPStatus
 from typing import List
 
 from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     authorize_by_application_role, authorize_by_privilege,
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
     enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
     get_current_requester, get_verified_target_user)
-from api.app.schemas import (GCNotifyGrantAccessEmailParam, Requester,
-                             TargetUser)
+from api.app.schemas import Requester, TargetUser
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
-from requests import HTTPError
 from sqlalchemy.orm import Session
 
 from .. import database, jwt_validation, schemas
@@ -83,7 +80,10 @@ def create_user_role_assignment_many(
 
         # sending user notification after event is finished.
         if role_assignment_request.requires_send_user_email:
-            __send_user_access_granted_email(target_user=target_user, roles_assigned=response)
+            crud_user_role.send_user_access_granted_email(
+                target_user=target_user,
+                roles_assigned=response
+            )
 
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
@@ -171,36 +171,3 @@ def delete_user_role_assignment(
                 user_role.role.client_number.forest_client_number
             )
         audit_event_log.log_event()
-
-
-def __send_user_access_granted_email(
-        target_user: TargetUser,
-        roles_assigned: List[schemas.FamUserRoleAssignmentCreateResponse]):
-    """
-    Send email using GC Notify integration service.
-    TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
-        - do not fail event when sending email fails (400/500).
-        - 'create_user_role_assignment_many' router's response schema needs to be refactored.
-        - if email sent -> include in response status/message email is sent.
-        - if email sent failed (400/500) -> include in response status/message email is not sent
-        - frontend needs to display email sent failure message.
-
-    Note, FAM currently is not concerned with checking status from GC Notify (callback) to verify
-        if email is really sent from GC Notify.
-    """
-    granted_roles = ", ".join(item.detail.role.role_name for item in roles_assigned)
-    email_service = GCNotifyEmailService()
-    email_params = GCNotifyGrantAccessEmailParam(**{
-        "first_name": target_user.first_name,
-        "last_name": target_user.last_name,
-        "application_name": roles_assigned[0].detail.role.application.application_description,
-        "role_list_string": granted_roles,
-        "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
-        "send_to_email": target_user.email
-    })
-    try:
-        email_service.send_user_access_granted_email(email_params)
-        LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
-    except HTTPError as err:
-        LOGGER.debug(f"Failure sending email to {email_params.send_to_email}.")
-        LOGGER.debug(f"Failure reason : {err.response.text}.")

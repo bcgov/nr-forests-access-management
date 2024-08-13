@@ -9,8 +9,10 @@ from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
 from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
+from requests import HTTPError
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -295,3 +297,37 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
         .one_or_none()
     )
     return user_role
+
+
+def send_user_access_granted_email(
+        target_user: schemas.TargetUser,
+        roles_assigned: List[schemas.FamUserRoleAssignmentCreateResponse]):
+    """
+    Send email using GC Notify integration service.
+    TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
+        - do not fail event when sending email fails (400/500).
+        - 'create_user_role_assignment_many' router's response schema needs to be refactored.
+        - if email sent -> include in response status/message email is sent.
+        - if email sent failed (400/500) -> include in response status/message email is not sent
+        - frontend needs to display email sent failure message.
+
+    Note
+        - FAM currently is not concerned with checking status from GC Notify (callback) to verify
+            if email is really sent from GC Notify.
+    """
+    granted_roles = ", ".join(item.detail.role.role_name for item in roles_assigned)
+    email_service = GCNotifyEmailService()
+    email_params = schemas.GCNotifyGrantAccessEmailParam(**{
+        "first_name": target_user.first_name,
+        "last_name": target_user.last_name,
+        "application_name": roles_assigned[0].detail.role.application.application_description,
+        "role_list_string": granted_roles,
+        "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
+        "send_to_email": target_user.email
+    })
+    try:
+        email_service.send_user_access_granted_email(email_params)
+        LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
+    except HTTPError as err:
+        LOGGER.debug(f"Failure sending email to {email_params.send_to_email}.")
+        LOGGER.debug(f"Failure reason : {err.response.text}.")
