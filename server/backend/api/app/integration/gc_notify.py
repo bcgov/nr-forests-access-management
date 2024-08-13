@@ -36,12 +36,20 @@ class GCNotifyEmailService:
         """
         Send grant access email
         """
+        # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
+        # 'variable' within coditional text. Easier to do this in code.
+        contact_message = (
+            f"Please contact your administrator {params.application_team_contact_email} if you have any issues accessing the application."
+            if params.application_team_contact_email is not None
+            else "Please contact your administrator if you have any issues accessing the application."
+        )
+
         email_params = {
             "email_address": params.send_to_email,
             "template_id": self.grant_access_email_template_id,
             "personalisation": {
-                # TODO need to create another variable to hold formated string for 'application_team_contact_email' sentence.
-                **params.__dict__
+                **params.__dict__,
+                "contact_message": contact_message
             },
         }
         LOGGER.debug(f"Sending user access granted email with param {email_params}")
