@@ -331,7 +331,7 @@ class IdimProxyBceidInfo(BaseModel):
 
 
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
-class GCNotifyGrantAccessEmailParam(BaseModel):
+class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
     send_to_email_address: EmailStr
     application_name: Annotated[str, StringConstraints(max_length=100)]
     first_name: Annotated[str, StringConstraints(max_length=20)]
