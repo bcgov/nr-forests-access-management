@@ -82,7 +82,7 @@ def create_user_role_assignment_many(
         if role_assignment_request.requires_send_user_email:
             crud_user_role.send_user_access_granted_email(
                 target_user=target_user,
-                roles_assigned=response
+                roles_assignment_response=response
             )
 
         # get target user from database, so for existing user, we can get the cognito user id

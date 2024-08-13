@@ -301,7 +301,7 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
 
 def send_user_access_granted_email(
         target_user: schemas.TargetUser,
-        roles_assigned: List[schemas.FamUserRoleAssignmentCreateResponse]):
+        roles_assignment_response: List[schemas.FamUserRoleAssignmentCreateResponse]):
     """
     Send email using GC Notify integration service.
     TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
@@ -315,17 +315,25 @@ def send_user_access_granted_email(
         - FAM currently is not concerned with checking status from GC Notify (callback) to verify
             if email is really sent from GC Notify.
     """
-    granted_roles = ", ".join(item.detail.role.role_name for item in roles_assigned)
+    granted_roles = ", ".join(
+        item.detail.role.role_name for item in filter(
+            lambda res: res.status_code == HTTPStatus.OK,
+            roles_assignment_response
+        )
+    )
     email_service = GCNotifyEmailService()
     email_params = schemas.GCNotifyGrantAccessEmailParam(**{
         "first_name": target_user.first_name,
         "last_name": target_user.last_name,
-        "application_name": roles_assigned[0].detail.role.application.application_description,
+        "application_name": roles_assignment_response[0].detail.role.application.application_description,
         "role_list_string": granted_roles,
         "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
         "send_to_email": target_user.email
+
     })
     try:
+        if granted_roles == "":  # no role is granted
+            return
         email_service.send_user_access_granted_email(email_params)
         LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
     except HTTPError as err:
