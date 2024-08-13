@@ -136,6 +136,7 @@ resource "aws_lambda_function" "fam_admin_management_api_function" {
 
       IDIM_PROXY_BASE_URL_PROD = "${var.idim_proxy_api_base_url_prod}"
       IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"
+      GC_NOTIFY_EMAIL_API_KEY = "${var.gc_notify_email_api_key}"
       TARGET_ENV = "${var.target_env}"
     }
 
