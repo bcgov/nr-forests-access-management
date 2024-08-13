@@ -5,37 +5,31 @@ from http import HTTPStatus
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (
-    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-    ERROR_CODE_SELF_GRANT_PROHIBITED,
-    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-    UserType,
-)
+from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_SELF_GRANT_PROHIBITED,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    ACCESS_GRANT_FOM_TEST_CR_IDIR,
-    BUSINESS_GUID_BCEID_LOAD_3_TEST,
-    BUSINESS_GUID_BCEID_LOAD_4_TEST,
-    FC_NUMBER_EXISTS_ACTIVE_00001011,
-    FC_NUMBER_EXISTS_DEACTIVATED,
-    FC_NUMBER_NOT_EXISTS,
-    FOM_DEV_APPLICATION_ID,
-    FOM_DEV_REVIEWER_ROLE_ID,
-    FOM_DEV_SUBMITTER_ROLE_ID,
-    FOM_TEST_APPLICATION_ID,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               ACCESS_GRANT_FOM_TEST_CR_IDIR,
+                               BUSINESS_GUID_BCEID_LOAD_3_TEST,
+                               BUSINESS_GUID_BCEID_LOAD_4_TEST,
+                               FC_NUMBER_EXISTS_ACTIVE_00001011,
+                               FC_NUMBER_EXISTS_DEACTIVATED,
+                               FC_NUMBER_NOT_EXISTS, FOM_DEV_APPLICATION_ID,
+                               FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID,
+                               FOM_TEST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/user_role_assignment"
@@ -110,7 +104,7 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
     assert "user_role_xref_id" in detail
     assert "user_id" in detail
     assert "role_id" in detail
-    assert "application_id" in detail
+    assert "application_id" in detail.get("role").get("application")
 
 
 def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delegated_admin(
@@ -155,7 +149,7 @@ def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delega
     assert "user_role_xref_id" in detail
     assert "user_id" in detail
     assert "role_id" in detail
-    assert "application_id" in detail
+    assert "application_id" in detail.get("role").get("application")
 
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -281,13 +275,15 @@ def test_create_user_role_assignment_many_with_concrete_role(
     assert "user_role_xref_id" in detail
     assert "user_id" in detail
     assert "role_id" in detail
-    assert "application_id" in detail
+    assert "application_id" in detail.get("role").get("application")
 
     # verify assignment did get created
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
-        db=db_pg_session, application_id=detail["application_id"], requester=requester
+        db=db_pg_session,
+        application_id=detail["role"]["application"]["application_id"],
+        requester=requester
     )
     assert len(assignment_user_role_concrete) == 1
     assert (
@@ -418,7 +414,7 @@ def test_create_user_role_assignment_many_with_abstract_role(
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_abstract = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=data[0]["detail"]["application_id"],
+        application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
     )
     assert len(assignment_user_role_abstract) == 2
@@ -496,7 +492,7 @@ def test_create_user_role_assignment_many_with_same_username(
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=assignment_one["application_id"],
+        application_id=assignment_one["role"]["application"]["application_id"],
         requester=requester,
     )
     assert len(assignment_user_role_items) == 3
@@ -563,8 +559,8 @@ def test_assign_same_application_roles_for_different_environments(
     assert assignment_role_id_dev != assignment_role_id_test
 
     # verify application id
-    assert fom_dev_user_role_assignment["application_id"] == FOM_DEV_APPLICATION_ID
-    assert fom_test_user_role_assignment["application_id"] == FOM_TEST_APPLICATION_ID
+    assert fom_dev_user_role_assignment["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
+    assert fom_test_user_role_assignment["role"]["application"]["application_id"] == FOM_TEST_APPLICATION_ID
 
     # verify assignment did get created for fom_dev
     # retrieved requester for current request.
@@ -1052,7 +1048,7 @@ def test_delete_user_role_assignment(
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=data[0]["detail"]["application_id"],
+        application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
     )
     assert len(assignment_user_role_items) == 1
@@ -1071,7 +1067,7 @@ def test_delete_user_role_assignment(
     # verify user/role assignment has been deleted
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
-        application_id=data[0]["detail"]["application_id"],
+        application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
     )
     assert len(assignment_user_role_items) == 0

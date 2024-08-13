@@ -308,7 +308,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
     # Verify this IDIR delegated admin has privileges to view only for users
     #   granted with: FOM_REVIEWER, FOM_SUBMITTER_00001018
     assert all(
-        granted["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+        granted["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
         and (
             granted["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
             or granted["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018
@@ -324,7 +324,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
             data
             for data in response_data
             if (
-                data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+                data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
                 and data["user"]["user_type"]["code"] == UserType.IDIR
             )
         ]
@@ -344,7 +344,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
             data
             for data in response_data
             if (
-                data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+                data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
                 and data["user"]["user_type"]["code"]== UserType.BCEID
             )
         ]
@@ -366,7 +366,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.IDIR
                     and data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00000001
                 )
@@ -463,7 +463,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     #   users granted with: FOM_REVIEWER, FOM_SUBMITTER_00001018 and within
     #   the same organization.
     assert all(
-        data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+        data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
         and (
             data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
             or data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00001018
@@ -480,7 +480,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.IDIR
                 )
             ]
@@ -498,7 +498,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.BCEID
                     and (
                         data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER

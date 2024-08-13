@@ -1,11 +1,12 @@
 import logging
 from typing import List
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from api.app import schemas
 from api.app.constants import UserType
 from api.app.models import model as models
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
 from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ def get_application(db: Session, application_id: int):
 
 def get_application_role_assignments(
     db: Session, application_id: int, requester: schemas.Requester
-) -> List[models.FamUserRoleXref]:
+) -> List[schemas.FamApplicationUserRoleAssignmentGet]:
     """query the user / role cross reference table to retrieve the role
     assignments.
     Delegated Admin will only see user role assignments by the roles granted for them.

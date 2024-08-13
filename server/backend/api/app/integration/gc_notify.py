@@ -18,6 +18,9 @@ class GCNotifyEmailService:
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
     def __init__(self):
+        # For lower environment to send email, FAM uses GC Notify 'team and safelist' API_KEY type.
+        # For production it uses 'live' key.
+        # ref: https://documentation.notification.canada.ca/en/keys.html
         self.API_KEY = config.get_gc_notify_email_api_key()
         self.grant_access_email_template_id = GC_NOTIFY_GRANT_ACCESS_EMAIL_TEMPLATE_ID
         self.email_base_url = GC_NOTIFY_EMAIL_BASE_URL
@@ -29,18 +32,27 @@ class GCNotifyEmailService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def send_granted_access_email(self, params: GCNotifyGrantAccessEmailParam):
+    def send_user_access_granted_email(self, params: GCNotifyGrantAccessEmailParam):
         """
         Send grant access email
         """
+        # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
+        # 'variable' within coditional text. Easier to do this in code.
+        contact_message = (
+            f"Please contact your administrator {params.application_team_contact_email} if you have any issues accessing the application."
+            if params.application_team_contact_email is not None
+            else "Please contact your administrator if you have any issues accessing the application."
+        )
+
         email_params = {
             "email_address": params.send_to_email,
             "template_id": self.grant_access_email_template_id,
             "personalisation": {
-                "username": params.user_name,
-                "appname": params.application_name,
+                **params.__dict__,
+                "contact_message": contact_message
             },
         }
+        LOGGER.debug(f"Sending user access granted email with param {email_params}")
         gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"
 
         r = self.session.post(

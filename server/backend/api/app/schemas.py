@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from typing import List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
@@ -11,21 +10,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 # --------------------------------- FAM Application --------------------------------- #
-class FamApplicationCreate(BaseModel):
+class FamApplication(BaseModel):
+    application_id: int
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
-    application_client_id: Optional[int] = None
-    app_environment: Optional[famConstants.AppEnv] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FamApplication(FamApplicationCreate):
-    application_id: int
-    create_user: Annotated[str, StringConstraints(max_length=100)]
-    create_date: datetime
-    update_user: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
-    update_date: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -160,7 +148,7 @@ class FamRoleCreate(BaseModel):
 class FamRoleMin(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     role_type_code: famConstants.RoleType
-    application_id: int
+    application: FamApplication
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -208,17 +196,9 @@ class FamApplicationUserRoleAssignmentGet(BaseModel):
     role_id: int
     user: FamUserInfo
     role: FamRoleWithClient
-    application_id: Optional[Union[int, None]] = None
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
-    model_config = ConfigDict(
-        from_attributes=True,
-        fields={
-            "application_id": {"exclude": True},
-            "user_id": {"exclude": True},
-            "role_id": {"exclude": True},
-        },
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FamUserRoleAssignmentCreateResponse(BaseModel):
@@ -264,8 +244,11 @@ class IdimProxyBceidInfo(BaseModel):
 
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
 class GCNotifyGrantAccessEmailParam(BaseModel):
-    user_name: Annotated[str, StringConstraints(max_length=20)]
+    first_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
+    last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
     application_name: Annotated[str, StringConstraints(max_length=35)]
+    role_list_string: Annotated[str, StringConstraints(max_length=500)]
+    application_team_contact_email: Optional[EmailStr] = None
     send_to_email: EmailStr
 
 

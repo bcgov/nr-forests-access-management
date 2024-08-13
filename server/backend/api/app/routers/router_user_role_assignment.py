@@ -3,19 +3,15 @@ from http import HTTPStatus
 from typing import List
 
 from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.routers.router_guards import (
-    authorize_by_application_role,
-    authorize_by_privilege,
-    authorize_by_user_type,
-    enforce_bceid_by_same_org_guard,
-    enforce_bceid_terms_conditions_guard,
-    enforce_self_grant_guard,
-    get_current_requester,
-    get_verified_target_user,
-)
-from api.app.schemas import Requester, TargetUser
 from api.app.models.model import FamUser
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.routers.router_guards import (
+    authorize_by_application_role, authorize_by_privilege,
+    authorize_by_user_type, enforce_bceid_by_same_org_guard,
+    enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
+    get_current_requester, get_verified_target_user)
+from api.app.schemas import Requester, TargetUser
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -81,6 +77,14 @@ def create_user_role_assignment_many(
         response = crud_user_role.create_user_role_assignment_many(
             db, role_assignment_request, target_user, requester.cognito_user_id
         )
+
+        # sending user notification after event is finished.
+        if role_assignment_request.requires_send_user_email:
+            crud_user_role.send_user_access_granted_email(
+                target_user=target_user,
+                roles_assignment_response=response
+            )
+
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
             db,
