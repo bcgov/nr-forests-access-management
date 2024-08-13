@@ -41,3 +41,7 @@ jobs:
       tf_subcommand: apply
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
+
+  data-model-update:
+    name: Generating Data Model
+    uses: ./.github/workflows/reusable-doc-gen.yml
