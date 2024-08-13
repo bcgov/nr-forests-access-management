@@ -11,6 +11,7 @@ GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID = "9abff613-e507-4562-aae0-008
 GC_NOTIFY_GRANT_APP_ADMIN_EMAIL_TEMPLATE_ID = "230bca59-4906-40b2-8f2b-2f6186a98663"
 
 
+
 class GCNotifyEmailService:
     """
     The class is used for sending email
@@ -33,6 +34,14 @@ class GCNotifyEmailService:
         """
         Send email notification for new delegated admin
         """
+        # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
+        # 'variable' within coditional text. Easier to do this in code.
+        contact_message = (
+            f"Please contact your administrator {params.application_team_contact_email} if you have any issues accessing the application."
+            if params.application_team_contact_email is not None
+            else "Please contact your administrator if you have any issues accessing the application."
+        )
+
         email_params = {
             "email_address": params.send_to_email_address,
             "template_id": GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID,
@@ -41,7 +50,7 @@ class GCNotifyEmailService:
                 "last_name": params.last_name,
                 "application_name": params.application_name,
                 "role_list_string": params.role_list_string,
-                "application_team_contact_email": params.application_team_contact_email
+                "contact_message": contact_message
             },
         }
         gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"

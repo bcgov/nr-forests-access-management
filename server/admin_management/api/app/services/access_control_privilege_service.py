@@ -228,13 +228,14 @@ class AccessControlPrivilegeService:
                         "send_to_email_address": target_user.email,
                         "application_name": application_name,
                         "first_name": target_user.first_name,
-                        "lastName": target_user.last_name,
+                        "last_name": target_user.last_name,
                         "role_list_string": ", ".join(
                             item.detail.role.role_name for item in roles_assigned
                         ),
                     }
                 )
             )
+            LOGGER.debug(f"Email is sent to {target_user.email}: {email_response}")
             return email_response
         except Exception as e:
             LOGGER.debug(
