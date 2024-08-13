@@ -160,6 +160,7 @@ class FamRoleWithClientDto(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     client_number: Optional[FamForestClientBase] = None
     parent_role: Optional[FamRoleBase] = None
+    application: FamApplicationBase
 
     model_config = ConfigDict(from_attributes=True)
 

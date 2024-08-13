@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { FamApplicationBase } from './fam-application-base';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FamForestClientBase } from './fam-forest-client-base';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -50,5 +53,11 @@ export interface FamRoleWithClientDto {
      * @memberof FamRoleWithClientDto
      */
     'parent_role'?: FamRoleBase | null;
+    /**
+     * 
+     * @type {FamApplicationBase}
+     * @memberof FamRoleWithClientDto
+     */
+    'application': FamApplicationBase;
 }
 

@@ -217,21 +217,30 @@ class AccessControlPrivilegeService:
     def send_email_notification(
         self,
         target_user: schemas.TargetUser,
-        application_name: str,
-        roles_assigned: List[schemas.FamAccessControlPrivilegeCreateResponse],
+        access_control_priviliege_response: List[
+            schemas.FamAccessControlPrivilegeCreateResponse
+        ],
     ):
         try:
+            granted_roles = ", ".join(
+                item.detail.role.role_name
+                for item in filter(
+                    lambda res: res.status_code == HTTPStatus.OK,
+                    access_control_priviliege_response,
+                )
+            )
+
             gc_notify_email_service = GCNotifyEmailService()
             email_response = gc_notify_email_service.send_delegated_admin_granted_email(
                 schemas.GCNotifyGrantDelegatedAdminEmailParam(
                     **{
                         "send_to_email_address": target_user.email,
-                        "application_name": application_name,
+                        "application_name": access_control_priviliege_response[
+                            0
+                        ].detail.role.application.application_description,
                         "first_name": target_user.first_name,
                         "last_name": target_user.last_name,
-                        "role_list_string": ", ".join(
-                            item.detail.role.role_name for item in roles_assigned
-                        ),
+                        "role_list_string": granted_roles,
                     }
                 )
             )

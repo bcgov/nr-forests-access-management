@@ -96,7 +96,7 @@ def create_access_control_privilege_many(
         # Send email notification if required
         if access_control_privilege_request.requires_send_user_email:
             access_control_privilege_service.send_email_notification(
-                target_user, audit_event_log.application.application_name, response
+                target_user, response
             )
 
         return response
