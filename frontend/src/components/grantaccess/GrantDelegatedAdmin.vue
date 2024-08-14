@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
-import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
+import { ErrorCode, GrantPermissionType, Severity } from '@/enum/SeverityEnum';
 import { TabKey } from '@/enum/TabEnum';
 import router from '@/router';
 import { routeItems } from '@/router/routeItem';
@@ -14,10 +14,11 @@ import {
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import LoginUserState from '@/store/FamLoginUserState';
 import { isLoading } from '@/store/LoadingState';
-import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
-import type {
-    FamAccessControlPrivilegeCreateRequest,
-    FamRoleDto,
+import { composeAndPushGrantPermissionNotification, setNotificationMsg } from '@/store/NotificationState';
+import {
+    EmailSendingStatus,
+    type FamAccessControlPrivilegeCreateRequest,
+    type FamRoleDto,
 } from 'fam-admin-mgmt-api/model';
 import { UserType } from 'fam-app-acsctl-api';
 import ConfirmDialog from 'primevue/confirmdialog';
@@ -123,7 +124,7 @@ const confirmSubmit = async () => {
             await AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
                 data
             );
-        returnResponse.data.forEach((response) => {
+        returnResponse.data.assignments_detail.forEach((response) => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
@@ -136,6 +137,12 @@ const confirmSubmit = async () => {
                 errorList.push(forestClientNumber ?? '');
             }
         });
+        if (returnResponse.data.email_sending_status == EmailSendingStatus.SentToEmailServiceFailure) {
+            setNotificationMsg(
+                Severity.Error,
+                'TODO: ask email sending failure message.'
+            );
+        }
     } catch (error: any) {
         // error happens here will fail adding all forest client numbers
         if (error.response?.data.detail.code === 'self_grant_prohibited') {
