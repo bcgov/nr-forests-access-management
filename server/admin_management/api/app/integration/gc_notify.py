@@ -8,6 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 GC_NOTIFY_EMAIL_BASE_URL = "https://api.notification.canada.ca"
 GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID = "9abff613-e507-4562-aae0-008317dfe3b9"
+# Template id for granting application admin, we will use this later
 GC_NOTIFY_GRANT_APP_ADMIN_EMAIL_TEMPLATE_ID = "230bca59-4906-40b2-8f2b-2f6186a98663"
 
 

@@ -230,6 +230,9 @@ class AccessControlPrivilegeService:
                 )
             )
 
+            if granted_roles == "":  # no role is granted
+                return
+
             gc_notify_email_service = GCNotifyEmailService()
             email_response = gc_notify_email_service.send_delegated_admin_granted_email(
                 schemas.GCNotifyGrantDelegatedAdminEmailParam(
