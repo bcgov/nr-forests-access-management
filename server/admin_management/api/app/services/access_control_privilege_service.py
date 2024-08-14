@@ -4,19 +4,17 @@ from typing import List
 
 from api.app import constants as famConstants
 from api.app import schemas
-from api.app.integration.forest_client_integration import ForestClientIntegrationService
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
-from api.app.repositories.access_control_privilege_repository import (
-    AccessControlPrivilegeRepository,
-)
+from api.app.repositories.access_control_privilege_repository import \
+    AccessControlPrivilegeRepository
 from api.app.services import utils_service
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.services.validator.forest_client_validator import (
-    forest_client_active,
-    forest_client_number_exists,
-    get_forest_client_status,
-)
+    forest_client_active, forest_client_number_exists,
+    get_forest_client_status)
 from api.app.utils import utils
 from sqlalchemy.orm import Session
 
@@ -248,9 +246,10 @@ class AccessControlPrivilegeService:
                 )
             )
             LOGGER.debug(f"Email is sent to {target_user.email}: {email_response}")
-            return email_response
+            return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_SUCCESS
         except Exception as e:
             LOGGER.debug(
                 f"Failure sending email to the new delegated admin {target_user.email}."
             )
             LOGGER.debug(f"Failure reason : {e}.")
+            return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_FAILURE

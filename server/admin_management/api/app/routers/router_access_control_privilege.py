@@ -4,25 +4,20 @@ from typing import List
 from api.app import jwt_validation, schemas
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
-    authorize_by_app_id,
-    authorize_by_application_role,
-    enforce_self_grant_guard,
-    get_current_requester,
-    get_verified_target_user,
-    validate_param_access_control_privilege_id,
-)
+    authorize_by_app_id, authorize_by_application_role,
+    enforce_self_grant_guard, get_current_requester, get_verified_target_user,
+    validate_param_access_control_privilege_id)
 from api.app.routers.router_utils import (
-    access_control_privilege_service_instance,
-    role_service_instance,
-    user_service_instance,
-)
-from api.app.schemas import Requester, TargetUser
-from api.app.services.access_control_privilege_service import (
-    AccessControlPrivilegeService,
-)
+    access_control_privilege_service_instance, role_service_instance,
+    user_service_instance)
+from api.app.schemas import (FamAccessControlPrivilegeResponse, Requester,
+                             TargetUser)
+from api.app.services.access_control_privilege_service import \
+    AccessControlPrivilegeService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
+from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
+                                      AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +27,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=List[schemas.FamAccessControlPrivilegeCreateResponse],
+    response_model=schemas.FamAccessControlPrivilegeResponse,
     dependencies=[
         Depends(
             authorize_by_application_role
@@ -82,11 +77,12 @@ def create_access_control_privilege_many(
         )
         audit_event_log.application = audit_event_log.role.application
 
-        response = (
-            access_control_privilege_service.create_access_control_privilege_many(
+        response = FamAccessControlPrivilegeResponse(
+            assignments_detail=access_control_privilege_service.create_access_control_privilege_many(
                 access_control_privilege_request, requester.cognito_user_id, target_user
             )
         )
+
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
             access_control_privilege_request.user_type_code,
@@ -95,7 +91,7 @@ def create_access_control_privilege_many(
 
         # Send email notification if required
         if access_control_privilege_request.requires_send_user_email:
-            access_control_privilege_service.send_email_notification(
+            response.email_sending_status = access_control_privilege_service.send_email_notification(
                 target_user, response
             )
 
