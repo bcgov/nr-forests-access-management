@@ -92,7 +92,7 @@ def create_user_role_assignment_many(
         if role_assignment_request.requires_send_user_email:
             response.email_sending_status = crud_user_role.send_user_access_granted_email(
                 target_user=target_user,
-                roles_assignment_response=response
+                roles_assignment_responses=response.assignments_detail
             )
 
         return response

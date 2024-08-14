@@ -301,7 +301,7 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
 
 def send_user_access_granted_email(
         target_user: schemas.TargetUser,
-        roles_assignment_response: List[schemas.FamUserRoleAssignmentCreateResponse]):
+        roles_assignment_responses: List[schemas.FamUserRoleAssignmentCreateResponse]):
     """
     Send email using GC Notify integration service.
     TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
@@ -319,14 +319,14 @@ def send_user_access_granted_email(
         granted_roles = ", ".join(
             item.detail.role.role_name for item in filter(
                 lambda res: res.status_code == HTTPStatus.OK,
-                roles_assignment_response
+                roles_assignment_responses
             )
         )
         email_service = GCNotifyEmailService()
         email_params = schemas.GCNotifyGrantAccessEmailParam(**{
             "first_name": target_user.first_name,
             "last_name": target_user.last_name,
-            "application_name": roles_assignment_response[0].detail.role.application.application_description,
+            "application_name": roles_assignment_responses[0].detail.role.application.application_description,
             "role_list_string": granted_roles,
             "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
             "send_to_email": target_user.email
@@ -338,7 +338,7 @@ def send_user_access_granted_email(
         email_service.send_user_access_granted_email(email_params)
         LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
         return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_SUCCESS
-    except HTTPError as err:
+    except Exception as e:
         LOGGER.debug(f"Failure sending email to {email_params.send_to_email}.")
-        LOGGER.debug(f"Failure reason : {err.response.text}.")
+        LOGGER.debug(f"Failure reason : {e}.")
         return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_FAILURE

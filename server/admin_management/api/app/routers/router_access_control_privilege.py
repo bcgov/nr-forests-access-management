@@ -92,7 +92,7 @@ def create_access_control_privilege_many(
         # Send email notification if required
         if access_control_privilege_request.requires_send_user_email:
             response.email_sending_status = access_control_privilege_service.send_email_notification(
-                target_user, response
+                target_user, response.assignments_detail
             )
 
         return response
