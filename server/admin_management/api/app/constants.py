@@ -65,9 +65,16 @@ class IdimSearchUserParamType(str, Enum):
     USER_ID = "userId"
 
 
+class EmailSendingStatus(str, Enum):
+    NOT_REQUIRED = "NOT_REQUIRED"  # does not require sending email.
+    SENT_TO_EMAIL_SERVICE_SUCCESS = "SENT_TO_EMAIL_SERVICE_SUCCESS"  # send to external service successful.
+    SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
+
+
 # ------- Error/Exception Code Constant -------
 
 # Note, this is default error code but better use specific code category if possible.
 ERROR_CODE_INVALID_OPERATION = "invalid_operation"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
+
