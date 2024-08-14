@@ -82,8 +82,10 @@ def create_access_control_privilege_many(
         )
         audit_event_log.application = audit_event_log.role.application
 
-        response = access_control_privilege_service.create_access_control_privilege_many(
-            access_control_privilege_request, requester.cognito_user_id, target_user
+        response = (
+            access_control_privilege_service.create_access_control_privilege_many(
+                access_control_privilege_request, requester.cognito_user_id, target_user
+            )
         )
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = user_service.get_user_by_domain_and_guid(
@@ -91,7 +93,13 @@ def create_access_control_privilege_many(
             access_control_privilege_request.user_guid,
         )
 
-        return  response
+        # Send email notification if required
+        if access_control_privilege_request.requires_send_user_email:
+            access_control_privilege_service.send_email_notification(
+                target_user, response
+            )
+
+        return response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL

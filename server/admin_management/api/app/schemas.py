@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, EmailStr
 from typing_extensions import Annotated
 
 from . import constants as famConstants
@@ -160,6 +160,7 @@ class FamRoleWithClientDto(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     client_number: Optional[FamForestClientBase] = None
     parent_role: Optional[FamRoleBase] = None
+    application: FamApplicationBase
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -316,6 +317,7 @@ class IdimProxyIdirInfo(BaseModel):
     guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
 
 
 class IdimProxyBceidInfo(BaseModel):
@@ -326,3 +328,15 @@ class IdimProxyBceidInfo(BaseModel):
     businessLegalName: Optional[Annotated[str, StringConstraints(max_length=60)]] = None
     firstName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
     lastName: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
+
+
+# ------------------------------------- GC Notify Integraion ---------------------------------------- #
+class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
+    send_to_email_address: EmailStr
+    application_name: Annotated[str, StringConstraints(max_length=100)]
+    first_name: Annotated[str, StringConstraints(max_length=20)]
+    last_name: Annotated[str, StringConstraints(max_length=20)]
+    role_list_string: Annotated[str, StringConstraints(max_length=200)]
+    application_team_contact_email: Optional[EmailStr] = None
+

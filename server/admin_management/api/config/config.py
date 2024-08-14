@@ -164,7 +164,11 @@ def get_idim_proxy_api_baseurl(api_instance_env: ApiInstanceEnv):
     return idim_proxy_api_baseurl
 
 
-
 def get_idim_proxy_api_key():
     idim_proxy_api_key = get_env_var("IDIM_PROXY_API_KEY")
     return idim_proxy_api_key
+
+
+def get_gc_notify_email_api_key():
+    gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY")
+    return gc_notify_email_api_key
