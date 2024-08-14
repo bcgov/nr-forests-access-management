@@ -24,9 +24,9 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { FamAccessControlPrivilegeCreateRequest } from '../model';
 // @ts-ignore
-import { FamAccessControlPrivilegeCreateResponse } from '../model';
-// @ts-ignore
 import { FamAccessControlPrivilegeGetResponse } from '../model';
+// @ts-ignore
+import { FamAccessControlPrivilegeResponse } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -171,7 +171,7 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>> {
+        async createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamAccessControlPrivilegeResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.createAccessControlPrivilegeMany']?.[localVarOperationServerIndex]?.url;
@@ -220,7 +220,7 @@ export const FAMAccessControlPrivilegesApiFactory = function (configuration?: Co
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: any): AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>> {
+        createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: any): AxiosPromise<FamAccessControlPrivilegeResponse> {
             return localVarFp.createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -260,7 +260,7 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
-    createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeCreateResponse>>;
+    createAccessControlPrivilegeMany(famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<FamAccessControlPrivilegeResponse>;
 
     /**
      * 
