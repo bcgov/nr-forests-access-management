@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
 
 from . import constants as famConstants
@@ -236,6 +236,11 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
     error_message: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FamAccessControlPrivilegeResponse(BaseModel):
+    email_sending_status: famConstants.EmailSendingStatus = famConstants.EmailSendingStatus.NOT_REQUIRED
+    assignments_detail: List[FamAccessControlPrivilegeCreateResponse]
 
 
 # ------------------------------------- FAM Admin User Access ---------------------------------------- #

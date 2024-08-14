@@ -209,6 +209,11 @@ class FamUserRoleAssignmentCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FamUserRoleAssignmentResponse(BaseModel):
+    email_sending_status: famConstants.EmailSendingStatus = famConstants.EmailSendingStatus.NOT_REQUIRED
+    assignments_detail: List[FamUserRoleAssignmentCreateResponse]
+
+
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 class IdimProxySearchParam(BaseModel):
     userId: Annotated[
