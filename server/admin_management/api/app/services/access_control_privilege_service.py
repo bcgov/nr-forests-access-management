@@ -232,6 +232,7 @@ class AccessControlPrivilegeService:
                 return
 
             gc_notify_email_service = GCNotifyEmailService()
+            with_client_number = "yes" if access_control_priviliege_response[0].detail.role.client_number is not None else "no"
             email_response = gc_notify_email_service.send_delegated_admin_granted_email(
                 schemas.GCNotifyGrantDelegatedAdminEmailParam(
                     **{
@@ -242,6 +243,7 @@ class AccessControlPrivilegeService:
                         "first_name": target_user.first_name,
                         "last_name": target_user.last_name,
                         "role_list_string": granted_roles,
+                        "with_client_number": with_client_number
                     }
                 )
             )

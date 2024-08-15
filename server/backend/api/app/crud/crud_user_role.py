@@ -322,6 +322,7 @@ def send_user_access_granted_email(
                 roles_assignment_responses
             )
         )
+        with_client_number = "yes" if roles_assignment_responses[0].detail.role.client_number is not None else "no"
         email_service = GCNotifyEmailService()
         email_params = schemas.GCNotifyGrantAccessEmailParam(**{
             "first_name": target_user.first_name,
@@ -329,8 +330,8 @@ def send_user_access_granted_email(
             "application_name": roles_assignment_responses[0].detail.role.application.application_description,
             "role_list_string": granted_roles,
             "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
-            "send_to_email": target_user.email
-
+            "send_to_email": target_user.email,
+            "with_client_number": with_client_number
         })
 
         if granted_roles == "":  # no role is granted
