@@ -56,10 +56,12 @@ const userIdChange = (userId: string) => {
 const verifyUserIdPassed = ref(false);
 const setVerifyUserIdPassed = (
     verifiedResult: boolean,
-    userGuid: string = ''
+    userGuid: string = '',
+    userEmail: string = '',
 ) => {
     verifyUserIdPassed.value = verifiedResult;
     formData.value.userGuid = userGuid;
+    formData.value.userEmail = userEmail;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -140,7 +142,7 @@ const confirmSubmit = async () => {
         if (returnResponse.data.email_sending_status == EmailSendingStatus.SentToEmailServiceFailure) {
             setNotificationMsg(
                 Severity.Error,
-                `Failed to send email to ${username}, please contact the user to notify they've been granted permission.`
+                `Failed to send email to ${formData.value.userEmail}, please contact the user to notify they've been granted permission.`
             );
         }
     } catch (error: any) {
