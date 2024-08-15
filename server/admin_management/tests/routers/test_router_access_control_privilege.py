@@ -69,7 +69,7 @@ def test_create_access_control_privilege_many(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.OK
 
@@ -88,7 +88,7 @@ def test_create_access_control_privilege_many(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 2
     assert data[0].get("status_code") == HTTPStatus.CONFLICT
     assert data[1].get("status_code") == HTTPStatus.OK
@@ -243,7 +243,7 @@ def test_delete_access_control_privilege(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()[0]["detail"]
+    data = response.json().get("assignments_detail")[0]["detail"]
 
     # test delete with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key)
