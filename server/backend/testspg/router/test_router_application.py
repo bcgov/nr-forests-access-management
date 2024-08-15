@@ -84,7 +84,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    concrete_role_data = response.json()[0]['detail']
+    concrete_role_data = response.json().get("assignments_detail")[0]['detail']
 
     # check
     response = test_client_fixture.get(
@@ -121,7 +121,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    abstract_role_data = response.json()[0]['detail']
+    abstract_role_data = response.json().get("assignments_detail")[0]['detail']
 
     # check
     response = test_client_fixture.get(
