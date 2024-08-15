@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
@@ -344,4 +344,5 @@ class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
     last_name: Annotated[str, StringConstraints(max_length=20)]
     role_list_string: Annotated[str, StringConstraints(max_length=200)]
     application_team_contact_email: Optional[EmailStr] = None
+    with_client_number: Literal['yes', 'no']
 
