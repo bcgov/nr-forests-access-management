@@ -157,7 +157,7 @@ const handleSubmit = async () => {
         if (returnResponse.data.email_sending_status == EmailSendingStatus.SentToEmailServiceFailure) {
             setNotificationMsg(
                 Severity.Error,
-                'TODO: ask email sending failure message.'
+                `Failed to send email to ${username}, please contact the user to notify they've been granted permission.`
             );
         }
     } catch (error: any) {
