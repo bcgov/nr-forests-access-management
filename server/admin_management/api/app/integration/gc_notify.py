@@ -46,10 +46,7 @@ class GCNotifyEmailService:
             "email_address": params.send_to_email_address,
             "template_id": GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID,
             "personalisation": {
-                "first_name": params.first_name,
-                "last_name": params.last_name,
-                "application_name": params.application_name,
-                "role_list_string": params.role_list_string,
+                **params.__dict__,
                 "contact_message": contact_message
             },
         }

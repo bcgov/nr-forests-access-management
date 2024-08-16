@@ -9,7 +9,7 @@ import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue
 import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
-import { ErrorCode, GrantPermissionType } from '@/enum/SeverityEnum';
+import { ErrorCode, GrantPermissionType, Severity } from '@/enum/SeverityEnum';
 import { TabKey } from '@/enum/TabEnum';
 import { routeItems } from '@/router/routeItem';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
@@ -21,9 +21,9 @@ import {
 import { setCurrentTabState } from '@/store/CurrentTabState';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { isLoading } from '@/store/LoadingState';
-import { composeAndPushGrantPermissionNotification } from '@/store/NotificationState';
+import { composeAndPushGrantPermissionNotification, setNotificationMsg } from '@/store/NotificationState';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import type { FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import { EmailSendingStatus, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
 import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultDomain =
@@ -67,10 +67,12 @@ const userIdChange = (userId: string) => {
 const verifyUserIdPassed = ref(false);
 const setVerifyUserIdPassed = (
     verifiedResult: boolean,
-    userGuid: string = ''
+    userGuid: string = '',
+    userEmail: string = '',
 ) => {
     verifyUserIdPassed.value = verifiedResult;
     formData.value.userGuid = userGuid;
+    formData.value.userEmail = userEmail;
 };
 
 /* ------------------- Role selection method -------------------------- */
@@ -140,7 +142,7 @@ const handleSubmit = async () => {
                 data
             );
 
-        returnResponse.data.forEach((response) => {
+        returnResponse.data.assignments_detail.forEach((response) => {
             const forestClientNumber =
                 response.detail.role.client_number?.forest_client_number;
             if (response.status_code == 200) {
@@ -153,6 +155,13 @@ const handleSubmit = async () => {
                 errorList.push(forestClientNumber ?? '');
             }
         });
+
+        if (returnResponse.data.email_sending_status == EmailSendingStatus.SentToEmailServiceFailure) {
+            setNotificationMsg(
+                Severity.Error,
+                `Failed to send email to ${formData.value.userEmail}, please contact the user to notify they've been granted permission.`
+            );
+        }
     } catch (error: any) {
         // error happens here will fail adding all forest client numbers
         if (error.response?.data.detail.code === 'self_grant_prohibited') {

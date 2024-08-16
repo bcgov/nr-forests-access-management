@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { ErrorMessage, Field } from 'vee-validate';
-import InputText from 'primevue/inputtext';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { isLoading } from '@/store/LoadingState';
 import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { IdpProvider } from '@/enum/IdpEnum';
-import { UserType } from 'fam-app-acsctl-api';
-import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
-import FamLoginUserState from '@/store/FamLoginUserState';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { selectedApplicationId } from '@/store/ApplicationState';
+import FamLoginUserState from '@/store/FamLoginUserState';
+import { isLoading } from '@/store/LoadingState';
+import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import { UserType } from 'fam-app-acsctl-api';
+import InputText from 'primevue/inputtext';
+import { ErrorMessage, Field } from 'vee-validate';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     domain: { type: String, required: true },
@@ -72,7 +72,7 @@ const verifyUserId = async () => {
         }
     } finally {
         if (verifiedUserIdentity.value?.found) {
-            emit('setVerifyResult', true, verifiedUserIdentity.value.guid);
+            emit('setVerifyResult', true, verifiedUserIdentity.value.guid, verifiedUserIdentity.value.email);
         }
     }
 };

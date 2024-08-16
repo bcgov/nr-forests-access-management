@@ -14,9 +14,11 @@ index.ts
 model/admin-role-auth-group.ts
 model/admin-user-access-response.ts
 model/app-env.ts
+model/email-sending-status.ts
 model/fam-access-control-privilege-create-request.ts
 model/fam-access-control-privilege-create-response.ts
 model/fam-access-control-privilege-get-response.ts
+model/fam-access-control-privilege-response.ts
 model/fam-app-admin-create-request.ts
 model/fam-app-admin-get-response.ts
 model/fam-application-base.ts

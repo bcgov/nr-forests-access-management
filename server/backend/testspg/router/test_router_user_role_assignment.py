@@ -97,7 +97,7 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.OK
     detail = data[0].get("detail")
@@ -142,7 +142,7 @@ def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delega
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.OK
     detail = data[0].get("detail")
@@ -268,7 +268,7 @@ def test_create_user_role_assignment_many_with_concrete_role(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.OK
     detail = data[0].get("detail")
@@ -338,7 +338,7 @@ def test_create_user_role_assignment_many_with_concrete_role_duplicate(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.CONFLICT
     assert data[0].get("error_message").find(ERROR_DUPLICATE_USER_ROLE) != -1
@@ -404,7 +404,7 @@ def test_create_user_role_assignment_many_with_abstract_role(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert len(data) == 2
     assert data[0].get("status_code") == HTTPStatus.OK
     assert data[1].get("status_code") == HTTPStatus.OK
@@ -468,7 +468,7 @@ def test_create_user_role_assignment_many_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_one = response.json()[0]["detail"]
+    assignment_one = response.json().get("assignments_detail")[0]["detail"]
 
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
@@ -477,7 +477,7 @@ def test_create_user_role_assignment_many_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_two = response.json()[0]["detail"]
+    assignment_two = response.json().get("assignments_detail")[0]["detail"]
 
     # allow create a user role assignment with the same username, different role
     response = test_client_fixture.post(
@@ -486,7 +486,7 @@ def test_create_user_role_assignment_many_with_same_username(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    assignment_three = response.json()[0]["detail"]
+    assignment_three = response.json().get("assignments_detail")[0]["detail"]
 
     # retrieved requester for current request.
     requester = get_current_requester_by_token(fom_dev_access_admin_token)
@@ -535,7 +535,7 @@ def test_assign_same_application_roles_for_different_environments(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    fom_dev_user_role_assignment = response.json()[0]["detail"]
+    fom_dev_user_role_assignment = response.json().get("assignments_detail")[0]["detail"]
     assert "user_role_xref_id" in fom_dev_user_role_assignment
 
     # create a user role assignment with same username and type, but for FOM_TEST role
@@ -545,7 +545,7 @@ def test_assign_same_application_roles_for_different_environments(
         headers=jwt_utils.headers(fom_test_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    fom_test_user_role_assignment = response.json()[0]["detail"]
+    fom_test_user_role_assignment = response.json().get("assignments_detail")[0]["detail"]
     assert "user_role_xref_id" in fom_test_user_role_assignment
 
     # verify assignment id not the same
@@ -1040,7 +1040,7 @@ def test_delete_user_role_assignment(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
     assert response.status_code == HTTPStatus.OK
-    data = response.json()
+    data = response.json().get("assignments_detail")
     assert "user_role_xref_id" in data[0]["detail"]
 
     # verify assignment did get created

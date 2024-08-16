@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import List
 
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models.model import FamUser
@@ -9,13 +8,15 @@ from api.app.routers.router_guards import (
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
     enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
     get_current_requester, get_verified_target_user)
-from api.app.schemas import Requester, TargetUser
+from api.app.schemas import (FamUserRoleAssignmentCreate,
+                             FamUserRoleAssignmentResponse, Requester,
+                             TargetUser)
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
-from .. import database, jwt_validation, schemas
+from .. import database, jwt_validation
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=List[schemas.FamUserRoleAssignmentCreateResponse],
+    response_model=FamUserRoleAssignmentResponse,
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(enforce_self_grant_guard),
@@ -45,7 +46,7 @@ router = APIRouter()
     description="Grant User Access to an application's role.",
 )
 def create_user_role_assignment_many(
-    role_assignment_request: schemas.FamUserRoleAssignmentCreate,
+    role_assignment_request: FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
@@ -74,16 +75,11 @@ def create_user_role_assignment_many(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        response = crud_user_role.create_user_role_assignment_many(
-            db, role_assignment_request, target_user, requester.cognito_user_id
-        )
-
-        # sending user notification after event is finished.
-        if role_assignment_request.requires_send_user_email:
-            crud_user_role.send_user_access_granted_email(
-                target_user=target_user,
-                roles_assignment_response=response
+        response = FamUserRoleAssignmentResponse(
+            assignments_detail=crud_user_role.create_user_role_assignment_many(
+                db, role_assignment_request, target_user, requester.cognito_user_id
             )
+        )
 
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
@@ -91,6 +87,13 @@ def create_user_role_assignment_many(
             role_assignment_request.user_type_code,
             role_assignment_request.user_guid,
         )
+
+        # sending user notification after event is finished.
+        if role_assignment_request.requires_send_user_email:
+            response.email_sending_status = crud_user_role.send_user_access_granted_email(
+                target_user=target_user,
+                roles_assignment_responses=response.assignments_detail
+            )
 
         return response
 

@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
@@ -209,6 +209,11 @@ class FamUserRoleAssignmentCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FamUserRoleAssignmentResponse(BaseModel):
+    email_sending_status: famConstants.EmailSendingStatus = famConstants.EmailSendingStatus.NOT_REQUIRED
+    assignments_detail: List[FamUserRoleAssignmentCreateResponse]
+
+
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 class IdimProxySearchParam(BaseModel):
     userId: Annotated[
@@ -250,6 +255,7 @@ class GCNotifyGrantAccessEmailParam(BaseModel):
     role_list_string: Annotated[str, StringConstraints(max_length=500)]
     application_team_contact_email: Optional[EmailStr] = None
     send_to_email: EmailStr
+    with_client_number: Literal['yes', 'no']
 
 
 # ------------------------------------- Forest Client API Integraion ---------------------------------------- #

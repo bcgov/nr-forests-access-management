@@ -235,7 +235,7 @@ def create_test_user_role_assignment(
         json=request_body,
         headers=jwt_utils.headers(token),
     )
-    data = response.json()
+    data = response.json().get("assignments_detail")
     return data[0]["detail"]["user_role_xref_id"]
 
 

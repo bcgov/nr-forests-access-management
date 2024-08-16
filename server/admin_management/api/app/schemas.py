@@ -1,7 +1,7 @@
 import logging
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
 
 from . import constants as famConstants
@@ -238,6 +238,11 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FamAccessControlPrivilegeResponse(BaseModel):
+    email_sending_status: famConstants.EmailSendingStatus = famConstants.EmailSendingStatus.NOT_REQUIRED
+    assignments_detail: List[FamAccessControlPrivilegeCreateResponse]
+
+
 # ------------------------------------- FAM Admin User Access ---------------------------------------- #
 class FamApplicationDto(BaseModel):
     id: int = Field(validation_alias="application_id")
@@ -339,4 +344,5 @@ class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
     last_name: Annotated[str, StringConstraints(max_length=20)]
     role_list_string: Annotated[str, StringConstraints(max_length=200)]
     application_team_contact_email: Optional[EmailStr] = None
+    with_client_number: Literal['yes', 'no']
 

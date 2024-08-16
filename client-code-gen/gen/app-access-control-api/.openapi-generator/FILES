@@ -15,6 +15,7 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+model/email-sending-status.ts
 model/fam-application-user-role-assignment-get.ts
 model/fam-application.ts
 model/fam-forest-client-status-type.ts
@@ -25,6 +26,7 @@ model/fam-role-with-client.ts
 model/fam-user-info.ts
 model/fam-user-role-assignment-create-response.ts
 model/fam-user-role-assignment-create.ts
+model/fam-user-role-assignment-response.ts
 model/fam-user-type.ts
 model/fam-user-update-response.ts
 model/httpvalidation-error.ts
