@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from api.app import jwt_validation, schemas
+from api.app import jwt_validation
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     authorize_by_app_id, authorize_by_application_role,
@@ -10,7 +10,9 @@ from api.app.routers.router_guards import (
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance, role_service_instance,
     user_service_instance)
-from api.app.schemas import (FamAccessControlPrivilegeResponse, Requester,
+from api.app.schemas import (FamAccessControlPrivilegeCreateRequest,
+                             FamAccessControlPrivilegeGetResponse,
+                             FamAccessControlPrivilegeResponse, Requester,
                              TargetUser)
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
@@ -27,7 +29,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=schemas.FamAccessControlPrivilegeResponse,
+    response_model=FamAccessControlPrivilegeResponse,
     dependencies=[
         Depends(
             authorize_by_application_role
@@ -37,7 +39,7 @@ router = APIRouter()
     description="Grant Delegated Admin Privileges",
 )
 def create_access_control_privilege_many(
-    access_control_privilege_request: schemas.FamAccessControlPrivilegeCreateRequest,
+    access_control_privilege_request: FamAccessControlPrivilegeCreateRequest,
     request: Request,
     token_claims: dict = Depends(jwt_validation.authorize),
     requester: Requester = Depends(get_current_requester),
@@ -117,7 +119,7 @@ def create_access_control_privilege_many(
 
 @router.get(
     "",
-    response_model=List[schemas.FamAccessControlPrivilegeGetResponse],
+    response_model=List[FamAccessControlPrivilegeGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_app_id)],  # only app admin can do this
     description="Get Delegated Admin Privileges For an Application",

@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import List
 
 from api.app.crud import crud_role, crud_user, crud_user_role
 from api.app.models.model import FamUser
@@ -9,14 +8,15 @@ from api.app.routers.router_guards import (
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
     enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
     get_current_requester, get_verified_target_user)
-from api.app.schemas import (FamUserRoleAssignmentResponse, Requester,
+from api.app.schemas import (FamUserRoleAssignmentCreate,
+                             FamUserRoleAssignmentResponse, Requester,
                              TargetUser)
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
-from .. import database, jwt_validation, schemas
+from .. import database, jwt_validation
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=schemas.FamUserRoleAssignmentResponse,
+    response_model=FamUserRoleAssignmentResponse,
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(enforce_self_grant_guard),
@@ -46,7 +46,7 @@ router = APIRouter()
     description="Grant User Access to an application's role.",
 )
 def create_user_role_assignment_many(
-    role_assignment_request: schemas.FamUserRoleAssignmentCreate,
+    role_assignment_request: FamUserRoleAssignmentCreate,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
