@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.22.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.21.0...v1.22.0) (2024-08-16)
+
+
+### Features
+
+* [#1031](https://github.com/bcgov/nr-forests-access-management/issues/1031) Enable SchemaSpy to auto generate data model ([#1525](https://github.com/bcgov/nr-forests-access-management/issues/1525)) ([35add25](https://github.com/bcgov/nr-forests-access-management/commit/35add25a581498dd3ec8a311a1c8035eb26d90ea))
+* [#1031](https://github.com/bcgov/nr-forests-access-management/issues/1031) Fix SchemaSpy pipeline and auto run when do prod deployment  ([#1526](https://github.com/bcgov/nr-forests-access-management/issues/1526)) ([560f33b](https://github.com/bcgov/nr-forests-access-management/commit/560f33b3f174f02e1ee0bfc247b6261b19d73665))
+* [#1469](https://github.com/bcgov/nr-forests-access-management/issues/1469) Enable email notification for granting delegated admin ([#1529](https://github.com/bcgov/nr-forests-access-management/issues/1529)) ([1d352c5](https://github.com/bcgov/nr-forests-access-management/commit/1d352c5a4992e2980a1b7b9e27506a45d921f51a))
+* [#1471](https://github.com/bcgov/nr-forests-access-management/issues/1471) Handle email sending error ([#1531](https://github.com/bcgov/nr-forests-access-management/issues/1531)) ([67f6c85](https://github.com/bcgov/nr-forests-access-management/commit/67f6c8581491b441d63bc833e9603beed4fc1652))
+* [#1508](https://github.com/bcgov/nr-forests-access-management/issues/1508) send email notification optionally ([#1519](https://github.com/bcgov/nr-forests-access-management/issues/1519)) ([0163b3d](https://github.com/bcgov/nr-forests-access-management/commit/0163b3df86940a56144ac2e869ec3b100e70f15a))
+* [#799](https://github.com/bcgov/nr-forests-access-management/issues/799) sending grant user email ([#1527](https://github.com/bcgov/nr-forests-access-management/issues/1527)) ([073d3fa](https://github.com/bcgov/nr-forests-access-management/commit/073d3fac0e95fabd84f7daa009dfa9298fd73cbf))
+
+
+### Bug Fixes
+
+* [#1521](https://github.com/bcgov/nr-forests-access-management/issues/1521)  fix one-time load user information logic ([#1522](https://github.com/bcgov/nr-forests-access-management/issues/1522)) ([665bf80](https://github.com/bcgov/nr-forests-access-management/commit/665bf806c63bf7a85fd7d928952683ebfa1d40c1))
+
 ## [1.21.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.20.1...v1.21.0) (2024-08-08)
 
 
