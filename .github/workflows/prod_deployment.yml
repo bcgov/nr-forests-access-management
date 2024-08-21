@@ -44,4 +44,4 @@ jobs:
 
   data-model-update:
     name: Generating Data Model
-    uses: ./.github/workflows/reusable-doc-gen.yml
+    uses: ./.github/workflows/reusable_data_model_gen.yml
