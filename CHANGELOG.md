@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.22.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.0...v1.22.1) (2024-08-21)
+
+
+### Bug Fixes
+
+* [#1031](https://github.com/bcgov/nr-forests-access-management/issues/1031) Disable SchemaSpy trigger in prod deployment for now ([#1558](https://github.com/bcgov/nr-forests-access-management/issues/1558)) ([3e80cc5](https://github.com/bcgov/nr-forests-access-management/commit/3e80cc5a7f14add687cefa2078e60abb9dc43911))
+* [#1031](https://github.com/bcgov/nr-forests-access-management/issues/1031) Fix SchemaSpy trigger in production deployment yaml ([#1556](https://github.com/bcgov/nr-forests-access-management/issues/1556)) ([2ac4146](https://github.com/bcgov/nr-forests-access-management/commit/2ac41466f8063d45745665106e3aa998202ddeb1))
+
 ## [1.22.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.21.0...v1.22.0) (2024-08-16)
 
 
