@@ -14,14 +14,14 @@ on:
       - ".github/workflows/pr_open_terraform_ci.yml"
 
   pull_request:
-    branches:
-      - "main"
-    paths:
-      - "terraform/**"
-      - "terraform-frontend/**"
-      - "infrastructure/**"
-      - ".github/workflows/reusable_terraform_server.yml"
-      - ".github/workflows/pr_open_terraform_ci.yml"
+    # branches:
+    #   - "main"
+    # paths:
+    #   - "terraform/**"
+    #   - "terraform-frontend/**"
+    #   - "infrastructure/**"
+    #   - ".github/workflows/reusable_terraform_server.yml"
+    #   - ".github/workflows/pr_open_terraform_ci.yml"
 
 # When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
