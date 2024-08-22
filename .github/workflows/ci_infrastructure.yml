@@ -86,6 +86,11 @@ jobs:
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
       fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
 
+
+permissions:
+  contents: write # This is required for actions/checkout
+
+jobs:
   data-model-update:
     name: Generating Data Model
     uses: ./.github/workflows/reusable_data_model_gen.yml
