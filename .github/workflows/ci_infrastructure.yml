@@ -14,20 +14,20 @@ on:
       - ".github/workflows/pr_open_terraform_ci.yml"
 
   pull_request:
-    # branches:
-    #   - "main"
-    # paths:
-    #   - "terraform/**"
-    #   - "terraform-frontend/**"
-    #   - "infrastructure/**"
-    #   - ".github/workflows/reusable_terraform_server.yml"
-    #   - ".github/workflows/pr_open_terraform_ci.yml"
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+      - "terraform-frontend/**"
+      - "infrastructure/**"
+      - ".github/workflows/reusable_terraform_server.yml"
+      - ".github/workflows/pr_open_terraform_ci.yml"
 
 # When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: write # This is required for actions/checkout
+  contents: read # This is required for actions/checkout
 
 jobs:
   backend-terraform-plan:
@@ -85,7 +85,3 @@ jobs:
       idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
       fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
-
-  data-model-update:
-    name: Generating Data Model
-    uses: ./.github/workflows/reusable_data_model_gen.yml
