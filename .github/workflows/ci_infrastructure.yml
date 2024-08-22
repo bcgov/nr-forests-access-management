@@ -27,7 +27,7 @@ on:
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+  contents: write # This is required for actions/checkout
 
 jobs:
   backend-terraform-plan:
@@ -86,11 +86,6 @@ jobs:
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
       fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
 
-
-permissions:
-  contents: write # This is required for actions/checkout
-
-jobs:
   data-model-update:
     name: Generating Data Model
     uses: ./.github/workflows/reusable_data_model_gen.yml
