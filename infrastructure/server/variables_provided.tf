@@ -373,3 +373,9 @@ variable "dev_pr_url_count" {
   type = number
   default = 50
 }
+
+variable "oidc_sso_playground_url" {
+  description = "OIDC SSO Playground for debugging congnito login"
+  type = string
+  default = "https://sso-playground.apps.gold.devops.gov.bc.ca"
+}

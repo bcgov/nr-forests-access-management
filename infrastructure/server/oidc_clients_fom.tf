@@ -3,13 +3,18 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = concat([
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
-    "http://localhost:4200/admin/search"
-  ], [for i in range("${var.dev_pr_url_count}") : "https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/search"])
-  logout_urls                                   = concat([
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true"
-  ], [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"])
+  callback_urls                                 = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:4200/admin/search"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/search"])
+  logout_urls                                   = concat(
+    [
+      var.oidc_sso_playground_url,
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -39,12 +44,13 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
+    var.oidc_sso_playground_url,
     "https://fom-test.nrs.gov.bc.ca/admin/search",
     "https://fom-demo.apps.silver.devops.gov.bc.ca/admin/search",
     "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
+    var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.test}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true",
     "${var.cognito_app_client_logout_chain_url.test}https://fom-demo.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"
   ]
@@ -77,9 +83,11 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://fom.nrs.gov.bc.ca/admin/search",
+    var.oidc_sso_playground_url,
+    "https://fom.nrs.gov.bc.ca/admin/search"
   ]
   logout_urls                                   = [
+    var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.prod}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
   ]
   enable_propagate_additional_user_context_data = "false"

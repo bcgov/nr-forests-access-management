@@ -3,13 +3,17 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls = (concat(var.fam_callback_urls,
+  callback_urls = (concat(
+    var.fam_callback_urls,
     [
+      var.oidc_sso_playground_url,
       "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
       "${aws_api_gateway_stage.admin_management_api_gateway_stage.invoke_url}/docs/oauth2-redirect"
     ]
   ))
-  logout_urls                                   = var.fam_logout_urls
+  logout_urls                                   = concat(
+    var.fam_logout_urls
+    [var.oidc_sso_playground_url])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]

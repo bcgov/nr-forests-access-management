@@ -33,8 +33,7 @@ generate "tools_tfvars" {
     "https://fam-tools.nrs.gov.bc.ca/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
-    "http://localhost:8001/docs/oauth2-redirect",
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/"
+    "http://localhost:8001/docs/oauth2-redirect"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_test_url}https://fam-tools.nrs.gov.bc.ca",
