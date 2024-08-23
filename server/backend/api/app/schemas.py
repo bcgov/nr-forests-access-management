@@ -156,6 +156,10 @@ class FamRoleMin(BaseModel):
 
 class FamRoleWithClient(FamRoleMin):
     role_id: int
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
+        validation_alias="role_purpose"
+    )
     client_number: Optional[FamForestClient] = None
     parent_role: Optional[FamRoleMin] = None
 
