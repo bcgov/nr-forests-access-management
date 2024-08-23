@@ -131,6 +131,7 @@ class FamForestClient(BaseModel):
 class FamRoleCreate(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
     role_purpose: Union[Annotated[str, StringConstraints(max_length=300)], None] = None
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )

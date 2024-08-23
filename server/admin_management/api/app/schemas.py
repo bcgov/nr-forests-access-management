@@ -141,6 +141,7 @@ class FamRoleBase(BaseModel):
 class FamRoleCreateDto(FamRoleBase):
     application_id: int = Field(title="Application this role is associated with")
     role_purpose: Optional[Annotated[str, StringConstraints(max_length=300)]] = None
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
