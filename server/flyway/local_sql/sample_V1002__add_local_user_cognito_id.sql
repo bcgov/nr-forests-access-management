@@ -42,13 +42,10 @@ INSERT INTO app_fam.fam_user (
     user_name,
     user_type_code,
     cognito_user_id,
+    user_guid,
     create_user
 )
 VALUES
-
-('JFERREIR','I','test-idir_278f48bd9mangledf7e618d@idir',CURRENT_USER),
-('NSAGLION','I','test-idir_3f1414bd1mangled18a1293c40@idir',CURRENT_USER),
-('CMENG','I','test-idir_a9888e8ac6a04mangled35df625bf@idir',CURRENT_USER),
-('OLIBERCH','I','test-idir_b7e191fa11dmangled9df1854b71@idir',CURRENT_USER),
-('CYU','I','test-idir_234d9cbe4373457famangledd26ab162@idir',CURRENT_USER);
-
+('CMENG','I','test-idir_a9888e8ac6a04mangled35df625bf@idir','A9888E8AC6A04MANGLED00135DF625BF',CURRENT_USER),
+('OLIBERCH','I','test-idir_b7e191fa11dmangled9df1854b71@idir','B7E191FA11MANLED818EC79DF1854B71',CURRENT_USER),
+('CYU','I','test-idir_234d9cbe4373457famangledd26ab162@idir','234D9CBE4373457ANLEDE215D26AB162',CURRENT_USER);
