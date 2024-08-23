@@ -12,7 +12,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
     ]
   ))
   logout_urls                                   = concat(
-    var.fam_logout_urls
+    var.fam_logout_urls,
     [var.oidc_sso_playground_url])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
