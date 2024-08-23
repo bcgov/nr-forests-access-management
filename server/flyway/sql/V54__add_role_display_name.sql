@@ -53,8 +53,7 @@ UPDATE app_fam.fam_role SET display_name = 'Viewer'
     SELECT fr.role_id
 	FROM app_fam.fam_role fr
 	join app_fam.fam_application fa on fr.application_id = fa.application_id
-	where fa.application_name like 'SILVA_%'
-    and fr.role_name like 'Viewer%');
+	where fa.application_name like 'SILVA_%' and fr.role_name like 'Viewer%');
 
 -- 'Submitter' (role_type = 'A')
 UPDATE app_fam.fam_role SET display_name = 'Submitter'
@@ -62,8 +61,7 @@ UPDATE app_fam.fam_role SET display_name = 'Submitter'
     SELECT fr.role_id
 	FROM app_fam.fam_role fr
 	join app_fam.fam_application fa on fr.application_id = fa.application_id
-	where fa.application_name like 'SILVA_%'
-    and fr.role_name like 'Submitter%');
+	where fa.application_name like 'SILVA_%' and fr.role_name like 'Submitter%');
 
 -- 'Approver' (role_type = 'A')
 UPDATE app_fam.fam_role SET display_name = 'Approver'
@@ -71,8 +69,7 @@ UPDATE app_fam.fam_role SET display_name = 'Approver'
     SELECT fr.role_id
 	FROM app_fam.fam_role fr
 	join app_fam.fam_application fa on fr.application_id = fa.application_id
-	where fa.application_name like 'SILVA_%'
-    and fr.role_name like 'Approver%');
+	where fa.application_name like 'SILVA_%' and fr.role_name like 'Approver%');
 
 -- 'Planner' (role_type = 'A')
 UPDATE app_fam.fam_role SET display_name = 'Planner'
@@ -80,8 +77,7 @@ UPDATE app_fam.fam_role SET display_name = 'Planner'
     SELECT fr.role_id
 	FROM app_fam.fam_role fr
 	join app_fam.fam_application fa on fr.application_id = fa.application_id
-	where fa.application_name like 'SILVA_%'
-    and fr.role_name like 'Planner%');
+	where fa.application_name like 'SILVA_%' and fr.role_name like 'Planner%');
 
 -- 'Admin' (role_type = 'A')
 UPDATE app_fam.fam_role SET display_name = 'Admin'
@@ -89,8 +85,7 @@ UPDATE app_fam.fam_role SET display_name = 'Admin'
     SELECT fr.role_id
 	FROM app_fam.fam_role fr
 	join app_fam.fam_application fa on fr.application_id = fa.application_id
-	where fa.application_name like 'SILVA_%'
-    and fr.role_name like 'Admin%');
+	where fa.application_name like 'SILVA_%' and fr.role_name like 'Admin%');
 
 --
 
