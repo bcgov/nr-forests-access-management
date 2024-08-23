@@ -244,6 +244,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="role_type_code" nullable="false" remarks="Identifies if the role is an abstract or concrete role. Users should only be assigned to roles where role_type=concrete" size="2" type="varchar" typeCode="12">
             <parent column="role_type_code" foreignKey="reffam_role_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role_type"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="display_name" nullable="true" remarks="Human redable name for the role" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="role_id" sequenceNumberInPK="1"/>
          <index name="fam_rle_pk" unique="true">
             <column ascending="true" name="role_id"/>
