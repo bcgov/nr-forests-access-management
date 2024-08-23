@@ -547,6 +547,7 @@ class FamRole(Base):
     )
     role_name = Column(String(100), nullable=False)
     role_purpose = Column(String(300), nullable=True)
+    display_name = Column(String(100), nullable=True)
     application_id = Column(BigInteger, nullable=False, index=True)
     client_number_id = Column(
         BigInteger,

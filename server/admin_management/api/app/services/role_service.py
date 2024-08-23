@@ -1,12 +1,11 @@
 import logging
-from sqlalchemy.orm import Session
 
 from api.app import constants as famConstants
-from api.app.schemas import FamRoleCreateDto
 from api.app.models.model import FamRole
 from api.app.repositories.role_repository import RoleRepository
+from api.app.schemas import FamRoleCreateDto
 from api.app.services.forest_client_service import ForestClientService
-
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +47,7 @@ class RoleService:
                             parent_role_purpose=parent_role.role_purpose,
                             forest_client_number=forest_client_number,
                         ),
+                        "display_name": parent_role.display_name,
                         "create_user": requester,
                         "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                     }

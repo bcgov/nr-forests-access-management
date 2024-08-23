@@ -273,6 +273,7 @@ def find_or_create_forest_client_child_role(
                     "application_id": parent_role.application_id,
                     "forest_client_number": forest_client_number,
                     "role_name": forest_client_role_name,
+                    "display_name": parent_role.display_name,
                     "role_purpose": construct_forest_client_role_purpose(
                         parent_role_purpose=parent_role.role_purpose,
                         forest_client_number=forest_client_number,

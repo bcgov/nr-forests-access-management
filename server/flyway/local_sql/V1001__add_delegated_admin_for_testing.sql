@@ -57,6 +57,7 @@ VALUES (
 -- create a chile role FOM_SUBMITTER_00001018
 INSERT INTO app_fam.fam_role (
     role_name,
+    display_name,
     role_purpose,
     parent_role_id,
     application_id,
@@ -66,6 +67,7 @@ INSERT INTO app_fam.fam_role (
 )
 VALUES (
     'FOM_SUBMITTER_00001018',
+    'Submitter',
     'Provides the privilege to submit a FOM (on behalf of a specific forest client) for 00001018',
     (select role_id from app_fam.fam_role where role_name='FOM_SUBMITTER' and application_id=(select application_id from app_fam.fam_application where application_name = 'FOM_DEV')),
     (select application_id from app_fam.fam_application where application_name = 'FOM_DEV'),
