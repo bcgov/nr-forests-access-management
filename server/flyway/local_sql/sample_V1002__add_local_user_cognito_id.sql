@@ -8,7 +8,8 @@
 -- make sure to git ignore the file so it doesn't get checked in. The cognito
 -- user ids in this script have been intentionally mangled for security purposes.
 -- If it is just for personal use, you only need to add your own IDIR guid
--- (available from the "users" tab in FAM DEV Cognito).
+-- (available from the "users" tab in FAM DEV Cognito). We use upper cases for user_guid,
+-- as the real user_guid are all in upper cases.
 
 -- This script does not run in production (as it is in the "local_sql"
 -- directory instead of the "sql" directory). FYI other scripts can be added to
