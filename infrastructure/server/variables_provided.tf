@@ -64,6 +64,12 @@ variable "oidc_bceid_business_idp_client_id" {
   default = "fsa-cognito-b-ce-id-business-dev-4090"
 }
 
+variable "oidc_sso_playground_url" {
+  description = "OIDC SSO Playground for debugging congnito login"
+  type = string
+  default = "https://sso-playground.apps.gold.devops.gov.bc.ca"
+}
+
 # Client secrets for IDIR in each environment
 
 variable "dev_oidc_idir_idp_client_secret" {
@@ -372,10 +378,4 @@ variable "dev_pr_url_count" {
   description = "Number of pull request redirect urls of Cognito dev clients"
   type = number
   default = 50
-}
-
-variable "oidc_sso_playground_url" {
-  description = "OIDC SSO Playground for debugging congnito login"
-  type = string
-  default = "https://sso-playground.apps.gold.devops.gov.bc.ca"
 }
