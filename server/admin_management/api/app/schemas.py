@@ -271,7 +271,7 @@ class FamRoleDto(BaseModel):
     name: Annotated[str, StringConstraints(max_length=100)] = Field(
         validation_alias="role_name"
     )
-    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]]
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
         validation_alias="role_purpose"
     )
