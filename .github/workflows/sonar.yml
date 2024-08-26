@@ -33,7 +33,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
@@ -83,7 +83,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
@@ -129,7 +129,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN }}
@@ -147,7 +147,7 @@ jobs:
   ci-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.2.1
         with:
           commands: |
             npm run install-frontend
