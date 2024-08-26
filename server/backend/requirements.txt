@@ -1,5 +1,5 @@
-boto3==1.28.83
-botocore==1.31.83
+boto3==1.35.5
+botocore==1.35.5
 fastapi==0.109.1
 pydantic==2.5.3
 pydantic-core==2.14.6
