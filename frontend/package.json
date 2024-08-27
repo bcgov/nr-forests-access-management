@@ -17,7 +17,7 @@
     "dependencies": {
         "@bcgov-nr/nr-theme": "^1.8.9",
         "@carbon/icons-vue": "^10.89.0",
-        "aws-amplify": "^5.3.18",
+        "aws-amplify": "^5.3.21",
         "bootstrap": "^5.3.3",
         "axios": "1.7.4",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
