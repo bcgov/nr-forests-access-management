@@ -5,6 +5,9 @@ CREATE TABLE app_fam.fam_privilege_change_type (
     description VARCHAR(50) NOT NULL
 );
 
+-- Permission for table fam_privilege_change_type
+GRANT SELECT ON app_fam.fam_privilege_change_type TO ${auth_lambda_db_user};
+
 -- Insert the values into the fam_privilege_change_type table
 INSERT INTO
     app_fam.fam_privilege_change_type (code, description)
@@ -30,6 +33,9 @@ CREATE TABLE IF NOT EXISTS app_fam.fam_privilege_change_audit (
     CONSTRAINT fk_change_target_user FOREIGN KEY (change_target_user_id) REFERENCES app_fam.fam_user(user_id),
     CONSTRAINT fk_privilege_change_type FOREIGN KEY (privilege_change_type_code) REFERENCES app_fam.fam_privilege_change_type(code)
 );
+
+-- Permission for fam_privilege_change_audit
+GRANT SELECT, INSERT ON app_fam.fam_privilege_change_audit TO ${auth_lambda_db_user};
 
 -- Comments on fam_privilege_change_audit
 COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_change_audit_id IS 'Identity column acting as surrogate primary key';
