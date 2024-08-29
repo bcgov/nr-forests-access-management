@@ -1,0 +1,53 @@
+-- Create a permission audit table and a code table https://github.com/bcgov/nr-forests-access-management/issues/1536
+-- Create the fam_privilege_change_type table
+CREATE TABLE app_fam.fam_privilege_change_type (
+    code VARCHAR(10) PRIMARY KEY,
+    description VARCHAR(50) NOT NULL
+);
+
+-- Insert the values into the fam_privilege_change_type table
+INSERT INTO
+    app_fam.fam_privilege_change_type (code, description)
+VALUES
+    ('Grant', 'Grant'),
+    ('Revoke', 'Revoke'),
+    ('Update', 'Update access');
+
+-- Create the fam_privilege_change_audit table
+CREATE TABLE IF NOT EXISTS app_fam.fam_privilege_change_audit (
+    privilege_change_audit_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    application_id BIGINT NOT NULL,
+    change_date TIMESTAMP(6) WITH TIME ZONE NOT NULL,
+    change_performer_user_details JSONB NOT NULL,
+    change_performer_user_id BIGINT,
+    change_target_user_id BIGINT NOT NULL,
+    create_date TIMESTAMP(6) WITH TIME ZONE NOT NULL,
+    create_user VARCHAR(100) NOT NULL,
+    privilege_change_type_code VARCHAR(10) NOT NULL,
+    privilege_details JSONB NOT NULL,
+    CONSTRAINT fk_application FOREIGN KEY (application_id) REFERENCES app_fam.fam_application(application_id),
+    CONSTRAINT fk_change_performer_user FOREIGN KEY (change_performer_user_id) REFERENCES app_fam.fam_user(user_id),
+    CONSTRAINT fk_change_target_user FOREIGN KEY (change_target_user_id) REFERENCES app_fam.fam_user(user_id),
+    CONSTRAINT fk_privilege_change_type FOREIGN KEY (privilege_change_type_code) REFERENCES app_fam.fam_privilege_change_type(code)
+);
+
+-- Comments on fam_privilege_change_audit
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_change_audit_id IS 'Identity column acting as surrogate primary key';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.application_id IS 'Foreign key to fam_application. Specifies the application for which the privilege change was made.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.change_date IS 'Date & time of the privilege change. For initial data migration, this is NOT the same as the create time of this audit record.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.change_performer_user_details IS 'JSON-formatted document describing the user that performed the change.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.change_performer_user_id IS 'Specifies the user that initiated the privilege change. Foreign key to fam_user. Nullable when access was granted by a system change.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.change_target_user_id IS 'Specifies the user that the privilege change was performed on. Foreign key to fam_user.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.create_date IS 'The date and time the record was created. Not necessarily the same time as when the privilege change occurred.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.create_user IS 'The user or system account that created the record. Not necessarily the same as the user that performed the privilege change.';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_change_type_code IS 'Foreign key to fam_privilege_change_type code table. Identifies the type of privilege change (Grant, Revoke, or Update access).';
+
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_details IS 'JSON-formatted document describing the privilege(s) being changed. For end user permissions, this is details about the fam_role(s).';
