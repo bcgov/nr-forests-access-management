@@ -98,3 +98,4 @@ terraform/tools/output.txt
 
 # No env files
 *.env
+*.env.bat
