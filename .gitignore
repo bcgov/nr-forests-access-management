@@ -35,7 +35,6 @@ out.json
 
 
 *.db
-.env
 **/.venv/**/*
 venv
 venvdc
@@ -96,3 +95,6 @@ terraform/tools/output.txt
 
 # VSCode
 .vscode/
+
+# No env files
+*.env
