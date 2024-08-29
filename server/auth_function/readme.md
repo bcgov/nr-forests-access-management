@@ -41,15 +41,15 @@ Note: We need to use master db user(postgres) to run the tests.
 
 Comment out lines 28-31 of /server/auth_function/conftest.py (the code that starts
 and stops the DB container on each test run). Then you can start the fam db
-container with docker-compose and leave it running.
+container with docker compose and leave it running.
 
 The tests expect a clean (flyway bootstrapped) database on each test run, so if
 you put in your own test data or if tests fail in a weird way, you may have to
-blow away the container and image and run docker-compose again.
+blow away the container and image and run docker compose again.
 
 ```
 ## Bring up the docker container permanently
-docker-compose up fam-flyway
+docker compose up fam-flyway
 ```
 
 
