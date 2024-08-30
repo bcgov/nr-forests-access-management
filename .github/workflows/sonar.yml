@@ -86,6 +86,7 @@ jobs:
           COGNITO_USER_POOL_DOMAIN: ${{ env.LOCAL_COGNITO_USER_POOL_DOMAIN }}
           ENABLE_BCSC_JWKS_ENDPOINT: ${{ env.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
         run: |
+          echo "test env U: $COGNITO_USER_POOL_ID C: $COGNITO_CLIENT_ID D: $COGNITO_USER_POOL_DOMAIN"
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
@@ -143,6 +144,7 @@ jobs:
           COGNITO_CLIENT_ID: ${{ env.LOCAL_COGNITO_CLIENT_ID }}
           COGNITO_USER_POOL_DOMAIN: ${{ env.LOCAL_COGNITO_USER_POOL_DOMAIN }}
         run: |
+          echo "test env U: $COGNITO_USER_POOL_ID C: $COGNITO_CLIENT_ID D: $COGNITO_USER_POOL_DOMAIN"
           cd server/admin_management
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
