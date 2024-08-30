@@ -75,18 +75,17 @@ jobs:
           IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
           GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
           TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
-          POSTGRES_USER: ${{ env.LOCAL_BACKEND_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.LOCAL_POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ env.LOCAL_POSTGRES_HOST }}
-          POSTGRES_DB: ${{ env.LOCAL_POSTGRES_DB }}
-          POSTGRES_PORT: ${{ env.LOCAL_POSTGRES_PORT }}
-          COGNITO_REGION: ${{ env.LOCAL_COGNITO_REGION }}
-          COGNITO_USER_POOL_ID: ${{ env.LOCAL_COGNITO_USER_POOL_ID }}
-          COGNITO_CLIENT_ID: ${{ env.LOCAL_COGNITO_CLIENT_ID }}
-          COGNITO_USER_POOL_DOMAIN: ${{ env.LOCAL_COGNITO_USER_POOL_DOMAIN }}
-          ENABLE_BCSC_JWKS_ENDPOINT: ${{ env.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
+          POSTGRES_USER: ${{ vars.LOCAL_BACKEND_POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
+          ENABLE_BCSC_JWKS_ENDPOINT: ${{ vars.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
         run: |
-          echo "test env U: $COGNITO_USER_POOL_ID C: $COGNITO_CLIENT_ID D: $COGNITO_USER_POOL_DOMAIN DUMB: ${{ env.POSTGRES_HOST }}"
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
           pip install pytest-cov
@@ -134,15 +133,15 @@ jobs:
           FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
           IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
           GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
-          POSTGRES_USER: ${{ env.LOCAL_ADMAN_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.LOCAL_POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ env.LOCAL_POSTGRES_HOST }}
-          POSTGRES_DB: ${{ env.LOCAL_POSTGRES_DB }}
-          POSTGRES_PORT: ${{ env.LOCAL_POSTGRES_PORT }}
-          COGNITO_REGION: ${{ env.LOCAL_COGNITO_REGION }}
-          COGNITO_USER_POOL_ID: ${{ env.LOCAL_COGNITO_USER_POOL_ID }}
-          COGNITO_CLIENT_ID: ${{ env.LOCAL_COGNITO_CLIENT_ID }}
-          COGNITO_USER_POOL_DOMAIN: ${{ env.LOCAL_COGNITO_USER_POOL_DOMAIN }}
+          POSTGRES_USER: ${{ vars.LOCAL_ADMAN_POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
         run: |
           echo "test env U: $COGNITO_USER_POOL_ID C: $COGNITO_CLIENT_ID D: $COGNITO_USER_POOL_DOMAIN"
           cd server/admin_management
