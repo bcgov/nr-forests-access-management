@@ -11,13 +11,12 @@ pip install -r requirements.txt
 
 # Create or update the necessary environment variables
 
-In general, if there is a setting change in local-dev.env, run below to have correct environments setup.
+Find the env files template [here](https://github.com/bcgov/nr-forests-access-management/wiki/Local-Env-Vars-Template) and create them on your local machine.
 
-Note: This is no longer necessary if running through Docker or running tests through VS Code testrunner, as they both reference the .env file at startup.
-
-```
+If you want to run the service locally without using docker compose, you can export the env vars with the following script
+```bash
 cd server/admin_management
-set -o allexport; source local-dev.env; set +o allexport
+export $(cat local-dev.env | xargs)
 ```
 
 ## -------------- Windows Configuration ----------------------------------------
