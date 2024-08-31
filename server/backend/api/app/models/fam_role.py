@@ -81,21 +81,21 @@ class FamRoleModel(Base):
     )
 
     application: Mapped[FamApplicationModel] = relationship(
-        "FamApplication", back_populates="fam_role"
+        "FamApplicationModel", back_populates="fam_role"
     )
     client_number = relationship(
-        "FamForestClient", back_populates="fam_role", lazy="joined"
+        "FamForestClientModel", back_populates="fam_role", lazy="joined"
     )
     parent_role = relationship(
-        "FamRole", remote_side=[role_id], back_populates="parent_role_reverse"
+        "FamRoleModel", remote_side=[role_id], back_populates="parent_role_reverse"
     )
     parent_role_reverse = relationship(
-        "FamRole", remote_side=[parent_role_id], back_populates="parent_role"
+        "FamRoleModel", remote_side=[parent_role_id], back_populates="parent_role"
     )
-    fam_user_role_xref = relationship("FamUserRoleXref", back_populates="role")
-    role_type_relation = relationship("FamRoleType", backref="role_relation")
+    fam_user_role_xref = relationship("FamUserRoleXrefModel", back_populates="role")
+    role_type_relation = relationship("FamRoleTypeModel", backref="role_relation")
     fam_access_control_privilege = relationship(
-        "FamAccessControlPrivilege", back_populates="role"
+        "FamAccessControlPrivilegeModel", back_populates="role"
     )
     __table_args__ = (
         ForeignKeyConstraint(
