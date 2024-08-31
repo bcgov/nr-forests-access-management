@@ -18,10 +18,8 @@ from .base import Base
 
 
 class FamUserModel(Base):
-    from api.app.models import (
-        FamAccessControlPrivilegeModel,
-        FamUserTermsConditionsModel,
-    )
+    from .fam_access_control import FamAccessControlPrivilegeModel
+    from .fam_user import FamUserTermsConditionsModel
 
     __tablename__ = "fam_user"
 
