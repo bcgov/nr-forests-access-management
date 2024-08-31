@@ -15,8 +15,8 @@ from sqlalchemy.orm import Mapped, relationship
 from .base import Base
 
 class FamUserModel(Base):
-    from FamAccessControlPrivilege import FamAccessControlPrivilegeModel
-    from FamUserTermsConditions import FamUserTermsConditionsModel
+    from .FamAccessControlPrivilege import FamAccessControlPrivilegeModel
+    from .FamUserTermsConditions import FamUserTermsConditionsModel
 
     __tablename__ = "fam_user"
 
