@@ -35,7 +35,7 @@ def replace_str_list(
     )
 
 
-def get_primary_key_name(instance: DeclarativeMeta) -> str:
+def get_primary_key(instance: DeclarativeMeta) -> str:
     """
     Given a SQLAlchemy model instance, return the name of the primary key.
 
