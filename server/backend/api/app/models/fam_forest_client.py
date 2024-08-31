@@ -18,6 +18,7 @@ class FamForestClientModel(Base):
     __table_args__ = (
         PrimaryKeyConstraint("client_number_id", name="fam_for_cli_pk"),
         UniqueConstraint("forest_client_number", name="fam_for_cli_num_uk"),
+        # UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
         {
             "comment": "A forest client is a business, individual, or agency that is "
             'identified as an entity that a user can have a privilege "on '
@@ -45,6 +46,8 @@ class FamForestClientModel(Base):
         index=True,
         comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client.",
     )
+    # client_name = Column(String(100), nullable=True, index=True)  # noqa NOSONAR
+
     create_user = Column(
         String(100),
         nullable=False,
@@ -58,7 +61,7 @@ class FamForestClientModel(Base):
     )
     update_user = Column(
         String(100),
-        comment="The user or proxy account that created or last updated the record.",
+        comment="The user or proxy account that created or last updated the record. ",
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
@@ -66,6 +69,4 @@ class FamForestClientModel(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_role = relationship(
-        "FamRoleModel", back_populates="client_number", lazy="joined"
-    )
+    fam_role = relationship("FamRoleModel", back_populates="client_number")

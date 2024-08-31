@@ -40,7 +40,6 @@ class FamAccessControlPrivilegeModel(Base):
             "schema": "app_fam",
         },
     )
-
     access_control_privilege_id = Column(
         BigInteger,
         Identity(
@@ -88,4 +87,6 @@ class FamAccessControlPrivilegeModel(Base):
     )
 
     def __repr__(self):
-        return f"FamAccessControlPrivilegeModel(user_id={self.user_id}, role_id={self.role_id})"
+        return (
+            f"FamAccessControlPrivilegeModel(user_id={self.user_id}, role_id={self.role_id})"
+        )

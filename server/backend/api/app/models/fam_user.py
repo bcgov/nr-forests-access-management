@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 from sqlalchemy import (
     BigInteger,
     Column,
@@ -11,7 +12,9 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
+
+from api.app.models import FamAccessControlPrivilegeModel, FamUserTermsConditionsModel
 from .base import Base
 
 
@@ -71,10 +74,10 @@ class FamUserModel(Base):
     user_type_relation = relationship(
         "FamUserTypeModel", backref="user_relation", lazy="joined"
     )
-    fam_access_control_privileges = relationship(
-        "FamAccessControlPrivilegeModel", back_populates="user"
+    fam_access_control_privileges: Mapped[List[FamAccessControlPrivilegeModel]] = (
+        relationship("FamAccessControlPrivilegeModel", back_populates="user")
     )
-    fam_user_terms_conditions = relationship(
+    fam_user_terms_conditions: Mapped[FamUserTermsConditionsModel] = relationship(
         "FamUserTermsConditionsModel", back_populates="user"
     )
 
@@ -92,6 +95,9 @@ class FamUserModel(Base):
             "schema": "app_fam",
         },
     )
+
+    def __str__(self):
+        return f"FamUserModel({self.user_id}, {self.user_name}, {self.user_type_code})"
 
 
 class FamUserTypeModel(Base):

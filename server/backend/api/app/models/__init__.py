@@ -6,7 +6,7 @@ from .fam_application import (
     FamApplicationClientModel,
     FamAppEnvironmentModel,
 )
-from .fam_role import FamRoleModel, FamRoleTypeModel
+from .fam_role import FamRoleModel, FamRoleTypeModel, FamUserRoleXrefModel
 from .fam_user import FamUserModel, FamUserTypeModel, FamUserTermsConditionsModel
 from .fam_access_control import FamAccessControlPrivilegeModel
 from .fam_forest_client import FamForestClientModel
@@ -22,6 +22,7 @@ __all__ = [
     "FamAppEnvironmentModel",
     "FamRoleModel",
     "FamRoleTypeModel",
+    "FamUserRoleXrefModel",
     "FamUserModel",
     "FamUserTypeModel",
     "FamUserTermsConditionsModel",

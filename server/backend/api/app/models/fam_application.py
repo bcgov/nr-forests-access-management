@@ -29,7 +29,6 @@ class FamApplicationModel(Base):
             cycle=False,
             cache=1,
         ),
-        primary_key=True,
         comment="Automatically generated key used to identify the uniqueness "
         + "of an Application registered under FAM",
     )
@@ -83,9 +82,31 @@ class FamApplicationModel(Base):
         },
     )
 
+    def __repr__(self):
+        return f"FamApplicationModel({self.application_id}, {self.application_name}, {self.app_environment})"
+
 
 class FamApplicationClientModel(Base):
     __tablename__ = "fam_application_client"
+    __table_args__ = (
+        UniqueConstraint("cognito_client_id", "application_id", name="cognito_app_uk"),
+        ForeignKeyConstraint(
+            ["application_id"],
+            ["app_fam.fam_application.application_id"],
+            name="reffam_application31",
+        ),
+        PrimaryKeyConstraint("application_client_id", name="fam_app_cli_pk"),
+        {
+            "comment": "FAM needs to know the OIDC client ID in order to match to an "
+            "application. The relationship between OIDC client and application "
+            "is many-to-one because sometimes there is more than one OIDC "
+            "client for an application and it is convenient to be able to "
+            "configure the authorization once (at the application level) and "
+            "re-use it (at the OIDC level).",
+            "schema": "app_fam",
+        },
+    )
+
     application_client_id = Column(
         BigInteger().with_variant(Integer, "sqlite"),
         Identity(
@@ -97,16 +118,10 @@ class FamApplicationClientModel(Base):
             cycle=False,
             cache=1,
         ),
-        primary_key=True,
         comment="Automatically generated key used to identify the uniqueness "
         + " of an OIDC as it corresponds to an identified client ",
     )
     cognito_client_id = Column(String(32), nullable=False)
-    application_id = Column(
-        BigInteger,
-        comment="Automatically generated key used to identify the uniqueness "
-        + "of an Application registered under FAM",
-    )
     create_user = Column(
         String(100),
         nullable=False,
@@ -118,12 +133,18 @@ class FamApplicationClientModel(Base):
         server_default=text("LOCALTIMESTAMP"),
         comment="The date and time the record was created.",
     )
+    application_id = Column(
+        BigInteger,
+        comment="Automatically generated key used to identify the uniqueness "
+        + "of an Application registered under FAM",
+    )
     update_user = Column(
         String(100),
         comment="The user or proxy account that created or last updated the "
         + "record. ",
     )
     update_date = Column(
+        # String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
         server_default=text("LOCALTIMESTAMP"),
@@ -136,14 +157,17 @@ class FamApplicationClientModel(Base):
 
 class FamAppEnvironmentModel(Base):
     __tablename__ = "fam_app_environment"
+
     app_environment = Column(
         String(4), nullable=False, comment="Application environment."
     )
+
     description = Column(
         String(100),
         nullable=True,
         comment="Description of what the app_environment represents.",
     )
+
     effective_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
@@ -151,12 +175,14 @@ class FamAppEnvironmentModel(Base):
         server_default=func.now(),
         comment="The date and time the code was effective.",
     )
+
     expiry_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=True,
         default=None,
         comment="The date and time the code expired.",
     )
+
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         onupdate=datetime.datetime.utcnow,
