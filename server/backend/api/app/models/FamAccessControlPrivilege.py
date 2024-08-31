@@ -85,7 +85,7 @@ class FamAccessControlPrivilegeModel(Base):
         "FamRoleModel", back_populates="fam_access_control_privilege", lazy="joined"
     )
     user = relationship(
-        "FamRoleModel", back_populates="fam_access_control_privileges", lazy="joined"
+        "FamUserModel", back_populates="fam_access_control_privileges", lazy="joined"
     )
 
     def __repr__(self):
