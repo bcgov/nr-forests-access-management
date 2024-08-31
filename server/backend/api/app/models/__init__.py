@@ -5,17 +5,25 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 Base: DeclarativeMeta = declarative_base()
 metadata = Base.metadata
 
+# Import models with fewer dependencies first
+
 from .FamApplication import FamApplicationModel
 from .FamForestClient import FamForestClientModel
-from .FamAccessControlPrivilege import FamAccessControlPrivilegeModel
-from .FamUserTermsConditions import FamUserTermsConditionsModel
-from .FamUserType import FamUserTypeModel
-from .FamUser import FamUserModel
-from .FamApplicationClient import FamApplicationClientModel
-from .FamRoleType import FamRoleTypeModel
-from .FamRole import FamRoleModel
-from .FamUserRoleXref import FamUserRoleXrefModel
 from .FamAppEnvironment import FamAppEnvironmentModel
+
+# Import models that have dependencies on previously imported models
+
+from .FamRoleType import FamRoleTypeModel
+from .FamUserType import FamUserTypeModel
+from .FamRole import FamRoleModel
+from .FamUser import FamUserModel
+
+# Import models that depend on multiple others
+
+from .FamAccessControlPrivilege import FamAccessControlPrivilegeModel
+from .FamUserRoleXref import FamUserRoleXrefModel
+from .FamUserTermsConditions import FamUserTermsConditionsModel
+from .FamApplicationClient import FamApplicationClientModel
 
 # Ensure all mappers are configured after all models have been imported
 configure_mappers()
