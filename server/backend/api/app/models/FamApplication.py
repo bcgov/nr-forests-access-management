@@ -61,9 +61,9 @@ class FamApplicationModel(Base):
     )
 
     fam_application_client = relationship(
-        "FamApplicationClient", back_populates="application"
+        "FamApplicationClientModel", back_populates="application"
     )
-    fam_role = relationship("FamRole", back_populates="application")
+    fam_role = relationship("FamRoleModel", back_populates="application")
 
     __table_args__ = (
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),

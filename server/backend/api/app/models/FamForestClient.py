@@ -70,4 +70,4 @@ class FamForestClientModel(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_role = relationship("FamRole", back_populates="client_number")
+    fam_role = relationship("FamRoleModel", back_populates="client_number")

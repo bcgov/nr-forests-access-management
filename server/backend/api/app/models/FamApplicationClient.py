@@ -79,5 +79,5 @@ class FamApplicationClientModel(Base):
         comment="The date and time the record was created.",
     )
     application = relationship(
-        "FamApplication", back_populates="fam_application_client"
+        "FamApplicationModel", back_populates="fam_application_client"
     )

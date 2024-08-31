@@ -83,5 +83,5 @@ class FamUserRoleXrefModel(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    role = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
-    user = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
+    role = relationship("FamRoleModel", back_populates="fam_user_role_xref", lazy="joined")
+    user = relationship("FamUserModel", back_populates="fam_user_role_xref", lazy="joined")

@@ -78,4 +78,4 @@ class FamUserTermsConditionsModel(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    user = relationship("FamUser", back_populates="fam_user_terms_conditions")
+    user = relationship("FamUserModel", back_populates="fam_user_terms_conditions")

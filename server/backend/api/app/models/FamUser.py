@@ -67,15 +67,15 @@ class FamUserModel(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_user_role_xref = relationship("FamUserRoleXref", back_populates="user")
+    fam_user_role_xref = relationship("FamUserRoleXrefModel", back_populates="user")
     user_type_relation = relationship(
-        "FamUserType", backref="user_relation", lazy="joined"
+        "FamUserTypeModel", backref="user_relation", lazy="joined"
     )
     fam_access_control_privileges: Mapped[List[FamAccessControlPrivilegeModel]] = (
-        relationship("FamAccessControlPrivilege", back_populates="user")
+        relationship("FamAccessControlPrivilegeModel", back_populates="user")
     )
     fam_user_terms_conditions: Mapped[FamUserTermsConditionsModel] = relationship(
-        "FamUserTermsConditions", back_populates="user"
+        "FamUserTermsConditionsModel", back_populates="user"
     )
 
     __table_args__ = (
