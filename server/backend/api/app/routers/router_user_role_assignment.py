@@ -2,17 +2,24 @@ import logging
 from http import HTTPStatus
 
 from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.models.model import FamUser
+from api.app.models import FamUserModel
 from api.app.routers.router_guards import (
-    authorize_by_application_role, authorize_by_privilege,
-    authorize_by_user_type, enforce_bceid_by_same_org_guard,
-    enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
-    get_current_requester, get_verified_target_user)
-from api.app.schemas import (FamUserRoleAssignmentCreate,
-                             FamUserRoleAssignmentResponse, Requester,
-                             TargetUser)
-from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
-                                      AuditEventType)
+    authorize_by_application_role,
+    authorize_by_privilege,
+    authorize_by_user_type,
+    enforce_bceid_by_same_org_guard,
+    enforce_bceid_terms_conditions_guard,
+    enforce_self_grant_guard,
+    get_current_requester,
+    get_verified_target_user,
+)
+from api.app.schemas import (
+    FamUserRoleAssignmentCreate,
+    FamUserRoleAssignmentResponse,
+    Requester,
+    TargetUser,
+)
+from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -90,9 +97,11 @@ def create_user_role_assignment_many(
 
         # sending user notification after event is finished.
         if role_assignment_request.requires_send_user_email:
-            response.email_sending_status = crud_user_role.send_user_access_granted_email(
-                target_user=target_user,
-                roles_assignment_responses=response.assignments_detail
+            response.email_sending_status = (
+                crud_user_role.send_user_access_granted_email(
+                    target_user=target_user,
+                    roles_assignment_responses=response.assignments_detail,
+                )
             )
 
         return response
@@ -106,7 +115,7 @@ def create_user_role_assignment_many(
     finally:
         # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
-            audit_event_log.target_user = FamUser(
+            audit_event_log.target_user = FamUserModel(
                 user_type_code=target_user.user_type_code,
                 user_name=target_user.user_name,
                 user_guid=target_user.user_guid,

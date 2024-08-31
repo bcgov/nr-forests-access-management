@@ -5,12 +5,9 @@ originally written in go - tbls (https://github.com/k1LoW/tbls#quick-start)
 
 """
 
-import api.app.models.model as model
-
+from api.app.models import metadata
 
 from sqlalchemy_schemadisplay import create_schema_graph
-from sqlalchemy import MetaData
 
-
-graph = create_schema_graph(metadata=model.metadata)
-graph.write_png('fam_erd.png')
+graph = create_schema_graph(metadata=metadata)
+graph.write_png("fam_erd.png")

@@ -7,7 +7,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_INVALID_APPLICATION_ID,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.main import apiPrefix
-from api.app.models.model import FamUserTermsConditions
+from api.app.models import FamUserTermsConditionsModel
 from sqlalchemy import insert
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
@@ -543,7 +543,7 @@ def test_get_fam_application_user_role_assignment_enforce_bceid_terms_conditions
     requester = get_current_requester_by_token(token)
     # create T&C record as the requester accepts T&C.
     db_pg_session.execute(
-        insert(FamUserTermsConditions),
+        insert(FamUserTermsConditionsModel),
         [{
             "user_id": requester.user_id,
             "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,

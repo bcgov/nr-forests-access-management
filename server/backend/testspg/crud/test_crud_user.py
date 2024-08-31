@@ -4,7 +4,7 @@ import api.app.schemas as schemas
 import pytest
 from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION, UserType
 from api.app.crud import crud_user
-from api.app.models.model import FamUserTermsConditions
+from api.app.models import FamUserTermsConditionsModel
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
 from testspg.constants import (TEST_CREATOR, TEST_NEW_BCEID_USER,
@@ -252,9 +252,9 @@ def test_fetch_initial_requester_info_can_join_terms_conditions(
     assert bceid_user.cognito_user_id is not None
     assert bceid_user.fam_user_terms_conditions is None
 
-    # bceid_user accepts FamUserTermsConditions
+    # bceid_user accepts FamUserTermsConditionsModel
     db_pg_session.execute(
-        insert(FamUserTermsConditions),
+        insert(FamUserTermsConditionsModel),
         [{
             "user_id": bceid_user.user_id,
             "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,

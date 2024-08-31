@@ -3,7 +3,13 @@ from typing import List
 
 from api.app import schemas
 from api.app.constants import UserType
-from api.app.models import model as models
+from api.app.models import (
+    FamApplicationModel,
+    FamRoleModel,
+    FamUserModel,
+    FamUserRoleXrefModel,
+    FamAccessControlPrivilegeModel,
+)
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -15,8 +21,8 @@ LOGGER = logging.getLogger(__name__)
 def get_application(db: Session, application_id: int):
     """gets a single application"""
     application = (
-        db.query(models.FamApplication)
-        .filter(models.FamApplication.application_id == application_id)
+        db.query(FamApplicationModel)
+        .filter(FamApplicationModel.application_id == application_id)
         .one_or_none()
     )
     return application
@@ -43,9 +49,9 @@ def get_application_role_assignments(
     # base query - users assigned to the application. This could be the case
     #              for [APP]_ADMIN.
     q = (
-        db.query(models.FamUserRoleXref)
-        .join(models.FamRole)
-        .filter(models.FamRole.application_id == application_id)
+        db.query(FamUserRoleXrefModel)
+        .join(FamRoleModel)
+        .filter(FamRoleModel.application_id == application_id)
     )
 
     if not crud_utils.is_app_admin(
@@ -54,12 +60,12 @@ def get_application_role_assignments(
         # subquery for finding out what roles (role_ids) the requester
         # (as an application delegated admin) is managing at for a specific application.
         role_ids_dlgdadmin_managed_subquery = (
-            db.query(models.FamAccessControlPrivilege.role_id)
-            .join(models.FamUser)
-            .join(models.FamRole)
+            db.query(FamAccessControlPrivilegeModel.role_id)
+            .join(FamUserModel)
+            .join(FamRoleModel)
             .filter(
-                models.FamUser.cognito_user_id == requester.cognito_user_id,
-                models.FamRole.application_id == application_id,
+                FamUserModel.cognito_user_id == requester.cognito_user_id,
+                FamRoleModel.application_id == application_id,
             )
             .subquery()
         )
@@ -67,7 +73,7 @@ def get_application_role_assignments(
         # filtered by the managed role for user_role assignments that the
         # requester (as an delegated admin) is allowed to see.
         q = q.filter(
-            models.FamUserRoleXref.role_id.in_(
+            FamUserRoleXrefModel.role_id.in_(
                 select(role_ids_dlgdadmin_managed_subquery)
             )
         )
@@ -77,9 +83,9 @@ def get_application_role_assignments(
             # user_role records belonging to the same business organization.
 
             # Note, need to reassign to the variable from the base query.
-            q = q.join(models.FamUser).filter(
-                models.FamUser.user_type_code == UserType.BCEID,
-                func.upper(models.FamUser.business_guid)
+            q = q.join(FamUserModel).filter(
+                FamUserModel.user_type_code == UserType.BCEID,
+                func.upper(FamUserModel.business_guid)
                 == requester.business_guid.upper(),
             )
 

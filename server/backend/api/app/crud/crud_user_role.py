@@ -6,13 +6,14 @@ from api.app import constants as famConstants
 from api.app import schemas
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.crud.validator.forest_client_validator import (
-    forest_client_active, forest_client_number_exists,
-    get_forest_client_status)
+    forest_client_active,
+    forest_client_number_exists,
+    get_forest_client_status,
+)
 from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.integration.gc_notify import GCNotifyEmailService
-from api.app.models import model as models
+from api.app.models import FamRoleModel, FamUserModel, FamUserRoleXrefModel
 from api.app.utils.utils import raise_http_exception
-from requests import HTTPError
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -147,7 +148,7 @@ def create_user_role_assignment_many(
 
 
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester: str
+    db: Session, user: FamUserModel, role: FamRoleModel, requester: str
 ):
     create_user_role_assginment_return = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
@@ -155,14 +156,14 @@ def create_user_role_assignment(
     )
 
     if fam_user_role_xref:
-        error_msg = (
-            f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
-        )
+        error_msg = f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
         create_user_role_assginment_return = (
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.CONFLICT,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(
+                        **fam_user_role_xref.__dict__
+                    ),
                     "error_message": error_msg,
                 }
             )
@@ -173,7 +174,9 @@ def create_user_role_assignment(
             schemas.FamUserRoleAssignmentCreateResponse(
                 **{
                     "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(**fam_user_role_xref.__dict__),
+                    "detail": schemas.FamApplicationUserRoleAssignmentGet(
+                        **fam_user_role_xref.__dict__
+                    ),
                 }
             )
         )
@@ -183,8 +186,8 @@ def create_user_role_assignment(
 
 def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
     record = (
-        db.query(models.FamUserRoleXref)
-        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
+        db.query(FamUserRoleXrefModel)
+        .filter(FamUserRoleXrefModel.user_role_xref_id == user_role_xref_id)
         .one()
     )
     db.delete(record)
@@ -196,7 +199,7 @@ def create(db: Session, user_id: int, role_id: int, requester: str):
         f"FamUserRoleXref - 'create' with user_id: {user_id}, " + f"role_id: {role_id}."
     )
 
-    new_fam_user_role: models.FamUserRoleXref = models.FamUserRoleXref(
+    new_fam_user_role: FamUserRoleXrefModel = FamUserRoleXrefModel(
         **{
             "user_id": user_id,
             "role_id": role_id,
@@ -212,12 +215,12 @@ def create(db: Session, user_id: int, role_id: int, requester: str):
 
 def get_use_role_by_user_id_and_role_id(
     db: Session, user_id: int, role_id: int
-) -> models.FamUserRoleXref:
+) -> FamUserRoleXrefModel:
     user_role = (
-        db.query(models.FamUserRoleXref)
+        db.query(FamUserRoleXrefModel)
         .filter(
-            models.FamUserRoleXref.user_id == user_id,
-            models.FamUserRoleXref.role_id == role_id,
+            FamUserRoleXrefModel.user_id == user_id,
+            FamUserRoleXrefModel.role_id == role_id,
         )
         .one_or_none()
     )
@@ -237,7 +240,7 @@ def construct_forest_client_role_purpose(
 
 
 def find_or_create_forest_client_child_role(
-    db: Session, forest_client_number: str, parent_role: models.FamRole, requester: str
+    db: Session, forest_client_number: str, parent_role: FamRoleModel, requester: str
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
@@ -291,18 +294,19 @@ def find_or_create_forest_client_child_role(
     return child_role
 
 
-def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
+def find_by_id(db: Session, user_role_xref_id: int) -> FamUserRoleXrefModel:
     user_role = (
-        db.query(models.FamUserRoleXref)
-        .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
+        db.query(FamUserRoleXrefModel)
+        .filter(FamUserRoleXrefModel.user_role_xref_id == user_role_xref_id)
         .one_or_none()
     )
     return user_role
 
 
 def send_user_access_granted_email(
-        target_user: schemas.TargetUser,
-        roles_assignment_responses: List[schemas.FamUserRoleAssignmentCreateResponse]):
+    target_user: schemas.TargetUser,
+    roles_assignment_responses: List[schemas.FamUserRoleAssignmentCreateResponse],
+):
     """
     Send email using GC Notify integration service.
     TODO: Erro handling when sending email encountered technical errors (400/500). Ticket #1471.
@@ -318,22 +322,30 @@ def send_user_access_granted_email(
     """
     try:
         granted_roles = ", ".join(
-            item.detail.role.role_name for item in filter(
-                lambda res: res.status_code == HTTPStatus.OK,
-                roles_assignment_responses
+            item.detail.role.role_name
+            for item in filter(
+                lambda res: res.status_code == HTTPStatus.OK, roles_assignment_responses
             )
         )
-        with_client_number = "yes" if roles_assignment_responses[0].detail.role.client_number is not None else "no"
+        with_client_number = (
+            "yes"
+            if roles_assignment_responses[0].detail.role.client_number is not None
+            else "no"
+        )
         email_service = GCNotifyEmailService()
-        email_params = schemas.GCNotifyGrantAccessEmailParam(**{
-            "first_name": target_user.first_name,
-            "last_name": target_user.last_name,
-            "application_name": roles_assignment_responses[0].detail.role.application.application_description,
-            "role_list_string": granted_roles,
-            "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
-            "send_to_email": target_user.email,
-            "with_client_number": with_client_number
-        })
+        email_params = schemas.GCNotifyGrantAccessEmailParam(
+            **{
+                "first_name": target_user.first_name,
+                "last_name": target_user.last_name,
+                "application_name": roles_assignment_responses[
+                    0
+                ].detail.role.application.application_description,
+                "role_list_string": granted_roles,
+                "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
+                "send_to_email": target_user.email,
+                "with_client_number": with_client_number,
+            }
+        )
 
         if granted_roles == "":  # no role is granted
             return

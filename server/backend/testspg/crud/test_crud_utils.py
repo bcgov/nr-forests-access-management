@@ -1,6 +1,6 @@
 import logging
 
-import api.app.models.model as model
+from api.app.models import FamUserModel
 import api.app.schemas as schemas
 import pytest
 from api.app.crud import crud_user, crud_utils
@@ -55,7 +55,7 @@ def test_get_primary_key():
     """Testing that the method to retrieve the name of a primary key column
     on a table.
     """
-    pk_col_name = crud_utils.get_primary_key(model.FamUser)
+    pk_col_name = crud_utils.get_primary_key(FamUserModel)
     assert pk_col_name == "user_id"
 
 
@@ -71,7 +71,7 @@ def test_get_next(db_pg_session: Session):
         pre-populated with user data.
     :type dbsession_fam_users: sqlalchemy.orm.Session
     """
-    fam_user_model = model.FamUser
+    fam_user_model = FamUserModel
     LOGGER.debug(f"fam_user_model type: {type(fam_user_model)}")
     next_value_before = crud_utils.get_next(db=db_pg_session, model=fam_user_model)
     assert next_value_before > 0

@@ -2,7 +2,7 @@ import logging
 from http import HTTPStatus
 
 from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION
-from api.app.models.model import FamUserTermsConditions
+from api.app.models import FamUserTermsConditionsModel
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
@@ -11,12 +11,12 @@ LOGGER = logging.getLogger(__name__)
 
 def get_user_terms_conditions_by_user_id_and_version(
     db: Session, user_id: int, version: str
-) -> FamUserTermsConditions:
+) -> FamUserTermsConditionsModel:
     return (
-        db.query(FamUserTermsConditions)
+        db.query(FamUserTermsConditionsModel)
         .filter(
-            FamUserTermsConditions.user_id == user_id,
-            FamUserTermsConditions.version == version,
+            FamUserTermsConditionsModel.user_id == user_id,
+            FamUserTermsConditionsModel.version == version,
         )
         .one_or_none()
     )
@@ -24,7 +24,7 @@ def get_user_terms_conditions_by_user_id_and_version(
 
 def create_user_terms_conditions(
     db: Session, user_id: int, requester: str
-) -> FamUserTermsConditions:
+) -> FamUserTermsConditionsModel:
     LOGGER.debug(
         f"Creating user terms conditions acceptance record for user {user_id} and version {CURRENT_TERMS_AND_CONDITIONS_VERSION}"
     )
@@ -35,7 +35,7 @@ def create_user_terms_conditions(
         error_msg = "User already accepted terms and conditions."
         raise_http_exception(error_msg=error_msg, status_code=HTTPStatus.CONFLICT)
 
-    new_user_terms_conditions = FamUserTermsConditions(
+    new_user_terms_conditions = FamUserTermsConditionsModel(
         **{
             "user_id": user_id,
             "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,

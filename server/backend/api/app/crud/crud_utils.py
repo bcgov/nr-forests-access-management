@@ -3,11 +3,12 @@ import os
 from typing import List, Optional
 
 import sqlalchemy
+from sqlalchemy.orm import DeclarativeMeta
 from api.app.constants import (APPLICATION_FAM,
                                ERROR_CODE_INVALID_APPLICATION_ID,
                                ApiInstanceEnv, AppEnv, AwsTargetEnv)
 from api.app.crud import crud_application
-from api.app.models import model as models
+from api.app.models import FamApplicationModel
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
@@ -29,19 +30,20 @@ def replace_str_list(
         else None
     )
 
-
-def get_primary_key(model: models) -> str:
-    """recieves a declarative base model and returns the primary key that
-    is defined for the base
-
-    :param model: input declarative base model object
-    :type model: sqlalchemy.ext.declarative
-    :return: name of the primarly key column as a string
-    :rtype: str
+def get_primary_key(instance: DeclarativeMeta) -> str:
     """
-    pk_name = inspect(model).primary_key[0].name
-    LOGGER.debug(f"primary key for table {model.__table__}: {pk_name}")
-    return pk_name
+    Given a SQLAlchemy model instance, return the value of the primary key.
+
+    Args:
+        instance (DeclarativeMeta): An instance of a SQLAlchemy model.
+
+    Returns:
+        str: The value of the primary key for the given model instance.
+    """
+    # Inspect the instance to get its primary key
+    primary_key = inspect(instance).mapper.primary_key[0]
+    # Return the value of the primary key attribute
+    return getattr(instance, primary_key.name)
 
 
 def get_highest_value(
@@ -66,7 +68,7 @@ def get_highest_value(
     return query_result
 
 
-def get_next(model: sqlalchemy.orm.decl_api.DeclarativeMeta, db: Session) -> int:
+def get_next(model: DeclarativeMeta, db: Session) -> int:
     """calculates the next increment for the given model.  This is
     created because in development the autoincrement / populate feature
     for sqllite databases does not always work.
@@ -114,7 +116,7 @@ def is_on_aws_prod() -> bool:
     return get_aws_target_env() == AwsTargetEnv.PROD
 
 
-def use_api_instance_by_app(application: models.FamApplication) -> ApiInstanceEnv:
+def use_api_instance_by_app(application: FamApplicationModel) -> ApiInstanceEnv:
     """
     FAM PROD environment supports (DEV/TET/PROD) integrated applications.
     Only PROD application at FAM PROD uses API instance in PROD.

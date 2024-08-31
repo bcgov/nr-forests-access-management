@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
 
 from api.app.constants import UserType, ApiInstanceEnv, IdimSearchUserParamType
-from api.app.models import model as models
+from api.app.models import FamUserModel
 from api.app.crud import crud_utils
 from api.app.integration.idim_proxy import IdimProxyService
 from api.config import config
@@ -22,7 +22,7 @@ def get_users(db: Session):
     :rtype: _type_
     """
     LOGGER.debug(f"db session: {db}")
-    fam_users = db.query(models.FamUser).all()
+    fam_users = db.query(FamUserModel).all()
     return fam_users
 
 
@@ -38,20 +38,20 @@ def get_user(db: Session, user_id: int):
     """
     # get a single user based on user_id
     fam_user = (
-        db.query(models.FamUser).filter(models.FamUser.user_id == user_id).one_or_none()
+        db.query(FamUserModel).filter(FamUserModel.user_id == user_id).one_or_none()
     )
     return fam_user
 
 
 def get_user_by_domain_and_name(
     db: Session, user_type_code: str, user_name: str
-) -> models.FamUser:
+) -> FamUserModel:
     # get a single user based on unique combination of user_name and user_type_code.
-    fam_user: models.FamUser = (
-        db.query(models.FamUser)
+    fam_user: FamUserModel = (
+        db.query(FamUserModel)
         .filter(
-            models.FamUser.user_type_code == user_type_code,
-            models.FamUser.user_name.ilike(user_name),
+            FamUserModel.user_type_code == user_type_code,
+            FamUserModel.user_name.ilike(user_name),
         )
         .one_or_none()
     )
@@ -63,12 +63,12 @@ def get_user_by_domain_and_name(
 
 def get_user_by_domain_and_guid(
     db: Session, user_type_code: str, user_guid: str
-) -> models.FamUser:
+) -> FamUserModel:
     return (
-        db.query(models.FamUser)
+        db.query(FamUserModel)
         .filter(
-            models.FamUser.user_type_code == user_type_code,
-            models.FamUser.user_guid == user_guid,
+            FamUserModel.user_type_code == user_type_code,
+            FamUserModel.user_guid == user_guid,
         )
         .one_or_none()
     )
@@ -87,7 +87,7 @@ def create_user(fam_user: schemas.FamUser, db: Session):
     LOGGER.debug(f"Creating Fam_User: {fam_user}")
 
     fam_user_dict = fam_user.model_dump()
-    db_item = models.FamUser(**fam_user_dict)
+    db_item = FamUserModel(**fam_user_dict)
     db.add(db_item)
     db.flush()
     return db_item
@@ -113,7 +113,7 @@ def find_or_create(
             update(
                 db,
                 fam_user_by_domain_and_name.user_id,
-                {models.FamUser.user_guid: user_guid},
+                {FamUserModel.user_guid: user_guid},
                 requester,
             )
             LOGGER.debug(
@@ -143,10 +143,10 @@ def find_or_create(
     return fam_user
 
 
-def get_user_by_cognito_user_id(db: Session, cognito_user_id: str) -> models.FamUser:
+def get_user_by_cognito_user_id(db: Session, cognito_user_id: str) -> FamUserModel:
     user = (
-        db.query(models.FamUser)
-        .filter(models.FamUser.cognito_user_id == cognito_user_id)
+        db.query(FamUserModel)
+        .filter(FamUserModel.cognito_user_id == cognito_user_id)
         .one_or_none()
     )
     return user
@@ -160,9 +160,9 @@ def update(
         + f"for requester {requester}"
     )
     update_count = (
-        db.query(models.FamUser)
-        .filter(models.FamUser.user_id == user_id)
-        .update({**update_values, models.FamUser.update_user: requester})
+        db.query(FamUserModel)
+        .filter(FamUserModel.user_id == user_id)
+        .update({**update_values, FamUserModel.update_user: requester})
     )
     LOGGER.debug(f"{update_count} row updated.")
     return update_count
@@ -170,7 +170,7 @@ def update(
 
 def update_user_name(
     db: Session,
-    user: models.FamUser,
+    user: FamUserModel,
     user_name_for_update: str,
     requester: str,  # cognito_user_id
 ):
@@ -178,7 +178,7 @@ def update_user_name(
         update(
             db,
             user.user_id,
-            {models.FamUser.user_name: user_name_for_update},
+            {FamUserModel.user_name: user_name_for_update},
             requester,
         )
         LOGGER.debug(
@@ -214,9 +214,9 @@ def update_user_properties_from_verified_target_user(
         f"email: {email} for fam_user update."
     )
     properties_to_update = {
-        models.FamUser.first_name: first_name,
-        models.FamUser.last_name: last_name,
-        models.FamUser.email: email,
+        FamUserModel.first_name: first_name,
+        FamUserModel.last_name: last_name,
+        FamUserModel.email: email,
     }
     # update business_guid when necessary
     business_guid = target_user.business_guid
@@ -225,7 +225,7 @@ def update_user_properties_from_verified_target_user(
         # add additional property to 'properties_to_update'
         properties_to_update = {
             **properties_to_update,
-            models.FamUser.business_guid: business_guid,
+            FamUserModel.business_guid: business_guid,
         }
 
     update(db, user_id, properties_to_update, requester)
@@ -244,12 +244,12 @@ def fetch_initial_requester_info(db: Session, cognito_user_id: str):
     Use orm `joinedload` to join due to the relationship with user is a `lazy`.
     """
     q_stm = (
-        select(models.FamUser)
+        select(FamUserModel)
         .options(
-            joinedload(models.FamUser.fam_access_control_privileges),
-            joinedload(models.FamUser.fam_user_terms_conditions),
+            joinedload(FamUserModel.fam_access_control_privileges),
+            joinedload(FamUserModel.fam_user_terms_conditions),
         )
-        .filter(models.FamUser.cognito_user_id == cognito_user_id)
+        .filter(FamUserModel.cognito_user_id == cognito_user_id)
     )
     user = db.scalars(q_stm).unique().one_or_none()
     return user
@@ -281,8 +281,8 @@ def update_user_info_from_idim_source(
 
     if use_pagination:
         fam_users = (
-            db.query(models.FamUser)
-            .order_by(models.FamUser.user_id.asc())
+            db.query(FamUserModel)
+            .order_by(FamUserModel.user_id.asc())
             .offset((page - 1) * per_page)
             .limit(per_page)
             .all()
@@ -317,7 +317,7 @@ def update_user_info_from_idim_source(
                 if not user.user_guid:
                     # if user has no user_guid in our database, add it
                     properties_to_update = {
-                        models.FamUser.user_guid: search_result.get("guid"),
+                        FamUserModel.user_guid: search_result.get("guid"),
                     }
 
                 elif (
@@ -346,7 +346,7 @@ def update_user_info_from_idim_source(
                         )
                     )
                     properties_to_update = {
-                        models.FamUser.user_name: search_result.get("userId"),
+                        FamUserModel.user_name: search_result.get("userId"),
                     }
 
                 else:
@@ -360,7 +360,7 @@ def update_user_info_from_idim_source(
                         )
                     )
                     properties_to_update = {
-                        models.FamUser.user_guid: search_result.get("guid"),
+                        FamUserModel.user_guid: search_result.get("guid"),
                     }
             else:
                 # ignore bc service card users
@@ -374,10 +374,10 @@ def update_user_info_from_idim_source(
             if search_result and search_result.get("found"):
                 properties_to_update = {
                     **properties_to_update,
-                    models.FamUser.first_name: search_result.get("firstName"),
-                    models.FamUser.last_name: search_result.get("lastName"),
-                    models.FamUser.email: search_result.get("email"),
-                    models.FamUser.business_guid: search_result.get("businessGuid"),
+                    FamUserModel.first_name: search_result.get("firstName"),
+                    FamUserModel.last_name: search_result.get("lastName"),
+                    FamUserModel.email: search_result.get("email"),
+                    FamUserModel.business_guid: search_result.get("businessGuid"),
                 }
 
                 update(

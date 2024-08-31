@@ -33,7 +33,7 @@ from api.app.jwt_validation import (
     get_request_cognito_user_id,
     validate_token,
 )
-from api.app.models.model import FamRole, FamUser
+from api.app.models import FamRoleModel, FamUserModel
 from api.app.schemas import Requester, TargetUser
 from api.app.utils import utils
 from fastapi import Depends, Request, Security
@@ -59,7 +59,7 @@ def get_current_requester(
     LOGGER.debug(
         f"Retrieving current requester from: request_cognito_user_id: {request_cognito_user_id}"
     )
-    fam_user: FamUser = crud_user.fetch_initial_requester_info(
+    fam_user: FamUserModel = crud_user.fetch_initial_requester_info(
         db, request_cognito_user_id
     )
     LOGGER.debug(f"Current retrieved fam_user: {fam_user}")
@@ -84,11 +84,11 @@ def get_current_requester(
         return requester
 
 
-def _parse_custom_requester_fields(fam_user: FamUser):
+def _parse_custom_requester_fields(fam_user: FamUserModel):
     """
-    Conversation helper function to parse information from FamUser for some
+    Conversation helper function to parse information from FamUserModel for some
     custom attributes needed at Requester.
-    :fam_user: fetched FamUser from db with joined table information.
+    :fam_user: fetched FamUserModel from db with joined table information.
     :return: dictionary contains custom attributes information for setting 'Requester'
     """
     user_type_code = fam_user.user_type_code
@@ -164,7 +164,7 @@ def authorize_by_app_id(
 
 async def get_request_role_from_id(
     request: Request, db: Session = Depends(database.get_db)
-) -> FamRole:
+) -> FamRoleModel:
     """
     (this is a sub-dependency as convenient function)
     To get role id from request...
@@ -196,7 +196,7 @@ async def get_request_role_from_id(
 def authorize_by_application_role(
     # Depends on "get_request_role_from_id()" to figure out
     # what id to use to get role from endpoint.
-    role: FamRole = Depends(get_request_role_from_id),
+    role: FamRoleModel = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
@@ -219,7 +219,7 @@ def authorize_by_application_role(
 
 async def authorize_by_privilege(
     request: Request,
-    role: FamRole = Depends(get_request_role_from_id),
+    role: FamRoleModel = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: Requester = Depends(get_current_requester),
@@ -404,7 +404,7 @@ async def enforce_self_grant_guard(
 async def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
-    role: FamRole = Depends(get_request_role_from_id),
+    role: FamRoleModel = Depends(get_request_role_from_id),
 ) -> TargetUser:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user

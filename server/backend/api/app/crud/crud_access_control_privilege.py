@@ -1,6 +1,6 @@
 import logging
 
-from api.app.models.model import FamAccessControlPrivilege, FamRole
+from api.app.models import FamAccessControlPrivilegeModel, FamRoleModel
 from sqlalchemy.orm import Session
 
 
@@ -19,11 +19,11 @@ def is_delegated_admin_by_app_id(
     """
     return (
         True
-        if db.query(FamAccessControlPrivilege)
-        .join(FamRole)
+        if db.query(FamAccessControlPrivilegeModel)
+        .join(FamRoleModel)
         .filter(
-            FamAccessControlPrivilege.user_id == user_id,
-            FamRole.application_id == application_id,
+            FamAccessControlPrivilegeModel.user_id == user_id,
+            FamRoleModel.application_id == application_id,
         )
         .first()
         else False
@@ -39,9 +39,9 @@ def is_delegated_admin(db: Session, user_id: int) -> bool:
     """
     return (
         True
-        if db.query(FamAccessControlPrivilege)
+        if db.query(FamAccessControlPrivilegeModel)
         .filter(
-            FamAccessControlPrivilege.user_id == user_id,
+            FamAccessControlPrivilegeModel.user_id == user_id,
         )
         .first()
         else False
@@ -58,10 +58,10 @@ def has_privilege_by_role_id(db: Session, user_id: int, role_id: int) -> bool:
     """
     return (
         True
-        if db.query(FamAccessControlPrivilege)
+        if db.query(FamAccessControlPrivilegeModel)
         .filter(
-            FamAccessControlPrivilege.user_id == user_id,
-            FamAccessControlPrivilege.role_id == role_id,
+            FamAccessControlPrivilegeModel.user_id == user_id,
+            FamAccessControlPrivilegeModel.role_id == role_id,
         )
         .one_or_none()
         else False

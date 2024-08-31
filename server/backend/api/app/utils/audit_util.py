@@ -2,7 +2,7 @@ import logging
 from typing import List
 from enum import Enum
 import json
-from api.app.models import model as models
+from api.app.models import FamRoleModel, FamApplicationModel, FamUserModel
 from api.app.schemas import Requester
 from fastapi import Request, HTTPException
 
@@ -24,11 +24,11 @@ class AuditEventLog:
     request: Request
     event_type: AuditEventType
     event_outcome: AuditEventOutcome
-    application: models.FamApplication
-    role: models.FamRole
+    application: FamApplicationModel
+    role: FamRoleModel
     forest_client_numbers: List[str]
     requesting_user: Requester
-    target_user: models.FamUser
+    target_user: FamUserModel
     exception: Exception
 
     def __init__(
@@ -36,11 +36,11 @@ class AuditEventLog:
         request: Request = None,
         event_type: AuditEventType = None,
         event_outcome: AuditEventOutcome = None,
-        application: models.FamApplication = None,
-        role: models.FamRole = None,
+        application: FamApplicationModel = None,
+        role: FamRoleModel = None,
         forest_client_numbers: List[str] = [],
         requesting_user: Requester = None,
-        target_user: models.FamUser = None,
+        target_user: FamUserModel = None,
         exception: Exception = None,
     ):
         self.request = request
@@ -57,45 +57,49 @@ class AuditEventLog:
 
         log_item = {
             "auditEventTypeCode": self.event_type.name if self.event_type else None,
-            "auditEventResultCode": self.event_outcome.name
-            if self.event_outcome
-            else None,
-            "applicationId": self.application.application_id
-            if self.application
-            else None,
-            "applicationName": self.application.application_name
-            if self.application
-            else None,
-            "applicationEnv": self.application.app_environment
-            if self.application
-            else None,
+            "auditEventResultCode": (
+                self.event_outcome.name if self.event_outcome else None
+            ),
+            "applicationId": (
+                self.application.application_id if self.application else None
+            ),
+            "applicationName": (
+                self.application.application_name if self.application else None
+            ),
+            "applicationEnv": (
+                self.application.app_environment if self.application else None
+            ),
             "roleId": self.role.role_id if self.role else None,
             "roleName": self.role.role_name if self.role else None,
             "roleType": self.role.role_type_code if self.role else None,
             "forestClientNumbers": self.forest_client_numbers,
             "targetUser": {
                 "userGuid": self.target_user.user_guid if self.target_user else None,
-                "userType": self.target_user.user_type_code
-                if self.target_user
-                else None,
+                "userType": (
+                    self.target_user.user_type_code if self.target_user else None
+                ),
                 "idpUserName": self.target_user.user_name if self.target_user else None,
-                "cognitoUsername": self.target_user.cognito_user_id
-                if self.target_user
-                else None,
+                "cognitoUsername": (
+                    self.target_user.cognito_user_id if self.target_user else None
+                ),
             },
             "requestingUser": {
-                "userGuid": self.requesting_user.user_guid
-                if self.requesting_user
-                else None,
-                "userType": self.requesting_user.user_type_code
-                if self.requesting_user
-                else None,
-                "idpUserName": self.requesting_user.user_name
-                if self.requesting_user
-                else None,
-                "cognitoUsername": self.requesting_user.cognito_user_id
-                if self.requesting_user
-                else None,
+                "userGuid": (
+                    self.requesting_user.user_guid if self.requesting_user else None
+                ),
+                "userType": (
+                    self.requesting_user.user_type_code
+                    if self.requesting_user
+                    else None
+                ),
+                "idpUserName": (
+                    self.requesting_user.user_name if self.requesting_user else None
+                ),
+                "cognitoUsername": (
+                    self.requesting_user.cognito_user_id
+                    if self.requesting_user
+                    else None
+                ),
             },
             "requestIP": self.request.client.host if self.request.client else "unknown",
         }
