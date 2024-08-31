@@ -12,10 +12,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, relationship
-from api.app.models import Base, FamAccessControlPrivilegeModel, FamUserTermsConditionsModel
-
+from .base import Base
 
 class FamUserModel(Base):
+    from FamAccessControlPrivilege import FamAccessControlPrivilegeModel
+    from FamUserTermsConditions import FamUserTermsConditionsModel
+
     __tablename__ = "fam_user"
 
     user_id = Column(
@@ -94,4 +96,4 @@ class FamUserModel(Base):
     )
 
     def __str__(self):
-        return f"FamUser({self.user_id}, {self.user_name}, {self.user_type_code})"
+        return f"FamUserModel({self.user_id}, {self.user_name}, {self.user_type_code})"

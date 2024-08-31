@@ -1,9 +1,4 @@
-from sqlalchemy.orm import declarative_base, configure_mappers
-from sqlalchemy.ext.declarative import DeclarativeMeta
-
-# Create the Base and metadata objects
-Base: DeclarativeMeta = declarative_base()
-metadata = Base.metadata
+from sqlalchemy.orm import configure_mappers
 
 from .FamApplication import FamApplicationModel
 from .FamForestClient import FamForestClientModel

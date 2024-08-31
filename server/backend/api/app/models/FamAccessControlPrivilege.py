@@ -13,7 +13,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from api.app.models import Base
+from .base import Base
 
 
 class FamAccessControlPrivilegeModel(Base):
@@ -90,5 +90,5 @@ class FamAccessControlPrivilegeModel(Base):
 
     def __repr__(self):
         return (
-            f"FamAccessControlPrivilege(user_id={self.user_id}, role_id={self.role_id})"
+            f"FamAccessControlPrivilegeModel(user_id={self.user_id}, role_id={self.role_id})"
         )

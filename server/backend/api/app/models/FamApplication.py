@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from api.app.models import Base
+from .base import Base
 
 
 class FamApplicationModel(Base):
@@ -82,4 +82,4 @@ class FamApplicationModel(Base):
     )
 
     def __repr__(self):
-        return f"FamApplication({self.application_id}, {self.application_name}, {self.app_environment})"
+        return f"FamApplicationModel({self.application_id}, {self.application_name}, {self.app_environment})"

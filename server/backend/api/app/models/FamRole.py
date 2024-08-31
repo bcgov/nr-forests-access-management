@@ -13,10 +13,11 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, relationship
 
-from api.app.models import Base, FamApplicationModel
-
+from .base import Base
 
 class FamRoleModel(Base):
+    from .FamApplication import FamApplicationModel
+
     __tablename__ = "fam_role"
 
     role_id = Column(

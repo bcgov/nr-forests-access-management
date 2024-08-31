@@ -11,7 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from api.app.models import Base
+from .base import Base
 
 
 class FamForestClientModel(Base):
