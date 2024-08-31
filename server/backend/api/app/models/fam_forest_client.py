@@ -1,17 +1,16 @@
 import datetime
-
 from sqlalchemy import (
     BigInteger,
     Column,
-    Identity,
     Integer,
-    PrimaryKeyConstraint,
     String,
+    Identity,
+    PrimaryKeyConstraint,
     UniqueConstraint,
+    TIMESTAMP,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from api.app.models import Base
+from .base import Base
 
 
 class FamForestClientModel(Base):
@@ -19,7 +18,6 @@ class FamForestClientModel(Base):
     __table_args__ = (
         PrimaryKeyConstraint("client_number_id", name="fam_for_cli_pk"),
         UniqueConstraint("forest_client_number", name="fam_for_cli_num_uk"),
-        # UniqueConstraint("client_name", name="fam_for_cli_name_uk"),
         {
             "comment": "A forest client is a business, individual, or agency that is "
             'identified as an entity that a user can have a privilege "on '
@@ -47,8 +45,6 @@ class FamForestClientModel(Base):
         index=True,
         comment="Id number as String from external Forest Client source(api/table) that identifies the Forest Client.",
     )
-    # client_name = Column(String(100), nullable=True, index=True)  # noqa NOSONAR
-
     create_user = Column(
         String(100),
         nullable=False,
@@ -57,17 +53,19 @@ class FamForestClientModel(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
         String(100),
-        comment="The user or proxy account that created or last updated the record. ",
+        comment="The user or proxy account that created or last updated the record.",
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_role = relationship("FamRoleModel", back_populates="client_number")
+    fam_role = relationship(
+        "FamRoleModel", back_populates="client_number", lazy="joined"
+    )

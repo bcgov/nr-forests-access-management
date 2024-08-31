@@ -1,27 +1,23 @@
 import datetime
-
 from sqlalchemy import (
     BigInteger,
     Column,
-    ForeignKeyConstraint,
     Identity,
     Integer,
-    PrimaryKeyConstraint,
     String,
+    ForeignKeyConstraint,
+    PrimaryKeyConstraint,
     UniqueConstraint,
+    TIMESTAMP,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import Mapped, relationship
-
-from api.app.models import Base, FamApplicationModel
+from sqlalchemy.orm import relationship
+from .base import Base
 
 
 class FamRoleModel(Base):
     __tablename__ = "fam_role"
 
     role_id = Column(
-        # Use '.with_variant' for sqlite as it does not recognize BigInteger
-        # Ref: 	https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#allowing-autoincrement-behavior-sqlalchemy-types-other-than-integer-integer
         BigInteger().with_variant(Integer, "sqlite"),
         Identity(
             always=True,
@@ -53,7 +49,7 @@ class FamRoleModel(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     parent_role_id = Column(
@@ -69,7 +65,7 @@ class FamRoleModel(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
     role_type_code = Column(
@@ -80,9 +76,7 @@ class FamRoleModel(Base):
         + "role_type=concrete",
     )
 
-    application: Mapped[FamApplicationModel] = relationship(
-        "FamApplicationModel", back_populates="fam_role"
-    )
+    application = relationship("FamApplicationModel", back_populates="fam_role")
     client_number = relationship(
         "FamForestClientModel", back_populates="fam_role", lazy="joined"
     )
@@ -97,6 +91,7 @@ class FamRoleModel(Base):
     fam_access_control_privilege = relationship(
         "FamAccessControlPrivilegeModel", back_populates="role"
     )
+
     __table_args__ = (
         ForeignKeyConstraint(
             ["application_id"],
@@ -125,3 +120,9 @@ class FamRoleModel(Base):
             "schema": "app_fam",
         },
     )
+
+
+class FamRoleTypeModel(Base):
+    __tablename__ = "fam_role_type"
+    role_type_code = Column(String(2), nullable=False)
+    description = Column(String(100), nullable=True)

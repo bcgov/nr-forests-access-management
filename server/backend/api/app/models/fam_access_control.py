@@ -1,6 +1,4 @@
 import datetime
-from typing import List
-
 from sqlalchemy import (
     BigInteger,
     Column,
@@ -10,10 +8,10 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     UniqueConstraint,
+    TIMESTAMP,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from api.app.models import Base
+from .base import Base
 
 
 class FamAccessControlPrivilegeModel(Base):
@@ -42,6 +40,7 @@ class FamAccessControlPrivilegeModel(Base):
             "schema": "app_fam",
         },
     )
+
     access_control_privilege_id = Column(
         BigInteger,
         Identity(
@@ -69,7 +68,7 @@ class FamAccessControlPrivilegeModel(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=datetime.datetime.utcnow,
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -78,17 +77,15 @@ class FamAccessControlPrivilegeModel(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=datetime.datetime.utcnow,
         comment="The date and time the record was created or last updated.",
     )
     role = relationship(
         "FamRoleModel", back_populates="fam_access_control_privilege", lazy="joined"
     )
     user = relationship(
-        "FamRoleModel", back_populates="fam_access_control_privileges", lazy="joined"
+        "FamUserModel", back_populates="fam_access_control_privileges", lazy="joined"
     )
 
     def __repr__(self):
-        return (
-            f"FamAccessControlPrivilege(user_id={self.user_id}, role_id={self.role_id})"
-        )
+        return f"FamAccessControlPrivilegeModel(user_id={self.user_id}, role_id={self.role_id})"

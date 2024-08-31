@@ -1,43 +1,30 @@
-from sqlalchemy.orm import declarative_base, configure_mappers
-from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import configure_mappers
+from .base import Base, metadata
 
-# Create the Base and metadata objects
-Base: DeclarativeMeta = declarative_base()
-metadata = Base.metadata
+from .fam_application import (
+    FamApplicationModel,
+    FamApplicationClientModel,
+    FamAppEnvironmentModel,
+)
+from .fam_role import FamRoleModel, FamRoleTypeModel
+from .fam_user import FamUserModel, FamUserTypeModel, FamUserTermsConditionsModel
+from .fam_access_control import FamAccessControlPrivilegeModel
+from .fam_forest_client import FamForestClientModel
 
-# Import models with fewer dependencies first
-
-from .FamApplication import FamApplicationModel
-from .FamForestClient import FamForestClientModel
-from .FamAppEnvironment import FamAppEnvironmentModel
-
-# Import models that have dependencies on previously imported models
-
-from .FamRoleType import FamRoleTypeModel
-from .FamUserType import FamUserTypeModel
-from .FamRole import FamRoleModel
-from .FamUser import FamUserModel
-
-# Import models that depend on multiple others
-
-from .FamAccessControlPrivilege import FamAccessControlPrivilegeModel
-from .FamUserRoleXref import FamUserRoleXrefModel
-from .FamUserTermsConditions import FamUserTermsConditionsModel
-from .FamApplicationClient import FamApplicationClientModel
-
-# Ensure all mappers are configured after all models have been imported
+# Ensure that all mappers are configured to avoid circular import issues
 configure_mappers()
 
 __all__ = [
+    "Base",
+    "metadata",
     "FamApplicationModel",
-    "FamForestClientModel",
-    "FamAccessControlPrivilegeModel",
-    "FamUserTermsConditionsModel",
-    "FamUserTypeModel",
-    "FamUserModel",
     "FamApplicationClientModel",
-    "FamRoleTypeModel",
-    "FamRoleModel",
-    "FamUserRoleXrefModel",
     "FamAppEnvironmentModel",
+    "FamRoleModel",
+    "FamRoleTypeModel",
+    "FamUserModel",
+    "FamUserTypeModel",
+    "FamUserTermsConditionsModel",
+    "FamAccessControlPrivilegeModel",
+    "FamForestClientModel",
 ]
