@@ -7,7 +7,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from models import Base
+from api.app.models import Base
 
 
 class FamAppEnvironmentModel(Base):

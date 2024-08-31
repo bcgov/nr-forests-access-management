@@ -13,7 +13,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, relationship
 
-from models import Base, FamApplicationModel
+from api.app.models import Base, FamApplicationModel
 
 
 class FamRoleModel(Base):

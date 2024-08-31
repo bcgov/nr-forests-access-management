@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy import Column, PrimaryKeyConstraint, String
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from models import Base
+from api.app.models import Base
 
 
 class FamUserTypeModel(Base):

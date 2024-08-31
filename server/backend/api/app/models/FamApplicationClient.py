@@ -11,7 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from models import Base
+from api.app.models import Base
 
 
 class FamApplicationClientModel(Base):

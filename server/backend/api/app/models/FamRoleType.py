@@ -6,7 +6,7 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from models import Base
+from api.app.models import Base
 
 
 class FamRoleTypeModel(Base):
