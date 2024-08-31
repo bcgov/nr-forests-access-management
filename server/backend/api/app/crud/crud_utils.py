@@ -4,9 +4,13 @@ from typing import List, Optional
 
 import sqlalchemy
 from sqlalchemy.orm import DeclarativeMeta
-from api.app.constants import (APPLICATION_FAM,
-                               ERROR_CODE_INVALID_APPLICATION_ID,
-                               ApiInstanceEnv, AppEnv, AwsTargetEnv)
+from api.app.constants import (
+    APPLICATION_FAM,
+    ERROR_CODE_INVALID_APPLICATION_ID,
+    ApiInstanceEnv,
+    AppEnv,
+    AwsTargetEnv,
+)
 from api.app.crud import crud_application
 from api.app.models import FamApplicationModel
 from api.app.utils.utils import raise_http_exception
@@ -30,20 +34,21 @@ def replace_str_list(
         else None
     )
 
-def get_primary_key(instance: DeclarativeMeta) -> str:
+
+def get_primary_key_name(instance: DeclarativeMeta) -> str:
     """
-    Given a SQLAlchemy model instance, return the value of the primary key.
+    Given a SQLAlchemy model instance, return the name of the primary key.
 
     Args:
         instance (DeclarativeMeta): An instance of a SQLAlchemy model.
 
     Returns:
-        str: The value of the primary key for the given model instance.
+        str: The name of the primary key for the given model instance.
     """
     # Inspect the instance to get its primary key
     primary_key = inspect(instance).mapper.primary_key[0]
-    # Return the value of the primary key attribute
-    return getattr(instance, primary_key.name)
+    # Return the name of the primary key attribute
+    return primary_key.name
 
 
 def get_highest_value(
@@ -124,11 +129,11 @@ def use_api_instance_by_app(application: FamApplicationModel) -> ApiInstanceEnv:
     Ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
     api_instance_env = ApiInstanceEnv.TEST  # API TEST instance as default.
-    if (is_on_aws_prod() and (
+    if is_on_aws_prod() and (
         # either PROD app or app is FAM
-        application.app_environment == AppEnv.APP_ENV_TYPE_PROD or
-        application.application_name == APPLICATION_FAM
-    )):
+        application.app_environment == AppEnv.APP_ENV_TYPE_PROD
+        or application.application_name == APPLICATION_FAM
+    ):
         api_instance_env = ApiInstanceEnv.PROD
 
     LOGGER.info(f"Use api instance environment -- {api_instance_env}")
