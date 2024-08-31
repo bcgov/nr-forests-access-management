@@ -1,4 +1,4 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, configure_mappers
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 # Create the Base and metadata objects
@@ -16,6 +16,9 @@ from .FamRoleType import FamRoleTypeModel
 from .FamRole import FamRoleModel
 from .FamUserRoleXref import FamUserRoleXrefModel
 from .FamAppEnvironment import FamAppEnvironmentModel
+
+# Ensure all mappers are configured after all models have been imported
+configure_mappers()
 
 __all__ = [
     "FamApplicationModel",
