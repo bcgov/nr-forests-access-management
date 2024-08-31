@@ -14,11 +14,15 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship, Mapped
 
-from api.app.models import FamAccessControlPrivilegeModel
 from .base import Base
 
 
 class FamUserModel(Base):
+    from api.app.models import (
+        FamAccessControlPrivilegeModel,
+        FamUserTermsConditionsModel,
+    )
+
     __tablename__ = "fam_user"
 
     user_id = Column(
