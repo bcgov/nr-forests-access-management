@@ -29,6 +29,7 @@ class FamApplicationModel(Base):
             cycle=False,
             cache=1,
         ),
+        primary_key=True,
         comment="Automatically generated key used to identify the uniqueness "
         + "of an Application registered under FAM",
     )
@@ -96,6 +97,7 @@ class FamApplicationClientModel(Base):
             cycle=False,
             cache=1,
         ),
+        primary_key=True,
         comment="Automatically generated key used to identify the uniqueness "
         + " of an OIDC as it corresponds to an identified client ",
     )
