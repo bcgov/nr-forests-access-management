@@ -9,8 +9,8 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     PrimaryKeyConstraint,
     UniqueConstraint,
-    TIMESTAMP,
 )
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from .base import Base
 
