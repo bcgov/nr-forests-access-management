@@ -76,11 +76,11 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
 
-    # --- Performs search_idir user (This is only for IDIR RequesterSchema) ---
+    # --- Performs search_idir user (This is only for IDIR requester) ---
 
     def test_search_idir__invalid_idir_requester_error_rasied(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
-        idim_proxy_api.RequesterSchema.user_name = "USER_NOT_EXIST"
+        idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
             idim_proxy_api.search_idir(self.search_params_idir)
 
@@ -108,7 +108,7 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    # --- Performs search_business_bceid user (IDIR RequesterSchema/BCeID RequesterSchema) ---
+    # --- Performs search_business_bceid user (IDIR Requester/BCeID Requester) ---
 
     def test_search_bceid__user_not_exist_not_found(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
@@ -122,7 +122,7 @@ class TestIdimProxyServiceClass(object):
     def test_search_bceid__idir_requester_by_userid_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
 
-        # for IDIR RequesterSchema, it does not matter the "business organization" for BCeID user.
+        # for IDIR Requester, it does not matter the "business organization" for BCeID user.
         search_result = idim_proxy_api.search_business_bceid(
             self.search_params_business_bceid_same_org
         )
@@ -168,7 +168,7 @@ class TestIdimProxyServiceClass(object):
     def test_search_bceid__idir_requester_by_user_guid_search_pass(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
 
-        # for IDIR RequesterSchema, it does not matter the "business organization" for BCeID user.
+        # for IDIR Requester, it does not matter the "business organization" for BCeID user.
         search_params = IdimProxyBceidSearchParamSchema(
             **{
                 "searchUserBy": IdimSearchUserParamType.USER_GUID,
@@ -189,7 +189,7 @@ class TestIdimProxyServiceClass(object):
         reason="Search BCeID by user_guid is not enabled. Enable this test when ready."
     )
     def test_search_bceid__bceid_requester_by_user_guid_same_org_search_pass(self):
-        # business bceid RequesterSchema
+        # business bceid Requester
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
 
         # This search_params uses "TEST-3-LOAD-CHILD-1", same org with "LOAD-3-TEST"

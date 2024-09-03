@@ -31,26 +31,26 @@ valid_user_id_param_business_bceid = "LOAD-2-TEST"
 
 async def mock_get_current_requester_with_idir_user():
     """
-    A mock for router dependency, for RequesterSchema who is IDIR user.
+    A mock for router dependency, for Requester who is IDIR user.
     """
     return RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
 
 
 async def mock_get_current_requester_with_business_bceid_user():
     """
-    A mock for router dependency, for RequesterSchema who is not IDIR user.
+    A mock for router dependency, for Requester who is not IDIR user.
     """
     return RequesterSchema(**TEST_BCEID_REQUESTER_DICT)
 
 
 async def mock_get_current_requester_user_not_exists():
     """
-    A mock for router dependency, for RequesterSchema who does not exists.
+    A mock for router dependency, for Requester who does not exists.
     """
     raise_http_exception(
         status_code=HTTPStatus.FORBIDDEN,
         error_code=ERROR_CODE_REQUESTER_NOT_EXISTS,
-        error_msg="RequesterSchema does not exist, action is not allowed.",
+        error_msg="Requester does not exist, action is not allowed.",
     )
 
 
@@ -61,7 +61,7 @@ def test_search_idir_with_valid_user_found_result(
     """
     Test valid user_id to search.
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_idir_user
@@ -91,7 +91,7 @@ def test_search_idir_with_invalid_user_return_not_found(
     """
     Test invalid user_id to search.
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_idir_user
@@ -120,10 +120,10 @@ def test_none_idir_user_cannot_search_idir_user(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
-    Test RequesterSchema is external.
+    Test Requester is external.
     """
 
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_business_bceid_user
@@ -147,10 +147,10 @@ def test_search_idir_user_requester_not_found_error_raised(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
-    Test RequesterSchema does not exist.
+    Test Requester does not exist.
     """
 
-    # override dependency for RequesterSchema not exists.
+    # override dependency for Requester not exists.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_user_not_exists
@@ -167,7 +167,7 @@ def test_search_idir_user_requester_not_found_error_raised(
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert "RequesterSchema does not exist" in response.text
+    assert "Requester does not exist" in response.text
 
 
 # --------------------- Test search for Business BCEID --------------------------- #
@@ -177,7 +177,7 @@ def test_search_bceid_with_valid_user_same_org_found_result(
     """
     Test business bceid user search valid business bceid user_id within same organization
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_business_bceid_user
@@ -209,7 +209,7 @@ def test_search_bceid_with_valid_user_diff_org_fail(
     """
     Test business bceid user search valid business bceid user_id from different organization
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_business_bceid_user
@@ -236,7 +236,7 @@ def test_search_bceid_with_valid_user_without_authorization_fail(
     """
     Test business bceid user search valid business bceid user_id without authorization
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_business_bceid_user
@@ -263,7 +263,7 @@ def test_search_bceid_with_invalid_user_return_not_found(
     """
     Test idir user search invalid business bceid user_id.
     """
-    # override dependency for RequesterSchema on router.
+    # override dependency for Requester on router.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_with_business_bceid_user
@@ -290,10 +290,10 @@ def test_search_bceid_user_requester_not_found_error_raised(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
-    Test RequesterSchema does not exist.
+    Test Requester does not exist.
     """
 
-    # override dependency for RequesterSchema not exists.
+    # override dependency for Requester not exists.
     app = test_client_fixture.app
     app.dependency_overrides[get_current_requester] = (
         mock_get_current_requester_user_not_exists
@@ -310,4 +310,4 @@ def test_search_bceid_user_requester_not_found_error_raised(
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert "RequesterSchema does not exist" in response.text
+    assert "Requester does not exist" in response.text

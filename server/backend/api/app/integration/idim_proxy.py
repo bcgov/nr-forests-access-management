@@ -34,10 +34,10 @@ class IdimProxyService:
 
     def __init__(
         self,
-        RequesterSchema: RequesterSchema,
+        requester: RequesterSchema,
         api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST,
     ):
-        self.RequesterSchema = RequesterSchema
+        self.requester = requester
         # by default use test idim proxy url if not specify the api instance enviornment
         self.api_idim_proxy_url = (
             f"{config.get_idim_proxy_api_baseurl(api_instance_env)}/api/idim-webservice"
@@ -55,7 +55,7 @@ class IdimProxyService:
         """
         # query_params to request to idim-proxy
         query_params = vars(search_params)
-        query_params.update({"requesterUserId": self.RequesterSchema.user_name})
+        query_params.update({"requesterUserId": self.requester.user_name})
         # The proxy allows only "Internal" for this search.
         query_params.update(
             {"requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[UserType.IDIR]}
@@ -75,7 +75,7 @@ class IdimProxyService:
     def search_business_bceid(self, search_params: IdimProxyBceidSearchParamSchema):
         """
         Search on Business BCEID user.
-        This search can be perfomed by IDIR RequesterSchema or BCeID RequesterSchema by passing "user_guid" to
+        This search can be perfomed by IDIR requester or BCeID requester by passing "user_guid" to
         "requesterUserGuid".
         search_param: is of type "IdimProxyBceidSearchParamSchema" and can be 'searchUserBy'
             - "userId" or
@@ -83,11 +83,11 @@ class IdimProxyService:
         """
         # query_params to request to idim-proxy, vars(search_params) returns a dict of the search_params
         query_params = vars(search_params)
-        query_params.update({"requesterUserGuid": self.RequesterSchema.user_guid})
+        query_params.update({"requesterUserGuid": self.requester.user_guid})
         query_params.update(
             {
                 "requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[
-                    self.RequesterSchema.user_type_code
+                    self.requester.user_type_code
                 ]
             }
         )
@@ -103,8 +103,8 @@ class IdimProxyService:
 
         if (
             api_result.get("found") == True
-            and self.RequesterSchema.user_type_code == UserType.BCEID
-            and self.RequesterSchema.business_guid != api_result.get("businessGuid")
+            and self.requester.user_type_code == UserType.BCEID
+            and self.requester.business_guid != api_result.get("businessGuid")
         ):
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,

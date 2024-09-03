@@ -162,7 +162,7 @@ def fom_test_access_admin_token(test_rsa_key):
 @pytest.fixture(scope="function")
 def get_current_requester_by_token(db_pg_session):
     """
-    Convenient fixture to get current RequesterSchema from token (retrieved from database setup).
+    Convenient fixture to get current Requester from token (retrieved from database setup).
     The fixture returns a function to be called based on access_token's ["username"]
         , which is the user's cognito_user_id.
 
@@ -177,14 +177,14 @@ def get_current_requester_by_token(db_pg_session):
     def _get_current_requester_by_token(access_token: str) -> RequesterSchema:
 
         claims = jwt.decode(access_token, options={"verify_signature": False})
-        RequesterSchema = get_current_requester(
+        requester = get_current_requester(
             db=db_pg_session,
             access_roles=jwt_validation.get_access_roles(claims),
             request_cognito_user_id=claims[COGNITO_USERNAME_KEY],
         )
-        LOGGER.debug(f"RequesterSchema: {RequesterSchema}")
+        LOGGER.debug(f"requester: {requester}")
 
-        return RequesterSchema
+        return requester
 
     return _get_current_requester_by_token
 
