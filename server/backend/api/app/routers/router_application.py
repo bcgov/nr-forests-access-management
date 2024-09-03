@@ -28,7 +28,7 @@ router = APIRouter()
 def get_fam_application_user_role_assignment(
     application_id: int,
     db: Session = Depends(database.get_db),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
     gets the roles assignment associated with an application
@@ -37,7 +37,7 @@ def get_fam_application_user_role_assignment(
         f"Loading application role assigments for application_id: {application_id}"
     )
     app_user_role_assignment = crud_application.get_application_role_assignments(
-        db=db, application_id=application_id, RequesterSchema=RequesterSchema
+        db=db, application_id=application_id, requester=requester
     )
     LOGGER.debug(
         f"Completed loading application role assigments -\

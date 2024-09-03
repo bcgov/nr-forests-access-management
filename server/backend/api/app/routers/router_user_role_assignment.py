@@ -39,10 +39,10 @@ router = APIRouter()
         Depends(enforce_bceid_terms_conditions_guard),
         Depends(
             authorize_by_application_role
-        ),  # RequesterSchema needs to be app admin or delegated admin
+        ),  # Requester needs to be app admin or delegated admin
         Depends(
             authorize_by_privilege
-        ),  # if RequesterSchema is delegated admin, needs to have privilge to grant access with the request role
+        ),  # if Requester is delegated admin, needs to have privilge to grant access with the request role
         Depends(
             authorize_by_user_type
         ),  # check business bceid user cannot grant idir user access
@@ -57,7 +57,7 @@ def create_user_role_assignment_many(
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_verified_target_user),
 ):
     """
@@ -80,14 +80,14 @@ def create_user_role_assignment_many(
 
         audit_event_log.role = role
         audit_event_log.application = role.application
-        audit_event_log.requesting_user = RequesterSchema
+        audit_event_log.requesting_user = requester
 
         response = FamUserRoleAssignmentResponseSchema(
             assignments_detail=crud_user_role.create_user_role_assignment_many(
                 db,
                 role_assignment_request,
                 target_user,
-                RequesterSchema.cognito_user_id,
+                requester.cognito_user_id,
             )
         )
 
@@ -145,7 +145,7 @@ def delete_user_role_assignment(
     request: Request,
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -171,7 +171,7 @@ def delete_user_role_assignment(
         audit_event_log.role = user_role.role
         audit_event_log.target_user = user_role.user
         audit_event_log.application = user_role.role.application
-        audit_event_log.requesting_user = RequesterSchema
+        audit_event_log.requesting_user = requester
 
         crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
 

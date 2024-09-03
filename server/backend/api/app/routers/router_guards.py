@@ -57,7 +57,7 @@ def get_current_requester(
     db: Session = Depends(database.get_db),
 ) -> RequesterSchema:
     LOGGER.debug(
-        f"Retrieving current RequesterSchema from: request_cognito_user_id: {request_cognito_user_id}"
+        f"Retrieving current Requester from: request_cognito_user_id: {request_cognito_user_id}"
     )
     fam_user: FamUserModel = crud_user.fetch_initial_requester_info(
         db, request_cognito_user_id
@@ -66,28 +66,28 @@ def get_current_requester(
 
     if fam_user is None:
         utils.raise_http_exception(
-            error_msg="RequesterSchema does not exist, action is not allowed.",
+            error_msg="Requester does not exist, action is not allowed.",
             error_code=ERROR_CODE_REQUESTER_NOT_EXISTS,
             status_code=HTTPStatus.FORBIDDEN,
         )
 
     else:
         custom_fields = _parse_custom_requester_fields(fam_user)
-        RequesterSchema = RequesterSchema.model_validate(
+        requester = RequesterSchema.model_validate(
             {
                 **fam_user.__dict__,  # base db 'user' info
                 "access_roles": access_roles,  # role from JWT
                 **custom_fields,  # build/convert to custom attributes
             }
         )
-        LOGGER.debug(f"Current request user (RequesterSchema): {RequesterSchema}")
-        return RequesterSchema
+        LOGGER.debug(f"Current request user (Requester): {requester}")
+        return requester
 
 
 def _parse_custom_requester_fields(fam_user: FamUserModel):
     """
     Conversation helper function to parse information from FamUserModel for some
-    custom attributes needed at RequesterSchema.
+    custom attributes needed at Requester.
     :fam_user: fetched FamUserModel from db with joined table information.
     :return: dictionary contains custom attributes information for setting 'RequesterSchema'
     """
@@ -112,7 +112,7 @@ def _parse_custom_requester_fields(fam_user: FamUserModel):
 
 def authorize(
     claims: dict = Depends(validate_token),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
     This authorize method is used by Forest Client API and IDIM Proxy API integration for a general authorization check,
@@ -123,7 +123,7 @@ def authorize(
         # check if user has any delegated admin access
 
         # if user is not app admin and not delegated admin of any application, throw miss access group error
-        if not RequesterSchema.is_delegated_admin:
+        if not requester.is_delegated_admin:
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_GROUPS_REQUIRED,
@@ -135,7 +135,7 @@ def authorize_by_app_id(
     application_id: int,
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
     This authorize_by_app_id method is used for the authorization check of a specific application,
@@ -150,7 +150,7 @@ def authorize_by_app_id(
         # check if user is application delegated admin
         requester_is_app_delegated_admin = (
             crud_access_control_privilege.is_delegated_admin_by_app_id(
-                db, RequesterSchema.user_id, application_id
+                db, requester.user_id, application_id
             )
         )
         # if user is not app admin and not delegated admin of the application, throw permission error
@@ -158,7 +158,7 @@ def authorize_by_app_id(
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="RequesterSchema has no admin or delegated admin access to the application.",
+                error_msg="Requester has no admin or delegated admin access to the application.",
             )
 
 
@@ -199,7 +199,7 @@ def authorize_by_application_role(
     role: FamRoleModel = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
     This authorize_by_application_role method is used for the authorization check of a specific application,
@@ -212,7 +212,7 @@ def authorize_by_application_role(
         application_id=role.application_id,
         db=db,
         access_roles=access_roles,
-        RequesterSchema=RequesterSchema,
+        requester=requester,
     )
     return role
 
@@ -222,10 +222,10 @@ async def authorize_by_privilege(
     role: FamRoleModel = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
-    This authorize_by_privilege method is used for checking if the RequesterSchema has the privilege to grant/remove access of the role.
+    This authorize_by_privilege method is used for checking if the requester has the privilege to grant/remove access of the role.
     :param role: for remove access, it is the concrete role get by user_role_xref_id in the request params;
                  for grant access, it is the concrete role, or the parent role of an abstract role get by role_id in the request params
     """
@@ -233,7 +233,7 @@ async def authorize_by_privilege(
         role.application_id, db, access_roles
     )
 
-    # if RequesterSchema is not application admin, check if has the privilege to grant/remove access of the role
+    # if requester is not application admin, check if has the privilege to grant/remove access of the role
     if not requester_is_app_admin:
         if "user_role_xref_id" not in request.path_params:
             # for grant access with abstract role, if the request params has forest_client_numbers, need to get the child role
@@ -257,25 +257,25 @@ async def authorize_by_privilege(
                     if (
                         not role
                         or not crud_access_control_privilege.has_privilege_by_role_id(
-                            db, RequesterSchema.user_id, role.role_id
+                            db, requester.user_id, role.role_id
                         )
                     ):
                         # if user has no privilege of the role, throw permission error
                         utils.raise_http_exception(
                             status_code=HTTPStatus.FORBIDDEN,
                             error_code=ERROR_PERMISSION_REQUIRED,
-                            error_msg="RequesterSchema has no privilege to grant this access.",
+                            error_msg="Requester has no privilege to grant this access.",
                         )
 
         # for remove access and grant access with concrete, role is what we get above from Depends(get_request_role_from_id)
         if not role or not crud_access_control_privilege.has_privilege_by_role_id(
-            db, RequesterSchema.user_id, role.role_id
+            db, requester.user_id, role.role_id
         ):
             # if user has no privilege of the role, throw permission error
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="RequesterSchema has no privilege to grant this access.",
+                error_msg="Requester has no privilege to grant this access.",
             )
 
 
@@ -330,13 +330,13 @@ async def get_target_user_from_id(
 
 
 async def authorize_by_user_type(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
 ):
     """
     This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
     """
-    if RequesterSchema.user_type_code == UserType.BCEID:
+    if requester.user_type_code == UserType.BCEID:
         target_user_type_code = target_user.user_type_code
 
         if not target_user_type_code:
@@ -351,14 +351,14 @@ async def authorize_by_user_type(
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Business BCEID RequesterSchema has no privilege to grant this access to IDIR user.",
+                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
             )
 
 
 async def internal_only_action(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
-    if RequesterSchema.user_type_code is not UserType.IDIR:
+    if requester.user_type_code is not UserType.IDIR:
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
@@ -367,9 +367,9 @@ async def internal_only_action(
 
 
 def external_delegated_admin_only_action(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
-    if not RequesterSchema.is_external_delegated_admin():
+    if not requester.is_external_delegated_admin():
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_INVALID_OPERATION,
@@ -378,22 +378,22 @@ def external_delegated_admin_only_action(
 
 
 async def enforce_self_grant_guard(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
 ):
     """
     Verify logged on admin (RequesterSchema):
         Self granting/removing privilege currently isn't allowed.
     """
-    LOGGER.debug(f"enforce_self_grant_guard: RequesterSchema - {RequesterSchema}")
+    LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
 
     if (
-        RequesterSchema.user_type_code == target_user.user_type_code
-        and RequesterSchema.user_guid == target_user.user_guid
+        requester.user_type_code == target_user.user_type_code
+        and requester.user_guid == target_user.user_guid
     ):
         LOGGER.debug(
-            f"User '{RequesterSchema.user_name}' should not "
+            f"User '{requester.user_name}' should not "
             f"grant/remove permission privilege to self."
         )
         utils.raise_http_exception(
@@ -404,7 +404,7 @@ async def enforce_self_grant_guard(
 
 
 async def get_verified_target_user(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
     role: FamRoleModel = Depends(get_request_role_from_id),
 ) -> TargetUserSchema:
@@ -414,19 +414,19 @@ async def get_verified_target_user(
     LOGGER.debug(f"For application operation on: {role.application}")
     api_instance_env = crud_utils.use_api_instance_by_app(role.application)
     target_user_validator = TargetUserValidator(
-        RequesterSchema, target_user, api_instance_env
+        requester, target_user, api_instance_env
     )
     return target_user_validator.verify_user_exist()
 
 
 async def enforce_bceid_by_same_org_guard(
-    # forbid business bceid user (RequesterSchema) manage idir user's access
+    # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_verified_target_user),
 ):
     """
-    When RequesterSchema is a BCeID user, enforce RequesterSchema can only manage target
+    When requester is a BCeID user, enforce requester can only manage target
     user from the same organization.
     :param _enforce_user_type_auth: call the authorize_by_user_type method
             to ensure that this enforce_bceid_by_same_org_guard method only
@@ -434,15 +434,15 @@ async def enforce_bceid_by_same_org_guard(
             bceid user
     """
     LOGGER.debug(
-        f"Verifying RequesterSchema {RequesterSchema.user_name} (type {RequesterSchema.user_type_code}) "
+        f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
         "is allowed to manage BCeID target user for the same organization."
     )
-    if RequesterSchema.user_type_code == UserType.BCEID:
-        requester_business_guid = RequesterSchema.business_guid
+    if requester.user_type_code == UserType.BCEID:
+        requester_business_guid = requester.business_guid
         target_user_business_guid = target_user.business_guid
 
         if requester_business_guid is None or target_user_business_guid is None:
-            error_msg = "Operation encountered unexpected error. RequesterSchema or target user business GUID is missing."
+            error_msg = "Operation encountered unexpected error. requester or target user business GUID is missing."
             utils.raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
@@ -458,9 +458,9 @@ async def enforce_bceid_by_same_org_guard(
 
 
 def enforce_bceid_terms_conditions_guard(
-    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
-    if RequesterSchema.requires_accept_tc:
+    if requester.requires_accept_tc:
         utils.raise_http_exception(
             error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
             error_msg="Requires to accept terms and conditions.",

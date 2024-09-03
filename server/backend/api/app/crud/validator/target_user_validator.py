@@ -22,13 +22,13 @@ LOGGER = logging.getLogger(__name__)
 class TargetUserValidator:
     def __init__(
         self,
-        RequesterSchema: RequesterSchema,
+        requester: RequesterSchema,
         target_user: TargetUserSchema,
         api_instance_env: ApiInstanceEnv,
     ):
         LOGGER.debug(f"Validating target env set to: {api_instance_env}")
         self.verified_target_user = copy.deepcopy(target_user)
-        self.idim_proxy_service = IdimProxyService(RequesterSchema, api_instance_env)
+        self.idim_proxy_service = IdimProxyService(requester, api_instance_env)
 
     def verify_user_exist(self) -> TargetUserSchema:
         search_result = None
