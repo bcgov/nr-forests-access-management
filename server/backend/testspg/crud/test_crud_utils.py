@@ -1,5 +1,5 @@
 import logging
-
+import pytest
 import api.app.models.model as model
 from api.app.schemas import FamUserSchema
 from api.app.crud import crud_user, crud_utils
