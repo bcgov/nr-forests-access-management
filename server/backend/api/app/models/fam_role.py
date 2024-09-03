@@ -16,7 +16,7 @@ from sqlalchemy.orm import Mapped, relationship
 from .base import Base
 
 class FamRoleModel(Base):
-    from .FamApplication import FamApplicationModel
+    from .fam_application import FamApplicationModel
 
     __tablename__ = "fam_role"
 

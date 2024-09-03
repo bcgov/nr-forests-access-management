@@ -14,10 +14,10 @@ from api.app.routers.router_guards import (
     get_verified_target_user,
 )
 from api.app.schemas import (
-    FamUserRoleAssignmentCreate,
-    FamUserRoleAssignmentResponse,
-    Requester,
-    TargetUser,
+    FamUserRoleAssignmentCreateSchema,
+    FamUserRoleAssignmentResponseSchema,
+    RequesterSchema,
+    TargetUserSchema,
 )
 from api.app.utils.audit_util import AuditEventLog, AuditEventOutcome, AuditEventType
 from fastapi import APIRouter, Depends, Request, Response
@@ -32,17 +32,17 @@ router = APIRouter()
 
 @router.post(
     "",
-    response_model=FamUserRoleAssignmentResponse,
+    response_model=FamUserRoleAssignmentResponseSchema,
     # Guarding endpoint with Depends().
     dependencies=[
         Depends(enforce_self_grant_guard),
         Depends(enforce_bceid_terms_conditions_guard),
         Depends(
             authorize_by_application_role
-        ),  # requester needs to be app admin or delegated admin
+        ),  # RequesterSchema needs to be app admin or delegated admin
         Depends(
             authorize_by_privilege
-        ),  # if requester is delegated admin, needs to have privilge to grant access with the request role
+        ),  # if RequesterSchema is delegated admin, needs to have privilge to grant access with the request role
         Depends(
             authorize_by_user_type
         ),  # check business bceid user cannot grant idir user access
@@ -53,12 +53,12 @@ router = APIRouter()
     description="Grant User Access to an application's role.",
 )
 def create_user_role_assignment_many(
-    role_assignment_request: FamUserRoleAssignmentCreate,
+    role_assignment_request: FamUserRoleAssignmentCreateSchema,
     request: Request,
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.validate_token),
-    requester: Requester = Depends(get_current_requester),
-    target_user: TargetUser = Depends(get_verified_target_user),
+    RequesterSchema: RequesterSchema = Depends(get_current_requester),
+    target_user: TargetUserSchema = Depends(get_verified_target_user),
 ):
     """
     Create FAM user_role_xref association.
@@ -80,11 +80,14 @@ def create_user_role_assignment_many(
 
         audit_event_log.role = role
         audit_event_log.application = role.application
-        audit_event_log.requesting_user = requester
+        audit_event_log.requesting_user = RequesterSchema
 
-        response = FamUserRoleAssignmentResponse(
+        response = FamUserRoleAssignmentResponseSchema(
             assignments_detail=crud_user_role.create_user_role_assignment_many(
-                db, role_assignment_request, target_user, requester.cognito_user_id
+                db,
+                role_assignment_request,
+                target_user,
+                RequesterSchema.cognito_user_id,
             )
         )
 
@@ -142,7 +145,7 @@ def delete_user_role_assignment(
     request: Request,
     user_role_xref_id: int,
     db: Session = Depends(database.get_db),
-    requester: Requester = Depends(get_current_requester),
+    RequesterSchema: RequesterSchema = Depends(get_current_requester),
 ) -> None:
     """
     Delete FAM user_role_xref association.
@@ -168,7 +171,7 @@ def delete_user_role_assignment(
         audit_event_log.role = user_role.role
         audit_event_log.target_user = user_role.user
         audit_event_log.application = user_role.role.application
-        audit_event_log.requesting_user = requester
+        audit_event_log.requesting_user = RequesterSchema
 
         crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
 

@@ -3,7 +3,14 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
-from api.app import schemas
+from api.app.schemas import (
+    FamUserRoleAssignmentCreateSchema,
+    TargetUserSchema,
+    FamUserRoleAssignmentCreateResponseSchema,
+    FamApplicationUserRoleAssignmentGetSchema,
+    GCNotifyGrantAccessEmailParamSchema,
+    FamRoleCreateSchema
+)
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active,
@@ -21,10 +28,10 @@ LOGGER = logging.getLogger(__name__)
 
 def create_user_role_assignment_many(
     db: Session,
-    request: schemas.FamUserRoleAssignmentCreate,
-    target_user: schemas.TargetUser,
+    request: FamUserRoleAssignmentCreateSchema,
+    target_user: TargetUserSchema,
     requester: str,
-) -> List[schemas.FamUserRoleAssignmentCreateResponse]:
+) -> List[FamUserRoleAssignmentCreateResponseSchema]:
     """
     Create fam_user_role_xref Association
 
@@ -75,7 +82,7 @@ def create_user_role_assignment_many(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    create_return_list: List[schemas.FamUserRoleAssignmentCreateResponse] = []
+    create_return_list: List[FamUserRoleAssignmentCreateResponseSchema] = []
 
     if require_child_role:
         LOGGER.debug(
@@ -157,28 +164,24 @@ def create_user_role_assignment(
 
     if fam_user_role_xref:
         error_msg = f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
-        create_user_role_assginment_return = (
-            schemas.FamUserRoleAssignmentCreateResponse(
-                **{
-                    "status_code": HTTPStatus.CONFLICT,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(
-                        **fam_user_role_xref.__dict__
-                    ),
-                    "error_message": error_msg,
-                }
-            )
+        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+            **{
+                "status_code": HTTPStatus.CONFLICT,
+                "detail": FamApplicationUserRoleAssignmentGetSchema(
+                    **fam_user_role_xref.__dict__
+                ),
+                "error_message": error_msg,
+            }
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        create_user_role_assginment_return = (
-            schemas.FamUserRoleAssignmentCreateResponse(
-                **{
-                    "status_code": HTTPStatus.OK,
-                    "detail": schemas.FamApplicationUserRoleAssignmentGet(
-                        **fam_user_role_xref.__dict__
-                    ),
-                }
-            )
+        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+            **{
+                "status_code": HTTPStatus.OK,
+                "detail": FamApplicationUserRoleAssignmentGetSchema(
+                    **fam_user_role_xref.__dict__
+                ),
+            }
         )
 
     return create_user_role_assginment_return
@@ -270,7 +273,7 @@ def find_or_create_forest_client_child_role(
 
     if not child_role:
         child_role = crud_role.create_role(
-            schemas.FamRoleCreate(
+            FamRoleCreateSchema(
                 **{
                     "parent_role_id": parent_role.role_id,
                     "application_id": parent_role.application_id,
@@ -304,8 +307,8 @@ def find_by_id(db: Session, user_role_xref_id: int) -> FamUserRoleXrefModel:
 
 
 def send_user_access_granted_email(
-    target_user: schemas.TargetUser,
-    roles_assignment_responses: List[schemas.FamUserRoleAssignmentCreateResponse],
+    target_user: TargetUserSchema,
+    roles_assignment_responses: List[FamUserRoleAssignmentCreateResponseSchema],
 ):
     """
     Send email using GC Notify integration service.
@@ -333,7 +336,7 @@ def send_user_access_granted_email(
             else "no"
         )
         email_service = GCNotifyEmailService()
-        email_params = schemas.GCNotifyGrantAccessEmailParam(
+        email_params = GCNotifyGrantAccessEmailParamSchema(
             **{
                 "first_name": target_user.first_name,
                 "last_name": target_user.last_name,

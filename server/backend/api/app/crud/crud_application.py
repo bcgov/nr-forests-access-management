@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from api.app import schemas
+from api.app.schemas import RequesterSchema, FamApplicationUserRoleAssignmentGetSchema
 from api.app.constants import UserType
 from api.app.models import (
     FamApplicationModel,
@@ -29,8 +29,8 @@ def get_application(db: Session, application_id: int):
 
 
 def get_application_role_assignments(
-    db: Session, application_id: int, requester: schemas.Requester
-) -> List[schemas.FamApplicationUserRoleAssignmentGet]:
+    db: Session, application_id: int, requester: RequesterSchema
+) -> List[FamApplicationUserRoleAssignmentGetSchema]:
     """query the user / role cross reference table to retrieve the role
     assignments.
     Delegated Admin will only see user role assignments by the roles granted for them.

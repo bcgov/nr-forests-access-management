@@ -1,12 +1,14 @@
 import logging
 from typing import List
 
-from api.app import database, schemas
+from api.app import database
 from api.app.crud import crud_application
 from api.app.routers.router_guards import (
-    authorize_by_app_id, enforce_bceid_terms_conditions_guard,
-    get_current_requester)
-from api.app.schemas import Requester
+    authorize_by_app_id,
+    enforce_bceid_terms_conditions_guard,
+    get_current_requester,
+)
+from api.app.schemas import RequesterSchema, FamApplicationUserRoleAssignmentGetSchema
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -16,7 +18,7 @@ router = APIRouter()
 
 @router.get(
     "/{application_id}/user_role_assignment",
-    response_model=List[schemas.FamApplicationUserRoleAssignmentGet],
+    response_model=List[FamApplicationUserRoleAssignmentGetSchema],
     status_code=200,
     dependencies=[
         Depends(authorize_by_app_id),  # Enforce application-level security
@@ -26,7 +28,7 @@ router = APIRouter()
 def get_fam_application_user_role_assignment(
     application_id: int,
     db: Session = Depends(database.get_db),
-    requester: Requester = Depends(get_current_requester),
+    RequesterSchema: RequesterSchema = Depends(get_current_requester),
 ):
     """
     gets the roles assignment associated with an application
@@ -35,7 +37,7 @@ def get_fam_application_user_role_assignment(
         f"Loading application role assigments for application_id: {application_id}"
     )
     app_user_role_assignment = crud_application.get_application_role_assignments(
-        db=db, application_id=application_id, requester=requester
+        db=db, application_id=application_id, RequesterSchema=RequesterSchema
     )
     LOGGER.debug(
         f"Completed loading application role assigments -\

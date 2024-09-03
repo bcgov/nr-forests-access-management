@@ -3,7 +3,7 @@ from pydantic import ValidationError
 import pytest
 from requests import HTTPError
 from api.app.integration.gc_notify import GCNotifyEmailService
-from api.app.schemas import GCNotifyGrantAccessEmailParam
+from api.app.schemas import GCNotifyGrantAccessEmailParamSchema
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class TestGCNotifyEmailServiceClass(object):
         The test checks the error handling when provide an invalid email address
         """
         with pytest.raises(Exception) as excinfo:
-            _test_params = GCNotifyGrantAccessEmailParam(
+            _test_params = GCNotifyGrantAccessEmailParamSchema(
                 **{
                     "user_name": "cmeng",
                     "application_name": "fam",

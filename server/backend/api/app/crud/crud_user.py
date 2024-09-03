@@ -7,8 +7,13 @@ from api.app.models import FamUserModel
 from api.app.crud import crud_utils
 from api.app.integration.idim_proxy import IdimProxyService
 from api.config import config
-
-from .. import schemas
+from api.app.schemas import (
+    FamUserSchema,
+    TargetUserSchema,
+    FamUserUpdateResponseSchema,
+    IdimProxySearchParamSchema,
+    IdimProxyBceidSearchParamSchema,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,11 +79,11 @@ def get_user_by_domain_and_guid(
     )
 
 
-def create_user(fam_user: schemas.FamUser, db: Session):
+def create_user(fam_user: FamUserSchema, db: Session):
     """used to add a new FAM user to the database
 
     :param fam_user: _description_
-    :type fam_user: schemas.FamUser
+    :type fam_user: FamUserSchema
     :param db: _description_
     :type db: Session
     :return: _description_
@@ -124,7 +129,7 @@ def find_or_create(
         # or found user by domain and username, but user guid does not match (this is the edge case that could happen when username changed from IDP provider)
         # create a new user
         else:
-            request_user = schemas.FamUser(
+            request_user = FamUserSchema(
                 **{
                     "user_type_code": user_type_code,
                     "user_name": user_name,
@@ -191,7 +196,7 @@ def update_user_name(
 def update_user_properties_from_verified_target_user(
     db: Session,
     user_id: int,
-    target_user: schemas.TargetUser,
+    target_user: TargetUserSchema,
     requester: str,  # cognito_user_id
 ):
     """
@@ -257,7 +262,7 @@ def fetch_initial_requester_info(db: Session, cognito_user_id: str):
 
 def update_user_info_from_idim_source(
     db: Session, use_pagination: bool, page: int, per_page: int
-) -> schemas.FamUserUpdateResponse:
+) -> FamUserUpdateResponseSchema:
     """
     Go through each user record in the database,
     update the user information to match the record in IDIM web service,
@@ -311,7 +316,7 @@ def update_user_info_from_idim_source(
             if user.user_type_code == UserType.IDIR:
                 # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
                 search_result = idim_proxy_service.search_idir(
-                    schemas.IdimProxySearchParam(**{"userId": user.user_name})
+                    IdimProxySearchParamSchema(**{"userId": user.user_name})
                 )
 
                 if not user.user_guid:
@@ -338,7 +343,7 @@ def update_user_info_from_idim_source(
                 if user.user_guid:
                     # if found business bceid user by user_guid, update username if necessary
                     search_result = idim_proxy_service.search_business_bceid(
-                        schemas.IdimProxyBceidSearchParam(
+                        IdimProxyBceidSearchParamSchema(
                             **{
                                 "searchUserBy": IdimSearchUserParamType.USER_GUID,
                                 "searchValue": user.user_guid,
@@ -352,7 +357,7 @@ def update_user_info_from_idim_source(
                 else:
                     # if user has no user_guid in our database, find by user_name and add user_guid to database
                     search_result = idim_proxy_service.search_business_bceid(
-                        schemas.IdimProxyBceidSearchParam(
+                        IdimProxyBceidSearchParamSchema(
                             **{
                                 "searchUserBy": IdimSearchUserParamType.USER_ID,
                                 "searchValue": user.user_name,
@@ -395,7 +400,7 @@ def update_user_info_from_idim_source(
             LOGGER.debug(f"Failed to update user info: {e}")
             failed_user_list.append(user.user_id)
 
-    return schemas.FamUserUpdateResponse(
+    return FamUserUpdateResponseSchema(
         **{
             "total_db_users_count": total_db_users_count,
             "current_page": page,

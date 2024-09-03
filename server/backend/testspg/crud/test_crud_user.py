@@ -1,20 +1,24 @@
 import logging
 
-import api.app.schemas as schemas
+from api.app.schemas import FamUserSchema, TargetUserSchema
 import pytest
 from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION, UserType
 from api.app.crud import crud_user
 from api.app.models import FamUserTermsConditionsModel
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_CREATOR, TEST_NEW_BCEID_USER,
-                               TEST_NEW_USER, TEST_NOT_EXIST_USER_TYPE,
-                               USER_NAME_BCEID_LOAD_3_TEST,
-                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
+from testspg.constants import (
+    TEST_CREATOR,
+    TEST_NEW_BCEID_USER,
+    TEST_NEW_USER,
+    TEST_NOT_EXIST_USER_TYPE,
+    USER_NAME_BCEID_LOAD_3_TEST,
+    USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
+)
 
 LOGGER = logging.getLogger(__name__)
 NEW_USERNAME = "NEW_USERNAME"
-NEW_USER_REQUEST = schemas.FamUser(**TEST_NEW_USER)
+NEW_USER_REQUEST = FamUserSchema(**TEST_NEW_USER)
 
 
 def test_get_users(db_pg_session: Session):
@@ -41,7 +45,7 @@ def test_get_user_by_domain_and_name(db_pg_session: Session):
     assert fam_user is None
 
     # create a new user and find it and verify found
-    request_user = schemas.FamUser(**TEST_NEW_USER)
+    request_user = FamUserSchema(**TEST_NEW_USER)
     new_user = crud_user.create_user(fam_user=request_user, db=db_pg_session)
     fam_user = crud_user.get_user_by_domain_and_name(
         db_pg_session, TEST_NEW_USER["user_type_code"], TEST_NEW_USER["user_name"]
@@ -191,25 +195,41 @@ def test_update_user_name(db_pg_session: Session):
 @pytest.mark.parametrize(
     "new_user_initial_config, update_properties",
     [
-        (TEST_NEW_BCEID_USER, {
-            "first_name": "test", "last_name": "bceid", "email": "becid_user@test.com", "business_guid": "test_business_guid"
-        }),
-        (TEST_NEW_USER, {  # IDIR
-            "first_name": "test", "last_name": "idir", "email": "idir_user@test.com", "business_guid": None
-        }),
-        (TEST_NEW_USER, {
-            "first_name": None, "last_name": None, "email": None, "business_guid": None
-        })
-    ]
+        (
+            TEST_NEW_BCEID_USER,
+            {
+                "first_name": "test",
+                "last_name": "bceid",
+                "email": "becid_user@test.com",
+                "business_guid": "test_business_guid",
+            },
+        ),
+        (
+            TEST_NEW_USER,
+            {  # IDIR
+                "first_name": "test",
+                "last_name": "idir",
+                "email": "idir_user@test.com",
+                "business_guid": None,
+            },
+        ),
+        (
+            TEST_NEW_USER,
+            {
+                "first_name": None,
+                "last_name": None,
+                "email": None,
+                "business_guid": None,
+            },
+        ),
+    ],
 )
 def test_update_user_properties_from_verified_target_user(
-    new_user_initial_config,
-    update_properties,
-    db_pg_session: Session
+    new_user_initial_config, update_properties, db_pg_session: Session
 ):
     # create a new user
     new_user = crud_user.create_user(
-        schemas.FamUser(**new_user_initial_config), db_pg_session
+        FamUserSchema(**new_user_initial_config), db_pg_session
     )
     # verify new user is created with no additoinal properties set.
     found_user = crud_user.get_user_by_domain_and_name(
@@ -223,15 +243,9 @@ def test_update_user_properties_from_verified_target_user(
     assert new_user.email is None
     assert new_user.business_guid is None
 
-    target_user = schemas.TargetUser(
-        **new_user_initial_config,
-        **update_properties
-    )
+    target_user = TargetUserSchema(**new_user_initial_config, **update_properties)
     updated_user = crud_user.update_user_properties_from_verified_target_user(
-        db_pg_session,
-        found_user.user_id,
-        target_user,
-        found_user.create_user
+        db_pg_session, found_user.user_id, target_user, found_user.create_user
     )
     assert updated_user.user_id == found_user.user_id
     assert updated_user.first_name == update_properties.get("first_name")
@@ -240,9 +254,7 @@ def test_update_user_properties_from_verified_target_user(
     assert updated_user.business_guid == update_properties.get("business_guid")
 
 
-def test_fetch_initial_requester_info_can_join_terms_conditions(
-    db_pg_session: Session
-):
+def test_fetch_initial_requester_info_can_join_terms_conditions(db_pg_session: Session):
     bceid_user = crud_user.get_user_by_domain_and_name(
         db_pg_session,
         UserType.BCEID,
@@ -255,11 +267,13 @@ def test_fetch_initial_requester_info_can_join_terms_conditions(
     # bceid_user accepts FamUserTermsConditionsModel
     db_pg_session.execute(
         insert(FamUserTermsConditionsModel),
-        [{
-            "user_id": bceid_user.user_id,
-            "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
-            "create_user": TEST_CREATOR,
-        }]
+        [
+            {
+                "user_id": bceid_user.user_id,
+                "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                "create_user": TEST_CREATOR,
+            }
+        ],
     )
 
     # this seems important, otherwise newly added attribute (T&C) won't
@@ -277,7 +291,7 @@ def test_fetch_initial_requester_info_can_join_terms_conditions(
 
 
 def test_fetch_initial_requester_info_can_join_its_delegated_admin_record(
-    db_pg_session: Session
+    db_pg_session: Session,
 ):
     # the db user for backend/server has no permission to insert record
     # into `app_fam.fam_access_control_privileg` table. So use
