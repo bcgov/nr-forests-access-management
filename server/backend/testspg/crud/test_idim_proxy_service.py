@@ -6,17 +6,22 @@ import pytest
 from api.app.constants import IdimSearchUserParamType
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
-                             Requester)
+from api.app.schemas import (
+    IdimProxyBceidSearchParamSchema,
+    IdimProxySearchParamSchema,
+    RequesterSchema,
+)
 from fastapi import HTTPException
 from requests import HTTPError
-from testspg.constants import (TEST_BCEID_REQUESTER_DICT,
-                               TEST_IDIR_REQUESTER_DICT,
-                               USER_GUID_BCEID_LOAD_3_TEST,
-                               USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
-                               USER_NAME_BCEID_LOAD_2_TEST,
-                               USER_NAME_BCEID_LOAD_3_TEST,
-                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
+from testspg.constants import (
+    TEST_BCEID_REQUESTER_DICT,
+    TEST_IDIR_REQUESTER_DICT,
+    USER_GUID_BCEID_LOAD_3_TEST,
+    USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+    USER_NAME_BCEID_LOAD_2_TEST,
+    USER_NAME_BCEID_LOAD_3_TEST,
+    USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,27 +34,29 @@ class TestIdimProxyServiceClass(object):
     """
 
     # Valid test IDIR user.
-    search_params_idir = IdimProxySearchParam(
-        **{"userId": "ianliu"}
-    )
+    search_params_idir = IdimProxySearchParamSchema(**{"userId": "ianliu"})
     # Valid test Business Bceid user
-    search_params_business_bceid_same_org = IdimProxyBceidSearchParam(
-        **{"searchUserBy": IdimSearchUserParamType.USER_ID,
-            "searchValue": USER_NAME_BCEID_LOAD_3_TEST_CHILD_1}
+    search_params_business_bceid_same_org = IdimProxyBceidSearchParamSchema(
+        **{
+            "searchUserBy": IdimSearchUserParamType.USER_ID,
+            "searchValue": USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
+        }
     )
     # Valid test Business Bceid user.
-    search_params_business_bceid_diff_org = IdimProxyBceidSearchParam(
-        **{"searchUserBy": IdimSearchUserParamType.USER_ID,
-            "searchValue": USER_NAME_BCEID_LOAD_2_TEST}
+    search_params_business_bceid_diff_org = IdimProxyBceidSearchParamSchema(
+        **{
+            "searchUserBy": IdimSearchUserParamType.USER_ID,
+            "searchValue": USER_NAME_BCEID_LOAD_2_TEST,
+        }
     )
 
     def setup_class(self):
-        # local valid mock requester
-        self.requester_idir = Requester(**TEST_IDIR_REQUESTER_DICT)
+        # local valid mock RequesterSchema
+        self.requester_idir = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
         self.requester_idir.user_guid = TEST_IDIR_USER_GUID
 
         # This tester uses "LOAD-3-TEST"
-        self.requester_business_bceid = Requester(**TEST_BCEID_REQUESTER_DICT)
+        self.requester_business_bceid = RequesterSchema(**TEST_BCEID_REQUESTER_DICT)
 
     def test_verify_init(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
@@ -69,11 +76,11 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
 
-    # --- Performs search_idir user (This is only for IDIR requester) ---
+    # --- Performs search_idir user (This is only for IDIR RequesterSchema) ---
 
     def test_search_idir__invalid_idir_requester_error_rasied(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
-        idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
+        idim_proxy_api.RequesterSchema.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
             idim_proxy_api.search_idir(self.search_params_idir)
 
@@ -101,7 +108,7 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    # --- Performs search_business_bceid user (IDIR requester/BCeID requester) ---
+    # --- Performs search_business_bceid user (IDIR RequesterSchema/BCeID RequesterSchema) ---
 
     def test_search_bceid__user_not_exist_not_found(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
@@ -115,7 +122,7 @@ class TestIdimProxyServiceClass(object):
     def test_search_bceid__idir_requester_by_userid_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
 
-        # for IDIR requester, it does not matter the "business organization" for BCeID user.
+        # for IDIR RequesterSchema, it does not matter the "business organization" for BCeID user.
         search_result = idim_proxy_api.search_business_bceid(
             self.search_params_business_bceid_same_org
         )
@@ -161,10 +168,12 @@ class TestIdimProxyServiceClass(object):
     def test_search_bceid__idir_requester_by_user_guid_search_pass(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
 
-        # for IDIR requester, it does not matter the "business organization" for BCeID user.
-        search_params = IdimProxyBceidSearchParam(
-            **{"searchUserBy": IdimSearchUserParamType.USER_GUID,
-                "searchValue": USER_GUID_BCEID_LOAD_3_TEST}
+        # for IDIR RequesterSchema, it does not matter the "business organization" for BCeID user.
+        search_params = IdimProxyBceidSearchParamSchema(
+            **{
+                "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                "searchValue": USER_GUID_BCEID_LOAD_3_TEST,
+            }
         )
         search_result = idim_proxy_api.search_business_bceid(search_params)
 
@@ -180,13 +189,15 @@ class TestIdimProxyServiceClass(object):
         reason="Search BCeID by user_guid is not enabled. Enable this test when ready."
     )
     def test_search_bceid__bceid_requester_by_user_guid_same_org_search_pass(self):
-        # business bceid requester
+        # business bceid RequesterSchema
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
 
         # This search_params uses "TEST-3-LOAD-CHILD-1", same org with "LOAD-3-TEST"
-        search_params = IdimProxyBceidSearchParam(
-            **{"searchUserBy": IdimSearchUserParamType.USER_GUID,
-                "searchValue": USER_GUID_BCEID_LOAD_3_TEST_CHILD_1}
+        search_params = IdimProxyBceidSearchParamSchema(
+            **{
+                "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                "searchValue": USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+            }
         )
         search_result = idim_proxy_api.search_business_bceid(search_params)
 

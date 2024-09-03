@@ -1,10 +1,10 @@
 import logging
 from typing import Optional
+from sqlalchemy.orm import Session
 
 from api.app.models import model as models
 from sqlalchemy.orm import Session
 
-from .. import schemas
 from . import crud_forest_client
 
 
@@ -45,7 +45,7 @@ def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
                 + f" 327 / {forest_client_number}",
                 "create_user": fam_role_model.create_user,
             }
-            fc_pydantic = schemas.FamForestClientCreate(**fc_dict)
+            fc_pydantic = FamForestClientCreateSchema(**fc_dict)
             forest_client_model = crud_forest_client.create_forest_client(
                 db=db, fam_forest_client=fc_pydantic
             )
@@ -71,7 +71,9 @@ def get_role_by_role_name_and_app_id(
     """
     Gets FAM role based on role_name and application_id.
     """
-    LOGGER.debug(f"Getting FamRole by role_name: {role_name} and application_di: {application_id}")
+    LOGGER.debug(
+        f"Getting FamRole by role_name: {role_name} and application_di: {application_id}"
+    )
     return (
         db.query(models.FamRole)
         .filter(

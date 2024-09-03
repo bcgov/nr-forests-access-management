@@ -1,8 +1,7 @@
 import logging
 
 import api.app.models.model as model
-import api.app.schemas as schemas
-import pytest
+from api.app.schemas import FamUserSchema
 from api.app.crud import crud_user, crud_utils
 from sqlalchemy.orm import Session
 from testspg.constants import TEST_NEW_USER
@@ -10,11 +9,14 @@ from testspg.constants import TEST_NEW_USER
 LOGGER = logging.getLogger(__name__)
 
 
-@pytest.mark.parametrize("str_list_to_test, expcted_str_list", [
-    (['fam', 'fom', 'aws'], ['FAM', 'FOM', 'AWS']),
-    (['FAM', 'FOM', 'AWS'], ['FAM', 'FOM', 'AWS']),
-    (None, None)
-])
+@pytest.mark.parametrize(
+    "str_list_to_test, expcted_str_list",
+    [
+        (["fam", "fom", "aws"], ["FAM", "FOM", "AWS"]),
+        (["FAM", "FOM", "AWS"], ["FAM", "FOM", "AWS"]),
+        (None, None),
+    ],
+)
 def test_to_upper(str_list_to_test, expcted_str_list):
     result = crud_utils.to_upper(str_list_to_test)
     if result:
@@ -24,24 +26,26 @@ def test_to_upper(str_list_to_test, expcted_str_list):
         assert result == expcted_str_list
 
 
-@pytest.mark.parametrize("str_list_to_test, str_to_replace, replace_with, expcted_str_list", [
-    (
-        ['FAM_ADMIN', 'FOM_DEV_ADMIN', 'FOM_TEST_ADMIN'],
-        "_ADMIN", "",
-        ['FAM', 'FOM_DEV', 'FOM_TEST']
-    ),
-    (
-        ['FAM_ACCESS', 'FOM_DEV', 'FOM'],
-        "_ACCESS", "_ADMIN",
-        ['FAM_ADMIN', 'FOM_DEV', 'FOM']
-    ),
-    (None, "something", "some_other_thing", None)
-])
+@pytest.mark.parametrize(
+    "str_list_to_test, str_to_replace, replace_with, expcted_str_list",
+    [
+        (
+            ["FAM_ADMIN", "FOM_DEV_ADMIN", "FOM_TEST_ADMIN"],
+            "_ADMIN",
+            "",
+            ["FAM", "FOM_DEV", "FOM_TEST"],
+        ),
+        (
+            ["FAM_ACCESS", "FOM_DEV", "FOM"],
+            "_ACCESS",
+            "_ADMIN",
+            ["FAM_ADMIN", "FOM_DEV", "FOM"],
+        ),
+        (None, "something", "some_other_thing", None),
+    ],
+)
 def test_replace_str_list(
-    str_list_to_test,
-    str_to_replace,
-    replace_with,
-    expcted_str_list
+    str_list_to_test, str_to_replace, replace_with, expcted_str_list
 ):
     result = crud_utils.replace_str_list(str_list_to_test, str_to_replace, replace_with)
     if result:
@@ -77,9 +81,7 @@ def test_get_next(db_pg_session: Session):
     assert next_value_before > 0
 
     # now add record and test again that the number is greater
-    request_user = schemas.FamUser(
-        **TEST_NEW_USER
-    )
+    request_user = FamUserSchema(**TEST_NEW_USER)
     new_user = crud_user.create_user(fam_user=request_user, db=db_pg_session)
 
     next_value_after = crud_utils.get_next(db=db_pg_session, model=fam_user_model)

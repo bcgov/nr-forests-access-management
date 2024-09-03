@@ -4,8 +4,11 @@ from http import HTTPStatus
 import requests
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, ApiInstanceEnv, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
-                             Requester)
+from api.app.schemas import (
+    IdimProxyBceidSearchParamSchema,
+    IdimProxySearchParamSchema,
+    RequesterSchema,
+)
 from api.config import config
 from fastapi import HTTPException
 
@@ -29,8 +32,12 @@ class IdimProxyService:
 
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
-    def __init__(self, requester: Requester, api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
-        self.requester = requester
+    def __init__(
+        self,
+        RequesterSchema: RequesterSchema,
+        api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST,
+    ):
+        self.RequesterSchema = RequesterSchema
         # by default use test idim proxy url if not specify the api instance enviornment
         self.api_idim_proxy_url = (
             f"{config.get_idim_proxy_api_baseurl(api_instance_env)}/api/idim-webservice"
@@ -41,14 +48,14 @@ class IdimProxyService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search_idir(self, search_params: IdimProxySearchParam):
+    def search_idir(self, search_params: IdimProxySearchParamSchema):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
         """
         # query_params to request to idim-proxy
         query_params = vars(search_params)
-        query_params.update({"requesterUserId": self.requester.user_name})
+        query_params.update({"requesterUserId": self.RequesterSchema.user_name})
         # The proxy allows only "Internal" for this search.
         query_params.update(
             {"requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[UserType.IDIR]}
@@ -65,22 +72,22 @@ class IdimProxyService:
         LOGGER.debug(f"API result: {api_result}")
         return api_result
 
-    def search_business_bceid(self, search_params: IdimProxyBceidSearchParam):
+    def search_business_bceid(self, search_params: IdimProxyBceidSearchParamSchema):
         """
         Search on Business BCEID user.
-        This search can be perfomed by IDIR requester or BCeID requester by passing "user_guid" to
+        This search can be perfomed by IDIR RequesterSchema or BCeID RequesterSchema by passing "user_guid" to
         "requesterUserGuid".
-        search_param: is of type "IdimProxyBceidSearchParam" and can be 'searchUserBy'
+        search_param: is of type "IdimProxyBceidSearchParamSchema" and can be 'searchUserBy'
             - "userId" or
             - "userGuid" (preferred)
         """
         # query_params to request to idim-proxy, vars(search_params) returns a dict of the search_params
         query_params = vars(search_params)
-        query_params.update({"requesterUserGuid": self.requester.user_guid})
+        query_params.update({"requesterUserGuid": self.RequesterSchema.user_guid})
         query_params.update(
             {
                 "requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[
-                    self.requester.user_type_code
+                    self.RequesterSchema.user_type_code
                 ]
             }
         )
@@ -96,8 +103,8 @@ class IdimProxyService:
 
         if (
             api_result.get("found") == True
-            and self.requester.user_type_code == UserType.BCEID
-            and self.requester.business_guid != api_result.get("businessGuid")
+            and self.RequesterSchema.user_type_code == UserType.BCEID
+            and self.RequesterSchema.business_guid != api_result.get("businessGuid")
         ):
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,

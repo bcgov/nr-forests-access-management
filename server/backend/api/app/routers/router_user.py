@@ -5,13 +5,17 @@ from api.app import database
 from api.app.crud import crud_user
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from api.app.schemas import FamUserUpdateResponse
+from api.app.schemas import FamUserUpdateResponseSchema
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.put("/users-information", status_code=HTTPStatus.OK, response_model=FamUserUpdateResponse)
+@router.put(
+    "/users-information",
+    status_code=HTTPStatus.OK,
+    response_model=FamUserUpdateResponseSchema,
+)
 def update_user_information_from_idim_source(
     page: int = 1,
     per_page: int = 100,
