@@ -1,8 +1,8 @@
 -- Create a permission audit table and a code table https://github.com/bcgov/nr-forests-access-management/issues/1536
 -- Create the fam_privilege_change_type table
 CREATE TABLE app_fam.fam_privilege_change_type (
-    code VARCHAR(10) PRIMARY KEY,
-    description VARCHAR(50) NOT NULL
+    privilege_change_type_code VARCHAR(10) PRIMARY KEY,
+    description VARCHAR(100) NOT NULL
 );
 
 -- Permission for table fam_privilege_change_type
@@ -10,7 +10,7 @@ GRANT SELECT ON app_fam.fam_privilege_change_type TO ${auth_lambda_db_user};
 
 -- Insert the values into the fam_privilege_change_type table
 INSERT INTO
-    app_fam.fam_privilege_change_type (code, description)
+    app_fam.fam_privilege_change_type (privilege_change_type_code, description)
 VALUES
     ('Grant', 'Grant'),
     ('Revoke', 'Revoke'),
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS app_fam.fam_privilege_change_audit (
     CONSTRAINT fk_application FOREIGN KEY (application_id) REFERENCES app_fam.fam_application(application_id),
     CONSTRAINT fk_change_performer_user FOREIGN KEY (change_performer_user_id) REFERENCES app_fam.fam_user(user_id),
     CONSTRAINT fk_change_target_user FOREIGN KEY (change_target_user_id) REFERENCES app_fam.fam_user(user_id),
-    CONSTRAINT fk_privilege_change_type FOREIGN KEY (privilege_change_type_code) REFERENCES app_fam.fam_privilege_change_type(code)
+    CONSTRAINT fk_privilege_change_type FOREIGN KEY (privilege_change_type_code) REFERENCES app_fam.fam_privilege_change_type(privilege_change_type_code)
 );
 
 -- Permission for fam_privilege_change_audit
