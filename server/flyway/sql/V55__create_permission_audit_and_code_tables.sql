@@ -3,10 +3,15 @@
 CREATE TABLE app_fam.fam_privilege_change_type (
     privilege_change_type_code VARCHAR(10) PRIMARY KEY,
     description VARCHAR(100) NOT NULL,
-    effective_date TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    effective_date TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
     expiry_date TIMESTAMP(6) WITHOUT TIME ZONE,
     update_date TIMESTAMP(6) WITHOUT TIME ZONE
 );
+
+-- Permission for fam_privilege_change_type
+GRANT
+SELECT
+    ON app_fam.fam_privilege_change_type TO ${admin_management_api_db_user}, ${api_db_username};
 
 -- Insert the values into the fam_privilege_change_type table
 INSERT INTO
@@ -61,7 +66,7 @@ CREATE TABLE IF NOT EXISTS app_fam.fam_privilege_change_audit (
 -- Permission for fam_privilege_change_audit
 GRANT
 SELECT, INSERT
-    ON app_fam.fam_privilege_change_audit TO $ { auth_lambda_db_user };
+    ON app_fam.fam_privilege_change_audit TO ${admin_management_api_db_user}, ${api_db_username};
 
 -- Comments on fam_privilege_change_audit
 COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_change_audit_id IS 'Identity column acting as surrogate primary key';
@@ -82,4 +87,4 @@ COMMENT ON COLUMN app_fam.fam_privilege_change_audit.create_user IS 'The user or
 
 COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_change_type_code IS 'Foreign key to fam_privilege_change_type code table. Identifies the type of privilege change (Grant, Revoke, or Update access).';
 
-COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_details IS 'JSON-formatted document describing the privilege(s) being changed. For end user permissions, this is details about the fam_role(s).';
+COMMENT ON COLUMN app_fam.fam_privilege_change_audit.privilege_details IS 'JSON-formatted document describing the privilege(s) being changed. E.g. For end user permissions, this is details about the fam_role(s).';
