@@ -1,5 +1,6 @@
 fam_forest_client
 fam_app_environment
+fam_privilege_change_type
 fam_role_type
 fam_user_type_code
 fam_application
@@ -14,5 +15,6 @@ fam_application_group_xref
 fam_group_role_xref
 fam_user_group_xref
 fam_user_role_xref
+fam_privilege_change_audit
 alembic_version
 flyway_schema_history

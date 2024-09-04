@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>fam_app_environment - fam.app_fam</title>
+        <title>fam_privilege_change_audit - fam.app_fam</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>fam_app_environment</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>fam_privilege_change_audit</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Used by the application to indicate its environment.</p>
+                            <p>Audit log tracking privilege changes, including details of the change, performer, and target user.</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,32 +122,144 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="app_environment">app_environment</span></td>
-                                    <td>varchar</td>
-                                    <td>4</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="privilege_change_audit_id">privilege_change_audit_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Identity column acting as surrogate primary key</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="application_id">application_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="fam_application.app_environment references fam_app_environment.app_environment via reffam_app_env"><a href='fam_application.html'>fam_application</a><span class='relatedKey'>.app_environment</span></td>
-                                                <td class="constraint detail">reffam_app_env</td>
+                                                <td title="fam_privilege_change_audit.application_id references fam_application.application_id via fk_application"><a href='fam_application.html'>fam_application</a><span class='relatedKey'>.application_id</span></td>
+                                                <td class="constraint detail">fk_application</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
+                                    <td><p>Foreign key to fam_application. Specifies the application for which the privilege change was made.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="change_date">change_date</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Application environment.</p></td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Date &amp; time of the privilege change. For initial data migration, this is NOT the same as the create time of this audit record.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="description">description</span></td>
+                                    <td><span id="change_performer_user_details">change_performer_user_details</span></td>
+                                    <td>jsonb</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>JSON-formatted document describing the user that performed the change.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="change_performer_user_id">change_performer_user_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="fam_privilege_change_audit.change_performer_user_id references fam_user.user_id via fk_change_performer_user"><a href='fam_user.html'>fam_user</a><span class='relatedKey'>.user_id</span></td>
+                                                <td class="constraint detail">fk_change_performer_user</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Specifies the user that initiated the privilege change. Foreign key to fam_user. Nullable when access was granted by a system change.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="change_target_user_id">change_target_user_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="fam_privilege_change_audit.change_target_user_id references fam_user.user_id via fk_change_target_user"><a href='fam_user.html'>fam_user</a><span class='relatedKey'>.user_id</span></td>
+                                                <td class="constraint detail">fk_change_target_user</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Specifies the user that the privilege change was performed on. Foreign key to fam_user.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_date">create_date</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date and time the record was created. Not necessarily the same time as when the privilege change occurred.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_user">create_user</span></td>
                                     <td>varchar</td>
                                     <td>100</td>
-                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -158,30 +270,35 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Description of what the app_environmentrepresents.</p></td>
+                                    <td><p>The user or system account that created the record. Not necessarily the same as the user that performed the privilege change.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="effective_date">effective_date</span></td>
-                                    <td>timestamptz</td>
-                                    <td>35,6</td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="privilege_change_type_code">privilege_change_type_code</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>now()</td>
+                                    <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="fam_privilege_change_audit.privilege_change_type_code references fam_privilege_change_type.privilege_change_type_code via fk_privilege_change_type"><a href='fam_privilege_change_type.html'>fam_privilege_change_type</a><span class='relatedKey'>.privilege_change_type_code</span></td>
+                                                <td class="constraint detail">fk_privilege_change_type</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
-                                    <td><p>The date and time the record was effective.</p></td>
+                                    <td><p>Foreign key to fam_privilege_change_type code table. Identifies the type of privilege change (Grant, Revoke, or Update access).</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="expiry_date">expiry_date</span></td>
-                                    <td>timestamptz</td>
-                                    <td>35,6</td>
-                                    <td title='nullable'>√</td>
+                                    <td><span id="privilege_details">privilege_details</span></td>
+                                    <td>jsonb</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -192,24 +309,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The date and time the record expired.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_date">update_date</span></td>
-                                    <td>timestamptz</td>
-                                    <td>35,6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The date and time the record was created or last updated.</p></td>
+                                    <td><p>JSON-formatted document describing the privilege(s) being changed. E.g. For end user permissions, this is details about the fam_role(s).</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -242,10 +342,22 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> fam_app_environment_pk</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> fam_privilege_change_audit_pkey</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>app_environment</td>
+                                    <td>privilege_change_audit_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_fam_privilege_change_audit_application_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>application_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_fam_privilege_change_audit_change_target_user_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>change_target_user_id</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -270,22 +382,31 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="fam_application.html" target="_top" title="fam_application" alt="" coords="416,5,652,181">
-<area shape="rect" id="node2" href="fam_app_environment.html" target="_top" title="fam_app_environment" alt="" coords="5,61,372,277">
+<area shape="rect" id="node1" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="343,64,783,427">
+<area shape="rect" id="node2" href="fam_application.html" target="_top" title="fam_application" alt="" coords="34,5,270,181">
+<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="66,199,238,375">
+<area shape="rect" id="node4" href="fam_privilege_change_type.html" target="_top" title="fam_privilege_change_type" alt="" coords="5,392,299,509">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/fam_app_environment.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/fam_privilege_change_audit.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="fam_application.html" target="_top" title="fam_application" alt="" coords="416,213,652,389">
-<area shape="rect" id="node2" href="fam_app_environment.html" target="_top" title="fam_app_environment" alt="" coords="5,269,372,485">
-<area shape="rect" id="node3" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="713,5,979,93">
-<area shape="rect" id="node4" href="fam_application_client.html" target="_top" title="fam_application_client" alt="" coords="717,111,975,199">
-<area shape="rect" id="node5" href="fam_application_group_xref.html" target="_top" title="fam_application_group_xref" alt="" coords="696,216,996,304">
-<area shape="rect" id="node6" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="697,321,995,409">
-<area shape="rect" id="node7" href="fam_role.html" target="_top" title="fam_role" alt="" coords="771,427,921,515">
+<area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="1000,111,1309,199">
+<area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="666,111,815,199">
+<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="655,269,827,445">
+<area shape="rect" id="node4" href="fam_application.html" target="_top" title="fam_application" alt="" coords="309,528,545,704">
+<area shape="rect" id="node11" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="308,331,547,419">
+<area shape="rect" id="node5" href="fam_app_environment.html" target="_top" title="fam_app_environment" alt="" coords="5,589,264,677">
+<area shape="rect" id="node6" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="1022,807,1287,895">
+<area shape="rect" id="node7" href="fam_application_client.html" target="_top" title="fam_application_client" alt="" coords="611,463,870,551">
+<area shape="rect" id="node8" href="fam_application_group_xref.html" target="_top" title="fam_application_group_xref" alt="" coords="591,739,891,827">
+<area shape="rect" id="node9" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="935,427,1375,789">
+<area shape="rect" id="node10" href="fam_privilege_change_type.html" target="_top" title="fam_privilege_change_type" alt="" coords="594,604,887,721">
+<area shape="rect" id="node12" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="1032,216,1277,304">
+<area shape="rect" id="node13" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="1040,5,1269,93">
+<area shape="rect" id="node14" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="1006,321,1303,409">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/fam_app_environment.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/fam_privilege_change_audit.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

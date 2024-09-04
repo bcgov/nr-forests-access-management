@@ -141,6 +141,16 @@
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
+                                                <td title="fam_privilege_change_audit.change_performer_user_id references fam_user.user_id via fk_change_performer_user"><a href='fam_privilege_change_audit.html'>fam_privilege_change_audit</a><span class='relatedKey'>.change_performer_user_id</span></td>
+                                                <td class="constraint detail">fk_change_performer_user</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="fam_privilege_change_audit.change_target_user_id references fam_user.user_id via fk_change_target_user"><a href='fam_privilege_change_audit.html'>fam_privilege_change_audit</a><span class='relatedKey'>.change_target_user_id</span></td>
+                                                <td class="constraint detail">fk_change_target_user</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="fam_user_group_xref.user_id references fam_user.user_id via reffam_user29"><a href='fam_user_group_xref.html'>fam_user_group_xref</a><span class='relatedKey'>.user_id</span></td>
                                                 <td class="constraint detail">reffam_user29</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -438,27 +448,30 @@
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
 <area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="643,5,952,181">
-<area shape="rect" id="node2" href="fam_user.html" target="_top" title="fam_user" alt="" coords="288,389,599,840">
-<area shape="rect" id="node4" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,627,244,744">
+<area shape="rect" id="node2" href="fam_user.html" target="_top" title="fam_user" alt="" coords="288,477,599,928">
+<area shape="rect" id="node5" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,715,244,832">
 <area shape="rect" id="node3" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="665,199,930,375">
-<area shape="rect" id="node5" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="675,392,920,539">
-<area shape="rect" id="node6" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="683,556,912,732">
-<area shape="rect" id="node7" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="649,749,946,925">
+<area shape="rect" id="node4" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="648,392,947,627">
+<area shape="rect" id="node6" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="675,644,920,791">
+<area shape="rect" id="node7" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="683,808,912,984">
+<area shape="rect" id="node8" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="649,1001,946,1177">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/fam_user.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="643,585,952,761">
-<area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="369,671,518,759">
-<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="288,203,599,653">
-<area shape="rect" id="node5" href="fam_application.html" target="_top" title="fam_application" alt="" coords="21,623,228,711">
-<area shape="rect" id="node6" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,440,244,557">
-<area shape="rect" id="node4" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="665,5,930,181">
-<area shape="rect" id="node7" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="675,779,920,925">
-<area shape="rect" id="node8" href="fam_group.html" target="_top" title="fam_group" alt="" coords="361,811,525,899">
-<area shape="rect" id="node9" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="683,392,912,568">
-<area shape="rect" id="node10" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="649,199,946,375">
+<area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="643,5,952,181">
+<area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="369,231,518,319">
+<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="288,544,599,995">
+<area shape="rect" id="node5" href="fam_application.html" target="_top" title="fam_application" alt="" coords="21,435,228,523">
+<area shape="rect" id="node8" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,781,244,899">
+<area shape="rect" id="node4" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="665,392,930,568">
+<area shape="rect" id="node6" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="648,585,947,820">
+<area shape="rect" id="node7" href="fam_privilege_change_type.html" target="_top" title="fam_privilege_change_type" alt="" coords="297,1012,590,1100">
+<area shape="rect" id="node9" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="675,1067,920,1213">
+<area shape="rect" id="node10" href="fam_group.html" target="_top" title="fam_group" alt="" coords="361,1117,525,1205">
+<area shape="rect" id="node11" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="683,199,912,375">
+<area shape="rect" id="node12" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="649,837,946,1013">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/fam_user.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
