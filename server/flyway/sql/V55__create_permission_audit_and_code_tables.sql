@@ -79,10 +79,10 @@ CREATE TABLE IF NOT EXISTS app_fam.fam_privilege_change_audit (
 );
 
 -- Create index on application_id
-CREATE INDEX idx_application_id ON app_fam.fam_privilege_change_audit(application_id);
+CREATE INDEX idx_fam_privilege_change_audit_application_id ON app_fam.fam_privilege_change_audit(application_id);
 
 -- Create index on change_target_user_id
-CREATE INDEX idx_change_target_user_id ON app_fam.fam_privilege_change_audit(change_target_user_id);
+CREATE INDEX idx_fam_privilege_change_audit_change_target_user_id ON app_fam.fam_privilege_change_audit(change_target_user_id);
 
 -- Permission for fam_privilege_change_audit
 GRANT
