@@ -23,30 +23,22 @@ INSERT INTO
     app_fam.fam_privilege_change_type (
         privilege_change_type_code,
         description,
-        effective_date,
-        expiry_date,
-        update_date
+        effective_date
     )
 VALUES
     (
         'GRANT',
         'Grant',
-        '2024-09-03',
-        '9999-01-01',
         '2024-09-03'
     ),
     (
         'REVOKE',
         'Revoke',
-        '2024-09-03',
-        '9999-01-01',
         '2024-09-03'
     ),
     (
         'UPDATE',
         'Update access',
-        '2024-09-03',
-        '9999-01-01',
         '2024-09-03'
     );
 
