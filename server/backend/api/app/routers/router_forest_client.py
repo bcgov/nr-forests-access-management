@@ -6,17 +6,17 @@ from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.routers.router_utils import get_api_instance_env
 from fastapi import APIRouter, Depends, Query
 
-from .. import schemas
+from api.app.schemas import FamForestClientSchema
 
 LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-@router.get("/search", response_model=List[schemas.FamForestClient])
+@router.get("/search", response_model=List[FamForestClientSchema])
 def search(
     client_number: str = Query(min_length=3, max_length=8),
-    api_instance_env=Depends(get_api_instance_env)
+    api_instance_env=Depends(get_api_instance_env),
 ):
     """
     Forest Client(s) search (by defined query parameter(s)).
@@ -34,13 +34,12 @@ def search(
     return forest_clients
 
 
-def __map_api_results(item) -> schemas.FamForestClient:
+def __map_api_results(item) -> FamForestClientSchema:
     """
-    Private method to map api result to schemas.FamForestClient
+    Private method to map api result to FamForestClientSchema
     """
     parsed = json.loads(
         json.dumps(item),  # need json string format, so dumps from 'dic' type 'item'.
-        object_hook=schemas.FamForestClient.from_api_json
+        object_hook=FamForestClientSchema.from_api_json,
     )
     return parsed
-

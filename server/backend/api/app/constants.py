@@ -39,7 +39,7 @@ class AwsTargetEnv(str, Enum):
 
 # Internal defined enum client status constants for FAM 'router_forest_client'.
 # ACTIVE/INACTIVE are mapped from Forest Client API spce.
-# See schemas.py/FamForestClientStatus class.
+# See schemas/fam_forest_client_status.py class.
 class FamForestClientStatusType(str, Enum):
     ACTIVE = "A"
     INACTIVE = "I"
