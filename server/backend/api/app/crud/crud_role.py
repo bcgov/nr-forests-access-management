@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from api.app.models import model as models
+from api.app.schemas import FamForestClientCreateSchema, FamRoleCreateSchema
 from sqlalchemy.orm import Session
 
 from . import crud_forest_client
@@ -18,7 +19,7 @@ def get_role(db: Session, role_id: int) -> Optional[models.FamRole]:
     )
 
 
-def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
+def create_role(role: FamRoleCreateSchema, db: Session) -> models.FamRole:
     LOGGER.debug(f"Creating Fam role: {role}")
 
     fam_role_dict = role.model_dump()
@@ -64,9 +65,7 @@ def create_role(role: schemas.FamRoleCreate, db: Session) -> models.FamRole:
 
 
 def get_role_by_role_name_and_app_id(
-        db: Session,
-        role_name: str,
-        application_id: int
+    db: Session, role_name: str, application_id: int
 ) -> Optional[models.FamRole]:
     """
     Gets FAM role based on role_name and application_id.
@@ -78,7 +77,7 @@ def get_role_by_role_name_and_app_id(
         db.query(models.FamRole)
         .filter(
             models.FamRole.role_name == role_name,
-            models.FamRole.application_id == application_id
+            models.FamRole.application_id == application_id,
         )
         .one_or_none()
     )
