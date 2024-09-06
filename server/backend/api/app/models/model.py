@@ -72,6 +72,9 @@ class FamApplication(Base):
         "FamApplicationClient", back_populates="application"
     )
     fam_role = relationship("FamRole", back_populates="application")
+    privilege_change_audits = relationship(
+        "FamPrivilegeChangeAudit", back_populates="application"
+    )
 
     __table_args__ = (
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
@@ -401,6 +404,16 @@ class FamUser(Base):
     )
     fam_user_terms_conditions: Mapped[FamUserTermsConditions] = relationship(
         "FamUserTermsConditions", back_populates="user"
+    )
+    performed_privilege_changes = relationship(
+        "FamPrivilegeChangeAudit",
+        foreign_keys="[FamPrivilegeChangeAudit.change_performer_user_id]",
+        back_populates="change_performer_user",
+    )
+    received_privilege_changes = relationship(
+        "FamPrivilegeChangeAudit",
+        foreign_keys="[FamPrivilegeChangeAudit.change_target_user_id]",
+        back_populates="change_target_user",
     )
 
     __table_args__ = (
