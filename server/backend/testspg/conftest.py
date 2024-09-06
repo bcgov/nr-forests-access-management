@@ -18,16 +18,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (COGNITO_USERNAME_KEY,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED)
+from api.app.constants import COGNITO_USERNAME_KEY, ERROR_CODE_TERMS_CONDITIONS_REQUIRED
 from api.app.crud import crud_utils
 from api.app.main import apiPrefix, app
 from api.app.routers.router_guards import (
-    enforce_bceid_terms_conditions_guard, get_current_requester,
-    get_verified_target_user)
-from api.app.schemas import Requester, TargetUser
-from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
-                               FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE)
+    enforce_bceid_terms_conditions_guard,
+    get_current_requester,
+    get_verified_target_user,
+)
+from api.app.schemas import RequesterSchema, TargetUserSchema
+from testspg.constants import (
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+    FOM_DEV_ADMIN_ROLE,
+    FOM_TEST_ADMIN_ROLE,
+)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -158,7 +162,7 @@ def fom_test_access_admin_token(test_rsa_key):
 @pytest.fixture(scope="function")
 def get_current_requester_by_token(db_pg_session):
     """
-    Convenient fixture to get current requester from token (retrieved from database setup).
+    Convenient fixture to get current Requester from token (retrieved from database setup).
     The fixture returns a function to be called based on access_token's ["username"]
         , which is the user's cognito_user_id.
 
@@ -170,7 +174,7 @@ def get_current_requester_by_token(db_pg_session):
          currently how Pytest can work with async from fixture.)
     """
 
-    def _get_current_requester_by_token(access_token: str) -> Requester:
+    def _get_current_requester_by_token(access_token: str) -> RequesterSchema:
 
         claims = jwt.decode(access_token, options={"verify_signature": False})
         requester = get_current_requester(
@@ -190,7 +194,7 @@ def override_get_verified_target_user(test_client_fixture):
     # mock the return result for idim validation of the target user, to avoid calling external idim-proxy
     def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
-        app.dependency_overrides[get_verified_target_user] = lambda: TargetUser(
+        app.dependency_overrides[get_verified_target_user] = lambda: TargetUserSchema(
             **mocked_data
         )
 
@@ -244,9 +248,10 @@ def override_enforce_bceid_terms_conditions_guard(test_client_fixture):
     # Override T&C checks based on test cases scenarios.
     def _override_enforce_bceid_terms_conditions_guard(mocked_tc_accepted=True):
         app = test_client_fixture.app
-        app.dependency_overrides[
-            enforce_bceid_terms_conditions_guard
-        ] = lambda: (None if mocked_tc_accepted else crud_utils.raise_http_exception(
+        app.dependency_overrides[enforce_bceid_terms_conditions_guard] = lambda: (
+            None
+            if mocked_tc_accepted
+            else crud_utils.raise_http_exception(
                 error_code=ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
                 error_msg="Requires to accept terms and conditions.",
             )

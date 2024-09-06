@@ -3,7 +3,7 @@ import logging
 from api.app.models import model as models
 from sqlalchemy.orm import Session
 
-from .. import schemas
+from api.app.schemas import FamForestClientCreateSchema
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def get_forest_client(db: Session, forest_client_number: str) -> models.FamFores
     return fam_forest_client
 
 
-def create_forest_client(fam_forest_client: schemas.FamForestClientCreate, db: Session):
+def create_forest_client(fam_forest_client: FamForestClientCreateSchema, db: Session):
     LOGGER.debug(f"Creating Fam_Forest_Client with: {fam_forest_client}")
 
     fam_forest_client_dict = fam_forest_client.model_dump()
@@ -45,7 +45,7 @@ def find_or_create(db: Session, forest_client_number: str, requester: str):
             "does not exist, add a new Forest Client."
         )
 
-        request_forest_client = schemas.FamForestClientCreate(
+        request_forest_client = FamForestClientCreateSchema(
             **{
                 "forest_client_number": forest_client_number,
                 "create_user": requester,

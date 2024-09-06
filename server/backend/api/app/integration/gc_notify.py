@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from api.app.schemas import GCNotifyGrantAccessEmailParam
+from api.app.schemas import GCNotifyGrantAccessEmailParamSchema
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,9 @@ class GCNotifyEmailService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def send_user_access_granted_email(self, params: GCNotifyGrantAccessEmailParam):
+    def send_user_access_granted_email(
+        self, params: GCNotifyGrantAccessEmailParamSchema
+    ):
         """
         Send grant access email
         """
@@ -47,10 +49,7 @@ class GCNotifyEmailService:
         email_params = {
             "email_address": params.send_to_email,
             "template_id": self.grant_access_email_template_id,
-            "personalisation": {
-                **params.__dict__,
-                "contact_message": contact_message
-            },
+            "personalisation": {**params.__dict__, "contact_message": contact_message},
         }
         LOGGER.debug(f"Sending user access granted email with param {email_params}")
         gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"
