@@ -2,17 +2,33 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
 from typing_extensions import Annotated, Literal
 
+from api.app.constants import (
+    CLIENT_NUMBER_MAX_LEN,
+    CLIENT_NAME_MAX_LEN,
+    DISTRICT_ID_MAX_LEN,
+    DISTRICT_NAME_MAX_LEN,
+    ROLE_NAME_MAX_LEN,
+)
+
 
 class ScopeSchema(BaseModel):
     scope_type: Literal["Client", "District"]
-    client_id: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    client_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
-    district_id: Optional[Annotated[str, StringConstraints(max_length=20)]] = None
-    district_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    client_id: Optional[
+        Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
+    ] = None
+    client_name: Optional[
+        Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
+    ] = None
+    district_id: Optional[
+        Annotated[str, StringConstraints(max_length=DISTRICT_ID_MAX_LEN)]
+    ] = None
+    district_name: Optional[
+        Annotated[str, StringConstraints(max_length=DISTRICT_NAME_MAX_LEN)]
+    ] = None
 
 
 class RoleSchema(BaseModel):
-    role: Annotated[str, StringConstraints(max_length=50)]
+    role: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
     scopes: List[ScopeSchema]
 
 

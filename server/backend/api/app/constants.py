@@ -70,7 +70,9 @@ class IdimSearchUserParamType(str, Enum):
 
 class EmailSendingStatus(str, Enum):
     NOT_REQUIRED = "NOT_REQUIRED"  # does not require sending email.
-    SENT_TO_EMAIL_SERVICE_SUCCESS = "SENT_TO_EMAIL_SERVICE_SUCCESS"  # send to external service successful.
+    SENT_TO_EMAIL_SERVICE_SUCCESS = (
+        "SENT_TO_EMAIL_SERVICE_SUCCESS"  # send to external service successful.
+    )
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
 
@@ -87,3 +89,15 @@ ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
+
+
+# --------------------------------- Schema --------------------------------- #
+USER_NAME_MAX_LEN = 20
+FIRST_NAME_MAX_LEN = 50
+LAST_NAME_MAX_LEN = 50
+EMAIL_MAX_LEN = 250
+CLIENT_NUMBER_MAX_LEN = 8
+CLIENT_NAME_MAX_LEN = 60
+DISTRICT_ID_MAX_LEN = 20  # Assumption
+DISTRICT_NAME_MAX_LEN = 60  # Assumption
+ROLE_NAME_MAX_LEN = 100
