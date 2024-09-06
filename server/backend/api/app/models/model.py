@@ -787,6 +787,7 @@ class FamPrivilegeChangeAudit(Base):
     __tablename__ = "fam_privilege_change_audit"
     __table_args__ = {"schema": "app_fam"}
 
+    # Columns
     privilege_change_audit_id = Column(
         BigInteger, Identity(start=1, increment=1), primary_key=True
     )
@@ -810,6 +811,7 @@ class FamPrivilegeChangeAudit(Base):
     )
     privilege_details = Column(JSON, nullable=False)
 
+    # Relationships
     application = relationship(
         "FamApplication", back_populates="privilege_change_audits"
     )
