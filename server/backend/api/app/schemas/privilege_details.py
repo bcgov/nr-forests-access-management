@@ -5,25 +5,17 @@ from typing_extensions import Annotated, Literal
 from api.app.constants import (
     CLIENT_NUMBER_MAX_LEN,
     CLIENT_NAME_MAX_LEN,
-    DISTRICT_ID_MAX_LEN,
-    DISTRICT_NAME_MAX_LEN,
     ROLE_NAME_MAX_LEN,
 )
 
 
 class ScopeSchema(BaseModel):
-    scope_type: Literal["Client", "District"]
+    scope_type: Literal["Client"]
     client_id: Optional[
         Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
     ] = None
     client_name: Optional[
         Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
-    ] = None
-    district_id: Optional[
-        Annotated[str, StringConstraints(max_length=DISTRICT_ID_MAX_LEN)]
-    ] = None
-    district_name: Optional[
-        Annotated[str, StringConstraints(max_length=DISTRICT_NAME_MAX_LEN)]
     ] = None
 
 
