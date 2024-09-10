@@ -59,4 +59,4 @@ from .target_user import TargetUserSchema
 
 # ---------- Permission Audit History Schemas ---------- #
 from .privilege_details import PrivilegeDetailsSchema
-from .change_user_detail import ChangeUserDetailsSchema
+from .privilege_change_performer_schema import PrivilegeChangePerformerSchema

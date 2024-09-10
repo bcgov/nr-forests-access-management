@@ -27,6 +27,21 @@ class PrivilegeDetailsRoleSchema(BaseModel):
 
 
 class PrivilegeDetailsSchema(BaseModel):
+    """
+    This schema represents the structure of the `privilege_details` JSON field used in the `fam_privilege_change_audit` table.
+
+    The `privilege_details` field captures the details of the privileges being changed during a privilege audit event.
+    It includes information about the `permission_type` and, types of permissions, the associated roles and scopes.
+
+    Attributes:
+        permission_type (PrivilegeDetailsPermissionTypeEnum): The type of permission being changed.
+        roles (List[PrivilegeDetailsRoleSchema], optional): A list of roles associated with the permission.
+              Required for `END_USER` and `DELEGATED_ADMIN` permission types, and should be omitted for `APPLICATION_ADMIN`.
+
+    Validation:
+        The schema includes a validator to ensure that roles are appropriately present or absent based on the `permission_type`.
+    """
+
     permission_type: PrivilegeDetailsPermissionTypeEnum
     roles: Optional[List[PrivilegeDetailsRoleSchema]] = None
 
