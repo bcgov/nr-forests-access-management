@@ -91,7 +91,7 @@ ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
 
 
-# --------------------------------- Schema --------------------------------- #
+# ------------------------------- Schema Constants ------------------------------- #
 USER_NAME_MAX_LEN = 20
 FIRST_NAME_MAX_LEN = 50
 LAST_NAME_MAX_LEN = 50
@@ -99,3 +99,12 @@ EMAIL_MAX_LEN = 250
 CLIENT_NUMBER_MAX_LEN = 8
 CLIENT_NAME_MAX_LEN = 60
 ROLE_NAME_MAX_LEN = 100
+
+# --------------------------------- Schema Enums --------------------------------- #
+class PrivilegeDetailsScopeTypeEnum(str, Enum):
+    CLIENT = "Client"
+
+class PrivilegeDetailsPermissionTypeEnum(str, Enum):
+    END_USER = "End User"
+    DELEGATED_ADMIN = "Delegated Admin"
+    APPLICATION_ADMIN = "Application Admin"
