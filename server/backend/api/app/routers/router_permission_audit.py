@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/", response_model=List[FamApplicationUserRoleAssignmentGetSchema], status_code=200
+    "/", response_model=List[dict], status_code=200
 )
 async def get_permission_audit_history_by_user_and_application(
     user_id: int,
