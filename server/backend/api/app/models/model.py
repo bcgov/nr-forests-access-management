@@ -797,7 +797,11 @@ class FamPrivilegeChangeType(Base):
 
 class FamPrivilegeChangeAudit(Base):
     __tablename__ = "fam_privilege_change_audit"
-    __table_args__ = {"schema": "app_fam"}
+    __table_args__ = (
+        Index('idx_fam_privilege_change_audit_application_id', 'application_id'),
+        Index('idx_fam_privilege_change_audit_change_target_user_id', 'change_target_user_id'),
+        {"schema": "app_fam"},
+    )
 
     # Columns
     privilege_change_audit_id = Column(
