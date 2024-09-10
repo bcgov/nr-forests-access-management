@@ -2,7 +2,6 @@ import datetime
 from typing import List
 
 from sqlalchemy import (
-    JSON,
     BigInteger,
     Column,
     ForeignKey,
@@ -16,7 +15,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy.dialects.postgresql import TIMESTAMP, JSONB
 from sqlalchemy.orm import Mapped, declarative_base, relationship
 
 Base = declarative_base()
@@ -808,7 +807,7 @@ class FamPrivilegeChangeAudit(Base):
         BigInteger, ForeignKey("app_fam.fam_application.application_id"), nullable=False
     )
     change_date = Column(TIMESTAMP, nullable=False)
-    change_performer_user_details = Column(JSON, nullable=False)
+    change_performer_user_details = Column(JSONB, nullable=False)
     change_performer_user_id = Column(
         BigInteger, ForeignKey("app_fam.fam_user.user_id")
     )
@@ -822,7 +821,7 @@ class FamPrivilegeChangeAudit(Base):
         ForeignKey("app_fam.fam_privilege_change_type.privilege_change_type_code"),
         nullable=False,
     )
-    privilege_details = Column(JSON, nullable=False)
+    privilege_details = Column(JSONB, nullable=False)
 
     # Relationships
     application = relationship(
