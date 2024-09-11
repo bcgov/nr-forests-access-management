@@ -29,7 +29,7 @@ async def get_permission_audit_history_by_user_and_application(
         applicationId (int): The ID of the application associated with the audit history.
 
     Returns:
-        List[dict]: A list of audit history records for the given user and application.
+        List[PermissionAuditHistoryResDto]: A list of audit history records for the given user and application.
     """
     return read_permission_audit_history_by_user_and_application(
         user_id=user_id, application_id=application_id, db=db
