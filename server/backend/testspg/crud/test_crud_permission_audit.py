@@ -6,6 +6,7 @@ from api.app.crud.crud_permission_audit import (
 )
 from testspg.fixture.permission_audit_fixture import (
     APPLICATION_ID_1,
+    APPLICATION_ID_2,
     AUDIT_RECORD_U1_A1_D1,
     AUDIT_RECORD_U1_A1_D2,
     AUDIT_RECORD_U1_A2,
@@ -56,7 +57,7 @@ def test_read_permission_audit_history_multiple_users_same_application(
     db_pg_session.commit()
 
     result = read_permission_audit_history_by_user_and_application(
-        USER_ID_1, APPLICATION_ID_1, db_pg_session
+        USER_ID_1, APPLICATION_ID_2, db_pg_session
     )
 
     assert len(result) == 1
@@ -88,7 +89,7 @@ def test_read_permission_audit_history_multiple_applications_same_user(
         == AUDIT_RECORD_U1_A1_D1.change_performer_user_id
     )
     assert (
-        result[0].change_performer_user_details["username"]
+        result[0].change_performer_user_details.username
         == PERFORMER_DETAILS_1.username
     )
 

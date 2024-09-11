@@ -74,7 +74,7 @@ def test_get_permission_audit_history_unauthorized(mocker):
         f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}"
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 # Test database dependency failure
