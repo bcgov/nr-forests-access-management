@@ -5,11 +5,12 @@ from api.app.constants import (
 )
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas import PermissionAuditHistoryResDto
+from testspg.constants import TEST_USER_ID, FAM_APPLICATION_ID, FOM_DEV_APPLICATION_ID
 
-USER_ID_1 = 1
+USER_ID_1 = TEST_USER_ID
 USER_ID_2 = 2
-APPLICATION_ID_1 = 1
-APPLICATION_ID_2 = 2
+APPLICATION_ID_1 = FAM_APPLICATION_ID
+APPLICATION_ID_2 = FOM_DEV_APPLICATION_ID
 CHANGE_DATE_1 = datetime.datetime(2024, 9, 10, 0, 0)
 CHANGE_DATE_2 = datetime.datetime(2024, 9, 11, 0, 0)
 ENDPOINT_ROOT = "/permission-audit-history"
