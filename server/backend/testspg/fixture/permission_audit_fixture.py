@@ -51,7 +51,7 @@ AUDIT_RECORD_1 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_1,
     create_user="admin",
-    privilege_change_type_code="ADD",
+    privilege_change_type_code="GRANT",
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_1,
 )
@@ -63,7 +63,7 @@ AUDIT_RECORD_2 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_2,
     create_date=CHANGE_DATE_2,
     create_user="admin",
-    privilege_change_type_code="REMOVE",
+    privilege_change_type_code="REVOKE",
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_1,
 )
@@ -75,7 +75,7 @@ AUDIT_RECORD_3 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_2,
     create_user="admin",
-    privilege_change_type_code="REMOVE",
+    privilege_change_type_code="REVOKE",
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_2,
 )
@@ -88,7 +88,7 @@ MOCKED_PERMISSION_HISTORY_RESPONSE = [
         change_target_user_id=1,
         create_date=CHANGE_DATE_1,
         create_user="admin",
-        privilege_change_type_code="ADD",
+        privilege_change_type_code="GRANT",
         privilege_details=PRIVILEGE_DETAILS,
     )
 ]
