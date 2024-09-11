@@ -12,6 +12,7 @@ APPLICATION_ID_1 = 1
 APPLICATION_ID_2 = 2
 CHANGE_DATE_1 = datetime.datetime(2024, 9, 10, 0, 0)
 CHANGE_DATE_2 = datetime.datetime(2024, 9, 11, 0, 0)
+ENDPOINT_ROOT = "/permission-audit-history"
 
 PERFORMER_DETAILS_1 = {
     "username": "bigfoot_hunter",

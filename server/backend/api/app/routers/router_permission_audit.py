@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[PermissionAuditHistoryResDto], status_code=200)
+@router.get("", response_model=List[PermissionAuditHistoryResDto], status_code=200)
 async def get_permission_audit_history_by_user_and_application(
     user_id: int,
     application_id: int = Depends(authorize_by_app_id),
