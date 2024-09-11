@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from api.app.main import app
-from testspg.constants import (
+from testspg.fixture.permission_audit_fixture import (
     APPLICATION_ID_1,
     USER_ID_1,
     MOCKED_PERMISSION_HISTORY_RESPONSE,

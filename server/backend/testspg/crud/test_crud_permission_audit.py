@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from api.app.crud.crud_permission_audit import (
     read_permission_audit_history_by_user_and_application,
 )
-from testspg.constants import (
+from testspg.fixture.permission_audit_fixture import (
     APPLICATION_ID_1,
     AUDIT_RECORD_1,
     AUDIT_RECORD_2,
