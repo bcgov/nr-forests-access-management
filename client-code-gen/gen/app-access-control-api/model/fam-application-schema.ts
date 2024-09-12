@@ -14,13 +14,29 @@
 
 
 
-export * from './api/bcscproxy-api';
-export * from './api/famapplications-api';
-export * from './api/famforest-clients-api';
-export * from './api/famuser-api';
-export * from './api/famuser-role-assignment-api';
-export * from './api/famuser-terms-and-conditions-api';
-export * from './api/idirbce-idproxy-api';
-export * from './api/permission-audit-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface FamApplicationSchema
+ */
+export interface FamApplicationSchema {
+    /**
+     * 
+     * @type {number}
+     * @memberof FamApplicationSchema
+     */
+    'application_id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationSchema
+     */
+    'application_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationSchema
+     */
+    'application_description': string;
+}
 

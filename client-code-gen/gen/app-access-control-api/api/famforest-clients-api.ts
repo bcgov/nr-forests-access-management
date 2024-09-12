@@ -22,7 +22,7 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { FamForestClient } from '../model';
+import { FamForestClientSchema } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -97,7 +97,7 @@ export const FAMForestClientsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(clientNumber: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamForestClient>>> {
+        async search(clientNumber: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamForestClientSchema>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.search(clientNumber, applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMForestClientsApi.search']?.[localVarOperationServerIndex]?.url;
@@ -121,7 +121,7 @@ export const FAMForestClientsApiFactory = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(clientNumber: string, applicationId: number, options?: any): AxiosPromise<Array<FamForestClient>> {
+        search(clientNumber: string, applicationId: number, options?: any): AxiosPromise<Array<FamForestClientSchema>> {
             return localVarFp.search(clientNumber, applicationId, options).then((request) => request(axios, basePath));
         },
     };
@@ -142,7 +142,7 @@ export interface FAMForestClientsApiInterface {
      * @throws {RequiredError}
      * @memberof FAMForestClientsApiInterface
      */
-    search(clientNumber: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamForestClient>>;
+    search(clientNumber: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamForestClientSchema>>;
 
 }
 

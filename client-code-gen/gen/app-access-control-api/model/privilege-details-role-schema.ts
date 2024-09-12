@@ -13,14 +13,27 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PrivilegeDetailsScopeSchema } from './privilege-details-scope-schema';
 
-export * from './api/bcscproxy-api';
-export * from './api/famapplications-api';
-export * from './api/famforest-clients-api';
-export * from './api/famuser-api';
-export * from './api/famuser-role-assignment-api';
-export * from './api/famuser-terms-and-conditions-api';
-export * from './api/idirbce-idproxy-api';
-export * from './api/permission-audit-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @interface PrivilegeDetailsRoleSchema
+ */
+export interface PrivilegeDetailsRoleSchema {
+    /**
+     * 
+     * @type {string}
+     * @memberof PrivilegeDetailsRoleSchema
+     */
+    'role': string;
+    /**
+     * 
+     * @type {Array<PrivilegeDetailsScopeSchema>}
+     * @memberof PrivilegeDetailsRoleSchema
+     */
+    'scopes': Array<PrivilegeDetailsScopeSchema>;
+}
 
