@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ISideNavItem } from '@/components/common/SideNav.vue';
+import type { ISideNavItem } from '@/components/common/SideNav.vue';
 import Header from '@/components/header/Header.vue';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import sideNavData from '@/static/sideNav.json';
