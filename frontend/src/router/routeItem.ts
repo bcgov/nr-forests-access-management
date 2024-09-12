@@ -1,6 +1,6 @@
 export interface IRouteInfo {
-    label: string;
-    path: string;
+    label?: string;
+    path?: string;
     name: string;
 }
 
@@ -38,5 +38,10 @@ export const routeItems = {
         name: 'myPermissions',
         path: '/my-permissions',
         label: 'Check my permissions',
-    }
+    },
+    userDetails: {
+        name: 'viewUserDetails',
+        path: '/user-details/users/:userId/applications/:applicationId',
+        label: 'User details',
+    },
 } as RouteItems;
