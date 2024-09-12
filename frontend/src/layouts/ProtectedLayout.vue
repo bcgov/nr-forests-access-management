@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { type ISideNavItem } from '@/components/common/SideNav.vue';
 import Header from '@/components/header/Header.vue';
-import SideNav, { type ISideNavItem } from '@/components/common/SideNav.vue';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import sideNavData from '@/static/sideNav.json';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
 import {
     isApplicationSelected,
     selectedApplicationId,
 } from '@/store/ApplicationState';
+import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
-
 const navigationData = ref<[ISideNavItem]>(sideNavData as any);
+const route = useRoute();
 
 // Show and hide the correct sideNav btn based on the application
 const setSideNavOptions = () => {
@@ -42,18 +43,24 @@ onMounted(() => {
     }
 });
 
-watch(selectedApplicationId, () => {
+// watch a ref:selectedApplicationId and a route change in order to react to sidNav difference.
+watch([selectedApplicationId, route], () => {
     setSideNavOptions();
 });
 
 const disableSideNavOption = (optionName: string, disabled: boolean) => {
-    navigationData.value.map((navItem) => {
-        navItem.items?.map((childNavItem: ISideNavItem) => {
-            if (childNavItem.name === optionName) {
-                childNavItem.disabled = disabled;
+    const disableSideNavItemsOption = (optionName: string, disabled: boolean, items: ISideNavItem[]) => {
+        items.forEach((navItem) => {
+            if (navItem.name === optionName) {
+                navItem.disabled = disabled;
             }
-        });
-    });
+            if (navItem.items) {
+                disableSideNavItemsOption(optionName, disabled, navItem.items);
+            }
+        })
+    }
+
+    disableSideNavItemsOption(optionName, disabled, navigationData.value);
 };
 </script>
 <template>
