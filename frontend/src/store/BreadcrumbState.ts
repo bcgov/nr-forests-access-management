@@ -8,7 +8,7 @@ export const breadcrumbState = ref();
 // at the end of the `breadcrumbItem` array
 const crumbEndItem = {
     name: 'endCrumb',
-    path: undefined, // deliberately undefined.
+    path: "", // deliberately empty.
     label: undefined // deliberately undefined.
 }
 

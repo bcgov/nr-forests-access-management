@@ -1,6 +1,6 @@
 export interface IRouteInfo {
     label?: string;
-    path?: string;
+    path: string;
     name: string;
 }
 
