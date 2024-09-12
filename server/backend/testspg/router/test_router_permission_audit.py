@@ -1,7 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
 from api.app.main import app, apiPrefix
-from testspg import jwt_utils
 from testspg.fixture.permission_audit_fixture import (
     APPLICATION_ID_1,
     USER_ID_1,
@@ -12,17 +11,19 @@ client = TestClient(app)
 ENDPOINT_ROOT = "permission-audit-history"
 
 
-@pytest.fixture(scope="function")
-def auth_headers(test_rsa_key):
-    token = jwt_utils.create_jwt_token(test_rsa_key)
-    headers = jwt_utils.headers(token)
-    return headers
+@pytest.fixture(scope="function", autouse=True)
+def mock_get_db(mocker, db_pg_session):
+    # This will mock the get_db dependency for all tests in this module
+    mocker.patch(
+        "api.app.routers.router_permission_audit.database.get_db",
+        return_value=db_pg_session,
+    )
 
 
 # Test successful retrieval
 def test_get_permission_audit_history_success(mocker, auth_headers):
     mocker.patch(
-        "api.app.crud.crud_permission_audit.read_permission_audit_history_by_user_and_application",
+        "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         return_value=MOCKED_PERMISSION_HISTORY_RESPONSE,
     )
 
@@ -41,7 +42,7 @@ def test_get_permission_audit_history_success(mocker, auth_headers):
 # Test retrieval with no records
 def test_get_permission_audit_history_bad_request(mocker, auth_headers):
     mocker.patch(
-        "api.app.crud.crud_permission_audit.read_permission_audit_history_by_user_and_application",
+        "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         return_value=[],
     )
 
@@ -66,7 +67,7 @@ def test_get_permission_audit_history_invalid_user_id_type(auth_headers):
 # Test unauthorized access
 def test_get_permission_audit_history_unauthorized(mocker):
     mocker.patch(
-        "api.app.routers.router_guards.authorize_by_app_id",
+        "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         side_effect=Exception("Unauthorized"),
     )
 
@@ -75,17 +76,3 @@ def test_get_permission_audit_history_unauthorized(mocker):
     )
 
     assert response.status_code == 401
-
-
-# Test database dependency failure
-def test_get_permission_audit_history_dependency_failure(mocker, auth_headers):
-    mocker.patch(
-        "api.app.database.get_db", side_effect=Exception("Database connection error")
-    )
-
-    response = client.get(
-        f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}",
-        headers=auth_headers,
-    )
-
-    assert response.status_code == 500

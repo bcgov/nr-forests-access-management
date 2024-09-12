@@ -159,7 +159,7 @@ cd server/backend
 . ./venv/bin/activate
 ```
 
-- run postgres tests
+- run backend tests
 
 ```
 pytest

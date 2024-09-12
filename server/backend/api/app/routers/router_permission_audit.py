@@ -9,7 +9,6 @@ from api.app.schemas import PermissionAuditHistoryResDto
 from api.app.crud.crud_permission_audit import (
     read_permission_audit_history_by_user_and_application,
 )
-from api.app import database
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()

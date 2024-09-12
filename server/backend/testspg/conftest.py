@@ -258,3 +258,11 @@ def override_enforce_bceid_terms_conditions_guard(test_client_fixture):
         )
 
     return _override_enforce_bceid_terms_conditions_guard
+
+
+# Mock the headers obj that can be used right away.
+@pytest.fixture(scope="function")
+def auth_headers(test_rsa_key):
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    headers = jwt_utils.headers(token)
+    return headers

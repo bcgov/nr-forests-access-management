@@ -66,8 +66,8 @@ def test_read_permission_audit_history_multiple_users_same_application(
         == AUDIT_RECORD_U1_A2.change_performer_user_id
     )
     assert (
-        result[0].change_performer_user_details["username"]
-        == PERFORMER_DETAILS_1.username
+        result[0].change_performer_user_details.username
+        == PERFORMER_DETAILS_1["username"]
     )
 
 
@@ -90,7 +90,7 @@ def test_read_permission_audit_history_multiple_applications_same_user(
     )
     assert (
         result[0].change_performer_user_details.username
-        == PERFORMER_DETAILS_1.username
+        == PERFORMER_DETAILS_1["username"]
     )
 
 
