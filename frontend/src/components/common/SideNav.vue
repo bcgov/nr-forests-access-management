@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import Sidebar from 'primevue/sidebar';
-import router from '@/router';
 import { sideNavState } from '@/store/SideNavState';
+import Sidebar from 'primevue/sidebar';
 import type { PropType } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -35,7 +34,7 @@ const props = defineProps({
                                     item.link,
                                 'sidenav-disabled': item.disabled,
                             }"
-                            @click="router.push(item.link)"
+                            @click="$router.push(item.link)"
                         >
                             {{ item.name }}
                         </li>
@@ -48,7 +47,7 @@ const props = defineProps({
                                     child.link,
                                 'sidenav-disabled': child.disabled,
                             }"
-                            @click="router.push(child.link)"
+                            @click="$router.push(child.link)"
                         >
                             <span>{{ child.name }}</span>
                         </li>
