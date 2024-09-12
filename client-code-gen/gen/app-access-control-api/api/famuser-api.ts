@@ -22,7 +22,7 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { FamUserUpdateResponseSchema } from '../model';
+import { FamUserUpdateResponse } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -98,7 +98,7 @@ export const FAMUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserUpdateResponseSchema>> {
+        async updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserUpdateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserInformationFromIdimSource(page, perPage, usePagination, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMUserApi.updateUserInformationFromIdimSource']?.[localVarOperationServerIndex]?.url;
@@ -123,7 +123,7 @@ export const FAMUserApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: any): AxiosPromise<FamUserUpdateResponseSchema> {
+        updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: any): AxiosPromise<FamUserUpdateResponse> {
             return localVarFp.updateUserInformationFromIdimSource(page, perPage, usePagination, options).then((request) => request(axios, basePath));
         },
     };
@@ -145,7 +145,7 @@ export interface FAMUserApiInterface {
      * @throws {RequiredError}
      * @memberof FAMUserApiInterface
      */
-    updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: RawAxiosRequestConfig): AxiosPromise<FamUserUpdateResponseSchema>;
+    updateUserInformationFromIdimSource(page?: number, perPage?: number, usePagination?: boolean, options?: RawAxiosRequestConfig): AxiosPromise<FamUserUpdateResponse>;
 
 }
 

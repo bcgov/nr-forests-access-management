@@ -22,7 +22,7 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { FamApplicationUserRoleAssignmentGetSchema } from '../model';
+import { FamApplicationUserRoleAssignmentGet } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -86,7 +86,7 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>>> {
+        async getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationUserRoleAssignment(applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMApplicationsApi.getFamApplicationUserRoleAssignment']?.[localVarOperationServerIndex]?.url;
@@ -109,7 +109,7 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationUserRoleAssignment(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>> {
+        getFamApplicationUserRoleAssignment(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>> {
             return localVarFp.getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(axios, basePath));
         },
     };
@@ -129,7 +129,7 @@ export interface FAMApplicationsApiInterface {
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
      */
-    getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>>;
+    getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGet>>;
 
 }
 
