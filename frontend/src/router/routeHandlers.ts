@@ -1,10 +1,11 @@
 import { FamRouteError, RouteErrorName } from '@/errors/FamCustomError';
 import { routeItems } from '@/router/routeItem';
 import AuthService from '@/services/AuthService';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import {
     fetchApplicationAdmins,
-    fetchUserRoleAssignments,
     fetchDelegatedAdmins,
+    fetchUserRoleAssignments,
 } from '@/services/fetchData';
 import { asyncWrap } from '@/services/utils';
 import {
@@ -17,7 +18,6 @@ import LoginUserState from '@/store/FamLoginUserState';
 import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
@@ -84,7 +84,7 @@ const beforeEnterGrantUserPermissionRoute = async (
         return { path: routeItems.dashboard.path };
     }
 
-    populateBreadcrumb([routeItems.dashboard, routeItems.grantUserPermission]);
+    populateBreadcrumb([routeItems.dashboard]);
     return true;
 };
 
@@ -96,7 +96,7 @@ const beforeEnterGrantApplicationAdminRoute = async (
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
-    populateBreadcrumb([routeItems.dashboard, routeItems.grantAppAdmin]);
+    populateBreadcrumb([routeItems.dashboard]);
     return true;
 };
 
@@ -107,7 +107,7 @@ const beforeEnterGrantDelegationAdminRoute = async (
         emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
-    populateBreadcrumb([routeItems.dashboard, routeItems.grantDelegatedAdmin]);
+    populateBreadcrumb([routeItems.dashboard]);
     return true;
 };
 
