@@ -20,11 +20,11 @@ import {
     NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
 import { isNewAccess } from '@/services/utils';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
 
 type emit = (
     e: 'deleteUserRoleAssignment',
-    item: FamApplicationUserRoleAssignmentGet
+    item: FamApplicationUserRoleAssignmentGetSchema
 ) => void;
 
 const confirm = useConfirm();
@@ -37,7 +37,7 @@ const props = defineProps({
     },
     userRoleAssignments: {
         type: [Array] as PropType<
-            FamApplicationUserRoleAssignmentGet[] | undefined
+            FamApplicationUserRoleAssignmentGetSchema[] | undefined
         >,
         required: true,
     },
@@ -64,7 +64,7 @@ const confirmDeleteData = reactive({
     role: '',
 });
 
-function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
+function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema) {
     confirmDeleteData.role = assignment.role.role_name;
     confirmDeleteData.userName = assignment.user.user_name;
     confirm.require({
