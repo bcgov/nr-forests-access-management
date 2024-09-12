@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
+import UserDetails from '@/components/managePermissions/userDetails/UserDetails.vue';
 import NotFound from '@/components/NotFound.vue';
 import {
     beforeEachRouteHandler,
@@ -13,7 +14,6 @@ import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import MyPermissionsView from '@/views/MyPermissionsView.vue';
-import UserDetailsView from '@/views/UserDetailsView.vue';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
@@ -125,7 +125,7 @@ const routes = [
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
         },
-        component: UserDetailsView,
+        component: UserDetails,
 
         /* TODO: 'beforeEnter' placeholder to fetch data from backend*/
         // beforeEnter: beforeEnterHandlers[routeItems.userDetails.name],
