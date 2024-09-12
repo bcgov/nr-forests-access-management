@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Forest Access Management - FAM - API
- *  Forest Access Management API used by the Forest Access Management application to Define who has access to what apps, and what roles they will operate under  once access is granted. 
+ *  Forest Access Management API used by the Forest Access Management application to Define who has access to what apps, and what roles they will operate under  once access is granted.
  *
  * The version of the OpenAPI document: 0.0.1
  * Contact: SIBIFSAF@victoria1.gov.bc.ca
@@ -21,5 +21,6 @@ export * from './api/famuser-api';
 export * from './api/famuser-role-assignment-api';
 export * from './api/famuser-terms-and-conditions-api';
 export * from './api/idirbce-idproxy-api';
+export * from './api/permission-audit-api';
 export * from './api/smoke-test-api';
 

@@ -24,9 +24,9 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 // @ts-ignore
-import { IdimProxyBceidInfo } from '../model';
+import { IdimProxyBceidInfoSchema } from '../model';
 // @ts-ignore
-import { IdimProxyIdirInfo } from '../model';
+import { IdimProxyIdirInfoSchema } from '../model';
 /**
  * IDIRBCeIDProxyApi - axios parameter creator
  * @export
@@ -147,7 +147,7 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async bceidSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyBceidInfo>> {
+        async bceidSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyBceidInfoSchema>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.bceidSearch(userId, applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.bceidSearch']?.[localVarOperationServerIndex]?.url;
@@ -161,7 +161,7 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async idirSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirInfo>> {
+        async idirSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirInfoSchema>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.idirSearch(userId, applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.idirSearch']?.[localVarOperationServerIndex]?.url;
@@ -185,7 +185,7 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        bceidSearch(userId: string, applicationId: number, options?: any): AxiosPromise<IdimProxyBceidInfo> {
+        bceidSearch(userId: string, applicationId: number, options?: any): AxiosPromise<IdimProxyBceidInfoSchema> {
             return localVarFp.bceidSearch(userId, applicationId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -196,7 +196,7 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        idirSearch(userId: string, applicationId: number, options?: any): AxiosPromise<IdimProxyIdirInfo> {
+        idirSearch(userId: string, applicationId: number, options?: any): AxiosPromise<IdimProxyIdirInfoSchema> {
             return localVarFp.idirSearch(userId, applicationId, options).then((request) => request(axios, basePath));
         },
     };
@@ -217,7 +217,7 @@ export interface IDIRBCeIDProxyApiInterface {
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    bceidSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyBceidInfo>;
+    bceidSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyBceidInfoSchema>;
 
     /**
      * 
@@ -228,7 +228,7 @@ export interface IDIRBCeIDProxyApiInterface {
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    idirSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirInfo>;
+    idirSearch(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirInfoSchema>;
 
 }
 
