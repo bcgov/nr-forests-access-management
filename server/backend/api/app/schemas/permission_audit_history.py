@@ -12,7 +12,7 @@ class PermissionAduitHistoryRes(BaseModel):
     including when it occurred, who performed the change, who the change was applied to,
     and the specific details of the permission changes.
     """
-
+    privilege_change_audit_id: int
     change_date: datetime
     change_performer_user_details: PrivilegeChangePerformerSchema
     change_performer_user_id: Optional[int]
