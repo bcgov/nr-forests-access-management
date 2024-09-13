@@ -5,7 +5,7 @@ from api.app.constants import (
 )
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas import (
-    PermissionAuditHistoryResDto,
+    PermissionAduitHistoryRes,
     PrivilegeChangePerformerSchema,
     PrivilegeDetailsSchema,
 )
@@ -99,7 +99,7 @@ AUDIT_RECORD_U2_A2 = FamPrivilegeChangeAudit(
 )
 
 MOCKED_PERMISSION_HISTORY_RESPONSE = [
-    PermissionAuditHistoryResDto(
+    PermissionAduitHistoryRes(
         change_date=CHANGE_DATE_1,
         change_performer_user_details=PERFORMER_DETAILS_1,
         change_performer_user_id=1,

@@ -5,7 +5,7 @@ from .privilege_details import PrivilegeDetailsSchema
 from .privilege_change_performer import PrivilegeChangePerformerSchema
 
 
-class PermissionAuditHistoryResDto(BaseModel):
+class PermissionAduitHistoryRes(BaseModel):
     """
     This class is used to transfer data related to the changes made to a user's permissions,
     typically in the context of an audit trail. It encapsulates details about the change,
