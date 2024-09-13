@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from sqlalchemy import desc  # Import if you want descending order
 from typing import List
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas import PermissionAuditHistoryResDto
