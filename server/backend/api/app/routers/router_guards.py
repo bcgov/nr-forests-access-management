@@ -163,7 +163,6 @@ def authorize_by_app_id(
                 error_code=ERROR_PERMISSION_REQUIRED,
                 error_msg="Requester has no admin or delegated admin access to the application.",
             )
-    return application_id
 
 
 async def get_request_role_from_id(
