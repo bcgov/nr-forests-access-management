@@ -50,6 +50,7 @@ PRIVILEGE_DETAILS = PrivilegeDetailsSchema(
 ).model_dump()
 
 AUDIT_RECORD_U1_A1_D1 = FamPrivilegeChangeAudit(
+    privilege_change_audit_id=1,
     change_date=CHANGE_DATE_1,
     change_performer_user_details=PERFORMER_DETAILS_1,
     change_performer_user_id=USER_ID_1,
@@ -63,6 +64,7 @@ AUDIT_RECORD_U1_A1_D1 = FamPrivilegeChangeAudit(
 
 # Same as AUDIT_RECORD_U1_A1_D1 but with different dates
 AUDIT_RECORD_U1_A1_D2 = FamPrivilegeChangeAudit(
+    privilege_change_audit_id=2,
     change_date=CHANGE_DATE_2,
     change_performer_user_details=PERFORMER_DETAILS_1,
     change_performer_user_id=USER_ID_1,
@@ -75,6 +77,7 @@ AUDIT_RECORD_U1_A1_D2 = FamPrivilegeChangeAudit(
 )
 
 AUDIT_RECORD_U1_A2 = FamPrivilegeChangeAudit(
+    privilege_change_audit_id=3,
     change_date=CHANGE_DATE_2,
     change_performer_user_details=PERFORMER_DETAILS_1,
     change_performer_user_id=USER_ID_1,
@@ -87,6 +90,7 @@ AUDIT_RECORD_U1_A2 = FamPrivilegeChangeAudit(
 )
 
 AUDIT_RECORD_U2_A2 = FamPrivilegeChangeAudit(
+    privilege_change_audit_id=4,
     change_date=CHANGE_DATE_2,
     change_performer_user_details=PERFORMER_DETAILS_2,
     change_performer_user_id=USER_ID_2,
@@ -100,6 +104,7 @@ AUDIT_RECORD_U2_A2 = FamPrivilegeChangeAudit(
 
 MOCKED_PERMISSION_HISTORY_RESPONSE = [
     PermissionAduitHistoryRes(
+        privilege_change_audit_id=1,
         change_date=CHANGE_DATE_1,
         change_performer_user_details=PERFORMER_DETAILS_1,
         change_performer_user_id=1,
