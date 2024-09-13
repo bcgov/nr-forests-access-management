@@ -3,11 +3,11 @@ import type { PropType } from 'vue';
 import Card from 'primevue/card';
 import Tag from 'primevue/tag';
 import { IconSize } from '@/enum/IconEnum';
-import type { FamForestClient } from 'fam-app-acsctl-api';
+import type { FamForestClientSchema } from 'fam-app-acsctl-api';
 
 const props = defineProps({
     forestClientData: {
-        type: Object as PropType<FamForestClient[]>,
+        type: Object as PropType<FamForestClientSchema[]>,
     },
 });
 </script>

@@ -23,7 +23,7 @@ import FamLoginUserState from '@/store/FamLoginUserState';
 import { isLoading } from '@/store/LoadingState';
 import { composeAndPushGrantPermissionNotification, setNotificationMsg } from '@/store/NotificationState';
 import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import { EmailSendingStatus, type FamUserRoleAssignmentCreate } from 'fam-app-acsctl-api';
+import { EmailSendingStatus, type FamUserRoleAssignmentCreateSchema } from 'fam-app-acsctl-api';
 import { UserType } from 'fam-app-acsctl-api/model';
 
 const defaultDomain =
@@ -210,7 +210,7 @@ function toRequestPayload(formData: any) {
                   forest_client_numbers: formData.verifiedForestClients,
               }
             : {}),
-    } as FamUserRoleAssignmentCreate;
+    } as FamUserRoleAssignmentCreateSchema;
     return request;
 }
 </script>

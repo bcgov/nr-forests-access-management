@@ -2,6 +2,8 @@ from typing import Optional
 from pydantic import StringConstraints
 from typing_extensions import Annotated
 
+from api.app.constants import FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN, EMAIL_MAX_LEN
+
 from .requester import RequesterSchema
 
 
@@ -12,6 +14,10 @@ class TargetUserSchema(RequesterSchema):
     """
 
     user_id: Optional[int] = None
-    first_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
-    last_name: Optional[Annotated[str, StringConstraints(max_length=50)]] = None
-    email: Optional[Annotated[str, StringConstraints(max_length=250)]] = None
+    first_name: Optional[
+        Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
+    ] = None
+    last_name: Optional[
+        Annotated[str, StringConstraints(max_length=LAST_NAME_MAX_LEN)]
+    ] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=EMAIL_MAX_LEN)]] = None

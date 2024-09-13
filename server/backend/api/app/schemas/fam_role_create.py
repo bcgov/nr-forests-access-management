@@ -1,12 +1,14 @@
 from typing import Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from typing_extensions import Annotated
-from api.app.constants import RoleType
+
+from api.app.constants import RoleType, ROLE_NAME_MAX_LEN
+
 from .fam_forest_client_create import FamForestClientCreateSchema
 
 
 class FamRoleCreateSchema(BaseModel):
-    role_name: Annotated[str, StringConstraints(max_length=100)]
+    role_name: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
     role_purpose: Union[Annotated[str, StringConstraints(max_length=300)], None] = None
     display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     parent_role_id: Union[int, None] = Field(

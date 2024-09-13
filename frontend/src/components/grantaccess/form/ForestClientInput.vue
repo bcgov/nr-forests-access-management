@@ -7,7 +7,7 @@ import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
 import { isLoading } from '@/store/LoadingState';
 import {
     FamForestClientStatusType,
-    type FamForestClient,
+    type FamForestClientSchema,
 } from 'fam-app-acsctl-api';
 import InputText from 'primevue/inputtext';
 import { ErrorMessage, Field } from 'vee-validate';
@@ -26,7 +26,7 @@ const emit = defineEmits([
 ]);
 
 const forestClientNumbersInput = ref('');
-const forestClientData = ref<FamForestClient[]>([]);
+const forestClientData = ref<FamForestClientSchema[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 const verifyForestClientNumber = async (forestClientNumbers: string) => {

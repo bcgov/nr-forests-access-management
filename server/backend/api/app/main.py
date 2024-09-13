@@ -26,7 +26,8 @@ from .routers import (
     router_user_role_assignment,
     router_user_terms_conditions,
     router_guards,
-    router_user
+    router_user,
+    router_permission_audit
 )
 
 logConfigFile = os.path.join(
@@ -135,6 +136,12 @@ app.include_router(
     prefix=apiPrefix + "/users",
     dependencies=[Depends(router_guards.verify_api_key_for_update_user_info)],
     tags=["FAM User"],
+)
+app.include_router(
+    router_permission_audit.router,
+    prefix=apiPrefix + "/permission-audit-history",
+    dependencies=[Depends(router_guards.authorize)],
+    tags=["Permission Audit"],
 )
 
 

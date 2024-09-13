@@ -15,12 +15,12 @@ import {
     TEST_SUCCESS_FOREST_CLIENT_NUMBER_2,
     TEST_SUCCESS_FOREST_CLIENT_NUMBER_3,
 } from './common/ForestClientData';
-import type { FamForestClient } from 'fam-app-acsctl-api';
+import type { FamForestClientSchema } from 'fam-app-acsctl-api';
 import { fixJsdomCssErr } from '@/tests/common/fixJsdomCssErr';
 
 fixJsdomCssErr()
 
-const testActiveClient: FamForestClient[] = [
+const testActiveClient: FamForestClientSchema[] = [
     {
         client_name: `${TEST_FOREST_CLIENT_NAME}_${TEST_SUCCESS_FOREST_CLIENT_NUMBER}`,
         forest_client_number: TEST_SUCCESS_FOREST_CLIENT_NUMBER,
@@ -31,7 +31,7 @@ const testActiveClient: FamForestClient[] = [
     }
 ];
 
-const testMultipleActiveClient: FamForestClient[] = [
+const testMultipleActiveClient: FamForestClientSchema[] = [
     {
         client_name: `${TEST_FOREST_CLIENT_NAME}_${TEST_SUCCESS_FOREST_CLIENT_NUMBER}`,
         forest_client_number: TEST_SUCCESS_FOREST_CLIENT_NUMBER,
@@ -58,7 +58,7 @@ const testMultipleActiveClient: FamForestClient[] = [
     }
 ];
 
-const testInactiveClient: FamForestClient[] = [
+const testInactiveClient: FamForestClientSchema[] = [
     {
         client_name: `${TEST_FOREST_CLIENT_NAME}_${TEST_INACTIVE_FOREST_CLIENT_NUMBER}`,
         forest_client_number: TEST_INACTIVE_FOREST_CLIENT_NUMBER,
@@ -69,7 +69,7 @@ const testInactiveClient: FamForestClient[] = [
     }
 ];
 
-const testMultipleInactiveClient: FamForestClient[] = [
+const testMultipleInactiveClient: FamForestClientSchema[] = [
     {
         client_name: `${TEST_FOREST_CLIENT_NAME}_${TEST_INACTIVE_FOREST_CLIENT_NUMBER}`,
         forest_client_number: TEST_SUCCESS_FOREST_CLIENT_NUMBER,

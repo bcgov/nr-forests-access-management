@@ -37,7 +37,7 @@ import type {
     FamAccessControlPrivilegeGetResponse,
     FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
 import TabPanel from 'primevue/tabpanel';
 import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
@@ -48,7 +48,7 @@ const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 const props = defineProps({
     userRoleAssignments: {
-        type: Array as PropType<FamApplicationUserRoleAssignmentGet[]>,
+        type: Array as PropType<FamApplicationUserRoleAssignmentGetSchema[]>,
         default: [],
     },
     applicationAdmins: {
@@ -74,7 +74,7 @@ const props = defineProps({
     },
 });
 
-const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGet[]>(
+const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGetSchema[]>(
     props.userRoleAssignments
 );
 
@@ -127,7 +127,7 @@ const onApplicationSelected = async (e: DropdownChangeEvent) => {
 };
 
 const deleteUserRoleAssignment = async (
-    assignment: FamApplicationUserRoleAssignmentGet
+    assignment: FamApplicationUserRoleAssignmentGetSchema
 ) => {
     resetNotificationAndNewRowTag();
 

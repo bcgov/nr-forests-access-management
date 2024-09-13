@@ -35,12 +35,13 @@ def get_db():
 
         db = _session_local()
         yield db
+        db.commit()
 
     except Exception as e:
-        LOGGER.debug(f"db session excpetion: {e}")
+        LOGGER.warning(f"DB session exception: {e}")
         db.rollback()
+        raise e
 
     finally:
-        db.commit()
         LOGGER.debug("closing db session")
         db.close()

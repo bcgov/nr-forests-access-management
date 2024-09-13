@@ -22,14 +22,14 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 type emit = (
     e: 'deleteUserRoleAssignment',
-    item: FamApplicationUserRoleAssignmentGet
+    item: FamApplicationUserRoleAssignmentGetSchema
 ) => void;
 
 const confirm = useConfirm();
@@ -42,7 +42,7 @@ const props = defineProps({
     },
     userRoleAssignments: {
         type: [Array] as PropType<
-            FamApplicationUserRoleAssignmentGet[] | undefined
+            FamApplicationUserRoleAssignmentGetSchema[] | undefined
         >,
         required: true,
     },
@@ -69,7 +69,7 @@ const confirmDeleteData = reactive({
     role: '',
 });
 
-function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGet) {
+function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema) {
     confirmDeleteData.role = assignment.role.role_name;
     confirmDeleteData.userName = assignment.user.user_name;
     confirm.require({

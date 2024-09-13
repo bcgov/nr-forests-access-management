@@ -56,3 +56,8 @@ for.
 """
 from .requester import RequesterSchema
 from .target_user import TargetUserSchema
+
+# ---------- Permission Audit History Schemas ---------- #
+from .privilege_details import PrivilegeDetailsSchema
+from .privilege_change_performer import PrivilegeChangePerformerSchema
+from .permission_audit_history import PermissionAduitHistoryRes
