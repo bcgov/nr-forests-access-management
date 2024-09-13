@@ -20,6 +20,7 @@ declare module '@carbon/icons-vue/es/group--access/16';
 declare module '@carbon/icons-vue/es/enterprise/16'
 declare module '@carbon/icons-vue/es/user--profile/16'
 declare module '@carbon/icons-vue/es/document/16'
+declare module '@carbon/icons-vue/es/recently-viewed/16';
 
 // medium
 declare module '@carbon/icons-vue/es/login/20';

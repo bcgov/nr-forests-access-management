@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
-import type { PropType } from 'vue';
 import { IconSize } from '@/enum/IconEnum';
+import type { PropType } from 'vue';
+import { defineAsyncComponent } from 'vue';
 
 const props = defineProps({
     icon: {
@@ -71,6 +71,9 @@ const icons = {
     ),
     document16: defineAsyncComponent(
         () => import('@carbon/icons-vue/es/document/16')
+    ),
+    history16: defineAsyncComponent(
+        () => import('@carbon/icons-vue/es/recently-viewed/16')
     ),
 
     // medium icons

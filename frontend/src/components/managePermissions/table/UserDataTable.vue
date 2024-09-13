@@ -1,26 +1,31 @@
 <script setup lang="ts">
-import { reactive, ref, computed, type PropType } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
 import ConfirmDialog from 'primevue/confirmdialog';
+import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
+import { useConfirm } from 'primevue/useconfirm';
+import { computed, reactive, ref, type PropType } from 'vue';
 
-import { IconSize } from '@/enum/IconEnum';
-import { routeItems } from '@/router/routeItem';
-import Button from '@/components/common/Button.vue';
 import NewUserTag from '@/components/common/NewUserTag.vue';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import { IconSize } from '@/enum/IconEnum';
+import router from '@/router';
+import { routeItems } from '@/router/routeItem';
+import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { isNewAccess } from '@/services/utils';
+import { selectedApplicationId } from '@/store/ApplicationState';
 import {
+    NEW_ACCESS_STYLE_IN_TABLE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
-    NEW_ACCESS_STYLE_IN_TABLE,
 } from '@/store/Constants';
-import { isNewAccess } from '@/services/utils';
 import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
+
+const environmentSettings = new EnvironmentSettings();
+const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -75,6 +80,13 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
         accept: () => {
             emit('deleteUserRoleAssignment', assignment);
         },
+    });
+}
+
+const viewUserPermissionHistoryDetails = (user_id: number) => {
+    router.push({
+        name: routeItems.userDetails.name,
+        params: {userId: user_id, applicationId: selectedApplicationId.value}
     });
 }
 
@@ -177,12 +189,14 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 >
                 <Column header="Action">
                     <template #body="{ data }">
-                        <!-- Hidden until functionality is available
-                            <button
-                                class="btn btn-icon"
-                            >
-                                <Icon icon="edit" :size="IconSize.small"/>
-                            </button> -->
+                        <button
+                            title="User permission history"
+                            class="btn btn-icon"
+                            :disabled="!isDevEnvironment"
+                            @click="viewUserPermissionHistoryDetails(data.user_id)">
+                            <Icon icon="history" :size="IconSize.small" />
+                        </button>
+
                         <button
                             title="Delete user"
                             class="btn btn-icon"
