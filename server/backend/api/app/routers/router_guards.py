@@ -3,43 +3,32 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (
-    CURRENT_TERMS_AND_CONDITIONS_VERSION,
-    ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-    ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
-    ERROR_CODE_INVALID_OPERATION,
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    ERROR_CODE_INVALID_ROLE_ID,
-    ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-    ERROR_CODE_REQUESTER_NOT_EXISTS,
-    ERROR_CODE_SELF_GRANT_PROHIBITED,
-    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-    RoleType,
-    UserType,
-)
-from api.app.crud import (
-    crud_access_control_privilege,
-    crud_role,
-    crud_user,
-    crud_user_role,
-    crud_utils,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
+                               ERROR_CODE_INVALID_OPERATION,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               ERROR_CODE_INVALID_ROLE_ID,
+                               ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                               ERROR_CODE_REQUESTER_NOT_EXISTS,
+                               ERROR_CODE_SELF_GRANT_PROHIBITED,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
+                               UserType)
+from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
+                          crud_user_role, crud_utils)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
-from api.app.jwt_validation import (
-    ERROR_GROUPS_REQUIRED,
-    ERROR_PERMISSION_REQUIRED,
-    JWT_GROUPS_KEY,
-    get_access_roles,
-    get_request_cognito_user_id,
-    validate_token,
-)
+from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
+                                    ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
+                                    get_access_roles,
+                                    get_request_cognito_user_id,
+                                    validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.utils import utils
+from api.config import config
 from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
-from api.config import config
 
 """
 This file is intended to host functions only to guard the endpoints at framework's
@@ -141,8 +130,6 @@ def authorize_by_app_id(
     This authorize_by_app_id method is used for the authorization check of a specific application,
     we require user to be the app admin or delegated admin of the application
 
-    Returns:
-        int: The application ID if the user is authorized.
     """
     requester_is_app_admin = crud_utils.is_app_admin(
         db=db, application_id=application_id, access_roles=access_roles

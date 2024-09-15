@@ -1,8 +1,4 @@
-import datetime
 from api.app import constants as fam_constants
-from api.app.models.model import FamPrivilegeChangeAudit
-from api.app.schemas.permission_audit_history import PermissionAuditHistoryResDto
-
 
 # --------------------- Testing application  ---------------------------- #
 FAM_APPLICATION_ID = 1
