@@ -3,23 +3,23 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
-from api.app.schemas import (
-    FamUserRoleAssignmentCreateSchema,
-    TargetUserSchema,
-    FamUserRoleAssignmentCreateResponseSchema,
-    FamApplicationUserRoleAssignmentGetSchema,
-    GCNotifyGrantAccessEmailParamSchema,
-    FamRoleCreateSchema
-)
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
-from api.app.integration.forest_client.forest_client import ForestClientService
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
+from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
+                             FamRoleCreateSchema,
+                             FamUserRoleAssignmentCreateResponseSchema,
+                             FamUserRoleAssignmentCreateSchema,
+                             GCNotifyGrantAccessEmailParamSchema,
+                             TargetUserSchema)
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
+
+from server.backend.api.app.integration.forest_client.forest_client_integration import \
+    ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -102,7 +102,7 @@ def create_user_role_assignment_many(
             )
 
         api_instance_env = crud_utils.use_api_instance_by_app(fam_role.application)
-        forest_client_integration_service = ForestClientService(api_instance_env)
+        forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
 
         for forest_client_number in request.forest_client_numbers:
             # validate the forest client number
