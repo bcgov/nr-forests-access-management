@@ -3,8 +3,7 @@
 import logging
 
 import pytest
-
-from server.backend.api.app.integration.forest_client_integration import \
+from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)

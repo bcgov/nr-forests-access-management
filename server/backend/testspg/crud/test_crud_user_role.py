@@ -1,20 +1,16 @@
 import copy
 import logging
 
-from api.app.schemas import TargetUserSchema, FamUserRoleAssignmentCreateSchema
 import pytest
 from api.app.crud import crud_role, crud_user_role
+from api.app.schemas import FamUserRoleAssignmentCreateSchema, TargetUserSchema
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    FOM_DEV_REVIEWER_ROLE_ID,
-    FOM_DEV_SUBMITTER_ROLE_ID,
-    NOT_EXIST_ROLE_ID,
-    TEST_CREATOR,
-    TEST_NOT_EXIST_USER_TYPE,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_REVIEWER_ROLE_ID,
+                               FOM_DEV_SUBMITTER_ROLE_ID, NOT_EXIST_ROLE_ID,
+                               TEST_CREATOR, TEST_NOT_EXIST_USER_TYPE)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,10 +70,9 @@ def test_get_use_role_by_user_id_and_role_id(db_pg_session: Session):
     assert found_user_role_xref is None
 
     # create a user role assignment
-    user_role_xref = crud_user_role.create(
+    crud_user_role.create(
         db_pg_session, TEST_USER_ID, FOM_DEV_REVIEWER_ROLE_ID, TEST_CREATOR
     )
-    xref_dict = user_role_xref.__dict__
 
     # find it
     found_user_role_xref = crud_user_role.get_use_role_by_user_id_and_role_id(

@@ -141,7 +141,9 @@ def create_user_role_assignment_many(
             )
 
             # Update response object for Forest Client Name. FAM currently does not store this.
-            new_user_role_assginment_res.detail.role.forest_client.client_name = forest_client_search_return.get("clientName")
+            # TODO:
+            # new_user_role_assginment_res.detail.role.forest_client = forest_client_search_return[0]
+
             new_user_permission_grated_list.append(new_user_role_assginment_res)
     else:
         # Create user/role assignment

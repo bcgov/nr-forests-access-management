@@ -4,6 +4,8 @@ import pytest
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from mock import patch
 from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
                                FC_NUMBER_EXISTS_DEACTIVATED,
@@ -11,9 +13,6 @@ from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
                                FC_NUMBER_EXISTS_RECEIVERSHIP,
                                FC_NUMBER_EXISTS_SUSPENDED,
                                FC_NUMBER_LEN_TOO_SHORT, FC_NUMBER_NOT_EXISTS)
-
-from server.backend.api.app.integration.forest_client_integration import \
-    ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ sample_forest_client_return = [
 def mock_forest_client():
     # Mocked dependency class object
     with patch(
-        "api.app.integration.forest_client.forest_client.ForestClientService",
+        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
         autospec=True,
     ) as m:
         yield m.return_value  # Very important to get instance of mocked class.
