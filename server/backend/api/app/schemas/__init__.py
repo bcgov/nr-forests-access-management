@@ -31,6 +31,12 @@ from .idim_proxy_bceid_search_param import IdimProxyBceidSearchParamSchema
 from .idim_proxy_idir_info import IdimProxyIdirInfoSchema
 # ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 from .idim_proxy_search_param import IdimProxySearchParamSchema
+# ---------- Permission Audit History Schemas ---------- #
+from .permission_audit_history import (PermissionAduitHistoryBaseSchema,
+                                       PermissionAduitHistoryCreateSchema,
+                                       PermissionAduitHistoryRes)
+from .privilege_change_performer import PrivilegeChangePerformerSchema
+from .privilege_details import PrivilegeDetailsSchema
 
 # ---------- System schema objects ---------- #
 """
@@ -44,9 +50,5 @@ for.
       possible some endpoints will target on multiple users. In such case,
       further design or refactoring might be needed.
 """
-from .permission_audit_history import PermissionAduitHistoryRes
-from .privilege_change_performer import PrivilegeChangePerformerSchema
-# ---------- Permission Audit History Schemas ---------- #
-from .privilege_details import PrivilegeDetailsSchema
 from .requester import RequesterSchema
 from .target_user import TargetUserSchema

@@ -2,7 +2,7 @@ import logging
 
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas.permission_audit_history import \
-    PermissionAuditHistoryResDto
+    PermissionAduitHistoryCreateSchema
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class PermissionAuditRepository:
 
     # --- Create ---
 
-    def save(self, item: PermissionAuditHistoryResDto) -> FamPrivilegeChangeAudit:
+    def save(self, item: PermissionAduitHistoryCreateSchema) -> FamPrivilegeChangeAudit:
         db_item = FamPrivilegeChangeAudit(**item)
         self.db.add(db_item)
         self.db.flush()
