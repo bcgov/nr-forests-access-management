@@ -92,6 +92,7 @@ ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
 
 
 # ------------------------------- Schema Constants ------------------------------- #
+SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
 FIRST_NAME_MAX_LEN = 50
 LAST_NAME_MAX_LEN = 50
