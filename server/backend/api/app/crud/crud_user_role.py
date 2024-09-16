@@ -17,6 +17,7 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamUserRoleAssignmentCreateSchema,
                              GCNotifyGrantAccessEmailParamSchema,
                              TargetUserSchema)
+from api.app.schemas.fam_forest_client import FamForestClientSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
@@ -141,8 +142,7 @@ def create_user_role_assignment_many(
             )
 
             # Update response object for Forest Client Name. FAM currently does not store this.
-            # TODO:
-            # new_user_role_assginment_res.detail.role.forest_client = forest_client_search_return[0]
+            new_user_role_assginment_res.detail.role.forest_client = FamForestClientSchema.from_api_json(forest_client_search_return[0])
 
             new_user_permission_grated_list.append(new_user_role_assginment_res)
     else:
