@@ -2,12 +2,11 @@ import json
 import logging
 from typing import List
 
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from api.app.routers.router_utils import get_api_instance_env
 from api.app.schemas import FamForestClientSchema
 from fastapi import APIRouter, Depends, Query
-
-from server.backend.api.app.integration.forest_client_integration import \
-    ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
 
