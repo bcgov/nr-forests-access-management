@@ -7,6 +7,8 @@ from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
@@ -17,9 +19,6 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              TargetUserSchema)
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
-
-from server.backend.api.app.integration.forest_client_integration import \
-    ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -80,7 +79,7 @@ def create_user_role_assignment_many(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    create_return_list: List[FamUserRoleAssignmentCreateRes] = []
+    new_user_permission_grated_list: List[FamUserRoleAssignmentCreateRes] = []
 
     if require_child_role:
         LOGGER.debug(
@@ -137,32 +136,34 @@ def create_user_role_assignment_many(
                 db, forest_client_number, fam_role, requester
             )
             # Create user/role assignment
-            handle_create_return = create_user_role_assignment(
+            new_user_role_assginment_res = create_user_role_assignment(
                 db, fam_user, child_role, requester
             )
-            create_return_list.append(handle_create_return)
+
+            # Update response object for Forest Client Name. FAM currently does not store this.
+            new_user_role_assginment_res.detail.role.forest_client.client_name = forest_client_search_return.get("clientName")
+            new_user_permission_grated_list.append(new_user_role_assginment_res)
     else:
         # Create user/role assignment
-        handle_create_return = create_user_role_assignment(
+        new_user_role_assginment_res = create_user_role_assignment(
             db, fam_user, fam_role, requester
         )
-        create_return_list.append(handle_create_return)
-
-    LOGGER.debug(f"User/Role assignment executed successfully: {create_return_list}")
-    return create_return_list
+        new_user_permission_grated_list.append(new_user_role_assginment_res)
+    LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_grated_list}")
+    return new_user_permission_grated_list
 
 
 def create_user_role_assignment(
     db: Session, user: models.FamUser, role: models.FamRole, requester: str
 ):
-    create_user_role_assginment_return = None
+    new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id
     )
 
     if fam_user_role_xref:
         error_msg = f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateRes(
+        new_user_role_assginment_res = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.CONFLICT,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -173,7 +174,7 @@ def create_user_role_assignment(
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateRes(
+        new_user_role_assginment_res = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.OK,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -182,7 +183,7 @@ def create_user_role_assignment(
             }
         )
 
-    return create_user_role_assginment_return
+    return new_user_role_assginment_res
 
 
 def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
@@ -328,7 +329,7 @@ def send_user_access_granted_email(
                 roles_assignment_responses
             )
         )
-        with_client_number = "yes" if roles_assignment_responses[0].detail.role.client_number is not None else "no"
+        with_client_number = "yes" if roles_assignment_responses[0].detail.role.forest_client is not None else "no"
         email_service = GCNotifyEmailService()
         email_params = GCNotifyGrantAccessEmailParamSchema(
             **{
