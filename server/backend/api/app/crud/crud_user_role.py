@@ -18,7 +18,7 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
-from server.backend.api.app.integration.forest_client.forest_client_integration import \
+from server.backend.api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)

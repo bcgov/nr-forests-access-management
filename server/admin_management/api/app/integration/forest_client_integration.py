@@ -18,6 +18,12 @@ class ForestClientIntegrationService():
     Spec of API:
         test: https://nr-forest-client-api-test.api.gov.bc.ca/
         prod: https://nr-forest-client-api-prod.api.gov.bc.ca/
+
+    Note! This is external API integration and FAM supports 3 applications environments in PROD.
+          For FAM(PROD)-Application(PROD): it will connect to ForestClientAPI PROD instance.
+          For rest of application environments (TEST/DEV) in FAM(PROD): it will use TEST instance.
+          For FAM environment management relating to the use of external API,
+          see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts

@@ -12,7 +12,7 @@ from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
                                FC_NUMBER_EXISTS_SUSPENDED,
                                FC_NUMBER_LEN_TOO_SHORT, FC_NUMBER_NOT_EXISTS)
 
-from server.backend.api.app.integration.forest_client.forest_client_integration import \
+from server.backend.api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)

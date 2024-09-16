@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from server.backend.api.app.integration.forest_client.forest_client_integration import \
+from server.backend.api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
