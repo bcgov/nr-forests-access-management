@@ -1,11 +1,12 @@
 from typing import List
-from pydantic import BaseModel
+
 from api.app.constants import EmailSendingStatus
-from .fam_user_role_assignment_create_response import (
-    FamUserRoleAssignmentCreateResponseSchema,
-)
+from pydantic import BaseModel
+
+from .fam_user_role_assignment_create_response import \
+    FamUserRoleAssignmentCreateRes
 
 
-class FamUserRoleAssignmentResponseSchema(BaseModel):
+class FamUserRoleAssignmentRes(BaseModel):
     email_sending_status: EmailSendingStatus = EmailSendingStatus.NOT_REQUIRED
-    assignments_detail: List[FamUserRoleAssignmentCreateResponseSchema]
+    assignments_detail: List[FamUserRoleAssignmentCreateRes]

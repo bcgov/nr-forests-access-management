@@ -16,9 +16,8 @@ from .fam_user_info import FamUserInfoSchema
 # --------------------------------- FAM User Role Assignment--------------------------------- #
 from .fam_user_role_assignment_create import FamUserRoleAssignmentCreateSchema
 from .fam_user_role_assignment_create_response import \
-    FamUserRoleAssignmentCreateResponseSchema
-from .fam_user_role_assignment_response import \
-    FamUserRoleAssignmentResponseSchema
+    FamUserRoleAssignmentCreateRes
+from .fam_user_role_assignment_response import FamUserRoleAssignmentRes
 from .fam_user_type import FamUserTypeSchema
 from .fam_user_update_response import FamUserUpdateResponseSchema
 # ------------------------------------- Forest Client API Integraion ---------------------------------------- #

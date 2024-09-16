@@ -11,7 +11,7 @@ from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamRoleCreateSchema,
-                             FamUserRoleAssignmentCreateResponseSchema,
+                             FamUserRoleAssignmentCreateRes,
                              FamUserRoleAssignmentCreateSchema,
                              GCNotifyGrantAccessEmailParamSchema,
                              TargetUserSchema)
@@ -29,7 +29,7 @@ def create_user_role_assignment_many(
     request: FamUserRoleAssignmentCreateSchema,
     target_user: TargetUserSchema,
     requester: str,
-) -> List[FamUserRoleAssignmentCreateResponseSchema]:
+) -> List[FamUserRoleAssignmentCreateRes]:
     """
     Create fam_user_role_xref Association
 
@@ -80,7 +80,7 @@ def create_user_role_assignment_many(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    create_return_list: List[FamUserRoleAssignmentCreateResponseSchema] = []
+    create_return_list: List[FamUserRoleAssignmentCreateRes] = []
 
     if require_child_role:
         LOGGER.debug(
@@ -162,7 +162,7 @@ def create_user_role_assignment(
 
     if fam_user_role_xref:
         error_msg = f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+        create_user_role_assginment_return = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.CONFLICT,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -173,7 +173,7 @@ def create_user_role_assignment(
         )
     else:
         fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+        create_user_role_assginment_return = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.OK,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -306,7 +306,7 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
 
 def send_user_access_granted_email(
     target_user: TargetUserSchema,
-    roles_assignment_responses: List[FamUserRoleAssignmentCreateResponseSchema],
+    roles_assignment_responses: List[FamUserRoleAssignmentCreateRes],
 ):
     """
     Send email using GC Notify integration service.
