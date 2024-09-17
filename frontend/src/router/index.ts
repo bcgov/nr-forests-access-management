@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 import {
     beforeEachRouteHandler,
     beforeEnterHandlers,
@@ -9,9 +9,9 @@ import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 // Initial load
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
+import AuthCallback from '@/components/AuthCallbackHandler.vue';
 
 // Lazy load all components
-const AuthCallback = () => import('@/components/AuthCallbackHandler.vue');
 const UserDetails = () => import('@/views/UserDetails/index.vue');
 const NotFound = () => import('@/components/NotFound.vue');
 const GrantAccessView = () => import('@/views/GrantAccessView.vue');
@@ -27,7 +27,7 @@ const MyPermissionsView = () => import('@/views/MyPermissionsView.vue');
 // Workaround: reload the page in the browser
 // Workarounds:
 // 1. Reload the page in the browser if the hot-reload fails.
-// 2. (Recommended) Within router below use a wrapper view compoent. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
+// 2. (Recommended) Within router below use a wrapper view component. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
 //    There still seem to be cases where page reload is needed.
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax.
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
@@ -39,10 +39,12 @@ const MyPermissionsView = () => import('@/views/MyPermissionsView.vue');
  *      If not provided or `false` means it is "public" (for everyone without authentication).
  *
  * - `requiresAppSelected`:
- *      Means user should have selected(or default to) an `application` as a context for business logic.
+ *      Means user should have selected (or default to) an `application` as a context for business logic.
  *      => global "selectedApplication" state is set.
  */
-const routes = [
+
+// Routes using createWebHashHistory
+const hashRoutes = [
     {
         path: '/',
         name: routeItems.landing.name,
@@ -122,14 +124,13 @@ const routes = [
         path: routeItems.userDetails.path,
         name: routeItems.userDetails.name,
         meta: {
-            requiresAuth: false,
-            requiresAppSelected: false,
+            requiresAuth: true,
+            requiresAppSelected: true,
             title: routeItems.userDetails.label,
             layout: 'ProtectedLayout',
             hasBreadcrumb: true,
         },
         component: UserDetails,
-
     },
     {
         path: routeItems.myPermissions.path,
@@ -143,14 +144,6 @@ const routes = [
         component: MyPermissionsView,
     },
     {
-        path: '/authCallback',
-        name: 'Cognito Auth (success) Callback',
-        meta: {
-            requiresAuth: false,
-        },
-        component: AuthCallback,
-    },
-    {
         path: '/:catchAll(.*)',
         meta: {
             requiresAuth: false,
@@ -159,13 +152,27 @@ const routes = [
     },
 ];
 
-const router = createRouter({
+// Router for `authCallback` using `createWebHistory`
+const historyRouter = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes,
+    routes: [
+        {
+            path: '/authCallback',
+            name: 'Cognito Auth (success) Callback',
+            meta: {
+                requiresAuth: false,
+            },
+            component: AuthCallback,
+        },
+    ],
 });
 
-router.beforeEach(beforeEachRouteHandler);
+// Router for all other routes using `createWebHashHistory`
+const hashRouter = createRouter({
+    history: createWebHashHistory(import.meta.env.BASE_URL),
+    routes: hashRoutes,
+});
 
-export { routes };
+hashRouter.beforeEach(beforeEachRouteHandler);
 
-export default router;
+export { historyRouter, hashRouter };

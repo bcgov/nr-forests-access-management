@@ -1,4 +1,4 @@
-import router from '@/router';
+import { hashRouter } from '@/router';
 import AuthService from '@/services/AuthService';
 import Http from '@/services/http/HttpCommon';
 import LoginUserState from '@/store/FamLoginUserState';
@@ -27,7 +27,7 @@ async function authenticationErrorResponsesItcpt(error: any) {
             }
         } else {
             LoginUserState.removeFamUser(); // Done retry refresh token, token expired; remove user.
-            router.replace('/'); // 401 unauthenticated/expired, back to home page.
+            hashRouter.replace('/'); // 401 unauthenticated/expired, back to home page.
         }
     }
     retryCount.value = 0; // Reset counter when retry ends or not 401.

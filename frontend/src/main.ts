@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 import awsExports from './aws-exports';
 
 import App from '@/App.vue';
-import router from '@/router';
+import { historyRouter, hashRouter } from '@/router';  // Import the two routers
 
 import 'bootstrap';
 
@@ -22,5 +22,13 @@ app.use(ToastService);
 app.use(ConfirmationService);
 app.use(PrimeVue);
 
-app.use(router).mount('#app');
+// Determine which router to use based on the initial path
+const currentPath = window.location.pathname;
+if (currentPath.startsWith('/authCallback')) {
+    app.use(historyRouter);
+} else {
+    app.use(hashRouter);
+}
+
+app.mount('#app');
 export { app };

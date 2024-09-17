@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { Form as VeeForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 
@@ -106,7 +106,7 @@ const resetVerifiedForestClients = () => {
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    router.push('/dashboard');
+    hashRouter.push('/dashboard');
 };
 
 /*
@@ -187,14 +187,14 @@ const handleSubmit = async () => {
     setCurrentTabState(TabKey.UserAccess);
 
     if (newUserAccessIds.length > 0) {
-        router.push({
+        hashRouter.push({
             path: routeItems.dashboard.path,
             query: {
                 newUserAccessIds: newUserAccessIds.join(','),
             },
         });
     } else {
-        router.push(routeItems.dashboard.path);
+        hashRouter.push(routeItems.dashboard.path);
     }
 };
 
@@ -207,8 +207,8 @@ function toRequestPayload(formData: any) {
         requires_send_user_email: formData.sendUserEmail,
         ...(formData.verifiedForestClients.length > 0
             ? {
-                  forest_client_numbers: formData.verifiedForestClients,
-              }
+                forest_client_numbers: formData.verifiedForestClients,
+            }
             : {}),
     } as FamUserRoleAssignmentCreateSchema;
     return request;
@@ -216,91 +216,40 @@ function toRequestPayload(formData: any) {
 </script>
 
 <template>
-    <PageTitle
-        title="Add user permission"
-        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
-    />
-    <VeeForm
-        ref="form"
-        v-slot="{ meta }"
-        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
-        as="div"
-    >
+    <PageTitle title="Add user permission"
+        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`" />
+    <VeeForm ref="form" v-slot="{ meta }" :validation-schema="formValidationSchema(isAbstractRoleSelected())" as="div">
         <div class="page-body">
             <form id="grantAccessForm" class="form-container">
                 <StepContainer title="User information">
-                    <UserDomainSelect
-                        v-if="
-                            FamLoginUserState.getUserIdpProvider() ===
-                            IdpProvider.IDIR
-                        "
-                        :domain="formData.domain"
-                        @change="userDomainChange"
-                    />
-                    <UserNameInput
-                        :domain="formData.domain"
-                        :userId="formData.userId"
-                        @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed"
-                    />
+                    <UserDomainSelect v-if="
+                        FamLoginUserState.getUserIdpProvider() ===
+                        IdpProvider.IDIR
+                    " :domain="formData.domain" @change="userDomainChange" />
+                    <UserNameInput :domain="formData.domain" :userId="formData.userId" @change="userIdChange"
+                        @setVerifyResult="setVerifyUserIdPassed" />
                 </StepContainer>
 
-                <StepContainer
-                    title="User roles"
-                    :divider="isAbstractRoleSelected()"
-                >
-                    <RoleSelectTable
-                        :roleId="formData.roleId"
-                        :roleOptions="applicationRoleOptions"
-                        @change="roleSelectChange"
-                        @resetVerifiedForestClients="resetVerifiedForestClients"
-                    />
+                <StepContainer title="User roles" :divider="isAbstractRoleSelected()">
+                    <RoleSelectTable :roleId="formData.roleId" :roleOptions="applicationRoleOptions"
+                        @change="roleSelectChange" @resetVerifiedForestClients="resetVerifiedForestClients" />
                 </StepContainer>
 
-                <StepContainer
-                    v-if="isAbstractRoleSelected()"
-                    title="Organization information"
-                    :divider="false"
-                >
-                    <ForestClientInput
-                        :userId="formData.userId"
-                        :roleId="formData.roleId"
-                        @setVerifiedForestClients="setVerifiedForestClients"
-                        @removeVerifiedForestClients="
-                            removeVerifiedForestClients
-                        "
-                        @resetVerifiedForestClients="resetVerifiedForestClients"
-                    />
+                <StepContainer v-if="isAbstractRoleSelected()" title="Organization information" :divider="false">
+                    <ForestClientInput :userId="formData.userId" :roleId="formData.roleId"
+                        @setVerifiedForestClients="setVerifiedForestClients" @removeVerifiedForestClients="removeVerifiedForestClients
+                            " @resetVerifiedForestClients="resetVerifiedForestClients" />
                 </StepContainer>
 
-                <Divider/>
-                <BoolCheckbox
-                    v-model="formData.sendUserEmail"
-                    label="Send email to notify user"
-                />
+                <Divider />
+                <BoolCheckbox v-model="formData.sendUserEmail" label="Send email to notify user" />
 
                 <div class="button-stack">
-                    <Button
-                        type="button"
-                        id="grantAccessCancel"
-                        class="w100"
-                        severity="secondary"
-                        label="Cancel"
-                        :disabled="isLoading()"
-                        @click="cancelForm()"
-                        >&nbsp;</Button
-                    >
-                    <Button
-                        type="button"
-                        id="grantAccessSubmit"
-                        class="w100"
-                        label="Grant Access"
-                        :disabled="
-                            !(meta.valid && areVerificationsPassed()) ||
-                            isLoading()
-                        "
-                        @click="handleSubmit()"
-                    >
+                    <Button type="button" id="grantAccessCancel" class="w100" severity="secondary" label="Cancel"
+                        :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
+                    <Button type="button" id="grantAccessSubmit" class="w100" label="Grant Access" :disabled="!(meta.valid && areVerificationsPassed()) ||
+                        isLoading()
+                        " @click="handleSubmit()">
                         <Icon icon="checkmark" :size="IconSize.small" />
                     </Button>
                 </div>
