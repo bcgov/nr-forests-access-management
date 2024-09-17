@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.1...v1.22.2) (2024-09-17)
+
+
+### Bug Fixes
+
+* [#1593](https://github.com/bcgov/nr-forests-access-management/issues/1593) adjust application name's max length ([#1597](https://github.com/bcgov/nr-forests-access-management/issues/1597)) ([5e25de6](https://github.com/bcgov/nr-forests-access-management/commit/5e25de6c6bbf0bd8b7b4b59acb156f6cf39acf93))
+
 ## [1.22.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.0...v1.22.1) (2024-08-21)
 
 
