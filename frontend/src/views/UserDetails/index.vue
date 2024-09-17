@@ -1,5 +1,8 @@
 <script setup lang="ts">
-    // TODO: Currently this is a placeholder component.
+defineOptions({
+  name: 'UserDetails'
+});
+
 </script>
 
 <template>
