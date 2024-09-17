@@ -4,13 +4,15 @@ import logging
 import pytest
 from api.app.crud import crud_role, crud_user_role
 from api.app.schemas import FamUserRoleAssignmentCreateSchema, TargetUserSchema
+from api.app.schemas.requester import RequesterSchema
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_REVIEWER_ROLE_ID,
                                FOM_DEV_SUBMITTER_ROLE_ID, NOT_EXIST_ROLE_ID,
-                               TEST_CREATOR, TEST_NOT_EXIST_USER_TYPE)
+                               TEST_CREATOR, TEST_NOT_EXIST_USER_TYPE,
+                               TEST_USER_GUID_IDIR, TEST_USER_NAME_IDIR)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +23,12 @@ TEST_FOREST_CLIENT_NUMBER = "00000001"
 def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
     user_role["role_id"] = NOT_EXIST_ROLE_ID
+    dummy_test_requester = RequesterSchema(**{
+        "cognito_user_id": TEST_CREATOR,
+        "user_name": TEST_USER_NAME_IDIR,
+        "user_guid":  TEST_USER_GUID_IDIR,
+        "user_id": TEST_USER_ID
+    })
 
     with pytest.raises(HTTPException) as e:
 
@@ -29,7 +37,7 @@ def test_create_user_role_with_role_not_exists(db_pg_session: Session):
             db_pg_session,
             FamUserRoleAssignmentCreateSchema(**user_role),
             mocked_target_user,
-            TEST_CREATOR,
+            dummy_test_requester
         )
     assert str(e._excinfo).find("Role id ") != -1
     assert str(e._excinfo).find("does not exist") != -1

@@ -80,7 +80,7 @@ def create_user_role_assignment_many(
                 db,
                 role_assignment_request,
                 target_user,
-                requester.cognito_user_id,
+                requester,
             )
         )
 
