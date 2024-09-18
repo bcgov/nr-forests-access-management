@@ -44,22 +44,22 @@ class PermissionAuditService:
             lambda res: res.status_code == HTTPStatus.OK, new_user_permission_grated_list
         ))
         if (len(success_granted_list) == 0):
-            LOGGER.debug("No success permission granted available. No audit record to store.")
+            LOGGER.debug("No success granted permission available. No audit record to store.")
             return
-
+        change_type = PrivilegeChangeTypeEnum.GRANT
         audit_record = PermissionAduitHistoryCreateSchema(
             application_id=success_granted_list[0].detail.role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
             change_target_user_id=change_target_user.user_id,
             change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
-            privilege_change_type_code=PrivilegeChangeTypeEnum.GRANT,
+            privilege_change_type_code=change_type,
             privilege_details=PermissionAuditService.to_enduser_privliege_granted_details(success_granted_list),
             create_date=datetime.datetime.now(datetime.UTC),
             change_date=datetime.datetime.now(datetime.UTC)
         )
 
-        LOGGER.debug(f"Adding audit record for ({PrivilegeChangeTypeEnum.GRANT}): {audit_record}")
+        LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
         self.repo.save(audit_record)
 
     def store_user_permissions_revoked_audit_history(
@@ -67,19 +67,20 @@ class PermissionAuditService:
     ):
         revoked_permission_target_user = delete_record.user
         revoked_permission_role = delete_record.role
+        change_type = PrivilegeChangeTypeEnum.REVOKE
         audit_record = PermissionAduitHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
             change_target_user_id=revoked_permission_target_user.user_id,
             change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
-            privilege_change_type_code=PrivilegeChangeTypeEnum.REVOKE,
+            privilege_change_type_code=change_type,
             privilege_details=PermissionAuditService.to_enduser_privliege_revoked_details(delete_record),
             create_date=datetime.datetime.now(datetime.UTC),
             change_date=datetime.datetime.now(datetime.UTC)
         )
 
-        LOGGER.debug(f"Adding audit record for ({PrivilegeChangeTypeEnum.REVOKE}): {audit_record}")
+        LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
         self.repo.save(audit_record)
 
     @staticmethod
@@ -98,7 +99,7 @@ class PermissionAuditService:
         if (len(enduser_privliege_list) == 0):
             return
 
-        # Note, current FAM supports create ONLY 1 role with multiple forest_client(s) at ONLY 1 scope type ("CLIENT").
+        # Note, current FAM supports creating ONLY 1 role with multiple forest_client(s) at ONLY 1 scope type ("CLIENT").
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
         def __map_to_privilege_role_scope(item: FamUserRoleAssignmentCreateRes):
             assigned_role = item.detail.role
@@ -110,24 +111,25 @@ class PermissionAuditService:
             )
 
         scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list))
-        role = PrivilegeDetailsRoleSchema(
-            role=enduser_privliege_list[0].detail.role.display_name,
-            scopes=scopes
-        )
-
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
-            roles=[role]
+            roles=[
+                PrivilegeDetailsRoleSchema(
+                    role=enduser_privliege_list[0].detail.role.display_name,
+                    scopes=scopes
+                )
+            ]
         )
 
     @staticmethod
     def to_enduser_privliege_revoked_details(delete_record: FamUserRoleXref):
-        # Note, current FAM supports delet ONLY 1 role with ONLY 1 scope type ("CLIENT").
+        # Note, current FAM supports deleting ONLY 1 role with ONLY 1 scope type ("CLIENT") with 1 forst client.
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
         revoked_permission_role = delete_record.role
         is_forest_client_scoped_role = revoked_permission_role.client_number_id
         forest_client_number = None
         forest_client_name = None
+        # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
         if (is_forest_client_scoped_role):
             forest_client_number = revoked_permission_role.client_number.forest_client_number
             api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
@@ -135,7 +137,6 @@ class PermissionAuditService:
             fc_search_result = forest_client_integration_service.find_by_client_number(
                 forest_client_number
             )
-            # Search forest client name for storing audit record.
             # Forest Client search is an exact search.
             if len(fc_search_result) == 1:
                 forest_client_name = fc_search_result[0]["clientName"]
@@ -159,12 +160,13 @@ class PermissionAuditService:
             client_id=forest_client_number if is_forest_client_scoped_role else None,
             client_name=forest_client_name if is_forest_client_scoped_role else None
         )
-        role = PrivilegeDetailsRoleSchema(
-            role=revoked_permission_role.display_name,
-            scopes=[revoke_privilege_details_scope]
-        )
 
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
-            roles=[role]
+            roles=[
+                PrivilegeDetailsRoleSchema(
+                    role=revoked_permission_role.display_name,
+                    scopes=[revoke_privilege_details_scope]
+                )
+            ]
         )
