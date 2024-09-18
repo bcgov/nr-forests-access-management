@@ -19,14 +19,14 @@ CHANGE_DATE_2 = datetime.datetime(2024, 9, 11, 0, 0)
 ENDPOINT_ROOT = "/permission-audit-history"
 
 PERFORMER_DETAILS_1 = PrivilegeChangePerformerSchema(
-    username="bigfoot_hunter",
+    user_name="bigfoot_hunter",
     first_name="Sasquatch",
     last_name="Seeker",
     email="sasquatch.seeker@cryptid.com",
 ).model_dump()
 
 PERFORMER_DETAILS_2 = PrivilegeChangePerformerSchema(
-    username="big_monke",
+    user_name="big_monke",
     first_name="Rainbow",
     last_name="Winton",
     email="rainbow.winton@zooworld.com",
