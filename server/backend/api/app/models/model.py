@@ -1,22 +1,12 @@
 import datetime
 from typing import List, Optional
 
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    ForeignKey,
-    ForeignKeyConstraint,
-    Identity,
-    Index,
-    Integer,
-    PrimaryKeyConstraint,
-    String,
-    UniqueConstraint,
-    func,
-    text,
-)
-from sqlalchemy.dialects.postgresql import TIMESTAMP, JSONB
-from sqlalchemy.orm import Mapped, declarative_base, relationship, mapped_column
+from sqlalchemy import (BigInteger, Column, ForeignKey, ForeignKeyConstraint,
+                        Identity, Index, Integer, PrimaryKeyConstraint, String,
+                        UniqueConstraint, func, text)
+from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
+from sqlalchemy.orm import (Mapped, declarative_base, mapped_column,
+                            relationship)
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -618,7 +608,7 @@ class FamRole(Base):
     application: Mapped[FamApplication] = relationship(
         "FamApplication", back_populates="fam_role"
     )
-    client_number = relationship(
+    client_number: Mapped[FamForestClient] = relationship(
         "FamForestClient", back_populates="fam_role", lazy="joined"
     )
     parent_role = relationship(
@@ -730,8 +720,8 @@ class FamUserRoleXref(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    role = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
-    user = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
+    role: Mapped[FamRole] = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
+    user: Mapped[FamUser] = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
 
 
 class FamAppEnvironment(Base):

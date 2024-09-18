@@ -164,7 +164,7 @@ def delete_user_role_assignment(
         audit_event_log.application = user_role.role.application
         audit_event_log.requesting_user = requester
 
-        crud_user_role.delete_fam_user_role_assignment(db, user_role_xref_id)
+        crud_user_role.delete_fam_user_role_assignment(db, requester, user_role_xref_id)
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL

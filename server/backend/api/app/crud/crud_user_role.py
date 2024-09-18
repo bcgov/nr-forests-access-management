@@ -197,12 +197,19 @@ def create_user_role_assignment(
     return new_user_role_assginment_res
 
 
-def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
+def delete_fam_user_role_assignment(db: Session, requester: RequesterSchema, user_role_xref_id: int):
     record = (
         db.query(models.FamUserRoleXref)
         .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
         .one()
     )
+
+    # save audit record
+    permissionAuditService = PermissionAuditService(db)
+    permissionAuditService.store_user_permissions_revoked_audit_history(
+        requester, record
+    )
+
     db.delete(record)
     db.flush()
 

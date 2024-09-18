@@ -89,7 +89,7 @@ ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
-
+ERROR_CODE_UNKNOWN_STATE = "unknown_state"
 
 # ------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"
