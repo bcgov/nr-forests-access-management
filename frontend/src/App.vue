@@ -28,4 +28,8 @@ watch(
 
 <style lang="scss">
 @import '~bootstrap/scss/bootstrap';
+@import 'primeflex/primeflex.css';
+@import '@/assets/styles/styles.scss';
+@import 'primevue/resources/primevue.min.css';
+@import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
 </style>

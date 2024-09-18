@@ -12,10 +12,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import { VueQueryPlugin, QueryClient } from '@tanstack/vue-query'
 import { isAxiosError } from 'axios';
-
-import 'primevue/resources/primevue.min.css';
-import 'primevue/resources/themes/bootstrap4-light-blue/theme.css';
-import './assets/styles/styles.scss';
+import { THREE_HOURS } from '@/constants/TimeUnits';
 
 Amplify.configure(awsExports); // Config Amplify for Cognito resource.
 
@@ -39,15 +36,17 @@ const queryClient = new QueryClient({
                     }
                 }
                 return true;
-            }
+            },
+            staleTime: THREE_HOURS,
+            gcTime: THREE_HOURS
         }
     }
 });
 
 const app = createApp(App);
-app.use(ToastService);
 app.use(ConfirmationService);
 app.use(PrimeVue);
+app.use(ToastService);
 app.use(VueQueryPlugin, { queryClient });
 
 // Determine which router to use based on the initial path

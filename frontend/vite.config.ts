@@ -42,7 +42,16 @@ export default defineConfig(async ({ command, mode }) => {
         server: {
             port: port,
         },
-
+        css: {
+            preprocessorOptions: {
+              scss: {
+                additionalData: `
+                  @use '@bcgov-nr/nr-theme/design-tokens/colors.scss' as colors;
+                  @use '@carbon/type' as type;
+                `
+              }
+            }
+          }
         // Note: define 'global' to solve aws-amplify `global is not defined` error.
         // but does not work when using Vitest and configured as using 'jsdom' above.
         //    ,

@@ -73,6 +73,3 @@ const disableSideNavOption = (optionName: string, disabled: boolean) => {
         </main>
     </div>
 </template>
-<style lang="scss">
-@import '@/assets/styles/base.scss';
-</style>

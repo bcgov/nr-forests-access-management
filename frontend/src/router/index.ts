@@ -82,7 +82,6 @@ const hashRoutes = [
         beforeEnter: beforeEnterHandlers[routeItems.dashboard.name],
         props: (route: any) => {
             return {
-                // userRoleAssignments is ready for the `component` as props.
                 userRoleAssignments: route.meta.userRoleAssignments,
                 applicationAdmins: route.meta.applicationAdmins,
                 delegatedAdmins: route.meta.delegatedAdmins,
