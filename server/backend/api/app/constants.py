@@ -102,6 +102,11 @@ CLIENT_NAME_MAX_LEN = 60
 ROLE_NAME_MAX_LEN = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
+class PrivilegeChangeTypeEnum(str, Enum):
+    GRANT = "GRANT"
+    REVOKE = "REVOKE"
+    UPDATE = "UPDATE"
+
 class PrivilegeDetailsScopeTypeEnum(str, Enum):
     CLIENT = "Client"
 
