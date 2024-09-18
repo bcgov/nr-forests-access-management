@@ -16,7 +16,7 @@ class PermissionAuditRepository:
     # --- Create ---
 
     def save(self, item: PermissionAduitHistoryCreateSchema) -> FamPrivilegeChangeAudit:
-        db_item = FamPrivilegeChangeAudit(**item)
+        db_item = FamPrivilegeChangeAudit(**item.model_dump())
         self.db.add(db_item)
         self.db.flush()
         return db_item

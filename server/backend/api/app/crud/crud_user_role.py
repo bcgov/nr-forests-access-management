@@ -4,6 +4,8 @@ from typing import List
 
 from api.app import constants as famConstants
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
+from api.app.crud.services.permission_audit_service import \
+    PermissionAuditService
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
@@ -153,6 +155,12 @@ def create_user_role_assignment_many(
         )
         new_user_permission_grated_list.append(new_user_role_assginment_res)
     LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_grated_list}")
+
+    permissionAuditService = PermissionAuditService(db)
+    permissionAuditService.store_user_permissions_granted_audit_history(
+        requester, fam_user, new_user_permission_grated_list
+    )
+
     return new_user_permission_grated_list
 
 

@@ -3,7 +3,8 @@ from typing import Optional
 from api.app.constants import (EMAIL_MAX_LEN, FIRST_NAME_MAX_LEN,
                                LAST_NAME_MAX_LEN, SYSTEM_ACCOUNT_NAME,
                                USER_NAME_MAX_LEN)
-from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
+from pydantic import (BaseModel, ConfigDict, Field, StringConstraints,
+                      model_validator)
 from typing_extensions import Annotated
 
 
@@ -30,7 +31,7 @@ class PrivilegeChangePerformerSchema(BaseModel):
         no other fields (`first_name`, `last_name`, `email`) are populated.
     """
 
-    username: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
+    username: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)] = Field(alias="user_name")
     first_name: Optional[
         Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
     ] = None

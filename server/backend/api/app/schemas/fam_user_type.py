@@ -1,7 +1,6 @@
-import logging
+from api.app.constants import UserType
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from typing_extensions import Annotated
-from api.app.constants import UserType
 
 
 class FamUserTypeSchema(BaseModel):
