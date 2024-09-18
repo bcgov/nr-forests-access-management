@@ -83,7 +83,7 @@ def create_user_role_assignment_many(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    new_user_permission_grated_list: List[FamUserRoleAssignmentCreateRes] = []
+    new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes] = []
 
     if require_child_role:
         LOGGER.debug(
@@ -147,21 +147,21 @@ def create_user_role_assignment_many(
             # Update response object for Forest Client Name. FAM currently does not store this.
             new_user_role_assginment_res.detail.role.forest_client = FamForestClientSchema.from_api_json(forest_client_search_return[0])
 
-            new_user_permission_grated_list.append(new_user_role_assginment_res)
+            new_user_permission_granted_list.append(new_user_role_assginment_res)
     else:
         # Create user/role assignment
         new_user_role_assginment_res = create_user_role_assignment(
             db, fam_user, fam_role, requester.cognito_user_id,
         )
-        new_user_permission_grated_list.append(new_user_role_assginment_res)
-    LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_grated_list}")
+        new_user_permission_granted_list.append(new_user_role_assginment_res)
+    LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_granted_list}")
 
     permissionAuditService = PermissionAuditService(db)
     permissionAuditService.store_user_permissions_granted_audit_history(
-        requester, fam_user, new_user_permission_grated_list
+        requester, fam_user, new_user_permission_granted_list
     )
 
-    return new_user_permission_grated_list
+    return new_user_permission_granted_list
 
 
 def create_user_role_assignment(
