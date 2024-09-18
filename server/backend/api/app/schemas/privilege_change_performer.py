@@ -31,7 +31,7 @@ class PrivilegeChangePerformerSchema(BaseModel):
         no other fields (`first_name`, `last_name`, `email`) are populated.
     """
 
-    username: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)] = Field(alias="user_name")
+    username: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
     first_name: Optional[
         Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
     ] = None

@@ -54,7 +54,10 @@ class PermissionAduitHistoryCreateSchema(PermissionAduitHistoryBaseSchema):
         requester: RequesterSchema
     ) -> PrivilegeChangePerformerSchema:
         return PrivilegeChangePerformerSchema(
-            **requester.model_dump()
+            username=requester.user_name,
+            first_name=requester.first_name,
+            last_name=requester.last_name,
+            email=requester.email
         )
 
     @staticmethod
