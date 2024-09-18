@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { FamUserRoleAssignmentCreateSchema } from '../model';
 // @ts-ignore
-import { FamUserRoleAssignmentResponseSchema } from '../model';
+import { FamUserRoleAssignmentRes } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
@@ -128,7 +128,7 @@ export const FAMUserRoleAssignmentApiFp = function(configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserRoleAssignmentResponseSchema>> {
+        async createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserRoleAssignmentRes>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMUserRoleAssignmentApi.createUserRoleAssignmentMany']?.[localVarOperationServerIndex]?.url;
@@ -164,7 +164,7 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: any): AxiosPromise<FamUserRoleAssignmentResponseSchema> {
+        createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: any): AxiosPromise<FamUserRoleAssignmentRes> {
             return localVarFp.createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema, options).then((request) => request(axios, basePath));
         },
         /**
@@ -194,7 +194,7 @@ export interface FAMUserRoleAssignmentApiInterface {
      * @throws {RequiredError}
      * @memberof FAMUserRoleAssignmentApiInterface
      */
-    createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: RawAxiosRequestConfig): AxiosPromise<FamUserRoleAssignmentResponseSchema>;
+    createUserRoleAssignmentMany(famUserRoleAssignmentCreateSchema: FamUserRoleAssignmentCreateSchema, options?: RawAxiosRequestConfig): AxiosPromise<FamUserRoleAssignmentRes>;
 
     /**
      * Remove a specific application\'s role from user\'s access.

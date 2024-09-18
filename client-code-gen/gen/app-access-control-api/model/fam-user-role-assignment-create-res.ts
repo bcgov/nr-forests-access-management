@@ -15,30 +15,30 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamApplicationUserRoleAssignmentGet } from './fam-application-user-role-assignment-get';
+import { FamApplicationUserRoleAssignmentGetSchema } from './fam-application-user-role-assignment-get-schema';
 
 /**
  * 
  * @export
- * @interface FamUserRoleAssignmentCreateResponse
+ * @interface FamUserRoleAssignmentCreateRes
  */
-export interface FamUserRoleAssignmentCreateResponse {
+export interface FamUserRoleAssignmentCreateRes {
     /**
      * 
      * @type {number}
-     * @memberof FamUserRoleAssignmentCreateResponse
+     * @memberof FamUserRoleAssignmentCreateRes
      */
     'status_code': number;
     /**
      * 
-     * @type {FamApplicationUserRoleAssignmentGet}
-     * @memberof FamUserRoleAssignmentCreateResponse
+     * @type {FamApplicationUserRoleAssignmentGetSchema}
+     * @memberof FamUserRoleAssignmentCreateRes
      */
-    'detail': FamApplicationUserRoleAssignmentGet;
+    'detail': FamApplicationUserRoleAssignmentGetSchema;
     /**
      * 
      * @type {string}
-     * @memberof FamUserRoleAssignmentCreateResponse
+     * @memberof FamUserRoleAssignmentCreateRes
      */
     'error_message'?: string | null;
 }
