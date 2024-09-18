@@ -83,10 +83,14 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
     });
 }
 
-const viewUserPermissionHistoryDetails = (user_id: number) => {
+const navigateToUserDetails = (user_id: number, userTypeCode: string) => {
     hashRouter.push({
         name: routeItems.userDetails.name,
-        params: { userId: user_id, applicationId: selectedApplicationId.value }
+        params: {
+            userId: user_id,
+            applicationId: selectedApplicationId.value,
+            userTypeCode
+        }
     });
 }
 
@@ -164,7 +168,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 <Column header="Action">
                     <template #body="{ data }">
                         <button title="User permission history" class="btn btn-icon" :disabled="!isDevEnvironment"
-                            @click="viewUserPermissionHistoryDetails(data.user_id)">
+                            @click="navigateToUserDetails(data.user_id, data.user.user_type.code)">
                             <Icon icon="history" :size="IconSize.small" />
                         </button>
 

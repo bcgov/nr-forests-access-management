@@ -1,4 +1,8 @@
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
+import {
+    createRouter, createWebHashHistory, createWebHistory
+} from 'vue-router';
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
+
 import {
     beforeEachRouteHandler,
     beforeEnterHandlers,
@@ -10,6 +14,7 @@ import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
+import AuthService from '../services/AuthService';
 
 // Lazy load all components
 const UserDetails = () => import('@/views/UserDetails/index.vue');
@@ -43,6 +48,7 @@ const MyPermissionsView = () => import('@/views/MyPermissionsView.vue');
  *      => global "selectedApplication" state is set.
  */
 
+
 // Routes using createWebHashHistory
 const hashRoutes = [
     {
@@ -53,6 +59,13 @@ const hashRoutes = [
             title: 'Welcome to FAM',
             layout: 'SimpleLayout',
             hasBreadcrumb: false,
+        },
+        beforeEnter: (_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
+            if (AuthService.isLoggedIn()) {
+                next({ name: routeItems.dashboard.name });
+            } else {
+                next();
+            }
         },
         component: LandingView,
     },
