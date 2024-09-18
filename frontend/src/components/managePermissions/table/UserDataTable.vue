@@ -130,7 +130,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     'user.last_name',
                     'user.email',
                     'role.role_name',
-                    'role.client_number.forest_client_number',
+                    'role.forest_client.forest_client_number',
                 ]"
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
