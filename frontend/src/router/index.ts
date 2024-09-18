@@ -17,7 +17,7 @@ import AuthCallback from '@/components/AuthCallbackHandler.vue';
 import AuthService from '../services/AuthService';
 
 // Lazy load all components
-const UserDetails = () => import('@/views/UserDetails/index.vue');
+const UserDetails = () => import('@/views/UserDetails');
 const NotFound = () => import('@/components/NotFound.vue');
 const GrantAccessView = () => import('@/views/GrantAccessView.vue');
 const GrantApplicationAdminView = () => import('@/views/GrantApplicationAdminView.vue');

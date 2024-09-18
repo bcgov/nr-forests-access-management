@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { hashRouter } from '@/router';
-import UserInfoCard from '@/components/UserInfoCard';
+import UserSummaryCard from '@/components/UserSummaryCard/index.vue';
+import type { UserTypeCodeType } from '@/types/UserTypeCodeType';
 
 const route = useRoute();
 
 // Access the path parameters
-const userId = route.params.userId as string | undefined;
+const userName = route.params.userName as string | undefined;
 const applicationId = route.params.applicationId as string | undefined;
-const userTypeCode = route.params.userTypeCode as string | undefined;
+const userTypeCode = route.params.userTypeCode as UserTypeCodeType | undefined;
 
-if (!userId || !applicationId || !userTypeCode) {
+if (!userName || !applicationId || !userTypeCode) {
   console.warn("Missing required path params");
   hashRouter.push('/');
 }
@@ -18,7 +19,7 @@ if (!userId || !applicationId || !userTypeCode) {
 </script>
 
 <template>
-  <UserInfoCard :userId="userId" :userTypeCode="userTypeCode" />
+  <UserSummaryCard :userName="userName!" :applicationId="applicationId!" :userTypeCode="userTypeCode!" />
 </template>
 
 <style scoped lang="scss">

@@ -5,7 +5,6 @@
         "src/**/*.ts",
         "src/**/*",
         "src/**/*.vue",
-        "components.d.ts"
     ],
     "compilerOptions": {
         "baseUrl": ".",
@@ -14,21 +13,21 @@
                 "./src/*"
             ],
             "@/components/*": [
-                "./src/components/*",
                 "./src/components/*/index.vue",
+                "./src/components/*",
             ],
             "@/views/*": [
-                "./src/views/*",
                 "./src/views/*/index.vue",
+                "./src/views/*",
             ]
         },
         "allowJs": true,
         "skipLibCheck": true,
-        "moduleResolution": "node", // Ensures correct module resolution
+        "moduleResolution": "node",
         "types": [
             "vite/client"
         ],
-        "esModuleInterop": true, // Ensures ES module compatibility
+        "esModuleInterop": true,
         "strict": true
     },
     "references": [
