@@ -144,9 +144,9 @@ def create_user_role_assignment_many(
                 db, fam_user, child_role, requester.cognito_user_id,
             )
 
-            # Update response object for Forest Client Name. FAM currently does not store this.
+            # Update response object for Forest Client Name from the forest_client_search.
+            # FAM currently does not store forest client name for easy retrieval.
             new_user_role_assginment_res.detail.role.forest_client = FamForestClientSchema.from_api_json(forest_client_search_return[0])
-
             new_user_permission_granted_list.append(new_user_role_assginment_res)
     else:
         # Create user/role assignment
