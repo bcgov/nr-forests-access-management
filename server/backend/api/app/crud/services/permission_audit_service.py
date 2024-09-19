@@ -38,10 +38,10 @@ class PermissionAuditService:
         self,
         requester: RequesterSchema,
         change_target_user: FamUser,
-        new_user_permission_grated_list: List[FamUserRoleAssignmentCreateRes]
+        new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes]
     ):
         success_granted_list = list(filter(
-            lambda res: res.status_code == HTTPStatus.OK, new_user_permission_grated_list
+            lambda res: res.status_code == HTTPStatus.OK, new_user_permission_granted_list
         ))
         if (len(success_granted_list) == 0):
             LOGGER.debug("No success granted permission available. No audit record to store.")
