@@ -174,7 +174,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 </Column>
                 <Column field="user.email" header="Email" sortable></Column>
                 <Column
-                    field="role.client_number.forest_client_number"
+                    field="role.forest_client.forest_client_number"
                     header="Client Number"
                     sortable
                 ></Column>
