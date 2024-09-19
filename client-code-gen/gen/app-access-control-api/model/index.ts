@@ -22,6 +22,7 @@ export * from './privilege-details-permission-type-enum';
 export * from './privilege-details-role-schema';
 export * from './privilege-details-schema';
 export * from './privilege-details-scope-schema';
+export * from './privilege-details-scope-type-enum';
 export * from './role-type';
 export * from './user-type';
 export * from './validation-error';

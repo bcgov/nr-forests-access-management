@@ -107,8 +107,13 @@ class PrivilegeChangeTypeEnum(str, Enum):
     REVOKE = "REVOKE"
     UPDATE = "UPDATE"
 
+# Note! There is an issue for openapi generator to generate an enum with only 1 constant.
+# Since in future we plan to use "District", it is added (and can be used later) here
+# so openapi can generate it with no prolbme but for now it is a holder.
 class PrivilegeDetailsScopeTypeEnum(str, Enum):
     CLIENT = "Client"
+    DISTRICT = "District"
+
 
 class PrivilegeDetailsPermissionTypeEnum(str, Enum):
     END_USER = "End User"

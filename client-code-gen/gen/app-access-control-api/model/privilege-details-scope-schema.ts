@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PrivilegeDetailsScopeTypeEnum } from './privilege-details-scope-type-enum';
 
 /**
  * 
@@ -22,10 +25,10 @@
 export interface PrivilegeDetailsScopeSchema {
     /**
      * 
-     * @type {string}
+     * @type {PrivilegeDetailsScopeTypeEnum}
      * @memberof PrivilegeDetailsScopeSchema
      */
-    'scope_type': string;
+    'scope_type': PrivilegeDetailsScopeTypeEnum;
     /**
      * 
      * @type {string}
@@ -39,4 +42,6 @@ export interface PrivilegeDetailsScopeSchema {
      */
     'client_name'?: string | null;
 }
+
+
 

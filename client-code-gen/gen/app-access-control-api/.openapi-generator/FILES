@@ -41,6 +41,7 @@ model/privilege-details-permission-type-enum.ts
 model/privilege-details-role-schema.ts
 model/privilege-details-schema.ts
 model/privilege-details-scope-schema.ts
+model/privilege-details-scope-type-enum.ts
 model/role-type.ts
 model/user-type.ts
 model/validation-error.ts
