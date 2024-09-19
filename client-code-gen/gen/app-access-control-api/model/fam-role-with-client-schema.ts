@@ -73,7 +73,7 @@ export interface FamRoleWithClientSchema {
      * @type {FamForestClientSchema}
      * @memberof FamRoleWithClientSchema
      */
-    'forest_client'?: FamForestClientSchema | null;
+    'forest_client': FamForestClientSchema | null;
     /**
      * 
      * @type {FamRoleMinSchema}

@@ -11,10 +11,10 @@ class FamRoleWithClientSchema(FamRoleMinSchema):
     role_id: int
     display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
-        alias="role_purpose"
+        validation_alias="role_purpose"
     )
     forest_client: Optional[FamForestClientSchema] = Field(
-        alias="client_number"
+        validation_alias="client_number"
     )
     parent_role: Optional[FamRoleMinSchema] = None
 
