@@ -68,6 +68,7 @@ class PermissionAuditService:
         revoked_permission_target_user = delete_record.user
         revoked_permission_role = delete_record.role
         change_type = PrivilegeChangeTypeEnum.REVOKE
+        privilege_details = PermissionAuditService.to_enduser_privliege_revoked_details(delete_record)
         audit_record = PermissionAduitHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
             create_user=requester.user_name,
@@ -75,7 +76,7 @@ class PermissionAuditService:
             change_target_user_id=revoked_permission_target_user.user_id,
             change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
             privilege_change_type_code=change_type,
-            privilege_details=PermissionAuditService.to_enduser_privliege_revoked_details(delete_record),
+            privilege_details=privilege_details,
             create_date=datetime.datetime.now(datetime.UTC),
             change_date=datetime.datetime.now(datetime.UTC)
         )
@@ -113,14 +114,17 @@ class PermissionAuditService:
 
         is_forest_client_scoped_role = enduser_privliege_list[0].detail.role.forest_client is not None
         scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list)) if is_forest_client_scoped_role else None
+        privilege_details_role = PrivilegeDetailsRoleSchema(
+            role=enduser_privliege_list[0].detail.role.display_name,
+            scopes=scopes
+        )
+        if (privilege_details_role.scopes is None):
+            # delete attribute from schema if None; so it does not show as {scopes: null} in json.
+            del privilege_details_role.scopes
+
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
-            roles=[
-                PrivilegeDetailsRoleSchema(
-                    role=enduser_privliege_list[0].detail.role.display_name,
-                    scopes=scopes
-                )
-            ]
+            roles=[privilege_details_role]
         )
 
     @staticmethod
@@ -165,12 +169,14 @@ class PermissionAuditService:
             client_name=forest_client_name
         )] if is_forest_client_scoped_role else None
 
+        privilege_detail_role = PrivilegeDetailsRoleSchema(
+            role=revoked_permission_role.display_name,
+            scopes=revoke_privilege_details_scopes
+        )
+        if (privilege_detail_role.scopes is None):
+            del privilege_detail_role.scopes  # delete attribute from schema if None.
+
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
-            roles=[
-                PrivilegeDetailsRoleSchema(
-                    role=revoked_permission_role.display_name,
-                    scopes=revoke_privilege_details_scopes
-                )
-            ]
+            roles=[privilege_detail_role]
         )
