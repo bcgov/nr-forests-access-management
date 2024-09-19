@@ -125,11 +125,10 @@ def authorize_by_app_id(
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: RequesterSchema = Depends(get_current_requester),
-) -> int:
+):
     """
     This authorize_by_app_id method is used for the authorization check of a specific application,
     we require user to be the app admin or delegated admin of the application
-
     """
     requester_is_app_admin = crud_utils.is_app_admin(
         db=db, application_id=application_id, access_roles=access_roles
