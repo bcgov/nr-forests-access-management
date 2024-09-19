@@ -95,22 +95,24 @@ class PermissionAuditService:
         )
 
     @staticmethod
-    def to_enduser_privliege_granted_details(enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]):
+    def to_enduser_privliege_granted_details(
+        enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]
+    ) -> PrivilegeDetailsSchema:
         if (len(enduser_privliege_list) == 0):
             return
 
         # Note, current FAM supports creating ONLY 1 role with multiple forest_client(s) at ONLY 1 scope type ("CLIENT").
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
-        def __map_to_privilege_role_scope(item: FamUserRoleAssignmentCreateRes):
+        def __map_to_privilege_role_scope(item: FamUserRoleAssignmentCreateRes) -> PrivilegeDetailsScopeSchema:
             assigned_role = item.detail.role
-            is_forest_client_scoped_role = assigned_role.forest_client is not None
             return PrivilegeDetailsScopeSchema(
                 scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-                client_id=assigned_role.forest_client.forest_client_number if is_forest_client_scoped_role else None,
-                client_name=assigned_role.forest_client.client_name if is_forest_client_scoped_role else None
+                client_id=assigned_role.forest_client.forest_client_number,
+                client_name=assigned_role.forest_client.client_name
             )
 
-        scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list))
+        is_forest_client_scoped_role = enduser_privliege_list[0].detail.role.forest_client is not None
+        scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list)) if is_forest_client_scoped_role else None
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
             roles=[
@@ -122,7 +124,9 @@ class PermissionAuditService:
         )
 
     @staticmethod
-    def to_enduser_privliege_revoked_details(delete_record: FamUserRoleXref):
+    def to_enduser_privliege_revoked_details(
+        delete_record: FamUserRoleXref
+    ) -> PrivilegeDetailsSchema:
         # Note, current FAM supports deleting ONLY 1 role with ONLY 1 scope type ("CLIENT") with 1 forst client.
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
         revoked_permission_role = delete_record.role
@@ -155,18 +159,18 @@ class PermissionAuditService:
                     }
                 )
 
-        revoke_privilege_details_scope = PrivilegeDetailsScopeSchema(
+        revoke_privilege_details_scopes = [PrivilegeDetailsScopeSchema(
             scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-            client_id=forest_client_number if is_forest_client_scoped_role else None,
-            client_name=forest_client_name if is_forest_client_scoped_role else None
-        )
+            client_id=forest_client_number,
+            client_name=forest_client_name
+        )] if is_forest_client_scoped_role else None
 
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
             roles=[
                 PrivilegeDetailsRoleSchema(
                     role=revoked_permission_role.display_name,
-                    scopes=[revoke_privilege_details_scope]
+                    scopes=revoke_privilege_details_scopes
                 )
             ]
         )
