@@ -2,8 +2,8 @@
 from .fam_application import FamApplicationSchema
 from .fam_application_user_role_assignment_get import \
     FamApplicationUserRoleAssignmentGetSchema
-from .fam_forest_client import FamForestClientSchema
 # --------------------------------- FAM Forest Client--------------------------------- #
+from .fam_forest_client import FamForestClientSchema
 from .fam_forest_client_create import FamForestClientCreateSchema
 from .fam_forest_client_status import FamForestClientStatusSchema
 # --------------------------------- FAM Role--------------------------------- #
@@ -26,10 +26,10 @@ from .forest_client_integration_find_response import \
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
 from .gc_notify_grant_access_email_param import \
     GCNotifyGrantAccessEmailParamSchema
+# ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 from .idim_proxy_bceid_info import IdimProxyBceidInfoSchema
 from .idim_proxy_bceid_search_param import IdimProxyBceidSearchParamSchema
 from .idim_proxy_idir_info import IdimProxyIdirInfoSchema
-# ------------------------------------- IDIM Proxy API Integraion ---------------------------------------- #
 from .idim_proxy_search_param import IdimProxySearchParamSchema
 # ---------- Permission Audit History Schemas ---------- #
 from .permission_audit_history import (PermissionAduitHistoryBaseSchema,
