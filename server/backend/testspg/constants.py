@@ -25,6 +25,18 @@ TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
 TEST_USER_NAME_IDIR = "TEST_USER"
 TEST_USER_GUID_IDIR = "MOCKEDGUID5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
+TEST_USER_FIREST_NAME = "FIRST NAME"
+TEST_USER_LAST_NAME = "LAST NAME"
+TEST_USER_EMAIL = "EMAIL"
+TEST_REQUESTER = {
+    "cognito_user_id": "test-idir_e72a12c916afakedffae7@idir",
+    "user_name": TEST_USER_NAME_IDIR,
+    "user_guid":  TEST_USER_GUID_IDIR,
+    "user_id": TEST_USER_ID,
+    "first_name": TEST_USER_FIREST_NAME,
+    "last_name": TEST_USER_LAST_NAME,
+    "email": TEST_USER_EMAIL,
+}
 
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
