@@ -165,7 +165,7 @@ def create_user_role_assignment_many(
 
 
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str  #cognito_user_id,
+    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str
 ):
     new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
