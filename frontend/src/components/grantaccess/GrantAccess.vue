@@ -144,7 +144,7 @@ const handleSubmit = async () => {
 
         returnResponse.data.assignments_detail.forEach((response) => {
             const forestClientNumber =
-                response.detail.role.client_number?.forest_client_number;
+                response.detail.role.forest_client?.forest_client_number;
             if (response.status_code == 200) {
                 newUserAccessIds.push(
                     response.detail.user_role_xref_id

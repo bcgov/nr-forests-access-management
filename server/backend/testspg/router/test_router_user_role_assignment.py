@@ -1088,7 +1088,7 @@ def test_self_remove_grant_fail(
         db=db_pg_session,
         user_id=user.user_id,
         role_id=FOM_DEV_REVIEWER_ROLE_ID,
-        requester=jwt_utils.COGNITO_USERNAME,
+        requester_cognito_user_id=jwt_utils.COGNITO_USERNAME,
     )
 
     response = test_client_fixture.delete(

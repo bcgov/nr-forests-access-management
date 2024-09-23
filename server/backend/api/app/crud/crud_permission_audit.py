@@ -1,8 +1,9 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
 from typing import List
+
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas import PermissionAduitHistoryRes
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
 
 def read_permission_audit_history_by_user_and_application(

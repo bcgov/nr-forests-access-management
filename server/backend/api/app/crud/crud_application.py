@@ -1,9 +1,10 @@
 import logging
 from typing import List
 
-from api.app.schemas import RequesterSchema, FamApplicationUserRoleAssignmentGetSchema
 from api.app.constants import UserType
 from api.app.models import model as models
+from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
+                             RequesterSchema)
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 

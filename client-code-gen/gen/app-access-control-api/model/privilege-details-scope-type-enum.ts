@@ -21,7 +21,8 @@
  */
 
 export const PrivilegeDetailsScopeTypeEnum = {
-    Client: 'Client'
+    Client: 'Client',
+    District: 'District'
 } as const;
 
 export type PrivilegeDetailsScopeTypeEnum = typeof PrivilegeDetailsScopeTypeEnum[keyof typeof PrivilegeDetailsScopeTypeEnum];

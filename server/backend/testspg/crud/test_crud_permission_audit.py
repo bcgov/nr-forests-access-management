@@ -1,19 +1,16 @@
 import pytest
-from sqlalchemy.orm import Session
+from api.app.crud.crud_permission_audit import \
+    read_permission_audit_history_by_user_and_application
 from sqlalchemy.exc import DataError
-from api.app.crud.crud_permission_audit import (
-    read_permission_audit_history_by_user_and_application,
-)
-from testspg.fixture.permission_audit_fixture import (
-    APPLICATION_ID_1,
-    APPLICATION_ID_2,
-    AUDIT_RECORD_U1_A1_D1,
-    AUDIT_RECORD_U1_A1_D2,
-    AUDIT_RECORD_U1_A2,
-    AUDIT_RECORD_U2_A2,
-    USER_ID_1,
-    PERFORMER_DETAILS_1,
-)
+from sqlalchemy.orm import Session
+from testspg.fixture.permission_audit_fixture import (APPLICATION_ID_1,
+                                                      APPLICATION_ID_2,
+                                                      AUDIT_RECORD_U1_A1_D1,
+                                                      AUDIT_RECORD_U1_A1_D2,
+                                                      AUDIT_RECORD_U1_A2,
+                                                      AUDIT_RECORD_U2_A2,
+                                                      PERFORMER_DETAILS_1,
+                                                      USER_ID_1)
 
 
 # No Records

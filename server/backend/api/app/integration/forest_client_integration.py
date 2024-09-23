@@ -8,7 +8,7 @@ from api.config import config
 LOGGER = logging.getLogger(__name__)
 
 
-class ForestClientService():
+class ForestClientIntegrationService():
     """
     The class is used for making requests to get information from Forest Client API.
     Api is located at BC API Service Portal: https://api.gov.bc.ca/devportal/api-directory/3179.
