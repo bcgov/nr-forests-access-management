@@ -137,15 +137,18 @@ class AccessControlPrivilegeService:
                 child_role = self.role_service.find_or_create_forest_client_child_role(
                     forest_client_number, fam_role, requester
                 )
-                handle_create_return = self.grant_privilege(
+                new_delegated_admin_grant_res = self.grant_privilege(
                     fam_user.user_id, child_role.role_id, requester
                 )
-                create_return_list.append(handle_create_return)
+                # Update response object for Forest Client Name from the forest_client_search.
+                # FAM currently does not store forest client name for easy retrieval.
+                new_delegated_admin_grant_res.detail.role.client_number = schemas.FamForestClientBase.from_api_json(forest_client_validator_return[0])
+                create_return_list.append(new_delegated_admin_grant_res)
         else:
-            handle_create_return = self.grant_privilege(
+            new_delegated_admin_grant_res = self.grant_privilege(
                 fam_user.user_id, fam_role.role_id, requester
             )
-            create_return_list.append(handle_create_return)
+            create_return_list.append(new_delegated_admin_grant_res)
 
         LOGGER.debug(
             f"Creating access control privilege executed successfully: {create_return_list}"

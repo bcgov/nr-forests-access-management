@@ -1,10 +1,13 @@
 import logging
 from typing import List, Literal, Optional, Union
 
+from api.app.constants import (APPLICATION_DESC_MAX_LEN, CLIENT_NAME_MAX_LEN,
+                               FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN,
+                               ROLE_NAME_MAX_LEN, USER_NAME_MAX_LEN,
+                               AdminRoleAuthGroup, AppEnv, EmailSendingStatus,
+                               IdimSearchUserParamType, RoleType, UserType)
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
-
-from . import constants as famConstants
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,7 +55,7 @@ class Requester(BaseModel):
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
     user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
-    user_type_code: famConstants.UserType
+    user_type_code: UserType
     access_roles: Union[
         List[Annotated[str, StringConstraints(max_length=50)]], None
     ] = None
@@ -79,7 +82,7 @@ class TargetUser(Requester):
 class FamApplicationBase(BaseModel):
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
-    app_environment: Optional[famConstants.AppEnv] = None
+    app_environment: Optional[AppEnv] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -92,7 +95,7 @@ class FamUserBase(BaseModel):
 
 
 class FamUserDto(FamUserBase):
-    user_type_code: famConstants.UserType
+    user_type_code: UserType
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     create_user: Annotated[str, StringConstraints(max_length=100)]
 
@@ -100,7 +103,7 @@ class FamUserDto(FamUserBase):
 
 
 class FamUserTypeDto(BaseModel):
-    user_type_code: famConstants.UserType = Field(alias="code")
+    user_type_code: UserType = Field(alias="code")
     description: Annotated[str, StringConstraints(max_length=35)]
 
     # required to set populate_by_name for alias fields
@@ -118,11 +121,23 @@ class FamUserInfoDto(FamUserBase):
 
 # ----------------------------------- FAM Forest Client ------------------------------------ #
 class FamForestClientBase(BaseModel):
+    client_name: Optional[
+        Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
+    ] = None
     # Note, the request may contain string(with leading '0')
     forest_client_number: Annotated[str, StringConstraints(max_length=8)]
 
     model_config = ConfigDict(from_attributes=True)
 
+    @staticmethod
+    def from_api_json(json_dict):
+        client_name = json_dict["clientName"]
+        forest_client_number = json_dict["clientNumber"]
+        fc = FamForestClientBase(
+            client_name=client_name,
+            forest_client_number=forest_client_number
+        )
+        return fc
 
 class FamForestClientCreateDto(FamForestClientBase):
     create_user: Annotated[str, StringConstraints(max_length=100)]
@@ -133,7 +148,7 @@ class FamForestClientCreateDto(FamForestClientBase):
 # ------------------------------------- FAM Role ------------------------------------------- #
 class FamRoleBase(BaseModel):
     role_name: Annotated[str, StringConstraints(max_length=100)]
-    role_type_code: famConstants.RoleType
+    role_type_code: RoleType
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -175,7 +190,7 @@ class FamRoleWithClientDto(BaseModel):
 class FamAppAdminCreateRequest(BaseModel):
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
-    user_type_code: famConstants.UserType
+    user_type_code: UserType
     application_id: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -203,7 +218,7 @@ class FamAccessControlPrivilegeCreateRequest(BaseModel):
 
     user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
-    user_type_code: famConstants.UserType
+    user_type_code: UserType
     role_id: int
     forest_client_numbers: Union[
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
@@ -244,7 +259,7 @@ class FamAccessControlPrivilegeCreateResponse(BaseModel):
 
 
 class FamAccessControlPrivilegeResponse(BaseModel):
-    email_sending_status: famConstants.EmailSendingStatus = famConstants.EmailSendingStatus.NOT_REQUIRED
+    email_sending_status: EmailSendingStatus = EmailSendingStatus.NOT_REQUIRED
     assignments_detail: List[FamAccessControlPrivilegeCreateResponse]
 
 
@@ -257,7 +272,7 @@ class FamApplicationDto(BaseModel):
     description: Annotated[Optional[str], StringConstraints(max_length=200)] = Field(
         default=None, validation_alias="application_description"
     )
-    env: Optional[famConstants.AppEnv] = Field(
+    env: Optional[AppEnv] = Field(
         validation_alias="app_environment", default=None
     )
 
@@ -275,7 +290,7 @@ class FamRoleDto(BaseModel):
     description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
         validation_alias="role_purpose"
     )
-    type_code: famConstants.RoleType = Field(validation_alias="role_type_code")
+    type_code: RoleType = Field(validation_alias="role_type_code")
     forest_clients: Optional[List[str]] = Field(default=None)
 
     model_config = ConfigDict(from_attributes=True)
@@ -289,7 +304,7 @@ class FamGrantDetailDto(BaseModel):
 
 
 class FamAuthGrantDto(BaseModel):
-    auth_key: famConstants.AdminRoleAuthGroup
+    auth_key: AdminRoleAuthGroup
     grants: List[FamGrantDetailDto]
 
     model_config = ConfigDict(from_attributes=True)
@@ -317,7 +332,7 @@ class IdimProxySearchParam(BaseModel):
 
 
 class IdimProxyBceidSearchParam(BaseModel):
-    searchUserBy: famConstants.IdimSearchUserParamType
+    searchUserBy: IdimSearchUserParamType
     searchValue: str
 
 
@@ -345,10 +360,17 @@ class IdimProxyBceidInfo(BaseModel):
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
 class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
     send_to_email_address: EmailStr
-    application_name: Annotated[str, StringConstraints(max_length=100)]
-    first_name: Annotated[str, StringConstraints(max_length=20)]
-    last_name: Annotated[str, StringConstraints(max_length=20)]
-    role_list_string: Annotated[str, StringConstraints(max_length=200)]
+    user_name: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
+    first_name: Optional[
+        Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
+    ] = None
+    last_name: Optional[
+        Annotated[str, StringConstraints(max_length=LAST_NAME_MAX_LEN)]
+    ] = None
+    # Email param variable is application_name but should supply application_description as data.
+    application_description: Annotated[str, StringConstraints(max_length=APPLICATION_DESC_MAX_LEN)]
+    role_display_name: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
+    organization_list: Optional[List[FamForestClientSchema]] = None
     application_team_contact_email: Optional[EmailStr] = None
-    with_client_number: Literal['yes', 'no']
+    is_bceid_user: Literal['yes', 'no']
 
