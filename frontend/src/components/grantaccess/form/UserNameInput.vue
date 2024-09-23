@@ -6,7 +6,7 @@ import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { selectedApplicationId } from '@/store/ApplicationState';
 import FamLoginUserState from '@/store/FamLoginUserState';
 import { isLoading } from '@/store/LoadingState';
-import type { IdimProxyBceidInfo, IdimProxyIdirInfo } from 'fam-app-acsctl-api';
+import type { IdimProxyBceidInfoSchema, IdimProxyIdirInfoSchema } from 'fam-app-acsctl-api';
 import { UserType } from 'fam-app-acsctl-api';
 import InputText from 'primevue/inputtext';
 import { ErrorMessage, Field } from 'vee-validate';
@@ -34,7 +34,7 @@ const computedUserId = computed({
 });
 
 const errorMsg = ref('');
-const verifiedUserIdentity = ref<IdimProxyIdirInfo | IdimProxyBceidInfo | null>(
+const verifiedUserIdentity = ref<IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null>(
     null
 );
 const verifyUserId = async () => {

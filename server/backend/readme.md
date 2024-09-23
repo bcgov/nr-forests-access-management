@@ -5,9 +5,16 @@ Backend API for Forest Access Management
 # Running the API with Docker Compose
 
 - On the command line, go to the root of the repository
-- Enter the command: `docker-compose up`
+- Find the env files template [here](https://github.com/bcgov/nr-forests-access-management/wiki/Local-Env-Vars-Template) and create them on your local machine.
+- Enter the command: `docker compose up`
 
-This will do three things:
+If you want to run the service locally without using docker compose, you can export the env vars with the following script
+```bash
+cd server/admin_management
+export $(cat local-dev.env | xargs)
+```
+
+The docker compose will do three things:
 
 1. Bring up PostgreSQL (empty) in a local docker container
 2. Bring up a temporary local container that will run flyway against PostgreSQL
@@ -16,11 +23,11 @@ This will do three things:
 
 Potential "gotchas":
 
-- The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else).
+- The FAM-API depends on being able to connect to the Cognito DEV environment. The values in `local-dev.env` may be out of date with the latest deployment. In particular, the values `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` need to match what has been deployed by Terraform in the DEV environment. If the DEV environment gets destroyed and recreated, you have to get those two values from AWS and populate `local-dev.env` manually with the right values (and check in the change for everyone else). You can find the template of the .env files [here](https://github.com/bcgov/nr-forests-access-management/wiki/Local-Env-Vars-Template)
 - When things are running, the roles that come through in your user login will come from the AWS DEV version of the database, NOT your local database. This is because the login process is happening through Cognito, which does not know about your local environment. Don't expect local changes to be reflected in your JWT.
 - There are several functions in the API that rely on the cognito username in the JWT. When developing locally and authenticating using your own IDIR, your IDIR record needs to be populated in the database so that the API can look it up. Rename sample_V1002\_\_add_local_user_cognito_id.sql and put your ACTUAL cognito username into it. Don't check it into github.
 - Currently the unit tests for the API depend on connecting to the forest client API. You have to put the API key into local-dev.env in order for them to work. (Somebody please make a mock for this service!)
-- Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker-compose command to rebuild, feel free to use that instead of this super paranoid version.
+- Docker containers can be annoyingly "sticky". You may think you are running the latest API or flyway scripts, but an old image is still running. If you want to be sure, stop all the docker containers and remove them. Remove any API images in your local docker registry. Prune docker volumes for extra aggression! If you figure out a reliable docker compose command to rebuild, feel free to use that instead of this super paranoid version.
 
 # Running the API locally
 
@@ -37,11 +44,11 @@ Instruction in summary:
 - Open the script and find the entry corresponding to your user.
 - Update the **cognito_user_id** value for your user and save the script. (If you are not sure the value, you can either get it from AWS Cognito User Pool or inspect the JWT ID Token for **"cognito:username"**)
 
-**Note!!**: If you already had a database running initially and you adjust the `sample_V1002__add_local_user_cognito_id.sql` script to "V1002\_\_..." for your local backend database, you will need to remove the docker container and the flyway image before running docker-compose up command.
+**Note!!**: If you already had a database running initially and you adjust the `sample_V1002__add_local_user_cognito_id.sql` script to "V1002\_\_..." for your local backend database, you will need to remove the docker container and the flyway image before running docker compose up command.
 
 When running the API locally, you still need to have a working database to connect to. Docker compose can run everything **other than the API** with the command:
 
-`docker-compose fam-flyway up`
+`docker compose fam-flyway up`
 
 This command will run the services in the Docker Compose definition but will omit the API.
 
@@ -152,7 +159,7 @@ cd server/backend
 . ./venv/bin/activate
 ```
 
-- run postgres tests
+- run backend tests
 
 ```
 pytest

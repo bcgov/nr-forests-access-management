@@ -3,7 +3,7 @@ from typing import List
 from enum import Enum
 import json
 from api.app.models import model as models
-from api.app.schemas import Requester
+from api.app.schemas import RequesterSchema
 from fastapi import Request, HTTPException
 
 
@@ -27,7 +27,7 @@ class AuditEventLog:
     application: models.FamApplication
     role: models.FamRole
     forest_client_numbers: List[str]
-    requesting_user: Requester
+    requesting_user: RequesterSchema
     target_user: models.FamUser
     exception: Exception
 
@@ -39,7 +39,7 @@ class AuditEventLog:
         application: models.FamApplication = None,
         role: models.FamRole = None,
         forest_client_numbers: List[str] = [],
-        requesting_user: Requester = None,
+        requesting_user: RequesterSchema = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
     ):

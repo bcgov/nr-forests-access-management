@@ -1,11 +1,11 @@
-import router, { routes } from '@/router';
-import { mount, VueWrapper } from '@vue/test-utils';
-import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
-import { routeItems } from '@/router/routeItem';
-import { fixJsdomCssErr } from './common/fixJsdomCssErr';
 import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
-import waitForExpect from 'wait-for-expect';
+import router, { routes } from '@/router';
+import { routeItems } from '@/router/routeItem';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
+import { mount, VueWrapper } from '@vue/test-utils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import waitForExpect from 'wait-for-expect';
+import { fixJsdomCssErr } from './common/fixJsdomCssErr';
 
 fixJsdomCssErr();
 vi.mock('vue-router', async () => {
@@ -25,7 +25,7 @@ describe('GrantApplicationAdmin', () => {
     const routerPushSpy = vi.spyOn(router, 'push');
 
     //populate the breadcrumbState
-    const breadcrumbItems = [routeItems.dashboard, routeItems.grantAppAdmin];
+    const breadcrumbItems = [routeItems.dashboard];
     populateBreadcrumb(breadcrumbItems);
     beforeEach(async () => {
         wrapper = mount(GrantApplicationAdmin, {

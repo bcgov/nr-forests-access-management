@@ -141,6 +141,7 @@ class FamRoleBase(BaseModel):
 class FamRoleCreateDto(FamRoleBase):
     application_id: int = Field(title="Application this role is associated with")
     role_purpose: Optional[Annotated[str, StringConstraints(max_length=300)]] = None
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     parent_role_id: Union[int, None] = Field(
         default=None, title="Reference role_id to higher role"
     )
@@ -158,6 +159,10 @@ class FamRoleCreateDto(FamRoleBase):
 class FamRoleWithClientDto(BaseModel):
     role_id: int
     role_name: Annotated[str, StringConstraints(max_length=100)]
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
+        validation_alias="role_purpose"
+    )
     client_number: Optional[FamForestClientBase] = None
     parent_role: Optional[FamRoleBase] = None
     application: FamApplicationBase
@@ -266,7 +271,8 @@ class FamRoleDto(BaseModel):
     name: Annotated[str, StringConstraints(max_length=100)] = Field(
         validation_alias="role_name"
     )
-    description: Annotated[str, StringConstraints(max_length=300)] = Field(
+    display_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
         validation_alias="role_purpose"
     )
     type_code: famConstants.RoleType = Field(validation_alias="role_type_code")

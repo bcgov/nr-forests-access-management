@@ -2,7 +2,7 @@ import type {
     FamAppAdminGetResponse,
     FamAccessControlPrivilegeGetResponse,
 } from 'fam-admin-mgmt-api/model';
-import type { FamApplicationUserRoleAssignmentGet } from 'fam-app-acsctl-api';
+import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
 import {
     AppActlApiService,
     AdminMgmtApiService,
@@ -16,7 +16,7 @@ import { isNewAccess } from './utils';
 export const fetchUserRoleAssignments = async (
     applicationId: number | undefined,
     newUserAccessIds: string = ''
-): Promise<FamApplicationUserRoleAssignmentGet[]> => {
+): Promise<FamApplicationUserRoleAssignmentGetSchema[]> => {
     if (!applicationId) return [];
 
     const newUsersAccessIdsList = newUserAccessIds.split(',');
@@ -55,7 +55,7 @@ export const fetchUserRoleAssignments = async (
 export const deleteAndRefreshUserRoleAssignments = async (
     userRoleXrefId: number,
     applicationId: number
-): Promise<FamApplicationUserRoleAssignmentGet[]> => {
+): Promise<FamApplicationUserRoleAssignmentGetSchema[]> => {
     await AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
         userRoleXrefId
     );

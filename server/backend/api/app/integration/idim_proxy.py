@@ -4,8 +4,11 @@ from http import HTTPStatus
 import requests
 from api.app.constants import IDIM_PROXY_ACCOUNT_TYPE_MAP, ApiInstanceEnv, UserType
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
-                             Requester)
+from api.app.schemas import (
+    IdimProxyBceidSearchParamSchema,
+    IdimProxySearchParamSchema,
+    RequesterSchema,
+)
 from api.config import config
 from fastapi import HTTPException
 
@@ -29,7 +32,11 @@ class IdimProxyService:
 
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
 
-    def __init__(self, requester: Requester, api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST):
+    def __init__(
+        self,
+        requester: RequesterSchema,
+        api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST,
+    ):
         self.requester = requester
         # by default use test idim proxy url if not specify the api instance enviornment
         self.api_idim_proxy_url = (
@@ -41,7 +48,7 @@ class IdimProxyService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search_idir(self, search_params: IdimProxySearchParam):
+    def search_idir(self, search_params: IdimProxySearchParamSchema):
         """
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
@@ -65,12 +72,12 @@ class IdimProxyService:
         LOGGER.debug(f"API result: {api_result}")
         return api_result
 
-    def search_business_bceid(self, search_params: IdimProxyBceidSearchParam):
+    def search_business_bceid(self, search_params: IdimProxyBceidSearchParamSchema):
         """
         Search on Business BCEID user.
         This search can be perfomed by IDIR requester or BCeID requester by passing "user_guid" to
         "requesterUserGuid".
-        search_param: is of type "IdimProxyBceidSearchParam" and can be 'searchUserBy'
+        search_param: is of type "IdimProxyBceidSearchParamSchema" and can be 'searchUserBy'
             - "userId" or
             - "userGuid" (preferred)
         """

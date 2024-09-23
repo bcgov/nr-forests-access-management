@@ -10,7 +10,7 @@ on:
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+  contents: write # This is required for actions/checkout
 
 jobs:
   aws-dev-deployment-server:
@@ -44,3 +44,6 @@ jobs:
     secrets:
       licenceplate: ${{ secrets.LICENCEPLATE}}
 
+  data-model-update:
+    name: Generating Data Model
+    uses: ./.github/workflows/reusable_data_model_gen.yml

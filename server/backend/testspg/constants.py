@@ -1,4 +1,7 @@
+import datetime
 from api.app import constants as fam_constants
+from api.app.models.model import FamPrivilegeChangeAudit
+from api.app.schemas.permission_audit_history import PermissionAduitHistoryRes
 
 
 # --------------------- Testing application  ---------------------------- #
@@ -31,7 +34,9 @@ TEST_NOT_EXIST_USER_TYPE = "NS"
 
 USER_NAME_BCEID_LOAD_2_TEST = "LOAD-2-TEST"
 USER_GUID_BCEID_LOAD_2_TEST = "81069F39B35B4861BCD010582B63B112"
-BUSINESS_GUID_BCEID_LOAD_2_TEST = "MOCKEDBUSINESSGUID5D4ACA9FA901EE"  # this is a faked business guid
+BUSINESS_GUID_BCEID_LOAD_2_TEST = (
+    "MOCKEDBUSINESSGUID5D4ACA9FA901EE"  # this is a faked business guid
+)
 USER_NAME_BCEID_LOAD_3_TEST = "LOAD-3-TEST"
 USER_GUID_BCEID_LOAD_3_TEST = "532905DE0AA24923AE535428F171BF13"
 BUSINESS_GUID_BCEID_LOAD_3_TEST = "E7C0431DA55D4ACA9FA901EE2C91CB3B"

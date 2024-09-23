@@ -58,7 +58,7 @@ class ForestClientService():
         try:
             r = self.session.get(url, timeout=self.TIMEOUT)
             r.raise_for_status()
-            # !! Don't map and return schema.FamForestClient or object from "scheam.py" as that
+            # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
             # will create circular dependency issue. let crud to map the result.
             api_result = r.json()
             LOGGER.debug(f"API result: {api_result}")

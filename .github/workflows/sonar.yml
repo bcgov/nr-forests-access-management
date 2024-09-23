@@ -33,7 +33,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
@@ -75,6 +75,16 @@ jobs:
           IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
           GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
           TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
+          POSTGRES_USER: ${{ vars.LOCAL_BACKEND_POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
+          ENABLE_BCSC_JWKS_ENDPOINT: ${{ vars.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
         run: |
           cd server/backend
           pip install -r requirements.txt -r requirements-dev.txt
@@ -83,7 +93,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
@@ -121,6 +131,17 @@ jobs:
       - name: Tests and coverage
         env:
           FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+          IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+          GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+          POSTGRES_USER: ${{ vars.LOCAL_ADMAN_POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
         run: |
           cd server/admin_management
           pip install -r requirements.txt -r requirements-dev.txt
@@ -129,7 +150,7 @@ jobs:
             -v --md=report.md --emoji
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN }}
@@ -147,7 +168,7 @@ jobs:
   ci-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.2.1
         with:
           commands: |
             npm run install-frontend
@@ -164,4 +185,3 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ("frontend" "terraform-frontend/")
-

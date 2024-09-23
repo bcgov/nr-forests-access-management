@@ -3,13 +3,18 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls = concat([
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
-    "http://localhost:3000/dashboard",
-  ], [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
-  logout_urls = concat([
-    "http://localhost:3000/logout"
-  ], [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/logout"])
+  callback_urls = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/dashboard"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
+  logout_urls = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/logout"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-forest-client-${i}-frontend.apps.silver.devops.gov.bc.ca/logout"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -43,11 +48,12 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
+    var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
     "https://forestclient-tst.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
+    var.oidc_sso_playground_url,
     "http://localhost:3000/logout",
     "https://forestclient-tst.nrs.gov.bc.ca/logout",
   ]
@@ -81,11 +87,12 @@ resource "aws_cognito_user_pool_client" "prod_forest_client_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://oidcdebugggersecure-c6af30-dev.apps.gold.devops.gov.bc.ca/",
+    var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
     "https://forestclient.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
+    var.oidc_sso_playground_url,
     "http://localhost:3000/logout",
     "https://forestclient.nrs.gov.bc.ca/logout"
   ]

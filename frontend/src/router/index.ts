@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import AuthCallback from '@/components/AuthCallbackHandler.vue';
+import UserDetails from '@/components/managePermissions/userDetails/UserDetails.vue';
 import NotFound from '@/components/NotFound.vue';
 import {
     beforeEachRouteHandler,
@@ -9,11 +10,11 @@ import {
 import { routeItems } from '@/router/routeItem';
 import GrantAccessView from '@/views/GrantAccessView.vue';
 import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
+import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
-import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
 import MyPermissionsView from '@/views/MyPermissionsView.vue';
+import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -113,6 +114,26 @@ const routes = [
         },
         component: GrantDelegatedAdminView,
         beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
+    },
+    {
+        path: routeItems.userDetails.path,
+        name: routeItems.userDetails.name,
+        meta: {
+            requiresAuth: true,
+            requiresAppSelected: true,
+            title: routeItems.userDetails.label,
+            layout: 'ProtectedLayout',
+            hasBreadcrumb: true,
+        },
+        component: UserDetails,
+
+        /* TODO: 'beforeEnter' placeholder to fetch data from backend*/
+        // beforeEnter: beforeEnterHandlers[routeItems.userDetails.name],
+        // props: (route: any) => {
+        //     return {
+        //         // TODO: placeholder here to supply props for the component.
+        //     };
+        // },
     },
     {
         path: routeItems.myPermissions.path,
