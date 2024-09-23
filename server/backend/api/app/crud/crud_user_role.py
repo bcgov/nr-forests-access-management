@@ -332,6 +332,7 @@ def send_user_access_granted_email(
         email_service = GCNotifyEmailService()
         email_params = GCNotifyGrantAccessEmailParamSchema(
             **{
+                "user_name": target_user.user_name,
                 "first_name": target_user.first_name,
                 "last_name": target_user.last_name,
                 "application_name": roles_assignment_responses[
