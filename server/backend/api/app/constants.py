@@ -99,6 +99,8 @@ EMAIL_MAX_LEN = 250
 CLIENT_NUMBER_MAX_LEN = 8
 CLIENT_NAME_MAX_LEN = 60
 ROLE_NAME_MAX_LEN = 100
+APPLICATION_NAME_MAX_LEN = 100
+APPLICATION_DESC_MAX_LEN = 200
 
 # --------------------------------- Schema Enums --------------------------------- #
 class PrivilegeDetailsScopeTypeEnum(str, Enum):
