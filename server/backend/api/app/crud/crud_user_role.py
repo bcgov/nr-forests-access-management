@@ -340,36 +340,41 @@ def send_user_access_granted_email(
         - FAM currently is not concerned with checking status from GC Notify (callback) to verify
             if email is really sent from GC Notify.
     """
+    granted_roles = list(filter(
+        lambda res: res.status_code == HTTPStatus.OK,
+        roles_assignment_responses
+    ))
+    if len(granted_roles) == 0:  # no role is granted, no email needs to be sent.
+        return
+
+    email_params: GCNotifyGrantAccessEmailParamSchema = None
     try:
-        granted_roles = ", ".join(
-            item.detail.role.role_name for item in filter(
-                lambda res: res.status_code == HTTPStatus.OK,
-                roles_assignment_responses
-            )
+        granted_role = granted_roles[0].detail.role
+        is_forest_client_scoped_role = granted_role.forest_client is not None
+        granted_role_client_list = (
+            list(map(lambda item: item.detail.role.forest_client, roles_assignment_responses))
+            if is_forest_client_scoped_role
+            else None
         )
-        with_client_number = "yes" if roles_assignment_responses[0].detail.role.forest_client is not None else "no"
         email_service = GCNotifyEmailService()
         email_params = GCNotifyGrantAccessEmailParamSchema(
             **{
                 "user_name": target_user.user_name,
                 "first_name": target_user.first_name,
                 "last_name": target_user.last_name,
-                "application_name": roles_assignment_responses[
-                    0
-                ].detail.role.application.application_description,
-                "role_list_string": granted_roles,
+                "application_description": granted_role.application.application_description,
+                "role_display_name": granted_role.display_name,
+                "organization_list": granted_role_client_list,
                 "application_team_contact_email": None,  # TODO: ticket #1507 to implement this.
                 "send_to_email": target_user.email,
-                "with_client_number": with_client_number,
             }
         )
 
-        if granted_roles == "":  # no role is granted
-            return
         email_service.send_user_access_granted_email(email_params)
         LOGGER.debug(f"Email is sent to {email_params.send_to_email}.")
         return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_SUCCESS
+
     except Exception as e:
-        LOGGER.debug(f"Failure sending email to {email_params.send_to_email}.")
-        LOGGER.debug(f"Failure reason : {e}.")
+        LOGGER.warning(f"Failure sending email to {email_params.send_to_email}.")
+        LOGGER.debug(f"Failure reason: {e}.")
         return famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_FAILURE

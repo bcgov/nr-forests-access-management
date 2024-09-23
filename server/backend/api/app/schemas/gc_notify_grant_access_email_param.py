@@ -16,11 +16,10 @@ class GCNotifyGrantAccessEmailParamSchema(BaseModel):
     last_name: Optional[
         Annotated[str, StringConstraints(max_length=LAST_NAME_MAX_LEN)]
     ] = None
-    # This is application description. param variable is application_name.
+    # Email param variable is application_name but should supply application_description as data.
     application_description: Annotated[str, StringConstraints(max_length=APPLICATION_DESC_MAX_LEN)]
     # Allow sending with 1 role and scope with multiple organization (optional)
     role_display_name: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
     organization_list: Optional[List[FamForestClientSchema]] = None
     application_team_contact_email: Optional[EmailStr] = None
     send_to_email: EmailStr
-    with_client_number: Literal["yes", "no"]

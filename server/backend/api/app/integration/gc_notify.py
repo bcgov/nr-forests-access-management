@@ -40,12 +40,14 @@ class GCNotifyEmailService:
         """
         # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
         # 'variable' within coditional text. Easier to do this in code.
-        application_role_granted_text = __to_application_role_granted_text(params)
-        organization_list_text = __to_organization_list_text(params)
-        contact_message = __to_contact_message(params)
+        application_role_granted_text = self.__to_application_role_granted_text(params)
+        organization_list_text = self.__to_organization_list_text(params)
+        contact_message = self.__to_contact_message(params)
         personalisation_params = {
+            "user_name": params.user_name,
             "first_name": params.first_name,
             "last_name": params.last_name,
+            "application_name": params.application_description,
             "application_role_granted_text": application_role_granted_text,
             "organization_list_text": organization_list_text,
             "contact_message": contact_message
@@ -62,29 +64,35 @@ class GCNotifyEmailService:
         r = self.session.post(
             gc_notify_email_send_url, timeout=self.TIMEOUT, json=email_params
         )
-        r.raise_for_status()  # There is a general error handler, see: requests_http_error_handler
+        # Add a debug for python response object for easy debugging purpose. After raising python
+        # exception (raise_for_status()), the error message is not printed from the caller.
+        LOGGER.debug(f"Email sending response: {r.__dict__}")
+        r.raise_for_status()
         send_email_result = r.json()
 
-        LOGGER.debug(f"Send Email result: {send_email_result}")
+        LOGGER.debug(f"Email sending result: {send_email_result}")
         return send_email_result
 
 
-def __to_contact_message(params: GCNotifyGrantAccessEmailParamSchema):
-    # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
-    # 'variable' within coditional text. Easier to do this in code.
-    return (
-        f"Please contact your administrator {params.application_team_contact_email} if you have any issues accessing the application."
-        if params.application_team_contact_email is not None
-        else "Please contact your administrator if you have any issues accessing the application."
-    )
+    def __to_contact_message(self, params: GCNotifyGrantAccessEmailParamSchema):
+        # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
+        # 'variable' within coditional text. Easier to do this in code.
+        return (
+            f"Please contact your administrator {params.application_team_contact_email} if you have any issues accessing the application."
+            if params.application_team_contact_email is not None
+            else "Please contact your administrator if you have any issues accessing the application."
+        )
 
-def __to_application_role_granted_text(params: GCNotifyGrantAccessEmailParamSchema):
-    granted_app_role_no_org_txt = f"You have been granted access to **{params.application_description}** with a **{params.role_display_name}** role."
-    granted_app_role_with_org_txt = f"You have been granted access to **{params.application_description}** with a **{params.role_display_name}** role for the following organizations:"
-    return granted_app_role_no_org_txt if params.organization_list is None else granted_app_role_with_org_txt
+    def __to_application_role_granted_text(self, params: GCNotifyGrantAccessEmailParamSchema):
+        granted_app_role_no_org_txt = f"You have been granted access to **{params.application_description}** with a **{params.role_display_name}** role."
+        granted_app_role_with_org_txt = f"You have been granted access to **{params.application_description}** with a **{params.role_display_name}** role for the following organizations:"
+        return granted_app_role_no_org_txt if params.organization_list is None else granted_app_role_with_org_txt
 
-def __to_organization_list_text(params: GCNotifyGrantAccessEmailParamSchema):
-    org_list = params.organization_list
-    # format to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
-    org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
-    return org_formatted_list_str
+    def __to_organization_list_text(self, params: GCNotifyGrantAccessEmailParamSchema):
+        org_list = params.organization_list
+        if (org_list is None):
+            return ""
+
+        # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
+        org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
+        return org_formatted_list_str
