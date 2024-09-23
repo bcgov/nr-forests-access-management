@@ -19,12 +19,29 @@ if (!userName || !applicationId || !userTypeCode) {
 </script>
 
 <template>
-  <PageTitle class="user-detail-page-title" title="User History" />
-  <UserSummaryCard :userName="userName!" :applicationId="applicationId!" :userTypeCode="userTypeCode!" />
+  <div class="user-detail-page-container">
+    <PageTitle class="user-detail-page-title" title="User History" />
+    <UserSummaryCard :userName="userName!" :applicationId="applicationId!" :userTypeCode="userTypeCode!" />
+    <div class="gray-container">
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
-.user-detail-page-title {
-  margin-bottom: 2rem;
+.user-detail-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 93vh;
+
+  .user-detail-page-title {
+    margin-bottom: 2rem;
+  }
+
+  .gray-container {
+    background-color: colors.$gray-10;
+    flex-grow: 1;
+    margin: 2.5rem -2.5rem 0 -2.5rem;
+    padding: 2.5rem;
+  }
 }
 </style>

@@ -1,3 +1,8 @@
+<!--
+  CardTextCol Component
+  This component is used to display a label and a description in a column format.
+  It can show a loading skeleton when data is being fetched or processed.
+-->
 <script setup lang="ts">
 import Skeleton from 'primevue/skeleton';
 import { PLACE_HOLDER, DEFAULT_SKELETON_BORDER_RADIUS } from '@/constants/constants';
@@ -13,15 +18,12 @@ const props = defineProps<{
 
 <template>
     <div class="card-text-col-container">
-        <div class="card-text-col-skeleton" v-if="props.isLoading">
-            <Skeleton width="5rem" class="mb-3" :borderRadius="DEFAULT_SKELETON_BORDER_RADIUS" />
-            <Skeleton width="8rem" class="mb-3" :borderRadius="DEFAULT_SKELETON_BORDER_RADIUS" />
-        </div>
-        <div class="card-text-col-content" v-else>
+        <div class="card-text-col-content">
             <span class="card-text-col-label" :id="`card-text-col-label-${id}`">
                 {{ props.label }}
             </span>
-            <span class="card-text-col-description" :id="`card-text-col-description-${id}`">
+            <Skeleton width="8rem" class="mb-3" :borderRadius="DEFAULT_SKELETON_BORDER_RADIUS" v-if="props.isLoading" />
+            <span class="card-text-col-description" :id="`card-text-col-description-${id}`" v-else>
                 {{ props.description ?? PLACE_HOLDER }}
             </span>
         </div>
@@ -42,7 +44,7 @@ const props = defineProps<{
             color: colors.$gray-100;
         }
 
-        .card-text-col-description{
+        .card-text-col-description {
             @include type.type-style('body-01');
             color: colors.$gray-100;
         }
