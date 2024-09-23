@@ -1,14 +1,13 @@
 import logging
 from typing import List
-from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends
 
 from api.app import database
+from api.app.crud.crud_permission_audit import \
+    read_permission_audit_history_by_user_and_application
 from api.app.routers.router_guards import authorize_by_app_id
 from api.app.schemas import PermissionAduitHistoryRes
-from api.app.crud.crud_permission_audit import (
-    read_permission_audit_history_by_user_and_application,
-)
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()

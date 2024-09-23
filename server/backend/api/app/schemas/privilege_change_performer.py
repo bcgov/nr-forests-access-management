@@ -1,13 +1,11 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
-from typing_extensions import Annotated
 
-from api.app.constants import (
-    USER_NAME_MAX_LEN,
-    FIRST_NAME_MAX_LEN,
-    LAST_NAME_MAX_LEN,
-    EMAIL_MAX_LEN,
-)
+from api.app.constants import (EMAIL_MAX_LEN, FIRST_NAME_MAX_LEN,
+                               LAST_NAME_MAX_LEN, SYSTEM_ACCOUNT_NAME,
+                               USER_NAME_MAX_LEN)
+from pydantic import (BaseModel, ConfigDict, Field, StringConstraints,
+                      model_validator)
+from typing_extensions import Annotated
 
 
 class PrivilegeChangePerformerSchema(BaseModel):
@@ -52,7 +50,7 @@ class PrivilegeChangePerformerSchema(BaseModel):
         last_name = values.get("last_name")
         email = values.get("email")
 
-        if username == "system":
+        if username == SYSTEM_ACCOUNT_NAME:
             # For system accounts, only username should be present
             if first_name or last_name or email:
                 raise ValueError("System account should only have a username.")

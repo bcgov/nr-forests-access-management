@@ -1,15 +1,14 @@
 import datetime
-from api.app.constants import (
-    PrivilegeDetailsPermissionTypeEnum,
-    PrivilegeDetailsScopeTypeEnum,
-)
+
+from api.app.constants import (PrivilegeChangeTypeEnum,
+                               PrivilegeDetailsPermissionTypeEnum,
+                               PrivilegeDetailsScopeTypeEnum)
 from api.app.models.model import FamPrivilegeChangeAudit
-from api.app.schemas import (
-    PermissionAduitHistoryRes,
-    PrivilegeChangePerformerSchema,
-    PrivilegeDetailsSchema,
-)
-from testspg.constants import TEST_USER_ID, FAM_APPLICATION_ID, FOM_DEV_APPLICATION_ID
+from api.app.schemas import (PermissionAduitHistoryRes,
+                             PrivilegeChangePerformerSchema,
+                             PrivilegeDetailsSchema)
+from testspg.constants import (FAM_APPLICATION_ID, FOM_DEV_APPLICATION_ID,
+                               TEST_USER_ID)
 
 USER_ID_1 = TEST_USER_ID
 USER_ID_2 = 2
@@ -71,7 +70,7 @@ AUDIT_RECORD_U1_A1_D2 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_2,
     create_user="admin",
-    privilege_change_type_code="REVOKE",
+    privilege_change_type_code=PrivilegeChangeTypeEnum.REVOKE,
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_1,
 )
@@ -84,7 +83,7 @@ AUDIT_RECORD_U1_A2 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_2,
     create_user="admin",
-    privilege_change_type_code="REVOKE",
+    privilege_change_type_code=PrivilegeChangeTypeEnum.REVOKE,
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_2,
 )
@@ -97,7 +96,7 @@ AUDIT_RECORD_U2_A2 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_2,
     create_date=CHANGE_DATE_2,
     create_user="admin",
-    privilege_change_type_code="REVOKE",
+    privilege_change_type_code=PrivilegeChangeTypeEnum.REVOKE,
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_2,
 )

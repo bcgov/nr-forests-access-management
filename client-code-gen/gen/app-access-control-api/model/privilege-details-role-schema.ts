@@ -34,6 +34,6 @@ export interface PrivilegeDetailsRoleSchema {
      * @type {Array<PrivilegeDetailsScopeSchema>}
      * @memberof PrivilegeDetailsRoleSchema
      */
-    'scopes': Array<PrivilegeDetailsScopeSchema>;
+    'scopes'?: Array<PrivilegeDetailsScopeSchema> | null;
 }
 

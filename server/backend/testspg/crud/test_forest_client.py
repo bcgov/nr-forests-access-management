@@ -3,7 +3,8 @@
 import logging
 
 import pytest
-from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ class TestForestClientServiceClass(object):
     some day. Since this field is not important at the moment, so test does not
     includ3e it.
     """
-    fc_api: ForestClientService
+    fc_api: ForestClientIntegrationService
     example_expected_valid_result = {
         'clientNumber': '00000002',
         'clientName': 'PENDING S & R BILLING',
@@ -24,7 +25,7 @@ class TestForestClientServiceClass(object):
     }
 
     def setup_class(self):
-        self.fc_api = ForestClientService()
+        self.fc_api = ForestClientIntegrationService()
 
     def test_verify_init(self):
         # Quick Verifying for init not empty

@@ -18,26 +18,26 @@
 import { EmailSendingStatus } from './email-sending-status';
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamUserRoleAssignmentCreateResponse } from './fam-user-role-assignment-create-response';
+import { FamUserRoleAssignmentCreateRes } from './fam-user-role-assignment-create-res';
 
 /**
  * 
  * @export
- * @interface FamUserRoleAssignmentResponse
+ * @interface FamUserRoleAssignmentRes
  */
-export interface FamUserRoleAssignmentResponse {
+export interface FamUserRoleAssignmentRes {
     /**
      * 
      * @type {EmailSendingStatus}
-     * @memberof FamUserRoleAssignmentResponse
+     * @memberof FamUserRoleAssignmentRes
      */
     'email_sending_status'?: EmailSendingStatus;
     /**
      * 
-     * @type {Array<FamUserRoleAssignmentCreateResponse>}
-     * @memberof FamUserRoleAssignmentResponse
+     * @type {Array<FamUserRoleAssignmentCreateRes>}
+     * @memberof FamUserRoleAssignmentRes
      */
-    'assignments_detail': Array<FamUserRoleAssignmentCreateResponse>;
+    'assignments_detail': Array<FamUserRoleAssignmentCreateRes>;
 }
 
 
