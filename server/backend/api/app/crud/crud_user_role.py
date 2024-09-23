@@ -3,21 +3,24 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
-from api.app.schemas import (
-    FamUserRoleAssignmentCreateSchema,
-    TargetUserSchema,
-    FamUserRoleAssignmentCreateResponseSchema,
-    FamApplicationUserRoleAssignmentGetSchema,
-    GCNotifyGrantAccessEmailParamSchema,
-    FamRoleCreateSchema
-)
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
+from api.app.crud.services.permission_audit_service import \
+    PermissionAuditService
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
-from api.app.integration.forest_client.forest_client import ForestClientService
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.models import model as models
+from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
+                             FamRoleCreateSchema,
+                             FamUserRoleAssignmentCreateRes,
+                             FamUserRoleAssignmentCreateSchema,
+                             GCNotifyGrantAccessEmailParamSchema,
+                             TargetUserSchema)
+from api.app.schemas.fam_forest_client import FamForestClientSchema
+from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
 
@@ -28,8 +31,8 @@ def create_user_role_assignment_many(
     db: Session,
     request: FamUserRoleAssignmentCreateSchema,
     target_user: TargetUserSchema,
-    requester: str,
-) -> List[FamUserRoleAssignmentCreateResponseSchema]:
+    requester: RequesterSchema,
+) -> List[FamUserRoleAssignmentCreateRes]:
     """
     Create fam_user_role_xref Association
 
@@ -54,10 +57,10 @@ def create_user_role_assignment_many(
 
     # Determine if user already exists or add a new user.
     fam_user = crud_user.find_or_create(
-        db, request.user_type_code, request.user_name, request.user_guid, requester
+        db, request.user_type_code, request.user_name, request.user_guid, requester.cognito_user_id
     )
     fam_user = crud_user.update_user_properties_from_verified_target_user(
-        db, fam_user.user_id, target_user, requester
+        db, fam_user.user_id, target_user, requester.cognito_user_id,
     )
 
     # Verify if role exists.
@@ -80,7 +83,7 @@ def create_user_role_assignment_many(
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    create_return_list: List[FamUserRoleAssignmentCreateResponseSchema] = []
+    new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes] = []
 
     if require_child_role:
         LOGGER.debug(
@@ -102,7 +105,7 @@ def create_user_role_assignment_many(
             )
 
         api_instance_env = crud_utils.use_api_instance_by_app(fam_role.application)
-        forest_client_integration_service = ForestClientService(api_instance_env)
+        forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
 
         for forest_client_number in request.forest_client_numbers:
             # validate the forest client number
@@ -134,35 +137,44 @@ def create_user_role_assignment_many(
 
             # Check if child role exists or add a new child role
             child_role = find_or_create_forest_client_child_role(
-                db, forest_client_number, fam_role, requester
+                db, forest_client_number, fam_role, requester.cognito_user_id,
             )
             # Create user/role assignment
-            handle_create_return = create_user_role_assignment(
-                db, fam_user, child_role, requester
+            new_user_role_assginment_res = create_user_role_assignment(
+                db, fam_user, child_role, requester.cognito_user_id,
             )
-            create_return_list.append(handle_create_return)
+
+            # Update response object for Forest Client Name from the forest_client_search.
+            # FAM currently does not store forest client name for easy retrieval.
+            new_user_role_assginment_res.detail.role.forest_client = FamForestClientSchema.from_api_json(forest_client_search_return[0])
+            new_user_permission_granted_list.append(new_user_role_assginment_res)
     else:
         # Create user/role assignment
-        handle_create_return = create_user_role_assignment(
-            db, fam_user, fam_role, requester
+        new_user_role_assginment_res = create_user_role_assignment(
+            db, fam_user, fam_role, requester.cognito_user_id,
         )
-        create_return_list.append(handle_create_return)
+        new_user_permission_granted_list.append(new_user_role_assginment_res)
+    LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_granted_list}")
 
-    LOGGER.debug(f"User/Role assignment executed successfully: {create_return_list}")
-    return create_return_list
+    permissionAuditService = PermissionAuditService(db)
+    permissionAuditService.store_user_permissions_granted_audit_history(
+        requester, fam_user, new_user_permission_granted_list
+    )
+
+    return new_user_permission_granted_list
 
 
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester: str
+    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str
 ):
-    create_user_role_assginment_return = None
+    new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id
     )
 
     if fam_user_role_xref:
         error_msg = f"Role {fam_user_role_xref.role.role_name} already assigned to user {fam_user_role_xref.user.user_name}."
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+        new_user_role_assginment_res = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.CONFLICT,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -172,8 +184,8 @@ def create_user_role_assignment(
             }
         )
     else:
-        fam_user_role_xref = create(db, user.user_id, role.role_id, requester)
-        create_user_role_assginment_return = FamUserRoleAssignmentCreateResponseSchema(
+        fam_user_role_xref = create(db, user.user_id, role.role_id, requester_cognito_user_id)
+        new_user_role_assginment_res = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.OK,
                 "detail": FamApplicationUserRoleAssignmentGetSchema(
@@ -182,20 +194,27 @@ def create_user_role_assignment(
             }
         )
 
-    return create_user_role_assginment_return
+    return new_user_role_assginment_res
 
 
-def delete_fam_user_role_assignment(db: Session, user_role_xref_id: int):
+def delete_fam_user_role_assignment(db: Session, requester: RequesterSchema, user_role_xref_id: int):
     record = (
         db.query(models.FamUserRoleXref)
         .filter(models.FamUserRoleXref.user_role_xref_id == user_role_xref_id)
         .one()
     )
+
+    # save audit record
+    permissionAuditService = PermissionAuditService(db)
+    permissionAuditService.store_user_permissions_revoked_audit_history(
+        requester, record
+    )
+
     db.delete(record)
     db.flush()
 
 
-def create(db: Session, user_id: int, role_id: int, requester: str):
+def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: str):
     LOGGER.debug(
         f"FamUserRoleXref - 'create' with user_id: {user_id}, " + f"role_id: {role_id}."
     )
@@ -204,7 +223,7 @@ def create(db: Session, user_id: int, role_id: int, requester: str):
         **{
             "user_id": user_id,
             "role_id": role_id,
-            "create_user": requester,
+            "create_user": requester_cognito_user_id,
         }
     )
     db.add(new_fam_user_role)
@@ -241,7 +260,7 @@ def construct_forest_client_role_purpose(
 
 
 def find_or_create_forest_client_child_role(
-    db: Session, forest_client_number: str, parent_role: models.FamRole, requester: str
+    db: Session, forest_client_number: str, parent_role: models.FamRole, requester_cognito_user_id: str
 ):
     # Note, client_name is unique. For now for MVP version we will insert it with
     # a dummy name.
@@ -251,7 +270,7 @@ def find_or_create_forest_client_child_role(
     # insert a record into the table. Later FAM will be interfacing with Forest
     # Client API, thus the way to insert a record will cahnge.
     forest_client = crud_forest_client.find_or_create(  # NOSONAR
-        db, forest_client_number, requester
+        db, forest_client_number, requester_cognito_user_id
     )
     LOGGER.debug(f"forest client number from db: {forest_client.forest_client_number}")
     LOGGER.debug(f"forest client client id from db: {forest_client.client_number_id}")
@@ -282,7 +301,7 @@ def find_or_create_forest_client_child_role(
                         parent_role_purpose=parent_role.role_purpose,
                         forest_client_number=forest_client_number,
                     ),
-                    "create_user": requester,
+                    "create_user": requester_cognito_user_id,
                     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                 }
             ),
@@ -306,7 +325,7 @@ def find_by_id(db: Session, user_role_xref_id: int) -> models.FamUserRoleXref:
 
 def send_user_access_granted_email(
     target_user: TargetUserSchema,
-    roles_assignment_responses: List[FamUserRoleAssignmentCreateResponseSchema],
+    roles_assignment_responses: List[FamUserRoleAssignmentCreateRes],
 ):
     """
     Send email using GC Notify integration service.
@@ -328,7 +347,7 @@ def send_user_access_granted_email(
                 roles_assignment_responses
             )
         )
-        with_client_number = "yes" if roles_assignment_responses[0].detail.role.client_number is not None else "no"
+        with_client_number = "yes" if roles_assignment_responses[0].detail.role.forest_client is not None else "no"
         email_service = GCNotifyEmailService()
         email_params = GCNotifyGrantAccessEmailParamSchema(
             **{

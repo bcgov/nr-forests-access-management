@@ -89,9 +89,10 @@ ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
-
+ERROR_CODE_UNKNOWN_STATE = "unknown_state"
 
 # ------------------------------- Schema Constants ------------------------------- #
+SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
 FIRST_NAME_MAX_LEN = 50
 LAST_NAME_MAX_LEN = 50
@@ -101,8 +102,18 @@ CLIENT_NAME_MAX_LEN = 60
 ROLE_NAME_MAX_LEN = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
+class PrivilegeChangeTypeEnum(str, Enum):
+    GRANT = "GRANT"
+    REVOKE = "REVOKE"
+    UPDATE = "UPDATE"
+
+# Note! There is an issue for openapi generator to generate an enum with only 1 constant.
+# Since in future we plan to use "District", it is added (and can be used later) here
+# so openapi can generate it with no prolbme but for now it is a holder.
 class PrivilegeDetailsScopeTypeEnum(str, Enum):
     CLIENT = "Client"
+    DISTRICT = "District"
+
 
 class PrivilegeDetailsPermissionTypeEnum(str, Enum):
     END_USER = "End User"

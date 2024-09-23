@@ -1,8 +1,9 @@
 from typing import List, Optional, Union
+
+from api.app.constants import (EMAIL_MAX_LEN, FIRST_NAME_MAX_LEN,
+                               LAST_NAME_MAX_LEN, USER_NAME_MAX_LEN, UserType)
 from pydantic import BaseModel, ConfigDict, StringConstraints
 from typing_extensions import Annotated
-
-from api.app.constants import UserType, USER_NAME_MAX_LEN
 
 
 class RequesterSchema(BaseModel):
@@ -17,6 +18,13 @@ class RequesterSchema(BaseModel):
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
     user_name: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
+    first_name: Optional[
+        Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
+    ] = None
+    last_name: Optional[
+        Annotated[str, StringConstraints(max_length=LAST_NAME_MAX_LEN)]
+    ] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=EMAIL_MAX_LEN)]] = None
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[UserType, None] = None
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]

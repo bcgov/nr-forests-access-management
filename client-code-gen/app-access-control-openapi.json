@@ -91,7 +91,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/FamUserRoleAssignmentResponseSchema"
+                    "$ref": "#/components/schemas/FamUserRoleAssignmentRes"
                   }
                 }
               }
@@ -461,7 +461,7 @@
             "Permission Audit"
           ],
           "summary": "Get Permission Audit History By User And Application",
-          "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAuditHistoryResDto]: A list of audit history records for the given user and application.",
+          "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.",
           "operationId": "get_permission_audit_history_by_user_and_application",
           "security": [
             {
@@ -496,7 +496,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/PermissionAuditHistoryResDto"
+                      "$ref": "#/components/schemas/PermissionAduitHistoryRes"
                     },
                     "title": "Response Get Permission Audit History By User And Application"
                   }
@@ -878,7 +878,7 @@
               ],
               "title": "Description"
             },
-            "client_number": {
+            "forest_client": {
               "anyOf": [
                 {
                   "$ref": "#/components/schemas/FamForestClientSchema"
@@ -905,7 +905,8 @@
             "role_type_code",
             "application",
             "role_id",
-            "description"
+            "description",
+            "forest_client"
           ],
           "title": "FamRoleWithClientSchema"
         },
@@ -963,7 +964,7 @@
           ],
           "title": "FamUserInfoSchema"
         },
-        "FamUserRoleAssignmentCreateResponseSchema": {
+        "FamUserRoleAssignmentCreateRes": {
           "properties": {
             "status_code": {
               "type": "integer",
@@ -989,7 +990,7 @@
             "status_code",
             "detail"
           ],
-          "title": "FamUserRoleAssignmentCreateResponseSchema"
+          "title": "FamUserRoleAssignmentCreateRes"
         },
         "FamUserRoleAssignmentCreateSchema": {
           "properties": {
@@ -1043,7 +1044,7 @@
           ],
           "title": "FamUserRoleAssignmentCreateSchema"
         },
-        "FamUserRoleAssignmentResponseSchema": {
+        "FamUserRoleAssignmentRes": {
           "properties": {
             "email_sending_status": {
               "allOf": [
@@ -1055,7 +1056,7 @@
             },
             "assignments_detail": {
               "items": {
-                "$ref": "#/components/schemas/FamUserRoleAssignmentCreateResponseSchema"
+                "$ref": "#/components/schemas/FamUserRoleAssignmentCreateRes"
               },
               "type": "array",
               "title": "Assignments Detail"
@@ -1065,7 +1066,7 @@
           "required": [
             "assignments_detail"
           ],
-          "title": "FamUserRoleAssignmentResponseSchema"
+          "title": "FamUserRoleAssignmentRes"
         },
         "FamUserTypeSchema": {
           "properties": {
@@ -1311,8 +1312,17 @@
           ],
           "title": "IdimProxyIdirInfoSchema"
         },
-        "PermissionAuditHistoryResDto": {
+        "PermissionAduitHistoryRes": {
           "properties": {
+            "create_date": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Create Date"
+            },
+            "create_user": {
+              "type": "string",
+              "title": "Create User"
+            },
             "change_date": {
               "type": "string",
               "format": "date-time",
@@ -1320,6 +1330,17 @@
             },
             "change_performer_user_details": {
               "$ref": "#/components/schemas/PrivilegeChangePerformerSchema"
+            },
+            "privilege_change_type_code": {
+              "type": "string",
+              "title": "Privilege Change Type Code"
+            },
+            "privilege_details": {
+              "$ref": "#/components/schemas/PrivilegeDetailsSchema"
+            },
+            "privilege_change_audit_id": {
+              "type": "integer",
+              "title": "Privilege Change Audit Id"
             },
             "change_performer_user_id": {
               "anyOf": [
@@ -1331,36 +1352,21 @@
                 }
               ],
               "title": "Change Performer User Id"
-            },
-            "create_date": {
-              "type": "string",
-              "format": "date-time",
-              "title": "Create Date"
-            },
-            "create_user": {
-              "type": "string",
-              "title": "Create User"
-            },
-            "privilege_change_type_code": {
-              "type": "string",
-              "title": "Privilege Change Type Code"
-            },
-            "privilege_details": {
-              "$ref": "#/components/schemas/PrivilegeDetailsSchema"
             }
           },
           "type": "object",
           "required": [
-            "change_date",
-            "change_performer_user_details",
-            "change_performer_user_id",
             "create_date",
             "create_user",
+            "change_date",
+            "change_performer_user_details",
             "privilege_change_type_code",
-            "privilege_details"
+            "privilege_details",
+            "privilege_change_audit_id",
+            "change_performer_user_id"
           ],
-          "title": "PermissionAuditHistoryResDto",
-          "description": "This class is used to transfer data related to the changes made to a user's permissions,\ntypically in the context of an audit trail. It encapsulates details about the change,\nincluding when it occurred, who performed the change, who the change was applied to,\nand the specific details of the permission changes.\n\nAttributes:\n    change_date (datetime): The date and time when the permission change occurred.\n    change_performer_user_details (PrivilegeChangePerformerSchema): Details of the user\n        or system that performed the permission change, including relevant user information.\n    change_performer_user_id (Optional[int]): The ID of the user who performed the change.\n        This may be `None` if the change was performed by the system or if the user ID is unavailable.\n    create_date (datetime): The date and time when this record was created in the system.\n    create_user (str): The username or identifier of the entity that created this change record.\n    privilege_change_type_code (str): The code representing the type of permission change,\n        such as adding or removing a specific role or scope.\n    privilege_details (PrivilegeDetailsSchema): The details of the permission change,\n        including information about the roles and scopes that were added, removed, or modified.\n\nThis DTO is designed to be used in API responses where partial data from the\n`FamPrivilegeChangeAudit` model needs to be exposed. It ensures that only the relevant\nfields are included in the response."
+          "title": "PermissionAduitHistoryRes",
+          "description": "This class is used to transfer data related to the changes made to a user's permissions,\ntypically in the context of an audit trail. It encapsulates details about the change,\nincluding when it occurred, who performed the change, who the change was applied to,\nand the specific details of the permission changes."
         },
         "PrivilegeChangePerformerSchema": {
           "properties": {
@@ -1430,17 +1436,23 @@
               "title": "Role"
             },
             "scopes": {
-              "items": {
-                "$ref": "#/components/schemas/PrivilegeDetailsScopeSchema"
-              },
-              "type": "array",
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/PrivilegeDetailsScopeSchema"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "title": "Scopes"
             }
           },
           "type": "object",
           "required": [
-            "role",
-            "scopes"
+            "role"
           ],
           "title": "PrivilegeDetailsRoleSchema"
         },
@@ -1509,7 +1521,10 @@
         },
         "PrivilegeDetailsScopeTypeEnum": {
           "type": "string",
-          "enum": ["Client"],
+          "enum": [
+            "Client",
+            "District"
+          ],
           "title": "PrivilegeDetailsScopeTypeEnum"
         },
         "RoleType": {

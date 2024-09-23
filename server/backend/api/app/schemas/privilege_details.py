@@ -1,14 +1,11 @@
 from typing import List, Optional
+
+from api.app.constants import (CLIENT_NAME_MAX_LEN, CLIENT_NUMBER_MAX_LEN,
+                               ROLE_NAME_MAX_LEN,
+                               PrivilegeDetailsPermissionTypeEnum,
+                               PrivilegeDetailsScopeTypeEnum)
 from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
 from typing_extensions import Annotated
-
-from api.app.constants import (
-    CLIENT_NUMBER_MAX_LEN,
-    CLIENT_NAME_MAX_LEN,
-    ROLE_NAME_MAX_LEN,
-    PrivilegeDetailsScopeTypeEnum,
-    PrivilegeDetailsPermissionTypeEnum,
-)
 
 
 class PrivilegeDetailsScopeSchema(BaseModel):
@@ -23,7 +20,7 @@ class PrivilegeDetailsScopeSchema(BaseModel):
 
 class PrivilegeDetailsRoleSchema(BaseModel):
     role: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
-    scopes: List[PrivilegeDetailsScopeSchema]
+    scopes: Optional[List[PrivilegeDetailsScopeSchema]] = None
 
 
 class PrivilegeDetailsSchema(BaseModel):
