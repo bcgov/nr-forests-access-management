@@ -41,7 +41,7 @@ def new_idir_requester(db_pg_session: Session, setup_new_user):
 	return requester
 
 
-def test_audit_history_end_user_role_no_scope(
+def test_store_end_user_audit_history_granted_role_no_scope(
 		db_pg_session: Session,
 		setup_new_user,
 		new_idir_requester,
@@ -78,7 +78,7 @@ def test_audit_history_end_user_role_no_scope(
 	verify_change_performer_user(audit_record, performer)
 	verify_end_user_privilege_details(audit_record, mock_user_permission_granted_list)
 
-def test_audit_history_end_user_role_scopes(
+def test_store_end_user_audit_history_granted_role_with_scopes(
 		db_pg_session: Session,
 		setup_new_user,
 		new_idir_requester,
