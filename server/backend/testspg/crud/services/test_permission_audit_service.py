@@ -200,9 +200,8 @@ def test_store_end_user_audit_history_revoke_role_no_scopes(
 	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
 
 
-@patch.object(ForestClientIntegrationService, "find_by_client_number")
 def test_store_end_user_audit_history_revoke_role_with_client_scopes(
-	mock_find_client_number,
+	mock_forest_client_integration_service,
 	db_pg_session: Session,
 	setup_new_user,
 	new_idir_requester,
@@ -223,7 +222,7 @@ def test_store_end_user_audit_history_revoke_role_with_client_scopes(
 	mock_forest_client_number = "00001011"
 	mock_delete_record.role.client_number.forest_client_number = mock_forest_client_number
 	mock_delete_record.role.role_name = f"FOM_SUBMITTER_{mock_forest_client_number}"
-	mock_find_client_number.return_value = MOCK_FIND_CLIENT_00001011_RETURN
+	mock_forest_client_integration_service.find_by_client_number.return_value = MOCK_FIND_CLIENT_00001011_RETURN
 
 	enduser_privliege_revoked_details_fn_spy = mocker.spy(PermissionAuditService, 'to_enduser_privliege_revoked_details')
 	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
@@ -249,9 +248,8 @@ def test_store_end_user_audit_history_revoke_role_with_client_scopes(
 	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
 
 
-@patch.object(ForestClientIntegrationService, "find_by_client_number")
 def test_store_end_user_audit_history_revoke_role_client_search_error(
-	mock_find_client_number,
+	mock_forest_client_integration_service,
 	db_pg_session: Session,
 	setup_new_user,
 	new_idir_requester,
@@ -269,7 +267,7 @@ def test_store_end_user_audit_history_revoke_role_client_search_error(
 		USER_GUID_BCEID_LOAD_2_TEST
 	)
 	mock_delete_record = copy.copy(sameple_user_role_with_notfound_client_revoked_record)
-	mock_find_client_number.return_value = [] # FC external service result not found.
+	mock_forest_client_integration_service.find_by_client_number.return_value = [] # FC external service result not found.
 	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'find_by_client_number')
 
 	with pytest.raises(HTTPException) as e:

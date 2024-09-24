@@ -9,6 +9,7 @@ import starlette
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from mock import patch
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -307,3 +308,13 @@ def setup_new_user(db_pg_session: Session):
         return fam_user
 
     return _setup_new_user
+
+
+@pytest.fixture(scope="function", autouse=True)
+def mock_forest_client_integration_service():
+    # Mocked dependency class object
+    with patch(
+        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
+        autospec=True,
+    ) as m:
+        yield m.return_value  # Very important to get instance of mocked class.
