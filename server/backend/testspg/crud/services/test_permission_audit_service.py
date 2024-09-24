@@ -4,7 +4,8 @@ from http import HTTPStatus
 from typing import List
 
 import pytest
-from api.app.constants import (PrivilegeChangeTypeEnum,
+from api.app.constants import (ERROR_CODE_UNKNOWN_STATE,
+                               PrivilegeChangeTypeEnum,
                                PrivilegeDetailsPermissionTypeEnum,
                                PrivilegeDetailsScopeTypeEnum, UserType)
 from api.app.crud.services.permission_audit_service import \
@@ -25,6 +26,7 @@ from api.app.schemas.fam_user_role_assignment_create_response import \
     FamUserRoleAssignmentCreateRes
 from api.app.schemas.fam_user_type import FamUserTypeSchema
 from api.app.schemas.requester import RequesterSchema
+from fastapi import HTTPException
 from mock import patch
 from sqlalchemy.orm import Session
 from testspg.constants import (FOM_DEV_APPLICATION_ID, TEST_USER_GUID_IDIR,
@@ -214,6 +216,53 @@ def test_store_end_user_audit_history_revoke_role_with_client_scopes(
 	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
 
 
+@patch.object(ForestClientIntegrationService, "find_by_client_number")
+def test_store_end_user_audit_history_revoke_role_client_search_error(
+	mock_find_client_number,
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester,
+	mocker
+):
+	"""
+	Test service saving user permission revoked history on role change with 'CLIENT' scope
+	but with scenario that forest client number is not found (unknown reason) from
+	FC integration external service. Exception should be raised and no audit record is saved.
+	"""
+	performer = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		USER_NAME_BCEID_LOAD_2_TEST,
+		USER_GUID_BCEID_LOAD_2_TEST
+	)
+	mock_delete_record = copy.copy(sameple_user_role_with_notfound_client_revoked_record)
+	mock_find_client_number.return_value = [] # FC external service result not found.
+	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'find_by_client_number')
+
+	with pytest.raises(HTTPException) as e:
+		paService = PermissionAuditService(db_pg_session)
+		paService.store_user_permissions_revoked_audit_history(performer, mock_delete_record)
+
+	assert str(e.value.detail.get("code")).find(ERROR_CODE_UNKNOWN_STATE) != -1
+	error_msg = (
+		"Revoke user permission encountered problem."
+		+ f"Unknown forest client number {mock_delete_record.role.client_number.forest_client_number} for "
+		+ f"scoped permission {mock_delete_record.role.role_name}."
+	)
+	assert (
+		str(e.value.detail.get("description")).find(error_msg)
+		!= -1
+	)
+	assert forest_client_integration_fn_spy.call_count == 1
+	# find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_delete_record.role.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one_or_none()
+	assert audit_record is None
+
+
 def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performer: FamUser):
 	audit_record.change_performer_user_id == performer.user_id
 	change_performer_user_details_dict = audit_record.change_performer_user_details
@@ -315,6 +364,17 @@ sameple_user_role_with_client_revoked_record = FamUserRoleXref(**{
 		"application": FamApplication(** {"application_id": FOM_DEV_APPLICATION_ID, }),
 		"client_number_id": 3, "client_number": FamForestClient(**{
 			"forest_client_number": "00001011"
+		})
+   })
+})
+
+sameple_user_role_with_notfound_client_revoked_record = FamUserRoleXref(**{
+	"user_id": 111, "role_id": 999,
+	"user": FamUser(**{"user_id": 111}),
+	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_09090909",
+		"application": FamApplication(** {"application_id": FOM_DEV_APPLICATION_ID, }),
+		"client_number_id": 3, "client_number": FamForestClient(**{
+			"forest_client_number": "09090909"
 		})
    })
 })
