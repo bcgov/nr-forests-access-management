@@ -9,8 +9,11 @@ from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
+from api.app.crud.services.permission_audit_service import \
+    PermissionAuditService
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
+from api.app.models.model import FamPrivilegeChangeAudit, FamUser
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
@@ -63,11 +66,14 @@ def test_create_user_role_assignment_many_not_authorized(
     )
 
 
+
 def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delegated_admin(
+    db_pg_session: Session,
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
     override_enforce_bceid_terms_conditions_guard,
+    mocker
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -84,6 +90,7 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
             "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
         }
     )
+    store_user_permissions_granted_audit_history_fn_spy = mocker.spy(PermissionAuditService, 'store_user_permissions_granted_audit_history')
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
@@ -105,6 +112,19 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
     assert "user_id" in detail
     assert "role_id" in detail
     assert "application_id" in detail.get("role").get("application")
+
+    # verify audit record created (service being called only)
+    # for detail tests see test_permission_audit_service.py).
+    performer = db_pg_session.query(FamUser).filter(
+        FamUser.cognito_user_id == jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+    ).one()
+    audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == detail["role"]["application"]["application_id"],
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == detail["user_id"]
+	).one_or_none()
+    assert store_user_permissions_granted_audit_history_fn_spy.call_count == 1
+    assert audit_record is not None
 
 
 def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delegated_admin(
@@ -868,6 +888,7 @@ def test_delete_user_role_assignment_with_forest_client_number(
     test_rsa_key,
     override_get_verified_target_user,
     override_enforce_bceid_terms_conditions_guard,
+    mocker
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -894,6 +915,8 @@ def test_delete_user_role_assignment_with_forest_client_number(
         ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
     )
 
+    store_user_permissions_revoked_audit_history_fn_spy = mocker.spy(PermissionAuditService, 'store_user_permissions_revoked_audit_history')
+
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
     token = jwt_utils.create_jwt_token(
@@ -905,6 +928,10 @@ def test_delete_user_role_assignment_with_forest_client_number(
     )
     # delete is successful
     assert response.status_code == HTTPStatus.NO_CONTENT
+
+    # verify audit record action (service being called only)
+    # for detail tests see test_permission_audit_service.py).
+    assert store_user_permissions_revoked_audit_history_fn_spy.call_count == 1
 
     # create a user role assignment for a business bceid user within the same organization as the user COGNITO_USERNAME_BCEID
     # with abstract role FOM_SUBMITTER and forest client number 00001011
