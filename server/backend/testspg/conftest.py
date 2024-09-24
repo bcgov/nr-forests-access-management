@@ -7,7 +7,6 @@ import jwt
 import pytest
 import starlette
 import testcontainers.compose
-from api.app.models.model import FamUser
 from api.app.schemas.fam_user import FamUserSchema
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
@@ -23,6 +22,7 @@ from api.app.constants import (COGNITO_USERNAME_KEY,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.crud import crud_user, crud_utils
 from api.app.main import apiPrefix, app
+from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
     get_verified_target_user)
