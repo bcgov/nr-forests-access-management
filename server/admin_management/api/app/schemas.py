@@ -370,7 +370,7 @@ class GCNotifyGrantDelegatedAdminEmailParam(BaseModel):
     # Email param variable is application_name but should supply application_description as data.
     application_description: Annotated[str, StringConstraints(max_length=APPLICATION_DESC_MAX_LEN)]
     role_display_name: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
-    organization_list: Optional[List[FamForestClientSchema]] = None
+    organization_list: Optional[List[FamForestClientBase]] = None
     application_team_contact_email: Optional[EmailStr] = None
     is_bceid_user: Literal['yes', 'no']
 

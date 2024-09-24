@@ -107,12 +107,10 @@ class AccessControlPrivilegeService:
             )
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
-                forest_client_validator_return = (
-                    forest_client_integration_service.find_by_client_number(
-                        forest_client_number
-                    )
+                forest_client_search_return = forest_client_integration_service.find_by_client_number(
+                    forest_client_number
                 )
-                if not forest_client_number_exists(forest_client_validator_return):
+                if not forest_client_number_exists(forest_client_search_return):
                     error_msg = (
                         "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} does not exist."
@@ -122,11 +120,11 @@ class AccessControlPrivilegeService:
                         error_msg=error_msg,
                     )
 
-                if not forest_client_active(forest_client_validator_return):
+                if not forest_client_active(forest_client_search_return):
                     error_msg = (
                         "Invalid access control privilege request. "
                         + f"Forest client number {forest_client_number} is not in active status: "
-                        + f"{get_forest_client_status(forest_client_validator_return)}."
+                        + f"{get_forest_client_status(forest_client_search_return)}."
                     )
                     utils.raise_http_exception(
                         error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
@@ -142,7 +140,9 @@ class AccessControlPrivilegeService:
                 )
                 # Update response object for Forest Client Name from the forest_client_search.
                 # FAM currently does not store forest client name for easy retrieval.
-                new_delegated_admin_grant_res.detail.role.client_number = schemas.FamForestClientBase.from_api_json(forest_client_validator_return[0])
+                new_delegated_admin_grant_res.detail.role.client_number = (
+                    schemas.FamForestClientBase.from_api_json(forest_client_search_return[0])
+                )
                 create_return_list.append(new_delegated_admin_grant_res)
         else:
             new_delegated_admin_grant_res = self.grant_privilege(
@@ -218,35 +218,37 @@ class AccessControlPrivilegeService:
     def send_email_notification(
         self,
         target_user: schemas.TargetUser,
-        access_control_priviliege_response: List[
-            schemas.FamAccessControlPrivilegeCreateResponse
-        ],
+        access_control_priviliege_response: List[schemas.FamAccessControlPrivilegeCreateResponse],
     ):
         try:
-            granted_roles = ", ".join(
-                item.detail.role.role_name
-                for item in filter(
-                    lambda res: res.status_code == HTTPStatus.OK,
-                    access_control_priviliege_response,
-                )
-            )
+            granted_roles_res = list(filter(
+                lambda res: res.status_code == HTTPStatus.OK,
+                access_control_priviliege_response,
+            ))
 
-            if granted_roles == "":  # no role is granted
+            if len(granted_roles_res) == 0:  # no role is granted
                 return
 
             gc_notify_email_service = GCNotifyEmailService()
-            with_client_number = "yes" if access_control_priviliege_response[0].detail.role.client_number is not None else "no"
+            is_bceid_user = "yes" if target_user.user_type_code == famConstants.UserType.BCEID else "no"
+            granted_role = access_control_priviliege_response[0].detail.role
+            is_forest_client_scoped_role = granted_role.client_number is not None
+            granted_role_client_list = (
+                list(map(lambda item: item.detail.role.client_number, granted_roles_res))
+                if is_forest_client_scoped_role
+                else None
+            )
             email_response = gc_notify_email_service.send_delegated_admin_granted_email(
                 schemas.GCNotifyGrantDelegatedAdminEmailParam(
-                    **{
+                    ** {
                         "send_to_email_address": target_user.email,
-                        "application_name": access_control_priviliege_response[
-                            0
-                        ].detail.role.application.application_description,
+                        "application_description": granted_role.application.application_description,
+                        "role_display_name": granted_role.display_name,
+                        "organization_list": granted_role_client_list,
+                        "user_name": target_user.user_name,
                         "first_name": target_user.first_name,
                         "last_name": target_user.last_name,
-                        "role_list_string": granted_roles,
-                        "with_client_number": with_client_number
+                        "is_bceid_user": is_bceid_user
                     }
                 )
             )
