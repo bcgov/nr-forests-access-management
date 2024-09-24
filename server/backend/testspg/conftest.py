@@ -7,7 +7,6 @@ import jwt
 import pytest
 import starlette
 import testcontainers.compose
-from api.app.schemas.fam_user import FamUserSchema
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
@@ -27,6 +26,7 @@ from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
     get_verified_target_user)
 from api.app.schemas import RequesterSchema, TargetUserSchema
+from api.app.schemas.fam_user import FamUserSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
                                TEST_CREATOR)

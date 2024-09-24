@@ -282,10 +282,7 @@ def test_store_end_user_audit_history_revoke_role_client_search_error(
 		+ f"Unknown forest client number {mock_delete_record.role.client_number.forest_client_number} for "
 		+ f"scoped permission {mock_delete_record.role.role_name}."
 	)
-	assert (
-		str(e.value.detail.get("description")).find(error_msg)
-		!= -1
-	)
+	assert str(e.value.detail.get("description")).find(error_msg) != -1
 	assert forest_client_integration_fn_spy.call_count == 1
 	# find the audit record and verify
 	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
