@@ -9,7 +9,8 @@ from api.app.constants import (PrivilegeChangeTypeEnum,
                                PrivilegeDetailsScopeTypeEnum, UserType)
 from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
-from api.app.models.model import FamPrivilegeChangeAudit, FamUser
+from api.app.models.model import (FamApplication, FamPrivilegeChangeAudit,
+                                  FamRole, FamUser, FamUserRoleXref)
 from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.schemas.fam_application_user_role_assignment_get import \
     FamApplicationUserRoleAssignmentGetSchema
@@ -42,10 +43,11 @@ def new_idir_requester(db_pg_session: Session, setup_new_user):
 
 
 def test_store_end_user_audit_history_granted_role_no_scope(
-		db_pg_session: Session,
-		setup_new_user,
-		new_idir_requester,
-		mocker):
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester,
+	mocker
+):
 	"""
 	Test service saving user permission granted history on role change with no scope.
 	"""
@@ -56,7 +58,7 @@ def test_store_end_user_audit_history_granted_role_no_scope(
 		USER_NAME_BCEID_LOAD_2_TEST,
 		USER_GUID_BCEID_LOAD_2_TEST
 	)
-	mock_user_permission_granted_list = [copy.deepcopy(sample_end_user_permission_granted_no_scope_details)]
+	mock_user_permission_granted_list = [copy.copy(sample_end_user_permission_granted_no_scope_details)]
 	enduser_privliege_granted_details_fn_spy = mocker.spy(PermissionAuditService, 'to_enduser_privliege_granted_details')
 	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
 
@@ -69,20 +71,21 @@ def test_store_end_user_audit_history_granted_role_no_scope(
 		FamPrivilegeChangeAudit.application_id == mock_user_permission_granted_list[0].detail.role.application.application_id,
 		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
 		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
-	).one_or_none()
+	).one()
 	assert audit_record is not None
 	assert change_performer_user_details_fn_spy.call_count == 1
 	assert enduser_privliege_granted_details_fn_spy.call_count == 1
 	assert audit_record.privilege_change_type_code == PrivilegeChangeTypeEnum.GRANT
 	assert audit_record.change_target_user_id == change_target_user.user_id
 	verify_change_performer_user(audit_record, performer)
-	verify_end_user_privilege_details(audit_record, mock_user_permission_granted_list)
+	verify_end_user_granted_privilege_details(audit_record, mock_user_permission_granted_list)
 
 def test_store_end_user_audit_history_granted_role_with_scopes(
-		db_pg_session: Session,
-		setup_new_user,
-		new_idir_requester,
-		mocker):
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester,
+	mocker
+):
 	"""
 	Test service saving user permission granted history on role change with scopes.
 	"""
@@ -92,7 +95,7 @@ def test_store_end_user_audit_history_granted_role_with_scopes(
 		USER_NAME_BCEID_LOAD_2_TEST,
 		USER_GUID_BCEID_LOAD_2_TEST
 	)
-	mock_user_permission_granted_list = [copy.deepcopy(sample_end_user_permission_granted_with_scope_details)]
+	mock_user_permission_granted_list = [copy.copy(sample_end_user_permission_granted_with_scope_details)]
 	enduser_privliege_granted_details_fn_spy = mocker.spy(PermissionAuditService, 'to_enduser_privliege_granted_details')
 	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
 
@@ -114,7 +117,42 @@ def test_store_end_user_audit_history_granted_role_with_scopes(
 		assert record.privilege_change_type_code == PrivilegeChangeTypeEnum.GRANT
 		assert record.change_target_user_id == change_target_user.user_id
 		verify_change_performer_user(record, performer)
-		verify_end_user_privilege_details(record, mock_user_permission_granted_list)
+		verify_end_user_granted_privilege_details(record, mock_user_permission_granted_list)
+
+def test_store_end_user_audit_history_revoke_role_no_scopes(
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester,
+	mocker
+):
+	performer = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		USER_NAME_BCEID_LOAD_2_TEST,
+		USER_GUID_BCEID_LOAD_2_TEST
+	)
+	mock_delete_record = copy.copy(sameple_user_role_with_no_client_revoked_record)
+	mock_delete_record.user = change_target_user
+	enduser_privliege_revoked_details_fn_spy = mocker.spy(PermissionAuditService, 'to_enduser_privliege_revoked_details')
+	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
+
+	# test the service: granting end user role with scopes.
+	paService = PermissionAuditService(db_pg_session)
+	paService.store_user_permissions_revoked_audit_history(performer, mock_delete_record)
+
+	# find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_delete_record.role.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one()
+	assert audit_record is not None
+	assert enduser_privliege_revoked_details_fn_spy.call_count == 1
+	assert change_performer_user_details_fn_spy.call_count == 1
+	assert audit_record.privilege_change_type_code == PrivilegeChangeTypeEnum.REVOKE
+	assert audit_record.change_target_user_id == change_target_user.user_id
+	verify_change_performer_user(audit_record, performer)
+	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
 
 def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performer: FamUser):
 	audit_record.change_performer_user_id == performer.user_id
@@ -124,8 +162,7 @@ def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performe
 	assert change_performer_user_details_dict["last_name"] == performer.last_name
 	assert change_performer_user_details_dict["email"] == performer.email
 
-
-def verify_end_user_privilege_details(
+def verify_end_user_granted_privilege_details(
 	audit_record: FamPrivilegeChangeAudit,
 	mock_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes]
 ):
@@ -149,6 +186,27 @@ def verify_end_user_privilege_details(
 			scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
 			scope.get("client_id") in org_id_list
 
+def verify_end_user_revoked_privilege_details(
+	audit_record: FamPrivilegeChangeAudit,
+	mock_delete_record: FamUserRoleXref
+):
+	audit_privilege_details_dict = audit_record.privilege_details
+	assert audit_privilege_details_dict["permission_type"] == PrivilegeDetailsPermissionTypeEnum.END_USER
+	assert len(audit_privilege_details_dict["roles"]) != 0
+	audit_role = audit_privilege_details_dict["roles"][0] # FAM can revoke 1 role at a time for now.
+	revoked_role = mock_delete_record.role
+	assert audit_role["role"] == revoked_role.display_name
+	audit_scopes = audit_role.get("scopes")
+	if not revoked_role.client_number_id:
+		# "scopes" attribute is not present if the revoked role has no scopes.
+		assert audit_scopes is None
+
+	else:
+		assert len(audit_scopes) == 1  # Fam can revoke role with 1 org at a time.
+		org_id = revoked_role.client_number_id
+		scope = audit_scopes[0]
+		scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
+		scope.get("client_id") in org_id
 
 # sample end user permission granted response - role with no scope
 sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreateRes(
@@ -180,3 +238,9 @@ sample_end_user_permission_granted_with_scope_details = FamUserRoleAssignmentCre
 		'error_message': None
 	}
  )
+
+sameple_user_role_with_no_client_revoked_record = FamUserRoleXref(**{
+	"user_id": 111, "role_id": 999,
+	"user": FamUser(**{"user_id": 111}),
+	"role": FamRole(** {"display_name": "Reviewer", "application": FamApplication(** {"application_id": 2})})
+})
