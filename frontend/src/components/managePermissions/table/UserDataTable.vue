@@ -83,13 +83,13 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
     });
 }
 
-const navigateToUserDetails = (userName: string, userTypeCode: string) => {
+const navigateToUserDetails = (userId: string) => {
+    console.log(userId);
     hashRouter.push({
         name: routeItems.userDetails.name,
         params: {
-            userName,
             applicationId: selectedApplicationId.value,
-            userTypeCode
+            userId: userId,
         }
     });
 }
@@ -122,12 +122,9 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     'user.email',
                     'role.role_name',
                     'role.forest_client.forest_client_number',
-                ]"
-                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
-                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
-                stripedRows
-                :rowStyle="highlightNewUserAccessRow"
-            >
+                ]" :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE" stripedRows
+                :rowStyle="highlightNewUserAccessRow">
                 <template #empty> No user found. </template>
                 <template #loading>
                     <ProgressSpinner aria-label="Loading" />
@@ -158,11 +155,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     </template>
                 </Column>
                 <Column field="user.email" header="Email" sortable></Column>
-                <Column
-                    field="role.forest_client.forest_client_number"
-                    header="Client Number"
-                    sortable
-                ></Column>
+                <Column field="role.forest_client.forest_client_number" header="Client Number" sortable></Column>
                 <Column field="role.role_name" header="Role" sortable>
                     <template #body="{ data }">
                         {{
@@ -175,7 +168,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 <Column header="Action">
                     <template #body="{ data }">
                         <button title="User permission history" class="btn btn-icon" :disabled="!isDevEnvironment"
-                            @click="navigateToUserDetails(data.user.user_name, data.user.user_type.code)">
+                            @click="navigateToUserDetails(data.user_id)">
                             <Icon icon="history" :size="IconSize.small" />
                         </button>
 

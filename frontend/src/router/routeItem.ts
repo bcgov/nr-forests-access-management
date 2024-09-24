@@ -46,7 +46,7 @@ export const routeItems: RouteItems = {
     },
     userDetails: {
         name: 'viewUserDetails',
-        path: '/user-details/users/:userName/user-type/:userTypeCode/applications/:applicationId',
+        path: '/user-details/applications/:applicationId/users/:userId',
         label: 'User details',
     },
 };

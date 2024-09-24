@@ -8,11 +8,10 @@ import PageTitle from '@/components/common/PageTitle.vue';
 const route = useRoute();
 
 // Access the path parameters
-const userName = route.params.userName as string | undefined;
+const userId = route.params.userId as string | undefined;
 const applicationId = route.params.applicationId as string | undefined;
-const userTypeCode = route.params.userTypeCode as UserTypeCodeType | undefined;
 
-if (!userName || !applicationId || !userTypeCode) {
+if (!userId || !applicationId) {
   console.warn("Missing required path params");
   hashRouter.push('/');
 }
@@ -21,7 +20,7 @@ if (!userName || !applicationId || !userTypeCode) {
 <template>
   <div class="user-detail-page-container">
     <PageTitle class="user-detail-page-title" title="User History" />
-    <UserSummaryCard :userName="userName!" :applicationId="applicationId!" :userTypeCode="userTypeCode!" />
+    <UserSummaryCard :userId="userId!" :applicationId="applicationId!" />
     <div class="gray-container">
     </div>
   </div>

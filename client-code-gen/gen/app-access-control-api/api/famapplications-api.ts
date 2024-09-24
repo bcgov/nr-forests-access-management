@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { FamApplicationUserRoleAssignmentGetSchema } from '../model';
 // @ts-ignore
+import { FamUserInfoSchema } from '../model';
+// @ts-ignore
 import { HTTPValidationError } from '../model';
 /**
  * FAMApplicationsApi - axios parameter creator
@@ -42,6 +44,48 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationUserRoleAssignment', 'applicationId', applicationId)
             const localVarPath = `/fam_applications/{application_id}/user_role_assignment`
+                .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 6jfveou69mgford233or30hmta required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
+         * @summary Retrieve User Information by User ID under an application
+         * @param {number} userId 
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserByUserId: async (userId: number, applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getUserByUserId', 'userId', userId)
+            // verify required parameter 'applicationId' is not null or undefined
+            assertParamExists('getUserByUserId', 'applicationId', applicationId)
+            const localVarPath = `/fam_applications/{application_id}/users/{user_id}`
+                .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)))
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -92,6 +136,20 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['FAMApplicationsApi.getFamApplicationUserRoleAssignment']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
+         * @summary Retrieve User Information by User ID under an application
+         * @param {number} userId 
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUserByUserId(userId: number, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamUserInfoSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserByUserId(userId, applicationId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMApplicationsApi.getUserByUserId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -112,6 +170,17 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
         getFamApplicationUserRoleAssignment(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>> {
             return localVarFp.getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(axios, basePath));
         },
+        /**
+         * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
+         * @summary Retrieve User Information by User ID under an application
+         * @param {number} userId 
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserByUserId(userId: number, applicationId: number, options?: any): AxiosPromise<FamUserInfoSchema> {
+            return localVarFp.getUserByUserId(userId, applicationId, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -130,6 +199,17 @@ export interface FAMApplicationsApiInterface {
      * @memberof FAMApplicationsApiInterface
      */
     getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>>;
+
+    /**
+     * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
+     * @summary Retrieve User Information by User ID under an application
+     * @param {number} userId 
+     * @param {number} applicationId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMApplicationsApiInterface
+     */
+    getUserByUserId(userId: number, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<FamUserInfoSchema>;
 
 }
 
@@ -150,6 +230,19 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
      */
     public getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig) {
         return FAMApplicationsApiFp(this.configuration).getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
+     * @summary Retrieve User Information by User ID under an application
+     * @param {number} userId 
+     * @param {number} applicationId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMApplicationsApi
+     */
+    public getUserByUserId(userId: number, applicationId: number, options?: RawAxiosRequestConfig) {
+        return FAMApplicationsApiFp(this.configuration).getUserByUserId(userId, applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
