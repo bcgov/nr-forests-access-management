@@ -88,6 +88,39 @@ def test_store_end_user_audit_history_granted_role_no_scope(
 	verify_end_user_granted_privilege_details(audit_record, mock_user_permission_granted_list)
 
 
+def test_store_end_user_audit_history_nosaving_when_no_success_permission_granted(
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester
+):
+	"""
+	Test service saving user permission granted history but no success granted permission
+	return from execution. Should have no audit record saved.
+	"""
+	performer = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		USER_NAME_BCEID_LOAD_2_TEST,
+		USER_GUID_BCEID_LOAD_2_TEST
+	)
+	mock_user_permission_granted_list = [copy.copy(sample_end_user_permission_granted_no_scope_details)]
+	# setup all responses not success
+	for item in mock_user_permission_granted_list:
+		item.status_code = HTTPStatus.CONFLICT
+
+	# test the service: granting end user role with no scope.
+	paService = PermissionAuditService(db_pg_session)
+	paService.store_user_permissions_granted_audit_history(performer, change_target_user, mock_user_permission_granted_list)
+
+	# find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_user_permission_granted_list[0].detail.role.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one_or_none()
+	assert audit_record is None
+
+
 def test_store_end_user_audit_history_granted_role_with_client_scopes(
 	db_pg_session: Session,
 	setup_new_user,
