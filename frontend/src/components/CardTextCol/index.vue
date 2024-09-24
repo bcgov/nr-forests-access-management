@@ -22,7 +22,7 @@ const props = defineProps<{
             <span class="card-text-col-label" :id="`card-text-col-label-${id}`">
                 {{ props.label }}
             </span>
-            <Skeleton width="8rem" class="mb-3" :borderRadius="DEFAULT_SKELETON_BORDER_RADIUS" v-if="props.isLoading" />
+            <Skeleton class="skeleton" width="8rem" :borderRadius="DEFAULT_SKELETON_BORDER_RADIUS" v-if="props.isLoading" />
             <span class="card-text-col-description" :id="`card-text-col-description-${id}`" v-else>
                 {{ props.description ?? PLACE_HOLDER }}
             </span>
