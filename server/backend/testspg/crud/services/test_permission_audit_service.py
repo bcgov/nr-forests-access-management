@@ -9,8 +9,11 @@ from api.app.constants import (PrivilegeChangeTypeEnum,
                                PrivilegeDetailsScopeTypeEnum, UserType)
 from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
-from api.app.models.model import (FamApplication, FamPrivilegeChangeAudit,
-                                  FamRole, FamUser, FamUserRoleXref)
+from api.app.integration.forest_client_integration import \
+    ForestClientIntegrationService
+from api.app.models.model import (FamApplication, FamForestClient,
+                                  FamPrivilegeChangeAudit, FamRole, FamUser,
+                                  FamUserRoleXref)
 from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.schemas.fam_application_user_role_assignment_get import \
     FamApplicationUserRoleAssignmentGetSchema
@@ -22,8 +25,10 @@ from api.app.schemas.fam_user_role_assignment_create_response import \
     FamUserRoleAssignmentCreateRes
 from api.app.schemas.fam_user_type import FamUserTypeSchema
 from api.app.schemas.requester import RequesterSchema
+from mock import patch
 from sqlalchemy.orm import Session
-from testspg.constants import (TEST_USER_GUID_IDIR, TEST_USER_NAME_IDIR,
+from testspg.constants import (FOM_DEV_APPLICATION_ID, TEST_USER_GUID_IDIR,
+                               TEST_USER_NAME_IDIR,
                                USER_GUID_BCEID_LOAD_2_TEST,
                                USER_NAME_BCEID_LOAD_2_TEST)
 
@@ -80,14 +85,15 @@ def test_store_end_user_audit_history_granted_role_no_scope(
 	verify_change_performer_user(audit_record, performer)
 	verify_end_user_granted_privilege_details(audit_record, mock_user_permission_granted_list)
 
-def test_store_end_user_audit_history_granted_role_with_scopes(
+
+def test_store_end_user_audit_history_granted_role_with_client_scopes(
 	db_pg_session: Session,
 	setup_new_user,
 	new_idir_requester,
 	mocker
 ):
 	"""
-	Test service saving user permission granted history on role change with scopes.
+	Test service saving user permission granted history on role change with 'CLIENT' scopes.
 	"""
 	performer = new_idir_requester
 	change_target_user: FamUser = setup_new_user(
@@ -119,12 +125,16 @@ def test_store_end_user_audit_history_granted_role_with_scopes(
 		verify_change_performer_user(record, performer)
 		verify_end_user_granted_privilege_details(record, mock_user_permission_granted_list)
 
+
 def test_store_end_user_audit_history_revoke_role_no_scopes(
 	db_pg_session: Session,
 	setup_new_user,
 	new_idir_requester,
 	mocker
 ):
+	"""
+	Test service saving user permission revoked history on role change with no scope.
+	"""
 	performer = new_idir_requester
 	change_target_user: FamUser = setup_new_user(
 		UserType.BCEID,
@@ -154,6 +164,56 @@ def test_store_end_user_audit_history_revoke_role_no_scopes(
 	verify_change_performer_user(audit_record, performer)
 	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
 
+
+@patch.object(ForestClientIntegrationService, "find_by_client_number")
+def test_store_end_user_audit_history_revoke_role_with_client_scopes(
+	mock_find_client_number,
+	db_pg_session: Session,
+	setup_new_user,
+	new_idir_requester,
+	mocker
+):
+	"""
+	Test service saving user permission revoked history on role change with 'CLIENT' scope.
+	"""
+	performer = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		USER_NAME_BCEID_LOAD_2_TEST,
+		USER_GUID_BCEID_LOAD_2_TEST
+	)
+	mock_delete_record = copy.copy(sameple_user_role_with_client_revoked_record)
+	mock_delete_record.user_id = change_target_user.user_id
+	mock_delete_record.user = change_target_user
+	mock_forest_client_number = "00001011"
+	mock_delete_record.role.client_number.forest_client_number = mock_forest_client_number
+	mock_delete_record.role.role_name = f"FOM_SUBMITTER_{mock_forest_client_number}"
+	mock_find_client_number.return_value = MOCK_FIND_CLIENT_00001011_RETURN
+
+	enduser_privliege_revoked_details_fn_spy = mocker.spy(PermissionAuditService, 'to_enduser_privliege_revoked_details')
+	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
+	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'find_by_client_number')
+
+	# test the service: granting end user role with scopes.
+	paService = PermissionAuditService(db_pg_session)
+	paService.store_user_permissions_revoked_audit_history(performer, mock_delete_record)
+
+	# find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_delete_record.role.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one()
+	assert audit_record is not None
+	assert enduser_privliege_revoked_details_fn_spy.call_count == 1
+	assert change_performer_user_details_fn_spy.call_count == 1
+	assert forest_client_integration_fn_spy.call_count == 1
+	assert audit_record.privilege_change_type_code == PrivilegeChangeTypeEnum.REVOKE
+	assert audit_record.change_target_user_id == change_target_user.user_id
+	verify_change_performer_user(audit_record, performer)
+	verify_end_user_revoked_privilege_details(audit_record, mock_delete_record)
+
+
 def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performer: FamUser):
 	audit_record.change_performer_user_id == performer.user_id
 	change_performer_user_details_dict = audit_record.change_performer_user_details
@@ -161,6 +221,7 @@ def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performe
 	assert change_performer_user_details_dict["first_name"] == performer.first_name
 	assert change_performer_user_details_dict["last_name"] == performer.last_name
 	assert change_performer_user_details_dict["email"] == performer.email
+
 
 def verify_end_user_granted_privilege_details(
 	audit_record: FamPrivilegeChangeAudit,
@@ -186,6 +247,7 @@ def verify_end_user_granted_privilege_details(
 			scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
 			scope.get("client_id") in org_id_list
 
+
 def verify_end_user_revoked_privilege_details(
 	audit_record: FamPrivilegeChangeAudit,
 	mock_delete_record: FamUserRoleXref
@@ -206,7 +268,8 @@ def verify_end_user_revoked_privilege_details(
 		org_id = revoked_role.client_number_id
 		scope = audit_scopes[0]
 		scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
-		scope.get("client_id") in org_id
+		scope.get("client_id") == org_id
+
 
 # sample end user permission granted response - role with no scope
 sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreateRes(
@@ -244,3 +307,18 @@ sameple_user_role_with_no_client_revoked_record = FamUserRoleXref(**{
 	"user": FamUser(**{"user_id": 111}),
 	"role": FamRole(** {"display_name": "Reviewer", "application": FamApplication(** {"application_id": 2})})
 })
+
+sameple_user_role_with_client_revoked_record = FamUserRoleXref(**{
+	"user_id": 111, "role_id": 999,
+	"user": FamUser(**{"user_id": 111}),
+	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_00001011",
+		"application": FamApplication(** {"application_id": FOM_DEV_APPLICATION_ID, }),
+		"client_number_id": 3, "client_number": FamForestClient(**{
+			"forest_client_number": "00001011"
+		})
+   })
+})
+
+MOCK_FIND_CLIENT_00001011_RETURN = [{
+	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
+}]
