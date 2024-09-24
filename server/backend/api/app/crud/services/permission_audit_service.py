@@ -98,7 +98,7 @@ class PermissionAuditService:
     @staticmethod
     def to_enduser_privliege_granted_details(
         enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]
-    ) -> PrivilegeDetailsSchema:
+    ) -> PrivilegeDetailsSchema | None:
         if (len(enduser_privliege_list) == 0):
             return
 
