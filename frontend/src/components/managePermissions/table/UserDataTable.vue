@@ -89,7 +89,7 @@ const navigateToUserDetails = (userId: string) => {
         name: routeItems.userDetails.name,
         params: {
             applicationId: selectedApplicationId.value,
-            userId: userId,
+            userId,
         }
     });
 }

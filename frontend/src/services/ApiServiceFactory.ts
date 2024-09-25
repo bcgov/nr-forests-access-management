@@ -13,6 +13,7 @@ import {
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
     FAMUserTermsAndConditionsApi,
+    PermissionAuditApi
 } from 'fam-app-acsctl-api';
 
 type AppAccessControlApiType = {
@@ -21,6 +22,7 @@ type AppAccessControlApiType = {
     forestClientsApi: FAMForestClientsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
     userTermsAndConditionsApi: FAMUserTermsAndConditionsApi;
+    permissionAuditApi: PermissionAuditApi
 };
 
 type AdminManagementApiType = {
@@ -68,6 +70,10 @@ export default class ApiServiceFactory {
                 FAMUserTermsAndConditionsApi,
                 appAccessControlBaseURL
             ),
+            permissionAuditApi: this.createApiInstance(
+                PermissionAuditApi,
+                appAccessControlBaseURL
+            )
         };
 
         this.adminManagementApiService = {

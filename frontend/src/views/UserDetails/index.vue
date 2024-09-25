@@ -4,6 +4,7 @@ import { hashRouter } from '@/router';
 import type { UserTypeCodeType } from '@/types/UserTypeCodeType';
 import UserSummaryCard from '@/components/UserSummaryCard/index.vue';
 import PageTitle from '@/components/common/PageTitle.vue';
+import UserPermissionHistoryTable from '@/components/UserPermissionHistoryTable';
 
 const route = useRoute();
 
@@ -22,6 +23,7 @@ if (!userId || !applicationId) {
     <PageTitle class="user-detail-page-title" title="User History" />
     <UserSummaryCard :userId="userId!" :applicationId="applicationId!" />
     <div class="gray-container">
+      <UserPermissionHistoryTable :userId="userId!" :applicationId="applicationId!" />
     </div>
   </div>
 </template>
