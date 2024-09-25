@@ -13,7 +13,7 @@ from api.app.schemas import (
     RequesterSchema,
     FamUserInfoSchema,
 )
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 
@@ -57,6 +57,12 @@ def get_fam_application_user_role_assignment(
     status_code=200,
     dependencies=[Depends(authorize_by_app_id)],
     summary="Retrieve User Information by User ID under an application",
+    responses={
+        404: {
+            "description": "User not found",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        }
+    },
 )
 async def get_user_by_user_id(
     user_id: int,
@@ -72,4 +78,7 @@ async def get_user_by_user_id(
     Returns:
         FamUserInfoSchema: The user information corresponding to the provided userId.
     """
-    return crud_user.get_user(user_id=user_id, db=db)
+    user = crud_user.get_user(user_id=user_id, db=db)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

@@ -52,9 +52,9 @@ def test_read_permission_audit_history_invalid_data_types(db_pg_session: Session
 def test_read_permission_audit_history_multiple_users_same_application(
     db_pg_session: Session,
 ):
-    db_pg_session.add(AUDIT_RECORD_U1_A2)
-    db_pg_session.add(AUDIT_RECORD_U2_A2)
-    db_pg_session.commit()
+    with db_pg_session.no_autoflush:
+        db_pg_session.add(AUDIT_RECORD_U1_A2)
+        db_pg_session.add(AUDIT_RECORD_U2_A2)
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_2, db_pg_session
@@ -75,9 +75,9 @@ def test_read_permission_audit_history_multiple_users_same_application(
 def test_read_permission_audit_history_multiple_applications_same_user(
     db_pg_session: Session,
 ):
-    db_pg_session.add(AUDIT_RECORD_U1_A2)
-    db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
-    db_pg_session.commit()
+    with db_pg_session.no_autoflush:
+        db_pg_session.add(AUDIT_RECORD_U1_A2)
+        db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_1, db_pg_session
@@ -96,9 +96,9 @@ def test_read_permission_audit_history_multiple_applications_same_user(
 
 # Valid Case
 def test_read_permission_audit_history_by_user_and_application(db_pg_session: Session):
-    db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
-    db_pg_session.add(AUDIT_RECORD_U1_A1_D2)
-    db_pg_session.commit()
+    with db_pg_session.no_autoflush:
+        db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
+        db_pg_session.add(AUDIT_RECORD_U1_A1_D2)
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_1, db_pg_session

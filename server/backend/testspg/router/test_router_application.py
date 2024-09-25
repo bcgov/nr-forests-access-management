@@ -3,28 +3,39 @@ from http import HTTPStatus
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
-                               ERROR_CODE_INVALID_APPLICATION_ID,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
+from api.app.constants import (
+    CURRENT_TERMS_AND_CONDITIONS_VERSION,
+    ERROR_CODE_INVALID_APPLICATION_ID,
+    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+    UserType,
+)
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
 from sqlalchemy import insert
-from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-                               ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
-                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
-                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
-                               FOM_DEV_APPLICATION_ID, ROLE_NAME_FOM_REVIEWER,
-                               ROLE_NAME_FOM_SUBMITTER_00000001,
-                               ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
-                               USER_NAME_BCEID_LOAD_3_TEST)
+from testspg.constants import (
+    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
+    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+    ACCESS_GRANT_FOM_DEV_CR_IDIR,
+    FOM_DEV_APPLICATION_ID,
+    ROLE_NAME_FOM_REVIEWER,
+    ROLE_NAME_FOM_SUBMITTER_00000001,
+    ROLE_NAME_FOM_SUBMITTER_00001018,
+    TEST_CREATOR,
+    USER_NAME_BCEID_LOAD_3_TEST,
+    TEST_USER_ID,
+    NOT_EXIST_TEST_USER_ID,
+    NOT_EXIST_ROLE_NAME,
+)
 
 LOGGER = logging.getLogger(__name__)
 end_point = f"{apiPrefix}/fam_applications"
+end_point_user_by_id = f"{end_point}/{{application_id}}/users/{{user_id}}"
 
 # GET enpoint for users' access grants.
 # ("{apiPrefix}/fam_applications/{application_id}/user_role_assignment")
@@ -35,6 +46,7 @@ get_application_role_assignment_end_point = (
 TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
 TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
 TEST_APPLICATION_ID_NOT_FOUND = 0
+ACCESS_ROLES_FOM_DEV_ONLY = ["FOM_DEV_ADMIN"]
 
 
 def test_get_fam_application_user_role_assignment_no_matching_application(
@@ -54,10 +66,8 @@ def test_get_fam_application_user_role_assignment_no_matching_application(
 def test_get_fam_application_user_role_assignment_no_role_assignments(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-
     # test no user role assignment for the application
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
+    token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
@@ -70,21 +80,19 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     test_rsa_key,
     override_get_verified_target_user,
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-
     # override router guard dependencies
     override_get_verified_target_user()
 
     # test user role assignment
     # create
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
+    token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
         json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    concrete_role_data = response.json().get("assignments_detail")[0]['detail']
+    concrete_role_data = response.json().get("assignments_detail")[0]["detail"]
 
     # check
     response = test_client_fixture.get(
@@ -107,21 +115,19 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     test_rsa_key,
     override_get_verified_target_user,
 ):
-    access_roles_fom_dev_only = ["FOM_DEV_ADMIN"]
-
     # override router guard dependencies
     override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     # test user role assignment for abstract role
     # create
-    token = jwt_utils.create_jwt_token(test_rsa_key, access_roles_fom_dev_only)
+    token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
         f"{apiPrefix}/user_role_assignment",
         json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == 200
-    abstract_role_data = response.json().get("assignments_detail")[0]['detail']
+    abstract_role_data = response.json().get("assignments_detail")[0]["detail"]
 
     # check
     response = test_client_fixture.get(
@@ -345,7 +351,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
             for data in response_data
             if (
                 data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
-                and data["user"]["user_type"]["code"]== UserType.BCEID
+                and data["user"]["user_type"]["code"] == UserType.BCEID
             )
         ]
     ) == len(
@@ -366,7 +372,8 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"]
+                    == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.IDIR
                     and data["role"]["role_name"] == ROLE_NAME_FOM_SUBMITTER_00000001
                 )
@@ -381,7 +388,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     test_rsa_key,
     create_test_user_role_assignments,
     fom_dev_access_admin_token,
-    override_enforce_bceid_terms_conditions_guard
+    override_enforce_bceid_terms_conditions_guard,
 ):
     """
     The test focus on filtering of the GET endpoint for application's user/role
@@ -480,7 +487,8 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"]
+                    == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.IDIR
                 )
             ]
@@ -498,7 +506,8 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
                 data
                 for data in response_data
                 if (
-                    data["role"]["application"]["application_id"] == FOM_DEV_APPLICATION_ID
+                    data["role"]["application"]["application_id"]
+                    == FOM_DEV_APPLICATION_ID
                     and data["user"]["user_type"]["code"] == UserType.BCEID
                     and (
                         data["role"]["role_name"] == ROLE_NAME_FOM_REVIEWER
@@ -518,7 +527,7 @@ def test_get_fam_application_user_role_assignment_enforce_bceid_terms_conditions
     db_pg_session,
     fom_dev_access_admin_token,
     create_test_user_role_assignments,
-    get_current_requester_by_token
+    get_current_requester_by_token,
 ):
     """
     Test this endpoint can "enforce_bceid_terms_conditions" on BCeID
@@ -536,22 +545,86 @@ def test_get_fam_application_user_role_assignment_enforce_bceid_terms_conditions
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
-    assert str(response.json()["detail"]).find(
-        ERROR_CODE_TERMS_CONDITIONS_REQUIRED
-    ) != -1
+    assert (
+        str(response.json()["detail"]).find(ERROR_CODE_TERMS_CONDITIONS_REQUIRED) != -1
+    )
 
     requester = get_current_requester_by_token(token)
     # create T&C record as the requester accepts T&C.
     db_pg_session.execute(
         insert(FamUserTermsConditions),
-        [{
-            "user_id": requester.user_id,
-            "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
-            "create_user": TEST_CREATOR,
-        }]
+        [
+            {
+                "user_id": requester.user_id,
+                "version": CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                "create_user": TEST_CREATOR,
+            }
+        ],
     )
 
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
     assert response.status_code == HTTPStatus.OK
+
+
+def test_get_user_by_user_id_success(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the GET /{application_id}/users/{user_id} endpoint for valid user data retrieval.
+    """
+    application_id = FOM_DEV_APPLICATION_ID
+    user_id = TEST_USER_ID
+
+    token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
+
+    response = test_client_fixture.get(
+        end_point_user_by_id.format(application_id=application_id, user_id=user_id),
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+
+    assert "user_name" in data
+    assert "first_name" in data
+
+
+def test_get_user_by_user_id_not_found(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the GET /{application_id}/users/{user_id} endpoint for a non-existent user.
+    """
+    application_id = FOM_DEV_APPLICATION_ID
+    user_id = NOT_EXIST_TEST_USER_ID
+
+    token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
+
+    response = test_client_fixture.get(
+        end_point_user_by_id.format(application_id=application_id, user_id=user_id),
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_get_user_by_user_id_application_authorization(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the GET /{application_id}/users/{user_id} endpoint for application authorization.
+    """
+    application_id = FOM_DEV_APPLICATION_ID
+    user_id = TEST_USER_ID
+
+    # Create a token for a user who does not have access to the application
+    unauthorized_token = jwt_utils.create_jwt_token(test_rsa_key, [NOT_EXIST_ROLE_NAME])
+
+    response = test_client_fixture.get(
+        end_point_user_by_id.format(application_id=application_id, user_id=user_id),
+        headers=jwt_utils.headers(unauthorized_token),
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
