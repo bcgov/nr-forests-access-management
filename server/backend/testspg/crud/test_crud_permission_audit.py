@@ -1,16 +1,19 @@
 import pytest
-from api.app.crud.crud_permission_audit import \
-    read_permission_audit_history_by_user_and_application
+from api.app.crud.crud_permission_audit import (
+    read_permission_audit_history_by_user_and_application,
+)
 from sqlalchemy.exc import DataError
 from sqlalchemy.orm import Session
-from testspg.fixture.permission_audit_fixture import (APPLICATION_ID_1,
-                                                      APPLICATION_ID_2,
-                                                      AUDIT_RECORD_U1_A1_D1,
-                                                      AUDIT_RECORD_U1_A1_D2,
-                                                      AUDIT_RECORD_U1_A2,
-                                                      AUDIT_RECORD_U2_A2,
-                                                      PERFORMER_DETAILS_1,
-                                                      USER_ID_1)
+from testspg.fixture.permission_audit_fixture import (
+    APPLICATION_ID_1,
+    APPLICATION_ID_2,
+    AUDIT_RECORD_U1_A1_D1,
+    AUDIT_RECORD_U1_A1_D2,
+    AUDIT_RECORD_U1_A2,
+    AUDIT_RECORD_U2_A2,
+    PERFORMER_DETAILS_1,
+    USER_ID_1,
+)
 
 
 # No Records
@@ -51,6 +54,7 @@ def test_read_permission_audit_history_multiple_users_same_application(
 ):
     db_pg_session.add(AUDIT_RECORD_U1_A2)
     db_pg_session.add(AUDIT_RECORD_U2_A2)
+    db_pg_session.commit()
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_2, db_pg_session
@@ -73,6 +77,7 @@ def test_read_permission_audit_history_multiple_applications_same_user(
 ):
     db_pg_session.add(AUDIT_RECORD_U1_A2)
     db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
+    db_pg_session.commit()
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_1, db_pg_session
@@ -93,6 +98,7 @@ def test_read_permission_audit_history_multiple_applications_same_user(
 def test_read_permission_audit_history_by_user_and_application(db_pg_session: Session):
     db_pg_session.add(AUDIT_RECORD_U1_A1_D1)
     db_pg_session.add(AUDIT_RECORD_U1_A1_D2)
+    db_pg_session.commit()
 
     result = read_permission_audit_history_by_user_and_application(
         USER_ID_1, APPLICATION_ID_1, db_pg_session
