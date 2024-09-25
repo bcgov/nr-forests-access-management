@@ -13,27 +13,12 @@ const props = defineProps<{
 <template>
     <Card class="custom-card">
         <template #header>
-            <Icon
-                id="checkmarkIcon"
-                icon="checkmark--filled"
-                :size="IconSize.small"
-                v-if="props.userIdentity.found"
-            />
-            <Icon
-                id="errorIcon"
-                class="custom-carbon-icon-misuse"
-                icon="misuse"
-                :size="IconSize.small"
-                v-else
-            />
+            <Icon id="checkmarkIcon" icon="checkmark--filled" :size="IconSize.small" v-if="props.userIdentity.found" />
+            <Icon id="errorIcon" class="custom-carbon-icon-misuse" icon="misuse" :size="IconSize.small" v-else />
             <p>Verified user information</p>
         </template>
         <template #content>
-            <div
-                v-if="props.errorMsg == ''"
-                class="col"
-                style="margin-left: 2rem"
-            >
+            <div v-if="props.errorMsg == ''" class="col" style="margin-left: 2rem">
                 <label for="userId" class="row">Username</label>
                 <span id="userId" name="userId" class="row">
                     {{ props.userIdentity.userId }}
@@ -51,13 +36,10 @@ const props = defineProps<{
                     {{ props.userIdentity.lastName }}
                 </span>
             </div>
-            <div
-                class="col"
-                v-if="
-                    props.userIdentity.found &&
-                    props.userIdentity.businessLegalName
-                "
-            >
+            <div class="col" v-if="
+                props.userIdentity.found &&
+                props.userIdentity.businessLegalName
+            ">
                 <label for="organizationName" class="row">
                     Organization Name
                 </label>
@@ -65,10 +47,7 @@ const props = defineProps<{
                     {{ props.userIdentity.businessLegalName }}
                 </span>
             </div>
-            <div
-                class="col-6 d-flex"
-                v-if="!props.userIdentity.found && props.errorMsg == ''"
-            >
+            <div class="col-6 d-flex" v-if="!props.userIdentity.found && props.errorMsg == ''">
                 <span class="px-0 invalid" id="userNotExist">
                     User does not exist
                 </span>
@@ -81,10 +60,3 @@ const props = defineProps<{
         </template>
     </Card>
 </template>
-
-<style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
-.col {
-    align-self: flex-start !important;
-}
-</style>

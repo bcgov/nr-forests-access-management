@@ -114,7 +114,6 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/card.scss';
 @import '@/assets/styles/styles.scss';
 
 p > label {

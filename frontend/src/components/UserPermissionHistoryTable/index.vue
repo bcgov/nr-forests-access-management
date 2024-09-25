@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/vue-query';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Skeleton from 'primevue/skeleton';
+
 
 import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
+import TableSkeleton from '@/components/TableSkeleton';
 
 const props = defineProps<{
     userId: string;
@@ -27,33 +28,16 @@ const auditHistoryQuery = useQuery(
     }
 );
 
+const headers = ['Date', 'Activity', 'Details', 'Performed by'];
+
 </script>
 
 <template>
     <!-- Skeleton when data is loading -->
-    <DataTable class="user-permission-table" :value="[1, 2, 3, 4, 5]" v-if="auditHistoryQuery.isFetching.value">
-        <Column field="create_date" header="Date">
-            <template #body>
-                <Skeleton width="100%" height="1.5rem" />
-            </template>
-        </Column>
-        <Column field="privilege_change_type_code" header="Activity">
-            <template #body>
-                <Skeleton width="100%" height="1.5rem" />
-            </template>
-        </Column>
-        <Column field="privilege_details" header="Details">
-            <template #body>
-                <Skeleton width="100%" height="1.5rem" />
-            </template>
-        </Column>
-        <Column field="change_performer_user_details" header="Performed by">
-            <template #body>
-                <Skeleton width="100%" height="1.5rem" />
-            </template>
-        </Column>
-    </DataTable>
+    <TableSkeleton className="user-permission-table" :headers="headers" :rowAmount="5"
+        v-if="auditHistoryQuery.isFetching.value" />
 
+    <!-- Table with values -->
     <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" v-else>
         <Column field="create_date" header="Date">
             <template #body="slotProps">

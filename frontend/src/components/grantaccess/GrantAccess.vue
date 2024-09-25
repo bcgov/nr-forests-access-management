@@ -216,44 +216,53 @@ function toRequestPayload(formData: any) {
 </script>
 
 <template>
-    <PageTitle title="Add user permission"
-        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`" />
-    <VeeForm ref="form" v-slot="{ meta }" :validation-schema="formValidationSchema(isAbstractRoleSelected())" as="div">
-        <div class="page-body">
-            <form id="grantAccessForm" class="form-container">
-                <StepContainer title="User information">
-                    <UserDomainSelect v-if="
-                        FamLoginUserState.getUserIdpProvider() ===
-                        IdpProvider.IDIR
-                    " :domain="formData.domain" @change="userDomainChange" />
-                    <UserNameInput :domain="formData.domain" :userId="formData.userId" @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed" />
-                </StepContainer>
+    <div class="grant-access-container">
+        <PageTitle title="Add user permission"
+            :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`" />
+        <VeeForm ref="form" v-slot="{ meta }" :validation-schema="formValidationSchema(isAbstractRoleSelected())"
+            as="div">
+            <div class="page-body">
+                <form id="grantAccessForm" class="form-container">
+                    <StepContainer title="User information">
+                        <UserDomainSelect v-if="
+                            FamLoginUserState.getUserIdpProvider() ===
+                            IdpProvider.IDIR
+                        " :domain="formData.domain" @change="userDomainChange" />
+                        <UserNameInput :domain="formData.domain" :userId="formData.userId" @change="userIdChange"
+                            @setVerifyResult="setVerifyUserIdPassed" />
+                    </StepContainer>
 
-                <StepContainer title="User roles" :divider="isAbstractRoleSelected()">
-                    <RoleSelectTable :roleId="formData.roleId" :roleOptions="applicationRoleOptions"
-                        @change="roleSelectChange" @resetVerifiedForestClients="resetVerifiedForestClients" />
-                </StepContainer>
+                    <StepContainer title="User roles" :divider="isAbstractRoleSelected()">
+                        <RoleSelectTable :roleId="formData.roleId" :roleOptions="applicationRoleOptions"
+                            @change="roleSelectChange" @resetVerifiedForestClients="resetVerifiedForestClients" />
+                    </StepContainer>
 
-                <StepContainer v-if="isAbstractRoleSelected()" title="Organization information" :divider="false">
-                    <ForestClientInput :userId="formData.userId" :roleId="formData.roleId"
-                        @setVerifiedForestClients="setVerifiedForestClients" @removeVerifiedForestClients="removeVerifiedForestClients
-                            " @resetVerifiedForestClients="resetVerifiedForestClients" />
-                </StepContainer>
+                    <StepContainer v-if="isAbstractRoleSelected()" title="Organization information" :divider="false">
+                        <ForestClientInput :userId="formData.userId" :roleId="formData.roleId"
+                            @setVerifiedForestClients="setVerifiedForestClients" @removeVerifiedForestClients="removeVerifiedForestClients
+                                " @resetVerifiedForestClients="resetVerifiedForestClients" />
+                    </StepContainer>
 
-                <Divider />
-                <BoolCheckbox v-model="formData.sendUserEmail" label="Send email to notify user" />
+                    <Divider />
+                    <BoolCheckbox v-model="formData.sendUserEmail" label="Send email to notify user" />
 
-                <div class="button-stack">
-                    <Button type="button" id="grantAccessCancel" class="w100" severity="secondary" label="Cancel"
-                        :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
-                    <Button type="button" id="grantAccessSubmit" class="w100" label="Grant Access" :disabled="!(meta.valid && areVerificationsPassed()) ||
-                        isLoading()
-                        " @click="handleSubmit()">
-                        <Icon icon="checkmark" :size="IconSize.small" />
-                    </Button>
-                </div>
-            </form>
-        </div>
-    </VeeForm>
+                    <div class="button-stack">
+                        <Button type="button" id="grantAccessCancel" class="w100" severity="secondary" label="Cancel"
+                            :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
+                        <Button type="button" id="grantAccessSubmit" class="w100" label="Grant Access" :disabled="!(meta.valid && areVerificationsPassed()) ||
+                            isLoading()
+                            " @click="handleSubmit()">
+                            <Icon icon="checkmark" :size="IconSize.small" />
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </VeeForm>
+    </div>
 </template>
+
+<style lang="scss">
+.grant-access-container {
+    @import '@/assets/styles/card.scss';
+}
+</style>
