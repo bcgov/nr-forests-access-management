@@ -94,5 +94,5 @@ class GCNotifyEmailService:
             return ""
 
         # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
-        org_formatted_list_str = "\n".join([f"* **{item.client_name.title()}** (Client number: {item.forest_client_number})" for item in org_list])
+        org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
         return org_formatted_list_str
