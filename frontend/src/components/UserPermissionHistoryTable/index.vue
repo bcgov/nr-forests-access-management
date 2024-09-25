@@ -9,6 +9,7 @@ import Column from 'primevue/column';
 import TableSkeleton from '@/components/TableSkeleton';
 import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
 import PermissionDetailsCol from '@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue';
+import ChangePerformerCol from '@/components/UserPermissionHistoryTable/ChangePerformerCol.vue';
 
 const props = defineProps<{
     userId: string;
@@ -35,7 +36,7 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
 <template>
     <!-- Skeleton when data is loading -->
-    <TableSkeleton className="user-permission-table" :headers="headers" :row-amount="5"
+    <TableSkeleton class-name="user-permission-table" :headers="headers" :row-amount="5"
         v-if="auditHistoryQuery.isFetching.value" />
 
     <!-- Table with values -->
@@ -51,7 +52,11 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
                 <PermissionDetailsCol :permission-details="slotProps.data.privilege_details" />
             </template>
         </Column>
-        <Column field="change_performer_user_details" :header="headers[3]" />
+        <Column field="change_performer_user_details" :header="headers[3]">
+            <template #body="slotProps">
+                <ChangePerformerCol :performer-details="slotProps.data.change_performer_user_details" />
+            </template>
+        </Column>
     </DataTable>
 
 

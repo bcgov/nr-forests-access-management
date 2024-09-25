@@ -18,7 +18,6 @@ const props = defineProps<{
         <div class="organizations-container" v-if="role.scopes?.find((scope) => scope !== null)">
             <p>Organizations:</p>
             <div class="organizations-list">
-                <br />
                 <div v-for="scope in role.scopes">
                     <div v-if="scope && scope.scope_type === 'Client'">
                         {{ formatForestClientDisplayName(scope.client_id, scope.client_name) }}

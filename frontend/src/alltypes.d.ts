@@ -41,3 +41,8 @@ declare module '@carbon/icons-vue/es/menu/20';
 
 // xLarge
 declare module '@carbon/icons-vue/es/search--locate/32';
+
+declare module '@carbon/icons-vue/es/*' {
+    const CarbonIcon: any;
+    export default CarbonIcon;
+}
