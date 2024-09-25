@@ -21,9 +21,9 @@ if (!userId || !applicationId) {
 <template>
   <div class="user-detail-page-container">
     <PageTitle class="user-detail-page-title" title="User History" />
-    <UserSummaryCard :userId="userId!" :applicationId="applicationId!" />
+    <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
     <div class="gray-container">
-      <UserPermissionHistoryTable :userId="userId!" :applicationId="applicationId!" />
+      <UserPermissionHistoryTable :user-id="userId!" :application-id="applicationId!" />
     </div>
   </div>
 </template>

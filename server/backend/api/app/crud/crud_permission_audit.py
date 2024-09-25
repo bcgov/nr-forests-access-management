@@ -3,7 +3,7 @@ from typing import List
 from api.app.models.model import FamPrivilegeChangeAudit
 from api.app.schemas import PermissionAduitHistoryRes
 from sqlalchemy import and_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 
 def read_permission_audit_history_by_user_and_application(
@@ -29,13 +29,19 @@ def read_permission_audit_history_by_user_and_application(
                 FamPrivilegeChangeAudit.application_id == application_id,
             )
         )
+        .options(joinedload(FamPrivilegeChangeAudit.privilege_change_type))
         .order_by(FamPrivilegeChangeAudit.change_date.desc())
         .all()
-    )  # Order by change_date, descending
+    )
 
     # Convert the ORM model instances to Pydantic DTO instances
     audit_history_dto = [
-        PermissionAduitHistoryRes.model_validate(record)
+        PermissionAduitHistoryRes.model_validate(
+            {
+                **record.__dict__,
+                "privilege_change_type_description": record.privilege_change_type.description
+            }
+        )
         for record in audit_history_records
     ]
 

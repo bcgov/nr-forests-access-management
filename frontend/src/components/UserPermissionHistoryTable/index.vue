@@ -34,18 +34,20 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
 <template>
     <!-- Skeleton when data is loading -->
-    <TableSkeleton className="user-permission-table" :headers="headers" :rowAmount="5"
+    <TableSkeleton className="user-permission-table" :headers="headers" :row-amount="5"
         v-if="auditHistoryQuery.isFetching.value" />
 
     <!-- Table with values -->
     <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" v-else>
         <Column field="create_date" header="Date">
             <template #body="slotProps">
-                <DateCol :utcDate="slotProps.data.create_date" />
+                <DateCol :utc-date="slotProps.data.create_date" />
             </template>
         </Column>
-        <Column field="privilege_change_type_code" header="Activity" />
-        <Column field="privilege_details" header="Details" />
+        <Column class="privilege-type-description-col" field="privilege_change_type_description" header="Activity" />
+        <Column field="privilege_details" header="Details">
+
+        </Column>
         <Column field="change_performer_user_details" header="Performed by" />
     </DataTable>
 
@@ -92,6 +94,10 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
     .p-column-header-content .p-column-title {
         padding: 1rem 0;
+    }
+
+    .privilege-type-description-col {
+        white-space: nowrap;
     }
 }
 </style>

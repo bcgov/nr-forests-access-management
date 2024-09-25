@@ -38,17 +38,18 @@ const userQuery = useQuery(
         <template #content v-else>
             <div class="grid">
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="user-name" label="Username"
-                    :description="userQuery.data.value?.user_name" />
+                    :description="userQuery.data.value?.user_name" :is-loading="userQuery.isFetching.value" />
 
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="full-name" label="Full name"
                     :description="`${userQuery.data.value?.first_name} ${userQuery.data.value?.last_name}`"
-                    :isLoading="userQuery.isFetching.value" />
+                    :is-loading="userQuery.isFetching.value" />
 
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="domain" label="Domain"
-                    :description="userQuery.data.value?.user_type.description" />
+                    :description="userQuery.data.value?.user_type.description"
+                    :is-loading="userQuery.isFetching.value" />
 
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="email" label="Email"
-                    :description="userQuery.data.value?.email" :isLoading="userQuery.isFetching.value" />
+                    :description="userQuery.data.value?.email" :is-loading="userQuery.isFetching.value" />
             </div>
         </template>
     </Card>

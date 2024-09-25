@@ -74,5 +74,11 @@ export interface PermissionAduitHistoryRes {
      * @memberof PermissionAduitHistoryRes
      */
     'change_performer_user_id': number | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionAduitHistoryRes
+     */
+    'privilege_change_type_description': string;
 }
 
