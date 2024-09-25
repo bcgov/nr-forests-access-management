@@ -1,5 +1,5 @@
 import PageTitle from '@/components/common/PageTitle.vue';
-import { routes } from '@/router';
+import { hashRoutes } from '@/router';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { it, describe, beforeEach, expect, afterEach, vi } from 'vitest';
 import { routeItems } from '@/router/routeItem';
@@ -11,7 +11,7 @@ vi.mock('vue-router', async () => {
     return {
         ...actual,
         useRoute: () => {
-            return routes.filter(
+            return hashRoutes.filter(
                 (route) => route.name == routeItems.grantAppAdmin.name
             )[0];
         },

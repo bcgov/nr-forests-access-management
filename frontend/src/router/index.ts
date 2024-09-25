@@ -187,4 +187,4 @@ const hashRouter = createRouter({
 
 hashRouter.beforeEach(beforeEachRouteHandler);
 
-export { historyRouter, hashRouter };
+export { historyRouter, hashRouter, hashRoutes };
