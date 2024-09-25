@@ -6,8 +6,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
 
-import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
 import TableSkeleton from '@/components/TableSkeleton';
+import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
+import PermissionDetailsCol from '@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue';
 
 const props = defineProps<{
     userId: string;
@@ -39,16 +40,18 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
     <!-- Table with values -->
     <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" v-else>
-        <Column field="create_date" header="Date">
+        <Column field="create_date" :header="headers[0]">
             <template #body="slotProps">
                 <DateCol :utc-date="slotProps.data.create_date" />
             </template>
         </Column>
-        <Column class="privilege-type-description-col" field="privilege_change_type_description" header="Activity" />
-        <Column field="privilege_details" header="Details">
-
+        <Column class="privilege-type-description-col" field="privilege_change_type_description" :header="headers[1]" />
+        <Column field="privilege_details" :header="headers[2]">
+            <template #body="slotProps">
+                <PermissionDetailsCol :permission-details="slotProps.data.privilege_details" />
+            </template>
         </Column>
-        <Column field="change_performer_user_details" header="Performed by" />
+        <Column field="change_performer_user_details" :header="headers[3]" />
     </DataTable>
 
 
