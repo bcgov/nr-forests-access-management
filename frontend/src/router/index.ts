@@ -140,7 +140,7 @@ const hashRoutes = [
             requiresAppSelected: true,
             title: routeItems.userDetails.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: true,
+            hasBreadcrumb: false,
         },
         component: UserDetails,
     },
