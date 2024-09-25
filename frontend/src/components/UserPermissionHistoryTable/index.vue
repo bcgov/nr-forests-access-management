@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { watch } from 'vue';
 import { isAxiosError } from 'axios';
 import { useQuery } from '@tanstack/vue-query';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
-
+import { hashRouter } from '@/router';
 import TableSkeleton from '@/components/TableSkeleton';
 import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
 import PermissionDetailsCol from '@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue';
 import ChangePerformerCol from '@/components/UserPermissionHistoryTable/ChangePerformerCol.vue';
+
 
 const props = defineProps<{
     userId: string;
@@ -26,9 +28,16 @@ const auditHistoryQuery = useQuery(
                 ).then((res) => res.data),
         enabled: !!props.userId && !!props.applicationId,
         staleTime: 0,
-        gcTime: 0
+        gcTime: 0,
     }
 );
+
+// Navigate back if user has no permission to view data.
+watch(() => auditHistoryQuery.error.value, (error) => {
+    if (isAxiosError(error) && error.response?.status === 403) {
+        hashRouter.push('/');
+    }
+});
 
 const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
@@ -39,8 +48,19 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
     <TableSkeleton class-name="user-permission-table" :headers="headers" :row-amount="5"
         v-if="auditHistoryQuery.isFetching.value" />
 
+    <!-- Simple error display -->
+    <div v-else-if="auditHistoryQuery.isError.value">
+        Something went wrong.
+        {{
+            isAxiosError(auditHistoryQuery.error.value)
+                ? `${auditHistoryQuery.error.value.status}: ${auditHistoryQuery.error.value.message}`
+                : auditHistoryQuery.error.value
+        }}
+    </div>
+
     <!-- Table with values -->
     <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" v-else>
+        <template #empty> No User History found.</template>
         <Column field="create_date" :header="headers[0]">
             <template #body="slotProps">
                 <DateCol :utc-date="slotProps.data.create_date" />
