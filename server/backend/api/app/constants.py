@@ -102,6 +102,7 @@ CLIENT_NAME_MAX_LEN = 60
 ROLE_NAME_MAX_LEN = 100
 APPLICATION_NAME_MAX_LEN = 100
 APPLICATION_DESC_MAX_LEN = 200
+CREATE_USER_MAX_LEN = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
 class PrivilegeChangeTypeEnum(str, Enum):

@@ -2,6 +2,7 @@ import logging
 from typing import List, Literal, Optional, Union
 
 from api.app.constants import (APPLICATION_DESC_MAX_LEN, CLIENT_NAME_MAX_LEN,
+                               CLIENT_NUMBER_MAX_LEN, CREATE_USER_MAX_LEN,
                                FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN,
                                ROLE_NAME_MAX_LEN, USER_NAME_MAX_LEN,
                                AdminRoleAuthGroup, AppEnv, EmailSendingStatus,
@@ -121,11 +122,9 @@ class FamUserInfoDto(FamUserBase):
 
 # ----------------------------------- FAM Forest Client ------------------------------------ #
 class FamForestClientBase(BaseModel):
-    client_name: Optional[
-        Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
-    ] = None
+    client_name: Optional[Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]] = None
     # Note, the request may contain string(with leading '0')
-    forest_client_number: Annotated[str, StringConstraints(max_length=8)]
+    forest_client_number: Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -139,8 +138,11 @@ class FamForestClientBase(BaseModel):
         )
         return fc
 
-class FamForestClientCreateDto(FamForestClientBase):
-    create_user: Annotated[str, StringConstraints(max_length=100)]
+class FamForestClientCreateDto(BaseModel):
+    # Note, the request may contain string(with leading '0')
+    forest_client_number: Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
+
+    create_user: Annotated[str, StringConstraints(max_length=CREATE_USER_MAX_LEN)]
 
     model_config = ConfigDict(from_attributes=True)
 

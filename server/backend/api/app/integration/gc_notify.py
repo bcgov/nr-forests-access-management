@@ -2,6 +2,7 @@ import logging
 
 import requests
 from api.app.schemas import GCNotifyGrantAccessEmailParamSchema
+from api.app.utils.utils import is_success_response
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -64,10 +65,13 @@ class GCNotifyEmailService:
         r = self.session.post(
             gc_notify_email_send_url, timeout=self.TIMEOUT, json=email_params
         )
-        # Add a debug for python response object for easy debugging purpose. After raising python
-        # exception (raise_for_status()), the error message is not printed from the caller.
-        LOGGER.debug(f"Email sending response: {r.__dict__}")
-        r.raise_for_status()
+
+        if not is_success_response(r):
+            # Add a debug for python response object for easy debugging purpose. After raising python
+            # exception (raise_for_status()), the error message is not printed from the caller.
+            LOGGER.debug(f"Email sending response: {r.__dict__}")
+            r.raise_for_status()
+
         send_email_result = r.json()
 
         LOGGER.debug(f"Email sending result: {send_email_result}")

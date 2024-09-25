@@ -2,6 +2,7 @@ import logging
 
 import requests
 from api.app.schemas import GCNotifyGrantDelegatedAdminEmailParam
+from api.app.utils.utils import is_success_response
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -36,27 +37,62 @@ class GCNotifyEmailService:
         """
         # GC Notify does not have sufficient conditional rendering, cannot send None to variable, and does not support
         # 'variable' within coditional text. Easier to do this in code.
-        contact_message = (
-            f"Please contact your administrator {params.application_team_contact_email} if you have any questions."
-            if params.application_team_contact_email is not None
-            else "Please contact your administrator if you have any questions."
-        )
+        application_role_granted_text = self.__to_application_role_granted_text(params)
+        organization_list_text = self.__to_organization_list_text(params)
+        contact_message = self.__to_contact_message(params)
+
+        personalisation_params = {
+            "user_name": params.user_name,
+            "first_name": params.first_name,
+            "last_name": params.last_name,
+            "application_name": params.application_description,
+            "application_role_granted_text": application_role_granted_text,
+            "organization_list_text": organization_list_text,
+            "contact_message": contact_message,
+            "is_bceid_user": params.is_bceid_user
+        }
 
         email_params = {
             "email_address": params.send_to_email_address,
             "template_id": GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID,
-            "personalisation": {
-                **params.__dict__,
-                "contact_message": contact_message
-            },
+            "personalisation": personalisation_params
         }
+        LOGGER.debug(f"Sending user delegated admin granted email with params: {email_params}")
         gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"
 
         r = self.session.post(
             gc_notify_email_send_url, timeout=self.TIMEOUT, json=email_params
         )
-        r.raise_for_status()  # There is a general error handler, see: requests_http_error_handler
+
+        if not is_success_response(r):
+            # Add a debug for python response object for easy debugging purpose. After raising python
+            # exception (raise_for_status()), the error message is not printed from the caller.
+            LOGGER.debug(f"Email sending error response: {r.__dict__}")
+            r.raise_for_status()
+
         send_email_result = r.json()
 
         LOGGER.debug(f"Send Email result: {send_email_result}")
         return send_email_result
+
+
+    def __to_contact_message(self, params: GCNotifyGrantDelegatedAdminEmailParam):
+        return (
+            f"Please contact your administrator {params.application_team_contact_email} if you have any questions."
+            if params.application_team_contact_email is not None
+            else "Please contact your administrator if you have any questions."
+        )
+
+    def __to_application_role_granted_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
+        granted_app_role_no_org_txt = f"With this role you can grant a **{params.role_display_name}** for users."
+        granted_app_role_with_org_txt = f"With this role you can grant a **{params.role_display_name}** for users within the following organizations:"
+        return granted_app_role_no_org_txt if params.organization_list is None else granted_app_role_with_org_txt
+
+    def __to_organization_list_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
+        org_list = params.organization_list
+        if (org_list is None):
+            return ""
+
+        # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
+        org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
+        return org_formatted_list_str
