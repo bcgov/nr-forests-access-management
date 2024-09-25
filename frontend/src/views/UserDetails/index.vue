@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { hashRouter } from '@/router';
-import type { UserTypeCodeType } from '@/types/UserTypeCodeType';
+import Button from 'primevue/button';
 import UserSummaryCard from '@/components/UserSummaryCard/index.vue';
 import PageTitle from '@/components/common/PageTitle.vue';
 import UserPermissionHistoryTable from '@/components/UserPermissionHistoryTable';
@@ -16,6 +16,10 @@ if (!userId || !applicationId) {
   console.warn("Missing required path params");
   hashRouter.push('/');
 }
+
+const navigateBack = () => {
+  hashRouter.push('/');
+};
 </script>
 
 <template>
@@ -24,6 +28,9 @@ if (!userId || !applicationId) {
     <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
     <div class="gray-container">
       <UserPermissionHistoryTable :user-id="userId!" :application-id="applicationId!" />
+      <div class="back-button-container">
+        <Button label="Back" severity="secondary" @click="navigateBack" />
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +50,18 @@ if (!userId || !applicationId) {
     flex-grow: 1;
     margin: 2.5rem -2.5rem 0 -2.5rem;
     padding: 2.5rem;
+
+    .back-button-container {
+      margin-top: 3rem;
+
+      button {
+        width: 15rem;
+
+        .p-button-label {
+          @include type.type-style('body-compact-01');
+        }
+      }
+    }
   }
 }
 </style>

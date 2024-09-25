@@ -57,6 +57,15 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
                 <ChangePerformerCol :performer-details="slotProps.data.change_performer_user_details" />
             </template>
         </Column>
+
+        <template #footer>
+            <div class="footer-text">
+                Older records are not available. For more information, please contact&nbsp;
+                <a href="mailto: FDSHWOOD@Victoria1.gov.bc.ca">
+                    FDSHWOOD@Victoria1.gov.bc.ca
+                </a>
+            </div>
+        </template>
     </DataTable>
 
 
@@ -107,5 +116,18 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
     .privilege-type-description-col {
         white-space: nowrap;
     }
+
+    .p-datatable-footer {
+        border: none;
+
+        .footer-text {
+            @include type.type-style('body-compact-01');
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+    }
+
+
 }
 </style>

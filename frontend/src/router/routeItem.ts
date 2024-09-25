@@ -19,11 +19,6 @@ export const routeItems: RouteItems = {
         path: '/dashboard',
         label: 'Manage permissions',
     },
-    managePermissions: {
-        name: 'ManagePermissions',
-        path: '/manage-permissions',
-        label: 'Manage permissions',
-    },
     grantUserPermission: {
         name: 'grantUserPermission',
         path: '/grant',
