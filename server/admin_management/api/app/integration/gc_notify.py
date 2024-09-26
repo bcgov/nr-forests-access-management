@@ -5,6 +5,8 @@ from api.app.schemas import GCNotifyGrantDelegatedAdminEmailParam
 from api.app.utils.utils import is_success_response
 from api.config import config
 
+from .integration_data import tc_file_attach_base64
+
 LOGGER = logging.getLogger(__name__)
 
 GC_NOTIFY_EMAIL_BASE_URL = "https://api.notification.canada.ca"
@@ -49,15 +51,24 @@ class GCNotifyEmailService:
             "application_role_granted_text": application_role_granted_text,
             "organization_list_text": organization_list_text,
             "contact_message": contact_message,
-            "is_bceid_user": params.is_bceid_user
+            "is_bceid_user": params.is_bceid_user,
         }
+
+        if params.is_bceid_user == "yes":
+            # only include file as GC Notify attachment for T&C.
+            personalisation_params |= {
+                'application_file':{
+                    "file": tc_file_attach_base64,
+                    "filename": "fam-delegated-admin-terms-conditions.pdf",
+                    "sending_method": "attach"
+                }
+            }
 
         email_params = {
             "email_address": params.send_to_email_address,
             "template_id": GC_NOTIFY_GRANT_DELEGATED_ADMIN_EMAIL_TEMPLATE_ID,
             "personalisation": personalisation_params
         }
-        LOGGER.debug(f"Sending user delegated admin granted email with params: {email_params}")
         gc_notify_email_send_url = f"{self.email_base_url}/v2/notifications/email"
 
         r = self.session.post(
