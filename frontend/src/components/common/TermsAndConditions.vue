@@ -1,13 +1,22 @@
 <script lang="ts" setup>
-import Dialog from 'primevue/dialog';
+import { AppActlApiService } from '@/services/ApiServiceFactory';
 import AuthService from '@/services/AuthService';
 import {
-    isTermsVisible,
     hideTerms,
     isTermsCloseable,
+    isTermsVisible,
 } from '@/store/TermsAndConditionsState';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { setRouteToastError } from '@/store/ToastState';
+import Dialog from 'primevue/dialog';
+
+/*
+Note: about Terms and Conditions used in coding.
+    Ther current version of T&C file is : "2024-06-04-.FAM.terms.of.use.approved.by.WK.BB.pdf".
+    Contact Olga or Kajo for the latest copy. Right now its not being stored in central place.
+    If there is version update, developers need to be aware the changes needs to be on both
+    frontend and the backend (GC Notify email sending for delegated admin has T&C as
+    attachment as abased64 string)
+*/
 
 const acceptTermsAndConditions = async () => {
     try {

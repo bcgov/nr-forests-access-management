@@ -55,6 +55,21 @@ class GCNotifyEmailService:
         }
 
         if params.is_bceid_user == "yes":
+            """
+            Note:
+                * About Terms and Conditions used in coding:
+                    Ther current version of T&C file is : "2024-06-04-.FAM.terms.of.use.approved.by.WK.BB.pdf".
+                    Contact Olga or Kajo for the latest copy. Right now its not being stored in central place.
+                    If there is version update, developers need to be aware the changes needs to be on both
+                    frontend and the backend (frontend has a component with word-by-word coded for T&C)
+
+                * Process for including Terms and Conditions in sending email:
+                    - Since currently T&C is not stored in a place that can have a hyperlink to be included in an
+                      email template, GC Notify provides a way to do this as (1.) sending as attachment (using api)
+                      (2.) as a link (using api) but is not recommended by GC Notify (it will be deleted after n days).
+                    - Both of methods need the pdf to be converted into base64 string.
+                    - Use any online pdf to base64 tool will do. Then copy the string to integration_data.py
+            """
             # only include file as GC Notify attachment for T&C.
             personalisation_params |= {
                 'application_file':{
