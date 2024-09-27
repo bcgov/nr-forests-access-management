@@ -42,6 +42,7 @@ class GCNotifyEmailService:
         application_role_granted_text = self.__to_application_role_granted_text(params)
         organization_list_text = self.__to_organization_list_text(params)
         contact_message = self.__to_contact_message(params)
+        terms_conditions_comply_text = self.__to_terms_conditions_comply_text(params)
 
         personalisation_params = {
             "user_name": params.user_name,
@@ -51,7 +52,7 @@ class GCNotifyEmailService:
             "application_role_granted_text": application_role_granted_text,
             "organization_list_text": organization_list_text,
             "contact_message": contact_message,
-            "is_bceid_user": params.is_bceid_user,
+            "terms_conditions_comply_text": ""  # empty will not be displayed by default, only BCEID user needs this.
         }
 
         if params.is_bceid_user == "yes":
@@ -59,24 +60,15 @@ class GCNotifyEmailService:
             Note:
                 * About Terms and Conditions used in coding:
                     Ther current version of T&C file is : "2024-06-04-.FAM.terms.of.use.approved.by.WK.BB.pdf".
-                    Contact Olga or Kajo for the latest copy. Right now its not being stored in central place.
+                    A copy is deposited under frontend's /public folder so it can be public accessible with a
+                    url friendly file name "2024-06-04-fam-terms-conditions.pdf".
+                    Contact Olga or Kajo for the latest copy.
                     If there is version update, developers need to be aware the changes needs to be on both
                     frontend and the backend (frontend has a component with word-by-word coded for T&C)
-
-                * Process for including Terms and Conditions in sending email:
-                    - Since currently T&C is not stored in a place that can have a hyperlink to be included in an
-                      email template, GC Notify provides a way to do this as (1.) sending as attachment (using api)
-                      (2.) as a link (using api) but is not recommended by GC Notify (it will be deleted after n days).
-                    - Both of methods need the pdf to be converted into base64 string.
-                    - Use any online pdf to base64 tool will do. Then copy the string to integration_data.py
             """
             # only include file as GC Notify attachment for T&C.
             personalisation_params |= {
-                'application_file':{
-                    "file": tc_file_attach_base64,
-                    "filename": "fam-delegated-admin-terms-conditions.pdf",
-                    "sending_method": "attach"
-                }
+                "terms_conditions_comply_text": terms_conditions_comply_text,
             }
 
         email_params = {
@@ -101,7 +93,6 @@ class GCNotifyEmailService:
         LOGGER.debug(f"Send Email result: {send_email_result}")
         return send_email_result
 
-
     def __to_contact_message(self, params: GCNotifyGrantDelegatedAdminEmailParam):
         return (
             f"Please contact your administrator {params.application_team_contact_email} if you have any questions."
@@ -122,3 +113,9 @@ class GCNotifyEmailService:
         # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
         org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
         return org_formatted_list_str
+
+    def __to_terms_conditions_comply_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
+            frontend_url = config.get_env_var("ALLOW_ORIGIN") if config.is_on_aws() else "https://fam-dev.nrs.gov.bc.ca"  # default to dev.
+            tc_filename = "2024-06-04-fam-terms-conditions.pdf"
+            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/{tc_filename})."
+            return txt
