@@ -7,8 +7,9 @@ import type { RouteLocationRaw } from 'vue-router';
 export interface ISideNavItem {
     name: string;
     icon: string;
-    link: RouteLocationRaw;
+    link: string;
     disabled: boolean;
+    childLinks?: string[];
     items?: [ISideNavItem];
 }
 
@@ -26,29 +27,20 @@ const props = defineProps({
             <div class="content">
                 <ul>
                     <template v-for="item in props.data">
-                        <li
-                            class="header"
-                            :class="{
-                                'sidenav-selected':
-                                    $router.currentRoute.value.path ==
-                                    item.link,
-                                'sidenav-disabled': item.disabled,
-                            }"
-                            @click="$router.push(item.link)"
-                        >
+                        <li class="header" :class="{
+                            'sidenav-selected':
+                                $router.currentRoute.value.path ==
+                                item.link || item.childLinks?.find((child) => $router.currentRoute.value.path.includes(child)),
+                            'sidenav-disabled': item.disabled,
+                        }" @click="$router.push(item.link)">
                             {{ item.name }}
                         </li>
-                        <li
-                            class="child"
-                            v-for="child in item.items"
-                            :class="{
-                                'sidenav-selected':
-                                    $router.currentRoute.value.path ==
-                                    child.link,
-                                'sidenav-disabled': child.disabled,
-                            }"
-                            @click="$router.push(child.link)"
-                        >
+                        <li class="child" v-for="child in item.items" :class="{
+                            'sidenav-selected':
+                                $router.currentRoute.value.path ==
+                                child.link,
+                            'sidenav-disabled': child.disabled,
+                        }" @click="$router.push(child.link)">
                             <span>{{ child.name }}</span>
                         </li>
                     </template>
@@ -79,6 +71,7 @@ const props = defineProps({
 </template>
 <style lang="scss" scoped>
 @import '@/assets/styles/styles.scss';
+
 .sidenav {
     position: fixed;
     padding: 2.25rem 0rem;
@@ -87,10 +80,12 @@ const props = defineProps({
     left: 0rem;
     overflow-x: hidden;
     overflow-y: auto;
+
     .content {
         position: relative;
         min-height: auto;
     }
+
     .support-section {
         position: absolute;
         bottom: 0rem;
@@ -110,15 +105,17 @@ const props = defineProps({
     font-weight: 400;
     align-items: center;
     padding: 0.9375rem 1rem;
+
     i {
         vertical-align: middle;
     }
+
     a {
         text-decoration: none;
     }
 }
 
-.sidenav li.child > span {
+.sidenav li.child>span {
     margin-left: 1.5rem;
 }
 

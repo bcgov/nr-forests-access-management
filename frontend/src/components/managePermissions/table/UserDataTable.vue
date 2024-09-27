@@ -84,7 +84,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
 }
 
 const navigateToUserDetails = (userId: string) => {
-    console.log(userId);
     hashRouter.push({
         name: routeItems.userDetails.name,
         params: {

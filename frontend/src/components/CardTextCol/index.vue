@@ -33,10 +33,12 @@ const props = defineProps<{
 <style scoped lang="scss">
 .card-text-col-container {
     padding-bottom: 0;
+    min-width: fit-content;
 
     .card-text-col-content {
         display: flex;
         flex-direction: column;
+        white-space: nowrap;
 
         .card-text-col-label {
             margin-bottom: 0.5rem;

@@ -12,6 +12,8 @@ import LoginUserState from '@/store/FamLoginUserState';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+import SideNav from '@/components/common/SideNav.vue';
+
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
 const navigationData = ref<[ISideNavItem]>(sideNavData as any);

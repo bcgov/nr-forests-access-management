@@ -2,6 +2,9 @@
     {
         "name": "Manage permissions",
         "link": "/dashboard",
+        "childLinks": [
+            "/user-details"
+        ],
         "disabled": false,
         "items": [
             {

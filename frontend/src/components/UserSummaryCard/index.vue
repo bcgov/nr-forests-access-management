@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios';
 import { useQuery } from '@tanstack/vue-query';
 import Card from 'primevue/card';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { DEFAULT_COL_SIZE, USER_TYPE_DESCRITION } from '@/components/UserSummaryCard/constants';
+import { DEFAULT_COL_SIZE } from '@/components/UserSummaryCard/constants';
 import CardTextCol from '@/components/CardTextCol/index.vue';
 
 const props = defineProps<{
@@ -48,8 +48,8 @@ const userQuery = useQuery(
                     :description="userQuery.data.value?.user_type.description"
                     :is-loading="userQuery.isFetching.value" />
 
-                <CardTextCol :class="DEFAULT_COL_SIZE" id="email" label="Email"
-                    :description="userQuery.data.value?.email" :is-loading="userQuery.isFetching.value" />
+                <CardTextCol :class="DEFAULT_COL_SIZE" id="email" label="Email" :description="userQuery.data.value?.email"
+                    :is-loading="userQuery.isFetching.value" />
             </div>
         </template>
     </Card>

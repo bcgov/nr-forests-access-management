@@ -77,15 +77,6 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
                 <ChangePerformerCol :performer-details="slotProps.data.change_performer_user_details" />
             </template>
         </Column>
-
-        <template #footer>
-            <div class="footer-text">
-                Older records are not available. For more information, please contact&nbsp;
-                <a href="mailto: FDSHWOOD@Victoria1.gov.bc.ca">
-                    FDSHWOOD@Victoria1.gov.bc.ca
-                </a>
-            </div>
-        </template>
     </DataTable>
 
 

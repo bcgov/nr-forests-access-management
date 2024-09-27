@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { RouterLink } from 'vue-router';
-import Breadcrumb from 'primevue/breadcrumb';
 import type { CrumbType } from '@/components/BreadCrumbs/definitions';
 
-const props = defineProps<{
+defineProps<{
     crumbs: CrumbType[]
 }>();
 
