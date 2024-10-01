@@ -59,7 +59,7 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
     </div>
 
     <!-- Table with values -->
-    <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" v-else>
+    <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" :striped-rows="true" v-else>
         <template #empty> No User History found.</template>
         <Column field="create_date" :header="headers[0]">
             <template #body="slotProps">
@@ -86,48 +86,51 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 .user-permission-table {
     table {
 
+        /* Header Corners */
         th:first-child {
-            /* Top-left corner */
             border-top-left-radius: 0.5rem;
+            /* Top-left corner */
         }
 
         th:last-child {
-            /* Top-right corner */
             border-top-right-radius: 0.5rem;
+            /* Top-right corner */
         }
 
+        /* Bottom Corners */
         tr:last-child td:first-child {
-            /* Bottom-left corner */
             border-bottom-left-radius: 0.5rem;
+            /* Bottom-left corner */
         }
 
         tr:last-child td:last-child {
-            /* Bottom-right corner */
             border-bottom-right-radius: 0.5rem;
+            /* Bottom-right corner */
         }
     }
 
-    p {
-        margin: 0;
-    }
-
+    /* Table Row and Cell Styling */
     .p-datatable-tbody>tr>td {
         padding: 1rem;
     }
 
+    /* Table Header Styling */
     .p-datatable-thead>tr>th {
         background: colors.$gray-20;
         height: 4rem;
     }
 
+    /* Column Header Content */
     .p-column-header-content .p-column-title {
         padding: 1rem 0;
     }
 
+    /* Privilege Type Column */
     .privilege-type-description-col {
         white-space: nowrap;
     }
 
+    /* Footer Styling */
     .p-datatable-footer {
         border: none;
 
@@ -139,6 +142,23 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
         }
     }
 
+    /* Hover Effects */
+    .p-datatable-tbody>tr:hover {
+        background-color: inherit;
+        /* Retains the original color of the row */
+    }
 
+    .p-datatable-tbody>tr:nth-child(even):hover {
+        background-color: var(--primevue-stripped-row-color);
+    }
+
+    .p-datatable-tbody>tr:nth-child(odd):hover {
+        background-color: colors.$white;
+    }
+
+    /* Paragraphs inside the Table */
+    p {
+        margin: 0;
+    }
 }
 </style>
