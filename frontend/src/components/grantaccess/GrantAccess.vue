@@ -260,9 +260,3 @@ function toRequestPayload(formData: any) {
         </VeeForm>
     </div>
 </template>
-
-<style lang="scss">
-.grant-access-container {
-    @import '@/assets/styles/card.scss';
-}
-</style>
