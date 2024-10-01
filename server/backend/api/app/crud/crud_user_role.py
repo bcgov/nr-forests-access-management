@@ -156,8 +156,8 @@ def create_user_role_assignment_many(
         new_user_permission_granted_list.append(new_user_role_assginment_res)
     LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_granted_list}")
 
-    permissionAuditService = PermissionAuditService(db)
-    permissionAuditService.store_user_permissions_granted_audit_history(
+    permission_audit_service = PermissionAuditService(db)
+    permission_audit_service.store_user_permissions_granted_audit_history(
         requester, fam_user, new_user_permission_granted_list
     )
 
@@ -205,8 +205,8 @@ def delete_fam_user_role_assignment(db: Session, requester: RequesterSchema, use
     )
 
     # save audit record
-    permissionAuditService = PermissionAuditService(db)
-    permissionAuditService.store_user_permissions_revoked_audit_history(
+    permission_audit_service = PermissionAuditService(db)
+    permission_audit_service.store_user_permissions_revoked_audit_history(
         requester, record
     )
 

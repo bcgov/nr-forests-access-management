@@ -42,7 +42,7 @@ class GCNotifyEmailService:
         application_role_granted_text = self.__to_application_role_granted_text(params)
         organization_list_text = self.__to_organization_list_text(params)
         contact_message = self.__to_contact_message(params)
-        terms_conditions_comply_text = self.__to_terms_conditions_comply_text(params)
+        terms_conditions_comply_text = self.__to_terms_conditions_comply_text()
 
         personalisation_params = {
             "user_name": params.user_name,
@@ -114,7 +114,7 @@ class GCNotifyEmailService:
         org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
         return org_formatted_list_str
 
-    def __to_terms_conditions_comply_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
+    def __to_terms_conditions_comply_text(self):
             frontend_url = config.get_env_var("ALLOW_ORIGIN") if config.is_on_aws() else "https://fam-dev.nrs.gov.bc.ca"  # default to dev.
             tc_filename = "2024-06-04-fam-terms-conditions.pdf"
             txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/{tc_filename})."
