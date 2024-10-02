@@ -149,7 +149,7 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
     }
 
     .p-datatable-tbody>tr:nth-child(even):hover {
-        background-color: var(--primevue-stripped-row-color);
+        background-color: var(--primevue-striped-row-color);
     }
 
     .p-datatable-tbody>tr:nth-child(odd):hover {
