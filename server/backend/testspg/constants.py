@@ -25,6 +25,18 @@ TEST_CREATOR = "TESTER"
 TEST_USER_ID = 1
 TEST_USER_NAME_IDIR = "TEST_USER"
 TEST_USER_GUID_IDIR = "MOCKEDGUID5D4ACA9FA901EE2C91CB3B"  # this is a faked user guid
+TEST_USER_FIREST_NAME = "FIRST NAME"
+TEST_USER_LAST_NAME = "LAST NAME"
+TEST_USER_EMAIL = "EMAIL"
+TEST_REQUESTER = {
+    "cognito_user_id": "test-idir_e72a12c916afakedffae7@idir",
+    "user_name": TEST_USER_NAME_IDIR,
+    "user_guid":  TEST_USER_GUID_IDIR,
+    "user_id": TEST_USER_ID,
+    "first_name": TEST_USER_FIREST_NAME,
+    "last_name": TEST_USER_LAST_NAME,
+    "email": TEST_USER_EMAIL,
+}
 
 TEST_NOT_EXIST_USER_TYPE = "NS"
 
@@ -77,6 +89,9 @@ FC_NUMBER_EXISTS_DECEASED = "00152880"
 FC_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
 FC_NUMBER_EXISTS_SUSPENDED = "00003643"
 
+MOCK_FIND_CLIENT_00001011_RETURN = [{
+	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
+}]
 
 # --------------------- Testing Admin role level at token -------------- #
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"

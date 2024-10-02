@@ -29,16 +29,6 @@ sample_forest_client_return = [
 ]
 
 
-@pytest.fixture(scope="function", autouse=True)
-def mock_forest_client():
-    # Mocked dependency class object
-    with patch(
-        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
-        autospec=True,
-    ) as m:
-        yield m.return_value  # Very important to get instance of mocked class.
-
-
 @pytest.fixture(scope="function")
 def forest_client_integration_service():
     return ForestClientIntegrationService()
@@ -82,10 +72,10 @@ def __to_mock_forest_client_return(forest_client_number, api_client_status_code)
 def test_forest_client_number_exists(
     client_id_to_test,
     expcted_result,
-    mock_forest_client,
+    mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.find_by_client_number.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],
@@ -133,10 +123,10 @@ def test_forest_client_number_exists(
 def test_forest_client_active(
     client_id_to_test,
     expcted_result,
-    mock_forest_client,
+    mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.find_by_client_number.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],
@@ -169,10 +159,10 @@ def test_forest_client_active(
 def test_get_forest_client_status(
     client_id_to_test,
     expcted_result,
-    mock_forest_client,
+    mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.find_by_client_number.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],

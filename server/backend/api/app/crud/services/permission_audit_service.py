@@ -98,7 +98,7 @@ class PermissionAuditService:
     @staticmethod
     def to_enduser_privliege_granted_details(
         enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]
-    ) -> PrivilegeDetailsSchema:
+    ) -> PrivilegeDetailsSchema | None:
         if (len(enduser_privliege_list) == 0):
             return
 
@@ -152,7 +152,7 @@ class PermissionAuditService:
                 error_msg = (
                     "Revoke user permission encountered problem."
                     + f"Unknown forest client number {forest_client_number} for "
-                    + "scoped permission {revoked_permission_role.role_name}."
+                    + f"scoped permission {revoked_permission_role.role_name}."
                 )
                 LOGGER.debug(error_msg)
                 raise HTTPException(
