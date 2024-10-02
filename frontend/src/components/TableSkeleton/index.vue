@@ -18,13 +18,9 @@ const columns: ColumnType[] = props.headers.map((header) => ({
 }));
 
 // Create placeholder rows for the skeleton table based on rowAmount
-const skeletonRows = Array.from({ length: props.rowAmount }).map(() =>
-    // Create a placeholder object with empty values for each column
-    columns.reduce((acc, col) => {
-        acc[col.field] = ''; // Set empty value for each column's field
-        return acc;
-    }, {} as Record<string, string>)
-);
+const skeletonRows = Array.from({ length: props.rowAmount }, () =>
+    Object.fromEntries(columns.map(col => [col.field, '']))
+)
 
 </script>
 
