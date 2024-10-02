@@ -74,7 +74,7 @@
         ],
         "summary": "Retrieve User Information by User ID under an application",
         "description": "Retrieve the user data for a given user id under an authorized application.\n\nArgs:\n    userId (int): The ID of the user.\n    applicationId (int): The ID of the application the user has access to.\n\nReturns:\n    FamUserInfoSchema: The user information corresponding to the provided userId.",
-        "operationId": "get_user_by_user_id",
+        "operationId": "get_application_user_by_id",
         "security": [
           {
             "6jfveou69mgford233or30hmta": []
@@ -107,6 +107,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FamUserInfoSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "User not found"
                 }
               }
             }

@@ -64,8 +64,7 @@ def get_fam_application_user_role_assignment(
         }
     },
 )
-async def get_user_by_user_id(
-    user_id: int,
+async def get_application_user_by_id(    user_id: int,
     db: Session = Depends(database.get_db),
 ):
     """

@@ -15,7 +15,7 @@ const userQuery = useQuery(
     {
         queryKey: ['fam_applications', props.applicationId, 'users', props.userId],
         queryFn: () => AppActlApiService.applicationsApi
-            .getUserByUserId(Number(props.userId), Number(props.applicationId))
+            .getApplicationUserById(Number(props.userId), Number(props.applicationId))
             .then((res) => res.data),
         enabled: !!props.userId && !!props.applicationId
     }
@@ -48,8 +48,8 @@ const userQuery = useQuery(
                     :description="userQuery.data.value?.user_type.description"
                     :is-loading="userQuery.isFetching.value" />
 
-                <CardTextCol :class="DEFAULT_COL_SIZE" id="email" label="Email" :description="userQuery.data.value?.email"
-                    :is-loading="userQuery.isFetching.value" />
+                <CardTextCol :class="DEFAULT_COL_SIZE" id="email" label="Email"
+                    :description="userQuery.data.value?.email" :is-loading="userQuery.isFetching.value" />
             </div>
         </template>
     </Card>

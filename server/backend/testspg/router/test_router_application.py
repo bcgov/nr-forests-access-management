@@ -568,7 +568,7 @@ def test_get_fam_application_user_role_assignment_enforce_bceid_terms_conditions
     assert response.status_code == HTTPStatus.OK
 
 
-def test_get_user_by_user_id_success(
+def test_get_application_user_by_id_success(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
@@ -591,7 +591,7 @@ def test_get_user_by_user_id_success(
     assert "first_name" in data
 
 
-def test_get_user_by_user_id_not_found(
+def test_get_application_user_by_id_not_found(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
@@ -610,7 +610,7 @@ def test_get_user_by_user_id_not_found(
     assert response.status_code == HTTPStatus.NOT_FOUND
 
 
-def test_get_user_by_user_id_application_authorization(
+def test_get_application_user_by_id_application_authorization(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     """
