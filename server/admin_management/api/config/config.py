@@ -115,7 +115,6 @@ def get_oidc_client_id():
                 service_name="secretsmanager", region_name=get_aws_region()
             )
             secret_value = client.get_secret_value(SecretId=client_id_secret_name)
-            LOGGER.info(f"Secret retrieved -- value: [{secret_value}]")
             _client_id = secret_value["SecretString"]
 
     if not _client_id:
