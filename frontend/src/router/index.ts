@@ -184,7 +184,13 @@ const historyRouter = createRouter({
     ],
 });
 
-// Router for all other routes using `createWebHashHistory`
+/**
+ * Router for all other routes using `createWebHashHistory`.
+ *
+ * This router is used for handling deep links by using the `#` symbol,
+ * ensuring that deep links work correctly across different environments,
+ * especially when server settings may not support `createWebHistory`.
+ */
 const hashRouter = createRouter({
     history: createWebHashHistory(import.meta.env.BASE_URL),
     routes: hashRoutes,
