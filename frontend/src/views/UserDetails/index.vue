@@ -6,7 +6,7 @@ import UserSummaryCard from '@/components/UserSummaryCard';
 import PageTitle from '@/components/common/PageTitle.vue';
 import UserPermissionHistoryTable from '@/components/UserPermissionHistoryTable';
 import BreadCrumbs from '@/components/BreadCrumbs';
-import type { CrumbType } from '@/components/BreadCrumbs/definitions';
+import type { BreadCrumbType } from '@/types/BreadCrumbTypes';
 
 const route = useRoute();
 
@@ -24,7 +24,7 @@ const navigateBack = () => {
 };
 
 // Breadcrumb configuration
-const crumbs: CrumbType[] = [
+const crumbs: BreadCrumbType[] = [
   {
     label: 'Manage permissions',
     path: '/'
