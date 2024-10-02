@@ -164,7 +164,12 @@ const hashRoutes = [
     },
 ];
 
-// Router for `authCallback` using `createWebHistory`
+/**
+ * Router for `authCallback` using `createWebHistory`.
+ *
+ * This router is separated to ensure that the `authCallback` URL does not have a `#` prefix,
+ * providing a clean URL for authentication callbacks without further configurations.
+ */
 const historyRouter = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
