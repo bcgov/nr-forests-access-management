@@ -2,7 +2,6 @@
 import { sideNavState } from '@/store/SideNavState';
 import Sidebar from 'primevue/sidebar';
 import type { PropType } from 'vue';
-import type { RouteLocationRaw } from 'vue-router';
 
 export interface ISideNavItem {
     name: string;
