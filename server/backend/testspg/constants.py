@@ -89,6 +89,9 @@ FC_NUMBER_EXISTS_DECEASED = "00152880"
 FC_NUMBER_EXISTS_RECEIVERSHIP = "00169575"
 FC_NUMBER_EXISTS_SUSPENDED = "00003643"
 
+MOCK_FIND_CLIENT_00001011_RETURN = [{
+	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
+}]
 
 # --------------------- Testing Admin role level at token -------------- #
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"

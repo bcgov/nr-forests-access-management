@@ -29,8 +29,9 @@ from api.app.schemas.requester import RequesterSchema
 from fastapi import HTTPException
 from mock import patch
 from sqlalchemy.orm import Session
-from testspg.constants import (FOM_DEV_APPLICATION_ID, TEST_USER_GUID_IDIR,
-                               TEST_USER_NAME_IDIR,
+from testspg.constants import (FOM_DEV_APPLICATION_ID,
+                               MOCK_FIND_CLIENT_00001011_RETURN,
+                               TEST_USER_GUID_IDIR, TEST_USER_NAME_IDIR,
                                USER_GUID_BCEID_LOAD_2_TEST,
                                USER_NAME_BCEID_LOAD_2_TEST)
 
@@ -407,6 +408,3 @@ sameple_user_role_with_notfound_client_revoked_record = FamUserRoleXref(**{
    })
 })
 
-MOCK_FIND_CLIENT_00001011_RETURN = [{
-	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
-}]
