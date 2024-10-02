@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from typing import List
+from typing import List, Optional
 
 import jwt
 import pytest
@@ -9,29 +9,28 @@ import starlette
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from mock import patch
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import COGNITO_USERNAME_KEY, ERROR_CODE_TERMS_CONDITIONS_REQUIRED
-from api.app.crud import crud_utils
+from api.app.constants import (COGNITO_USERNAME_KEY,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
+from api.app.crud import crud_user, crud_utils
 from api.app.main import apiPrefix, app
+from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
-    enforce_bceid_terms_conditions_guard,
-    get_current_requester,
-    get_verified_target_user,
-)
+    enforce_bceid_terms_conditions_guard, get_current_requester,
+    get_verified_target_user)
 from api.app.schemas import RequesterSchema, TargetUserSchema
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    FOM_DEV_ADMIN_ROLE,
-    FOM_TEST_ADMIN_ROLE,
-)
+from api.app.schemas.fam_user import FamUserSchema
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
+                               TEST_CREATOR)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -266,3 +265,56 @@ def auth_headers(test_rsa_key):
     token = jwt_utils.create_jwt_token(test_rsa_key)
     headers = jwt_utils.headers(token)
     return headers
+
+
+@pytest.fixture(scope="function")
+def setup_new_user(db_pg_session: Session):
+    """
+    New user setup for testing.
+    The fixture returns a function to be called with new user created based on
+        user_type, user_name and optionally if need to add cognito_user_id.
+    """
+
+    def _setup_new_user(
+        user_type: UserType, user_name, user_guid, cognito_user_id: Optional[str] = None
+    ) -> FamUser:
+        new_user_create = FamUserSchema(
+            **{
+                "user_type_code": user_type,
+                "user_name": user_name,
+                "user_guid": user_guid,
+                "create_user": TEST_CREATOR,
+                "first_name": "Fist",
+                "last_name": "Last",
+                "email": "test@test.com"
+            }
+        )
+
+        fam_user = crud_user.create_user(new_user_create, db_pg_session)
+        if cognito_user_id is not None:
+            # SqlAlchemy is a bit strange, need to use `.query()` to do the
+            # update() and query() again in order to get correct updated entity
+            # from session.
+            db_pg_session.query(FamUser).filter(
+                FamUser.user_id == fam_user.user_id
+            ).update({FamUser.cognito_user_id: cognito_user_id})
+
+            fam_user = (
+                db_pg_session.query(FamUser)
+                .filter(FamUser.user_id == fam_user.user_id)
+                .one()
+            )
+
+        return fam_user
+
+    return _setup_new_user
+
+
+@pytest.fixture(scope="function", autouse=True)
+def mock_forest_client_integration_service():
+    # Mocked dependency class object
+    with patch(
+        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
+        autospec=True,
+    ) as m:
+        yield m.return_value  # Very important to get instance of mocked class.
