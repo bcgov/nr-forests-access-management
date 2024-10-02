@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 from api.app.constants import ERROR_CODE_INVALID_OPERATION
 from fastapi import HTTPException
+from requests import Response
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,3 +59,10 @@ def ensure_binary(s):
     if isinstance(s, str):
         return s.encode("utf-8", "strict")
     raise TypeError(f"not expecting type '{type(s)}'")
+
+
+def is_success_response(response: Response):
+    SUCCESS_LIST = [
+        HTTPStatus.OK, HTTPStatus.CREATED, HTTPStatus.ACCEPTED, HTTPStatus.NO_CONTENT
+    ]
+    return response.status_code in SUCCESS_LIST

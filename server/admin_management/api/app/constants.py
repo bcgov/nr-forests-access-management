@@ -71,6 +71,16 @@ class EmailSendingStatus(str, Enum):
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
 
+# ------------------------------- Schema Constants ------------------------------- #
+USER_NAME_MAX_LEN = 20
+FIRST_NAME_MAX_LEN = 50
+LAST_NAME_MAX_LEN = 50
+ROLE_NAME_MAX_LEN = 100
+CLIENT_NUMBER_MAX_LEN = 8
+CLIENT_NAME_MAX_LEN = 60
+APPLICATION_DESC_MAX_LEN = 200
+CREATE_USER_MAX_LEN = 100
+
 # ------- Error/Exception Code Constant -------
 
 # Note, this is default error code but better use specific code category if possible.

@@ -1,8 +1,9 @@
-from http import HTTPStatus
 import logging
-from fastapi import HTTPException
+from http import HTTPStatus
 
 from api.app.constants import ERROR_CODE_INVALID_OPERATION
+from fastapi import HTTPException
+from requests import Response
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,3 +29,10 @@ def remove_app_env_suffix(name: str):
         if name.endswith(suffix):
             return name[: -len(suffix)]
     return name
+
+
+def is_success_response(response: Response):
+    SUCCESS_LIST = [
+        HTTPStatus.OK, HTTPStatus.CREATED, HTTPStatus.ACCEPTED, HTTPStatus.NO_CONTENT
+    ]
+    return response.status_code in SUCCESS_LIST
