@@ -1,4 +1,4 @@
-import { PLACE_HOLDER } from "../constants/constants";
+import { PLACE_HOLDER } from "@/constants/constants";
 
 /**
  * Formats a user's full name and ID (userName) into a readable string.
