@@ -1,3 +1,5 @@
+import { PLACE_HOLDER } from "@/constants/constants";
+
 /**
  * Formats a user's full name and ID (userName) into a readable string.
  * If both first and last names are missing, it returns the ID only.
@@ -30,4 +32,36 @@ export const formatUserNameAndId = (
     }
 
     return `${firstName} ${lastName} (${userName})`;
+}
+
+/**
+ * Formats a user's full name into a readable string.
+ * If both first and last names are missing, it returns an empty string.
+ * If either the first or last name is missing, it formats the remaining name.
+ * If both names are present, it combines them.
+ *
+ * @param {string} [firstName] - The optional first name of the user. Can be null.
+ * @param {string} [lastName] - The optional last name of the user. Can be null.
+ * @returns {string} - The formatted string in the format: "FirstName LastName",
+ *                     or just "LastName" if the first name is missing,
+ *                     or "FirstName" if the last name is missing,
+ *                     or a PLACE_HOLDER string if both names are missing.
+ */
+export const formatFullName = (
+    firstName?: string | null,
+    lastName?: string | null,
+): string => {
+    if (!firstName && !lastName) {
+        return PLACE_HOLDER;
+    }
+
+    if (!firstName) {
+        return lastName!;
+    }
+
+    if (!lastName) {
+        return firstName!;
+    }
+
+    return `${firstName} ${lastName}`;
 }
