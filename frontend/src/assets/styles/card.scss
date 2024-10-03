@@ -13,7 +13,7 @@
 
     p {
         margin: 0;
-        padding: 0 0 0 1rem !important;
+        padding: 0 0 0 1rem;
         display: inline-flex;
         margin-bottom: 0;
         color: map.get(lightTheme.$light-theme, 'text-primary');
@@ -42,7 +42,7 @@
     }
 
     span {
-        margin: 0 !important;
+        margin: 0;
         font-size: 0.875rem;
         line-height: 1.25rem;
         letter-spacing: 0.01rem;

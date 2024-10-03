@@ -75,7 +75,6 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
         console.log('Refreshing Token...');
         const currentAuthToken: CognitoUserSession =
             await Auth.currentSession();
-        console.log('currentAuthToken: ', currentAuthToken);
 
         const famLoginUser = parseToken(currentAuthToken);
 

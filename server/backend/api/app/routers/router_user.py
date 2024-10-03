@@ -6,6 +6,7 @@ from api.app.crud import crud_user
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from api.app.schemas import FamUserUpdateResponseSchema
+from api.app.routers import router_guards
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
@@ -15,6 +16,7 @@ router = APIRouter()
     "/users-information",
     status_code=HTTPStatus.OK,
     response_model=FamUserUpdateResponseSchema,
+    dependencies=[Depends(router_guards.verify_api_key_for_update_user_info)],
 )
 def update_user_information_from_idim_source(
     page: int = 1,

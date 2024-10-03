@@ -1,5 +1,5 @@
 import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
-import router, { routes } from '@/router';
+import { hashRouter, hashRoutes } from '@/router';
 import { routeItems } from '@/router/routeItem';
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { mount, VueWrapper } from '@vue/test-utils';
@@ -13,7 +13,7 @@ vi.mock('vue-router', async () => {
     return {
         ...actual,
         useRoute: () => {
-            return routes.filter(
+            return hashRoutes.filter(
                 (route) => route.name == routeItems.grantAppAdmin.name
             )[0];
         },
@@ -22,7 +22,7 @@ vi.mock('vue-router', async () => {
 
 describe('GrantApplicationAdmin', () => {
     let wrapper: VueWrapper;
-    const routerPushSpy = vi.spyOn(router, 'push');
+    const routerPushSpy = vi.spyOn(hashRouter, 'push');
 
     //populate the breadcrumbState
     const breadcrumbItems = [routeItems.dashboard];
@@ -30,7 +30,7 @@ describe('GrantApplicationAdmin', () => {
     beforeEach(async () => {
         wrapper = mount(GrantApplicationAdmin, {
             global: {
-                plugins: [router], // Inject mocked Vue Router
+                plugins: [hashRouter], // Inject mocked Vue Router
             },
         });
     });

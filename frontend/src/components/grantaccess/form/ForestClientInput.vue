@@ -196,8 +196,14 @@ watch(
 
     <ForestClientCard
         v-if="forestClientData.length > 0"
-        class="px-0"
+        class="fores-client-card-container px-0"
         :forestClientData="forestClientData"
         @remove-item="removeForestClientFromList"
     />
 </template>
+
+<style lang="scss">
+.fores-client-card-container {
+    @import '@/assets/styles/card.scss';
+}
+</style>

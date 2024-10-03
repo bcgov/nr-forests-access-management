@@ -8,7 +8,7 @@ export type RouteItems = {
     [key: string]: IRouteInfo;
 };
 
-export const routeItems = {
+export const routeItems: RouteItems = {
     landing: {
         name: 'landing',
         path: '/',
@@ -41,7 +41,7 @@ export const routeItems = {
     },
     userDetails: {
         name: 'viewUserDetails',
-        path: '/user-details/users/:userId/applications/:applicationId',
+        path: '/user-details/applications/:applicationId/users/:userId',
         label: 'User details',
     },
-} as RouteItems;
+};

@@ -158,7 +158,7 @@ watch(
         <div
             v-if="verifiedUserIdentity"
             id="UserIdentityCard"
-            class="col-md-5 px-0"
+            class="user-id-card-container col-md-5 px-0"
         >
             <UserIdentityCard
                 :userIdentity="verifiedUserIdentity"
@@ -167,3 +167,9 @@ watch(
         </div>
     </div>
 </template>
+
+<style lang="scss">
+.user-id-card-container {
+    @import '@/assets/styles/card.scss';
+}
+</style>

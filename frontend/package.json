@@ -17,11 +17,15 @@
     "dependencies": {
         "@bcgov-nr/nr-theme": "^1.8.9",
         "@carbon/icons-vue": "^10.89.0",
+        "@carbon/type": "^11.31.0",
+        "@tanstack/vue-query": "^5.56.2",
         "aws-amplify": "^5.3.21",
-        "bootstrap": "^5.3.3",
         "axios": "1.7.4",
+        "bootstrap": "^5.3.3",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
+        "luxon": "^3.5.0",
+        "primeflex": "^3.3.1",
         "primevue": "3.46.0",
         "vee-validate": "^4.12.6",
         "vue": "^3.4.23",
@@ -29,7 +33,9 @@
         "wait-for-expect": "^3.0.2"
     },
     "devDependencies": {
+        "@tanstack/vue-query-devtools": "^5.56.2",
         "@types/bootstrap": "^5.2.5",
+        "@types/luxon": "^3.4.2",
         "@vitejs/plugin-vue": "^4.0.0",
         "@vitest/coverage-v8": "^0.34.0",
         "@vue/test-utils": "^2.4.5",

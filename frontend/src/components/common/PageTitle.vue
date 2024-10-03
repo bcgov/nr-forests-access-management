@@ -10,7 +10,7 @@ const props = defineProps({
     },
     subtitle: {
         type: String,
-        required: true,
+        required: false,
     },
 });
 
@@ -18,27 +18,30 @@ const route = useRoute();
 </script>
 
 <template>
-    <Breadcrumb v-if="route.meta.hasBreadcrumb" :model="breadcrumbState">
-        <template #item="{ item }">
-            <RouterLink v-if="item.path" :to="item.path">
-                <span>
-                    {{ item.label }}
-                </span>
-            </RouterLink>
-        </template>
-    </Breadcrumb>
-    <h1 class="title">{{ props.title }}</h1>
-    <p class="subtitle" aria-roledescription="subtitle">
-        {{ props.subtitle }}
-    </p>
+    <div>
+        <Breadcrumb v-if="route.meta.hasBreadcrumb" :model="breadcrumbState">
+            <template #item="{ item }">
+                <RouterLink v-if="item.path" :to="item.path">
+                    <span>
+                        {{ item.label }}
+                    </span>
+                </RouterLink>
+            </template>
+        </Breadcrumb>
+        <h1 class="title">{{ props.title }}</h1>
+        <p v-if="props.subtitle" class="subtitle" aria-roledescription="subtitle">
+            {{ props.subtitle }}
+        </p>
+    </div>
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/base.scss';
+
 .title {
     font-size: 2rem;
     line-height: 2.5rem;
-    color: $light-text-primary;
+    color: colors.$gray-100;
     font-weight: 400;
 }
 

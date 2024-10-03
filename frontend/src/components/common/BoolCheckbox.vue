@@ -1,4 +1,3 @@
-
 <!-- This is a boolean checkbox (true/false) -->
 
 <script setup lang="ts">
@@ -29,19 +28,21 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
     </div>
 </template>
 
-<style lang="scss">
-    @import '@/assets/styles/base.scss';
-    .fam-checkbox {
-        .p-checkbox {
-            margin-right: 0.5rem;
-            width: 1.2rem;
-            height: 1.2rem;
-        }
-        label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: $light-text-secondary;
-            margin-bottom: 0;
-        }
+<style lang="scss" scoped>
+@import '@/assets/styles/base.scss';
+
+.fam-checkbox {
+    .p-checkbox {
+        margin-right: 0.5rem;
+        width: 1.2rem;
+        height: 1.2rem;
     }
+
+    label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $light-text-secondary;
+        margin-bottom: 0;
+    }
+}
 </style>

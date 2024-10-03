@@ -30,6 +30,7 @@ class PermissionAduitHistoryRes(PermissionAduitHistoryBaseSchema):
     """
     privilege_change_audit_id: int
     change_performer_user_id: Optional[int]
+    privilege_change_type_description: str
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { useRoute } from 'vue-router';
 
-console.log(`Route "${useRoute().path}" not found, redirect to home.`);
-router.push('/');
+console.warn(`Route "${useRoute().path}" not found, redirect to home.`);
+hashRouter.push('/');
 </script>
 
 <template></template>

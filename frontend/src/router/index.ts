@@ -1,20 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+    createRouter, createWebHashHistory, createWebHistory
+} from 'vue-router';
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
-import AuthCallback from '@/components/AuthCallbackHandler.vue';
-import UserDetails from '@/components/managePermissions/userDetails/UserDetails.vue';
-import NotFound from '@/components/NotFound.vue';
 import {
     beforeEachRouteHandler,
     beforeEnterHandlers,
 } from '@/router/routeHandlers';
 import { routeItems } from '@/router/routeItem';
-import GrantAccessView from '@/views/GrantAccessView.vue';
-import GrantApplicationAdminView from '@/views/GrantApplicationAdminView.vue';
-import GrantDelegatedAdminView from '@/views/GrantDelegatedAdminView.vue';
+import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
+
+// Initial load
 import LandingView from '@/views/LandingView.vue';
 import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import MyPermissionsView from '@/views/MyPermissionsView.vue';
-import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
+import AuthCallback from '@/components/AuthCallbackHandler.vue';
+import AuthService from '../services/AuthService';
+
+// Lazy load all components
+const UserDetails = () => import('@/views/UserDetails');
+const NotFound = () => import('@/components/NotFound.vue');
+const GrantAccessView = () => import('@/views/GrantAccessView.vue');
+const GrantApplicationAdminView = () => import('@/views/GrantApplicationAdminView.vue');
+const GrantDelegatedAdminView = () => import('@/views/GrantDelegatedAdminView.vue');
+const MyPermissionsView = () => import('@/views/MyPermissionsView.vue');
 
 // WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
 // See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
@@ -24,7 +32,7 @@ import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 // Workaround: reload the page in the browser
 // Workarounds:
 // 1. Reload the page in the browser if the hot-reload fails.
-// 2. (Recommended) Within router below use a wrapper view compoent. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
+// 2. (Recommended) Within router below use a wrapper view component. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
 //    There still seem to be cases where page reload is needed.
 // 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax.
 //    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
@@ -36,10 +44,13 @@ import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
  *      If not provided or `false` means it is "public" (for everyone without authentication).
  *
  * - `requiresAppSelected`:
- *      Means user should have selected(or default to) an `application` as a context for business logic.
+ *      Means user should have selected (or default to) an `application` as a context for business logic.
  *      => global "selectedApplication" state is set.
  */
-const routes = [
+
+
+// Routes using createWebHashHistory
+const hashRoutes = [
     {
         path: '/',
         name: routeItems.landing.name,
@@ -48,6 +59,13 @@ const routes = [
             title: 'Welcome to FAM',
             layout: 'SimpleLayout',
             hasBreadcrumb: false,
+        },
+        beforeEnter: (_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
+            if (AuthService.isLoggedIn()) {
+                next({ name: routeItems.dashboard.name });
+            } else {
+                next();
+            }
         },
         component: LandingView,
     },
@@ -64,7 +82,6 @@ const routes = [
         beforeEnter: beforeEnterHandlers[routeItems.dashboard.name],
         props: (route: any) => {
             return {
-                // userRoleAssignments is ready for the `component` as props.
                 userRoleAssignments: route.meta.userRoleAssignments,
                 applicationAdmins: route.meta.applicationAdmins,
                 delegatedAdmins: route.meta.delegatedAdmins,
@@ -123,17 +140,9 @@ const routes = [
             requiresAppSelected: true,
             title: routeItems.userDetails.label,
             layout: 'ProtectedLayout',
-            hasBreadcrumb: true,
+            hasBreadcrumb: false,
         },
         component: UserDetails,
-
-        /* TODO: 'beforeEnter' placeholder to fetch data from backend*/
-        // beforeEnter: beforeEnterHandlers[routeItems.userDetails.name],
-        // props: (route: any) => {
-        //     return {
-        //         // TODO: placeholder here to supply props for the component.
-        //     };
-        // },
     },
     {
         path: routeItems.myPermissions.path,
@@ -147,14 +156,6 @@ const routes = [
         component: MyPermissionsView,
     },
     {
-        path: '/authCallback',
-        name: 'Cognito Auth (success) Callback',
-        meta: {
-            requiresAuth: false,
-        },
-        component: AuthCallback,
-    },
-    {
         path: '/:catchAll(.*)',
         meta: {
             requiresAuth: false,
@@ -163,13 +164,38 @@ const routes = [
     },
 ];
 
-const router = createRouter({
+/**
+ * Router for `authCallback` using `createWebHistory`.
+ *
+ * This router is separated to ensure that the `authCallback` URL does not have a `#` prefix,
+ * providing a clean URL for authentication callbacks without further configurations.
+ */
+const historyRouter = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes,
+    routes: [
+        {
+            path: '/authCallback',
+            name: 'Cognito Auth (success) Callback',
+            meta: {
+                requiresAuth: false,
+            },
+            component: AuthCallback,
+        },
+    ],
 });
 
-router.beforeEach(beforeEachRouteHandler);
+/**
+ * Router for all other routes using `createWebHashHistory`.
+ *
+ * This router is used for handling deep links by using the `#` symbol,
+ * ensuring that deep links work correctly across different environments,
+ * especially when server settings may not support `createWebHistory`.
+ */
+const hashRouter = createRouter({
+    history: createWebHashHistory(import.meta.env.BASE_URL),
+    routes: hashRoutes,
+});
 
-export { routes };
+hashRouter.beforeEach(beforeEachRouteHandler);
 
-export default router;
+export { historyRouter, hashRouter, hashRoutes };

@@ -1,15 +1,35 @@
 {
     "extends": "@vue/tsconfig/tsconfig.web.json",
-    "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "components.d.ts"],
+    "include": [
+        "env.d.ts",
+        "src/**/*.ts",
+        "src/**/*",
+        "src/**/*.vue",
+    ],
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": [
+                "./src/*"
+            ],
+            "@/components/*": [
+                "./src/components/*/index.vue",
+                "./src/components/*",
+            ],
+            "@/views/*": [
+                "./src/views/*/index.vue",
+                "./src/views/*",
+            ]
         },
         "allowJs": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "types": [
+            "vite/client"
+        ],
+        "esModuleInterop": true,
+        "strict": true
     },
-
     "references": [
         {
             "path": "./tsconfig.config.json"

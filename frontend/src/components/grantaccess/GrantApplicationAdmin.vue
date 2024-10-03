@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { ErrorMessage, Field, Form as VeeForm } from 'vee-validate';
 import { object, string } from 'yup';
 import Dropdown from 'primevue/dropdown';
@@ -52,7 +52,7 @@ const setVerifyUserIdPassed = (
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    router.push('/dashboard');
+    hashRouter.push('/dashboard');
 };
 
 const toRequestPayload = (formData: any) => {
@@ -80,16 +80,14 @@ const handleSubmit = async () => {
         newAppAdminId = newAppAdminReturn.data.application_admin_id;
         setNotificationMsg(
             Severity.Success,
-            `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${
-                formData.value.application.name
+            `Admin privilege has been added to ${formData.value.userId.toUpperCase()} for application ${formData.value.application.name
             }${appEnv}`
         );
     } catch (error: any) {
         if (error.response?.status === 409) {
             setNotificationMsg(
                 Severity.Error,
-                `${formData.value.userId.toUpperCase()} is already a ${
-                    formData.value.application.name
+                `${formData.value.userId.toUpperCase()} is already a ${formData.value.application.name
                 }${appEnv} admin`
             );
         } else if (
@@ -105,10 +103,8 @@ const handleSubmit = async () => {
                 : ' ';
             setNotificationMsg(
                 Severity.Error,
-                `${
-                    ErrorDescription.Default
-                }${errorMsg} ${formData.value.userId.toUpperCase()} was not added as ${
-                    formData.value.application.name
+                `${ErrorDescription.Default
+                }${errorMsg} ${formData.value.userId.toUpperCase()} was not added as ${formData.value.application.name
                 }${appEnv} admin`
             );
         }
@@ -117,87 +113,42 @@ const handleSubmit = async () => {
     setCurrentTabState(TabKey.AdminAccess);
 
     if (newAppAdminId) {
-        router.push({
+        hashRouter.push({
             path: routeItems.dashboard.path,
             query: { newAppAdminId: newAppAdminId.toString() },
         });
     } else {
-        router.push(routeItems.dashboard.path);
+        hashRouter.push(routeItems.dashboard.path);
     }
 };
 </script>
 <template>
-    <PageTitle
-        title="Add application admin"
-        subtitle="All fields are mandatory"
-    />
-    <VeeForm
-        ref="form"
-        v-slot="{ errors, meta }"
-        :validation-schema="formValidationSchema"
-        as="div"
-    >
+    <PageTitle title="Add application admin" subtitle="All fields are mandatory" />
+    <VeeForm ref="form" v-slot="{ errors, meta }" :validation-schema="formValidationSchema" as="div">
         <div class="page-body">
             <form id="grantAdminForm" class="form-container">
                 <StepContainer title="User information">
-                    <UserNameInput
-                        :domain="UserType.I"
-                        :userId="formData.userId"
+                    <UserNameInput :domain="UserType.I" :userId="formData.userId"
                         helper-text="Only IDIR users are allowed to be added as application admins"
-                        @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed"
-                    />
+                        @change="userIdChange" @setVerifyResult="setVerifyUserIdPassed" />
                 </StepContainer>
-                <StepContainer
-                    title="Add application"
-                    subtitle="Select an application this user will be able to manage"
-                    :divider="false"
-                >
-                    <Field
-                        name="application"
-                        aria-label="Application Select"
-                        v-model="formData.application"
-                    >
+                <StepContainer title="Add application" subtitle="Select an application this user will be able to manage"
+                    :divider="false">
+                    <Field name="application" aria-label="Application Select" v-model="formData.application">
                         <div class="application-admin-group">
-                            <label for="application-dropdown"
-                                >Select application</label
-                            >
-                            <Dropdown
-                                v-model="formData.application"
-                                :options="applicationOptions"
-                                optionLabel="description"
-                                placeholder="Choose an application"
-                                name="application-dropdown"
-                            />
+                            <label for="application-dropdown">Select application</label>
+                            <Dropdown v-model="formData.application" :options="applicationOptions"
+                                optionLabel="description" placeholder="Choose an application"
+                                name="application-dropdown" />
                         </div>
-                        <ErrorMessage
-                            class="invalid-feedback"
-                            name="application"
-                            style="display: inline"
-                        />
+                        <ErrorMessage class="invalid-feedback" name="application" style="display: inline" />
                     </Field>
                 </StepContainer>
                 <div class="button-stack">
-                    <Button
-                        type="button"
-                        id="grantAdminCancel"
-                        class="w100"
-                        severity="secondary"
-                        label="Cancel"
-                        :disabled="isLoading()"
-                        @click="cancelForm()"
-                        >&nbsp;</Button
-                    >
-                    <Button
-                        type="button"
-                        id="grantAdminSubmit"
-                        class="w100"
-                        label="Create Application Admin"
-                        :disabled="
-                            !(meta.valid && verifyUserIdPassed) || isLoading()
-                        "
-                        @click="handleSubmit()"
-                    >
+                    <Button type="button" id="grantAdminCancel" class="w100" severity="secondary" label="Cancel"
+                        :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
+                    <Button type="button" id="grantAdminSubmit" class="w100" label="Create Application Admin" :disabled="!(meta.valid && verifyUserIdPassed) || isLoading()
+                        " @click="handleSubmit()">
                         <Icon icon="checkmark" :size="IconSize.small" />
                     </Button>
                 </div>

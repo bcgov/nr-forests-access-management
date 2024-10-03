@@ -3,7 +3,7 @@ import Button from '@/components/common/Button.vue';
 import { IconSize } from '@/enum/IconEnum';
 import { ErrorCode, GrantPermissionType, Severity } from '@/enum/SeverityEnum';
 import { TabKey } from '@/enum/TabEnum';
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { routeItems } from '@/router/routeItem';
 import { AdminMgmtApiService } from '@/services/ApiServiceFactory';
 import { formValidationSchema, isProdAppSelectedOnProdEnv } from '@/services/utils';
@@ -95,7 +95,7 @@ const resetVerifiedForestClients = () => {
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    router.push('/dashboard');
+    hashRouter.push('/dashboard');
 };
 
 /*
@@ -170,14 +170,14 @@ const confirmSubmit = async () => {
     setCurrentTabState(TabKey.DelegatedAdminAccess);
 
     if (newDelegatedAdminAccessIds.length > 0) {
-        router.push({
+        hashRouter.push({
             path: routeItems.dashboard.path,
             query: {
                 newDelegatedAdminIds: newDelegatedAdminAccessIds.join(','),
             },
         });
     } else {
-        router.push(routeItems.dashboard.path);
+        hashRouter.push(routeItems.dashboard.path);
     }
 };
 
@@ -190,8 +190,8 @@ function toRequestPayload(formData: any) {
         requires_send_user_email: formData.sendUserEmail,
         ...(formData.verifiedForestClients.length > 0
             ? {
-                  forest_client_numbers: formData.verifiedForestClients,
-              }
+                forest_client_numbers: formData.verifiedForestClients,
+            }
             : {}),
     } as FamAccessControlPrivilegeCreateRequest;
     return request;
@@ -224,89 +224,40 @@ function handleSubmit() {
         </template>
     </ConfirmDialog>
 
-    <PageTitle
-        title="Add a delegated admin"
-        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`"
-    />
+    <PageTitle title="Add a delegated admin"
+        :subtitle="`Adding a delegated admin to ${selectedApplicationDisplayText}. All fields are mandatory`" />
 
-    <VeeForm
-        ref="form"
-        v-slot="{ meta }"
-        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
-        as="div"
-    >
+    <VeeForm ref="form" v-slot="{ meta }" :validation-schema="formValidationSchema(isAbstractRoleSelected())" as="div">
         <div class="page-body">
             <form id="grantDelegatedForm" class="form-container">
                 <StepContainer title="User information">
-                    <UserDomainSelect
-                        :domain="formData.domain"
-                        @change="userDomainChange"
-                    />
-                    <UserNameInput
-                        :domain="formData.domain"
-                        :userId="formData.userId"
-                        @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed"
-                    />
+                    <UserDomainSelect :domain="formData.domain" @change="userDomainChange" />
+                    <UserNameInput :domain="formData.domain" :userId="formData.userId" @change="userIdChange"
+                        @setVerifyResult="setVerifyUserIdPassed" />
                 </StepContainer>
 
-                <StepContainer
-                    title="Add the role a delegated admin can assign"
-                    :divider="isAbstractRoleSelected()"
-                >
-                    <RoleSelectTable
-                        :roleId="formData.roleId"
-                        :roleOptions="delegatedRoleOptions"
-                        label="Assign a role the delgated admin can manage"
-                        @change="roleSelectChange"
-                        @resetVerifiedForestClients="resetVerifiedForestClients"
-                    />
+                <StepContainer title="Add the role a delegated admin can assign" :divider="isAbstractRoleSelected()">
+                    <RoleSelectTable :roleId="formData.roleId" :roleOptions="delegatedRoleOptions"
+                        label="Assign a role the delgated admin can manage" @change="roleSelectChange"
+                        @resetVerifiedForestClients="resetVerifiedForestClients" />
                 </StepContainer>
 
-                <StepContainer
-                    v-if="isAbstractRoleSelected()"
-                    title="Organization information"
-                    :divider="false"
-                >
-                    <ForestClientInput
-                        :userId="formData.userId"
-                        :roleId="formData.roleId"
-                        @setVerifiedForestClients="setVerifiedForestClients"
-                        @removeVerifiedForestClients="
-                            removeVerifiedForestClients
-                        "
-                        @resetVerifiedForestClients="resetVerifiedForestClients"
-                    />
+                <StepContainer v-if="isAbstractRoleSelected()" title="Organization information" :divider="false">
+                    <ForestClientInput :userId="formData.userId" :roleId="formData.roleId"
+                        @setVerifiedForestClients="setVerifiedForestClients" @removeVerifiedForestClients="removeVerifiedForestClients
+                            " @resetVerifiedForestClients="resetVerifiedForestClients" />
                 </StepContainer>
 
-                <Divider/>
-                <BoolCheckbox
-                    v-model="formData.sendUserEmail"
-                    label="Send email to notify user"
-                />
+                <Divider />
+                <BoolCheckbox v-model="formData.sendUserEmail" label="Send email to notify user" />
 
                 <div class="button-stack">
-                    <Button
-                        type="button"
-                        id="grantDelegatedCancel"
-                        class="w100"
-                        severity="secondary"
-                        label="Cancel"
-                        :disabled="isLoading()"
-                        @click="cancelForm()"
-                        >&nbsp;</Button
-                    >
-                    <Button
-                        type="button"
-                        id="grantDelegatedSubmit"
-                        class="w100"
-                        label="Create Delegated Admin"
-                        :disabled="
-                            !(meta.valid && areVerificationsPassed()) ||
+                    <Button type="button" id="grantDelegatedCancel" class="w100" severity="secondary" label="Cancel"
+                        :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
+                    <Button type="button" id="grantDelegatedSubmit" class="w100" label="Create Delegated Admin"
+                        :disabled="!(meta.valid && areVerificationsPassed()) ||
                             isLoading()
-                        "
-                        @click="handleSubmit()"
-                    >
+                            " @click="handleSubmit()">
                         <Icon icon="checkmark" :size="IconSize.small" />
                     </Button>
                 </div>
@@ -319,23 +270,18 @@ function handleSubmit() {
 @use 'sass:map';
 
 .dialog-accept-button {
-    border: 0.0625rem solid
-        map.get(lightButton.$light-button-token-overrides, 'button-primary') !important;
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        'button-primary'
-    ) !important;
+    border: 0.0625rem solid map.get(lightButton.$light-button-token-overrides, 'button-primary') !important;
+    background-color: map.get(lightButton.$light-button-token-overrides,
+            'button-primary'
+        ) !important;
 }
 
 .dialog-accept-button:hover {
-    border: 0.0625rem solid
-        map.get(
-            lightButton.$light-button-token-overrides,
+    border: 0.0625rem solid map.get(lightButton.$light-button-token-overrides,
             'button-primary-hover'
         ) !important;
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        'button-primary-hover'
-    ) !important;
+    background-color: map.get(lightButton.$light-button-token-overrides,
+            'button-primary-hover'
+        ) !important;
 }
 </style>

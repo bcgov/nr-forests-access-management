@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import InputText from 'primevue/inputtext';
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { routeItems } from '@/router/routeItem';
 import { IconSize } from '@/enum/IconEnum';
 import { selectedApplicationDisplayText } from '@/store/ApplicationState';
@@ -64,23 +64,14 @@ const tableHeaderCustomText = computed(() => {
     </div>
 
     <div class="utility-container">
-        <Button
-            v-if="props.btnRoute"
-            class="btn-add-user"
-            :label="props.btnLabel"
-            @click="router.push(props.btnRoute)"
-        >
+        <Button v-if="props.btnRoute" class="btn-add-user" :label="props.btnLabel"
+            @click="hashRouter.push(props.btnRoute)">
             <Icon icon="add" :size="IconSize.small" />
         </Button>
         <span class="p-input-icon-left">
             <Icon icon="search" :size="IconSize.small" />
-            <InputText
-                id="dashboardSearch"
-                class="dash-search"
-                :placeholder="props.inputPlaceholder"
-                v-model="computedFilter"
-                :value="props.filter"
-            />
+            <InputText id="dashboardSearch" class="dash-search" :placeholder="props.inputPlaceholder"
+                v-model="computedFilter" :value="props.filter" />
         </span>
     </div>
 </template>
@@ -91,6 +82,7 @@ const tableHeaderCustomText = computed(() => {
 .custom-data-table-header {
     padding: 1rem 1rem 1.5rem;
     background-color: $light-layer-two;
+
     h3 {
         @extend %heading-03;
         margin: 0;
@@ -137,6 +129,7 @@ const tableHeaderCustomText = computed(() => {
         border-bottom: 0.125rem solid transparent;
     }
 }
+
 :deep(.p-datatable .p-sortable-column .p-sortable-column-icon) {
     display: none;
 }

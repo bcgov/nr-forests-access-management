@@ -11,7 +11,7 @@ import NewUserTag from '@/components/common/NewUserTag.vue';
 import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
-import router from '@/router';
+import { hashRouter } from '@/router';
 import { routeItems } from '@/router/routeItem';
 import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { isNewAccess } from '@/services/utils';
@@ -83,10 +83,13 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
     });
 }
 
-const viewUserPermissionHistoryDetails = (user_id: number) => {
-    router.push({
+const navigateToUserDetails = (userId: string) => {
+    hashRouter.push({
         name: routeItems.userDetails.name,
-        params: {userId: user_id, applicationId: selectedApplicationId.value}
+        params: {
+            applicationId: selectedApplicationId.value,
+            userId,
+        }
     });
 }
 
@@ -100,28 +103,15 @@ const highlightNewUserAccessRow = (rowData: any) => {
 <template>
     <ConfirmDialog group="deleteAssignment">
         <template #message>
-            <ConfirmDialogtext
-                :role="confirmDeleteData.role"
-                :userName="confirmDeleteData.userName"
-            />
+            <ConfirmDialogtext :role="confirmDeleteData.role" :userName="confirmDeleteData.userName" />
         </template>
     </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
-            <DataTableHeader
-                btnLabel="Add user permission"
-                :btnRoute="routeItems.grantUserPermission.path"
-                :filter="userRoleAssignmentsFilters['global'].value"
-                @change="userSearchChange"
-            />
-            <DataTable
-                v-model:filters="userRoleAssignmentsFilters"
-                :value="userRoleAssignments"
-                paginator
-                :rows="50"
-                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
-                filterDisplay="menu"
-                :loading="props.loading"
+            <DataTableHeader btnLabel="Add user permission" :btnRoute="routeItems.grantUserPermission.path"
+                :filter="userRoleAssignmentsFilters['global'].value" @change="userSearchChange" />
+            <DataTable v-model:filters="userRoleAssignmentsFilters" :value="userRoleAssignments" paginator :rows="50"
+                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE" filterDisplay="menu" :loading="props.loading"
                 :globalFilterFields="[
                     'user.user_name',
                     'role.parent_role.role_name',
@@ -131,53 +121,40 @@ const highlightNewUserAccessRow = (rowData: any) => {
                     'user.email',
                     'role.role_name',
                     'role.forest_client.forest_client_number',
-                ]"
-                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
-                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
-                stripedRows
-                :rowStyle="highlightNewUserAccessRow"
-            >
+                ]" :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE" stripedRows
+                :rowStyle="highlightNewUserAccessRow">
                 <template #empty> No user found. </template>
                 <template #loading>
                     <ProgressSpinner aria-label="Loading" />
                 </template>
                 <Column header="User Name" sortable field="user.user_name">
                     <template #body="{ data }">
-                        <NewUserTag
-                            v-if="
-                                isNewAccess(
-                                    newUserAccessIds,
-                                    data.user_role_xref_id
-                                )
-                            "
-                        />
+                        <NewUserTag v-if="
+                            isNewAccess(
+                                newUserAccessIds,
+                                data.user_role_xref_id
+                            )
+                        " />
                         <span>
                             {{ data.user.user_name }}
                         </span>
                     </template>
                 </Column>
-                <Column
-                    field="user.user_type.description"
-                    header="Domain"
-                    sortable
-                ></Column>
+                <Column field="user.user_type.description" header="Domain" sortable></Column>
                 <Column field="user.first_name" header="Full Name" sortable>
                     <template #body="{ data }">
                         {{
                             data.user.first_name && data.user.last_name
                                 ? data.user.first_name +
-                                  ' ' +
-                                  data.user.last_name
+                                ' ' +
+                                data.user.last_name
                                 : ''
                         }}
                     </template>
                 </Column>
                 <Column field="user.email" header="Email" sortable></Column>
-                <Column
-                    field="role.forest_client.forest_client_number"
-                    header="Client Number"
-                    sortable
-                ></Column>
+                <Column field="role.forest_client.forest_client_number" header="Client Number" sortable></Column>
                 <Column field="role.role_name" header="Role" sortable>
                     <template #body="{ data }">
                         {{
@@ -185,23 +162,16 @@ const highlightNewUserAccessRow = (rowData: any) => {
                                 ? data.role.parent_role.role_name
                                 : data.role.role_name
                         }}
-                    </template></Column
-                >
+                    </template>
+                </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <button
-                            title="User permission history"
-                            class="btn btn-icon"
-                            :disabled="!isDevEnvironment"
-                            @click="viewUserPermissionHistoryDetails(data.user_id)">
+                        <button title="User permission history" class="btn btn-icon" :disabled="!isDevEnvironment"
+                            @click="navigateToUserDetails(data.user_id)">
                             <Icon icon="history" :size="IconSize.small" />
                         </button>
 
-                        <button
-                            title="Delete user"
-                            class="btn btn-icon"
-                            @click="deleteAssignment(data)"
-                        >
+                        <button title="Delete user" class="btn btn-icon" @click="deleteAssignment(data)">
                             <Icon icon="trash-can" :size="IconSize.small" />
                         </button>
                     </template>
