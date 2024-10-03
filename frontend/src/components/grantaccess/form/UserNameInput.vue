@@ -34,10 +34,35 @@ const computedUserId = computed({
 });
 
 const errorMsg = ref('');
+
 const verifiedUserIdentity = ref<IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null>(
     null
 );
+
+/**
+ * Checks if the provided user ID matches the currently logged-in user's ID.
+ */
+ const isCurrentUser = (): boolean => {
+    const userId = computedUserId.value?.toLowerCase();
+    const loggedInUserId = FamLoginUserState.state.value.famLoginUser?.username?.toLowerCase();
+
+    return userId === loggedInUserId;
+};
+
 const verifyUserId = async () => {
+    if (!computedUserId.value) {
+        return;
+    }
+    // Guard to forbid users to look up themselves
+    if (isCurrentUser()) {
+        verifiedUserIdentity.value = {
+            found: false,
+            userId: computedUserId.value
+        }
+        errorMsg.value = 'You cannot grant permissions to yourself.';
+        return;
+    }
+
     try {
         if (props.domain == UserType.B) {
             verifiedUserIdentity.value = (
@@ -116,6 +141,7 @@ watch(
                         v-bind="field"
                         :class="{ 'is-invalid': errorMessage }"
                         @keydown.enter.prevent="verifyUserId()"
+                        @blur="verifyUserId()"
                     />
                     <small
                         id="userIdInput-helper"
