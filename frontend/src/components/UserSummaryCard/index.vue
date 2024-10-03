@@ -5,6 +5,7 @@ import Card from 'primevue/card';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
 import { DEFAULT_COL_SIZE } from '@/components/UserSummaryCard/constants';
 import CardTextCol from '@/components/CardTextCol/index.vue';
+import { formatFullName } from '@/utils/UserUtils';
 
 const props = defineProps<{
     userId: string; // Fam User ID
@@ -41,7 +42,7 @@ const userQuery = useQuery(
                     :description="userQuery.data.value?.user_name" :is-loading="userQuery.isFetching.value" />
 
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="full-name" label="Full name"
-                    :description="`${userQuery.data.value?.first_name} ${userQuery.data.value?.last_name}`"
+                    :description="formatFullName(userQuery.data.value?.first_name, userQuery.data.value?.last_name)"
                     :is-loading="userQuery.isFetching.value" />
 
                 <CardTextCol :class="DEFAULT_COL_SIZE" id="domain" label="Domain"
