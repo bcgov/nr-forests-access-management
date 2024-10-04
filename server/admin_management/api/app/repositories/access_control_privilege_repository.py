@@ -49,7 +49,7 @@ class AccessControlPrivilegeRepository:
         self.db.refresh(db_item)
         return db_item
 
-    def delete_access_control_privilege(self, access_control_privilege_id: int):
+    def delete_access_control_privilege(self, access_control_privilege_id: int) -> FamAccessControlPrivilege:
         record = (
             self.db.query(FamAccessControlPrivilege)
             .filter(
@@ -60,6 +60,7 @@ class AccessControlPrivilegeRepository:
         )
         self.db.delete(record)
         self.db.flush()
+        return record
 
     def get_user_delegated_admin_grants(self, user_id: int) -> List[FamRole]:
         """

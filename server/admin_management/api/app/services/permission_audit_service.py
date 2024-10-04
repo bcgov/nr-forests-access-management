@@ -18,10 +18,9 @@ from api.app.schemas.permission_audit_history import (
     PrivilegeDetailsScopeSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateResponse,
                                      Requester)
+from api.app.services import utils_service
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from server.admin_management.api.app.services import utils_service
 
 LOGGER = logging.getLogger(__name__)
 
@@ -105,8 +104,8 @@ class PermissionAuditService:
             assigned_role = item.detail.role
             return PrivilegeDetailsScopeSchema(
                 scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-                client_id=assigned_role.forest_client.forest_client_number,
-                client_name=assigned_role.forest_client.client_name
+                client_id=assigned_role.client_number.forest_client_number,
+                client_name=assigned_role.client_number.client_name
             )
 
         is_forest_client_scoped_role = delegated_admin_privliege_list[0].detail.role.client_number is not None

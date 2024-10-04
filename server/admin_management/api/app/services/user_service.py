@@ -26,7 +26,7 @@ class UserService:
         return self.user_repo.get_users()
 
     def find_or_create(
-        self, user_type_code: str, user_name: str, user_guid: str, requester: str
+        self, user_type_code: str, user_name: str, user_guid: str, requester_cognito_user_id: str
     ):
         LOGGER.debug(
             f"Request for finding or creating a user with user_type: {user_type_code}, "
@@ -48,7 +48,7 @@ class UserService:
                 self.user_repo.update(
                     fam_user_by_domain_and_name.user_id,
                     {models.FamUser.user_guid: user_guid},
-                    requester,
+                    requester_cognito_user_id,
                 )
                 LOGGER.debug(
                     f"User {fam_user_by_domain_and_name.user_id} found, updated to store their user_guid."
@@ -63,7 +63,7 @@ class UserService:
                         "user_type_code": user_type_code,
                         "user_name": user_name,
                         "user_guid": user_guid,
-                        "create_user": requester,
+                        "create_user": requester_cognito_user_id,
                     }
                 )
 
@@ -73,7 +73,7 @@ class UserService:
 
         LOGGER.debug(f"User {fam_user.user_id} found.")
         # update user_name if needs
-        fam_user = self.update_user_name(fam_user, user_name, requester)
+        fam_user = self.update_user_name(fam_user, user_name, requester_cognito_user_id)
         return fam_user
 
     def update_user_name(
@@ -95,7 +95,7 @@ class UserService:
         return user
 
     def update_user_properties_from_verified_target_user(
-        self, user_id: int, target_user: TargetUser, requester: str  # cognito_user_id
+        self, user_id: int, target_user: TargetUser, requester_cognito_user_id: str
     ):
         """
         This is to update fam_user's properties from verified_target_user.
@@ -134,7 +134,7 @@ class UserService:
         self.user_repo.update(
             user_id,
             properties_to_update,
-            requester,
+            requester_cognito_user_id,
         )
 
         LOGGER.debug(

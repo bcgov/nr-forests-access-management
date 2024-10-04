@@ -19,7 +19,7 @@ class RoleService:
         return self.role_repo.get_role_by_id(role_id)
 
     def find_or_create_forest_client_child_role(
-        self, forest_client_number: str, parent_role: FamRole, requester: str
+        self, forest_client_number: str, parent_role: FamRole, requester_cognito_user_id: str
     ):
         forest_client_role_name = self.construct_forest_client_role_name(
             parent_role.role_name, forest_client_number
@@ -48,7 +48,7 @@ class RoleService:
                             forest_client_number=forest_client_number,
                         ),
                         "display_name": parent_role.display_name,
-                        "create_user": requester,
+                        "create_user": requester_cognito_user_id,
                         "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                     }
                 ),

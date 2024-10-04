@@ -81,7 +81,7 @@ def create_access_control_privilege_many(
 
         response = FamAccessControlPrivilegeResponse(
             assignments_detail=access_control_privilege_service.create_access_control_privilege_many(
-                access_control_privilege_request, requester.cognito_user_id, target_user
+                access_control_privilege_request, requester, target_user
             )
         )
 
@@ -174,6 +174,7 @@ def delete_access_control_privilege(
         audit_event_log.target_user = access_control_privilege.user
 
         return access_control_privilege_service.delete_access_control_privilege(
+            requester,
             access_control_privilege_id
         )
 

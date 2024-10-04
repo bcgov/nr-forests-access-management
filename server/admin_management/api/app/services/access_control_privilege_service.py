@@ -8,8 +8,15 @@ from api.app.integration.forest_client_integration import \
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
-from api.app.schemas import schemas
+from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
+                                     FamAccessControlPrivilegeCreateRequest,
+                                     FamAccessControlPrivilegeCreateResponse,
+                                     FamAccessControlPrivilegeGetResponse,
+                                     FamForestClientBase,
+                                     GCNotifyGrantDelegatedAdminEmailParam,
+                                     Requester, TargetUser)
 from api.app.services import utils_service
+from api.app.services.permission_audit_service import PermissionAuditService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from api.app.services.validator.forest_client_validator import (
@@ -25,6 +32,7 @@ class AccessControlPrivilegeService:
     def __init__(self, db: Session):
         self.user_service = UserService(db)
         self.role_service = RoleService(db)
+        self.permission_audit_service = PermissionAuditService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
     def get_acp_by_user_id_and_role_id(self, user_id: int, role_id: int):
@@ -39,32 +47,36 @@ class AccessControlPrivilegeService:
 
     def get_acp_by_application_id(
         self, application_id: int
-    ) -> List[schemas.FamAccessControlPrivilegeGetResponse]:
+    ) -> List[FamAccessControlPrivilegeGetResponse]:
         return self.access_control_privilege_repository.get_acp_by_application_id(
             application_id
         )
 
-    def delete_access_control_privilege(self, access_control_privilege_id: int):
-        return self.access_control_privilege_repository.delete_access_control_privilege(
+    def delete_access_control_privilege(self, requester: Requester, access_control_privilege_id: int):
+        deleted_record = self.access_control_privilege_repository.delete_access_control_privilege(
             access_control_privilege_id
+        )
+        # save audit record
+        self.permission_audit_service.store_delegated_admin_permissions_revoked_audit_history(
+            requester, deleted_record
         )
 
     def create_access_control_privilege_many(
         self,
-        request: schemas.FamAccessControlPrivilegeCreateRequest,
-        requester: str,
-        target_user: schemas.TargetUser,
-    ) -> List[schemas.FamAccessControlPrivilegeCreateResponse]:
+        request: FamAccessControlPrivilegeCreateRequest,
+        requester: Requester,
+        target_user: TargetUser,
+    ) -> List[FamAccessControlPrivilegeCreateResponse]:
         LOGGER.debug(
             f"Request for assigning access role privilege to a user: {request}."
         )
 
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
-            request.user_type_code, request.user_name, request.user_guid, requester
+            request.user_type_code, request.user_name, request.user_guid, requester.cognito_user_id
         )
         fam_user = self.user_service.update_user_properties_from_verified_target_user(
-            fam_user.user_id, target_user, requester
+            fam_user.user_id, target_user, requester.cognito_user_id
         )
 
         # Verify if role exists
@@ -81,7 +93,7 @@ class AccessControlPrivilegeService:
             fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
         )
 
-        create_return_list: List[schemas.FamAccessControlPrivilegeCreateResponse] = []
+        new_delegated_admin_permission_granted_list: List[FamAccessControlPrivilegeCreateResponse] = []
 
         if require_child_role:
             LOGGER.debug(
@@ -133,32 +145,36 @@ class AccessControlPrivilegeService:
 
                 # Check if child role exists or add a new child role
                 child_role = self.role_service.find_or_create_forest_client_child_role(
-                    forest_client_number, fam_role, requester
+                    forest_client_number, fam_role, requester.cognito_user_id
                 )
                 new_delegated_admin_grant_res = self.grant_privilege(
-                    fam_user.user_id, child_role.role_id, requester
+                    fam_user.user_id, child_role.role_id, requester.cognito_user_id
                 )
                 # Update response object for Forest Client Name from the forest_client_search.
                 # FAM currently does not store forest client name for easy retrieval.
                 new_delegated_admin_grant_res.detail.role.client_number = (
-                    schemas.FamForestClientBase.from_api_json(forest_client_search_return[0])
+                    FamForestClientBase.from_api_json(forest_client_search_return[0])
                 )
-                create_return_list.append(new_delegated_admin_grant_res)
+                new_delegated_admin_permission_granted_list.append(new_delegated_admin_grant_res)
         else:
             new_delegated_admin_grant_res = self.grant_privilege(
-                fam_user.user_id, fam_role.role_id, requester
+                fam_user.user_id, fam_role.role_id, requester.cognito_user_id
             )
-            create_return_list.append(new_delegated_admin_grant_res)
+            new_delegated_admin_permission_granted_list.append(new_delegated_admin_grant_res)
 
         LOGGER.debug(
-            f"Creating access control privilege executed successfully: {create_return_list}"
+            f"Creating access control privilege executed successfully: {new_delegated_admin_permission_granted_list}"
         )
 
-        return create_return_list
+        self.permission_audit_service.store_delegated_admin_permissions_granted_audit_history(
+            requester, fam_user, new_delegated_admin_permission_granted_list
+        )
+
+        return new_delegated_admin_permission_granted_list
 
     def grant_privilege(
-        self, user_id: int, role_id: int, requester: str
-    ) -> schemas.FamAccessControlPrivilegeCreateResponse:
+        self, user_id: int, role_id: int, requester_cognito_user_id: str
+    ) -> FamAccessControlPrivilegeCreateResponse:
         access_control_privilege_return = None
 
         # Check if user privilege already exists
@@ -180,10 +196,10 @@ class AccessControlPrivilegeService:
 
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
             access_control_privilege_return = (
-                schemas.FamAccessControlPrivilegeCreateResponse(
+                FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.CONFLICT,
-                        "detail": schemas.FamAccessControlPrivilegeGetResponse(
+                        "detail": FamAccessControlPrivilegeGetResponse(
                             **fam_access_control_privilege_dict
                         ),
                         "error_message": error_msg,
@@ -191,11 +207,11 @@ class AccessControlPrivilegeService:
                 )
             )
         else:
-            access_control_privilege_param = schemas.FamAccessControlPrivilegeCreateDto(
+            access_control_privilege_param = FamAccessControlPrivilegeCreateDto(
                 **{
                     "user_id": user_id,
                     "role_id": role_id,
-                    "create_user": requester,
+                    "create_user": requester_cognito_user_id,
                 }
             )
             fam_access_control_privilege = self.access_control_privilege_repository.create_access_control_privilege(
@@ -203,10 +219,10 @@ class AccessControlPrivilegeService:
             )
             fam_access_control_privilege_dict = fam_access_control_privilege.__dict__
             access_control_privilege_return = (
-                schemas.FamAccessControlPrivilegeCreateResponse(
+                FamAccessControlPrivilegeCreateResponse(
                     **{
                         "status_code": HTTPStatus.OK,
-                        "detail": schemas.FamAccessControlPrivilegeGetResponse(
+                        "detail": FamAccessControlPrivilegeGetResponse(
                             **fam_access_control_privilege_dict
                         ),
                     }
@@ -217,8 +233,8 @@ class AccessControlPrivilegeService:
 
     def send_email_notification(
         self,
-        target_user: schemas.TargetUser,
-        access_control_priviliege_response: List[schemas.FamAccessControlPrivilegeCreateResponse],
+        target_user: TargetUser,
+        access_control_priviliege_response: List[FamAccessControlPrivilegeCreateResponse],
     ):
         try:
             granted_roles_res = list(filter(
@@ -239,7 +255,7 @@ class AccessControlPrivilegeService:
                 else None
             )
             email_response = gc_notify_email_service.send_delegated_admin_granted_email(
-                schemas.GCNotifyGrantDelegatedAdminEmailParam(
+                GCNotifyGrantDelegatedAdminEmailParam(
                     ** {
                         "send_to_email_address": target_user.email,
                         "application_description": granted_role.application.application_description,
