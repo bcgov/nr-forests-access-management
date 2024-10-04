@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.0...v1.23.1) (2024-10-04)
+
+
+### Bug Fixes
+
+* remove disable logic ([#1620](https://github.com/bcgov/nr-forests-access-management/issues/1620)) ([9fae3c7](https://github.com/bcgov/nr-forests-access-management/commit/9fae3c7b5012983b38101d5549f47533a24f39a3))
+
 ## [1.23.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.1...v1.23.0) (2024-10-03)
 
 
