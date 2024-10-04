@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.23.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.1...v1.23.0) (2024-10-03)
+
+
+### Features
+
+* [#1242](https://github.com/bcgov/nr-forests-access-management/issues/1242) Add role display name ([#1564](https://github.com/bcgov/nr-forests-access-management/issues/1564)) ([d94a242](https://github.com/bcgov/nr-forests-access-management/commit/d94a242b1e9c2f52bec418fdc93457024f36d56d))
+* [#1536](https://github.com/bcgov/nr-forests-access-management/issues/1536) Create audit permission and code tables ([#1577](https://github.com/bcgov/nr-forests-access-management/issues/1577)) ([3272d7c](https://github.com/bcgov/nr-forests-access-management/commit/3272d7c520bd5613c0e42eb1f871cd7a54214011))
+* [#1537](https://github.com/bcgov/nr-forests-access-management/issues/1537) create an api to return audit information ([#1587](https://github.com/bcgov/nr-forests-access-management/issues/1587)) ([06294a7](https://github.com/bcgov/nr-forests-access-management/commit/06294a789f2753adb038a236f77892454c52cffd))
+* [#1538](https://github.com/bcgov/nr-forests-access-management/issues/1538) backend store user privilege change audit records ([#1601](https://github.com/bcgov/nr-forests-access-management/issues/1601)) ([b78f70b](https://github.com/bcgov/nr-forests-access-management/commit/b78f70bceec79e1399a475d8f27e7f109a7f161d))
+* [#1538](https://github.com/bcgov/nr-forests-access-management/issues/1538) store audit records tests ([#1605](https://github.com/bcgov/nr-forests-access-management/issues/1605)) ([9542953](https://github.com/bcgov/nr-forests-access-management/commit/95429539176a532a1ae7c6c993498e5ce61a0299))
+* [#1540](https://github.com/bcgov/nr-forests-access-management/issues/1540) create a user access history page ([#1607](https://github.com/bcgov/nr-forests-access-management/issues/1607)) ([6b507c6](https://github.com/bcgov/nr-forests-access-management/commit/6b507c6a70859d2e7b2ac057b21d6350ea422310))
+* [#1542](https://github.com/bcgov/nr-forests-access-management/issues/1542) User details link and breadcrumb change. ([#1589](https://github.com/bcgov/nr-forests-access-management/issues/1589)) ([fa6b3ad](https://github.com/bcgov/nr-forests-access-management/commit/fa6b3ade65a1de10091a70aeb0c9ad7cb283e590))
+* [#1575](https://github.com/bcgov/nr-forests-access-management/issues/1575) Remove sensitive data logging. ([#1609](https://github.com/bcgov/nr-forests-access-management/issues/1609)) ([a57dc45](https://github.com/bcgov/nr-forests-access-management/commit/a57dc45f2cc14f3b65ab50c7a24d6dcb6eb6b6aa))
+* [#1596](https://github.com/bcgov/nr-forests-access-management/issues/1596) Implement email styling enhancements ([#1608](https://github.com/bcgov/nr-forests-access-management/issues/1608)) ([51b4cd3](https://github.com/bcgov/nr-forests-access-management/commit/51b4cd3de72add8a281944b22ea308e9820a3b1e))
+
+
+### Bug Fixes
+
+* [#1436](https://github.com/bcgov/nr-forests-access-management/issues/1436) prevent self lookup on grant access ([#1617](https://github.com/bcgov/nr-forests-access-management/issues/1617)) ([94dac66](https://github.com/bcgov/nr-forests-access-management/commit/94dac6697017cf0776ba3cac90cf3f18898491c2))
+* [#1509](https://github.com/bcgov/nr-forests-access-management/issues/1509) Replace OIDC SSO playground url ([#1565](https://github.com/bcgov/nr-forests-access-management/issues/1565)) ([e888381](https://github.com/bcgov/nr-forests-access-management/commit/e8883816cc0140eb785fb30a424bdc1dcc509ad1))
+* [#1540](https://github.com/bcgov/nr-forests-access-management/issues/1540) add dashes to null name ([#1616](https://github.com/bcgov/nr-forests-access-management/issues/1616)) ([051981c](https://github.com/bcgov/nr-forests-access-management/commit/051981c1ecba436a2bbc80f9a14bec56c0aa84e4))
+* [#1559](https://github.com/bcgov/nr-forests-access-management/issues/1559) Fix SchemaSpy trigger in deployment pipeline ([#1560](https://github.com/bcgov/nr-forests-access-management/issues/1560)) ([73b80ca](https://github.com/bcgov/nr-forests-access-management/commit/73b80ca21d70dbda3a43c3bbd4979b3a101098e1))
+* [#1580](https://github.com/bcgov/nr-forests-access-management/issues/1580) de-spaghetti-fying backend schema ([#1586](https://github.com/bcgov/nr-forests-access-management/issues/1586)) ([52fff70](https://github.com/bcgov/nr-forests-access-management/commit/52fff7015e3ab4e40ee0c3fce6656577331d2c96))
+* [#1593](https://github.com/bcgov/nr-forests-access-management/issues/1593) gc notify app name max length ([#1599](https://github.com/bcgov/nr-forests-access-management/issues/1599)) ([96f0ca9](https://github.com/bcgov/nr-forests-access-management/commit/96f0ca9b46de169e7854d703d12236fb37994737))
+* Add new user to local setup script ([#1566](https://github.com/bcgov/nr-forests-access-management/issues/1566)) ([997a8f1](https://github.com/bcgov/nr-forests-access-management/commit/997a8f170c89629bf8eb1f0893941adb6368a948))
+* **deps:** update dependency axios to v1.7.4 [security] ([#1528](https://github.com/bcgov/nr-forests-access-management/issues/1528)) ([d676cde](https://github.com/bcgov/nr-forests-access-management/commit/d676cdef4165982d6d823fd9971001b188228752))
+* ignore env files ([#1578](https://github.com/bcgov/nr-forests-access-management/issues/1578)) ([e4f2db7](https://github.com/bcgov/nr-forests-access-management/commit/e4f2db726b702a4f1f4ea80bd297fd82fd4d370a))
+
+
+### Miscellaneous
+
+* **deps:** bump fast-xml-parser and aws-amplify in /frontend ([#1573](https://github.com/bcgov/nr-forests-access-management/issues/1573)) ([6810f0f](https://github.com/bcgov/nr-forests-access-management/commit/6810f0fe50619c1a8966bd3ecec3eeb79e386de7))
+* **deps:** update boto to v1.35.5 ([#1554](https://github.com/bcgov/nr-forests-access-management/issues/1554)) ([1bba6d4](https://github.com/bcgov/nr-forests-access-management/commit/1bba6d434716d0a92163cbf9cb56cde81611e0e3))
+* **deps:** update dependency authlib to v1.3.1 [security] ([#1446](https://github.com/bcgov/nr-forests-access-management/issues/1446)) ([5357465](https://github.com/bcgov/nr-forests-access-management/commit/53574656ce9588c7124f44fdfce37bcb0149aa4c))
+* **deps:** update dependency npm-run-all2 to v6 ([#1572](https://github.com/bcgov/nr-forests-access-management/issues/1572)) ([a58d103](https://github.com/bcgov/nr-forests-access-management/commit/a58d1035819bcee2356fb8222445f66f5653de8b))
+* **deps:** update github actions all dependencies ([#1567](https://github.com/bcgov/nr-forests-access-management/issues/1567)) ([63f309f](https://github.com/bcgov/nr-forests-access-management/commit/63f309fd3f5fda699cee67715911d8e7bb31f53d))
+* **deps:** update pytest ([#1569](https://github.com/bcgov/nr-forests-access-management/issues/1569)) ([cd274ae](https://github.com/bcgov/nr-forests-access-management/commit/cd274aeaaba07ad522488d6b2dc638cf05a304bf))
+* **deps:** update sqlalchemy ([#1553](https://github.com/bcgov/nr-forests-access-management/issues/1553)) ([e733606](https://github.com/bcgov/nr-forests-access-management/commit/e7336062cdb2f358f2ad81b945a7ffa423189000))
+
 ## [1.22.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.22.1...v1.22.2) (2024-09-17)
 
 
