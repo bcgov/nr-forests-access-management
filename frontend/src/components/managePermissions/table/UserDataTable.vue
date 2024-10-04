@@ -13,7 +13,6 @@ import DataTableHeader from '@/components/managePermissions/table/DataTableHeade
 import { IconSize } from '@/enum/IconEnum';
 import { hashRouter } from '@/router';
 import { routeItems } from '@/router/routeItem';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
 import { isNewAccess } from '@/services/utils';
 import { selectedApplicationId } from '@/store/ApplicationState';
 import {
@@ -24,8 +23,6 @@ import {
 } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
 
-const environmentSettings = new EnvironmentSettings();
-const isDevEnvironment = environmentSettings.isDevEnvironment();
 
 type emit = (
     e: 'deleteUserRoleAssignment',
@@ -166,7 +163,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <button title="User permission history" class="btn btn-icon" :disabled="!isDevEnvironment"
+                        <button title="User permission history" class="btn btn-icon"
                             @click="navigateToUserDetails(data.user_id)">
                             <Icon icon="history" :size="IconSize.small" />
                         </button>
