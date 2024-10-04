@@ -1,7 +1,6 @@
+import api.app.schemas.schemas as schemas
 from api.app import constants as famConstants
-import api.app.schemas as schemas
 from api.app.services.role_service import RoleService
-
 
 TEST_CREATOR = "TESTER"
 TEST_ANOTHER_CREATER = "TESTERTWO"
