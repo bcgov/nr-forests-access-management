@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from api.app.schemas import GCNotifyGrantDelegatedAdminEmailParam
+from api.app.schemas.schemas import GCNotifyGrantDelegatedAdminEmailParam
 from api.app.utils.utils import is_success_response
 from api.config import config
 

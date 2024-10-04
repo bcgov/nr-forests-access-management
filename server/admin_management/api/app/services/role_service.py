@@ -3,7 +3,7 @@ import logging
 from api.app import constants as famConstants
 from api.app.models.model import FamRole
 from api.app.repositories.role_repository import RoleRepository
-from api.app.schemas import FamRoleCreateDto
+from api.app.schemas.schemas import FamRoleCreateDto
 from api.app.services.forest_client_service import ForestClientService
 from sqlalchemy.orm import Session
 

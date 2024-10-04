@@ -3,7 +3,7 @@ import logging
 from api.app.constants import UserType
 from api.app.models import model as models
 from api.app.repositories.user_repository import UserRepository
-from api.app.schemas import FamUserDto, TargetUser
+from api.app.schemas.schemas import FamUserDto, TargetUser
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)

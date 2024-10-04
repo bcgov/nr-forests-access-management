@@ -3,12 +3,12 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
-from api.app import schemas
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
+from api.app.schemas import schemas
 from api.app.services import utils_service
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService

@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from api.app.models.model import FamAccessControlPrivilege, FamRole
-from api.app.schemas import FamAccessControlPrivilegeCreateDto
+from api.app.schemas.schemas import FamAccessControlPrivilegeCreateDto
 from sqlalchemy.orm import Session, joinedload
 
 LOGGER = logging.getLogger(__name__)

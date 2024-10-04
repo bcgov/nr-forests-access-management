@@ -31,8 +31,8 @@ from api.app.repositories.forest_client_repository import \
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.user_repository import UserRepository
 from api.app.routers.router_guards import get_verified_target_user
-from api.app.schemas import (FamAccessControlPrivilegeCreateDto, FamUserDto,
-                             TargetUser)
+from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
+                                     FamUserDto, TargetUser)
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
 from api.app.services.admin_user_access_service import AdminUserAccessService
