@@ -27,6 +27,7 @@ class PermissionAduitHistoryBaseSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class PermissionAduitHistoryCreateSchema(PermissionAduitHistoryBaseSchema):
     """
     This is the class for "create" of a "Privliege Change Audit" record.
@@ -34,6 +35,7 @@ class PermissionAduitHistoryCreateSchema(PermissionAduitHistoryBaseSchema):
     application_id: int
     change_performer_user_id: int
     change_target_user_id: int
+
 
 class PrivilegeChangePerformerSchema(BaseModel):
     """
@@ -85,6 +87,22 @@ class PrivilegeChangePerformerSchema(BaseModel):
 
         return values
 
+
+class PrivilegeDetailsScopeSchema(BaseModel):
+    scope_type: PrivilegeDetailsScopeTypeEnum
+    client_id: Optional[
+        Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
+    ] = None
+    client_name: Optional[
+        Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
+    ] = None
+
+
+class PrivilegeDetailsRoleSchema(BaseModel):
+    role: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
+    scopes: Optional[List[PrivilegeDetailsScopeSchema]] = None
+
+
 class PrivilegeDetailsSchema(BaseModel):
     """
     This schema represents the structure of the `privilege_details` JSON field used in the `fam_privilege_change_audit` table.
@@ -132,22 +150,6 @@ class PrivilegeDetailsSchema(BaseModel):
             )
 
         return values
-
-
-class PrivilegeDetailsScopeSchema(BaseModel):
-    scope_type: PrivilegeDetailsScopeTypeEnum
-    client_id: Optional[
-        Annotated[str, StringConstraints(max_length=CLIENT_NUMBER_MAX_LEN)]
-    ] = None
-    client_name: Optional[
-        Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
-    ] = None
-
-
-class PrivilegeDetailsRoleSchema(BaseModel):
-    role: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
-    scopes: Optional[List[PrivilegeDetailsScopeSchema]] = None
-
 
 # ---------------------------- Request and Response ---------------------------- #
 
