@@ -5,7 +5,7 @@ import {
     selectedApplicationId,
 } from '@/store/ApplicationState';
 import { FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
+// import { // TODO setRouteToastError } from '@/store/ToastState';
 import type { CognitoUserSession } from 'amazon-cognito-identity-js';
 import {
     AdminRoleAuthGroup,
@@ -262,7 +262,7 @@ const cacheUserAccess = async () => {
         storeFamUser(state.value.famLoginUser);
     } catch (error: any) {
         console.log("Unable to get user's access in FAM", error);
-        setRouteToastError(error);
+        // TODO setRouteToastError(error);
     }
 };
 

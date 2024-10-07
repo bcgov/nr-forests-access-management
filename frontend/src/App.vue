@@ -2,7 +2,7 @@
 import { defineAsyncComponent, shallowRef, watch, type Component } from 'vue';
 import { RouterView } from 'vue-router';
 import { useRoute } from 'vue-router';
-import ToastMessage from '@/components/common/ToastMessage.vue';
+// TODO import ToastMessage from '@/components/common/ToastMessage.vue';
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 
 const route = useRoute();
@@ -19,7 +19,7 @@ watch(
 </script>
 
 <template>
-    <ToastMessage />
+    <!-- <ToastMessage /> -->
     <component :is="layout_component">
         <router-view />
     </component>

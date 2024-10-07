@@ -15,7 +15,7 @@ import {
 import { populateBreadcrumb } from '@/store/BreadcrumbState';
 import { FAM_APPLICATION_ID } from '@/store/Constants';
 import LoginUserState from '@/store/FamLoginUserState';
-import { setRouteToastError as emitRouteToastError } from '@/store/ToastState';
+// import { setRouteToastError as // TODO emitRouteToastError } from '@/store/ToastState';
 import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -80,7 +80,7 @@ const beforeEnterGrantUserPermissionRoute = async (
     from: RouteLocationNormalized
 ) => {
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        // TODO emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
 
@@ -93,7 +93,7 @@ const beforeEnterGrantApplicationAdminRoute = async (
     from: RouteLocationNormalized
 ) => {
     if (selectedApplicationId.value !== FAM_APPLICATION_ID) {
-        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        // TODO emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
     populateBreadcrumb([routeItems.dashboard]);
@@ -104,7 +104,7 @@ const beforeEnterGrantDelegationAdminRoute = async (
     to: RouteLocationNormalized
 ) => {
     if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+        // TODO emitRouteToastError(ACCESS_RESTRICTED_ERROR);
         return { path: routeItems.dashboard.path };
     }
     populateBreadcrumb([routeItems.dashboard]);
@@ -135,7 +135,7 @@ export const beforeEachRouteHandler = async (
             "You're not login",
             { to, from }
         );
-        emitRouteToastError(routeError);
+        // TODO emitRouteToastError(routeError);
         // Back to Landing after emit error.
         return { path: routeItems.landing.path };
     }
@@ -150,7 +150,7 @@ export const beforeEachRouteHandler = async (
             'You do not have any access in FAM',
             { to, from }
         );
-        emitRouteToastError(routeError);
+        // TODO emitRouteToastError(routeError);
     }
 
     // Application selected guard.
@@ -160,7 +160,7 @@ export const beforeEachRouteHandler = async (
             'No application is Selected',
             { to, from }
         );
-        emitRouteToastError(routeError);
+        // TODO emitRouteToastError(routeError);
         // Back to dashboard after emit error.
         return { path: routeItems.dashboard.path };
     }
@@ -169,7 +169,7 @@ export const beforeEachRouteHandler = async (
     if (to.meta.requiredPrivileges) {
         for (let role of to.meta.requiredPrivileges as Array<string>) {
             if (!LoginUserState.hasAccess(role)) {
-                emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+                // TODO emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };
             }
             // if require APP_ADMIN role, need to be the admin of the selected application
@@ -177,7 +177,7 @@ export const beforeEachRouteHandler = async (
                 role == AdminRoleAuthGroup.AppAdmin &&
                 !LoginUserState.isAdminOfSelectedApplication()
             ) {
-                emitRouteToastError(ACCESS_RESTRICTED_ERROR);
+                // TODO emitRouteToastError(ACCESS_RESTRICTED_ERROR);
                 return { path: routeItems.dashboard.path };
             }
         }
