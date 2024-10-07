@@ -7,14 +7,6 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { useConfirm } from 'primevue/useconfirm';
 import { computed, reactive, ref, type PropType } from 'vue';
 
-import NewUserTag from '@/components/common/NewUserTag.vue';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { hashRouter } from '@/router';
-import { routeItems } from '@/router/routeItem';
-import { isNewAccess } from '@/services/utils';
-import { selectedApplicationId } from '@/store/ApplicationState';
 import {
     NEW_ACCESS_STYLE_IN_TABLE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
@@ -22,6 +14,14 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from '@/store/Constants';
 import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
+import { routeItems } from '@/router/routeItem';
+import { IconSize } from '@/enum/IconEnum';
+import { isNewAccess } from '@/services/utils';
+
+import NewUserTag from '@/components/common/NewUserTag.vue';
+import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
+import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
+import { navigateToUserDetails } from '@/components/managePermissions/table/utils';
 
 
 type emit = (
@@ -77,16 +77,6 @@ function deleteAssignment(assignment: FamApplicationUserRoleAssignmentGetSchema)
         accept: () => {
             emit('deleteUserRoleAssignment', assignment);
         },
-    });
-}
-
-const navigateToUserDetails = (userId: string) => {
-    hashRouter.push({
-        name: routeItems.userDetails.name,
-        params: {
-            applicationId: selectedApplicationId.value,
-            userId,
-        }
     });
 }
 
