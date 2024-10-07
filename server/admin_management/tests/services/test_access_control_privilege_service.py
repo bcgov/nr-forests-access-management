@@ -67,6 +67,7 @@ def test_create_access_control_privilege_many(
     user_service: UserService,
     forest_client_service: ForestClientService,
     db_pg_session: Session,
+    new_idir_requester,
 ):
     # verify the new user does not exist
     found_user = user_service.get_user_by_domain_and_name(
@@ -74,13 +75,14 @@ def test_create_access_control_privilege_many(
         TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE.get("user_type_code"),
     )
     assert found_user is None
+    requester = new_idir_requester
     # test create access control privilege for concrete role without forest client number
     return_result = (
         access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(
                 **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
             ),
-            TEST_CREATOR,
+            requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE
             )
@@ -113,7 +115,7 @@ def test_create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(
                 **TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             ),
-            TEST_CREATOR,
+            requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -162,7 +164,7 @@ def test_create_access_control_privilege_many(
                     ],
                 }
             ),
-            TEST_CREATOR,
+            requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -206,7 +208,7 @@ def test_create_access_control_privilege_many(
         del copy_data["forest_client_numbers"]
         access_control_privilege_service.create_access_control_privilege_many(
             schemas.FamAccessControlPrivilegeCreateRequest(**copy_data),
-            TEST_CREATOR,
+            requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -238,6 +240,7 @@ def test_create_access_control_privilege_many_invalid_user_type(
 
 def test_create_access_control_privilege_many_invalid_role_id(
     access_control_privilege_service: AccessControlPrivilegeService,
+    new_idir_requester
 ):
     # test create access control privilege with non exists role id
     with pytest.raises(HTTPException) as e:
@@ -248,7 +251,7 @@ def test_create_access_control_privilege_many_invalid_role_id(
                     "role_id": TEST_NOT_EXIST_ROLE_ID,
                 }
             ),
-            TEST_CREATOR,
+            new_idir_requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -259,6 +262,7 @@ def test_create_access_control_privilege_many_invalid_role_id(
 
 def test_create_access_control_privilege_many_invalid_forest_client(
     access_control_privilege_service: AccessControlPrivilegeService,
+    new_idir_requester
 ):
     with pytest.raises(HTTPException) as e:
         access_control_privilege_service.create_access_control_privilege_many(
@@ -268,7 +272,7 @@ def test_create_access_control_privilege_many_invalid_forest_client(
                     "forest_client_numbers": [TEST_NON_EXIST_FOREST_CLIENT_NUMBER],
                 }
             ),
-            TEST_CREATOR,
+            new_idir_requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -283,6 +287,7 @@ def test_create_access_control_privilege_many_invalid_forest_client(
 
 def test_create_access_control_privilege_many_inactive_forest_client(
     access_control_privilege_service: AccessControlPrivilegeService,
+    new_idir_requester
 ):
     with pytest.raises(HTTPException) as e:
         access_control_privilege_service.create_access_control_privilege_many(
@@ -292,7 +297,7 @@ def test_create_access_control_privilege_many_inactive_forest_client(
                     "forest_client_numbers": [TEST_INACTIVE_FOREST_CLIENT_NUMBER],
                 }
             ),
-            TEST_CREATOR,
+            new_idir_requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
@@ -307,6 +312,7 @@ def test_create_access_control_privilege_many_inactive_forest_client(
 
 def test_create_access_control_privilege_many_active_and_inactive_forest_client(
     access_control_privilege_service: AccessControlPrivilegeService,
+    new_idir_requester
 ):
     # test create access control privilege for abstract parent role with 3 forest client numbers,
     # one is inactive, one is active, one is invalid
@@ -322,7 +328,7 @@ def test_create_access_control_privilege_many_active_and_inactive_forest_client(
                     ],
                 }
             ),
-            TEST_CREATOR,
+            new_idir_requester,
             to_mocked_target_user(
                 TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST
             )
