@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent, shallowRef, watch, type Component } from 'vue';
-import { RouterView } from 'vue-router';
-import { useRoute } from 'vue-router';
+import { useRoute, RouterView } from 'vue-router';
 // TODO import ToastMessage from '@/components/common/ToastMessage.vue';
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 
