@@ -37,7 +37,7 @@ const crumbs: BreadCrumbType[] = [
 <template>
   <div class="user-detail-page-container">
     <BreadCrumbs :crumbs="crumbs" />
-    <PageTitle class="user-detail-page-title" title="User History" />
+    <PageTitle class="user-detail-page-title" title="User Permissions History" />
     <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
     <div class="gray-container">
       <UserPermissionHistoryTable :user-id="userId!" :application-id="applicationId!" />

@@ -60,7 +60,7 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
 
     <!-- Table with values -->
     <DataTable class="user-permission-table" :value="auditHistoryQuery.data.value" :striped-rows="true" v-else>
-        <template #empty> No User History found.</template>
+        <template #empty> No User Permissions History found.</template>
         <Column field="create_date" :header="headers[0]">
             <template #body="slotProps">
                 <DateCol :utc-date="slotProps.data.create_date" />
