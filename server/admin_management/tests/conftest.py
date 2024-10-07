@@ -5,8 +5,10 @@ from typing import List, Optional, Union
 
 import pytest
 import testcontainers.compose
+from api.app.services.permission_audit_service import PermissionAuditService
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from mock import patch
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -307,6 +309,16 @@ def override_get_verified_target_user(test_client_fixture):
     return _override_get_verified_target_user
 
 
+@pytest.fixture(scope="function", autouse=True)
+def mock_forest_client_integration_service():
+    # Mocked dependency class object
+    with patch(
+        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
+        autospec=True,
+    ) as m:
+        yield m.return_value  # Very important to get instance of mocked class.
+
+
 def to_mocked_target_user(rbody: dict):
     return TargetUser(**rbody)
 
@@ -391,3 +403,8 @@ def admin_user_access_service(db_pg_session: Session):
 @pytest.fixture(scope="function")
 def forest_client_integration_service():
     return ForestClientIntegrationService()
+
+
+@pytest.fixture(scope="function")
+def permission_audit_service(db_pg_session: Session):
+    return PermissionAuditService(db_pg_session)

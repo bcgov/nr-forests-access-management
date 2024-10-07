@@ -148,7 +148,7 @@ class PermissionAuditService:
                 forest_client_name = fc_search_result[0]["clientName"]
             else:
                 error_msg = (
-                    "Revoke user permission encountered problem."
+                    "Revoke delegated admin permission encountered problem."
                     + f"Unknown forest client number {forest_client_number} for "
                     + f"scoped permission {revoked_permission_role.role_name}."
                 )

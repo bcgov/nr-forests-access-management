@@ -72,6 +72,10 @@ TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreateDto(
         "create_user": TEST_CREATOR,
     }
 )
+MOCK_FIND_CLIENT_00001011_RETURN = [{
+	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
+}]
+
 
 # -------------------------- test role data ------------------------- #
 TEST_NOT_EXIST_ROLE_ID = 0
