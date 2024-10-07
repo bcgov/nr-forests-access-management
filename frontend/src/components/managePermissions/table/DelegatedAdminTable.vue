@@ -20,6 +20,7 @@ import DataTableHeader from '@/components/managePermissions/table/DataTableHeade
 import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
 import { navigateToUserDetails } from '@/components/managePermissions/table/utils';
+import Icon from '@/components/common/Icon.vue'
 
 type emit = (
     e: 'deleteDelegatedAdminAssignment',
