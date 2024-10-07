@@ -188,7 +188,7 @@ def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
 
 
 @pytest.fixture(scope="function")
-def new_idir_requester(setup_new_user):
+def new_idir_requester(setup_new_user) -> Requester:
     """
     Setup a new IDIR type user in test db session and return as a schema object.
     Convenient setup for some test scenarios.

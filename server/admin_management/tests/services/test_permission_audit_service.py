@@ -32,7 +32,7 @@ def test_store_delegated_admin_audit_history_granted_role_no_scope(
 	db_pg_session: Session,
 	permission_audit_service: PermissionAuditService,
 	setup_new_user,
-	new_idir_requester,
+	new_idir_requester: Requester,
 	mocker
 ):
 	"""
@@ -73,7 +73,7 @@ def test_store_delegated_admin_audit_history_nosaving_when_no_success_permission
 	db_pg_session: Session,
 	permission_audit_service: PermissionAuditService,
 	setup_new_user,
-	new_idir_requester
+	new_idir_requester: Requester
 ):
 	"""
 	Test service saving delegated admin permission granted history but no success granted permission
@@ -108,7 +108,7 @@ def test_store_delegated_admin_audit_history_granted_role_with_client_scopes(
 	db_pg_session: Session,
 	permission_audit_service: PermissionAuditService,
 	setup_new_user,
-	new_idir_requester,
+	new_idir_requester: Requester,
 	mocker
 ):
 	"""
@@ -151,7 +151,7 @@ def test_store_delegated_admin_audit_history_revoke_role_no_scopes(
 	db_pg_session: Session,
 	permission_audit_service: PermissionAuditService,
 	setup_new_user,
-	new_idir_requester,
+	new_idir_requester: Requester,
 	mocker
 ):
 	"""
@@ -192,7 +192,7 @@ def test_store_delegated_admin_audit_history_revoke_role_with_client_scopes(
 	permission_audit_service: PermissionAuditService,
 	db_pg_session: Session,
 	setup_new_user,
-	new_idir_requester,
+	new_idir_requester: Requester,
 	mocker
 ):
 	"""
@@ -240,7 +240,7 @@ def test_store_delegated_admin_audit_history_revoke_role_client_search_error(
 	mock_forest_client_integration_service: ForestClientIntegrationService,
 	db_pg_session: Session,
 	setup_new_user,
-	new_idir_requester,
+	new_idir_requester: Requester,
 	permission_audit_service: PermissionAuditService,
 	mocker
 ):
