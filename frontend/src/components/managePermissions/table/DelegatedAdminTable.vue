@@ -19,6 +19,7 @@ import {
 import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
 import { IconSize } from '@/enum/IconEnum';
 import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
+import { navigateToUserDetails } from '@/components/managePermissions/table/utils';
 
 type emit = (
     e: 'deleteDelegatedAdminAssignment',
@@ -191,6 +192,11 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
+                        <button title="User permission history" class="btn btn-icon"
+                            @click="navigateToUserDetails(data.user_id)">
+                            <Icon icon="history" :size="IconSize.small" />
+                        </button>
+
                         <button
                             class="btn btn-icon"
                             title="Delete delegated admin"
