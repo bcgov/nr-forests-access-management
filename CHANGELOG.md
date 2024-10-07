@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.1...v1.24.0) (2024-10-07)
+
+
+### Features
+
+* [#1619](https://github.com/bcgov/nr-forests-access-management/issues/1619) add user history icon to d amin action column ([#1622](https://github.com/bcgov/nr-forests-access-management/issues/1622)) ([e167740](https://github.com/bcgov/nr-forests-access-management/commit/e167740e537e7e4cb435421c77d44d9b92ef44ba))
+
 ## [1.23.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.0...v1.23.1) (2024-10-04)
 
 
