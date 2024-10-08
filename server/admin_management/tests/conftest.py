@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 
 import pytest
 import testcontainers.compose
-from api.app.services.permission_audit_service import PermissionAuditService
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock import patch
@@ -40,6 +39,7 @@ from api.app.services.access_control_privilege_service import \
 from api.app.services.admin_user_access_service import AdminUserAccessService
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.forest_client_service import ForestClientService
+from api.app.services.permission_audit_service import PermissionAuditService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from tests.constants import (TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
