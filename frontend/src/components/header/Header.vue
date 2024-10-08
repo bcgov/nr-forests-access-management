@@ -11,7 +11,7 @@ import { AUTH_KEY } from "@/constants/InjectionKeys";
 import type { AuthContext } from "@/types/AuthTypes";
 
 const auth = inject<AuthContext>(AUTH_KEY);
-console.log("headerss", auth?.authState.isAuthenticated);
+console.log("headerss", auth?.authState);
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings

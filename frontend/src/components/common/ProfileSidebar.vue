@@ -63,7 +63,11 @@ const adminRoles = "";
             </div>
             <div class="sidebar-body">
                 <Avatar
-                    label="11"
+                    :label="
+                        famLoginUser?.username
+                            ? famLoginUser.username.slice(0, 2)
+                            : ''
+                    "
                     class="mr-2 profile-avatar"
                     size="xlarge"
                     shape="circle"

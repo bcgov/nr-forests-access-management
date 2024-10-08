@@ -103,7 +103,6 @@ const hashRoutes = [
     },
     {
         path: "/my-permissions",
-        name: "MyPermissions",
         component: ProtectedLayout,
         async beforeEnter(
             _to: RouteLocationNormalized,
@@ -116,6 +115,7 @@ const hashRoutes = [
         children: [
             {
                 path: "",
+                name: "MyPermissions",
                 component: MyPermissionsView,
                 meta: { title: "Check my permissions" },
             },
