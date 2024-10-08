@@ -51,7 +51,7 @@ enum PermissionChangeType {
                 <p>Organizations:</p>
                 <div class="organizations-list">
                     <div v-for="scope in role.scopes">
-                        <div v-if="scope && scope.scope_type === 'Client'">
+                        <div v-if="scope && scope.scope_type === PrivilegeDetailsScopeTypeEnum.Client">
                             {{ formatForestClientDisplayName(scope.client_id, scope.client_name) }}
                         </div>
                     </div>
