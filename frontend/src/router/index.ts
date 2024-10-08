@@ -1,201 +1,148 @@
 import {
-    createRouter, createWebHashHistory, createWebHistory
-} from 'vue-router';
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
+    createRouter,
+    createWebHashHistory,
+    createWebHistory,
+} from "vue-router";
+import type { RouteLocationNormalized, NavigationGuardNext } from "vue-router";
+import LandingView from "@/views/LandingView.vue";
+import ManagePermissionsView from "@/views/ManagePermissionsView.vue";
+import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
+import { defineComponent } from "vue";
+import { Auth } from "aws-amplify"; // Assuming you're using Amplify for authentication
 
-import {
-    beforeEachRouteHandler,
-    beforeEnterHandlers,
-} from '@/router/routeHandlers';
-import { routeItems } from '@/router/routeItem';
-import { AdminRoleAuthGroup } from 'fam-admin-mgmt-api/model';
+// Lazy-loaded components for protected routes
+const UserDetails = () => import("@/views/UserDetails");
+const NotFound = () => import("@/components/NotFound.vue");
+const GrantAccessView = () => import("@/views/GrantAccessView.vue");
+const GrantApplicationAdminView = () =>
+    import("@/views/GrantApplicationAdminView.vue");
+const GrantDelegatedAdminView = () =>
+    import("@/views/GrantDelegatedAdminView.vue");
+const MyPermissionsView = () => import("@/views/MyPermissionsView.vue");
 
-// Initial load
-import LandingView from '@/views/LandingView.vue';
-import ManagePermissionsView from '@/views/ManagePermissionsView.vue';
-import AuthCallback from '@/components/AuthCallbackHandler.vue';
-import AuthService from '../services/AuthService';
+// Inline empty component for AuthCallback
+const AuthCallbackComponent = defineComponent({
+    template: "<div></div>",
+});
 
-// Lazy load all components
-const UserDetails = () => import('@/views/UserDetails');
-const NotFound = () => import('@/components/NotFound.vue');
-const GrantAccessView = () => import('@/views/GrantAccessView.vue');
-const GrantApplicationAdminView = () => import('@/views/GrantApplicationAdminView.vue');
-const GrantDelegatedAdminView = () => import('@/views/GrantDelegatedAdminView.vue');
-const MyPermissionsView = () => import('@/views/MyPermissionsView.vue');
+// Check if the user is authenticated
+async function isAuthenticated() {
+    try {
+        await Auth.currentAuthenticatedUser(); // Check for authenticated user
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
 
-// WARNING: any components referenced below that themselves reference the router cannot be automatically hot-reloaded in local development due to circular dependency
-// See vitejs issue https://github.com/vitejs/vite/issues/3033 for discussion.
-// Symptoms: you will see the following errors in your browser's Javascript console:
-// ReferenceError: Cannot access 'ApplicationSelection' before initialization at index.ts:21:18
-// Failed to reload /src/components/ApplicationSelection.vue. This could be due to syntax errors or importing non-existent modules.
-// Workaround: reload the page in the browser
-// Workarounds:
-// 1. Reload the page in the browser if the hot-reload fails.
-// 2. (Recommended) Within router below use a wrapper view component. The component referenced by the wrapper can be hot-reloaded, while updates to the wrapper view would still trigger this issue.
-//    There still seem to be cases where page reload is needed.
-// 3. (Not recommended) Within router below, use route-level code-splitting which generates a separately loaded javascript file for this route. Syntax: component: () => import(../components/<component>.vue) syntax.
-//    This fixes the issue, but seems to break using shared state (e.g. in ApplicationService).
-
-/**
- * meta:
- * - `requiresAuth`:
- *      Means "authentication (logged in)" is required. For router guard.
- *      If not provided or `false` means it is "public" (for everyone without authentication).
- *
- * - `requiresAppSelected`:
- *      Means user should have selected (or default to) an `application` as a context for business logic.
- *      => global "selectedApplication" state is set.
- */
-
-
-// Routes using createWebHashHistory
+// Hash-based routes (main app routes)
 const hashRoutes = [
     {
-        path: '/',
-        name: routeItems.landing.name,
-        meta: {
-            requiresAuth: false,
-            title: 'Welcome to FAM',
-            layout: 'SimpleLayout',
-            hasBreadcrumb: false,
-        },
-        beforeEnter: (_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
-            if (AuthService.isLoggedIn()) {
-                next({ name: routeItems.dashboard.name });
+        path: "/",
+        name: "Landing",
+        component: LandingView,
+        async beforeEnter(
+            _to: RouteLocationNormalized, // Explicitly type 'to'
+            _from: RouteLocationNormalized, // Use '_' to indicate that 'from' is intentionally unused
+            next: NavigationGuardNext // Type 'next' as NavigationGuardNext
+        ) {
+            const auth = await isAuthenticated();
+            if (auth) {
+                next("/dashboard"); // Redirect to dashboard if authenticated
             } else {
-                next();
+                next(); // Proceed to landing if not authenticated
             }
         },
-        component: LandingView,
-    },
-    {
-        path: routeItems.dashboard.path,
-        name: routeItems.dashboard.name,
-        meta: {
-            requiresAuth: true,
-            title: routeItems.dashboard.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: false,
-        },
-        component: ManagePermissionsView,
-        beforeEnter: beforeEnterHandlers[routeItems.dashboard.name],
-        props: (route: any) => {
-            return {
-                userRoleAssignments: route.meta.userRoleAssignments,
-                applicationAdmins: route.meta.applicationAdmins,
-                delegatedAdmins: route.meta.delegatedAdmins,
-                newAppAdminId: route.query.newAppAdminId,
-                newUserAccessIds: route.query.newUserAccessIds,
-                newDelegatedAdminIds: route.query.newDelegatedAdminIds,
-            };
-        },
-    },
-    {
-        path: routeItems.grantUserPermission.path,
-        name: routeItems.grantUserPermission.name,
-        meta: {
-            requiresAuth: true,
-            requiresAppSelected: true,
-            title: routeItems.grantUserPermission.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: true,
-        },
-        component: GrantAccessView,
-        beforeEnter: beforeEnterHandlers[routeItems.grantUserPermission.name],
-    },
-    {
-        path: routeItems.grantAppAdmin.path,
-        name: routeItems.grantAppAdmin.name,
-        meta: {
-            requiresAuth: true,
-            requiresAppSelected: true,
-            requiredPrivileges: [AdminRoleAuthGroup.FamAdmin],
-            title: routeItems.grantAppAdmin.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: true,
-        },
-        component: GrantApplicationAdminView,
-        beforeEnter: beforeEnterHandlers[routeItems.grantAppAdmin.name],
-    },
-    {
-        path: routeItems.grantDelegatedAdmin.path,
-        name: routeItems.grantDelegatedAdmin.name,
-        meta: {
-            requiresAuth: true,
-            requiresAppSelected: true,
-            requiredPrivileges: [AdminRoleAuthGroup.AppAdmin],
-            title: routeItems.grantDelegatedAdmin.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: true,
-        },
-        component: GrantDelegatedAdminView,
-        beforeEnter: beforeEnterHandlers[routeItems.grantDelegatedAdmin.name],
-    },
-    {
-        path: routeItems.userDetails.path,
-        name: routeItems.userDetails.name,
-        meta: {
-            requiresAuth: true,
-            requiresAppSelected: true,
-            title: routeItems.userDetails.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: false,
-        },
-        component: UserDetails,
-    },
-    {
-        path: routeItems.myPermissions.path,
-        name: routeItems.myPermissions.name,
-        meta: {
-            requiresAuth: true,
-            title: routeItems.myPermissions.label,
-            layout: 'ProtectedLayout',
-            hasBreadcrumb: false,
-        },
-        component: MyPermissionsView,
-    },
-    {
-        path: '/:catchAll(.*)',
         meta: {
             requiresAuth: false,
         },
+    },
+    {
+        path: "/dashboard",
+        name: "Dashboard",
+        component: ProtectedLayout,
+        async beforeEnter(
+            _to: RouteLocationNormalized,
+            _from: RouteLocationNormalized,
+            next: NavigationGuardNext
+        ) {
+            const auth = await isAuthenticated();
+            if (!auth) {
+                next("/"); // Redirect to landing if not authenticated
+            } else {
+                next(); // Proceed to dashboard if authenticated
+            }
+        },
+        children: [
+            {
+                path: "",
+                component: ManagePermissionsView,
+                name: "ManagePermissions",
+                meta: { title: "Manage permissions" },
+            },
+            {
+                path: "grant",
+                component: GrantAccessView,
+                name: "GrantAccess",
+                meta: { title: "Grant Access" },
+            },
+            {
+                path: "grant-app-admin",
+                component: GrantApplicationAdminView,
+                name: "GrantAppAdmin",
+                meta: { title: "Grant Application Admin" },
+            },
+            {
+                path: "grant-delegated-admin",
+                component: GrantDelegatedAdminView,
+                name: "GrantDelegatedAdmin",
+                meta: { title: "Grant Delegated Admin" },
+            },
+            {
+                path: "user-details",
+                component: UserDetails,
+                name: "UserDetails",
+                meta: { title: "User Details" },
+            },
+            {
+                path: "my-permissions",
+                component: MyPermissionsView,
+                name: "MyPermissions",
+                meta: { title: "Check my permissions" },
+            },
+        ],
+        meta: {
+            requiresAuth: true, // Protect all child routes with authentication
+        },
+    },
+    {
+        path: "/:catchAll(.*)", // Catch-all for undefined routes
         component: NotFound,
     },
 ];
 
-/**
- * Router for `authCallback` using `createWebHistory`.
- *
- * This router is separated to ensure that the `authCallback` URL does not have a `#` prefix,
- * providing a clean URL for authentication callbacks without further configurations.
- */
-const historyRouter = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [
-        {
-            path: '/authCallback',
-            name: 'Cognito Auth (success) Callback',
-            meta: {
-                requiresAuth: false,
-            },
-            component: AuthCallback,
+// Route for handling `/authCallback` separately with `historyRouter`
+const historyRoutes = [
+    {
+        path: "/authCallback",
+        name: "AuthCallback",
+        component: AuthCallbackComponent,
+        meta: {
+            requiresAuth: false,
         },
-    ],
-});
+    },
+];
 
-/**
- * Router for all other routes using `createWebHashHistory`.
- *
- * This router is used for handling deep links by using the `#` symbol,
- * ensuring that deep links work correctly across different environments,
- * especially when server settings may not support `createWebHistory`.
- */
+// Hash router for the main app
 const hashRouter = createRouter({
-    history: createWebHashHistory(import.meta.env.BASE_URL),
+    history: createWebHashHistory(),
     routes: hashRoutes,
 });
 
-hashRouter.beforeEach(beforeEachRouteHandler);
+// History router for the `/authCallback` route
+const historyRouter = createRouter({
+    history: createWebHistory(),
+    routes: historyRoutes,
+});
 
-export { historyRouter, hashRouter, hashRoutes };
+export { hashRouter, historyRouter };

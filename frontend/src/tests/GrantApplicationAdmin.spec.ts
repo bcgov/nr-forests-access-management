@@ -1,15 +1,15 @@
-import GrantApplicationAdmin from '@/components/grantaccess/GrantApplicationAdmin.vue';
-import { hashRouter, hashRoutes } from '@/router';
-import { routeItems } from '@/router/routeItem';
-import { populateBreadcrumb } from '@/store/BreadcrumbState';
-import { mount, VueWrapper } from '@vue/test-utils';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import waitForExpect from 'wait-for-expect';
-import { fixJsdomCssErr } from './common/fixJsdomCssErr';
+import GrantApplicationAdmin from "@/components/grantaccess/GrantApplicationAdmin.vue";
+import { hashRouter, hashRoutes } from "@/router";
+import { routeItems } from "@/router/routeItem";
+import { populateBreadcrumb } from "@/store/BreadcrumbState";
+import { mount, VueWrapper } from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import waitForExpect from "wait-for-expect";
+import { fixJsdomCssErr } from "./common/fixJsdomCssErr";
 
 fixJsdomCssErr();
-vi.mock('vue-router', async () => {
-    const actual: Object = await vi.importActual('vue-router');
+vi.mock("vue-router", async () => {
+    const actual: Object = await vi.importActual("vue-router");
     return {
         ...actual,
         useRoute: () => {
@@ -20,9 +20,9 @@ vi.mock('vue-router', async () => {
     };
 });
 
-describe('GrantApplicationAdmin', () => {
+describe("GrantApplicationAdmin", () => {
     let wrapper: VueWrapper;
-    const routerPushSpy = vi.spyOn(hashRouter, 'push');
+    const routerPushSpy = vi.spyOn(hashRouter, "push");
 
     //populate the breadcrumbState
     const breadcrumbItems = [routeItems.dashboard];
@@ -39,62 +39,64 @@ describe('GrantApplicationAdmin', () => {
         wrapper.unmount();
     });
 
-    it('Should display the correct heading texts', () => {
+    it("Should display the correct heading texts", () => {
         const titleText = [
-            'Add application admin',
-            'User information',
-            'Add application',
+            "Add application admin",
+            "User information",
+            "Add application",
         ];
         const subtitleText = [
-            'All fields are mandatory',
-            'Select an application this user will be able to manage',
+            "All fields are mandatory",
+            "Select an application this user will be able to manage",
         ];
-        wrapper.findAll('.title').forEach((title, i) => {
+        wrapper.findAll(".title").forEach((title, i) => {
             expect(title.isVisible()).toBe(true);
             expect(title.element.textContent).toContain(titleText[i]);
         });
 
-        wrapper.findAll('.subtitle').forEach((subtitle, i) => {
+        wrapper.findAll(".subtitle").forEach((subtitle, i) => {
             expect(subtitle.isVisible()).toBe(true);
             expect(subtitle.element.textContent).toContain(subtitleText[i]);
         });
     });
 
-    it('Should display the correct breadcrumb info', async () => {
-        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+    it("Should display the correct breadcrumb info", async () => {
+        const breadcrumb = wrapper.findComponent({ name: "Breadcrumb" });
 
         expect(breadcrumb.exists()).toBe(true);
 
         // assert that primevue breadcrumb is receiving the correct prop
-        expect(breadcrumb.props('model')).toEqual(breadcrumbItems);
+        expect(breadcrumb.props("model")).toEqual(breadcrumbItems);
 
         // assert that the text is the same as the breacrumbItems label
-        breadcrumb.findAll('p-breadcrumb-list span').forEach((breadcrumbItem, i) => {
-            expect(breadcrumbItem.isVisible()).toBe(true);
-            expect(breadcrumbItem.element.textContent).toBe(
-                breadcrumbItems[i].label
-            );
-        });
+        breadcrumb
+            .findAll("p-breadcrumb-list span")
+            .forEach((breadcrumbItem, i) => {
+                expect(breadcrumbItem.isVisible()).toBe(true);
+                expect(breadcrumbItem.element.textContent).toBe(
+                    breadcrumbItems[i].label
+                );
+            });
     });
 
-    it('Should redirect when breadcrumb item is clickled', async () => {
-        const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
-        const breadcrumbDashboardItem = breadcrumb.findAll('a').find((item) => {
+    it("Should redirect when breadcrumb item is clickled", async () => {
+        const breadcrumb = wrapper.findComponent({ name: "Breadcrumb" });
+        const breadcrumbDashboardItem = breadcrumb.findAll("a").find((item) => {
             return item.element.textContent === routeItems.dashboard.label;
         });
 
         expect(breadcrumbDashboardItem?.element.textContent).toBe(
             routeItems.dashboard.label
         );
-        await breadcrumbDashboardItem?.trigger('click');
+        await breadcrumbDashboardItem?.trigger("click");
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
-    it('Should show validation error when username input invalid', async () => {
-        const usernameInputText = wrapper.find('#userIdInput');
+    it("Should show validation error when username input invalid", async () => {
+        const usernameInputText = wrapper.find("#userIdInput");
         const usernameInputTextEl =
             usernameInputText.element as HTMLInputElement;
-        const btnVerify = wrapper.find('.input-with-verify-button button');
+        const btnVerify = wrapper.find(".input-with-verify-button button");
 
         // input is rendered
         expect(usernameInputText.isVisible()).toBe(true);
@@ -102,47 +104,47 @@ describe('GrantApplicationAdmin', () => {
 
         //verify btn is disabled by default
         expect((btnVerify.element as HTMLButtonElement).disabled).toBe(true);
-        expect(btnVerify.classes()).toContain('p-disabled');
+        expect(btnVerify.classes()).toContain("p-disabled");
 
-        await usernameInputText.setValue('I');
-        expect(usernameInputTextEl.value).toBe('I');
+        await usernameInputText.setValue("I");
+        expect(usernameInputTextEl.value).toBe("I");
 
         await waitForExpect(() => {
             expect(
-                wrapper.find('.input-with-verify-button .invalid-feedback')
+                wrapper.find(".input-with-verify-button .invalid-feedback")
                     .element.textContent
-            ).toContain('at least 2 characters');
+            ).toContain("at least 2 characters");
 
             //verify btn is disabled
             expect((btnVerify.element as HTMLButtonElement).disabled).toBe(
                 true
             );
-            expect(btnVerify.classes()).toContain('p-disabled');
+            expect(btnVerify.classes()).toContain("p-disabled");
         });
 
-        await usernameInputText.setValue('');
+        await usernameInputText.setValue("");
 
-        expect(usernameInputTextEl.value).toBe('');
+        expect(usernameInputTextEl.value).toBe("");
         await waitForExpect(() => {
             expect(
-                wrapper.find('.input-with-verify-button .invalid-feedback')
+                wrapper.find(".input-with-verify-button .invalid-feedback")
                     .element.textContent
-            ).toContain('required');
+            ).toContain("required");
 
             //verify btn is disabled
             expect((btnVerify.element as HTMLButtonElement).disabled).toBe(
                 true
             );
-            expect(btnVerify.classes()).toContain('p-disabled');
+            expect(btnVerify.classes()).toContain("p-disabled");
         });
     });
 
-    it('Should call cancelForm method and route to dashboard', async () => {
-        // Spy on cancelForm method, spy on router.push
-        const cancelFormSpy = vi.spyOn(wrapper.vm as any, 'cancelForm');
-        const cancelBtn = wrapper.get('#grantAdminCancel');
+    it("Should call cancelForm method and route to dashboard", async () => {
+        // Spy on cancelForm method, spy on hashRouter.push
+        const cancelFormSpy = vi.spyOn(wrapper.vm as any, "cancelForm");
+        const cancelBtn = wrapper.get("#grantAdminCancel");
 
-        await cancelBtn.trigger('click');
+        await cancelBtn.trigger("click");
 
         // cancelForm is called
         expect(cancelFormSpy).toHaveBeenCalled();
@@ -150,10 +152,10 @@ describe('GrantApplicationAdmin', () => {
         expect(routerPushSpy).toHaveBeenCalledWith(routeItems.dashboard.path);
     });
 
-    it('Should render submit btn and disabled by default', () => {
-        const submitBtn = wrapper.find('#grantAdminSubmit');
+    it("Should render submit btn and disabled by default", () => {
+        const submitBtn = wrapper.find("#grantAdminSubmit");
         expect(submitBtn.isVisible()).toBe(true);
         expect((submitBtn.element as HTMLButtonElement).disabled).toBe(true);
-        expect(submitBtn.classes()).toContain('p-disabled');
+        expect(submitBtn.classes()).toContain("p-disabled");
     });
 });

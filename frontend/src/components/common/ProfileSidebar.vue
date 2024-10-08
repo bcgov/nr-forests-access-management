@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import Button from '@/components/common/Button.vue';
-import { IconPosition, IconSize } from '@/enum/IconEnum';
-import authService from '@/services/AuthService';
-import LoginUserState from '@/store/FamLoginUserState';
-import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { showTermsForRead } from '@/store/TermsAndConditionsState';
-import Avatar from 'primevue/avatar';
-import { computed, ref } from 'vue';
+import { inject } from "vue";
+import Button from "@/components/common/Button.vue";
+import { IconPosition, IconSize } from "@/enum/IconEnum";
+import { profileSidebarState } from "@/store/ProfileSidebarState";
+import { showTermsForRead } from "@/store/TermsAndConditionsState";
+import Avatar from "primevue/avatar";
+import { computed, ref } from "vue";
+import { AUTH_KEY } from "@/constants/InjectionKeys";
+import type { AuthContext } from "@/types/AuthTypes";
 
-const userName = LoginUserState.state.value.famLoginUser!.username;
-const initials = userName ? userName.slice(0, 2) : '';
-const displayName = LoginUserState.state.value.famLoginUser!.displayName;
-const email = LoginUserState.state.value.famLoginUser!.email;
-const organization = LoginUserState.state.value.famLoginUser!.organization;
+const auth = inject<AuthContext>(AUTH_KEY);
+
+const famLoginUser = auth?.authState.famLoginUser;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
 const loading = ref(false);
 
 const logout = () => {
-    authService.logout();
+    auth?.logout();
     loading.value = true;
 };
 
@@ -29,20 +28,20 @@ const showTermsAndConditions = () => {
 };
 
 const buttonLabel = computed(() => {
-    return loading.value ? 'Signing out...' : 'Sign out';
+    return loading.value ? "Signing out..." : "Sign out";
 });
 
-const adminRoles = computed(() => {
-    const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
-    if (userAdminRoles) {
-        return userAdminRoles
-            .map((adminRole) => {
-                return adminRole.replace('_', ' ');
-            })
-            .join(', ');
-    }
-});
-
+const adminRoles = "";
+// computed(() => {
+//     const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
+//     if (userAdminRoles) {
+//         return userAdminRoles
+//             .map((adminRole) => {
+//                 return adminRole.replace('_', ' ');
+//             })
+//             .join(', ');
+//     }
+// });
 </script>
 
 <template>
@@ -64,28 +63,33 @@ const adminRoles = computed(() => {
             </div>
             <div class="sidebar-body">
                 <Avatar
-                    :label="initials"
+                    label="11"
                     class="mr-2 profile-avatar"
                     size="xlarge"
                     shape="circle"
                 />
                 <div class="profile-info">
-                    <p class="profile-name">{{ displayName }}</p>
+                    <p class="profile-name">{{ famLoginUser?.displayName }}</p>
                     <p class="profile-userid">
-                        {{ LoginUserState.getUserIdpProvider() }}:
-                        {{ userName }}
+                        {{ famLoginUser?.idpProvider }}:
+                        {{ famLoginUser?.username }}
                     </p>
-                    <p class="profile-organization" v-if="organization">
-                        Organization: {{ organization }}
+                    <p
+                        class="profile-organization"
+                        v-if="famLoginUser?.organization"
+                    >
+                        Organization: {{ famLoginUser.organization }}
                     </p>
-                    <p class="profile-email">Email: {{ email }}</p>
+                    <p class="profile-email">
+                        Email: {{ famLoginUser?.email }}
+                    </p>
                     <p class="profile-admin-level">
                         Granted: <strong>{{ adminRoles }}</strong>
                     </p>
                 </div>
             </div>
             <Divider class="profile-divider" />
-            <Button
+            <!-- <Button
                 v-if="LoginUserState.isExternalDelegatedAdmin()"
                 class="profile-sidebar-btn"
                 title="Terms of use"
@@ -101,7 +105,7 @@ const adminRoles = computed(() => {
                     :size="IconSize.small"
                     class="custom-carbon-icon-document"
                 />
-            </Button>
+            </Button> -->
             <Button
                 class="profile-sidebar-btn"
                 title="Sign out"
@@ -124,8 +128,8 @@ const adminRoles = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/styles.scss";
+@import "@/assets/styles/base.scss";
 
 .profile-container {
     background-color: #fff;

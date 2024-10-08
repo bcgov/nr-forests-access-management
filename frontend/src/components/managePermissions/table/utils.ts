@@ -8,6 +8,6 @@ export const navigateToUserDetails = (userId: string) => {
         params: {
             applicationId: selectedApplicationId.value,
             userId,
-        }
+        },
     });
-}
+};

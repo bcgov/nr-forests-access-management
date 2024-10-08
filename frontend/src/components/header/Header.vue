@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
-import ProfileSidebar from '@/components/common/ProfileSidebar.vue';
-import Icon from '@/components/common/Icon.vue';
-import { IconSize } from '@/enum/IconEnum';
-import authService from '@/services/AuthService';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import { profileSidebarState } from '@/store/ProfileSidebarState';
-import { sideNavState } from '@/store/SideNavState';
+import { inject } from "vue";
+import Button from "primevue/button";
+import ProfileSidebar from "@/components/common/ProfileSidebar.vue";
+import Icon from "@/components/common/Icon.vue";
+import { IconSize } from "@/enum/IconEnum";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { profileSidebarState } from "@/store/ProfileSidebarState";
+import { sideNavState } from "@/store/SideNavState";
+import { AUTH_KEY } from "@/constants/InjectionKeys";
+import type { AuthContext } from "@/types/AuthTypes";
+
+const auth = inject<AuthContext>(AUTH_KEY);
+console.log("headerss", auth?.authState.isAuthenticated);
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
-    .getEnvironmentDisplayName('[', ']')
+    .getEnvironmentDisplayName("[", "]")
     .toUpperCase();
 
 const props = defineProps({
@@ -48,19 +53,16 @@ const props = defineProps({
 
             <Button
                 aria-label="open profile sidebar"
-                :class="
-                    `btn-toggle-profile
-                    ${profileSidebarState.isVisible &&
-                    'btn-toggle-profile-active'}`"
+                :class="`btn-toggle-profile
+                    ${
+                        profileSidebarState.isVisible &&
+                        'btn-toggle-profile-active'
+                    }`"
                 title="Profile"
-                v-if="authService.isLoggedIn()"
+                v-if="auth?.authState.isAuthenticated"
                 @click="profileSidebarState.toggleVisible()"
             >
-                <Icon
-
-                    icon="user--avatar"
-                    :size="IconSize.medium"
-                />
+                <Icon icon="user--avatar" :size="IconSize.medium" />
             </Button>
         </nav>
         <teleport to=".modals">
@@ -70,7 +72,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 li {
     list-style: none;
@@ -140,12 +142,11 @@ li {
 }
 
 .btn-toggle-profile:hover,
-.btn-toggle-profile:focus  {
+.btn-toggle-profile:focus {
     color: #fff;
 }
 
 @media (min-width: 1024px) {
-
     .subtitle {
         display: inline;
     }

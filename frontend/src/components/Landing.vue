@@ -1,14 +1,27 @@
 <script setup lang="ts">
-import Button from '@/components/common/Button.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
-import AuthService from '@/services/AuthService';
-import logo from '@/assets/images/bc-gov-logo.png';
-import TreeLogs from '@/assets/images/tree-logs.jpg';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import { inject } from "vue";
+import Button from "@/components/common/Button.vue";
+import { IconSize } from "@/enum/IconEnum";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+
+import logo from "@/assets/images/bc-gov-logo.png";
+import TreeLogs from "@/assets/images/tree-logs.jpg";
+import { AUTH_KEY } from "@/constants/InjectionKeys";
+import type { IdpTypes, AuthContext } from "@/types/AuthTypes";
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
+
+const auth = inject<AuthContext>(AUTH_KEY);
+
+const handleLogin = (idp: IdpTypes) => {
+    if (auth) {
+        auth.login(idp);
+    } else {
+        console.error("Auth context not found");
+    }
+};
 </script>
 
 <template>
@@ -28,7 +41,7 @@ const isDevEnvironment = environmentSettings.isDevEnvironment();
                     class="landing-button"
                     :label="`Login with ${IdpProvider.IDIR}`"
                     id="login-idir-button"
-                    @click="AuthService.login()"
+                    @click="handleLogin(IdpProvider.IDIR)"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
@@ -38,7 +51,7 @@ const isDevEnvironment = environmentSettings.isDevEnvironment();
                     :disabled="!isDevEnvironment"
                     :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
                     id="login-business-bceid-button"
-                    @click="AuthService.loginBusinessBceid()"
+                    @click="handleLogin(IdpProvider.BCEIDBUSINESS)"
                 >
                     <Icon icon="login" :size="IconSize.medium" />
                 </Button>
@@ -55,5 +68,5 @@ const isDevEnvironment = environmentSettings.isDevEnvironment();
 </template>
 
 <style scoped lang="scss">
-@import '@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss';
+@import "@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss";
 </style>
