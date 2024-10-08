@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { provide, reactive, ref, onMounted, onBeforeUnmount } from "vue";
-import { useRouter } from "vue-router";
+import { provide, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { Auth } from "aws-amplify";
 import {
     CognitoUser,
@@ -12,34 +11,23 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
 import type {
     IdpTypes,
     AuthContext,
-    AuthState,
     FamLoginUser,
+    AuthState,
 } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { FIVE_MINUTES, FIFTEEN_MINUTES } from "@/constants/TimeUnits";
-import { hashRouter } from "@/router";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { authState } from "@/providers/authState";
+
+const environmentSettings = new EnvironmentSettings();
 
 // Constants
 const REFRESH_INTERVAL = FIVE_MINUTES; // 5 minutes before token expires
 const INACTIVITY_TIMEOUT = FIFTEEN_MINUTES; // 15 minutes of inactivity
 
-// Centralized authentication state
-let currentAuthState = reactive<AuthState>({
-    isAuthenticated: false,
-    famLoginUser: null,
-    cognitoUser: null,
-    accessToken: null,
-    idToken: null,
-    refreshToken: null,
-});
-
-const authState = ref<AuthState>(currentAuthState); // Ref to track the current auth state
-
 let refreshIntervalId: number | null = null; // Use number for browser timers
 let inactivityTimeoutId: number | null = null;
-
-// Router for navigation
-const router = useRouter();
 
 // Functions to detect activity
 const resetInactivityTimeout = () => {
@@ -58,7 +46,10 @@ const stopSilentRefresh = () => {
 // Login function
 const login = async (idP: IdpTypes) => {
     try {
-        const customProvider = idP === "IDIR" ? "idir" : "bceid_business";
+        const customProvider =
+            idP === IdpProvider.IDIR
+                ? environmentSettings.getIdentityProviderIdir()
+                : environmentSettings.getIdentityProviderBceid();
         await Auth.federatedSignIn({ customProvider });
     } catch (error) {
         console.error("Login failed:", error);

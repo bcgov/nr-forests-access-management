@@ -52,7 +52,7 @@ const setVerifyUserIdPassed = (
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    hashRouter.push("/dashboard");
+    hashRouter.push("/manage-permissions");
 };
 
 const toRequestPayload = (formData: any) => {

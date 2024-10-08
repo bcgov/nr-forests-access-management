@@ -8,9 +8,8 @@ import LandingView from "@/views/LandingView.vue";
 import ManagePermissionsView from "@/views/ManagePermissionsView.vue";
 import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
 import { defineComponent } from "vue";
-import { Auth } from "aws-amplify"; // Assuming you're using Amplify for authentication
+import { Auth } from "aws-amplify";
 
-// Lazy-loaded components for protected routes
 const UserDetails = () => import("@/views/UserDetails");
 const NotFound = () => import("@/components/NotFound.vue");
 const GrantAccessView = () => import("@/views/GrantAccessView.vue");
@@ -20,46 +19,43 @@ const GrantDelegatedAdminView = () =>
     import("@/views/GrantDelegatedAdminView.vue");
 const MyPermissionsView = () => import("@/views/MyPermissionsView.vue");
 
-// Inline empty component for AuthCallback
 const AuthCallbackComponent = defineComponent({
     template: "<div></div>",
 });
 
-// Check if the user is authenticated
-async function isAuthenticated() {
+/**
+ * Check if the user is authenticated using AWS Amplify
+ * @returns {Promise<boolean>}
+ */
+async function isAuthenticated(): Promise<boolean> {
     try {
-        await Auth.currentAuthenticatedUser(); // Check for authenticated user
+        await Auth.currentAuthenticatedUser();
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 }
 
-// Hash-based routes (main app routes)
 const hashRoutes = [
     {
         path: "/",
         name: "Landing",
         component: LandingView,
         async beforeEnter(
-            _to: RouteLocationNormalized, // Explicitly type 'to'
-            _from: RouteLocationNormalized, // Use '_' to indicate that 'from' is intentionally unused
-            next: NavigationGuardNext // Type 'next' as NavigationGuardNext
+            _to: RouteLocationNormalized,
+            _from: RouteLocationNormalized,
+            next: NavigationGuardNext
         ) {
             const auth = await isAuthenticated();
-            if (auth) {
-                next("/dashboard"); // Redirect to dashboard if authenticated
-            } else {
-                next(); // Proceed to landing if not authenticated
-            }
+            auth ? next("/manage-permissions") : next();
         },
         meta: {
             requiresAuth: false,
         },
     },
     {
-        path: "/dashboard",
-        name: "Dashboard",
+        path: "/manage-permissions",
+        name: "ManagePermissions",
         component: ProtectedLayout,
         async beforeEnter(
             _to: RouteLocationNormalized,
@@ -67,11 +63,7 @@ const hashRoutes = [
             next: NavigationGuardNext
         ) {
             const auth = await isAuthenticated();
-            if (!auth) {
-                next("/"); // Redirect to landing if not authenticated
-            } else {
-                next(); // Proceed to dashboard if authenticated
-            }
+            auth ? next() : next("/");
         },
         children: [
             {
@@ -104,24 +96,40 @@ const hashRoutes = [
                 name: "UserDetails",
                 meta: { title: "User Details" },
             },
+        ],
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: "/my-permissions",
+        name: "MyPermissions",
+        component: ProtectedLayout,
+        async beforeEnter(
+            _to: RouteLocationNormalized,
+            _from: RouteLocationNormalized,
+            next: NavigationGuardNext
+        ) {
+            const auth = await isAuthenticated();
+            auth ? next() : next("/");
+        },
+        children: [
             {
-                path: "my-permissions",
+                path: "",
                 component: MyPermissionsView,
-                name: "MyPermissions",
                 meta: { title: "Check my permissions" },
             },
         ],
         meta: {
-            requiresAuth: true, // Protect all child routes with authentication
+            requiresAuth: true,
         },
     },
     {
-        path: "/:catchAll(.*)", // Catch-all for undefined routes
+        path: "/:catchAll(.*)",
         component: NotFound,
     },
 ];
 
-// Route for handling `/authCallback` separately with `historyRouter`
 const historyRoutes = [
     {
         path: "/authCallback",
@@ -133,13 +141,11 @@ const historyRoutes = [
     },
 ];
 
-// Hash router for the main app
 const hashRouter = createRouter({
     history: createWebHashHistory(),
     routes: hashRoutes,
 });
 
-// History router for the `/authCallback` route
 const historyRouter = createRouter({
     history: createWebHistory(),
     routes: historyRoutes,
