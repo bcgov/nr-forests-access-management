@@ -272,7 +272,7 @@ const requiresAcceptTermsCondition = async () => {
     ).data;
 };
 
-//--------- get my permissions?? who the fuck is "my", is it you J0ta?
+//--------- get my permissions?? TODO
 
 const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
     const famGrant = access.grants.find(

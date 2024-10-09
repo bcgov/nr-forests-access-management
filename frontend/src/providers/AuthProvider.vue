@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { provide, onMounted, onBeforeUnmount, reactive, readonly } from "vue";
-import { useRouter } from "vue-router";
 import { Auth } from "aws-amplify";
 import {
     CognitoUser,
@@ -17,30 +16,37 @@ import type {
     AuthState,
 } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
-import { FIVE_MINUTES, FIFTEEN_MINUTES } from "@/constants/TimeUnits";
+import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
 
 const environmentSettings = new EnvironmentSettings();
 
-const REFRESH_INTERVAL = FIVE_MINUTES;
-const INACTIVITY_TIMEOUT = FIFTEEN_MINUTES;
+const REFRESH_INTERVAL = FOUR_MINUTES;
+const INACTIVITY_TIMEOUT = HALF_HOUR;
 
 let refreshIntervalId: number | null = null;
 let inactivityTimeoutId: number | null = null;
 
-const router = useRouter();
-
 /**
- * Resets the inactivity timeout for user activity tracking.
+ * Resets the inactivity timeout and sets a new timeout to log the user out after a period of inactivity.
+ * If the user is inactive (no mouse or keyboard input) for the defined `INACTIVITY_TIMEOUT`,
+ * and is still authenticated, they will be logged out and the silent refresh will stop.
  */
 const resetInactivityTimeout = () => {
     if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
-    inactivityTimeoutId = window.setTimeout(
-        stopSilentRefresh,
-        INACTIVITY_TIMEOUT
-    );
+
+    // Set a timeout that logs the user out after inactivity
+    inactivityTimeoutId = window.setTimeout(() => {
+        console.log(authState.value.isAuthenticated);
+        if (authState.value.isAuthenticated) {
+            console.log("User inactive, logging out.");
+            logout();
+        } else {
+            console.log("ahaha");
+        }
+    }, INACTIVITY_TIMEOUT);
 };
 
 /**
@@ -133,7 +139,7 @@ const handlePostLogin = async () => {
 };
 
 /**
- * Restores the user's session on page reload.
+ * Restores the user's session on page reload if the user is already authenticated.
  */
 const restoreSession = async () => {
     try {
@@ -157,7 +163,7 @@ const restoreSession = async () => {
 
         startSilentRefresh(cognitoUser);
     } catch (error) {
-        console.log("Failed to restore session on reload", error);
+        console.warn(error);
         logout();
     }
 };

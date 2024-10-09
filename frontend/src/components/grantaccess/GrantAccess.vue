@@ -196,16 +196,16 @@ const handleSubmit = async () => {
 
     setCurrentTabState(TabKey.UserAccess);
 
-    if (newUserAccessIds.length > 0) {
-        hashRouter.push({
-            path: routeItems.dashboard.path,
-            query: {
-                newUserAccessIds: newUserAccessIds.join(","),
-            },
-        });
-    } else {
-        hashRouter.push(routeItems.dashboard.path);
-    }
+    // TODO if (newUserAccessIds.length > 0) {
+    //     hashRouter.push({
+    //         path: routeItems.dashboard.path,
+    //         query: {
+    //             newUserAccessIds: newUserAccessIds.join(","),
+    //         },
+    //     });
+    // } else {
+    //     hashRouter.push(routeItems.dashboard.path);
+    // }
 };
 
 function toRequestPayload(formData: any) {
