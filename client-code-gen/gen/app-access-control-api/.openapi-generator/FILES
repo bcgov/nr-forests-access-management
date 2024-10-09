@@ -35,8 +35,9 @@ model/idim-proxy-bceid-info-schema.ts
 model/idim-proxy-idir-info-schema.ts
 model/index.ts
 model/location-inner.ts
-model/permission-aduit-history-res.ts
+model/permission-audit-history-res.ts
 model/privilege-change-performer-schema.ts
+model/privilege-change-type-enum.ts
 model/privilege-details-permission-type-enum.ts
 model/privilege-details-role-schema.ts
 model/privilege-details-schema.ts
