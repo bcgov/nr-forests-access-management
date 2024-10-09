@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { inject } from "vue";
 import Button from "@/components/common/Button.vue";
 import { IconPosition, IconSize } from "@/enum/IconEnum";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { showTermsForRead } from "@/store/TermsAndConditionsState";
 import Avatar from "primevue/avatar";
 import { computed, ref } from "vue";
-import { AUTH_KEY } from "@/constants/InjectionKeys";
-import type { AuthContext } from "@/types/AuthTypes";
+import useAuth from "@/composables/useAuth";
 
-const auth = inject<AuthContext>(AUTH_KEY);
+const auth = useAuth();
 
-const famLoginUser = auth?.authState.famLoginUser;
+const famLoginUser = auth.authState.famLoginUser;
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
 const loading = ref(false);
 
 const logout = () => {
-    auth?.logout();
+    auth.logout();
     loading.value = true;
 };
 
@@ -32,7 +30,7 @@ const buttonLabel = computed(() => {
 });
 
 const adminRoles = "";
-// computed(() => {
+// TODO computed(() => {
 //     const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
 //     if (userAdminRoles) {
 //         return userAdminRoles

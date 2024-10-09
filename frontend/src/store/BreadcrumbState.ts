@@ -1,5 +1,5 @@
-import type { IRouteInfo } from '@/router/routeItem';
-import { ref } from 'vue';
+import type { IRouteInfo } from "@/router/RouteItem";
+import { ref } from "vue";
 
 export const breadcrumbState = ref();
 
@@ -7,10 +7,10 @@ export const breadcrumbState = ref();
 // the very last item for breadcrum is not rendering as a link. It will be append
 // at the end of the `breadcrumbItem` array
 const crumbEndItem = {
-    name: 'endCrumb',
+    name: "endCrumb",
     path: "", // deliberately empty.
-    label: undefined // deliberately undefined.
-}
+    label: undefined, // deliberately undefined.
+};
 
 /**
  * 'breadcrumbItem' items to display for current routed component.

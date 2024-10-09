@@ -1,5 +1,5 @@
 import { hashRouter } from "@/router";
-import { routeItems } from "@/router/routeItem";
+import { routeItems } from "@/router/RouteItem";
 import { selectedApplicationId } from "@/store/ApplicationState";
 
 export const navigateToUserDetails = (userId: string) => {

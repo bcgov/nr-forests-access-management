@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { reactive, ref, computed, type PropType } from 'vue';
-import { FilterMatchMode } from 'primevue/api';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
-import ConfirmDialog from 'primevue/confirmdialog';
-import ProgressSpinner from 'primevue/progressspinner';
+import { reactive, ref, computed, type PropType } from "vue";
+import { FilterMatchMode } from "primevue/api";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import { useConfirm } from "primevue/useconfirm";
+import ConfirmDialog from "primevue/confirmdialog";
+import ProgressSpinner from "primevue/progressspinner";
 
-import { IconSize } from '@/enum/IconEnum';
-import { routeItems } from '@/router/routeItem';
-import ConfirmDialogtext from '@/components/managePermissions/ConfirmDialogText.vue';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import NewUserTag from '@/components/common/NewUserTag.vue';
+import { IconSize } from "@/enum/IconEnum";
+import { routeItems } from "@/router/RouteItem";
+import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
+import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
+import NewUserTag from "@/components/common/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
     NEW_ACCESS_STYLE_IN_TABLE,
-} from '@/store/Constants';
-import { isNewAccess } from '@/services/utils';
+} from "@/store/Constants";
+import { isNewAccess } from "@/services/utils";
 
-import type { FamAppAdminGetResponse } from 'fam-admin-mgmt-api/model';
+import type { FamAppAdminGetResponse } from "fam-admin-mgmt-api/model";
 
-type emit = (e: 'deleteAppAdmin', item: FamAppAdminGetResponse) => void;
+type emit = (e: "deleteAppAdmin", item: FamAppAdminGetResponse) => void;
 const confirm = useConfirm();
 const emit = defineEmits<emit>();
 
@@ -37,15 +37,15 @@ const props = defineProps({
     },
     newIds: {
         type: String,
-        default: '',
+        default: "",
     },
 });
 const newAppAdminIds = computed(() => {
-    return props.newIds.split(',');
+    return props.newIds.split(",");
 });
 
 const adminFilters = ref({
-    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    global: { value: "", matchMode: FilterMatchMode.CONTAINS },
 });
 
 const adminSearchChange = (newvalue: string) => {
@@ -53,19 +53,19 @@ const adminSearchChange = (newvalue: string) => {
 };
 
 const confirmDeleteData = reactive({
-    adminName: '',
-    role: 'ADMIN',
+    adminName: "",
+    role: "ADMIN",
 });
 
 const deleteAdmin = (admin: FamAppAdminGetResponse) => {
     confirmDeleteData.adminName = admin.user.user_name;
     confirm.require({
-        group: 'deleteAdmin',
-        header: 'Remove Access',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Remove',
+        group: "deleteAdmin",
+        header: "Remove Access",
+        rejectLabel: "Cancel",
+        acceptLabel: "Remove",
         accept: () => {
-            emit('deleteAppAdmin', admin);
+            emit("deleteAppAdmin", admin);
         },
     });
 };
@@ -146,9 +146,9 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
                         {{
                             data.user.first_name && data.user.last_name
                                 ? data.user.first_name +
-                                  ' ' +
+                                  " " +
                                   data.user.last_name
-                                : ''
+                                : ""
                         }}
                     </template>
                 </Column>
@@ -189,5 +189,5 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 </style>

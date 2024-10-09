@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { provide, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+import { provide, onMounted, onBeforeUnmount, reactive, readonly } from "vue";
+import { useRouter } from "vue-router";
 import { Auth } from "aws-amplify";
 import {
     CognitoUser,
@@ -8,6 +9,7 @@ import {
     CognitoRefreshToken,
 } from "amazon-cognito-identity-js";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
+
 import type {
     IdpTypes,
     AuthContext,
@@ -22,14 +24,17 @@ import { authState } from "@/providers/authState";
 
 const environmentSettings = new EnvironmentSettings();
 
-// Constants
-const REFRESH_INTERVAL = FIVE_MINUTES; // 5 minutes before token expires
-const INACTIVITY_TIMEOUT = FIFTEEN_MINUTES; // 15 minutes of inactivity
+const REFRESH_INTERVAL = FIVE_MINUTES;
+const INACTIVITY_TIMEOUT = FIFTEEN_MINUTES;
 
-let refreshIntervalId: number | null = null; // Use number for browser timers
+let refreshIntervalId: number | null = null;
 let inactivityTimeoutId: number | null = null;
 
-// Functions to detect activity
+const router = useRouter();
+
+/**
+ * Resets the inactivity timeout for user activity tracking.
+ */
 const resetInactivityTimeout = () => {
     if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
     inactivityTimeoutId = window.setTimeout(
@@ -38,12 +43,18 @@ const resetInactivityTimeout = () => {
     );
 };
 
+/**
+ * Stops the silent token refresh process.
+ */
 const stopSilentRefresh = () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
     refreshIntervalId = null;
 };
 
-// Login function
+/**
+ * Logs in the user using the specified identity provider.
+ * @param {IdpTypes} idP The identity provider type (IDIR, BCEIDBUSINESS).
+ */
 const login = async (idP: IdpTypes) => {
     try {
         const customProvider =
@@ -56,10 +67,12 @@ const login = async (idP: IdpTypes) => {
     }
 };
 
-// Logout function
+/**
+ * Logs the user out and resets authentication state.
+ */
 const logout = async () => {
     await Auth.signOut();
-    stopSilentRefresh(); // Stop the silent refresh when logging out
+    stopSilentRefresh();
     authState.value = reactive<AuthState>({
         isAuthenticated: false,
         famLoginUser: null,
@@ -70,7 +83,11 @@ const logout = async () => {
     });
 };
 
-// Get user information from the ID token
+/**
+ * Extracts user information from the provided ID token.
+ * @param {CognitoIdToken} idToken The ID token from which to extract user info.
+ * @returns {FamLoginUser} The extracted user information.
+ */
 const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
     const decodedIdToken = idToken.decodePayload();
     return {
@@ -82,7 +99,9 @@ const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
     };
 };
 
-// Handle post-login (OAuth callback handling)
+/**
+ * Handles post-login process, updating authentication state and starting silent refresh.
+ */
 const handlePostLogin = async () => {
     try {
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
@@ -94,7 +113,6 @@ const handlePostLogin = async () => {
 
         const famLoginUser = getFamLoginUser(idToken);
 
-        // Update auth state
         authState.value = reactive<AuthState>({
             isAuthenticated: true,
             cognitoUser,
@@ -104,19 +122,19 @@ const handlePostLogin = async () => {
             refreshToken,
         });
 
-        // Start silent refresh and inactivity timer
         startSilentRefresh(cognitoUser);
-        resetInactivityTimeout(); // Start inactivity timer
+        resetInactivityTimeout();
 
-        // Navigate to dashboard or appropriate route
-        window.location.replace("/");
+        window.location.replace("/#/manage-permissions");
     } catch (error) {
         console.log("Authentication Error:", error);
         logout();
     }
 };
 
-// Handle page reload and session restore
+/**
+ * Restores the user's session on page reload.
+ */
 const restoreSession = async () => {
     try {
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
@@ -128,7 +146,6 @@ const restoreSession = async () => {
 
         const famLoginUser = getFamLoginUser(idToken);
 
-        // Restore auth state
         authState.value = reactive<AuthState>({
             isAuthenticated: true,
             cognitoUser,
@@ -138,17 +155,19 @@ const restoreSession = async () => {
             refreshToken,
         });
 
-        // Start silent refresh
         startSilentRefresh(cognitoUser);
     } catch (error) {
         console.log("Failed to restore session on reload", error);
-        logout(); // Logout if there's any issue with restoring the session
+        logout();
     }
 };
 
-// Silent refresh logic
+/**
+ * Starts silent token refresh process for the authenticated user.
+ * @param {CognitoUser} cognitoUser The Cognito user to refresh tokens for.
+ */
 const startSilentRefresh = (cognitoUser: CognitoUser) => {
-    if (refreshIntervalId) clearInterval(refreshIntervalId); // Clear any existing interval
+    if (refreshIntervalId) clearInterval(refreshIntervalId);
 
     refreshIntervalId = setInterval(async () => {
         try {
@@ -160,7 +179,6 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
                             console.error("Token refresh failed:", err);
                             logout();
                         } else {
-                            // Update tokens in the state (replace the entire state)
                             authState.value = reactive<AuthState>({
                                 ...authState.value,
                                 accessToken: session.getAccessToken(),
@@ -178,7 +196,12 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
     }, REFRESH_INTERVAL) as unknown as number;
 };
 
-// Track user activity for inactivity timeout
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * - Adds event listeners for user activity (mousemove and keydown) to reset inactivity timeout.
+ * - Checks the current path. If the user is on the `/authCallback` path, it handles the login process.
+ * - If not on the `/authCallback` path, it attempts to restore the user's session.
+ */
 onMounted(() => {
     window.addEventListener("mousemove", resetInactivityTimeout);
     window.addEventListener("keydown", resetInactivityTimeout);
@@ -187,22 +210,30 @@ onMounted(() => {
     if (currentPath === "/authCallback") {
         handlePostLogin();
     } else {
-        restoreSession(); // Restore session on reload if not on authCallback
+        restoreSession();
     }
 });
 
+/**
+ * Lifecycle hook that runs when the component is about to be unmounted.
+ * - Stops the silent token refresh process.
+ * - Clears the inactivity timeout if it's set.
+ * - Removes event listeners for user activity (mousemove and keydown) to prevent memory leaks.
+ */
 onBeforeUnmount(() => {
-    stopSilentRefresh(); // Clean up refresh interval
+    stopSilentRefresh();
     if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
 
     window.removeEventListener("mousemove", resetInactivityTimeout);
     window.removeEventListener("keydown", resetInactivityTimeout);
 });
 
-// Provide authentication state and functions
+/**
+ * Provides authentication state and functions for use in components.
+ */
 provide<AuthContext>(AUTH_KEY, {
     get authState() {
-        return authState.value;
+        return readonly(authState.value);
     },
     login,
     logout,

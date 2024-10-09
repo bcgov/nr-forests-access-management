@@ -1,47 +1,59 @@
-export interface IRouteInfo {
-    label?: string;
-    path: string;
-    name: string;
-}
+import type { RouteRecordRaw } from "vue-router";
+import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
 
-export type RouteItems = {
-    [key: string]: IRouteInfo;
-};
-
-export const routeItems: RouteItems = {
-    landing: {
-        name: 'landing',
-        path: '/',
-        label: 'Welcome to FAM',
+export const routeItems: RouteRecordRaw[] = [
+    {
+        path: "/",
+        name: "Landing",
+        component: () => import("@/views/LandingView.vue"),
     },
-    dashboard: {
-        name: 'dashboard',
-        path: '/dashboard',
-        label: 'Manage permissions',
+    {
+        path: "/manage-permissions",
+        name: "ManagePermissions",
+        component: ProtectedLayout,
+        children: [
+            {
+                path: "",
+                component: () => import("@/views/ManagePermissionsView.vue"),
+                name: "ManagePermissions",
+            },
+            {
+                path: "grant",
+                component: () => import("@/views/GrantAccessView.vue"),
+                name: "GrantAccess",
+            },
+            {
+                path: "grant-app-admin",
+                component: () =>
+                    import("@/views/GrantApplicationAdminView.vue"),
+                name: "GrantAppAdmin",
+            },
+            {
+                path: "grant-delegated-admin",
+                component: () => import("@/views/GrantDelegatedAdminView.vue"),
+                name: "GrantDelegatedAdmin",
+            },
+            {
+                path: "user-details/applications/:applicationId/users/:userId",
+                component: () => import("@/views/UserDetails"),
+                name: "UserDetails",
+            },
+        ],
     },
-    grantUserPermission: {
-        name: 'grantUserPermission',
-        path: '/grant',
-        label: 'Add user permission',
+    {
+        path: "/my-permissions",
+        name: "MyPermissions",
+        component: ProtectedLayout,
+        children: [
+            {
+                path: "",
+                component: () => import("@/views/MyPermissionsView.vue"),
+                name: "ManagePermissionsView",
+            },
+        ],
     },
-    grantAppAdmin: {
-        name: 'grantAppAdmin',
-        path: '/grant-app-admin',
-        label: 'Add application admin',
+    {
+        path: "/:catchAll(.*)",
+        component: () => import("@/components/NotFound.vue"),
     },
-    grantDelegatedAdmin: {
-        name: 'grantDelegatedAdmin',
-        path: '/grant-delegated-admin',
-        label: 'Add a delegated admin',
-    },
-    myPermissions: {
-        name: 'myPermissions',
-        path: '/my-permissions',
-        label: 'Check my permissions',
-    },
-    userDetails: {
-        name: 'viewUserDetails',
-        path: '/user-details/applications/:applicationId/users/:userId',
-        label: 'User details',
-    },
-};
+];

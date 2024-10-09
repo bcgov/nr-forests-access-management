@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { inject } from "vue";
 import Button from "primevue/button";
 import ProfileSidebar from "@/components/common/ProfileSidebar.vue";
 import Icon from "@/components/common/Icon.vue";
@@ -7,11 +6,9 @@ import { IconSize } from "@/enum/IconEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { sideNavState } from "@/store/SideNavState";
-import { AUTH_KEY } from "@/constants/InjectionKeys";
-import type { AuthContext } from "@/types/AuthTypes";
+import useAuth from "@/composables/useAuth";
 
-const auth = inject<AuthContext>(AUTH_KEY);
-console.log("headerss", auth?.authState);
+const auth = useAuth();
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -59,7 +56,7 @@ const props = defineProps({
                         'btn-toggle-profile-active'
                     }`"
                 title="Profile"
-                v-if="auth?.authState.isAuthenticated"
+                v-if="auth.authState.isAuthenticated"
                 @click="profileSidebarState.toggleVisible()"
             >
                 <Icon icon="user--avatar" :size="IconSize.medium" />

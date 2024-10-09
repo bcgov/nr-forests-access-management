@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import { ref, reactive, computed, type PropType } from 'vue';
-import { FilterMatchMode } from 'primevue/api';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { isNewAccess } from '@/services/utils';
-import ProgressSpinner from 'primevue/progressspinner';
+import { ref, reactive, computed, type PropType } from "vue";
+import { FilterMatchMode } from "primevue/api";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import { useConfirm } from "primevue/useconfirm";
+import ConfirmDialog from "primevue/confirmdialog";
+import { isNewAccess } from "@/services/utils";
+import ProgressSpinner from "primevue/progressspinner";
 
-import { routeItems } from '@/router/routeItem';
-import NewUserTag from '@/components/common/NewUserTag.vue';
+import { routeItems } from "@/router/RouteItem";
+import NewUserTag from "@/components/common/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
     NEW_ACCESS_STYLE_IN_TABLE,
-} from '@/store/Constants';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import { IconSize } from '@/enum/IconEnum';
-import type { FamAccessControlPrivilegeGetResponse } from 'fam-admin-mgmt-api/model';
-import { navigateToUserDetails } from '@/components/managePermissions/table/utils';
-import Icon from '@/components/common/Icon.vue'
+} from "@/store/Constants";
+import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
+import { IconSize } from "@/enum/IconEnum";
+import type { FamAccessControlPrivilegeGetResponse } from "fam-admin-mgmt-api/model";
+import { navigateToUserDetails } from "@/components/managePermissions/table/utils";
+import Icon from "@/components/common/Icon.vue";
 
 type emit = (
-    e: 'deleteDelegatedAdminAssignment',
+    e: "deleteDelegatedAdminAssignment",
     item: FamAccessControlPrivilegeGetResponse
 ) => void;
 
@@ -40,16 +40,16 @@ const props = defineProps({
     },
     newIds: {
         type: String,
-        default: '',
+        default: "",
     },
 });
 
 const newDelegatedAdminIds = computed(() => {
-    return props.newIds.split(',');
+    return props.newIds.split(",");
 });
 
 const delegatedAdminFilters = ref({
-    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    global: { value: "", matchMode: FilterMatchMode.CONTAINS },
 });
 
 const delegatedAdminSearchChange = (newvalue: string) => {
@@ -61,8 +61,8 @@ const confirm = useConfirm();
 const emit = defineEmits<emit>();
 
 const confirmDeleteData = reactive({
-    adminName: '',
-    role: '',
+    adminName: "",
+    role: "",
 });
 
 const deleteDelegatedAdmin = (
@@ -73,12 +73,12 @@ const deleteDelegatedAdmin = (
         ? delegatedAdmin.role.parent_role.role_name
         : delegatedAdmin.role.role_name;
     confirm.require({
-        group: 'deleteDelegatedAdmin',
-        header: 'Remove Privilege',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Remove',
+        group: "deleteDelegatedAdmin",
+        header: "Remove Privilege",
+        rejectLabel: "Cancel",
+        acceptLabel: "Remove",
         accept: () => {
-            emit('deleteDelegatedAdminAssignment', delegatedAdmin);
+            emit("deleteDelegatedAdminAssignment", delegatedAdmin);
         },
     });
 };
@@ -165,9 +165,9 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                         {{
                             data.user.first_name && data.user.last_name
                                 ? data.user.first_name +
-                                  ' ' +
+                                  " " +
                                   data.user.last_name
-                                : ''
+                                : ""
                         }}
                     </template>
                 </Column>
@@ -193,8 +193,11 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <button title="User permission history" class="btn btn-icon"
-                            @click="navigateToUserDetails(data.user_id)">
+                        <button
+                            title="User permission history"
+                            class="btn btn-icon"
+                            @click="navigateToUserDetails(data.user_id)"
+                        >
                             <Icon icon="history" :size="IconSize.small" />
                         </button>
 
@@ -213,5 +216,5 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 </style>
