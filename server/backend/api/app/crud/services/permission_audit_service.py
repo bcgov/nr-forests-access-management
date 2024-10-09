@@ -16,7 +16,7 @@ from api.app.repositories.permission_audit_repository import \
 from api.app.schemas.fam_user_role_assignment_create_response import \
     FamUserRoleAssignmentCreateRes
 from api.app.schemas.permission_audit_history import \
-    PermissionAduitHistoryCreateSchema
+    PermissionAuditHistoryCreateSchema
 from api.app.schemas.privilege_change_performer import \
     PrivilegeChangePerformerSchema
 from api.app.schemas.privilege_details import (PrivilegeDetailsRoleSchema,
@@ -47,7 +47,7 @@ class PermissionAuditService:
             LOGGER.debug("No success granted permission available. No audit record to store.")
             return
         change_type = PrivilegeChangeTypeEnum.GRANT
-        audit_record = PermissionAduitHistoryCreateSchema(
+        audit_record = PermissionAuditHistoryCreateSchema(
             application_id=success_granted_list[0].detail.role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
@@ -69,7 +69,7 @@ class PermissionAuditService:
         revoked_permission_role = delete_record.role
         change_type = PrivilegeChangeTypeEnum.REVOKE
         privilege_details = PermissionAuditService.to_enduser_privliege_revoked_details(delete_record)
-        audit_record = PermissionAduitHistoryCreateSchema(
+        audit_record = PermissionAuditHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,

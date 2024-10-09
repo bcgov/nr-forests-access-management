@@ -13,7 +13,7 @@ from api.app.models.model import FamAccessControlPrivilege, FamUser
 from api.app.repositories.permission_audit_repository import \
     PermissionAuditRepository
 from api.app.schemas.permission_audit_history import (
-    PermissionAduitHistoryCreateSchema, PrivilegeChangePerformerSchema,
+    PermissionAuditHistoryCreateSchema, PrivilegeChangePerformerSchema,
     PrivilegeDetailsRoleSchema, PrivilegeDetailsSchema,
     PrivilegeDetailsScopeSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateResponse,
@@ -43,7 +43,7 @@ class PermissionAuditService:
             LOGGER.debug("No success granted delegated admin permission available. No audit record to store.")
             return
         change_type = PrivilegeChangeTypeEnum.GRANT
-        audit_record = PermissionAduitHistoryCreateSchema(
+        audit_record = PermissionAuditHistoryCreateSchema(
             application_id=success_granted_list[0].detail.role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
@@ -65,7 +65,7 @@ class PermissionAuditService:
         revoked_permission_role = delete_record.role
         change_type = PrivilegeChangeTypeEnum.REVOKE
         privilege_details = PermissionAuditService.to_delegated_admin_privliege_revoked_details(delete_record)
-        audit_record = PermissionAduitHistoryCreateSchema(
+        audit_record = PermissionAuditHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
