@@ -4,11 +4,16 @@ services:
     extends:
       file: docker-base-services.yml
       service: fam-database
+    container_name: fam-postgres
+    ports:
+      - "5432:5432"
 
   fam-flyway:
     extends:
       file: docker-base-services.yml
       service: fam-flyway
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
     depends_on:
       fam-database:
         condition: service_healthy

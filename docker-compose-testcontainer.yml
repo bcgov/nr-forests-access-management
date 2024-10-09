@@ -1,16 +1,23 @@
 ---
 services:
-  fam-database:
+  fam-database-testcontainser:
     extends:
       file: docker-base-services.yml
       service: fam-database
+    container_name: fam-postgres-testcontainer
+    ports:
+      - "5433:5432"
 
-  fam-flyway:
+  fam-flyway-testcontainser:
     extends:
       file: docker-base-services.yml
       service: fam-flyway
+    environment:
+      # note: this environment is separated out for testcontainer to avoid colliding with main app db instance.
+      # And in the docker network it is still prot '5432'
+      - FLYWAY_URL=jdbc:postgresql://fam-postgres-testcontainer:5432/fam
     depends_on:
-      fam-database:
+      fam-database-testcontainser:
         condition: service_healthy
 
   fam-test-nginx:
@@ -19,7 +26,7 @@ services:
     ports:
       - "8181:80"
     depends_on:
-      fam-flyway:
+      fam-flyway-testcontainser:
         condition: service_completed_successfully
 
 networks:
