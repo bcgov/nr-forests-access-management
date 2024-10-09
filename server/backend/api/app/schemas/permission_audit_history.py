@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+from api.app.constants import PrivilegeChangeTypeEnum
 from pydantic import BaseModel, ConfigDict
 
 from .privilege_change_performer import PrivilegeChangePerformerSchema
@@ -15,7 +16,7 @@ class PermissionAuditHistoryBaseSchema(BaseModel):
     create_user: str
     change_date: datetime
     change_performer_user_details: PrivilegeChangePerformerSchema
-    privilege_change_type_code: str
+    privilege_change_type_code: PrivilegeChangeTypeEnum
     privilege_details: PrivilegeDetailsSchema
 
     model_config = ConfigDict(from_attributes=True)

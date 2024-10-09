@@ -5,6 +5,7 @@ from api.app.constants import (CLIENT_NAME_MAX_LEN, CLIENT_NUMBER_MAX_LEN,
                                EMAIL_MAX_LEN, FIRST_NAME_MAX_LEN,
                                LAST_NAME_MAX_LEN, ROLE_NAME_MAX_LEN,
                                SYSTEM_ACCOUNT_NAME, USER_NAME_MAX_LEN,
+                               PrivilegeChangeTypeEnum,
                                PrivilegeDetailsPermissionTypeEnum,
                                PrivilegeDetailsScopeTypeEnum)
 from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
@@ -22,7 +23,7 @@ class PermissionAuditHistoryBaseSchema(BaseModel):
     create_user: str
     change_date: datetime
     change_performer_user_details: 'PrivilegeChangePerformerSchema'
-    privilege_change_type_code: str
+    privilege_change_type_code: PrivilegeChangeTypeEnum
     privilege_details: 'PrivilegeDetailsSchema'
 
     model_config = ConfigDict(from_attributes=True)

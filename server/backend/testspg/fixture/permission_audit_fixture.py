@@ -56,7 +56,7 @@ AUDIT_RECORD_U1_A1_D1 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_1,
     create_user="admin",
-    privilege_change_type_code="GRANT",
+    privilege_change_type_code=PrivilegeChangeTypeEnum.GRANT,
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_1,
 )
@@ -110,7 +110,7 @@ MOCKED_PERMISSION_HISTORY_RESPONSE = [
         change_target_user_id=1,
         create_date=CHANGE_DATE_1,
         create_user="admin",
-        privilege_change_type_code="GRANT",
+        privilege_change_type_code=PrivilegeChangeTypeEnum.GRANT,
         privilege_details=PRIVILEGE_DETAILS,
         privilege_change_type_description="Role added",
     )
