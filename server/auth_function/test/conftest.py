@@ -43,7 +43,7 @@ def get_local_db_string():
     password = os.getenv("POSTGRES_PASSWORD", "postgres")  # test
     host = os.getenv("POSTGRES_HOST", "localhost")
     dbname = os.getenv("POSTGRES_DB", "fam")
-    port = os.getenv("POSTGRES_PORT", "5432")
+    port = os.getenv("POSTGRES_PORT_TESTCONTAINER", "5433")
 
     db_conn_string = (
         f"user={username} password={password} host={host} "
