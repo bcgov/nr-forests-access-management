@@ -6,7 +6,7 @@ import Chip from 'primevue/chip';
 
 const props = defineProps<{
     permissionDetails: PrivilegeDetailsSchema;
-    permissionChangeType: String;
+    permissionChangeType: string;
 }>();
 </script>
 
