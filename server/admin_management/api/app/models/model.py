@@ -1,10 +1,12 @@
 import datetime
+from typing import Optional
 
-from sqlalchemy import (BigInteger, Column, ForeignKeyConstraint, Identity,
-                        Index, Integer, PrimaryKeyConstraint, String,
+from sqlalchemy import (BigInteger, Column, ForeignKey, ForeignKeyConstraint,
+                        Identity, Index, Integer, PrimaryKeyConstraint, String,
                         UniqueConstraint, func, text)
-from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import Mapped, declarative_base, relationship
+from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
+from sqlalchemy.orm import (Mapped, declarative_base, mapped_column,
+                            relationship)
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -64,6 +66,16 @@ class FamUser(Base):
     fam_application_admin = relationship("FamApplicationAdmin", back_populates="user")
     fam_access_control_privilege = relationship(
         "FamAccessControlPrivilege", back_populates="user"
+    )
+    performed_privilege_changes: Mapped["FamPrivilegeChangeAudit"] = relationship(
+        "FamPrivilegeChangeAudit",
+        foreign_keys="[FamPrivilegeChangeAudit.change_performer_user_id]",
+        back_populates="change_performer_user",
+    )
+    received_privilege_changes: Mapped["FamPrivilegeChangeAudit"] = relationship(
+        "FamPrivilegeChangeAudit",
+        foreign_keys="[FamPrivilegeChangeAudit.change_target_user_id]",
+        back_populates="change_target_user",
     )
 
     __table_args__ = (
@@ -135,6 +147,9 @@ class FamApplication(Base):
     fam_role = relationship("FamRole", back_populates="application")
     fam_application_admin = relationship(
         "FamApplicationAdmin", back_populates="application"
+    )
+    privilege_change_audits: Mapped["FamPrivilegeChangeAudit"] = relationship(
+        "FamPrivilegeChangeAudit", back_populates="application"
     )
     __table_args__ = (
         PrimaryKeyConstraint("application_id", name="fam_app_pk"),
@@ -220,7 +235,8 @@ class FamRole(Base):
     )
 
     application: Mapped[FamApplication] = relationship("FamApplication", back_populates="fam_role")
-    client_number = relationship(
+
+    client_number: Mapped['FamForestClient'] = relationship(
         "FamForestClient", back_populates="fam_role", lazy="joined"
     )
     parent_role = relationship(
@@ -670,3 +686,81 @@ class FamAppEnvironment(Base):
             "schema": "app_fam",
         },
     )
+
+class FamPrivilegeChangeType(Base):
+    __tablename__ = "fam_privilege_change_type"
+    __table_args__ = {"schema": "app_fam"}
+
+    privilege_change_type_code: Mapped[str] = mapped_column(
+        String(10), primary_key=True
+    )
+    description: Mapped[str] = mapped_column(String(100), nullable=False)
+    effective_date: Mapped[datetime.datetime] = mapped_column(
+        TIMESTAMP, server_default=func.now(), nullable=False
+    )
+    expiry_date: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP)
+    update_date: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP)
+
+    privilege_change_audits: Mapped[list["FamPrivilegeChangeAudit"]] = relationship(
+        "FamPrivilegeChangeAudit", back_populates="privilege_change_type"
+    )
+
+    def __repr__(self):
+        return f"<FamPrivilegeChangeType(privilege_change_type_code={self.privilege_change_type_code}, description={self.description})>"
+
+
+class FamPrivilegeChangeAudit(Base):
+    __tablename__ = "fam_privilege_change_audit"
+    __table_args__ = (
+        Index("idx_fam_privilege_change_audit_application_id", "application_id"),
+        Index(
+            "idx_fam_privilege_change_audit_change_target_user_id",
+            "change_target_user_id",
+        ),
+        {"schema": "app_fam"},
+    )
+
+    privilege_change_audit_id: Mapped[int] = mapped_column(
+        BigInteger, Identity(start=1, increment=1), primary_key=True
+    )
+    application_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("app_fam.fam_application.application_id"), nullable=False
+    )
+    change_date: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=False)
+    change_performer_user_details: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    change_performer_user_id: Mapped[Optional[int]] = mapped_column(
+        BigInteger, ForeignKey("app_fam.fam_user.user_id")
+    )
+    change_target_user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("app_fam.fam_user.user_id"), nullable=False
+    )
+    create_date: Mapped[datetime.datetime] = mapped_column(
+        TIMESTAMP, server_default=func.now(), nullable=False
+    )
+    create_user: Mapped[str] = mapped_column(String, nullable=False)
+    privilege_change_type_code: Mapped[str] = mapped_column(
+        String(10),
+        ForeignKey("app_fam.fam_privilege_change_type.privilege_change_type_code"),
+        nullable=False,
+    )
+    privilege_details: Mapped[dict] = mapped_column(JSONB, nullable=False)
+
+    application: Mapped[FamApplication] = relationship(
+        "FamApplication", back_populates="privilege_change_audits"
+    )
+    change_performer_user: Mapped[Optional[FamUser]] = relationship(
+        "FamUser",
+        foreign_keys=[change_performer_user_id],
+        back_populates="performed_privilege_changes",
+    )
+    change_target_user: Mapped[FamUser] = relationship(
+        "FamUser",
+        foreign_keys=[change_target_user_id],
+        back_populates="received_privilege_changes",
+    )
+    privilege_change_type: Mapped[FamPrivilegeChangeType] = relationship(
+        "FamPrivilegeChangeType", back_populates="privilege_change_audits"
+    )
+
+    def __repr__(self):
+        return f"<FamPrivilegeChangeAudit(privilege_change_audit_id={self.privilege_change_audit_id}, application_id={self.application_id})>"

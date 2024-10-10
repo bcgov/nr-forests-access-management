@@ -528,7 +528,7 @@
           "Permission Audit"
         ],
         "summary": "Get Permission Audit History By User And Application",
-        "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.",
+        "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.",
         "operationId": "get_permission_audit_history_by_user_and_application",
         "security": [
           {
@@ -563,7 +563,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PermissionAduitHistoryRes"
+                    "$ref": "#/components/schemas/PermissionAuditHistoryRes"
                   },
                   "title": "Response Get Permission Audit History By User And Application"
                 }
@@ -1379,7 +1379,7 @@
         ],
         "title": "IdimProxyIdirInfoSchema"
       },
-      "PermissionAduitHistoryRes": {
+      "PermissionAuditHistoryRes": {
         "properties": {
           "create_date": {
             "type": "string",
@@ -1399,8 +1399,7 @@
             "$ref": "#/components/schemas/PrivilegeChangePerformerSchema"
           },
           "privilege_change_type_code": {
-            "type": "string",
-            "title": "Privilege Change Type Code"
+            "$ref": "#/components/schemas/PrivilegeChangeTypeEnum"
           },
           "privilege_details": {
             "$ref": "#/components/schemas/PrivilegeDetailsSchema"
@@ -1437,7 +1436,7 @@
           "change_performer_user_id",
           "privilege_change_type_description"
         ],
-        "title": "PermissionAduitHistoryRes",
+        "title": "PermissionAuditHistoryRes",
         "description": "This class is used to transfer data related to the changes made to a user's permissions,\ntypically in the context of an audit trail. It encapsulates details about the change,\nincluding when it occurred, who performed the change, who the change was applied to,\nand the specific details of the permission changes."
       },
       "PrivilegeChangePerformerSchema": {
@@ -1490,6 +1489,15 @@
         ],
         "title": "PrivilegeChangePerformerSchema",
         "description": "This schema represents the structure of the `change_user_details` JSON field used in fam_privilege_change_audit.\n\nThe `change_user_details` field captures information about the user who performed a change, including\nthe `username`, `first_name`, `last_name`, and `email`. It is used to record the user details at the time\nof the audit event, ensuring that changes to these details later do not affect the integrity of the audit log.\n\nFor regular users, all fields (`username`, `first_name`, `last_name`, and `email`) are included. However,\nwhen the change is performed by a system account, only the `username` field is present, and it is set to\n\"system\". The schema includes validation logic to enforce this rule.\n\nAttributes:\n    username (str): The username of the user performing the change. For system accounts, this is \"system\".\n    first_name (str, optional): The first name of the user. Not present for system accounts.\n    last_name (str, optional): The last name of the user. Not present for system accounts.\n    email (str, optional): The email address of the user. Not present for system accounts.\n\nValidation:\n    The schema includes a validator to ensure that for system accounts (where `username` is \"system\"),\n    no other fields (`first_name`, `last_name`, `email`) are populated."
+      },
+      "PrivilegeChangeTypeEnum": {
+        "type": "string",
+        "enum": [
+          "GRANT",
+          "REVOKE",
+          "UPDATE"
+        ],
+        "title": "PrivilegeChangeTypeEnum"
       },
       "PrivilegeDetailsPermissionTypeEnum": {
         "type": "string",

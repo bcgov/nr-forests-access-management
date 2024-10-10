@@ -1,16 +1,16 @@
-import os
-import logging.config
-import logging
 import json
-import psycopg2
-from psycopg2 import sql
+import logging
+import logging.config
+import os
+from enum import Enum
+from typing import Any
+
 import config
 import event_type
-from typing import Any
-from enum import Enum
+import psycopg2
+from psycopg2 import sql
 
-
-# seeing as a simple lambda function, use a simple fileconfig for the aduit logging
+# seeing as a simple lambda function, use a simple fileconfig for the audit logging
 # config, and setting up manually if the function is called directly
 # as is done when lambda calls this script.
 # ... see end of file

@@ -18,67 +18,72 @@
 import { PrivilegeChangePerformerSchema } from './privilege-change-performer-schema';
 // May contain unused imports in some cases
 // @ts-ignore
+import { PrivilegeChangeTypeEnum } from './privilege-change-type-enum';
+// May contain unused imports in some cases
+// @ts-ignore
 import { PrivilegeDetailsSchema } from './privilege-details-schema';
 
 /**
  * This class is used to transfer data related to the changes made to a user\'s permissions, typically in the context of an audit trail. It encapsulates details about the change, including when it occurred, who performed the change, who the change was applied to, and the specific details of the permission changes.
  * @export
- * @interface PermissionAduitHistoryRes
+ * @interface PermissionAuditHistoryRes
  */
-export interface PermissionAduitHistoryRes {
+export interface PermissionAuditHistoryRes {
     /**
      * 
      * @type {string}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'create_date': string;
     /**
      * 
      * @type {string}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'create_user': string;
     /**
      * 
      * @type {string}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'change_date': string;
     /**
      * 
      * @type {PrivilegeChangePerformerSchema}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'change_performer_user_details': PrivilegeChangePerformerSchema;
     /**
      * 
-     * @type {string}
-     * @memberof PermissionAduitHistoryRes
+     * @type {PrivilegeChangeTypeEnum}
+     * @memberof PermissionAuditHistoryRes
      */
-    'privilege_change_type_code': string;
+    'privilege_change_type_code': PrivilegeChangeTypeEnum;
     /**
      * 
      * @type {PrivilegeDetailsSchema}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'privilege_details': PrivilegeDetailsSchema;
     /**
      * 
      * @type {number}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'privilege_change_audit_id': number;
     /**
      * 
      * @type {number}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'change_performer_user_id': number | null;
     /**
      * 
      * @type {string}
-     * @memberof PermissionAduitHistoryRes
+     * @memberof PermissionAuditHistoryRes
      */
     'privilege_change_type_description': string;
 }
+
+
 

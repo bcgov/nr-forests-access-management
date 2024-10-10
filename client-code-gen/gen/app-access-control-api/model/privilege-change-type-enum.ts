@@ -20,12 +20,13 @@
  * @enum {string}
  */
 
-export const PrivilegeDetailsScopeTypeEnum = {
-    Client: 'Client',
-    District: 'District'
+export const PrivilegeChangeTypeEnum = {
+    Grant: 'GRANT',
+    Revoke: 'REVOKE',
+    Update: 'UPDATE'
 } as const;
 
-export type PrivilegeDetailsScopeTypeEnum = typeof PrivilegeDetailsScopeTypeEnum[keyof typeof PrivilegeDetailsScopeTypeEnum];
+export type PrivilegeChangeTypeEnum = typeof PrivilegeChangeTypeEnum[keyof typeof PrivilegeChangeTypeEnum];
 
 
 

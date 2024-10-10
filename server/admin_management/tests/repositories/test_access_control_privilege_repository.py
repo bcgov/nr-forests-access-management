@@ -1,28 +1,23 @@
 import logging
 
 import pytest
-from api.app.repositories.access_control_privilege_repository import (
-    AccessControlPrivilegeRepository,
-)
+from api.app.repositories.access_control_privilege_repository import \
+    AccessControlPrivilegeRepository
 from api.app.repositories.user_repository import UserRepository
-from api.app.schemas import FamAccessControlPrivilegeCreateDto
+from api.app.schemas.schemas import FamAccessControlPrivilegeCreateDto
 from sqlalchemy.exc import IntegrityError
-from tests.constants import (
-    ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
-    ERROR_VOLIATE_UNIQUE_CONSTRAINT,
-    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE,
-    TEST_APPLICATION_ID_FOM_DEV,
-    TEST_CREATOR,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_FOM_TEST_REVIEWER_ROLE_ID,
-    TEST_NEW_IDIR_USER,
-    TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID,
-    TEST_NON_EXIST_USER_ID,
-    TEST_NOT_EXIST_APPLICATION_ID,
-    TEST_NOT_EXIST_ROLE_ID,
-    TEST_USER_ID,
-)
+from tests.constants import (ERROR_VOLIATE_FOREIGN_KEY_CONSTRAINT,
+                             ERROR_VOLIATE_UNIQUE_CONSTRAINT,
+                             TEST_ACCESS_CONTROL_PRIVILEGE_CREATE,
+                             TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR,
+                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                             TEST_FOM_TEST_REVIEWER_ROLE_ID,
+                             TEST_NEW_IDIR_USER,
+                             TEST_NON_EXIST_ACCESS_CONTROL_PRIVILEGE_ID,
+                             TEST_NON_EXIST_USER_ID,
+                             TEST_NOT_EXIST_APPLICATION_ID,
+                             TEST_NOT_EXIST_ROLE_ID, TEST_USER_ID)
 
 LOGGER = logging.getLogger(__name__)
 

@@ -72,14 +72,34 @@ class EmailSendingStatus(str, Enum):
 
 
 # ------------------------------- Schema Constants ------------------------------- #
+SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
+USER_NAME_MIN_LEN = 2
 FIRST_NAME_MAX_LEN = 50
 LAST_NAME_MAX_LEN = 50
+EMAIL_MAX_LEN = 250
 ROLE_NAME_MAX_LEN = 100
 CLIENT_NUMBER_MAX_LEN = 8
 CLIENT_NAME_MAX_LEN = 60
 APPLICATION_DESC_MAX_LEN = 200
 CREATE_USER_MAX_LEN = 100
+
+# Note! There is an issue for openapi generator to generate an enum with only 1 constant.
+# Since in future we plan to use "District", it is added (and can be used later) here
+# so openapi can generate it with no prolbme but for now it is a holder.
+class PrivilegeDetailsScopeTypeEnum(str, Enum):
+    CLIENT = "Client"
+    DISTRICT = "District"
+
+class PrivilegeDetailsPermissionTypeEnum(str, Enum):
+    END_USER = "End User"
+    DELEGATED_ADMIN = "Delegated Admin"
+    APPLICATION_ADMIN = "Application Admin"
+
+class PrivilegeChangeTypeEnum(str, Enum):
+    GRANT = "GRANT"
+    REVOKE = "REVOKE"
+    UPDATE = "UPDATE"
 
 # ------- Error/Exception Code Constant -------
 
@@ -87,4 +107,4 @@ CREATE_USER_MAX_LEN = 100
 ERROR_CODE_INVALID_OPERATION = "invalid_operation"
 ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
 ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
-
+ERROR_CODE_UNKNOWN_STATE = "unknown_state"

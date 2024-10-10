@@ -1,7 +1,6 @@
+import api.app.schemas.schemas as schemas
 from api.app import constants as famConstants
-import api.app.schemas as schemas
 from api.app.services.role_service import RoleService
-
 
 TEST_CREATOR = "TESTER"
 TEST_ANOTHER_CREATER = "TESTERTWO"
@@ -73,6 +72,10 @@ TEST_FOERST_CLIENT_CREATE = schemas.FamForestClientCreateDto(
         "create_user": TEST_CREATOR,
     }
 )
+MOCK_FIND_CLIENT_00001011_RETURN = [{
+	'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'
+}]
+
 
 # -------------------------- test role data ------------------------- #
 TEST_NOT_EXIST_ROLE_ID = 0

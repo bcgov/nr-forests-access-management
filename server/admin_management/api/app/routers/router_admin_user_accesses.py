@@ -1,8 +1,9 @@
 import logging
 
-from api.app.routers.router_guards import get_current_requester_without_access_check
+from api.app.routers.router_guards import \
+    get_current_requester_without_access_check
 from api.app.routers.router_utils import admin_user_access_service_instance
-from api.app.schemas import AdminUserAccessResponse, Requester
+from api.app.schemas.schemas import AdminUserAccessResponse, Requester
 from api.app.services.admin_user_access_service import AdminUserAccessService
 from fastapi import APIRouter, Depends
 

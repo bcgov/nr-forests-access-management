@@ -3,8 +3,9 @@ from typing import List, Literal, Optional, Union
 
 from api.app.constants import (APPLICATION_DESC_MAX_LEN, CLIENT_NAME_MAX_LEN,
                                CLIENT_NUMBER_MAX_LEN, CREATE_USER_MAX_LEN,
-                               FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN,
-                               ROLE_NAME_MAX_LEN, USER_NAME_MAX_LEN,
+                               EMAIL_MAX_LEN, FIRST_NAME_MAX_LEN,
+                               LAST_NAME_MAX_LEN, ROLE_NAME_MAX_LEN,
+                               USER_NAME_MAX_LEN, USER_NAME_MIN_LEN,
                                AdminRoleAuthGroup, AppEnv, EmailSendingStatus,
                                IdimSearchUserParamType, RoleType, UserType)
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
@@ -54,7 +55,16 @@ class Requester(BaseModel):
     user_id: int
     user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    user_name: Annotated[str, StringConstraints(min_length=2, max_length=20)]
+    user_name: Annotated[str, StringConstraints(
+        min_length=USER_NAME_MIN_LEN, max_length=USER_NAME_MAX_LEN
+    )]
+    first_name: Optional[
+        Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
+    ] = None
+    last_name: Optional[
+        Annotated[str, StringConstraints(max_length=LAST_NAME_MAX_LEN)]
+    ] = None
+    email: Optional[Annotated[str, StringConstraints(max_length=EMAIL_MAX_LEN)]] = None
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: UserType
     access_roles: Union[
@@ -81,6 +91,7 @@ class TargetUser(Requester):
 
 # -------------------------------------- FAM Application --------------------------------------- #
 class FamApplicationBase(BaseModel):
+    application_id: int
     application_name: Annotated[str, StringConstraints(max_length=100)]
     application_description: Annotated[str, StringConstraints(max_length=200)]
     app_environment: Optional[AppEnv] = None

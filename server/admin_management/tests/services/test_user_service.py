@@ -1,9 +1,8 @@
 import logging
 
 import pytest
-
 from api.app.repositories.user_repository import UserRepository
-from api.app.schemas import TargetUser
+from api.app.schemas.schemas import TargetUser
 from api.app.services.user_service import UserService
 from tests.constants import TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER
 

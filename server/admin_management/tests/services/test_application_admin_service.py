@@ -1,11 +1,10 @@
 import logging
 
 import pytest
+from api.app.schemas import schemas
+from api.app.services.application_admin_service import ApplicationAdminService
 from fastapi import HTTPException
 from pydantic import ValidationError
-
-from api.app import schemas
-from api.app.services.application_admin_service import ApplicationAdminService
 from tests.constants import (TEST_CREATOR, TEST_INVALID_USER_TYPE,
                              TEST_NEW_APPLICATION_ADMIN)
 

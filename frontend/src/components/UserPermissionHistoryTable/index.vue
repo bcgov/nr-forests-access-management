@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-import { isAxiosError } from 'axios';
-import { useQuery } from '@tanstack/vue-query';
 import { AppActlApiService } from '@/services/ApiServiceFactory';
-import DataTable from 'primevue/datatable';
+import { useQuery } from '@tanstack/vue-query';
+import { isAxiosError } from 'axios';
 import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import { watch } from 'vue';
 
-import { hashRouter } from '@/router';
 import TableSkeleton from '@/components/TableSkeleton';
+import ChangePerformerCol from '@/components/UserPermissionHistoryTable/ChangePerformerCol.vue';
 import DateCol from '@/components/UserPermissionHistoryTable/DateCol.vue';
 import PermissionDetailsCol from '@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue';
-import ChangePerformerCol from '@/components/UserPermissionHistoryTable/ChangePerformerCol.vue';
+import { hashRouter } from '@/router';
 
 
 const props = defineProps<{
@@ -69,7 +69,10 @@ const headers = ['Date', 'Activity', 'Details', 'Performed by'];
         <Column class="privilege-type-description-col" field="privilege_change_type_description" :header="headers[1]" />
         <Column field="privilege_details" :header="headers[2]">
             <template #body="slotProps">
-                <PermissionDetailsCol :permission-details="slotProps.data.privilege_details" />
+                <PermissionDetailsCol
+                    :permission-details="slotProps.data.privilege_details"
+                    :permission-change-type="slotProps.data.privilege_change_type_code"
+                />
             </template>
         </Column>
         <Column field="change_performer_user_details" :header="headers[3]">

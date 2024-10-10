@@ -1,10 +1,9 @@
 import logging
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
-
-from api.app import schemas
 from api.app.models import model as models
+from api.app.schemas import schemas
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 

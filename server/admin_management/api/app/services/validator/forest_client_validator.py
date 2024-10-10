@@ -2,8 +2,7 @@ import logging
 from typing import List, Union
 
 from api.app.constants import FOREST_CLIENT_STATUS
-from api.app.schemas import ForestClientIntegrationFindResponse
-
+from api.app.schemas.schemas import ForestClientIntegrationFindResponse
 
 LOGGER = logging.getLogger(__name__)
 

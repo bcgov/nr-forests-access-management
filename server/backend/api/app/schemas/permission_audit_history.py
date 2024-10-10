@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Optional
 
+from api.app.constants import PrivilegeChangeTypeEnum
 from pydantic import BaseModel, ConfigDict
 
 from .privilege_change_performer import PrivilegeChangePerformerSchema
 from .privilege_details import PrivilegeDetailsSchema
 
 
-class PermissionAduitHistoryBaseSchema(BaseModel):
+class PermissionAuditHistoryBaseSchema(BaseModel):
     """
     This is a base DTO class for "Privliege Change Audit".
     """
@@ -15,13 +16,13 @@ class PermissionAduitHistoryBaseSchema(BaseModel):
     create_user: str
     change_date: datetime
     change_performer_user_details: PrivilegeChangePerformerSchema
-    privilege_change_type_code: str
+    privilege_change_type_code: PrivilegeChangeTypeEnum
     privilege_details: PrivilegeDetailsSchema
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class PermissionAduitHistoryRes(PermissionAduitHistoryBaseSchema):
+class PermissionAuditHistoryRes(PermissionAuditHistoryBaseSchema):
     """
     This class is used to transfer data related to the changes made to a user's permissions,
     typically in the context of an audit trail. It encapsulates details about the change,
@@ -35,7 +36,7 @@ class PermissionAduitHistoryRes(PermissionAduitHistoryBaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PermissionAduitHistoryCreateSchema(PermissionAduitHistoryBaseSchema):
+class PermissionAuditHistoryCreateSchema(PermissionAuditHistoryBaseSchema):
     """
     This is the class for "create" of a "Privliege Change Audit" record.
     """

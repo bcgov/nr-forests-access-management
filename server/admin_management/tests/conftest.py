@@ -7,6 +7,7 @@ import pytest
 import testcontainers.compose
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
+from mock import patch
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -31,20 +32,23 @@ from api.app.repositories.forest_client_repository import \
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.user_repository import UserRepository
 from api.app.routers.router_guards import get_verified_target_user
-from api.app.schemas import (FamAccessControlPrivilegeCreateDto, FamUserDto,
-                             TargetUser)
+from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
+                                     FamUserDto, Requester, TargetUser)
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
 from api.app.services.admin_user_access_service import AdminUserAccessService
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.forest_client_service import ForestClientService
+from api.app.services.permission_audit_service import PermissionAuditService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
 from tests.constants import (TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-                             TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_CREATOR, TEST_DUMMY_COGNITO_USER_ID,
+                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
                              TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                              TEST_FOM_TEST_REVIEWER_ROLE_ID,
-                             TEST_FOM_TEST_SUBMITTER_ROLE_ID)
+                             TEST_FOM_TEST_SUBMITTER_ROLE_ID,
+                             TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -184,6 +188,27 @@ def setup_new_user(user_repo: UserRepository, db_pg_session: Session):
 
 
 @pytest.fixture(scope="function")
+def new_idir_requester(setup_new_user) -> Requester:
+    """
+    Setup a new IDIR type user in test db session and return as a schema object.
+    Convenient setup for some test scenarios.
+    Returns:
+        new user schema object created from test db session.
+    """
+    new_user = setup_new_user(
+        TEST_NEW_IDIR_USER.user_type_code,
+        TEST_NEW_IDIR_USER.user_name,
+        TEST_NEW_IDIR_USER.user_guid,
+        TEST_DUMMY_COGNITO_USER_ID
+    )
+
+    requester = Requester.model_validate(
+		new_user.__dict__
+	)
+    return requester
+
+
+@pytest.fixture(scope="function")
 def setup_new_app_admin(application_admin_repo: ApplicationAdminRepository):
     """
     Conveniently setup new APP_ADMIN user for testing using repository.
@@ -284,6 +309,16 @@ def override_get_verified_target_user(test_client_fixture):
     return _override_get_verified_target_user
 
 
+@pytest.fixture(scope="function", autouse=True)
+def mock_forest_client_integration_service():
+    # Mocked dependency class object
+    with patch(
+        "api.app.integration.forest_client_integration.ForestClientIntegrationService",
+        autospec=True,
+    ) as m:
+        yield m.return_value  # Very important to get instance of mocked class.
+
+
 def to_mocked_target_user(rbody: dict):
     return TargetUser(**rbody)
 
@@ -368,3 +403,8 @@ def admin_user_access_service(db_pg_session: Session):
 @pytest.fixture(scope="function")
 def forest_client_integration_service():
     return ForestClientIntegrationService()
+
+
+@pytest.fixture(scope="function")
+def permission_audit_service(db_pg_session: Session):
+    return PermissionAuditService(db_pg_session)
