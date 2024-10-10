@@ -4,16 +4,11 @@ import {
     createWebHashHistory,
     createWebHistory,
 } from "vue-router";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { authGuard, landingGuard } from "@/router/RouteGuards";
 
-// Define the component for the auth callback (an empty div)
-const AuthCallbackComponent = defineComponent({
-    template: "<div></div>",
-});
-
 // Hash-based router for the main app routes
-const hashRouter = createRouter({
+export const hashRouter = createRouter({
     history: createWebHashHistory(),
     routes: routeItems.map((route) => {
         if (route.name === "Landing") {
@@ -23,17 +18,3 @@ const hashRouter = createRouter({
         }
     }),
 });
-
-// History-based router for the auth callback
-const historyRouter = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {
-            path: "/authCallback",
-            name: "AuthCallback",
-            component: AuthCallbackComponent, // Using defineComponent for an empty div
-        },
-    ],
-});
-
-export { hashRouter, historyRouter };

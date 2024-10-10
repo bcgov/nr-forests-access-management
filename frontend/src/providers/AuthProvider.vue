@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { provide, onMounted, onBeforeUnmount, reactive, readonly } from "vue";
+import {
+    ref,
+    provide,
+    onMounted,
+    onBeforeUnmount,
+    reactive,
+    readonly,
+} from "vue";
 import { Auth } from "aws-amplify";
 import {
     CognitoUser,
@@ -20,14 +27,15 @@ import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
+import authLoadingSvg from "@/assets/images/auth-loading.svg";
 
 const environmentSettings = new EnvironmentSettings();
-
 const REFRESH_INTERVAL = FOUR_MINUTES;
 const INACTIVITY_TIMEOUT = HALF_HOUR;
 
 let refreshIntervalId: number | null = null;
 let inactivityTimeoutId: number | null = null;
+const isLoading = ref(false); // Loading state for animation
 
 /**
  * Resets the inactivity timeout and sets a new timeout to log the user out after a period of inactivity.
@@ -39,12 +47,9 @@ const resetInactivityTimeout = () => {
 
     // Set a timeout that logs the user out after inactivity
     inactivityTimeoutId = window.setTimeout(() => {
-        console.log(authState.value.isAuthenticated);
         if (authState.value.isAuthenticated) {
             console.log("User inactive, logging out.");
             logout();
-        } else {
-            console.log("ahaha");
         }
     }, INACTIVITY_TIMEOUT);
 };
@@ -110,6 +115,7 @@ const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
  */
 const handlePostLogin = async () => {
     try {
+        isLoading.value = true;
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
         const session: CognitoUserSession = await Auth.currentSession();
 
@@ -135,6 +141,8 @@ const handlePostLogin = async () => {
     } catch (error) {
         console.log("Authentication Error:", error);
         logout();
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -163,14 +171,13 @@ const restoreSession = async () => {
 
         startSilentRefresh(cognitoUser);
     } catch (error) {
-        console.warn(error);
+        console.warn("Failed to restore session:", error);
         logout();
     }
 };
 
 /**
  * Starts silent token refresh process for the authenticated user.
- * @param {CognitoUser} cognitoUser The Cognito user to refresh tokens for.
  */
 const startSilentRefresh = (cognitoUser: CognitoUser) => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
@@ -228,7 +235,9 @@ onMounted(() => {
  */
 onBeforeUnmount(() => {
     stopSilentRefresh();
-    if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
+    if (inactivityTimeoutId) {
+        clearTimeout(inactivityTimeoutId);
+    }
 
     window.removeEventListener("mousemove", resetInactivityTimeout);
     window.removeEventListener("keydown", resetInactivityTimeout);
@@ -248,5 +257,19 @@ provide<AuthContext>(AUTH_KEY, {
 </script>
 
 <template>
-    <slot />
+    <div v-if="isLoading" class="auth-callback-container">
+        <img :src="authLoadingSvg" alt="Loading" />
+    </div>
+    <slot v-else />
 </template>
+
+<style lang="scss" scoped>
+.auth-callback-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: colors.$blue-10;
+}
+</style>

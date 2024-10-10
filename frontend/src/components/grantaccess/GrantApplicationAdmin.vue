@@ -14,7 +14,7 @@ import { isLoading } from "@/store/LoadingState";
 import { setNotificationMsg } from "@/store/NotificationState";
 import LoginUserState from "@/store/FamLoginUserState";
 import { setCurrentTabState } from "@/store/CurrentTabState";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { UserType } from "fam-app-acsctl-api/model";
 
 const defaultFormData = {

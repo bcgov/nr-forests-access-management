@@ -2,7 +2,7 @@ import PageTitle from "@/components/common/PageTitle.vue";
 import { hashRoutes } from "@/router";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { it, describe, beforeEach, expect, afterEach, vi } from "vitest";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { fixJsdomCssErr } from "./common/fixJsdomCssErr";
 
 fixJsdomCssErr();

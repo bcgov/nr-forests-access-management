@@ -4,7 +4,7 @@ import { IconSize } from "@/enum/IconEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
 import { hashRouter } from "@/router";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import {
     formValidationSchema,

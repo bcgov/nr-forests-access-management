@@ -11,7 +11,7 @@ import { IconSize } from "@/enum/IconEnum";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import {
     formValidationSchema,

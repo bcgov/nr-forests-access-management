@@ -14,7 +14,7 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from "@/store/Constants";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { IconSize } from "@/enum/IconEnum";
 import { isNewAccess } from "@/services/utils";
 
@@ -101,7 +101,7 @@ const highlightNewUserAccessRow = (rowData: any) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add user permission"
-                :btnRoute="routeItems.grantUserPermission.path"
+                btnRoute="/manage-perimissions/grant"
                 :filter="userRoleAssignmentsFilters['global'].value"
                 @change="userSearchChange"
             />

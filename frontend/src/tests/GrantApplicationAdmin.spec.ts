@@ -1,6 +1,6 @@
 import GrantApplicationAdmin from "@/components/grantaccess/GrantApplicationAdmin.vue";
 import { hashRouter, hashRoutes } from "@/router";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { populateBreadcrumb } from "@/store/BreadcrumbState";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

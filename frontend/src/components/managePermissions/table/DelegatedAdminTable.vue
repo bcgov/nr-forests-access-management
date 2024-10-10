@@ -8,7 +8,7 @@ import ConfirmDialog from "primevue/confirmdialog";
 import { isNewAccess } from "@/services/utils";
 import ProgressSpinner from "primevue/progressspinner";
 
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import NewUserTag from "@/components/common/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
@@ -109,7 +109,7 @@ const highlightNewDelegatedAdminAccessRow = (rowData: any) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Create delegated admin"
-                :btnRoute="routeItems.grantDelegatedAdmin.path"
+                btnRoute="/TODO"
                 :filter="delegatedAdminFilters['global'].value"
                 @change="delegatedAdminSearchChange"
             />

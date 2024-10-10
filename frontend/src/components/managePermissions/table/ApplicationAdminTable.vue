@@ -8,7 +8,7 @@ import ConfirmDialog from "primevue/confirmdialog";
 import ProgressSpinner from "primevue/progressspinner";
 
 import { IconSize } from "@/enum/IconEnum";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
 import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
 import NewUserTag from "@/components/common/NewUserTag.vue";

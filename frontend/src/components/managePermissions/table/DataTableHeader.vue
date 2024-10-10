@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import InputText from "primevue/inputtext";
 import { hashRouter } from "@/router";
-import { routeItems } from "@/router/RouteItem";
+import { routeItems } from "@/router/RouteItems";
 import { IconSize } from "@/enum/IconEnum";
 import { selectedApplicationDisplayText } from "@/store/ApplicationState";
 
@@ -41,17 +41,19 @@ const computedFilter = computed({
     },
 });
 
-const userLevelText = computed(() => {
-    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return "delegated administrators";
-    return "users";
-});
+const userLevelText = "TODO";
+//  computed(() => {
+//     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+//         return "delegated administrators";
+//     return "users";
+// });
 
-const tableHeaderCustomText = computed(() => {
-    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return "and the roles they are allowed to manage for their users";
-    return "and their permissions levels";
-});
+const tableHeaderCustomText = "TODO";
+//  computed(() => {
+//     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+//         return "and the roles they are allowed to manage for their users";
+//     return "and their permissions levels";
+// });
 </script>
 
 <template>
