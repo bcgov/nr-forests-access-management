@@ -1,4 +1,7 @@
+# Note, the compose service name and container_name for "fam-database" and "fam-flyway" are named differently
+# than the main application docker-compose so that when testcontainer is up it does not delete previous running main container.
 ---
+
 services:
   fam-database-testcontainser:
     extends:
@@ -6,7 +9,7 @@ services:
       service: fam-database
     container_name: fam-postgres-testcontainer
     ports:
-      - "5433:5432"
+      - "5433:5432"  # choose host-port: '5433' for testcontainer db instance than '5432' for main db.
 
   fam-flyway-testcontainser:
     extends:
