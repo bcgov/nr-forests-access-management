@@ -1,25 +1,28 @@
 [
     {
         "name": "Manage permissions",
-        "link": "/dashboard",
+        "link": "/manage-permissions",
         "childLinks": [
-            "/user-details"
+            "/user-details",
+            "/grant",
+            "/grant-app-admin",
+            "/grant-delegated-admin"
         ],
         "disabled": false,
         "items": [
             {
                 "name": "Add user permission",
-                "link": "/grant",
+                "link": "/manage-permissions/grant",
                 "disabled": true
             },
             {
                 "name": "Add application admin",
-                "link": "/grant-app-admin",
+                "link": "/manage-permissions/grant-app-admin",
                 "disabled": true
             },
             {
                 "name": "Add delegated admin",
-                "link": "/grant-delegated-admin",
+                "link": "/manage-permissions/grant-delegated-admin",
                 "disabled": true
             }
         ]

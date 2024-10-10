@@ -1,8 +1,5 @@
 {
-    "editor.rulers": [
-        80,
-        120
-    ],
+    "editor.rulers": [80, 120],
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
     "editor.detectIndentation": true,
@@ -13,13 +10,22 @@
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.linting.flake8Args": ["--append-config=${workspaceFolder}/server/backend/.flake8"],
+    "python.linting.flake8Args": [
+        "--append-config=${workspaceFolder}/server/backend/.flake8"
+    ],
     "python.testing.cwd": "./server/backend",
 
     "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"],
     "python.languageServer": "Pylance",
     "files.trimTrailingWhitespace": true,
     "files.eol": "\n",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.tabWidth": 4,
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
-
-

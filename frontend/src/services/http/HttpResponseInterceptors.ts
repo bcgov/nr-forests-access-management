@@ -1,9 +1,9 @@
-import { hashRouter } from '@/router';
-import AuthService from '@/services/AuthService';
-import Http from '@/services/http/HttpCommon';
-import LoginUserState from '@/store/FamLoginUserState';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ref } from 'vue';
+import { hashRouter } from "@/router";
+import AuthService from "@/services/AuthService";
+import Http from "@/services/http/HttpCommon";
+import LoginUserState from "@/store/FamLoginUserState";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import { ref } from "vue";
 
 /*
 Note! Any status other than 2xx will be rejected (default status handling from Axios unless changed).
@@ -27,7 +27,7 @@ async function authenticationErrorResponsesItcpt(error: any) {
             }
         } else {
             LoginUserState.removeFamUser(); // Done retry refresh token, token expired; remove user.
-            hashRouter.replace('/'); // 401 unauthenticated/expired, back to home page.
+            // hashRouter.replace("/"); // 401 unauthenticated/expired, back to home page.
         }
     }
     retryCount.value = 0; // Reset counter when retry ends or not 401.
@@ -50,7 +50,7 @@ async function refreshTokenAndReTry(
         })
         .catch((error) => {
             console.log(
-                'Still encountered error after request retried: ',
+                "Still encountered error after request retried: ",
                 error
             );
             return Promise.reject(error);

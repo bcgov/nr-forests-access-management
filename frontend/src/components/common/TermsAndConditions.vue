@@ -6,7 +6,7 @@ import {
     isTermsCloseable,
     isTermsVisible,
 } from '@/store/TermsAndConditionsState';
-import { setRouteToastError } from '@/store/ToastState';
+// TODO import { setRouteToastError } from '@/store/ToastState';
 import Dialog from 'primevue/dialog';
 
 /*
@@ -23,7 +23,7 @@ const acceptTermsAndConditions = async () => {
         hideTerms();
     } catch (error: any) {
         // temporary error handling
-        setRouteToastError(error.message);
+        // setRouteToastError(error.message);
         AuthService.logout();
     }
 };

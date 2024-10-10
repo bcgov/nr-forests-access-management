@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { IconSize } from '@/enum/IconEnum';
 import { app } from '@/main';
 import {
@@ -41,4 +41,4 @@ const handleToastTimeoutEnds = (message: ToastMessageOptions) => {
             class="custom-carbon-icon-misuse"
         />
     </Toast>
-</template>
+</template> -->

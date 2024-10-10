@@ -1,77 +1,63 @@
 <script setup lang="ts">
-import type { ISideNavItem } from '@/components/common/SideNav.vue';
-import Header from '@/components/header/Header.vue';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import sideNavData from '@/static/sideNav.json';
-import {
-    isApplicationSelected,
-    selectedApplicationId,
-} from '@/store/ApplicationState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
-import LoginUserState from '@/store/FamLoginUserState';
-import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { Auth } from "aws-amplify";
+import type { ISideNavItem } from "@/components/common/SideNav.vue";
+import Header from "@/components/header/Header.vue";
+import SideNav from "@/components/common/SideNav.vue";
+import sideNavData from "@/static/sideNav.json";
 
-import SideNav from '@/components/common/SideNav.vue';
-
-const environmentSettings = new EnvironmentSettings();
-const isDevEnvironment = environmentSettings.isDevEnvironment();
+// State for side navigation data
 const navigationData = ref<[ISideNavItem]>(sideNavData as any);
-const route = useRoute();
 
-// Show and hide the correct sideNav btn based on the application
-const setSideNavOptions = () => {
-    if (selectedApplicationId.value === FAM_APPLICATION_ID) {
-        disableSideNavOption('Add user permission', true);
-        disableSideNavOption('Add application admin', false);
-        if (isDevEnvironment) disableSideNavOption('Add delegated admin', true);
-    } else {
-        disableSideNavOption('Add application admin', true);
-        disableSideNavOption('Add user permission', false);
+// Router instance
+const router = useRouter();
 
-        if (isDevEnvironment) {
-            if (LoginUserState.isAdminOfSelectedApplication()) {
-                disableSideNavOption('Add delegated admin', false);
-            } else {
-                disableSideNavOption('Add delegated admin', true);
-            }
-        }
+// State for user authentication
+const isAuthenticated = ref(false);
+const loading = ref(true); // For displaying a loader while checking authentication
+
+// Check if the user is authenticated via AWS Amplify's Auth module
+const checkAuthentication = async () => {
+    try {
+        // This will throw an error if the user is not authenticated
+        await Auth.currentAuthenticatedUser();
+        isAuthenticated.value = true; // Set as authenticated if user exists
+    } catch (error) {
+        console.log("User is not authenticated, redirecting to landing page");
+        isAuthenticated.value = false;
+        router.push("/"); // Redirect to landing page
+    } finally {
+        loading.value = false; // Stop loading state after authentication check
     }
 };
 
+// Run authentication check when the component is mounted
 onMounted(() => {
-    if (isApplicationSelected.value) {
-        setSideNavOptions();
-    }
+    checkAuthentication();
 });
-
-// watch a ref:selectedApplicationId and a route change in order to react to sidNav difference.
-watch([selectedApplicationId, route], () => {
-    setSideNavOptions();
-});
-
-const disableSideNavOption = (optionName: string, disabled: boolean) => {
-    const disableSideNavItemsOption = (optionName: string, disabled: boolean, items: ISideNavItem[]) => {
-        items.forEach((navItem) => {
-            if (navItem.name === optionName) {
-                navItem.disabled = disabled;
-            }
-            if (navItem.items) {
-                disableSideNavItemsOption(optionName, disabled, navItem.items);
-            }
-        })
-    }
-
-    disableSideNavItemsOption(optionName, disabled, navigationData.value);
-};
 </script>
-<template>
-    <Header title="FAM" subtitle="Forests Access Management" />
 
-    <SideNav :data="navigationData" />
-    <div class="main">
-        <main>
-            <RouterView></RouterView>
-        </main>
+<template>
+    <div v-if="loading">
+        <!-- Show a loading message while authentication state is being checked -->
+        <p>Loading...</p>
+    </div>
+
+    <div v-else-if="isAuthenticated">
+        <!-- Show layout and content only if authenticated -->
+        <Header title="FAM" subtitle="Forests Access Management" />
+        <SideNav :data="navigationData" />
+        <div class="main">
+            <main>
+                <RouterView />
+                <!-- Render protected routes here -->
+            </main>
+        </div>
+    </div>
+
+    <div v-else>
+        <!-- Show a message or loader while redirecting -->
+        <p>Redirecting to landing page...</p>
     </div>
 </template>
