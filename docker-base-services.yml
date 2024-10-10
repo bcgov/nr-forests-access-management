@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=fam
       - POSTGRES_HOST_AUTH_METHOD=password
-      - POSTGRES_PORT=5432
+      - POSTGRES_PORT=${POSTGRES_PORT}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
