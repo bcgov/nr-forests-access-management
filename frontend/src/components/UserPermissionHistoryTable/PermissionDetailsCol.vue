@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { PrivilegeDetailsPermissionTypeEnum } from 'fam-app-acsctl-api/model';
+import OrganizationsList from '@/components/UserPermissionHistoryTable/OrganizationList.vue';
+import { PrivilegeChangeTypeEnum, PrivilegeDetailsPermissionTypeEnum } from 'fam-app-acsctl-api/model';
 import type { PrivilegeDetailsSchema } from 'fam-app-acsctl-api/model/privilege-details-schema';
 import Chip from 'primevue/chip';
-import OrganizationsList from '@/components/UserPermissionHistoryTable/OrganizationList.vue';
 
 const props = defineProps<{
     permissionDetails: PrivilegeDetailsSchema;
     permissionChangeType: String;
 }>();
-
-enum PermissionChangeType {
-    GRANT = 'GRANT',
-    REVOKE = 'REVOKE'
-};
 </script>
 
 <template>
@@ -37,7 +32,7 @@ enum PermissionChangeType {
             <div class="d-admin-role-container">
                 <p>
                     {{
-                        props.permissionChangeType === PermissionChangeType.GRANT
+                        props.permissionChangeType === PrivilegeChangeTypeEnum.Grant
                             ? 'Role enabled to assign:'
                             : 'Role revoked from assignment:'
                     }}
