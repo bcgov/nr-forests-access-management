@@ -15,7 +15,6 @@ const router = useRouter();
 
 // State for user authentication
 const isAuthenticated = ref(false);
-const loading = ref(true); // For displaying a loader while checking authentication
 
 // Check if the user is authenticated via AWS Amplify's Auth module
 const checkAuthentication = async () => {
@@ -27,8 +26,6 @@ const checkAuthentication = async () => {
         console.log("User is not authenticated, redirecting to landing page");
         isAuthenticated.value = false;
         router.push("/"); // Redirect to landing page
-    } finally {
-        loading.value = false; // Stop loading state after authentication check
     }
 };
 
@@ -39,12 +36,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="loading">
-        <!-- Show a loading message while authentication state is being checked -->
-        <p>Loading...</p>
-    </div>
-
-    <div v-else-if="isAuthenticated">
+    <div v-if="isAuthenticated">
         <!-- Show layout and content only if authenticated -->
         <Header title="FAM" subtitle="Forests Access Management" />
         <SideNav :data="navigationData" />
