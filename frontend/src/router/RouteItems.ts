@@ -43,17 +43,40 @@ export const routeItems: RouteRecordRaw[] = [
     {
         path: "/my-permissions",
         name: "MyPermissions",
-        component: ProtectedLayout,
-        children: [
-            {
-                path: "",
-                component: () => import("@/views/MyPermissionsView.vue"),
-                name: "ManagePermissionsView",
-            },
-        ],
+        component: () => import("@/views/MyPermissionsView.vue"),
+        meta: {
+            layout: ProtectedLayout,
+        },
     },
     {
         path: "/:catchAll(.*)",
         component: () => import("@/components/NotFound.vue"),
     },
 ];
+
+// Type structure for the paths
+interface RoutePath {
+    path: string;
+    children?: Record<string, RoutePath>;
+}
+
+// Function to traverse routeItems and create a typed structure
+function getPathStructure(routes: RouteRecordRaw[]): Record<string, RoutePath> {
+    const paths: Record<string, RoutePath> = {};
+
+    routes.forEach((route) => {
+        if (route.name) {
+            paths[route.name as string] = {
+                path: route.path,
+                children: route.children
+                    ? getPathStructure(route.children)
+                    : undefined,
+            };
+        }
+    });
+
+    return paths;
+}
+
+// Build the paths structure
+export const paths = getPathStructure(routeItems);
