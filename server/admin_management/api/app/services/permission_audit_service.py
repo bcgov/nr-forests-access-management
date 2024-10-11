@@ -7,22 +7,18 @@ from api.app.constants import (ERROR_CODE_UNKNOWN_STATE,
                                PrivilegeChangeTypeEnum,
                                PrivilegeDetailsPermissionTypeEnum,
                                PrivilegeDetailsScopeTypeEnum)
-from api.app.crud import crud_utils
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from api.app.models.model import FamUser, FamUserRoleXref
+from api.app.models.model import FamAccessControlPrivilege, FamUser
 from api.app.repositories.permission_audit_repository import \
     PermissionAuditRepository
-from api.app.schemas.fam_user_role_assignment_create_response import \
-    FamUserRoleAssignmentCreateRes
-from api.app.schemas.permission_audit_history import \
-    PermissionAuditHistoryCreateSchema
-from api.app.schemas.privilege_change_performer import \
-    PrivilegeChangePerformerSchema
-from api.app.schemas.privilege_details import (PrivilegeDetailsRoleSchema,
-                                               PrivilegeDetailsSchema,
-                                               PrivilegeDetailsScopeSchema)
-from api.app.schemas.requester import RequesterSchema
+from api.app.schemas.permission_audit_history import (
+    PermissionAuditHistoryCreateSchema, PrivilegeChangePerformerSchema,
+    PrivilegeDetailsRoleSchema, PrivilegeDetailsSchema,
+    PrivilegeDetailsScopeSchema)
+from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateResponse,
+                                     Requester)
+from api.app.services import utils_service
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -34,17 +30,17 @@ class PermissionAuditService:
     def __init__(self, db: Session):
         self.repo = PermissionAuditRepository(db)
 
-    def store_user_permissions_granted_audit_history(
+    def store_delegated_admin_permissions_granted_audit_history(
         self,
-        requester: RequesterSchema,
+        requester: Requester,
         change_target_user: FamUser,
-        new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes]
+        new_delegated_admin_permission_granted_list: List[FamAccessControlPrivilegeCreateResponse] # 'dadmin' => 'delegated_admin'
     ):
         success_granted_list = list(filter(
-            lambda res: res.status_code == HTTPStatus.OK, new_user_permission_granted_list
+            lambda res: res.status_code == HTTPStatus.OK, new_delegated_admin_permission_granted_list
         ))
         if (len(success_granted_list) == 0):
-            LOGGER.debug("No success granted permission available. No audit record to store.")
+            LOGGER.debug("No success granted delegated admin permission available. No audit record to store.")
             return
         change_type = PrivilegeChangeTypeEnum.GRANT
         audit_record = PermissionAuditHistoryCreateSchema(
@@ -54,7 +50,7 @@ class PermissionAuditService:
             change_target_user_id=change_target_user.user_id,
             change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
             privilege_change_type_code=change_type,
-            privilege_details=PermissionAuditService.to_enduser_privliege_granted_details(success_granted_list),
+            privilege_details=PermissionAuditService.to_delegated_admin_privliege_granted_details(success_granted_list),
             create_date=datetime.datetime.now(datetime.UTC),
             change_date=datetime.datetime.now(datetime.UTC)
         )
@@ -62,13 +58,13 @@ class PermissionAuditService:
         LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
         self.repo.save(audit_record)
 
-    def store_user_permissions_revoked_audit_history(
-        self, requester: RequesterSchema, delete_record: FamUserRoleXref
+    def store_delegated_admin_permissions_revoked_audit_history(
+        self, requester: Requester, delete_record: FamAccessControlPrivilege
     ):
         revoked_permission_target_user = delete_record.user
         revoked_permission_role = delete_record.role
         change_type = PrivilegeChangeTypeEnum.REVOKE
-        privilege_details = PermissionAuditService.to_enduser_privliege_revoked_details(delete_record)
+        privilege_details = PermissionAuditService.to_delegated_admin_privliege_revoked_details(delete_record)
         audit_record = PermissionAuditHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
             create_user=requester.user_name,
@@ -86,7 +82,7 @@ class PermissionAuditService:
 
     @staticmethod
     def to_change_performer_user_details(
-        requester: RequesterSchema
+        requester: Requester
     ) -> PrivilegeChangePerformerSchema:
         return PrivilegeChangePerformerSchema(
             username=requester.user_name,
@@ -96,26 +92,26 @@ class PermissionAuditService:
         )
 
     @staticmethod
-    def to_enduser_privliege_granted_details(
-        enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]
+    def to_delegated_admin_privliege_granted_details(
+        delegated_admin_privliege_list: List[FamAccessControlPrivilegeCreateResponse]
     ) -> PrivilegeDetailsSchema | None:
-        if (len(enduser_privliege_list) == 0):
+        if (len(delegated_admin_privliege_list) == 0):
             return
 
         # Note, current FAM supports creating ONLY 1 role with multiple forest_client(s) at ONLY 1 scope type ("CLIENT").
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
-        def __map_to_privilege_role_scope(item: FamUserRoleAssignmentCreateRes) -> PrivilegeDetailsScopeSchema:
+        def __map_to_privilege_role_scope(item: FamAccessControlPrivilegeCreateResponse) -> PrivilegeDetailsScopeSchema:
             assigned_role = item.detail.role
             return PrivilegeDetailsScopeSchema(
                 scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-                client_id=assigned_role.forest_client.forest_client_number,
-                client_name=assigned_role.forest_client.client_name
+                client_id=assigned_role.client_number.forest_client_number,
+                client_name=assigned_role.client_number.client_name
             )
 
-        is_forest_client_scoped_role = enduser_privliege_list[0].detail.role.forest_client is not None
-        scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list)) if is_forest_client_scoped_role else None
+        is_forest_client_scoped_role = delegated_admin_privliege_list[0].detail.role.client_number is not None
+        scopes = list(map(__map_to_privilege_role_scope, delegated_admin_privliege_list)) if is_forest_client_scoped_role else None
         privilege_details_role = PrivilegeDetailsRoleSchema(
-            role=enduser_privliege_list[0].detail.role.display_name,
+            role=delegated_admin_privliege_list[0].detail.role.display_name,
             scopes=scopes
         )
         if (privilege_details_role.scopes is None):
@@ -123,13 +119,13 @@ class PermissionAuditService:
             del privilege_details_role.scopes
 
         return PrivilegeDetailsSchema(
-            permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
+            permission_type=PrivilegeDetailsPermissionTypeEnum.DELEGATED_ADMIN,
             roles=[privilege_details_role]
         )
 
     @staticmethod
-    def to_enduser_privliege_revoked_details(
-        delete_record: FamUserRoleXref
+    def to_delegated_admin_privliege_revoked_details(
+        delete_record: FamAccessControlPrivilege
     ) -> PrivilegeDetailsSchema:
         # Note, current FAM supports deleting ONLY 1 role with ONLY 1 scope type ("CLIENT") with 1 forst client.
         # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
@@ -140,7 +136,9 @@ class PermissionAuditService:
         # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
         if (is_forest_client_scoped_role):
             forest_client_number = revoked_permission_role.client_number.forest_client_number
-            api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
+            api_instance_env = utils_service.use_api_instance_by_app_env(
+                revoked_permission_role.application.app_environment
+            )
             forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
             fc_search_result = forest_client_integration_service.find_by_client_number(
                 forest_client_number
@@ -150,7 +148,7 @@ class PermissionAuditService:
                 forest_client_name = fc_search_result[0]["clientName"]
             else:
                 error_msg = (
-                    "Revoke user permission encountered problem."
+                    "Revoke delegated admin permission encountered problem."
                     + f"Unknown forest client number {forest_client_number} for "
                     + f"scoped permission {revoked_permission_role.role_name}."
                 )
@@ -177,6 +175,6 @@ class PermissionAuditService:
             del privilege_detail_role.scopes  # delete attribute from schema if None.
 
         return PrivilegeDetailsSchema(
-            permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
+            permission_type=PrivilegeDetailsPermissionTypeEnum.DELEGATED_ADMIN,
             roles=[privilege_detail_role]
         )

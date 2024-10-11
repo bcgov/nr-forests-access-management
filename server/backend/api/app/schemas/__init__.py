@@ -32,9 +32,9 @@ from .idim_proxy_bceid_search_param import IdimProxyBceidSearchParamSchema
 from .idim_proxy_idir_info import IdimProxyIdirInfoSchema
 from .idim_proxy_search_param import IdimProxySearchParamSchema
 # ---------- Permission Audit History Schemas ---------- #
-from .permission_audit_history import (PermissionAduitHistoryBaseSchema,
-                                       PermissionAduitHistoryCreateSchema,
-                                       PermissionAduitHistoryRes)
+from .permission_audit_history import (PermissionAuditHistoryBaseSchema,
+                                       PermissionAuditHistoryCreateSchema,
+                                       PermissionAuditHistoryRes)
 from .privilege_change_performer import PrivilegeChangePerformerSchema
 from .privilege_details import PrivilegeDetailsSchema
 

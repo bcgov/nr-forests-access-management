@@ -2,7 +2,6 @@ import itertools
 import logging
 from typing import List
 
-from api.app.utils import utils
 from api.app.constants import APPLICATION_FAM, AdminRoleAuthGroup
 from api.app.models.model import FamApplication, FamRole
 from api.app.repositories.access_control_privilege_repository import \
@@ -11,8 +10,10 @@ from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
-from api.app.schemas import (AdminUserAccessResponse, FamApplicationDto,
-                             FamAuthGrantDto, FamGrantDetailDto, FamRoleDto)
+from api.app.schemas.schemas import (AdminUserAccessResponse,
+                                     FamApplicationDto, FamAuthGrantDto,
+                                     FamGrantDetailDto, FamRoleDto)
+from api.app.utils import utils
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
