@@ -9,10 +9,11 @@ on:
 jobs:
   ci-auth:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_PORT: 5432
+    # env:
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_PASSWORD: postgres
+    #   POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+    #   POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,8 +26,11 @@ jobs:
 
       - name: Tests and coverage
         env:
-          FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
           POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
+          FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
         run: |
           cd server/auth_function
           pip install -r requirements.txt -r requirements-dev.txt
@@ -55,11 +59,10 @@ jobs:
     env:
       environment: dev
       organization: bcgov
-      POSTGRES_USER: fam_proxy_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
+      # POSTGRES_USER: fam_proxy_api
+      # POSTGRES_PASSWORD: test
+      # POSTGRES_HOST: localhost
+      # POSTGRES_DB: fam
       USE_POSTGRES: false
     steps:
       - uses: actions/checkout@v4
@@ -81,6 +84,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
           POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
           POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
           POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
           COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
           COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
@@ -115,11 +119,11 @@ jobs:
     env:
       environment: dev
       organization: bcgov
-      POSTGRES_USER: fam_admin_management_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
+      # POSTGRES_USER: fam_admin_management_api
+      # POSTGRES_PASSWORD: test
+      # POSTGRES_HOST: localhost
+      # POSTGRES_DB: fam
+      # POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -139,6 +143,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
           POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
           POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
           POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
           COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
           COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
