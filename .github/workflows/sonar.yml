@@ -25,6 +25,7 @@ jobs:
       - name: Tests and coverage
         env:
           FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+          POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
         run: |
           cd server/auth_function
           pip install -r requirements.txt -r requirements-dev.txt
