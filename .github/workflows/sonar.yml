@@ -9,11 +9,6 @@ on:
 jobs:
   ci-auth:
     runs-on: ubuntu-latest
-    # env:
-    #   POSTGRES_USER: postgres
-    #   POSTGRES_PASSWORD: postgres
-    #   POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
-    #   POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,10 +54,6 @@ jobs:
     env:
       environment: dev
       organization: bcgov
-      # POSTGRES_USER: fam_proxy_api
-      # POSTGRES_PASSWORD: test
-      # POSTGRES_HOST: localhost
-      # POSTGRES_DB: fam
       USE_POSTGRES: false
     steps:
       - uses: actions/checkout@v4
@@ -119,11 +110,6 @@ jobs:
     env:
       environment: dev
       organization: bcgov
-      # POSTGRES_USER: fam_admin_management_api
-      # POSTGRES_PASSWORD: test
-      # POSTGRES_HOST: localhost
-      # POSTGRES_DB: fam
-      # POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
     steps:
       - uses: actions/checkout@v4
         with:
