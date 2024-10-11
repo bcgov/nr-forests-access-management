@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { HTTPValidationError } from '../model';
 // @ts-ignore
-import { PermissionAduitHistoryRes } from '../model';
+import { PermissionAuditHistoryRes } from '../model';
 /**
  * PermissionAuditApi - axios parameter creator
  * @export
@@ -32,7 +32,7 @@ import { PermissionAduitHistoryRes } from '../model';
 export const PermissionAuditApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.
+         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.
          * @summary Get Permission Audit History By User And Application
          * @param {number} userId 
          * @param {number} applicationId 
@@ -90,14 +90,14 @@ export const PermissionAuditApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PermissionAuditApiAxiosParamCreator(configuration)
     return {
         /**
-         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.
+         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.
          * @summary Get Permission Audit History By User And Application
          * @param {number} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PermissionAduitHistoryRes>>> {
+        async getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PermissionAuditHistoryRes>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPermissionAuditHistoryByUserAndApplication(userId, applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['PermissionAuditApi.getPermissionAuditHistoryByUserAndApplication']?.[localVarOperationServerIndex]?.url;
@@ -114,14 +114,14 @@ export const PermissionAuditApiFactory = function (configuration?: Configuration
     const localVarFp = PermissionAuditApiFp(configuration)
     return {
         /**
-         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.
+         * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.
          * @summary Get Permission Audit History By User And Application
          * @param {number} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: any): AxiosPromise<Array<PermissionAduitHistoryRes>> {
+        getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: any): AxiosPromise<Array<PermissionAuditHistoryRes>> {
             return localVarFp.getPermissionAuditHistoryByUserAndApplication(userId, applicationId, options).then((request) => request(axios, basePath));
         },
     };
@@ -134,7 +134,7 @@ export const PermissionAuditApiFactory = function (configuration?: Configuration
  */
 export interface PermissionAuditApiInterface {
     /**
-     * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.
+     * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.
      * @summary Get Permission Audit History By User And Application
      * @param {number} userId 
      * @param {number} applicationId 
@@ -142,7 +142,7 @@ export interface PermissionAuditApiInterface {
      * @throws {RequiredError}
      * @memberof PermissionAuditApiInterface
      */
-    getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<PermissionAduitHistoryRes>>;
+    getPermissionAuditHistoryByUserAndApplication(userId: number, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<PermissionAuditHistoryRes>>;
 
 }
 
@@ -154,7 +154,7 @@ export interface PermissionAuditApiInterface {
  */
 export class PermissionAuditApi extends BaseAPI implements PermissionAuditApiInterface {
     /**
-     * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAduitHistoryRes]: A list of audit history records for the given user and application.
+     * Retrieve the permission audit history for a given user and application.  Args:     userId (int): The ID of the user for whom the audit history is being requested.     applicationId (int): The ID of the application associated with the audit history.  Returns:     List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.
      * @summary Get Permission Audit History By User And Application
      * @param {number} userId 
      * @param {number} applicationId 

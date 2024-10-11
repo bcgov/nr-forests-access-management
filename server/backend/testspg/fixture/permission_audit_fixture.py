@@ -1,17 +1,14 @@
 import datetime
 
-from api.app.constants import (
-    PrivilegeChangeTypeEnum,
-    PrivilegeDetailsPermissionTypeEnum,
-    PrivilegeDetailsScopeTypeEnum,
-)
+from api.app.constants import (PrivilegeChangeTypeEnum,
+                               PrivilegeDetailsPermissionTypeEnum,
+                               PrivilegeDetailsScopeTypeEnum)
 from api.app.models.model import FamPrivilegeChangeAudit
-from api.app.schemas import (
-    PermissionAduitHistoryRes,
-    PrivilegeChangePerformerSchema,
-    PrivilegeDetailsSchema,
-)
-from testspg.constants import FAM_APPLICATION_ID, FOM_DEV_APPLICATION_ID, TEST_USER_ID
+from api.app.schemas import (PermissionAuditHistoryRes,
+                             PrivilegeChangePerformerSchema,
+                             PrivilegeDetailsSchema)
+from testspg.constants import (FAM_APPLICATION_ID, FOM_DEV_APPLICATION_ID,
+                               TEST_USER_ID)
 
 USER_ID_1 = TEST_USER_ID
 USER_ID_2 = 2
@@ -59,7 +56,7 @@ AUDIT_RECORD_U1_A1_D1 = FamPrivilegeChangeAudit(
     change_target_user_id=USER_ID_1,
     create_date=CHANGE_DATE_1,
     create_user="admin",
-    privilege_change_type_code="GRANT",
+    privilege_change_type_code=PrivilegeChangeTypeEnum.GRANT,
     privilege_details=PRIVILEGE_DETAILS,
     application_id=APPLICATION_ID_1,
 )
@@ -105,7 +102,7 @@ AUDIT_RECORD_U2_A2 = FamPrivilegeChangeAudit(
 )
 
 MOCKED_PERMISSION_HISTORY_RESPONSE = [
-    PermissionAduitHistoryRes(
+    PermissionAuditHistoryRes(
         privilege_change_audit_id=1,
         change_date=CHANGE_DATE_1,
         change_performer_user_details=PERFORMER_DETAILS_1,
@@ -113,7 +110,7 @@ MOCKED_PERMISSION_HISTORY_RESPONSE = [
         change_target_user_id=1,
         create_date=CHANGE_DATE_1,
         create_user="admin",
-        privilege_change_type_code="GRANT",
+        privilege_change_type_code=PrivilegeChangeTypeEnum.GRANT,
         privilege_details=PRIVILEGE_DETAILS,
         privilege_change_type_description="Role added",
     )
