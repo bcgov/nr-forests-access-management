@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import { Form as VeeForm } from "vee-validate";
 import { computed, ref } from "vue";
 
@@ -115,7 +115,7 @@ const resetVerifiedForestClients = () => {
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    hashRouter.push("/manage-permissions");
+    router.push("/manage-permissions");
 };
 
 /*

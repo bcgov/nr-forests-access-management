@@ -3,8 +3,8 @@ import Button from "@/components/common/Button.vue";
 import { IconSize } from "@/enum/IconEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { hashRouter } from "@/router";
-import { routeItems } from "@/router/RouteItems";
+import { router } from "@/router";
+import { routeItems } from "@/router/c";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import {
     formValidationSchema,

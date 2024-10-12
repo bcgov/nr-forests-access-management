@@ -90,7 +90,7 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
         <div class="custom-data-table">
             <DataTableHeader
                 btnLabel="Add application admin"
-                :btnRoute="routeItems.grantAppAdmin.path"
+                btnRoute="TODO"
                 :filter="adminFilters['global'].value"
                 @change="adminSearchChange"
             />

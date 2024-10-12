@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import InputText from "primevue/inputtext";
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import { routeItems } from "@/router/RouteItems";
 import { IconSize } from "@/enum/IconEnum";
 import { selectedApplicationDisplayText } from "@/store/ApplicationState";
@@ -70,7 +70,7 @@ const tableHeaderCustomText = "TODO";
             v-if="props.btnRoute"
             class="btn-add-user"
             :label="props.btnLabel"
-            @click="hashRouter.push(props.btnRoute)"
+            @click="router.push(props.btnRoute)"
         >
             <Icon icon="add" :size="IconSize.small" />
         </Button>

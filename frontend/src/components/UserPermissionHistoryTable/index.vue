@@ -6,7 +6,7 @@ import { AppActlApiService } from "@/services/ApiServiceFactory";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import TableSkeleton from "@/components/TableSkeleton";
 import DateCol from "@/components/UserPermissionHistoryTable/DateCol.vue";
 import PermissionDetailsCol from "@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue";
@@ -39,7 +39,7 @@ watch(
     () => auditHistoryQuery.error.value,
     (error) => {
         if (isAxiosError(error) && error.response?.status === 403) {
-            hashRouter.push("/");
+            router.push("/");
         }
     }
 );

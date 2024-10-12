@@ -2,7 +2,7 @@
 import { sideNavState } from "@/store/SideNavState";
 import Sidebar from "primevue/sidebar";
 import type { PropType } from "vue";
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 
 export interface ISideNavItem {
     name: string;
@@ -40,7 +40,7 @@ const props = defineProps({
                                     ),
                                 'sidenav-disabled': item.disabled,
                             }"
-                            @click="hashRouter.push(item.link)"
+                            @click="router.push(item.link)"
                         >
                             {{ item.name }}
                         </li>
@@ -53,7 +53,7 @@ const props = defineProps({
                                     child.link,
                                 'sidenav-disabled': child.disabled,
                             }"
-                            @click="hashRouter.push(child.link)"
+                            @click="router.push(child.link)"
                         >
                             <span>{{ child.name }}</span>
                         </li>

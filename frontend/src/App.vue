@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { defineAsyncComponent, shallowRef, watch, type Component } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import AuthProvider from "@/providers/AuthProvider.vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
 
+// Get the current route
 const route = useRoute();
-const layout_component = shallowRef<Component>();
 
-watch(
-    () => route.meta.layout ?? "SimpleLayout",
-    (layout) => {
-        layout_component.value = defineAsyncComponent(
-            () => import(`@/layouts/${layout}.vue`)
-        );
-    },
-    { immediate: true }
-);
+// Use computed to determine which layout to use
+const layoutComponent = computed(() => {
+    return route.meta.layout === "ProtectedLayout" ? ProtectedLayout : null;
+});
 </script>
 
 <template>
     <AuthProvider>
-        <component :is="layout_component">
+        <!-- Render the layout if provided, otherwise just the router-view -->
+        <component v-if="layoutComponent" :is="layoutComponent">
             <router-view />
         </component>
+        <!-- No layout, just render the view -->
+        <router-view v-else />
         <VueQueryDevtools />
     </AuthProvider>
 </template>

@@ -1,14 +1,10 @@
 import { defineComponent } from "vue";
-import {
-    createRouter,
-    createWebHashHistory,
-    createWebHistory,
-} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { routeItems } from "@/router/RouteItems";
 import { authGuard, landingGuard } from "@/router/RouteGuards";
 
 // Hash-based router for the main app routes
-export const hashRouter = createRouter({
+export const router = createRouter({
     history: createWebHashHistory(),
     routes: routeItems.map((route) => {
         if (route.name === "Landing") {

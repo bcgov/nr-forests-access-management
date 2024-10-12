@@ -7,7 +7,7 @@ import UserDataTable from "@/components/managePermissions/table/UserDataTable.vu
 import { IconSize } from "@/enum/IconEnum";
 import { Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import {
     deleteAndRefreshApplicationAdmin,
@@ -94,7 +94,7 @@ const applicationsUserAdministers = computed(() => {
 const tabViewRef = ref();
 
 const resetNewTag = () => {
-    hashRouter.push({ query: {} });
+    router.push({ query: {} });
 };
 
 const resetNotificationAndNewRowTag = () => {

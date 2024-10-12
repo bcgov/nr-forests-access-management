@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import { ErrorMessage, Field, Form as VeeForm } from "vee-validate";
 import { object, string } from "yup";
 import Dropdown from "primevue/dropdown";
@@ -52,7 +52,7 @@ const setVerifyUserIdPassed = (
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    hashRouter.push("/manage-permissions");
+    router.push("/manage-permissions");
 };
 
 const toRequestPayload = (formData: any) => {
@@ -117,12 +117,12 @@ const handleSubmit = async () => {
     setCurrentTabState(TabKey.AdminAccess);
 
     if (newAppAdminId) {
-        hashRouter.push({
-            path: routeItems.dashboard.path,
+        router.push({
+            path: "TODO PATH",
             query: { newAppAdminId: newAppAdminId.toString() },
         });
     } else {
-        hashRouter.push(routeItems.dashboard.path);
+        router.push("TODO PATH");
     }
 };
 </script>

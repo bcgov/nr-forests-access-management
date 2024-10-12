@@ -1,5 +1,7 @@
 import type { RouteRecordRaw } from "vue-router";
-import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
+
+// Define a constant for ProtectedLayout meta
+const protectedLayoutMeta = { layout: "ProtectedLayout" };
 
 export const routeItems: RouteRecordRaw[] = [
     {
@@ -10,33 +12,33 @@ export const routeItems: RouteRecordRaw[] = [
     {
         path: "/manage-permissions",
         name: "ManagePermissions",
-        component: ProtectedLayout,
+        component: () => import("@/views/ManagePermissionsView.vue"),
+        meta: protectedLayoutMeta,
         children: [
-            {
-                path: "",
-                component: () => import("@/views/ManagePermissionsView.vue"),
-                name: "ManagePermissions",
-            },
             {
                 path: "grant",
                 component: () => import("@/views/GrantAccessView.vue"),
                 name: "GrantAccess",
+                meta: protectedLayoutMeta,
             },
             {
                 path: "grant-app-admin",
                 component: () =>
                     import("@/views/GrantApplicationAdminView.vue"),
                 name: "GrantAppAdmin",
+                meta: protectedLayoutMeta,
             },
             {
                 path: "grant-delegated-admin",
                 component: () => import("@/views/GrantDelegatedAdminView.vue"),
                 name: "GrantDelegatedAdmin",
+                meta: protectedLayoutMeta,
             },
             {
                 path: "user-details/applications/:applicationId/users/:userId",
                 component: () => import("@/views/UserDetails"),
                 name: "UserDetails",
+                meta: protectedLayoutMeta,
             },
         ],
     },
@@ -44,39 +46,10 @@ export const routeItems: RouteRecordRaw[] = [
         path: "/my-permissions",
         name: "MyPermissions",
         component: () => import("@/views/MyPermissionsView.vue"),
-        meta: {
-            layout: ProtectedLayout,
-        },
+        meta: protectedLayoutMeta,
     },
     {
         path: "/:catchAll(.*)",
         component: () => import("@/components/NotFound.vue"),
     },
 ];
-
-// Type structure for the paths
-interface RoutePath {
-    path: string;
-    children?: Record<string, RoutePath>;
-}
-
-// Function to traverse routeItems and create a typed structure
-function getPathStructure(routes: RouteRecordRaw[]): Record<string, RoutePath> {
-    const paths: Record<string, RoutePath> = {};
-
-    routes.forEach((route) => {
-        if (route.name) {
-            paths[route.name as string] = {
-                path: route.path,
-                children: route.children
-                    ? getPathStructure(route.children)
-                    : undefined,
-            };
-        }
-    });
-
-    return paths;
-}
-
-// Build the paths structure
-export const paths = getPathStructure(routeItems);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import Button from "primevue/button";
 import UserSummaryCard from "@/components/UserSummaryCard";
 import PageTitle from "@/components/common/PageTitle.vue";
@@ -16,11 +16,11 @@ const applicationId = route.params.applicationId as string | undefined;
 
 if (!userId || !applicationId) {
     console.warn("Missing required path params");
-    hashRouter.push("/");
+    router.push("/");
 }
 
 const navigateBack = () => {
-    hashRouter.push("/");
+    router.push("/");
 };
 
 // Breadcrumb configuration

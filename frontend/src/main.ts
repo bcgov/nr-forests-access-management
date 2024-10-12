@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { Amplify } from "aws-amplify";
 import awsExports from "./aws-exports";
 import App from "@/App.vue";
-import { hashRouter } from "@/router"; // Only use hashRouter here
+import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
@@ -48,8 +48,7 @@ const queryClient = new QueryClient({
 // Create and configure the Vue app
 const app = createApp(App);
 
-// Use only hashRouter here
-app.use(hashRouter);
+app.use(router);
 
 app.use(PrimeVue);
 app.use(ConfirmationService);

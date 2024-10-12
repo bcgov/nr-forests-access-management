@@ -1,4 +1,4 @@
-import { hashRouter } from "@/router";
+import { router } from "@/router";
 import AuthService from "@/services/AuthService";
 import Http from "@/services/http/HttpCommon";
 import LoginUserState from "@/store/FamLoginUserState";
