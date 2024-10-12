@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import InputText from "primevue/inputtext";
 import { router } from "@/router";
-import { routeItems } from "@/router/RouteItems";
+import { routeItems } from "@/router/routes";
 import { IconSize } from "@/enum/IconEnum";
 import { selectedApplicationDisplayText } from "@/store/ApplicationState";
 

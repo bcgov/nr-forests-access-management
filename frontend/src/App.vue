@@ -17,9 +17,7 @@ const layoutComponent = computed(() => {
 <template>
     <AuthProvider>
         <!-- Render the layout if provided, otherwise just the router-view -->
-        <component v-if="layoutComponent" :is="layoutComponent">
-            <router-view />
-        </component>
+        <component v-if="layoutComponent" :is="layoutComponent" />
         <!-- No layout, just render the view -->
         <router-view v-else />
         <VueQueryDevtools />

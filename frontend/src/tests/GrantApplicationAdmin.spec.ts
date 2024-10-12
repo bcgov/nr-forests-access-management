@@ -1,7 +1,7 @@
 // TODO TEST
 // import GrantApplicationAdmin from "@/components/grantaccess/GrantApplicationAdmin.vue";
 // import { router } from "@/router";
-// import { routeItems } from "@/router/RouteItems";
+// import { routeItems } from "@/router/routes";
 // import { populateBreadcrumb } from "@/store/BreadcrumbState";
 // import { mount, VueWrapper } from "@vue/test-utils";
 // import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

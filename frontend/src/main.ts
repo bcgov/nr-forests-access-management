@@ -49,7 +49,6 @@ const queryClient = new QueryClient({
 const app = createApp(App);
 
 app.use(router);
-
 app.use(PrimeVue);
 app.use(ConfirmationService);
 app.use(ToastService);

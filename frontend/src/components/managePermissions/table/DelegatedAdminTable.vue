@@ -8,7 +8,7 @@ import ConfirmDialog from "primevue/confirmdialog";
 import { isNewAccess } from "@/services/utils";
 import ProgressSpinner from "primevue/progressspinner";
 
-import { routeItems } from "@/router/RouteItems";
+import { routeItems } from "@/router/routes";
 import NewUserTag from "@/components/common/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,

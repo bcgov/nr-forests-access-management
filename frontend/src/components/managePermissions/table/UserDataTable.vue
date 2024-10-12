@@ -14,7 +14,7 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from "@/store/Constants";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api";
-import { routeItems } from "@/router/RouteItems";
+import { routeItems } from "@/router/routes";
 import { IconSize } from "@/enum/IconEnum";
 import { isNewAccess } from "@/services/utils";
 

@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-    ref,
-    provide,
-    onMounted,
-    onBeforeUnmount,
-    reactive,
-    readonly,
-} from "vue";
+import { ref, provide, onMounted, onBeforeUnmount, readonly } from "vue";
 import { Auth } from "aws-amplify";
 import {
     CognitoUser,
@@ -16,18 +9,14 @@ import {
 } from "amazon-cognito-identity-js";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
-import type {
-    IdpTypes,
-    AuthContext,
-    FamLoginUser,
-    AuthState,
-} from "@/types/AuthTypes";
+import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
 import authLoadingSvg from "@/assets/images/auth-loading.svg";
+import { useRouter } from "vue-router";
 
 const environmentSettings = new EnvironmentSettings();
 const REFRESH_INTERVAL = FOUR_MINUTES;
@@ -36,7 +25,7 @@ const INACTIVITY_TIMEOUT = HALF_HOUR;
 let refreshIntervalId: number | null = null;
 let inactivityTimeoutId: number | null = null;
 const isLoading = ref(false); // Loading state for animation
-
+const router = useRouter();
 /**
  * Resets the inactivity timeout and sets a new timeout to log the user out after a period of inactivity.
  * If the user is inactive (no mouse or keyboard input) for the defined `INACTIVITY_TIMEOUT`,
@@ -84,14 +73,14 @@ const login = async (idP: IdpTypes) => {
 const logout = async () => {
     await Auth.signOut();
     stopSilentRefresh();
-    authState.value = reactive<AuthState>({
+    authState.value = {
         isAuthenticated: false,
         famLoginUser: null,
         cognitoUser: null,
         accessToken: null,
         idToken: null,
         refreshToken: null,
-    });
+    };
 };
 
 /**
@@ -125,19 +114,32 @@ const handlePostLogin = async () => {
 
         const famLoginUser = getFamLoginUser(idToken);
 
-        authState.value = reactive<AuthState>({
+        authState.value = {
             isAuthenticated: true,
             cognitoUser,
             famLoginUser,
             accessToken,
             idToken,
             refreshToken,
-        });
+        };
 
         startSilentRefresh(cognitoUser);
         resetInactivityTimeout();
 
-        window.location.replace("/#/manage-permissions");
+        /*
+         * Update the browser's URL to remove the 'authCallback' part,
+         * ensuring a cleaner URL structure without disrupting the Vue Router's state.
+         * This prevents the 'authCallback' fragment from appearing in the URL,
+         * allowing for a seamless transition to the desired route, '/manage-permissions'.
+         *
+         * Additionally, this approach results in one fewer comparison check in the auth guard
+         * compared to using window.location.replace, optimizing the authentication flow
+         * and improving overall performance.
+         */
+        const newUrl = window.location.href.replace(/authCallback/, "");
+        history.replaceState(null, "", newUrl);
+
+        router.push("/manage-permissions");
     } catch (error) {
         console.log("Authentication Error:", error);
         logout();
@@ -160,18 +162,17 @@ const restoreSession = async () => {
 
         const famLoginUser = getFamLoginUser(idToken);
 
-        authState.value = reactive<AuthState>({
+        authState.value = {
             isAuthenticated: true,
             cognitoUser,
             famLoginUser,
             accessToken,
             idToken,
             refreshToken,
-        });
+        };
 
         startSilentRefresh(cognitoUser);
     } catch (error) {
-        console.warn("Failed to restore session:", error);
         logout();
     }
 };
@@ -192,11 +193,11 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
                             console.error("Token refresh failed:", err);
                             logout();
                         } else {
-                            authState.value = reactive<AuthState>({
+                            authState.value = {
                                 ...authState.value,
                                 accessToken: session.getAccessToken(),
                                 idToken: session.getIdToken(),
-                            });
+                            };
                             console.log("Tokens refreshed successfully.");
                         }
                     }

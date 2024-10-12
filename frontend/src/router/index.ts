@@ -1,6 +1,5 @@
-import { defineComponent } from "vue";
 import { createRouter, createWebHashHistory } from "vue-router";
-import { routeItems } from "@/router/RouteItems";
+import { routeItems } from "@/router/routes";
 import { authGuard, landingGuard } from "@/router/RouteGuards";
 
 // Hash-based router for the main app routes

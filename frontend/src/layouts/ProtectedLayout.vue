@@ -15,7 +15,7 @@ const navigationData = ref<[ISideNavItem]>(sideNavData as any);
         <SideNav :data="navigationData" />
         <div class="main">
             <main>
-                <RouterView />
+                <router-view />
                 <!-- Render protected routes here -->
             </main>
         </div>

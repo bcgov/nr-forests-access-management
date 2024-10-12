@@ -6,10 +6,23 @@ import type { RouteLocationNormalized, NavigationGuardNext } from "vue-router";
  * @returns {Promise<boolean>}
  */
 export async function isAuthenticated(): Promise<boolean> {
+    const startTime = performance.now(); // Start time
     try {
-        await Auth.currentAuthenticatedUser();
+        await Auth.currentSession();
+        const endTime = performance.now(); // End time
+        console.log(
+            `isAuthenticated Execution Time: ${
+                endTime - startTime
+            } milliseconds`
+        );
         return true;
     } catch {
+        const endTime = performance.now(); // End time
+        console.log(
+            `isAuthenticated Execution Time: ${
+                endTime - startTime
+            } milliseconds`
+        );
         return false;
     }
 }
