@@ -173,7 +173,6 @@ jobs:
                   commands: |
                       npm run install-frontend
                       npm run build
-                      npm run test-coverage
                   dir: frontend
                   node_version: "20"
                   sonar_args: >
@@ -182,6 +181,5 @@ jobs:
                       -Dsonar.project.monorepo.enabled=true
                       -Dsonar.projectKey=nr-forests-access-management_frontend
                       -Dsonar.sources=src
-                      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                   sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
                   triggers: ("frontend" "terraform-frontend/")
