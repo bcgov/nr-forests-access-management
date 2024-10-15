@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, provide, onMounted, onBeforeUnmount, readonly } from "vue";
 import { Auth } from "aws-amplify";
-import {
+import type {
     CognitoUser,
     CognitoAccessToken,
     CognitoIdToken,
