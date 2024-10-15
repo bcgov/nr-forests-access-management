@@ -46,7 +46,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             assertParamExists('getApplicationUserById', 'userId', userId)
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getApplicationUserById', 'applicationId', applicationId)
-            const localVarPath = `/fam_applications/{application_id}/users/{user_id}`
+            const localVarPath = `/fam-applications/{application_id}/users/{user_id}`
                 .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)))
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -85,7 +85,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         getFamApplicationUserRoleAssignment: async (applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationUserRoleAssignment', 'applicationId', applicationId)
-            const localVarPath = `/fam_applications/{application_id}/user_role_assignment`
+            const localVarPath = `/fam-applications/{application_id}/user-role-assignment`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

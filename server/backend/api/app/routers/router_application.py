@@ -4,25 +4,19 @@ from typing import List
 from api.app import database
 from api.app.crud import crud_application, crud_user
 from api.app.routers.router_guards import (
-    authorize_by_app_id,
-    enforce_bceid_terms_conditions_guard,
-    get_current_requester,
-)
-from api.app.schemas import (
-    FamApplicationUserRoleAssignmentGetSchema,
-    RequesterSchema,
-    FamUserInfoSchema,
-)
+    authorize_by_app_id, enforce_bceid_terms_conditions_guard,
+    get_current_requester)
+from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
+                             FamUserInfoSchema, RequesterSchema)
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.get(
-    "/{application_id}/user_role_assignment",
+    "/{application_id}/user-role-assignment",
     response_model=List[FamApplicationUserRoleAssignmentGetSchema],
     status_code=200,
     dependencies=[

@@ -15,7 +15,7 @@
     "version": "0.0.1"
   },
   "paths": {
-    "/fam_applications/{application_id}/user_role_assignment": {
+    "/fam-applications/{application_id}/user-role-assignment": {
       "get": {
         "tags": [
           "FAM Applications"
@@ -67,7 +67,7 @@
         }
       }
     },
-    "/fam_applications/{application_id}/users/{user_id}": {
+    "/fam-applications/{application_id}/users/{user_id}": {
       "get": {
         "tags": [
           "FAM Applications"
