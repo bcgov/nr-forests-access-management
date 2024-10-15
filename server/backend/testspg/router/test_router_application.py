@@ -3,44 +3,35 @@ from http import HTTPStatus
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (
-    CURRENT_TERMS_AND_CONDITIONS_VERSION,
-    ERROR_CODE_INVALID_APPLICATION_ID,
-    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-    UserType,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_INVALID_APPLICATION_ID,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
 from sqlalchemy import insert
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    FOM_DEV_APPLICATION_ID,
-    ROLE_NAME_FOM_REVIEWER,
-    ROLE_NAME_FOM_SUBMITTER_00000001,
-    ROLE_NAME_FOM_SUBMITTER_00001018,
-    TEST_CREATOR,
-    USER_NAME_BCEID_LOAD_3_TEST,
-    TEST_USER_ID,
-    NOT_EXIST_TEST_USER_ID,
-    NOT_EXIST_ROLE_NAME,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_APPLICATION_ID, NOT_EXIST_ROLE_NAME,
+                               NOT_EXIST_TEST_USER_ID, ROLE_NAME_FOM_REVIEWER,
+                               ROLE_NAME_FOM_SUBMITTER_00000001,
+                               ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
+                               TEST_USER_ID, USER_NAME_BCEID_LOAD_3_TEST)
 
 LOGGER = logging.getLogger(__name__)
-end_point = f"{apiPrefix}/fam_applications"
+end_point = f"{apiPrefix}/fam-applications"
 end_point_user_by_id = f"{end_point}/{{application_id}}/users/{{user_id}}"
 
 # GET enpoint for users' access grants.
-# ("{apiPrefix}/fam_applications/{application_id}/user_role_assignment")
+# ("{apiPrefix}/fam-applications/{application_id}/user-role-assignment")
 get_application_role_assignment_end_point = (
-    end_point + f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
+    end_point + f"/{FOM_DEV_APPLICATION_ID}/user-role-assignment"
 )
 
 TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
@@ -53,7 +44,7 @@ def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     role_assignment_end_point = (
-        end_point + f"/{TEST_APPLICATION_ID_NOT_FOUND}/user_role_assignment"
+        end_point + f"/{TEST_APPLICATION_ID_NOT_FOUND}/user-role-assignment"
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -163,9 +154,9 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
     invalid_path_param = "not-int-str-application-id"
     invalid_path_router_msg = "Input should be a valid integer"
 
-    # endpont GET: /{application_id}/user_role_assignment
+    # endpont GET: /{application_id}/user-role-assignment
     application_role_assignment_endpoint = (
-        end_point + f"/{invalid_path_param}/user_role_assignment"
+        end_point + f"/{invalid_path_param}/user-role-assignment"
     )
     response = test_client_fixture.get(
         application_role_assignment_endpoint, headers=jwt_utils.headers(token)

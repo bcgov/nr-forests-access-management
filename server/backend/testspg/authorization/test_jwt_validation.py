@@ -15,7 +15,7 @@ from testspg.jwt_utils import (assert_error_response, create_jwt_claims,
                                create_jwt_token, headers)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/fam_applications/{FAM_APPLICATION_ID}/user_role_assignment"
+endPoint = f"{apiPrefix}/fam-applications/{FAM_APPLICATION_ID}/user-role-assignment"
 
 
 def test_get_application_user_role_assignment_success(
