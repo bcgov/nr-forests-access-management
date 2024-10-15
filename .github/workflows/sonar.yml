@@ -1,187 +1,187 @@
 name: SonarCloud analysis
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+    pull_request:
+    push:
+        branches:
+            - main
 
 jobs:
-  ci-auth:
-    runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
-      - name: Tests and coverage
+    ci-auth:
+        runs-on: ubuntu-latest
         env:
-          FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
-        run: |
-          cd server/auth_function
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  # Deep fetch is required for SonarCloud
+                  fetch-depth: 0
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.3.0
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
+
+            - name: Tests and coverage
+              env:
+                  FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+              run: |
+                  cd server/auth_function
+                  pip install -r requirements.txt -r requirements-dev.txt
+                  pip install pytest-cov
+                  pytest --cov=. --cov-branch --cov-report=xml \
+                    -v --md=report.md --emoji
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v2.3.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
+              with:
+                  projectBaseDir: server/auth_function
+                  args: >
+                      -Dsonar.exclusions=**/test/**/*,config.py
+                      -Dsonar.organization=bcgov-sonarcloud
+                      -Dsonar.projectKey=nr-forests-access-management_auth
+                      -Dsonar.python.coverage.reportPaths=*coverage*.xml
+                      -Dsonar.python.version=3.12
+                      -Dsonar.sources=.
+                      -Dsonar.tests=test
+
+    ci-backend:
+        runs-on: ubuntu-latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
-        with:
-          projectBaseDir: server/auth_function
-          args: >
-            -Dsonar.exclusions=**/test/**/*,config.py
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_auth
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.12
-            -Dsonar.sources=.
-            -Dsonar.tests=test
+            environment: dev
+            organization: bcgov
+            POSTGRES_USER: fam_proxy_api
+            POSTGRES_PASSWORD: test
+            POSTGRES_HOST: localhost
+            POSTGRES_DB: fam
+            POSTGRES_PORT: 5432
+            USE_POSTGRES: false
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  # Deep fetch is required for SonarCloud
+                  fetch-depth: 0
 
-  ci-backend:
-    runs-on: ubuntu-latest
-    env:
-      environment: dev
-      organization: bcgov
-      POSTGRES_USER: fam_proxy_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
-      USE_POSTGRES: false
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
+            - name: Tests and coverage
+              env:
+                  FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+                  IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+                  GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+                  TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
+                  POSTGRES_USER: ${{ vars.LOCAL_BACKEND_POSTGRES_USER }}
+                  POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+                  POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+                  POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+                  POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+                  COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+                  COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+                  COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+                  COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
+                  ENABLE_BCSC_JWKS_ENDPOINT: ${{ vars.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
+              run: |
+                  cd server/backend
+                  pip install -r requirements.txt -r requirements-dev.txt
+                  pip install pytest-cov
+                  pytest --cov=. --cov-branch --cov-report=xml \
+                    -v --md=report.md --emoji
 
-      - name: Tests and coverage
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v2.3.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+              with:
+                  projectBaseDir: server/backend
+                  args: >
+                      -Dsonar.host.url=https://sonarcloud.io
+                      -Dsonar.organization=bcgov-sonarcloud
+                      -Dsonar.projectKey=nr-forests-access-management_backend
+                      -Dsonar.python.coverage.reportPaths=*coverage*.xml
+                      -Dsonar.python.version=3.12
+                      -Dsonar.sources=api
+                      -Dsonar.tests=testspg
+
+    ci-admin-management:
+        runs-on: ubuntu-latest
         env:
-          FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
-          IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
-          GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
-          TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
-          POSTGRES_USER: ${{ vars.LOCAL_BACKEND_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
-          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
-          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
-          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
-          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
-          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
-          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
-          ENABLE_BCSC_JWKS_ENDPOINT: ${{ vars.LOCAL_ENABLE_BCSC_JWKS_ENDPOINT }}
-        run: |
-          cd server/backend
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
+            environment: dev
+            organization: bcgov
+            POSTGRES_USER: fam_admin_management_api
+            POSTGRES_PASSWORD: test
+            POSTGRES_HOST: localhost
+            POSTGRES_DB: fam
+            POSTGRES_PORT: 5432
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  # Deep fetch is required for SonarCloud
+                  fetch-depth: 0
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with:
-          projectBaseDir: server/backend
-          args: >
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_backend
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.12
-            -Dsonar.sources=api
-            -Dsonar.tests=testspg
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
 
-  ci-admin-management:
-    runs-on: ubuntu-latest
-    env:
-      environment: dev
-      organization: bcgov
-      POSTGRES_USER: fam_admin_management_api
-      POSTGRES_PASSWORD: test
-      POSTGRES_HOST: localhost
-      POSTGRES_DB: fam
-      POSTGRES_PORT: 5432
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Deep fetch is required for SonarCloud
-          fetch-depth: 0
+            - name: Tests and coverage
+              env:
+                  FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
+                  IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+                  GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+                  POSTGRES_USER: ${{ vars.LOCAL_ADMAN_POSTGRES_USER }}
+                  POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
+                  POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
+                  POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
+                  POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
+                  COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
+                  COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
+                  COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
+                  COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
+              run: |
+                  cd server/admin_management
+                  pip install -r requirements.txt -r requirements-dev.txt
+                  pip install pytest-cov
+                  pytest --cov=. --cov-branch --cov-report=xml \
+                    -v --md=report.md --emoji
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@v2.3.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN }}
+              with:
+                  projectBaseDir: server/admin_management
+                  args: >
+                      -Dsonar.host.url=https://sonarcloud.io
+                      -Dsonar.organization=bcgov-sonarcloud
+                      -Dsonar.projectKey=nr-forests-access-management_admin
+                      -Dsonar.python.coverage.reportPaths=*coverage*.xml
+                      -Dsonar.python.version=3.12
+                      -Dsonar.sources=api
+                      -Dsonar.tests=tests
 
-      - name: Tests and coverage
-        env:
-          FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
-          IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
-          GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
-          POSTGRES_USER: ${{ vars.LOCAL_ADMAN_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ vars.LOCAL_POSTGRES_HOST }}
-          POSTGRES_DB: ${{ vars.LOCAL_POSTGRES_DB }}
-          POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
-          COGNITO_REGION: ${{ vars.LOCAL_COGNITO_REGION }}
-          COGNITO_USER_POOL_ID: ${{ vars.LOCAL_COGNITO_USER_POOL_ID }}
-          COGNITO_CLIENT_ID: ${{ vars.LOCAL_COGNITO_CLIENT_ID }}
-          COGNITO_USER_POOL_DOMAIN: ${{ vars.LOCAL_COGNITO_USER_POOL_DOMAIN }}
-        run: |
-          cd server/admin_management
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install pytest-cov
-          pytest --cov=. --cov-branch --cov-report=xml \
-            -v --md=report.md --emoji
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ADMIN }}
-        with:
-          projectBaseDir: server/admin_management
-          args: >
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=nr-forests-access-management_admin
-            -Dsonar.python.coverage.reportPaths=*coverage*.xml
-            -Dsonar.python.version=3.12
-            -Dsonar.sources=api
-            -Dsonar.tests=tests
-
-  ci-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.2.1
-        with:
-          commands: |
-            npm run install-frontend
-            npm run build
-            npm run test-coverage
-          dir: frontend
-          node_version: "18"
-          sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=true
-            -Dsonar.projectKey=nr-forests-access-management_frontend
-            -Dsonar.sources=src
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-          triggers: ("frontend" "terraform-frontend/")
+    ci-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: bcgov-nr/action-test-and-analyse@v1.2.1
+              with:
+                  commands: |
+                      npm run install-frontend
+                      npm run build
+                      npm run test-coverage
+                  dir: frontend
+                  node_version: "20"
+                  sonar_args: >
+                      -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+                      -Dsonar.organization=bcgov-sonarcloud
+                      -Dsonar.project.monorepo.enabled=true
+                      -Dsonar.projectKey=nr-forests-access-management_frontend
+                      -Dsonar.sources=src
+                      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                  sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+                  triggers: ("frontend" "terraform-frontend/")
