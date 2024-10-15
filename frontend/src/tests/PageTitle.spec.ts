@@ -1,8 +1,8 @@
 import PageTitle from "@/components/common/PageTitle.vue";
-import { hashRoutes } from "@/router";
+import { router } from "@/router";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { it, describe, beforeEach, expect, afterEach, vi } from "vitest";
-import { routeItems } from "@/router/c";
+import { routeItems, GrantAppAdminRoute } from "@/router/routes";
 import { fixJsdomCssErr } from "./common/fixJsdomCssErr";
 
 fixJsdomCssErr();
@@ -11,8 +11,8 @@ vi.mock("vue-router", async () => {
     return {
         ...actual,
         useRoute: () => {
-            return hashRoutes.filter(
-                (route) => route.name == routeItems.grantAppAdmin.name
+            return routeItems.filter(
+                (route) => route.name == GrantAppAdminRoute.name
             )[0];
         },
     };

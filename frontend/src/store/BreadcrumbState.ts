@@ -1,4 +1,4 @@
-import type { IRouteInfo } from "@/router/RouteItems";
+// TODO REMOVE THIS
 import { ref } from "vue";
 
 export const breadcrumbState = ref();
@@ -21,7 +21,7 @@ const crumbEndItem = {
  *   a link for convenience.
  * @param breadcrumbItem
  */
-export const populateBreadcrumb = (breadcrumbItem: IRouteInfo[]) => {
+export const populateBreadcrumb = (breadcrumbItem: any[]) => {
     breadcrumbItem.push(crumbEndItem);
     breadcrumbState.value = breadcrumbItem;
 };
