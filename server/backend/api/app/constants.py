@@ -1,5 +1,6 @@
 # User Type
 from enum import Enum
+from typing import TypeVar
 
 # FAM application name in database
 APPLICATION_FAM = "FAM"
@@ -103,6 +104,9 @@ ROLE_NAME_MAX_LEN = 100
 APPLICATION_NAME_MAX_LEN = 100
 APPLICATION_DESC_MAX_LEN = 200
 CREATE_USER_MAX_LEN = 100
+MIN_PAGE = 1
+DEFAULT_PAGE_SIZE = 50
+MAX_PAGE_SIZE = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
 class PrivilegeChangeTypeEnum(str, Enum):
@@ -122,3 +126,7 @@ class PrivilegeDetailsPermissionTypeEnum(str, Enum):
     END_USER = "End User"
     DELEGATED_ADMIN = "Delegated Admin"
     APPLICATION_ADMIN = "Application Admin"
+
+
+# ----------------------- Generic Type Variable Declaration ----------------------- #
+T = TypeVar('T')
