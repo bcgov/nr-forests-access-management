@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import InputText from 'primevue/inputtext';
-import { hashRouter } from '@/router';
-import { routeItems } from '@/router/routeItem';
-import { IconSize } from '@/enum/IconEnum';
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
+import { computed } from "vue";
+import InputText from "primevue/inputtext";
+import { router } from "@/router";
+import { routeItems } from "@/router/routes";
+import { IconSize } from "@/enum/IconEnum";
+import { selectedApplicationDisplayText } from "@/store/ApplicationState";
 
 const props = defineProps({
     btnLabel: {
@@ -26,32 +26,34 @@ const props = defineProps({
     },
     inputPlaceholder: {
         type: String,
-        default: 'Search by keyword',
+        default: "Search by keyword",
         required: false,
     },
 });
-const emit = defineEmits(['change']);
+const emit = defineEmits(["change"]);
 
 const computedFilter = computed({
     get() {
         return props.filter;
     },
     set(newValue) {
-        emit('change', newValue);
+        emit("change", newValue);
     },
 });
 
-const userLevelText = computed(() => {
-    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return 'delegated administrators';
-    return 'users';
-});
+const userLevelText = "TODO";
+//  computed(() => {
+//     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+//         return "delegated administrators";
+//     return "users";
+// });
 
-const tableHeaderCustomText = computed(() => {
-    if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
-        return 'and the roles they are allowed to manage for their users';
-    return 'and their permissions levels';
-});
+const tableHeaderCustomText = "TODO";
+//  computed(() => {
+//     if (props.btnRoute == routeItems.grantDelegatedAdmin.path)
+//         return "and the roles they are allowed to manage for their users";
+//     return "and their permissions levels";
+// });
 </script>
 
 <template>
@@ -64,20 +66,29 @@ const tableHeaderCustomText = computed(() => {
     </div>
 
     <div class="utility-container">
-        <Button v-if="props.btnRoute" class="btn-add-user" :label="props.btnLabel"
-            @click="hashRouter.push(props.btnRoute)">
+        <Button
+            v-if="props.btnRoute"
+            class="btn-add-user"
+            :label="props.btnLabel"
+            @click="router.push(props.btnRoute)"
+        >
             <Icon icon="add" :size="IconSize.small" />
         </Button>
         <span class="p-input-icon-left">
             <Icon icon="search" :size="IconSize.small" />
-            <InputText id="dashboardSearch" class="dash-search" :placeholder="props.inputPlaceholder"
-                v-model="computedFilter" :value="props.filter" />
+            <InputText
+                id="dashboardSearch"
+                class="dash-search"
+                :placeholder="props.inputPlaceholder"
+                v-model="computedFilter"
+                :value="props.filter"
+            />
         </span>
     </div>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 .custom-data-table-header {
     padding: 1rem 1rem 1.5rem;

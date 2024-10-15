@@ -1,8 +1,8 @@
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import LoginUserState, { type FamLoginUser } from '@/store/FamLoginUserState';
-import { showTermsForAcceptance } from '@/store/TermsAndConditionsState';
-import type { CognitoUserSession } from 'amazon-cognito-identity-js';
-import { Auth } from 'aws-amplify';
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import LoginUserState, { type FamLoginUser } from "@/store/FamLoginUserState";
+import { showTermsForAcceptance } from "@/store/TermsAndConditionsState";
+import type { CognitoUserSession } from "amazon-cognito-identity-js";
+import { Auth } from "aws-amplify";
 
 // functions
 
@@ -34,7 +34,7 @@ const loginBusinessBceid = async () => {
 const logout = async () => {
     await Auth.signOut();
     LoginUserState.removeFamUser();
-    console.log('User logged out.');
+    console.log("User logged out.");
 };
 
 const handlePostLogin = async () => {
@@ -55,8 +55,8 @@ const handlePostLogin = async () => {
                 showTermsForAcceptance();
         }
     } catch (error) {
-        console.log('Not signed in');
-        console.log('Authentication Error:', error);
+        console.log("Not signed in");
+        console.log("Authentication Error:", error);
         logout();
     }
 };
@@ -72,7 +72,7 @@ const handlePostLogin = async () => {
  */
 const refreshToken = async (): Promise<FamLoginUser | undefined> => {
     try {
-        console.log('Refreshing Token...');
+        console.log("Refreshing Token...");
         const currentAuthToken: CognitoUserSession =
             await Auth.currentSession();
 
@@ -85,7 +85,7 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
         return famLoginUser;
     } catch (error) {
         console.error(
-            'Problem refreshing token or token is invalidated:',
+            "Problem refreshing token or token is invalidated:",
             error
         );
         // logout and redirect to login.
@@ -102,12 +102,12 @@ const refreshToken = async (): Promise<FamLoginUser | undefined> => {
 const parseToken = (authToken: CognitoUserSession): FamLoginUser => {
     const decodedIdToken = authToken.getIdToken().decodePayload();
     const famLoginUser = {
-        username: decodedIdToken['custom:idp_username'],
-        displayName: decodedIdToken['custom:idp_display_name'],
-        email: decodedIdToken['email'],
-        idpProvider: decodedIdToken['identities'][0]['providerName'],
+        username: decodedIdToken["custom:idp_username"],
+        displayName: decodedIdToken["custom:idp_display_name"],
+        email: decodedIdToken["email"],
+        idpProvider: decodedIdToken["identities"][0]["providerName"],
         authToken: authToken,
-        organization: decodedIdToken['custom:idp_business_name'],
+        organization: decodedIdToken["custom:idp_business_name"],
     };
     return famLoginUser;
 };

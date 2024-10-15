@@ -1,12 +1,15 @@
-import { IdpProvider } from '@/enum/IdpEnum';
-import { AdminMgmtApiService, AppActlApiService } from '@/services/ApiServiceFactory';
+import { IdpProvider } from "@/enum/IdpEnum";
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from "@/services/ApiServiceFactory";
 import {
     CURRENT_SELECTED_APPLICATION_KEY,
     selectedApplicationId,
-} from '@/store/ApplicationState';
-import { FAM_APPLICATION_NAME } from '@/store/Constants';
-import { setRouteToastError } from '@/store/ToastState';
-import type { CognitoUserSession } from 'amazon-cognito-identity-js';
+} from "@/store/ApplicationState";
+import { FAM_APPLICATION_NAME } from "@/store/Constants";
+// import { // TODO setRouteToastError } from '@/store/ToastState';
+import type { CognitoUserSession } from "amazon-cognito-identity-js";
 import {
     AdminRoleAuthGroup,
     type AppEnv,
@@ -14,10 +17,10 @@ import {
     type FamAuthGrantDto,
     type FamGrantDetailDto,
     type FamRoleDto,
-} from 'fam-admin-mgmt-api/model';
-import { readonly, ref } from 'vue';
+} from "fam-admin-mgmt-api/model";
+import { readonly, ref } from "vue";
 
-const FAM_LOGIN_USER = 'famLoginUser';
+const FAM_LOGIN_USER = "famLoginUser";
 
 // For some of the values of the FAMLoginUser properties, see AuthService.parseToken().
 export interface FamLoginUser {
@@ -51,7 +54,7 @@ const state = ref({
 // FAM currently supports IDIR/BCeID Business login.
 const getUserIdpProvider = () => {
     // the IDP Provider has env in it (like DEV-IDIR, DEV-BCEIDBUSINESS), so we need to split and only grab the IDP part
-    const idpProvider = state.value.famLoginUser!.idpProvider!.split('-')[1];
+    const idpProvider = state.value.famLoginUser!.idpProvider!.split("-")[1];
     if (IdpProvider.IDIR == idpProvider) return IdpProvider.IDIR;
     else return IdpProvider.BCEIDBUSINESS;
 };
@@ -197,7 +200,7 @@ const getMyAdminPermission = (): IMyPermission[] => {
     return myPermissions.map((permission: IMyPermission) => {
         permission.application = permission.application!.replace(
             /\([^()]*\)/g,
-            ''
+            ""
         );
         return permission;
     });
@@ -220,10 +223,7 @@ const isAdminOfSelectedApplication = () => {
 
 const isExternalDelegatedAdmin = () =>
     getUserIdpProvider() == IdpProvider.BCEIDBUSINESS &&
-    getUserAdminRoleGroups()?.includes(
-        AdminRoleAuthGroup.DelegatedAdmin
-    );
-
+    getUserAdminRoleGroups()?.includes(AdminRoleAuthGroup.DelegatedAdmin);
 
 const hasAccess = (role: string): boolean => {
     return !!getUserAccess()?.find((access) => access.auth_key === role);
@@ -262,15 +262,17 @@ const cacheUserAccess = async () => {
         storeFamUser(state.value.famLoginUser);
     } catch (error: any) {
         console.log("Unable to get user's access in FAM", error);
-        setRouteToastError(error);
+        // TODO setRouteToastError(error);
     }
 };
 
 const requiresAcceptTermsCondition = async () => {
-    return (await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions()).data;
+    return (
+        await AppActlApiService.userTermsAndConditionsApi.validateUserRequiresAcceptTermsAndConditions()
+    ).data;
 };
 
-//--------- get my permissions
+//--------- get my permissions?? TODO
 
 const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
     const famGrant = access.grants.find(
@@ -282,7 +284,7 @@ const getMyFamAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
         {
             application: famGrant!.application.description,
             env: famGrant!.application.env,
-            role: 'Admin',
+            role: "Admin",
         },
     ];
 };
@@ -291,7 +293,7 @@ const getMyAppAdminPermission = (access: FamAuthGrantDto): IMyPermission[] => {
     return access.grants.map((grant: FamGrantDetailDto) => ({
         application: grant.application.description,
         env: grant.application.env,
-        role: 'Admin',
+        role: "Admin",
     }));
 };
 
@@ -301,7 +303,7 @@ const getMyDelegatedAdminPermission = (
     const permissions: IMyPermission[] = [];
     access.grants.forEach((grant: FamGrantDetailDto) => {
         grant.roles?.forEach((role: FamRoleDto) => {
-            const roleDescription = 'Delegated Admin, ' + role.name;
+            const roleDescription = "Delegated Admin, " + role.name;
             if (!role.forest_clients) {
                 permissions.push({
                     application: grant.application.description,

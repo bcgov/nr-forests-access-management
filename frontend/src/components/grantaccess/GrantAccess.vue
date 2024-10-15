@@ -1,30 +1,39 @@
 <script setup lang="ts">
-import { hashRouter } from '@/router';
-import { Form as VeeForm } from 'vee-validate';
-import { computed, ref } from 'vue';
+import { router } from "@/router";
+import { Form as VeeForm } from "vee-validate";
+import { computed, ref } from "vue";
 
-import Button from '@/components/common/Button.vue';
-import ForestClientInput from '@/components/grantaccess/form/ForestClientInput.vue';
-import UserDomainSelect from '@/components/grantaccess/form/UserDomainSelect.vue';
-import UserNameInput from '@/components/grantaccess/form/UserNameInput.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
-import { ErrorCode, GrantPermissionType, Severity } from '@/enum/SeverityEnum';
-import { TabKey } from '@/enum/TabEnum';
-import { routeItems } from '@/router/routeItem';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { formValidationSchema, isProdAppSelectedOnProdEnv } from '@/services/utils';
+import Button from "@/components/common/Button.vue";
+import ForestClientInput from "@/components/grantaccess/form/ForestClientInput.vue";
+import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
+import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
+import { IconSize } from "@/enum/IconEnum";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
+import { TabKey } from "@/enum/TabEnum";
+import { routeItems } from "@/router/routes";
+import { AppActlApiService } from "@/services/ApiServiceFactory";
+import {
+    formValidationSchema,
+    isProdAppSelectedOnProdEnv,
+} from "@/services/utils";
 import {
     selectedApplicationDisplayText,
-    selectedApplicationId
-} from '@/store/ApplicationState';
-import { setCurrentTabState } from '@/store/CurrentTabState';
-import FamLoginUserState from '@/store/FamLoginUserState';
-import { isLoading } from '@/store/LoadingState';
-import { composeAndPushGrantPermissionNotification, setNotificationMsg } from '@/store/NotificationState';
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import { EmailSendingStatus, type FamUserRoleAssignmentCreateSchema } from 'fam-app-acsctl-api';
-import { UserType } from 'fam-app-acsctl-api/model';
+    selectedApplicationId,
+} from "@/store/ApplicationState";
+import { setCurrentTabState } from "@/store/CurrentTabState";
+import FamLoginUserState from "@/store/FamLoginUserState";
+import { isLoading } from "@/store/LoadingState";
+import {
+    composeAndPushGrantPermissionNotification,
+    setNotificationMsg,
+} from "@/store/NotificationState";
+import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import {
+    EmailSendingStatus,
+    type FamUserRoleAssignmentCreateSchema,
+} from "fam-app-acsctl-api";
+import { UserType } from "fam-app-acsctl-api/model";
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -33,11 +42,11 @@ const defaultDomain =
 
 const defaultFormData = {
     domain: defaultDomain,
-    userId: '',
-    userGuid: '',
+    userId: "",
+    userGuid: "",
     verifiedForestClients: [],
     roleId: null as number | null,
-    sendUserEmail: (isProdAppSelectedOnProdEnv()) as boolean
+    sendUserEmail: isProdAppSelectedOnProdEnv() as boolean,
 };
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
 const applicationRoleOptions = computed(() => {
@@ -55,20 +64,20 @@ const applicationRoleOptions = computed(() => {
 /* ------------------ User information method ------------------------- */
 const userDomainChange = (selectedDomain: string) => {
     formData.value.domain = selectedDomain;
-    formData.value.userId = '';
-    formData.value.userGuid = '';
+    formData.value.userId = "";
+    formData.value.userGuid = "";
 };
 
 const userIdChange = (userId: string) => {
     formData.value.userId = userId;
-    formData.value.userGuid = '';
+    formData.value.userGuid = "";
 };
 
 const verifyUserIdPassed = ref(false);
 const setVerifyUserIdPassed = (
     verifiedResult: boolean,
-    userGuid: string = '',
-    userEmail: string = '',
+    userGuid: string = "",
+    userEmail: string = ""
 ) => {
     verifyUserIdPassed.value = verifiedResult;
     formData.value.userGuid = userGuid;
@@ -83,7 +92,7 @@ const getSelectedRole = (): FamRoleDto | undefined => {
 };
 
 const isAbstractRoleSelected = () => {
-    return getSelectedRole()?.type_code == 'A';
+    return getSelectedRole()?.type_code == "A";
 };
 
 const roleSelectChange = (roleId: number) => {
@@ -106,7 +115,7 @@ const resetVerifiedForestClients = () => {
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    hashRouter.push('/dashboard');
+    router.push("/manage-permissions");
 };
 
 /*
@@ -146,17 +155,18 @@ const handleSubmit = async () => {
             const forestClientNumber =
                 response.detail.role.forest_client?.forest_client_number;
             if (response.status_code == 200) {
-                newUserAccessIds.push(
-                    response.detail.user_role_xref_id
-                );
-                successList.push(forestClientNumber ?? '');
+                newUserAccessIds.push(response.detail.user_role_xref_id);
+                successList.push(forestClientNumber ?? "");
             } else {
                 if (response.status_code == 409) errorCode = ErrorCode.Conflict;
-                errorList.push(forestClientNumber ?? '');
+                errorList.push(forestClientNumber ?? "");
             }
         });
 
-        if (returnResponse.data.email_sending_status == EmailSendingStatus.SentToEmailServiceFailure) {
+        if (
+            returnResponse.data.email_sending_status ==
+            EmailSendingStatus.SentToEmailServiceFailure
+        ) {
             setNotificationMsg(
                 Severity.Error,
                 `Failed to send email to ${formData.value.userEmail}, please contact the user to notify they've been granted permission.`
@@ -164,7 +174,7 @@ const handleSubmit = async () => {
         }
     } catch (error: any) {
         // error happens here will fail adding all forest client numbers
-        if (error.response?.data.detail.code === 'self_grant_prohibited') {
+        if (error.response?.data.detail.code === "self_grant_prohibited") {
             errorCode = ErrorCode.SelfGrantProhibited;
         }
         // if has forest clientn number, set errorList to be the verifiedForestClients list
@@ -172,7 +182,7 @@ const handleSubmit = async () => {
         errorList =
             formData.value.verifiedForestClients.length > 0
                 ? formData.value.verifiedForestClients
-                : [''];
+                : [""];
     }
 
     composeAndPushGrantPermissionNotification(
@@ -186,16 +196,16 @@ const handleSubmit = async () => {
 
     setCurrentTabState(TabKey.UserAccess);
 
-    if (newUserAccessIds.length > 0) {
-        hashRouter.push({
-            path: routeItems.dashboard.path,
-            query: {
-                newUserAccessIds: newUserAccessIds.join(','),
-            },
-        });
-    } else {
-        hashRouter.push(routeItems.dashboard.path);
-    }
+    // TODO if (newUserAccessIds.length > 0) {
+    //     hashRouter.push({
+    //         path: routeItems.dashboard.path,
+    //         query: {
+    //             newUserAccessIds: newUserAccessIds.join(","),
+    //         },
+    //     });
+    // } else {
+    //     hashRouter.push(routeItems.dashboard.path);
+    // }
 };
 
 function toRequestPayload(formData: any) {
@@ -207,8 +217,8 @@ function toRequestPayload(formData: any) {
         requires_send_user_email: formData.sendUserEmail,
         ...(formData.verifiedForestClients.length > 0
             ? {
-                forest_client_numbers: formData.verifiedForestClients,
-            }
+                  forest_client_numbers: formData.verifiedForestClients,
+              }
             : {}),
     } as FamUserRoleAssignmentCreateSchema;
     return request;
@@ -216,40 +226,91 @@ function toRequestPayload(formData: any) {
 </script>
 
 <template>
-    <PageTitle title="Add user permission"
-        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`" />
-    <VeeForm ref="form" v-slot="{ meta }" :validation-schema="formValidationSchema(isAbstractRoleSelected())" as="div">
+    <PageTitle
+        title="Add user permission"
+        :subtitle="`Adding user permission to ${selectedApplicationDisplayText}. All fields are mandatory`"
+    />
+    <VeeForm
+        ref="form"
+        v-slot="{ meta }"
+        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
+        as="div"
+    >
         <div class="page-body">
             <form id="grantAccessForm" class="form-container">
                 <StepContainer title="User information">
-                    <UserDomainSelect v-if="
-                        FamLoginUserState.getUserIdpProvider() ===
-                        IdpProvider.IDIR
-                    " :domain="formData.domain" @change="userDomainChange" />
-                    <UserNameInput :domain="formData.domain" :userId="formData.userId" @change="userIdChange"
-                        @setVerifyResult="setVerifyUserIdPassed" />
+                    <UserDomainSelect
+                        v-if="
+                            FamLoginUserState.getUserIdpProvider() ===
+                            IdpProvider.IDIR
+                        "
+                        :domain="formData.domain"
+                        @change="userDomainChange"
+                    />
+                    <UserNameInput
+                        :domain="formData.domain"
+                        :userId="formData.userId"
+                        @change="userIdChange"
+                        @setVerifyResult="setVerifyUserIdPassed"
+                    />
                 </StepContainer>
 
-                <StepContainer title="User roles" :divider="isAbstractRoleSelected()">
-                    <RoleSelectTable :roleId="formData.roleId" :roleOptions="applicationRoleOptions"
-                        @change="roleSelectChange" @resetVerifiedForestClients="resetVerifiedForestClients" />
+                <StepContainer
+                    title="User roles"
+                    :divider="isAbstractRoleSelected()"
+                >
+                    <RoleSelectTable
+                        :roleId="formData.roleId"
+                        :roleOptions="applicationRoleOptions"
+                        @change="roleSelectChange"
+                        @resetVerifiedForestClients="resetVerifiedForestClients"
+                    />
                 </StepContainer>
 
-                <StepContainer v-if="isAbstractRoleSelected()" title="Organization information" :divider="false">
-                    <ForestClientInput :userId="formData.userId" :roleId="formData.roleId"
-                        @setVerifiedForestClients="setVerifiedForestClients" @removeVerifiedForestClients="removeVerifiedForestClients
-                            " @resetVerifiedForestClients="resetVerifiedForestClients" />
+                <StepContainer
+                    v-if="isAbstractRoleSelected()"
+                    title="Organization information"
+                    :divider="false"
+                >
+                    <ForestClientInput
+                        :userId="formData.userId"
+                        :roleId="formData.roleId"
+                        @setVerifiedForestClients="setVerifiedForestClients"
+                        @removeVerifiedForestClients="
+                            removeVerifiedForestClients
+                        "
+                        @resetVerifiedForestClients="resetVerifiedForestClients"
+                    />
                 </StepContainer>
 
                 <Divider />
-                <BoolCheckbox v-model="formData.sendUserEmail" label="Send email to notify user" />
+                <BoolCheckbox
+                    v-model="formData.sendUserEmail"
+                    label="Send email to notify user"
+                />
 
                 <div class="button-stack">
-                    <Button type="button" id="grantAccessCancel" class="w100" severity="secondary" label="Cancel"
-                        :disabled="isLoading()" @click="cancelForm()">&nbsp;</Button>
-                    <Button type="button" id="grantAccessSubmit" class="w100" label="Grant Access" :disabled="!(meta.valid && areVerificationsPassed()) ||
-                        isLoading()
-                        " @click="handleSubmit()">
+                    <Button
+                        type="button"
+                        id="grantAccessCancel"
+                        class="w100"
+                        severity="secondary"
+                        label="Cancel"
+                        :disabled="isLoading()"
+                        @click="cancelForm()"
+                        >&nbsp;</Button
+                    >
+                    <Button
+                        type="button"
+                        id="grantAccessSubmit"
+                        class="w100"
+                        label="Grant Access"
+                        :disabled="
+                            !(meta.valid && areVerificationsPassed()) ||
+                            isLoading()
+                        "
+                        @click="handleSubmit()"
+                    >
                         <Icon icon="checkmark" :size="IconSize.small" />
                     </Button>
                 </div>

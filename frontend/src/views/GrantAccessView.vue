@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GrantAccess from '../components/grantaccess/GrantAccess.vue';
+import GrantAccess from "@/components/grantaccess/GrantAccess.vue";
 </script>
 
 <template>

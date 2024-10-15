@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { sideNavState } from '@/store/SideNavState';
-import Sidebar from 'primevue/sidebar';
-import type { PropType } from 'vue';
+import { sideNavState } from "@/store/SideNavState";
+import Sidebar from "primevue/sidebar";
+import type { PropType } from "vue";
+import { router } from "@/router";
 
 export interface ISideNavItem {
     name: string;
@@ -16,7 +17,7 @@ const props = defineProps({
     data: {
         type: Object as PropType<ISideNavItem[]>,
         required: true,
-        default: '',
+        default: "",
     },
 });
 </script>
@@ -26,20 +27,34 @@ const props = defineProps({
             <div class="content">
                 <ul>
                     <template v-for="item in props.data">
-                        <li class="header" :class="{
-                            'sidenav-selected':
-                                $router.currentRoute.value.path ==
-                                item.link || item.childLinks?.find((child) => $router.currentRoute.value.path.includes(child)),
-                            'sidenav-disabled': item.disabled,
-                        }" @click="$router.push(item.link)">
+                        <li
+                            class="header"
+                            :class="{
+                                'sidenav-selected':
+                                    $router.currentRoute.value.path ==
+                                        item.link ||
+                                    item.childLinks?.find((child) =>
+                                        $router.currentRoute.value.path.includes(
+                                            child
+                                        )
+                                    ),
+                                'sidenav-disabled': item.disabled,
+                            }"
+                            @click="router.push(item.link)"
+                        >
                             {{ item.name }}
                         </li>
-                        <li class="child" v-for="child in item.items" :class="{
-                            'sidenav-selected':
-                                $router.currentRoute.value.path ==
-                                child.link,
-                            'sidenav-disabled': child.disabled,
-                        }" @click="$router.push(child.link)">
+                        <li
+                            class="child"
+                            v-for="child in item.items"
+                            :class="{
+                                'sidenav-selected':
+                                    $router.currentRoute.value.path ==
+                                    child.link,
+                                'sidenav-disabled': child.disabled,
+                            }"
+                            @click="router.push(child.link)"
+                        >
                             <span>{{ child.name }}</span>
                         </li>
                     </template>
@@ -69,7 +84,7 @@ const props = defineProps({
     </Sidebar>
 </template>
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
+@import "@/assets/styles/styles.scss";
 
 .sidenav {
     position: fixed;
@@ -114,7 +129,7 @@ const props = defineProps({
     }
 }
 
-.sidenav li.child>span {
+.sidenav li.child > span {
     margin-left: 1.5rem;
 }
 

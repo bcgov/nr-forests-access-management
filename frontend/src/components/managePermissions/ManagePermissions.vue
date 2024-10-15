@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import ManagePermissionsTitle from '@/components/managePermissions/ManagePermissionsTitle.vue';
-import ApplicationAdminTable from '@/components/managePermissions/table/ApplicationAdminTable.vue';
-import DelegatedAdminTable from '@/components/managePermissions/table/DelegatedAdminTable.vue';
-import UserDataTable from '@/components/managePermissions/table/UserDataTable.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { Severity } from '@/enum/SeverityEnum';
-import { TabKey } from '@/enum/TabEnum';
-import { hashRouter } from '@/router';
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
+import ManagePermissionsTitle from "@/components/managePermissions/ManagePermissionsTitle.vue";
+import ApplicationAdminTable from "@/components/managePermissions/table/ApplicationAdminTable.vue";
+import DelegatedAdminTable from "@/components/managePermissions/table/DelegatedAdminTable.vue";
+import TermsAndConditions from "@/components/common/TermsAndConditions.vue";
+import UserDataTable from "@/components/managePermissions/table/UserDataTable.vue";
+import { IconSize } from "@/enum/IconEnum";
+import { Severity } from "@/enum/SeverityEnum";
+import { TabKey } from "@/enum/TabEnum";
+import { router } from "@/router";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import {
     deleteAndRefreshApplicationAdmin,
     deleteAndRefreshDelegatedAdmin,
@@ -15,33 +16,33 @@ import {
     fetchApplicationAdmins,
     fetchDelegatedAdmins,
     fetchUserRoleAssignments,
-} from '@/services/fetchData';
+} from "@/services/fetchData";
 import {
     isApplicationSelected,
     selectedApplication,
     selectedApplicationId,
     setSelectedApplication,
-} from '@/store/ApplicationState';
-import { FAM_APPLICATION_ID } from '@/store/Constants';
+} from "@/store/ApplicationState";
+import { FAM_APPLICATION_ID } from "@/store/Constants";
 import {
     getCurrentTabState,
     setCurrentTabState,
-} from '@/store/CurrentTabState';
-import LoginUserState from '@/store/FamLoginUserState';
-import { isLoading } from '@/store/LoadingState';
+} from "@/store/CurrentTabState";
+import LoginUserState from "@/store/FamLoginUserState";
+import { isLoading } from "@/store/LoadingState";
 import {
     resetNotification,
     setNotificationMsg,
-} from '@/store/NotificationState';
+} from "@/store/NotificationState";
 import type {
     FamAccessControlPrivilegeGetResponse,
     FamAppAdminGetResponse,
-} from 'fam-admin-mgmt-api/model';
-import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
-import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown';
-import TabPanel from 'primevue/tabpanel';
-import TabView, { type TabViewChangeEvent } from 'primevue/tabview';
-import { computed, onUnmounted, ref, shallowRef, type PropType } from 'vue';
+} from "fam-admin-mgmt-api/model";
+import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api";
+import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
+import TabPanel from "primevue/tabpanel";
+import TabView, { type TabViewChangeEvent } from "primevue/tabview";
+import { computed, onUnmounted, ref, shallowRef, type PropType } from "vue";
 
 const environmentSettings = new EnvironmentSettings();
 const isDevEnvironment = environmentSettings.isDevEnvironment();
@@ -62,21 +63,21 @@ const props = defineProps({
     // router query parameters
     newAppAdminId: {
         type: String,
-        default: '',
+        default: "",
     },
     newUserAccessIds: {
         type: String,
-        default: '',
+        default: "",
     },
     newDelegatedAdminIds: {
         type: String,
-        default: '',
+        default: "",
     },
 });
 
-const userRoleAssignments = shallowRef<FamApplicationUserRoleAssignmentGetSchema[]>(
-    props.userRoleAssignments
-);
+const userRoleAssignments = shallowRef<
+    FamApplicationUserRoleAssignmentGetSchema[]
+>(props.userRoleAssignments);
 
 const applicationAdmins = shallowRef<FamAppAdminGetResponse[]>(
     props.applicationAdmins
@@ -93,7 +94,7 @@ const applicationsUserAdministers = computed(() => {
 const tabViewRef = ref();
 
 const resetNewTag = () => {
-    hashRouter.push({ query: {} });
+    router.push({ query: {} });
 };
 
 const resetNotificationAndNewRowTag = () => {
@@ -206,58 +207,91 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-    <TermsAndConditions />
+    <!-- TODO <TermsAndConditions /> -->
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">
             <label for="application-dropdown-id">
                 You are modifying access in this application:
             </label>
-            <Dropdown id="application-dropdown-id" name="application-dropdown-id" v-model="selectedApplication"
-                @change="onApplicationSelected" :options="applicationsUserAdministers" optionLabel="description"
-                placeholder="Choose an application to manage permissions" class="application-dropdown" />
+            <Dropdown
+                id="application-dropdown-id"
+                name="application-dropdown-id"
+                v-model="selectedApplication"
+                @change="onApplicationSelected"
+                :options="applicationsUserAdministers"
+                optionLabel="description"
+                placeholder="Choose an application to manage permissions"
+                class="application-dropdown"
+            />
         </div>
 
         <div class="dashboard-background-layout">
             <NotificationStack />
             <TablePlaceholder v-if="!isApplicationSelected" />
-            <TabView v-else ref="tabViewRef" :active-index="getCurrentTab()" @tab-change="setCurrentTab($event)" :pt="{
-                root: {
-                    style: 'margin-top: 1.5rem',
-                },
-                panelContainer: {
-                    style: 'margin-top: -0.0625rem;',
-                },
-            }">
-                <TabPanel :key="TabKey.AdminAccess" header="Application admins"
-                    v-if="selectedApplicationId === FAM_APPLICATION_ID">
+            <TabView
+                v-else
+                ref="tabViewRef"
+                :active-index="getCurrentTab()"
+                @tab-change="setCurrentTab($event)"
+                :pt="{
+                    root: {
+                        style: 'margin-top: 1.5rem',
+                    },
+                    panelContainer: {
+                        style: 'margin-top: -0.0625rem;',
+                    },
+                }"
+            >
+                <TabPanel
+                    :key="TabKey.AdminAccess"
+                    header="Application admins"
+                    v-if="selectedApplicationId === FAM_APPLICATION_ID"
+                >
                     <template #header>
                         <Icon icon="enterprise" :size="IconSize.small" />
                     </template>
-                    <ApplicationAdminTable :loading="isLoading()" :applicationAdmins="applicationAdmins || []"
-                        :newIds="props.newAppAdminId" @deleteAppAdmin="deleteAppAdmin" />
+                    <ApplicationAdminTable
+                        :loading="isLoading()"
+                        :applicationAdmins="applicationAdmins || []"
+                        :newIds="props.newAppAdminId"
+                        @deleteAppAdmin="deleteAppAdmin"
+                    />
                 </TabPanel>
                 <TabPanel :key="TabKey.UserAccess" header="Users" v-else>
                     <template #header>
                         <Icon icon="user" :size="IconSize.small" />
                     </template>
 
-                    <UserDataTable :loading="isLoading()" :userRoleAssignments="userRoleAssignments || []"
-                        :newIds="props.newUserAccessIds" @deleteUserRoleAssignment="deleteUserRoleAssignment" />
+                    <UserDataTable
+                        :loading="isLoading()"
+                        :userRoleAssignments="userRoleAssignments || []"
+                        :newIds="props.newUserAccessIds"
+                        @deleteUserRoleAssignment="deleteUserRoleAssignment"
+                    />
                 </TabPanel>
 
-                <TabPanel :key="TabKey.DelegatedAdminAccess" v-if="
-                    isDevEnvironment &&
-                    LoginUserState.isAdminOfSelectedApplication() &&
-                    selectedApplicationId !== FAM_APPLICATION_ID
-                " header="Delegated admins">
+                <TabPanel
+                    :key="TabKey.DelegatedAdminAccess"
+                    v-if="
+                        isDevEnvironment &&
+                        LoginUserState.isAdminOfSelectedApplication() &&
+                        selectedApplicationId !== FAM_APPLICATION_ID
+                    "
+                    header="Delegated admins"
+                >
                     <template #header>
                         <Icon icon="enterprise" :size="IconSize.small" />
                     </template>
 
-                    <DelegatedAdminTable :loading="isLoading()" :delegatedAdmins="delegatedAdmins || []"
-                        :newIds="props.newDelegatedAdminIds" @deleteDelegatedAdminAssignment="deleteDelegatedAdminAssignment
-                            " />
+                    <DelegatedAdminTable
+                        :loading="isLoading()"
+                        :delegatedAdmins="delegatedAdmins || []"
+                        :newIds="props.newDelegatedAdminIds"
+                        @deleteDelegatedAdminAssignment="
+                            deleteDelegatedAdminAssignment
+                        "
+                    />
                 </TabPanel>
             </TabView>
         </div>
@@ -265,7 +299,7 @@ const getCurrentTab = () => {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 .application-group {
     display: grid;
