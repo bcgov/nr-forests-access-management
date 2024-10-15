@@ -5,7 +5,7 @@ import type {
     CognitoRefreshToken,
 } from "amazon-cognito-identity-js";
 
-import { IdpProvider } from "@/enum/IdpEnum";
+import type { IdpProvider } from "@/enum/IdpEnum";
 
 export type IdpTypes = IdpProvider.IDIR | IdpProvider.BCEIDBUSINESS;
 
