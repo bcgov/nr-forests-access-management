@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import Button from "@/components/common/Button.vue";
 import { IconSize } from "@/enum/IconEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { router } from "@/router";
-import { routeItems } from "@/router/c";
+import { ManagePermissionsRoute, routeItems } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import {
     formValidationSchema,
@@ -30,9 +31,10 @@ import { UserType } from "fam-app-acsctl-api";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { Form as VeeForm } from "vee-validate";
-import { computed, ref } from "vue";
 
 const confirm = useConfirm();
+
+const router = useRouter();
 
 const defaultFormData = {
     domain: UserType.I,
@@ -101,7 +103,7 @@ const resetVerifiedForestClients = () => {
 /* ---------------------- Form method ---------------------------------- */
 const cancelForm = () => {
     formData.value = defaultFormData;
-    hashRouter.push("/manage-permissions");
+    router.push("/manage-permissions");
 };
 
 /*
@@ -179,14 +181,14 @@ const confirmSubmit = async () => {
     setCurrentTabState(TabKey.DelegatedAdminAccess);
 
     if (newDelegatedAdminAccessIds.length > 0) {
-        hashRouter.push({
-            path: routeItems.dashboard.path,
+        router.push({
+            path: ManagePermissionsRoute.name as string,
             query: {
                 newDelegatedAdminIds: newDelegatedAdminAccessIds.join(","),
             },
         });
     } else {
-        hashRouter.push(routeItems.dashboard.path);
+        router.push(ManagePermissionsRoute.name as string);
     }
 };
 

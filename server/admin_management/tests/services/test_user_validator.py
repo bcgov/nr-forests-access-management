@@ -1,9 +1,10 @@
 import logging
 
 import pytest
-from api.app.constants import ERROR_CODE_INVALID_REQUEST_PARAMETER, UserType, ApiInstanceEnv
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               ApiInstanceEnv, UserType)
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.schemas import Requester, TargetUser
+from api.app.schemas.schemas import Requester, TargetUser
 from api.app.services.validator.target_user_validator import \
     TargetUserValidator
 from fastapi import HTTPException

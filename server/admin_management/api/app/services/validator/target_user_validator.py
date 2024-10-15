@@ -2,10 +2,12 @@ import copy
 import logging
 
 from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
-                               IdimSearchUserParamType, UserType, ApiInstanceEnv)
+                               ApiInstanceEnv, IdimSearchUserParamType,
+                               UserType)
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.schemas import (IdimProxyBceidSearchParam, IdimProxySearchParam,
-                             Requester, TargetUser)
+from api.app.schemas.schemas import (IdimProxyBceidSearchParam,
+                                     IdimProxySearchParam, Requester,
+                                     TargetUser)
 from api.app.utils import utils
 
 LOGGER = logging.getLogger(__name__)

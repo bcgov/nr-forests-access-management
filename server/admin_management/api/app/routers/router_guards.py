@@ -3,36 +3,27 @@ import logging
 from http import HTTPStatus
 from typing import Union
 
-from api.app.constants import (
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    AdminRoleAuthGroup,
-    UserType,
-)
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               AdminRoleAuthGroup, UserType)
 from api.app.jwt_validation import (
-    ERROR_PERMISSION_REQUIRED,
-    get_access_roles,
-    get_request_cognito_user_id,
-    get_request_cognito_user_id_without_access_check,
-    validate_token,
-)
+    ERROR_PERMISSION_REQUIRED, get_access_roles, get_request_cognito_user_id,
+    get_request_cognito_user_id_without_access_check, validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance,
-    application_admin_service_instance,
-    application_service_instance,
-    role_service_instance,
-    user_service_instance,
-)
-from api.app.schemas import FamAppAdminCreateRequest, Requester, TargetUser
-from api.app.services.access_control_privilege_service import (
-    AccessControlPrivilegeService,
-)
+    application_admin_service_instance, application_service_instance,
+    role_service_instance, user_service_instance)
+from api.app.schemas.schemas import (FamAppAdminCreateRequest, Requester,
+                                     TargetUser)
+from api.app.services import utils_service
+from api.app.services.access_control_privilege_service import \
+    AccessControlPrivilegeService
 from api.app.services.application_admin_service import ApplicationAdminService
 from api.app.services.application_service import ApplicationService
 from api.app.services.role_service import RoleService
 from api.app.services.user_service import UserService
-from api.app.services.validator.target_user_validator import TargetUserValidator
-from api.app.services import utils_service
+from api.app.services.validator.target_user_validator import \
+    TargetUserValidator
 from api.app.utils import utils
 from fastapi import Depends, HTTPException, Request
 

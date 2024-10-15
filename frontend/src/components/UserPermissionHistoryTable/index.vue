@@ -88,6 +88,9 @@ const headers = ["Date", "Activity", "Details", "Performed by"];
             <template #body="slotProps">
                 <PermissionDetailsCol
                     :permission-details="slotProps.data.privilege_details"
+                    :permission-change-type="
+                        slotProps.data.privilege_change_type_code
+                    "
                 />
             </template>
         </Column>
