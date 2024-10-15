@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import UserAvatar16 from '@carbon/icons-vue/es/user--avatar/16';
-import { formatUserNameAndId } from '@/utils/UserUtils';
-import type { PrivilegeChangePerformerSchema } from 'fam-app-acsctl-api/model';
+import UserAvatar16 from "@carbon/icons-vue/es/user--avatar/16";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import type { PrivilegeChangePerformerSchema } from "fam-app-acsctl-api/model";
 
 defineProps<{
     performerDetails: PrivilegeChangePerformerSchema;
 }>();
-
 </script>
 
 <template>
@@ -27,7 +26,6 @@ defineProps<{
             <p v-if="performerDetails.email">
                 {{ performerDetails.email }}
             </p>
-
         </div>
     </div>
 </template>

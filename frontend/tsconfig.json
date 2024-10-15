@@ -1,32 +1,26 @@
 {
-    "extends": "@vue/tsconfig/tsconfig.web.json",
-    "include": [
-        "env.d.ts",
-        "src/**/*.ts",
-        "src/**/*",
-        "src/**/*.vue",
-    ],
+    "extends": "@vue/tsconfig/tsconfig.json",
+    "include": ["env.d.ts", "src/**/*.ts", "src/**/*", "src/**/*.vue"],
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
+            "@/*": ["./src/*"],
             "@/components/*": [
                 "./src/components/*/index.vue",
-                "./src/components/*",
+                "./src/components/*"
             ],
-            "@/views/*": [
-                "./src/views/*/index.vue",
-                "./src/views/*",
+            "@/views/*": ["./src/views/*/index.vue", "./src/views/*"],
+            "fam-app-acsctl-api/*": [
+                "../client-code-gen/gen/app-access-control-api/*"
+            ],
+            "fam-admin-mgmt-api/*": [
+                "../client-code-gen/gen/admin-management-api/*"
             ]
         },
         "allowJs": true,
         "skipLibCheck": true,
         "moduleResolution": "node",
-        "types": [
-            "vite/client"
-        ],
+        "types": ["vite/client"],
         "esModuleInterop": true,
         "strict": true
     },
