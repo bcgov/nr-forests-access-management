@@ -8,8 +8,10 @@ services:
       file: docker-base-services.yml
       service: fam-database
     container_name: fam-postgres-testcontainer
+    environment:
+      - PGPORT=${POSTGRES_PORT_TESTCONTAINER}  # the easiest way to change postgres db default port from '5432' to PGPORT.
     ports:
-      - "${POSTGRES_PORT_TESTCONTAINER}:${POSTGRES_PORT}"  # use host-port: '5433' for testcontainer db instance than '5432' for main db.
+      - "${POSTGRES_PORT_TESTCONTAINER}:${POSTGRES_PORT_TESTCONTAINER}"  # use host-port: POSTGRES_PORT_TESTCONTAINER ='5433' for testcontainer db instance than '5432' for main db.
 
   fam-flyway-testcontainer:
     extends:
@@ -17,8 +19,8 @@ services:
       service: fam-flyway
     environment:
       # note: this environment is separated out from docker-base-services.yml for testcontainer to avoid
-      # colliding with main app db instance. And within the docker network it is still prot '5432'
-      - FLYWAY_URL=jdbc:postgresql://fam-postgres-testcontainer:${POSTGRES_PORT}/fam
+      # colliding with main app db instance.
+      - FLYWAY_URL=jdbc:postgresql://fam-postgres-testcontainer:${POSTGRES_PORT_TESTCONTAINER}/fam
     depends_on:
       fam-database-testcontainer:
         condition: service_healthy
