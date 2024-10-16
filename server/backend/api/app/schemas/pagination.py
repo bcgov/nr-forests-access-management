@@ -1,5 +1,5 @@
 
-from typing import Generic, List, Optional
+from typing import Generic, List
 
 from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
                                MIN_PAGE_SIZE, T)
@@ -20,7 +20,7 @@ More over, the endpoint also need to use "Depends()" for function argument, like
         ...
     )
 
-And, in this working case, the validation will not be 400, it will be 422 (from Pydantic)
+And, in this case, the validation error default from Pydantic will not be 400, it will be 422 (from Pydantic)
 
 Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters-using-pydantic-model-in-fastapi
 """
@@ -35,10 +35,10 @@ class PageParamsSchema(BaseModel):
 
     # The best combination of FastAPI + Pydantic for Swagger
     page_number: int | None = Field(Query(
-        default=MIN_PAGE, ge=MIN_PAGE, description="page number to get the paged data"
+        default=MIN_PAGE, ge=MIN_PAGE, description="Page number to get the paged data"
     ))
     page_size: int | None = Field(Query(
-        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="number of records for each page"
+        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records for each page"
     ))
 
 
@@ -47,6 +47,7 @@ class PagedResultsSchema(GenericModel, Generic[T]):
     API pagination return schema.
     Use Python generice type for return type.
     """
-    total: int  # total counts
-    page_number: int
-    results: List[T]  # current paged results
+    total: int  = Field(description='Total records counts for query conditions')
+    page_number: int = Field(description='Page number')
+    page_size: int = Field(description='Number of records for each page')
+    results: List[T] = Field(description='Paged results')
