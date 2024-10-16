@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.24.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.1...v1.24.0) (2024-10-16)
+
+
+### Features
+
+* [#1545](https://github.com/bcgov/nr-forests-access-management/issues/1545) store audit records when grantingremoving delegated admin access ([#1625](https://github.com/bcgov/nr-forests-access-management/issues/1625)) ([465f066](https://github.com/bcgov/nr-forests-access-management/commit/465f0660bcb1dbb83cc4716e28038d6d3ea2428e))
+* [#1619](https://github.com/bcgov/nr-forests-access-management/issues/1619) add user history icon to d amin action column ([#1622](https://github.com/bcgov/nr-forests-access-management/issues/1622)) ([e167740](https://github.com/bcgov/nr-forests-access-management/commit/e167740e537e7e4cb435421c77d44d9b92ef44ba))
+
+
+### Bug Fixes
+
+* [#1614](https://github.com/bcgov/nr-forests-access-management/issues/1614) add client suspend role ([#1618](https://github.com/bcgov/nr-forests-access-management/issues/1618)) ([72713ec](https://github.com/bcgov/nr-forests-access-management/commit/72713ec7ecf752ee0cedf021eac2e97a0465cf8e))
+* [#1628](https://github.com/bcgov/nr-forests-access-management/issues/1628) Improve local testcontainer startup to avoid overriding running main docker db instance ([#1632](https://github.com/bcgov/nr-forests-access-management/issues/1632)) ([2371396](https://github.com/bcgov/nr-forests-access-management/commit/237139644ddb93708e7c6bffbe714c1e5c65b9e8))
+
 ## [1.23.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.0...v1.23.1) (2024-10-04)
 
 
