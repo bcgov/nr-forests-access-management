@@ -8,6 +8,7 @@ from api.app.routers.router_guards import (
     get_current_requester)
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamUserInfoSchema, RequesterSchema)
+from api.app.schemas.pagination import PageParamsSchema
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -26,6 +27,7 @@ router = APIRouter()
 )
 def get_fam_application_user_role_assignment(
     application_id: int,
+    page_params: PageParamsSchema = Depends(),
     db: Session = Depends(database.get_db),
     requester: RequesterSchema = Depends(get_current_requester),
 ):

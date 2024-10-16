@@ -106,6 +106,7 @@ APPLICATION_DESC_MAX_LEN = 200
 CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
+MIN_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
