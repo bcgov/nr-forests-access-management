@@ -1,10 +1,9 @@
 import logging
 from typing import List
-from sqlalchemy.orm import Session
 
-from api.app.schemas import FamRoleCreateDto
 from api.app.models.model import FamRole
-
+from api.app.schemas.schemas import FamRoleCreateDto
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 

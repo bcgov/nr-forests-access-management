@@ -2,13 +2,13 @@ import logging
 from http import HTTPStatus
 
 import starlette.testclient
-
 import tests.jwt_utils as jwt_utils
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import (
     ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, ERROR_INVALID_APPLICATION_ID,
     ERROR_INVALID_ROLE_ID)
+from api.app.services.permission_audit_service import PermissionAuditService
 from tests.constants import (INVALID_APPLICATION_ID,
                              TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
                              TEST_ACP_CREATE_CONCRETE_BCEID,
@@ -29,6 +29,7 @@ def test_create_access_control_privilege_many(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    mocker
 ):
     # test create with invalid role
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FAM_ADMIN_ROLE])
@@ -61,6 +62,9 @@ def test_create_access_control_privilege_many(
     override_get_verified_target_user()
 
     # test create access control privilege with abstract role and one forest client number
+    store_delegated_admin_permissions_granted_audit_history_fn_spy = mocker.spy(
+        PermissionAuditService, 'store_delegated_admin_permissions_granted_audit_history'
+    )
     response = test_client_fixture.post(
         f"{endPoint}",
         json=TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
@@ -72,7 +76,9 @@ def test_create_access_control_privilege_many(
     data = response.json().get("assignments_detail")
     assert len(data) == 1
     assert data[0].get("status_code") == HTTPStatus.OK
+    assert store_delegated_admin_permissions_granted_audit_history_fn_spy.call_count == 1
 
+    store_delegated_admin_permissions_granted_audit_history_fn_spy.call_count = 0 # reset spy count
     # test create access control privilege with abstract role and two forest client numbers
     # one just created above, one is new
     response = test_client_fixture.post(
@@ -92,7 +98,9 @@ def test_create_access_control_privilege_many(
     assert len(data) == 2
     assert data[0].get("status_code") == HTTPStatus.CONFLICT
     assert data[1].get("status_code") == HTTPStatus.OK
+    assert store_delegated_admin_permissions_granted_audit_history_fn_spy.call_count == 1
 
+    store_delegated_admin_permissions_granted_audit_history_fn_spy.call_count = 0 # reset spy count
     # test create access control privilege with invalid forest client numbers
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -108,6 +116,7 @@ def test_create_access_control_privilege_many(
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
     assert str(response.json()["detail"]).find("is not in active status") != -1
+    assert store_delegated_admin_permissions_granted_audit_history_fn_spy.call_count == 0
 
 
 def test_get_access_control_privileges_by_application_id(
@@ -230,6 +239,7 @@ def test_delete_access_control_privilege(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_get_verified_target_user,
+    mocker
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -246,6 +256,9 @@ def test_delete_access_control_privilege(
     data = response.json().get("assignments_detail")[0]["detail"]
 
     # test delete with invalid role
+    store_delegated_admin_permissions_revoked_audit_history_fn_spy = mocker.spy(
+        PermissionAuditService, 'store_delegated_admin_permissions_revoked_audit_history'
+    )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.delete(
         f"{endPoint}/{data.get('access_control_privilege_id')}",
@@ -254,6 +267,7 @@ def test_delete_access_control_privilege(
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() is not None
     assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
+    store_delegated_admin_permissions_revoked_audit_history_fn_spy.call_count == 0
 
     # test delete access control privilege
     token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_FOM_DEV_ADMIN_ROLE])
@@ -262,6 +276,7 @@ def test_delete_access_control_privilege(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.OK
+    store_delegated_admin_permissions_revoked_audit_history_fn_spy.call_count == 1
 
     # test delete non exists access control privilege
     response = test_client_fixture.delete(

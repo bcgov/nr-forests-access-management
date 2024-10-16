@@ -10,10 +10,10 @@ from api.app.routers.router_guards import (
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance, role_service_instance,
     user_service_instance)
-from api.app.schemas import (FamAccessControlPrivilegeCreateRequest,
-                             FamAccessControlPrivilegeGetResponse,
-                             FamAccessControlPrivilegeResponse, Requester,
-                             TargetUser)
+from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateRequest,
+                                     FamAccessControlPrivilegeGetResponse,
+                                     FamAccessControlPrivilegeResponse,
+                                     Requester, TargetUser)
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
 from api.app.services.role_service import RoleService
@@ -81,7 +81,7 @@ def create_access_control_privilege_many(
 
         response = FamAccessControlPrivilegeResponse(
             assignments_detail=access_control_privilege_service.create_access_control_privilege_many(
-                access_control_privilege_request, requester.cognito_user_id, target_user
+                access_control_privilege_request, requester, target_user
             )
         )
 
@@ -174,6 +174,7 @@ def delete_access_control_privilege(
         audit_event_log.target_user = access_control_privilege.user
 
         return access_control_privilege_service.delete_access_control_privilege(
+            requester,
             access_control_privilege_id
         )
 

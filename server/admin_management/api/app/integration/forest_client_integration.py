@@ -4,7 +4,7 @@ from typing import List
 
 import requests
 from api.app.constants import ApiInstanceEnv
-from api.app.schemas import ForestClientIntegrationFindResponse
+from api.app.schemas.schemas import ForestClientIntegrationFindResponse
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
