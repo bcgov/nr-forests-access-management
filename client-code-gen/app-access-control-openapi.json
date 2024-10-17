@@ -37,6 +37,47 @@
               "type": "integer",
               "title": "Application Id"
             }
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Page number",
+              "default": 1,
+              "title": "Page Number"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Number of records per page",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Number of records per page"
           }
         ],
         "responses": {
@@ -45,11 +86,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FamApplicationUserRoleAssignmentGetSchema"
-                  },
-                  "title": "Response Get Fam Application User Role Assignment"
+                  "$ref": "#/components/schemas/PagedResultsSchema_FamApplicationUserRoleAssignmentGetSchema_"
                 }
               }
             }
@@ -1378,6 +1415,47 @@
           "userId"
         ],
         "title": "IdimProxyIdirInfoSchema"
+      },
+      "PagedResultsSchema_FamApplicationUserRoleAssignmentGetSchema_": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total records counts for query conditions"
+          },
+          "number_of_pages": {
+            "type": "integer",
+            "title": "Number Of Pages",
+            "description": "Total pages for query records"
+          },
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number",
+            "description": "Page number"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size",
+            "description": "Number of records per page"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/FamApplicationUserRoleAssignmentGetSchema"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Paged results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "number_of_pages",
+          "page_number",
+          "page_size",
+          "results"
+        ],
+        "title": "PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]"
       },
       "PermissionAuditHistoryRes": {
         "properties": {

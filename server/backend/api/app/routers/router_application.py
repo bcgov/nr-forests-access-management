@@ -17,7 +17,6 @@ router = APIRouter()
 
 @router.get(
     "/{application_id}/user-role-assignment",
-    # response_model=List[FamApplicationUserRoleAssignmentGetSchema],
     response_model=PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema],
     status_code=200,
     dependencies=[
@@ -40,9 +39,6 @@ def get_fam_application_user_role_assignment(
     paged_results = crud_application.get_application_role_assignments(
         db=db, application_id=application_id, requester=requester, page_params=page_params
     )
-    # app_user_role_assignment = crud_application.get_application_role_assignments(
-    #     db=db, application_id=application_id, requester=requester
-    # )
     return paged_results
 
 

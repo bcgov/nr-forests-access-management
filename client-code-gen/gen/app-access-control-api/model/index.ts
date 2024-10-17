@@ -16,6 +16,7 @@ export * from './httpvalidation-error';
 export * from './idim-proxy-bceid-info-schema';
 export * from './idim-proxy-idir-info-schema';
 export * from './location-inner';
+export * from './paged-results-schema-fam-application-user-role-assignment-get-schema';
 export * from './permission-audit-history-res';
 export * from './privilege-change-performer-schema';
 export * from './privilege-change-type-enum';
