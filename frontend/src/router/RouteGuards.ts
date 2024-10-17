@@ -31,25 +31,19 @@ const isAuthenticated = (): boolean => {
  * Logs the execution time of the check.
  * @returns {Promise<boolean>} True if the user is authenticated, otherwise false.
  */
-export async function checkAuthentication(): Promise<boolean> {
-    const startTime = performance.now();
-    const isAuth = isAuthenticated();
-    const endTime = performance.now();
-    console.log(
-        `isAuthenticated Execution Time: ${endTime - startTime} milliseconds`
-    );
-    return isAuth;
-}
+export const checkAuthentication = async (): Promise<boolean> => {
+    return isAuthenticated();
+};
 
 /**
  * Auth guard that manages navigation based on authentication state.
  * Redirects unauthenticated users to the landing page.
  */
-export async function authGuard(
+export const authGuard = async (
     _to: RouteLocationNormalized,
     _from: RouteLocationNormalized,
     next: NavigationGuardNext
-) {
+) => {
     await waitForAuthRestoration();
 
     if (await checkAuthentication()) {
@@ -57,16 +51,16 @@ export async function authGuard(
     } else {
         next({ path: "/" });
     }
-}
+};
 
 /**
  * Redirects authenticated users to `/manage-permissions` if they attempt to access the landing page.
  */
-export async function landingGuard(
+export const landingGuard = async (
     _to: RouteLocationNormalized,
     _from: RouteLocationNormalized,
     next: NavigationGuardNext
-) {
+) => {
     await waitForAuthRestoration();
 
     if (await checkAuthentication()) {
@@ -74,4 +68,4 @@ export async function landingGuard(
     } else {
         next();
     }
-}
+};
