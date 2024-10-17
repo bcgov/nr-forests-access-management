@@ -1,34 +1,48 @@
-import { Auth } from "aws-amplify";
+import { authState } from "@/providers/authState";
 import type { RouteLocationNormalized, NavigationGuardNext } from "vue-router";
 
 /**
- * Check if the user is authenticated using AWS Amplify
- * @returns {Promise<boolean>}
+ * Waits for the authentication state to be restored.
+ * @returns {Promise<void>}
  */
-export async function isAuthenticated(): Promise<boolean> {
-    const startTime = performance.now(); // Start time
-    try {
-        await Auth.currentSession();
-        const endTime = performance.now(); // End time
-        console.log(
-            `isAuthenticated Execution Time: ${
-                endTime - startTime
-            } milliseconds`
-        );
-        return true;
-    } catch {
-        const endTime = performance.now(); // End time
-        console.log(
-            `isAuthenticated Execution Time: ${
-                endTime - startTime
-            } milliseconds`
-        );
-        return false;
-    }
+const waitForAuthRestoration = (): Promise<void> => {
+    return new Promise((resolve) => {
+        const checkAuthRestored = () => {
+            if (authState.value.isAuthRestored) {
+                resolve();
+            } else {
+                setTimeout(checkAuthRestored, 100);
+            }
+        };
+        checkAuthRestored();
+    });
+};
+
+/**
+ * Checks if the user is authenticated based on the current authentication state.
+ * @returns {boolean} True if the user is authenticated, otherwise false.
+ */
+const isAuthenticated = (): boolean => {
+    return authState.value.isAuthenticated;
+};
+
+/**
+ * Checks if the user is authenticated using AWS Amplify.
+ * Logs the execution time of the check.
+ * @returns {Promise<boolean>} True if the user is authenticated, otherwise false.
+ */
+export async function checkAuthentication(): Promise<boolean> {
+    const startTime = performance.now();
+    const isAuth = isAuthenticated();
+    const endTime = performance.now();
+    console.log(
+        `isAuthenticated Execution Time: ${endTime - startTime} milliseconds`
+    );
+    return isAuth;
 }
 
 /**
- * Auth guard to manage navigation based on authentication state.
+ * Auth guard that manages navigation based on authentication state.
  * Redirects unauthenticated users to the landing page.
  */
 export async function authGuard(
@@ -36,11 +50,12 @@ export async function authGuard(
     _from: RouteLocationNormalized,
     next: NavigationGuardNext
 ) {
-    const auth = await isAuthenticated();
-    if (auth) {
-        next(); // User is authenticated, proceed to the route
+    await waitForAuthRestoration();
+
+    if (await checkAuthentication()) {
+        next();
     } else {
-        next({ path: "/" }); // Redirect to the landing page if not authenticated
+        next({ path: "/" });
     }
 }
 
@@ -52,10 +67,11 @@ export async function landingGuard(
     _from: RouteLocationNormalized,
     next: NavigationGuardNext
 ) {
-    const auth = await isAuthenticated();
-    if (auth) {
-        next("/manage-permissions"); // Redirect authenticated users to manage-permissions
+    await waitForAuthRestoration();
+
+    if (await checkAuthentication()) {
+        next("/manage-permissions");
     } else {
-        next(); // Proceed to LandingView for non-authenticated users
+        next();
     }
 }

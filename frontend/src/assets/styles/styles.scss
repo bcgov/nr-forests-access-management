@@ -1,21 +1,21 @@
-@use 'sass:map';
-@use '@bcgov-nr/nr-theme/design-tokens/type-family.scss' as typeFamily;
+@use "sass:map";
+@use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
 
 // Import all of Bootstrap's CSS
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";
 
-@import 'base';
+@import "base";
 
 // Components
-@import '@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss';
+@import "@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss";
 
 :root {
-    --font-family: map.get(typeFamily.$type-family, 'sans');
+    --font-family: map.get(typeFamily.$type-family, "sans");
     --primevue-striped-row-color: rgba(0, 0, 0, 0.05);
 }
 
 body {
-    font-family: map.get(typeFamily.$type-family, 'sans');
+    font-family: map.get(typeFamily.$type-family, "sans");
 }
 
 /* ----------------- form input styles --------------------------- */
@@ -31,7 +31,7 @@ body {
 }
 
 .custom-height {
-    max-height: 2.813rem !important;
+    max-height: 2.813rem;
 }
 
 .button-stack {
@@ -44,7 +44,7 @@ body {
     grid-template-columns: 1fr 1fr;
 
     Button {
-        width: auto !important;
+        width: auto;
     }
 }
 
@@ -63,12 +63,12 @@ body {
         width: 38rem;
 
         Button {
-            width: 15rem !important;
+            width: 15rem;
             gap: 2rem;
             white-space: nowrap;
         }
     }
     .p-dialog {
-        max-width: 40rem !important;
+        max-width: 40rem;
     }
 }

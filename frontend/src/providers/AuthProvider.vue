@@ -80,6 +80,7 @@ const logout = async () => {
         accessToken: null,
         idToken: null,
         refreshToken: null,
+        isAuthRestored: true,
     };
 };
 
@@ -121,6 +122,7 @@ const handlePostLogin = async () => {
             accessToken,
             idToken,
             refreshToken,
+            isAuthRestored: true,
         };
 
         startSilentRefresh(cognitoUser);
@@ -153,6 +155,7 @@ const handlePostLogin = async () => {
  */
 const restoreSession = async () => {
     try {
+        isLoading.value = true;
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
         const session: CognitoUserSession = await Auth.currentSession();
 
@@ -169,11 +172,21 @@ const restoreSession = async () => {
             accessToken,
             idToken,
             refreshToken,
+            isAuthRestored: true,
         };
-
-        startSilentRefresh(cognitoUser);
     } catch (error) {
-        logout();
+        console.error("User not authenticated:", error);
+        authState.value = {
+            isAuthenticated: false,
+            famLoginUser: null,
+            cognitoUser: null,
+            accessToken: null,
+            idToken: null,
+            refreshToken: null,
+            isAuthRestored: true,
+        };
+    } finally {
+        isLoading.value = false;
     }
 };
 

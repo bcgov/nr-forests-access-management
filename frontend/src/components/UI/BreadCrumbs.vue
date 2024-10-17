@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { RouterLink } from 'vue-router';
-import type { BreadCrumbType } from '@/types/BreadCrumbTypes';
+import { RouterLink } from "vue-router";
+import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 
 defineProps<{
-    crumbs: BreadCrumbType[]
+    crumbs: BreadCrumbType[];
 }>();
-
 </script>
 
 <template>
