@@ -2,9 +2,11 @@ import logging
 from typing import List
 
 from api.app.constants import UserType
+from api.app.crud.services.paginate_service import PaginateService
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
+from api.app.schemas.pagination import PagedResultsSchema, PageParamsSchema
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -24,8 +26,9 @@ def get_application(db: Session, application_id: int):
 
 
 def get_application_role_assignments(
-    db: Session, application_id: int, requester: RequesterSchema
-) -> List[FamApplicationUserRoleAssignmentGetSchema]:
+    db: Session, application_id: int, requester: RequesterSchema, page_params: PageParamsSchema
+# ) -> List[FamApplicationUserRoleAssignmentGetSchema]:
+) -> PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]:
     """query the user / role cross reference table to retrieve the role
     assignments.
     Delegated Admin will only see user role assignments by the roles granted for them.
@@ -44,9 +47,9 @@ def get_application_role_assignments(
     # base query - users assigned to the application. This could be the case
     #              for [APP]_ADMIN.
     q = (
-        db.query(models.FamUserRoleXref)
+        select(models.FamUserRoleXref)
         .join(models.FamRole)
-        .filter(models.FamRole.application_id == application_id)
+        .where(models.FamRole.application_id == application_id)
     )
 
     if not crud_utils.is_app_admin(
@@ -55,10 +58,10 @@ def get_application_role_assignments(
         # subquery for finding out what roles (role_ids) the requester
         # (as an application delegated admin) is managing at for a specific application.
         role_ids_dlgdadmin_managed_subquery = (
-            db.query(models.FamAccessControlPrivilege.role_id)
+            select(models.FamAccessControlPrivilege.role_id)
             .join(models.FamUser)
             .join(models.FamRole)
-            .filter(
+            .where(
                 models.FamUser.cognito_user_id == requester.cognito_user_id,
                 models.FamRole.application_id == application_id,
             )
@@ -67,9 +70,9 @@ def get_application_role_assignments(
 
         # filtered by the managed role for user_role assignments that the
         # requester (as an delegated admin) is allowed to see.
-        q = q.filter(
+        q = q.where(
             models.FamUserRoleXref.role_id.in_(
-                select(role_ids_dlgdadmin_managed_subquery)
+                role_ids_dlgdadmin_managed_subquery
             )
         )
 
@@ -78,15 +81,16 @@ def get_application_role_assignments(
             # user_role records belonging to the same business organization.
 
             # Note, need to reassign to the variable from the base query.
-            q = q.join(models.FamUser).filter(
+            q = q.join(models.FamUser).where(
                 models.FamUser.user_type_code == UserType.BCEID,
                 func.upper(models.FamUser.business_guid)
                 == requester.business_guid.upper(),
             )
 
-    qresult = q.all()
+    paginated_service = PaginateService(db, q, page_params)
+    qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
     LOGGER.debug(
         f"Query for user role assignment complete with \
-                 # of results = {len(qresult)}"
+                 # of results = {len(qresult.results)}"
     )
     return qresult

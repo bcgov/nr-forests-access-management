@@ -107,6 +107,9 @@ CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
+
+# The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
+# and let frontend do the pagination, we could set it to 100000.
 MAX_PAGE_SIZE = 100
 
 # --------------------------------- Schema Enums --------------------------------- #
