@@ -26,19 +26,15 @@ Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters
 """
 
 class PageParamsSchema(BaseModel):
-    """ Request query params for backend API pagination """
-    # page_number: Annotated[int, Field(default=MIN_PAGE, ge=MIN_PAGE, description="number to get the paged data")]  # not working
-    # page_number: Annotated[int, Query(default=MIN_PAGE, ge=MIN_PAGE, description="number provided to get the paged data")]  # not working
-    # page_number: int = Field(default=MIN_PAGE, ge=MIN_PAGE, description="number provided to get the paged data") # not working
-    # page_number: Annotated[int, Field(Query(default=MIN_PAGE, ge=MIN_PAGE, description="number to get the paged data"))] # not working
-    # page_number: int | None = Field(default=1, ge=1, description="number to get the paged data")  # not working
-
+    """
+    Request query params for backend API pagination
+    """
     # The best combination of FastAPI + Pydantic for Swagger
     page_number: int | None = Field(Query(
-        default=MIN_PAGE, ge=MIN_PAGE, description="Page number to get the paged data"
+        default=MIN_PAGE, ge=MIN_PAGE, description="Page number"
     ))
     page_size: int | None = Field(Query(
-        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records for each page"
+        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records per page"
     ))
 
 
@@ -47,7 +43,8 @@ class PagedResultsSchema(GenericModel, Generic[T]):
     API pagination return schema.
     Use Python generice type for return type.
     """
-    total: int  = Field(description='Total records counts for query conditions')
+    total: int = Field(description='Total records counts for query conditions')
+    number_of_pages: int = Field(description='Total pages for query records')
     page_number: int = Field(description='Page number')
-    page_size: int = Field(description='Number of records for each page')
+    page_size: int = Field(description='Number of records per page')
     results: List[T] = Field(description='Paged results')
