@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.13
 
 COPY requirements.txt /usr/src/
 COPY api /usr/src/api
