@@ -14,12 +14,12 @@ class PaginateService:
             self,
             db: Session,
             base_query: Select,
-            order_by_construct: UnaryExpression | None,
+            order_by_criteria: UnaryExpression | None,
             page_param: PageParamsSchema
         ):
         self.db = db  # SqlAlchemy session.
         self.base_query = base_query  # Select query statement.
-        self.__order_by_construct = order_by_construct
+        self.__order_by_criteria = order_by_criteria
         self.__page_params__ = page_param
         self.page = page_param.page
         self.size = page_param.size
@@ -53,7 +53,7 @@ class PaginateService:
         return quotient if not rest else quotient + 1
 
     def __apply_order_by(self, q: Select) -> Select:
-        LOGGER.debug(f"Applying order_by_construct: {self.__order_by_construct}")
-        if self.__order_by_construct is not None:
-              q = q.order_by(self.__order_by_construct)
+        LOGGER.debug(f"Applying order_by criteria: {self.__order_by_criteria}")
+        if self.__order_by_criteria is not None:
+              q = q.order_by(self.__order_by_criteria)
         return q

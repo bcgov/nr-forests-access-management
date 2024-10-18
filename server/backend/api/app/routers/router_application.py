@@ -32,7 +32,8 @@ def get_fam_application_user_role_assignment(
     page_params: UserRolePageParamsSchema = Depends(),
 ):
     """
-    gets the roles assignment associated with an application
+
+    Gets the users/roles assignment associated with an application
     """
     LOGGER.debug(
         f"Loading application role assigments for application_id: {application_id}"

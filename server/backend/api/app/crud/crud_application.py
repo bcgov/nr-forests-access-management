@@ -25,25 +25,24 @@ def get_application(db: Session, application_id: int):
     return application
 
 
-def build_order_by_construct(page_params: UserRolePageParamsSchema):
-    # currently only 1 sortBy column.
+def build_order_by_criteria(page_params: UserRolePageParamsSchema):
+    # currently only 1 sortBy column at a time from frontend.
     sort_by = page_params.sort_by
     sort_order = page_params.sort_order
-    column = models.FamUser.user_name  # default
+    mapped_column = models.FamUser.user_name  # default
 
     if sort_by == UserRoleSortByEnum.DOMAIN:
-        column = models.FamUser.user_type_code
+        mapped_column = models.FamUser.user_type_code
     elif sort_by == UserRoleSortByEnum.EMAIL:
-        column = models.FamUser.email
+        mapped_column = models.FamUser.email
     elif sort_by == UserRoleSortByEnum.ROLE_DISPLAY_NAME:
-        column = models.FamRole.display_name
+        mapped_column = models.FamRole.display_name
     elif sort_by == UserRoleSortByEnum.FOREST_CLIENT_NUMBER:
-        column = models.FamForestClient.forest_client_number
+        mapped_column = models.FamForestClient.forest_client_number
     elif sort_by == UserRoleSortByEnum.FULL_NAME:
-        column = models.FamUser.full_name  # this is a hybrid column
+        mapped_column = models.FamUser.full_name  # this is a hybrid column
 
-    LOGGER.info(f"column: {column}")
-    return asc(column) if sort_order == SortOrderEnum.ASC else desc(column)
+    return asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
 
 
 def get_application_role_assignments(
@@ -108,10 +107,9 @@ def get_application_role_assignments(
                 == requester.business_guid.upper(),
             )
 
-    paginated_service = PaginateService(db, q, build_order_by_construct(page_params), page_params)
+    paginated_service = PaginateService(db, q, build_order_by_criteria(page_params), page_params)
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
     LOGGER.debug(
-        f"Query for user role assignment complete with \
-                 # of results = {len(qresult.results)}"
+        f"Querying for user role assignment completed with # of results = {len(qresult.results)}"
     )
     return qresult
