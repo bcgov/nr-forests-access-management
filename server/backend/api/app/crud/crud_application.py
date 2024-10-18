@@ -52,7 +52,7 @@ def build_filter_criteria(page_params: UserRolePageParamsSchema):
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
     return (
         or_(
-            *list(map(lambda column: column.like(f"%{search_keyword}%"), filter_on_columns))
+            *list(map(lambda column: column.ilike(f"%{search_keyword}%"), filter_on_columns))
         )
         if search_keyword is not None
         else None

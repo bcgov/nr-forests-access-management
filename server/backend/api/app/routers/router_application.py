@@ -9,7 +9,7 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamUserInfoSchema, RequesterSchema)
 from api.app.schemas.pagination import (PagedResultsSchema,
                                         UserRolePageParamsSchema)
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ router = APIRouter()
     ],
 )
 def get_fam_application_user_role_assignment(
+    response: Response,
     application_id: int,
     db: Session = Depends(database.get_db),
     requester: RequesterSchema = Depends(get_current_requester),
@@ -41,6 +42,7 @@ def get_fam_application_user_role_assignment(
     paged_results = crud_application.get_application_role_assignments(
         db=db, application_id=application_id, requester=requester, page_params=page_params
     )
+    response.headers["x-total-count"] = f"{paged_results.total}"
     return paged_results
 
 
