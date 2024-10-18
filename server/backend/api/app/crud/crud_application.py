@@ -7,13 +7,23 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
 from api.app.schemas.pagination import (PagedResultsSchema,
                                         UserRolePageParamsSchema)
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
+# Local constant(this may not be trivial on different query construct),
+# provide mapping for sortBy columns mapped to model columns.
+USER_ROLE_SORT_BY_MAPPED_COLUMN = {
+    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,
+    UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
+    UserRoleSortByEnum.EMAIL: models.FamUser.email,
+    UserRoleSortByEnum.FULL_NAME: models.FamUser.full_name,  # this is a hybrid column
+    UserRoleSortByEnum.ROLE_DISPLAY_NAME: models.FamRole.display_name,
+    UserRoleSortByEnum.FOREST_CLIENT_NUMBER: models.FamForestClient.forest_client_number
+}
 
 def get_application(db: Session, application_id: int):
     """gets a single application"""
@@ -26,23 +36,27 @@ def get_application(db: Session, application_id: int):
 
 
 def build_order_by_criteria(page_params: UserRolePageParamsSchema):
-    # currently only 1 sortBy column at a time from frontend.
+    # currently only sorting on 1 column at a time from frontend.
     sort_by = page_params.sort_by
     sort_order = page_params.sort_order
-    mapped_column = models.FamUser.user_name  # default
-
-    if sort_by == UserRoleSortByEnum.DOMAIN:
-        mapped_column = models.FamUser.user_type_code
-    elif sort_by == UserRoleSortByEnum.EMAIL:
-        mapped_column = models.FamUser.email
-    elif sort_by == UserRoleSortByEnum.ROLE_DISPLAY_NAME:
-        mapped_column = models.FamRole.display_name
-    elif sort_by == UserRoleSortByEnum.FOREST_CLIENT_NUMBER:
-        mapped_column = models.FamForestClient.forest_client_number
-    elif sort_by == UserRoleSortByEnum.FULL_NAME:
-        mapped_column = models.FamUser.full_name  # this is a hybrid column
+    mapped_column = (
+        models.FamUser.user_name if sort_by is None # default
+        else USER_ROLE_SORT_BY_MAPPED_COLUMN.get(sort_by)
+    )
 
     return asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
+
+
+def build_filter_criteria(page_params: UserRolePageParamsSchema):
+    search_keyword = page_params.search
+    filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
+    return (
+        or_(
+            *list(map(lambda column: column.like(f"%{search_keyword}%"), filter_on_columns))
+        )
+        if search_keyword is not None
+        else None
+    )
 
 
 def get_application_role_assignments(
@@ -107,7 +121,12 @@ def get_application_role_assignments(
                 == requester.business_guid.upper(),
             )
 
-    paginated_service = PaginateService(db, q, build_order_by_criteria(page_params), page_params)
+    paginated_service = PaginateService(
+        db, q,
+        build_filter_criteria(page_params),
+        build_order_by_criteria(page_params),
+        page_params
+    )
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
     LOGGER.debug(
         f"Querying for user role assignment completed with # of results = {len(qresult.results)}"

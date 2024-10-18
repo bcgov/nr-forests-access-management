@@ -40,7 +40,7 @@ class PageParamsSchema(BaseModel):
     ))
 
     search: str | None = Field(Query(
-        default=None, min_length=3, min_length=SEARCH_FIELD_MIN_LENGTH, max_length=SEARCH_FIELD_MAX_LENGTH, description="Search by keyword"
+        default=None, min_length=SEARCH_FIELD_MIN_LENGTH, max_length=SEARCH_FIELD_MAX_LENGTH, description="Search by keyword"
     ))
 
     sort_order: SortOrderEnum | None = Field(Query(default=SortOrderEnum.ASC, description="Column sorting order by", alias="sortOrder"))
