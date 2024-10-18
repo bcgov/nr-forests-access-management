@@ -107,11 +107,15 @@ CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
+SORT_COLUMN_MAX_LENGTH = 30
 
 # The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
 # and let frontend do the pagination, we could set it to 100000.
 # >> MAX_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 100000
+
+# ----------------------- Generic Type Variable Declaration ----------------------- #
+T = TypeVar('T')
 
 # --------------------------------- Schema Enums --------------------------------- #
 class PrivilegeChangeTypeEnum(str, Enum):
@@ -132,6 +136,15 @@ class PrivilegeDetailsPermissionTypeEnum(str, Enum):
     DELEGATED_ADMIN = "Delegated Admin"
     APPLICATION_ADMIN = "Application Admin"
 
+class SortOrderEnum(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
 
-# ----------------------- Generic Type Variable Declaration ----------------------- #
-T = TypeVar('T')
+class UserRoleSortByEnum(str, Enum):
+    # Note: this is not the exact model column name, requires table column mapping.
+    USER_NAME = "user_name"
+    DOMAIN = "user_type_code"
+    EMAIL = "email"
+    FULL_NAME = "full_name"  # special case: first_name + last_name
+    ROLE_DISPLAY_NAME = "role_display_name"
+    FOREST_CLIENT_NUMBER = "forest_client_number"

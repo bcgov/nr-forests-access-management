@@ -1,13 +1,13 @@
 import logging
-from typing import List
 
-from api.app.constants import UserType
+from api.app.constants import SortOrderEnum, UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
-from api.app.schemas.pagination import PagedResultsSchema, PageParamsSchema
-from sqlalchemy import func, select
+from api.app.schemas.pagination import (PagedResultsSchema,
+                                        UserRolePageParamsSchema)
+from sqlalchemy import asc, desc, func, select
 from sqlalchemy.orm import Session
 
 from . import crud_utils as crud_utils
@@ -25,9 +25,29 @@ def get_application(db: Session, application_id: int):
     return application
 
 
+def build_order_by_construct(page_params: UserRolePageParamsSchema):
+    # currently only 1 sortBy column.
+    sort_by = page_params.sort_by
+    sort_order = page_params.sort_order
+    column = models.FamUser.user_name  # default
+
+    if sort_by == UserRoleSortByEnum.DOMAIN:
+        column = models.FamUser.user_type_code
+    elif sort_by == UserRoleSortByEnum.EMAIL:
+        column = models.FamUser.email
+    elif sort_by == UserRoleSortByEnum.ROLE_DISPLAY_NAME:
+        column = models.FamRole.display_name
+    elif sort_by == UserRoleSortByEnum.FOREST_CLIENT_NUMBER:
+        column = models.FamForestClient.forest_client_number
+    elif sort_by == UserRoleSortByEnum.FULL_NAME:
+        column = models.FamUser.full_name  # this is a hybrid column
+
+    LOGGER.info(f"column: {column}")
+    return asc(column) if sort_order == SortOrderEnum.ASC else desc(column)
+
+
 def get_application_role_assignments(
-    db: Session, application_id: int, requester: RequesterSchema, page_params: PageParamsSchema
-# ) -> List[FamApplicationUserRoleAssignmentGetSchema]:
+    db: Session, application_id: int, requester: RequesterSchema, page_params: UserRolePageParamsSchema
 ) -> PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]:
     """query the user / role cross reference table to retrieve the role
     assignments.
@@ -37,19 +57,20 @@ def get_application_role_assignments(
     :param db: database session
     :param application_id: the application id to retrieve the role assignments for.
     :param requester: the user who perform this request/action.
-    :return: the user role assignments for the given application.
+    :param page_params: parameters for pagination, sorting and filtering.
+    :return: the paged user role assignments for the given application.
     """
     LOGGER.debug(
-        f"Querying for user role assignments on app id:\
-                  {application_id} by requester: {requester} "
+        f"Querying for user role assignments on app id: {application_id} by requester: {requester} "
     )
 
     # base query - users assigned to the application. This could be the case
     #              for [APP]_ADMIN.
     q = (
         select(models.FamUserRoleXref)
+        .join(models.FamUser)
         .join(models.FamRole)
-        .where(models.FamRole.application_id == application_id)
+        .outerjoin(models.FamRole.client_number)
     )
 
     if not crud_utils.is_app_admin(
@@ -87,7 +108,7 @@ def get_application_role_assignments(
                 == requester.business_guid.upper(),
             )
 
-    paginated_service = PaginateService(db, q, page_params)
+    paginated_service = PaginateService(db, q, build_order_by_construct(page_params), page_params)
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
     LOGGER.debug(
         f"Query for user role assignment complete with \

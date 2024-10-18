@@ -1,8 +1,9 @@
 
-from typing import Generic, List
+from typing import Generic, List, Optional
 
 from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
-                               MIN_PAGE_SIZE, T)
+                               MIN_PAGE_SIZE, SORT_COLUMN_MAX_LENGTH,
+                               SortOrderEnum, T, UserRoleSortByEnum)
 from fastapi import Query
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
@@ -27,14 +28,24 @@ Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters
 
 class PageParamsSchema(BaseModel):
     """
-    Request query params for backend API pagination
+    Request query params for backend API pagination, sorting
+    This is the base schema for common fields. Endpoints can extends this class for specific needs.
     """
-    # The best combination of FastAPI + Pydantic for Swagger
-    page_number: int | None = Field(Query(
-        default=MIN_PAGE, ge=MIN_PAGE, description="Page number"
+    page: int | None = Field(Query(
+        default=MIN_PAGE, ge=MIN_PAGE, description="Page number", alias="pageNumber"
     ))
-    page_size: int | None = Field(Query(
-        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records per page"
+    size: int | None = Field(Query(
+        default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records per page", alias="pageSize"
+    ))
+
+    sort_order: Optional[SortOrderEnum] = Field(Query(
+        default=SortOrderEnum.ASC, min_length=1, max_length=SORT_COLUMN_MAX_LENGTH, description="Column sorting order by", alias="sortOrder"
+    ))
+
+
+class UserRolePageParamsSchema(PageParamsSchema):
+    sort_by: Optional[UserRoleSortByEnum] = Field(Query(
+        default=UserRoleSortByEnum.USER_NAME, min_length=1, max_length=SORT_COLUMN_MAX_LENGTH, description="Column to be sorted by", alias="sortBy"
     ))
 
 

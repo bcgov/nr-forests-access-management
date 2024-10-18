@@ -7,7 +7,8 @@ from api.app.routers.router_guards import (
     get_current_requester)
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamUserInfoSchema, RequesterSchema)
-from api.app.schemas.pagination import PagedResultsSchema, PageParamsSchema
+from api.app.schemas.pagination import (PagedResultsSchema,
+                                        UserRolePageParamsSchema)
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -28,7 +29,7 @@ def get_fam_application_user_role_assignment(
     application_id: int,
     db: Session = Depends(database.get_db),
     requester: RequesterSchema = Depends(get_current_requester),
-    page_params: PageParamsSchema = Depends(),
+    page_params: UserRolePageParamsSchema = Depends(),
 ):
     """
     gets the roles assignment associated with an application
