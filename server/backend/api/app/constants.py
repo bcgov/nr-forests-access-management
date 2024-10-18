@@ -107,12 +107,13 @@ CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
-SORT_COLUMN_MAX_LENGTH = 30
 
 # The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
 # and let frontend do the pagination, we could set it to 100000.
 # >> MAX_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 100000
+SEARCH_FIELD_MIN_LENGTH = 3
+SEARCH_FIELD_MAX_LENGTH = 30
 
 # ----------------------- Generic Type Variable Declaration ----------------------- #
 T = TypeVar('T')

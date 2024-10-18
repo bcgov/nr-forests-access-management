@@ -1,9 +1,10 @@
 
-from typing import Generic, List, Optional
+from typing import Generic, List
 
 from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
-                               MIN_PAGE_SIZE, SORT_COLUMN_MAX_LENGTH,
-                               SortOrderEnum, T, UserRoleSortByEnum)
+                               MIN_PAGE_SIZE, SEARCH_FIELD_MAX_LENGTH,
+                               SEARCH_FIELD_MIN_LENGTH, SortOrderEnum, T,
+                               UserRoleSortByEnum)
 from fastapi import Query
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
@@ -38,15 +39,15 @@ class PageParamsSchema(BaseModel):
         default=DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE, description="Number of records per page", alias="pageSize"
     ))
 
-    sort_order: Optional[SortOrderEnum] = Field(Query(
-        default=SortOrderEnum.ASC, min_length=1, max_length=SORT_COLUMN_MAX_LENGTH, description="Column sorting order by", alias="sortOrder"
+    search: str | None = Field(Query(
+        default=None, min_length=3, min_length=SEARCH_FIELD_MIN_LENGTH, max_length=SEARCH_FIELD_MAX_LENGTH, description="Search by keyword"
     ))
+
+    sort_order: SortOrderEnum | None = Field(Query(default=SortOrderEnum.ASC, description="Column sorting order by", alias="sortOrder"))
 
 
 class UserRolePageParamsSchema(PageParamsSchema):
-    sort_by: Optional[UserRoleSortByEnum] = Field(Query(
-        default=UserRoleSortByEnum.USER_NAME, min_length=1, max_length=SORT_COLUMN_MAX_LENGTH, description="Column to be sorted by", alias="sortBy"
-    ))
+    sort_by: UserRoleSortByEnum | None = Field(Query(default=UserRoleSortByEnum.USER_NAME, description="Column to be sorted by", alias="sortBy"))
 
 
 class PagedResultsSchema(GenericModel, Generic[T]):
