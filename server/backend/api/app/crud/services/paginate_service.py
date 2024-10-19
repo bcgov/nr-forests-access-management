@@ -10,6 +10,22 @@ from sqlalchemy.orm import Session
 LOGGER = logging.getLogger(__name__)
 
 class PaginateService:
+    """
+    A simple pagination service as a helper for simple pagination, sorting and filtering.
+    For each business service requires pagination, the query/requirement will not be
+    trivial so they still need to provid base query, sorting and filtering construct
+    for this PaginateService, then it uses 'page_param' for executing paged query and
+    provides paged result.
+
+    Attributes:
+        db (Session): The SqlAlchemy database session.
+        base_query (Select): Provided base query as SqlAlchemy 'Select' statement.
+        filter_by_criteria (ColumnElement): Provided filter criteria for base query to be filtered by.
+            'None' if no need to apply filter.
+        order_by_criteria (UnaryExpression): Provided order_by criteria for base query.
+            'None' if no need to define ordering.
+        page_param: Paging parameters for performing pagination, sorting, filtering passed from external inputs.
+    """
     def __init__(
             self,
             db: Session,
@@ -31,6 +47,15 @@ class PaginateService:
     def get_paginated_results(self, ResultSchema: BaseModel) -> PagedResultsSchema[T]:
         """
         Paginate the query results.
+        Main function for the service, it will apply 'filter', 'order_by' if needed and
+        apply paging based on calculated 'offset' and 'limit'
+
+        Arguments:
+            ResultSchema: This is the return type Class and used for paged result conversion.
+
+        Return:
+            Paged result with Generic type 'PagedResultsSchema[T]'. Other than paged results,
+            the pagniation metadata are also returned.
         """
         LOGGER.debug(f"Obtaining paginated results with page params: {self.__page_params__}")
         paged_query = self.__apply_filter_by(self.base_query)

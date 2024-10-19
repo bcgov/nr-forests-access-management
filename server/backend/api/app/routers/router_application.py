@@ -34,7 +34,7 @@ def get_fam_application_user_role_assignment(
 ):
     """
 
-    Gets the users/roles assignment associated with an application
+    Gets paged users/roles assignment records associated with an application.
     """
     LOGGER.debug(
         f"Loading application role assigments for application_id: {application_id}"

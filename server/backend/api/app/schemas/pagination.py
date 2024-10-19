@@ -10,6 +10,10 @@ from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 
 """
+Schema objects for the backend pagination, sorting, filtering related purpose.
+"""
+
+"""
 Note: FastAPI does not seem to work well with Pydantic for Query Parameter + Swagger.
 To use Pydantic class in "router's endpoint" as FastAPI query parameter, it needs to wrap the property with "Field(Query(...))"
 like below example in order to get validation correct and with 'description' shows up at Swagger:
@@ -29,7 +33,7 @@ Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters
 
 class PageParamsSchema(BaseModel):
     """
-    Request query params for backend API pagination, sorting
+    Request query params for backend API pagination, sorting, filtering.
     This is the base schema for common fields. Endpoints can extends this class for specific needs.
     """
     page: int | None = Field(Query(
