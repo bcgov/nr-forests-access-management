@@ -1,33 +1,17 @@
-import pytest
-from fastapi.testclient import TestClient
-from api.app.main import app, apiPrefix
+from api.app.main import apiPrefix
 from testspg.fixture.permission_audit_fixture import (
-    APPLICATION_ID_1,
-    USER_ID_1,
-    MOCKED_PERMISSION_HISTORY_RESPONSE,
-)
+    APPLICATION_ID_1, MOCKED_PERMISSION_HISTORY_RESPONSE, USER_ID_1)
 
-client = TestClient(app)
 ENDPOINT_ROOT = "permission-audit-history"
 
-
-@pytest.fixture(scope="function", autouse=True)
-def mock_get_db(mocker, db_pg_session):
-    # This will mock the get_db dependency for all tests in this module
-    mocker.patch(
-        "api.app.routers.router_permission_audit.database.get_db",
-        return_value=db_pg_session,
-    )
-
-
 # Test successful retrieval
-def test_get_permission_audit_history_success(mocker, auth_headers):
+def test_get_permission_audit_history_success(mocker, test_client_fixture, auth_headers):
     mocker.patch(
         "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         return_value=MOCKED_PERMISSION_HISTORY_RESPONSE,
     )
 
-    response = client.get(
+    response = test_client_fixture.get(
         f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}",
         headers=auth_headers,
     )
@@ -40,13 +24,13 @@ def test_get_permission_audit_history_success(mocker, auth_headers):
 
 
 # Test retrieval with no records
-def test_get_permission_audit_history_bad_request(mocker, auth_headers):
+def test_get_permission_audit_history_bad_request(mocker, test_client_fixture, auth_headers):
     mocker.patch(
         "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         return_value=[],
     )
 
-    response = client.get(
+    response = test_client_fixture.get(
         f"{apiPrefix}/{ENDPOINT_ROOT}?user_id=999&application_id=999",
         headers=auth_headers,
     )
@@ -55,8 +39,8 @@ def test_get_permission_audit_history_bad_request(mocker, auth_headers):
 
 
 # Test handling of invalid user_id
-def test_get_permission_audit_history_invalid_user_id_type(auth_headers):
-    response = client.get(
+def test_get_permission_audit_history_invalid_user_id_type(auth_headers, test_client_fixture):
+    response = test_client_fixture.get(
         f"{apiPrefix}/{ENDPOINT_ROOT}?user_id=invalid_user_id&application_id={APPLICATION_ID_1}",
         headers=auth_headers,
     )
@@ -65,13 +49,13 @@ def test_get_permission_audit_history_invalid_user_id_type(auth_headers):
 
 
 # Test unauthorized access
-def test_get_permission_audit_history_unauthorized(mocker):
+def test_get_permission_audit_history_unauthorized(mocker, test_client_fixture):
     mocker.patch(
         "api.app.routers.router_permission_audit.read_permission_audit_history_by_user_and_application",
         side_effect=Exception("Unauthorized"),
     )
 
-    response = client.get(
+    response = test_client_fixture.get(
         f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}"
     )
 
