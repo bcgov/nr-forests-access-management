@@ -8,21 +8,17 @@
 services:
   fam-database:
     image: postgres:14.1-alpine
-    container_name: fam-postgres
     mem_limit: 128m
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=fam
       - POSTGRES_HOST_AUTH_METHOD=password
-      - POSTGRES_PORT=5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 6
-    ports:
-      - "5432:5432"
     networks:
       - fam
 
@@ -31,7 +27,6 @@ services:
       context: server/flyway
       dockerfile: Dockerfile
     environment:
-      - FLYWAY_URL=jdbc:postgresql://fam-postgres:5432/fam
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=postgres
       - FLYWAY_BASELINE_ON_MIGRATE=true
