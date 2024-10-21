@@ -7,7 +7,6 @@ from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
                                UserRoleSortByEnum)
 from fastapi import Query
 from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
 
 """
 Schema objects for the backend pagination, sorting, filtering related purpose.
@@ -54,7 +53,7 @@ class UserRolePageParamsSchema(PageParamsSchema):
     sort_by: UserRoleSortByEnum | None = Field(Query(default=UserRoleSortByEnum.USER_NAME, description="Column to be sorted by", alias="sortBy"))
 
 
-class PagedResultsSchema(GenericModel, Generic[T]):
+class PagedResultsSchema(BaseModel, Generic[T]):
     """
     API pagination return schema.
     Use Python generice type for return type.
