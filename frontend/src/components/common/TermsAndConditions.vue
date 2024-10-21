@@ -6,7 +6,6 @@ import {
     isTermsCloseable,
     isTermsVisible,
 } from "@/store/TermsAndConditionsState";
-// TODO import { setRouteToastError } from '@/store/ToastState';
 import Dialog from "primevue/dialog";
 
 const auth = useAuth();
@@ -24,8 +23,6 @@ const acceptTermsAndConditions = async () => {
         await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
         hideTerms();
     } catch (error: any) {
-        // temporary error handling
-        // setRouteToastError(error.message);
         auth.logout();
     }
 };
