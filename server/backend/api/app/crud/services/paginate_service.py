@@ -12,10 +12,9 @@ LOGGER = logging.getLogger(__name__)
 class PaginateService:
     """
     A simple pagination service as a helper for simple pagination, sorting and filtering.
-    For each business service requires pagination, the query/requirement will not be
-    trivial so they still need to provid base query, sorting and filtering construct
-    for this PaginateService, then it uses 'page_param' for executing paged query and
-    provides paged result.
+    For each business service requires pagination it needs to provid base query, sorting
+    and filtering construct for this PaginateService, The service uses 'page_param' for
+    executing paged query and provides paged result.
 
     Attributes:
         db (Session): The SqlAlchemy database session.
@@ -72,7 +71,10 @@ class PaginateService:
         return results
 
     def __get_total_count(self) -> int:
-        count = self.db.scalar(select(func.count()).select_from(self.base_query.subquery()))
+        total_count_q = self.__apply_filter_by(self.base_query)
+        count = self.db.scalar(
+            select(func.count()).select_from(total_count_q.subquery())
+        )
         return count
 
     def __get_number_of_pages(self, count: int) -> int:
