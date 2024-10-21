@@ -16,6 +16,8 @@ const attachAuthHeader = (
     if (accessToken) {
         const authHeader = `Bearer ${accessToken}`;
         config.headers.setAuthorization(authHeader);
+    } else {
+        console.error("Cannot set auth header, access token not found.");
     }
     return config;
 };

@@ -15,8 +15,8 @@ import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
-import authLoadingSvg from "@/assets/images/auth-loading.svg";
 import { useRouter } from "vue-router";
+import Spinner from "@/components/UI/Spinner.vue";
 
 const environmentSettings = new EnvironmentSettings();
 const REFRESH_INTERVAL = FOUR_MINUTES;
@@ -175,7 +175,7 @@ const restoreSession = async () => {
             isAuthRestored: true,
         };
     } catch (error) {
-        console.error("User not authenticated:", error);
+        console.warn(error);
         authState.value = {
             isAuthenticated: false,
             famLoginUser: null,
@@ -272,7 +272,7 @@ provide<AuthContext>(AUTH_KEY, {
 
 <template>
     <div v-if="isLoading" class="auth-callback-container">
-        <img :src="authLoadingSvg" alt="Loading" />
+        <Spinner loading-text="Page loading" />
     </div>
     <slot v-else />
 </template>
@@ -284,6 +284,5 @@ provide<AuthContext>(AUTH_KEY, {
     align-items: center;
     height: 100vh;
     width: 100vw;
-    background-color: colors.$blue-10;
 }
 </style>
