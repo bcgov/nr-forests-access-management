@@ -84,6 +84,7 @@ def get_application_role_assignments(
         .join(models.FamUser)
         .join(models.FamRole)
         .outerjoin(models.FamRole.client_number)
+        .filter(models.FamRole.application_id == application_id)
     )
 
     if not crud_utils.is_app_admin(
