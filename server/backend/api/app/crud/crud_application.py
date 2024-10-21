@@ -14,8 +14,8 @@ from . import crud_utils as crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
-# Local constant(this may not be trivial on different query construct),
-# provide mapping for sortBy columns mapped to model columns.
+# Local constant only, for application user/role sorting/filtering query,
+# provides mapping for sortBy/filtered columns mapped to model columns.
 USER_ROLE_SORT_BY_MAPPED_COLUMN = {
     UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,
     UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
@@ -35,7 +35,7 @@ def get_application(db: Session, application_id: int):
     return application
 
 
-def build_order_by_criteria(page_params: UserRolePageParamsSchema):
+def __build_order_by_criteria(page_params: UserRolePageParamsSchema):
     # currently only sorting on 1 column at a time from frontend.
     sort_by = page_params.sort_by
     sort_order = page_params.sort_order
@@ -47,7 +47,7 @@ def build_order_by_criteria(page_params: UserRolePageParamsSchema):
     return asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
 
 
-def build_filter_criteria(page_params: UserRolePageParamsSchema):
+def __build_filter_criteria(page_params: UserRolePageParamsSchema):
     search_keyword = page_params.search
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
     return (
@@ -123,8 +123,8 @@ def get_application_role_assignments(
 
     paginated_service = PaginateService(
         db, q,
-        build_filter_criteria(page_params),
-        build_order_by_criteria(page_params),
+        __build_filter_criteria(page_params),
+        __build_order_by_criteria(page_params),
         page_params
     )
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
