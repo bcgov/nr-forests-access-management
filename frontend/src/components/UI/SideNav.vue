@@ -42,7 +42,11 @@ const isMenuItemHighlighted = (
                                 ),
                                 'sidenav-disabled': item.disabled,
                             }"
-                            @click="router.push({ name: item.routeName })"
+                            @click="
+                                item.disabled
+                                    ? () => {}
+                                    : router.push({ name: item.routeName })
+                            "
                         >
                             <component v-if="item.icon" :is="item.icon" />
                             <p>
@@ -59,7 +63,11 @@ const isMenuItemHighlighted = (
                                 'sidenav-disabled': subMenuItem.disabled,
                             }"
                             @click="
-                                router.push({ name: subMenuItem.routeName })
+                                subMenuItem.disabled
+                                    ? () => {}
+                                    : router.push({
+                                          name: subMenuItem.routeName,
+                                      })
                             "
                         >
                             <span>{{ subMenuItem.name }}</span>
@@ -108,10 +116,6 @@ const isMenuItemHighlighted = (
                 fill: colors.$blue-70;
             }
 
-            a {
-                text-decoration: none;
-            }
-
             p {
                 margin: 0;
             }
@@ -136,10 +140,22 @@ const isMenuItemHighlighted = (
                     background: $light-layer-selected-hover-01;
                 }
             }
-        }
 
-        &-disabled {
-            display: none;
+            &.sidenav-disabled {
+                color: colors.$gray-30;
+                cursor: not-allowed;
+
+                svg {
+                    fill: colors.$gray-30;
+                }
+
+                &:hover {
+                    background: none;
+
+                    color: colors.$gray-30;
+                    cursor: not-allowed;
+                }
+            }
         }
     }
 

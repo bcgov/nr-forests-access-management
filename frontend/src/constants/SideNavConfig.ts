@@ -17,6 +17,5 @@ export const sideNavItems: SideNavItemType[] = [
         name: "My permissions",
         routeName: MyPermissionsRoute.name!,
         icon: IbmLpa,
-        disabled: false,
     },
 ];
