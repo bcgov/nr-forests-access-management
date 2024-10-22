@@ -1,4 +1,5 @@
 
+from abc import ABC
 from typing import Generic, List
 
 from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
@@ -30,10 +31,10 @@ And, in this case, the validation error default from Pydantic will not be 400, i
 Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters-using-pydantic-model-in-fastapi
 """
 
-class PageParamsSchema(BaseModel):
+class PageParamsSchema(BaseModel, ABC):
     """
-    Request query params for backend API pagination, sorting, filtering.
-    This is the base schema for common fields. Endpoints can extends this class for specific needs.
+    Abstract class for request query params for backend API pagination, sorting and filtering.
+    This is the base schema for common fields. Endpoints need to extend this class for specific needs.
     """
     page: int | None = Field(Query(
         default=MIN_PAGE, ge=MIN_PAGE, description="Page number", alias="pageNumber"
