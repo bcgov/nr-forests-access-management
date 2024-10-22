@@ -8,6 +8,8 @@ import { computed, ref } from "vue";
 import useAuth from "@/composables/useAuth";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import Logout from "@carbon/icons-vue/es/logout/16";
+import PSkeleton from "@/components/Skeletons/PSkeleton.vue";
 
 const auth = useAuth();
 
@@ -31,26 +33,23 @@ const buttonLabel = computed(() => {
     return loading.value ? "Signing out..." : "Sign out";
 });
 
-const adminRoles = "";
-// TODO computed(() => {
-//     const userAdminRoles = LoginUserState.getUserAdminRoleGroups();
-//     if (userAdminRoles) {
-//         return userAdminRoles
-//             .map((adminRole) => {
-//                 return adminRole.replace('_', ' ');
-//             })
-//             .join(', ');
-//     }
-// });
-
-//AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
-
 const adminUserAccessQuery = useQuery({
     queryKey: ["admin-user-access"],
     queryFn: () =>
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
+    select: (data) => {
+        const accessList = data.access.map((grantDto) => grantDto.auth_key);
+
+        const famAdminIndex = accessList.indexOf("FAM_ADMIN");
+        if (famAdminIndex !== -1) {
+            const famAdmin = accessList.splice(famAdminIndex, 1)[0];
+            accessList.unshift(famAdmin);
+        }
+
+        return accessList.map((key) => key.replace("_", " ")).join(", ");
+    },
 });
 </script>
 
@@ -98,7 +97,13 @@ const adminUserAccessQuery = useQuery({
                         Email: {{ famLoginUser?.email }}
                     </p>
                     <p class="profile-admin-level">
-                        Granted: <strong>{{ adminRoles }}</strong>
+                        Granted:&nbsp;
+                        <PSkeleton
+                            v-if="adminUserAccessQuery.isFetching.value"
+                        />
+                        <strong v-else>
+                            {{ adminUserAccessQuery.data.value }}
+                        </strong>
                     </p>
                 </div>
             </div>
@@ -130,10 +135,8 @@ const adminUserAccessQuery = useQuery({
                 @click="logout"
                 :disabled="loading ? true : false"
             >
-                <Icon
+                <Logout
                     title="Sign out"
-                    icon="user--follow"
-                    :size="IconSize.small"
                     class="custom-carbon-icon-user--follow"
                 />
             </Button>
@@ -193,6 +196,7 @@ const adminUserAccessQuery = useQuery({
         margin: 0.375rem 0 0;
         display: flex;
         flex-direction: column;
+        width: 100%;
     }
 
     .profile-name,
@@ -221,9 +225,9 @@ const adminUserAccessQuery = useQuery({
 .profile-sidebar-btn:hover,
 .profile-sidebar-btn:active,
 .profile-sidebar-btn:focus {
-    background-color: $light-border-subtle-00 !important;
-    box-shadow: none !important;
-    outline: none !important;
+    background-color: $light-border-subtle-00;
+    box-shadow: none;
+    outline: none;
 }
 
 .profile-userid,
@@ -235,8 +239,13 @@ const adminUserAccessQuery = useQuery({
     font-weight: 400;
 }
 
+.profile-admin-level {
+    display: flex;
+    flex-direction: row;
+}
+
 .profile-divider {
-    margin: 1rem 0 !important;
+    margin: 1rem 0;
 }
 
 .profile-sidebar-btn {

@@ -59,4 +59,7 @@ const auth = useAuth();
 
 <style scoped lang="scss">
 @import "@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss";
+.landing-img {
+    width: 100%;
+}
 </style>

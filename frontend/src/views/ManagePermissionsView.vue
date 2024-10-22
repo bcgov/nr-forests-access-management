@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import ManagePermissions from '@/components/managePermissions/ManagePermissions.vue';
+import MyPermissionsTable from "@/components/myPermissions/MyPermissionsTable.vue";
+import PageTitle from "@/components/common/PageTitle.vue";
 </script>
 
 <template>
-    <ManagePermissions />
+    <PageTitle
+        title="Manage permissions"
+        subtitle="Manage users and add permissions for the selected application"
+    />
 </template>
