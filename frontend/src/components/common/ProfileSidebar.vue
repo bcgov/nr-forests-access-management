@@ -6,6 +6,8 @@ import { showTermsForRead } from "@/store/TermsAndConditionsState";
 import Avatar from "primevue/avatar";
 import { computed, ref } from "vue";
 import useAuth from "@/composables/useAuth";
+import { useQuery } from "@tanstack/vue-query";
+import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 
 const auth = useAuth();
 
@@ -40,6 +42,16 @@ const adminRoles = "";
 //             .join(', ');
 //     }
 // });
+
+//AdminMgmtApiService.adminUserAccessesApi.adminUserAccessPrivilege();
+
+const adminUserAccessQuery = useQuery({
+    queryKey: ["admin-user-access"],
+    queryFn: () =>
+        AdminMgmtApiService.adminUserAccessesApi
+            .adminUserAccessPrivilege()
+            .then((res) => res.data),
+});
 </script>
 
 <template>

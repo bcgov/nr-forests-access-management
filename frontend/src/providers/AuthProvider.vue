@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, provide, onMounted, onBeforeUnmount, readonly } from "vue";
+import axios from "axios";
 import { Auth } from "aws-amplify";
 import type {
     CognitoUser,
@@ -26,6 +27,11 @@ let refreshIntervalId: number | null = null;
 let inactivityTimeoutId: number | null = null;
 const isLoading = ref(false); // Loading state for animation
 const router = useRouter();
+
+const setAxiosAuthorizationHeader = (token: string) => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
 /**
  * Resets the inactivity timeout and sets a new timeout to log the user out after a period of inactivity.
  * If the user is inactive (no mouse or keyboard input) for the defined `INACTIVITY_TIMEOUT`,
@@ -73,6 +79,9 @@ const login = async (idP: IdpTypes) => {
 const logout = async () => {
     await Auth.signOut();
     stopSilentRefresh();
+
+    delete axios.defaults.headers.common["Authorization"];
+
     authState.value = {
         isAuthenticated: false,
         famLoginUser: null,
@@ -125,6 +134,8 @@ const handlePostLogin = async () => {
             isAuthRestored: true,
         };
 
+        setAxiosAuthorizationHeader(accessToken.getJwtToken());
+
         startSilentRefresh(cognitoUser);
         resetInactivityTimeout();
 
@@ -174,6 +185,8 @@ const restoreSession = async () => {
             refreshToken,
             isAuthRestored: true,
         };
+
+        setAxiosAuthorizationHeader(accessToken.getJwtToken());
     } catch (error) {
         console.warn(error);
         authState.value = {
@@ -201,7 +214,7 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
             if (authState.value.refreshToken) {
                 cognitoUser.refreshSession(
                     authState.value.refreshToken,
-                    (err, session) => {
+                    (err, session: CognitoUserSession) => {
                         if (err) {
                             console.error("Token refresh failed:", err);
                             logout();
@@ -211,6 +224,9 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
                                 accessToken: session.getAccessToken(),
                                 idToken: session.getIdToken(),
                             };
+                            setAxiosAuthorizationHeader(
+                                session.getAccessToken().getJwtToken()
+                            );
                             console.log("Tokens refreshed successfully.");
                         }
                     }
