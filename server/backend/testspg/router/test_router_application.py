@@ -62,7 +62,7 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 0  # initially no one is assigned with FOM_DEV roles
 
 
@@ -89,7 +89,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
     assert (
@@ -124,7 +124,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
     assert (
@@ -206,7 +206,7 @@ def test_get_user_role_assignments_filtering_for_app_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # APP_ADMIN should have visibility for FOM_DEV all user access grants.
@@ -279,7 +279,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # This FOM_DEV IDIR DELEGATED_ADMIN admin user with FOM_REVIEWER and
@@ -438,7 +438,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # This FOM_DEV BCEID DELEGATED_ADMIN admin user with FOM_REVIEWER and

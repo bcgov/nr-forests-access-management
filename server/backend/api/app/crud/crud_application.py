@@ -116,7 +116,7 @@ def get_application_role_assignments(
             # user_role records belonging to the same business organization.
 
             # Note, need to reassign to the variable from the base query.
-            q = q.join(models.FamUser).where(
+            q = q.where(
                 models.FamUser.user_type_code == UserType.BCEID,
                 func.upper(models.FamUser.business_guid)
                 == requester.business_guid.upper(),

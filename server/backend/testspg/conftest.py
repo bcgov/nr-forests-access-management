@@ -7,6 +7,7 @@ import jwt
 import pytest
 import starlette
 import testcontainers.compose
+from api.app.schemas.pagination import UserRolePageParamsSchema
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock import patch
@@ -18,8 +19,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import api.app.database as database
 import api.app.jwt_validation as jwt_validation
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (COGNITO_USERNAME_KEY,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
+from api.app.constants import (COGNITO_USERNAME_KEY, DEFAULT_PAGE_SIZE,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, MIN_PAGE,
+                               UserType)
 from api.app.crud import crud_user, crud_utils
 from api.app.main import apiPrefix, app
 from api.app.models.model import FamUser
@@ -318,3 +320,14 @@ def mock_forest_client_integration_service():
         autospec=True,
     ) as m:
         yield m.return_value  # Very important to get instance of mocked class.
+
+
+@pytest.fixture(scope="function")
+def default_app_role_assignment_page_Params() -> UserRolePageParamsSchema:
+    return UserRolePageParamsSchema(
+        page=MIN_PAGE,
+        size=DEFAULT_PAGE_SIZE,
+        search=None,
+        sort_by=None,
+        sort_order=None
+    )

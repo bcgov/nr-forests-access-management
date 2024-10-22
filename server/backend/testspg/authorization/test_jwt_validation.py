@@ -27,7 +27,7 @@ def test_get_application_user_role_assignment_success(
     response = test_client_fixture.get(f"{endPoint}", headers=headers(token))
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json().get("results")
     assert data == []
 
 
