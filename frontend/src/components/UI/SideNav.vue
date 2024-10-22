@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { useRouter, type RouteRecordName } from "vue-router";
 import { sideNavState } from "@/store/SideNavState";
 import Sidebar from "primevue/sidebar";
 import { sideNavItems } from "@/constants/SideNavConfig";
@@ -9,21 +9,21 @@ const router = useRouter();
 /**
  * Determines if a menu item is highlighted based on the current route.
  *
- * @param {string} itemLink - The link associated with the menu item.
- * @param {string[]} [childLinks] - Optional. An array of child links that should be considered for highlighting.
- * @returns {boolean} True if the menu item or any of its child links match the current route; otherwise, false.
+ * @param {RouteRecordName} itemRouteName - The route name associated with the menu item.
+ * @param {RouteRecordName[]} [subRouteNames] - Optional. An array of sub-route names that should be considered for highlighting.
+ * @returns {boolean} True if the menu item or any of its sub-route names match the current route; otherwise, false.
  */
 const isMenuItemHighlighted = (
-    itemLink: string,
-    childLinks?: string[]
+    itemRouteName: RouteRecordName,
+    subRouteNames?: RouteRecordName[]
 ): boolean => {
-    const currentPath = router.currentRoute.value.path;
+    const currentRouteName = router.currentRoute.value.name;
 
-    // Check if the current path matches the item link or if any child links are matched
+    // Check if the current route matches the item route or any sub-routes
     return (
-        currentPath === itemLink ||
-        (childLinks
-            ? childLinks.some((child) => currentPath.includes(child))
+        currentRouteName === itemRouteName ||
+        (subRouteNames
+            ? subRouteNames.includes(currentRouteName as RouteRecordName)
             : false)
     );
 };
@@ -37,12 +37,12 @@ const isMenuItemHighlighted = (
                         <li
                             :class="{
                                 'sidenav-selected': isMenuItemHighlighted(
-                                    item.link,
-                                    item.childLinks
+                                    item.routeName,
+                                    item.subRoutes
                                 ),
                                 'sidenav-disabled': item.disabled,
                             }"
-                            @click="router.push(item.link)"
+                            @click="router.push({ name: item.routeName })"
                         >
                             <component v-if="item.icon" :is="item.icon" />
                             <p>
@@ -54,11 +54,13 @@ const isMenuItemHighlighted = (
                             v-for="subMenuItem in item.subMenuItems"
                             :class="{
                                 'sidenav-selected': isMenuItemHighlighted(
-                                    subMenuItem.link
+                                    subMenuItem.routeName
                                 ),
                                 'sidenav-disabled': subMenuItem.disabled,
                             }"
-                            @click="router.push(subMenuItem.link)"
+                            @click="
+                                router.push({ name: subMenuItem.routeName })
+                            "
                         >
                             <span>{{ subMenuItem.name }}</span>
                         </li>
