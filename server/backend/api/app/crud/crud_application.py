@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 # Local constant only, for application user/role sorting/filtering query,
 # provides mapping for sortBy/filtered columns mapped to model columns.
 USER_ROLE_SORT_BY_MAPPED_COLUMN = {
-    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,
+    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,  # default
     UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
     UserRoleSortByEnum.EMAIL: models.FamUser.email,
     UserRoleSortByEnum.FULL_NAME: models.FamUser.full_name,  # this is a hybrid column
@@ -36,11 +36,17 @@ def get_application(db: Session, application_id: int):
 
 
 def __build_order_by_criteria(page_params: UserRolePageParamsSchema):
+    """
+    Based on 'sort_by' and 'sort_order' page_params to build SQL "ORDER BY"
+    clause, e.g., ("ORDER BY app_fam.fam_user.user_name ASC") to return
+    for the query.
+    """
     # currently only sorting on 1 column at a time from frontend.
     sort_by = page_params.sort_by
     sort_order = page_params.sort_order
     mapped_column = (
-        models.FamUser.user_name if sort_by is None # default
+        USER_ROLE_SORT_BY_MAPPED_COLUMN.get(UserRoleSortByEnum.USER_NAME)
+        if sort_by is None # default
         else USER_ROLE_SORT_BY_MAPPED_COLUMN.get(sort_by)
     )
 
@@ -48,10 +54,21 @@ def __build_order_by_criteria(page_params: UserRolePageParamsSchema):
 
 
 def __build_filter_criteria(page_params: UserRolePageParamsSchema):
+    """
+    Based on 'search' keyword from page_params to build additional 'where'
+    clause. In this endpoint pagination case, all mapped columns to be
+    filtered on can apply with 'ilike' (case-insensitive operator) with
+    'OR' sql condition,
+    e.g., (app_fam.fam_user.user_name ILIKE %(user_name_1)s OR
+           app_fam.fam_user.user_type_code ILIKE %(user_type_code_1)s OR
+           app_fam.fam_user.email ILIKE %(email_1)s OR ...)
+    to return for the query.
+    """
     search_keyword = page_params.search
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
     return (
         or_(
+            # build where ... "OR" conditions for all mapped columns.
             *list(map(lambda column: column.ilike(f"%{search_keyword}%"), filter_on_columns))
         )
         if search_keyword is not None
