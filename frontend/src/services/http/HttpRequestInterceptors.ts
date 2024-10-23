@@ -1,18 +1,27 @@
-import LoginUserState from '@/store/FamLoginUserState';
-import type { InternalAxiosRequestConfig } from 'axios';
+import useAuth from "@/composables/useAuth";
+import type { InternalAxiosRequestConfig } from "axios";
 
-// Typically when adding "request" interceptors, they are presumed to be asynchronous by default.
-// See "https://www.npmjs.com/package/axios#interceptors" if there is a need for synchronous interceptors behaviour.
-
-function addAuthHeaderItcpt(config: InternalAxiosRequestConfig) {
-    const authToken = LoginUserState.getAuthToken();
-    if (authToken) {
-        const authHeader = `Bearer ${authToken.getAccessToken().getJwtToken()}`;
-        config.headers.setAuthorization(authHeader)
+/**
+ * Adds the authorization header to the Axios request configuration.
+ * Retrieves the access token from the auth state and adds it as a Bearer token.
+ *
+ * @param {InternalAxiosRequestConfig} config - The Axios request configuration object.
+ * @returns {InternalAxiosRequestConfig} The modified request configuration with the Authorization header.
+ */
+const attachAuthHeader = (
+    config: InternalAxiosRequestConfig
+): InternalAxiosRequestConfig => {
+    const auth = useAuth();
+    const accessToken = auth.authState.accessToken?.getJwtToken();
+    if (accessToken) {
+        const authHeader = `Bearer ${accessToken}`;
+        config.headers.setAuthorization(authHeader);
+    } else {
+        console.error("Cannot set auth header, access token not found.");
     }
     return config;
-}
+};
 
 export default {
-    addAuthHeaderItcpt,
+    attachAuthHeader,
 };

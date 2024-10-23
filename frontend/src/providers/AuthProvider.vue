@@ -15,8 +15,8 @@ import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
-import authLoadingSvg from "@/assets/images/auth-loading.svg";
 import { useRouter } from "vue-router";
+import Spinner from "@/components/UI/Spinner.vue";
 
 const environmentSettings = new EnvironmentSettings();
 const REFRESH_INTERVAL = FOUR_MINUTES;
@@ -80,6 +80,7 @@ const logout = async () => {
         accessToken: null,
         idToken: null,
         refreshToken: null,
+        isAuthRestored: true,
     };
 };
 
@@ -121,6 +122,7 @@ const handlePostLogin = async () => {
             accessToken,
             idToken,
             refreshToken,
+            isAuthRestored: true,
         };
 
         startSilentRefresh(cognitoUser);
@@ -153,6 +155,7 @@ const handlePostLogin = async () => {
  */
 const restoreSession = async () => {
     try {
+        isLoading.value = true;
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
         const session: CognitoUserSession = await Auth.currentSession();
 
@@ -169,11 +172,21 @@ const restoreSession = async () => {
             accessToken,
             idToken,
             refreshToken,
+            isAuthRestored: true,
         };
-
-        startSilentRefresh(cognitoUser);
     } catch (error) {
-        logout();
+        console.warn(error);
+        authState.value = {
+            isAuthenticated: false,
+            famLoginUser: null,
+            cognitoUser: null,
+            accessToken: null,
+            idToken: null,
+            refreshToken: null,
+            isAuthRestored: true,
+        };
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -259,7 +272,7 @@ provide<AuthContext>(AUTH_KEY, {
 
 <template>
     <div v-if="isLoading" class="auth-callback-container">
-        <img :src="authLoadingSvg" alt="Loading" />
+        <Spinner loading-text="Page loading" />
     </div>
     <slot v-else />
 </template>
@@ -271,6 +284,5 @@ provide<AuthContext>(AUTH_KEY, {
     align-items: center;
     height: 100vh;
     width: 100vw;
-    background-color: colors.$blue-10;
 }
 </style>

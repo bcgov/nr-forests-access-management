@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import AuthService from '@/services/AuthService';
+import { AppActlApiService } from "@/services/ApiServiceFactory";
+import useAuth from "@/composables/useAuth";
 import {
     hideTerms,
     isTermsCloseable,
     isTermsVisible,
-} from '@/store/TermsAndConditionsState';
-// TODO import { setRouteToastError } from '@/store/ToastState';
-import Dialog from 'primevue/dialog';
+} from "@/store/TermsAndConditionsState";
+import Dialog from "primevue/dialog";
+
+const auth = useAuth();
 
 /*
 Note: about Terms and Conditions used in coding.
@@ -22,9 +23,7 @@ const acceptTermsAndConditions = async () => {
         await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
         hideTerms();
     } catch (error: any) {
-        // temporary error handling
-        // setRouteToastError(error.message);
-        AuthService.logout();
+        auth.logout();
     }
 };
 </script>
@@ -487,7 +486,7 @@ const acceptTermsAndConditions = async () => {
                 class="btn"
                 label="Cancel and logout"
                 severity="secondary"
-                @click="AuthService.logout()"
+                @click="auth.logout()"
             />
 
             <Button
@@ -500,7 +499,7 @@ const acceptTermsAndConditions = async () => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 h3,
 p {

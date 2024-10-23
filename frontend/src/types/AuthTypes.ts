@@ -24,6 +24,7 @@ export type AuthState = {
     readonly accessToken: CognitoAccessToken | null;
     readonly idToken: CognitoIdToken | null;
     readonly refreshToken: CognitoRefreshToken | null;
+    readonly isAuthRestored: boolean;
 };
 
 export interface AuthContext {

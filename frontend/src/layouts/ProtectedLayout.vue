@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { ISideNavItem } from "@/components/common/SideNav.vue";
-import Header from "@/components/header/Header.vue";
-import SideNav from "@/components/common/SideNav.vue";
-import sideNavData from "@/static/sideNav.json";
-
-const navigationData = ref<[ISideNavItem]>(sideNavData as any);
+import Header from "@/components/UI/Header.vue";
+import SideNav from "@/components/UI/SideNav.vue";
 </script>
 
 <template>
     <div>
         <!-- Show layout and content -->
         <Header title="FAM" subtitle="Forests Access Management" />
-        <SideNav :data="navigationData" />
+        <SideNav />
         <div class="main">
             <main>
                 <router-view />

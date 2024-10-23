@@ -32,7 +32,7 @@ const props = defineProps({
         <nav class="navbar justify-content-start">
             <Button
                 class="btn-toggle-sideNav"
-                @click="sideNavState.toggleSideNavVisible()"
+                @click="sideNavState.toggleVisible()"
                 aria-label="Toggle Side Navigation"
             >
                 <Icon
