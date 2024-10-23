@@ -3,6 +3,7 @@
  1. Define the route as a constant object using `RouteRecordRaw`.
  2. Use `meta: { layout: "ProtectedLayout" }` if the route requires the ProtectedLayout.
  3. Add the new route constant to the `routeItems` array below.
+ 4. Each route must have a name defined.
 */
 import type { RouteRecordRaw } from "vue-router";
 
