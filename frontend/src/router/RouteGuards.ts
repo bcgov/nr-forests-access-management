@@ -27,15 +27,6 @@ const isAuthenticated = (): boolean => {
 };
 
 /**
- * Checks if the user is authenticated using AWS Amplify.
- * Logs the execution time of the check.
- * @returns {Promise<boolean>} True if the user is authenticated, otherwise false.
- */
-export const checkAuthentication = async (): Promise<boolean> => {
-    return isAuthenticated();
-};
-
-/**
  * Auth guard that manages navigation based on authentication state.
  * Redirects unauthenticated users to the landing page.
  */
@@ -46,7 +37,7 @@ export const authGuard = async (
 ) => {
     await waitForAuthRestoration();
 
-    if (await checkAuthentication()) {
+    if (isAuthenticated()) {
         next();
     } else {
         next({ path: "/" });
@@ -63,7 +54,7 @@ export const landingGuard = async (
 ) => {
     await waitForAuthRestoration();
 
-    if (await checkAuthentication()) {
+    if (isAuthenticated()) {
         next("/manage-permissions");
     } else {
         next();
