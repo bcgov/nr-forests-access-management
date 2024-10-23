@@ -7,7 +7,6 @@ import jwt
 import pytest
 import starlette
 import testcontainers.compose
-from api.app.schemas.pagination import UserRolePageParamsSchema
 from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock import patch
@@ -30,6 +29,7 @@ from api.app.routers.router_guards import (
     get_verified_target_user)
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_user import FamUserSchema
+from api.app.schemas.pagination import UserRolePageParamsSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
                                TEST_CREATOR)
