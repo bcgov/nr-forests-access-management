@@ -187,6 +187,7 @@ const restoreSession = async () => {
         };
         setAxiosAuthorizationHeader(accessToken.getJwtToken());
         startSilentRefresh(cognitoUser);
+        resetInactivityTimeout();
     } catch (error) {
         console.warn(error);
         authState.value = {
