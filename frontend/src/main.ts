@@ -8,7 +8,6 @@ import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
 import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
-import "bootstrap";
 import { THREE_HOURS } from "@/constants/TimeUnits";
 
 // Configure Amplify

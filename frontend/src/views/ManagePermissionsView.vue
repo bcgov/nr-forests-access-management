@@ -6,6 +6,8 @@ import type { DropdownChangeEvent } from "primevue/dropdown";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import type { FamApplicationDto } from "fam-admin-mgmt-api/model";
 import { ref } from "vue";
+import { isAxiosError } from "axios";
+import { formatAxiosError } from "@/utils/AxiosUtils";
 
 const selectedApp = ref<FamApplicationDto>();
 
@@ -49,6 +51,12 @@ const adminUserAccessQuery = useQuery({
         option-label="description"
         placeholder="Choose an application to manage permissions"
         :is-fetching="adminUserAccessQuery.isFetching.value"
+        :is-error="adminUserAccessQuery.isError.value"
+        :error-msg="
+            isAxiosError(adminUserAccessQuery.error.value)
+                ? formatAxiosError(adminUserAccessQuery.error.value)
+                : 'Failed to fetch data.'
+        "
     />
 </template>
 

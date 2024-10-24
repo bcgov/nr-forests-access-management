@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
-import { useAttrs, type Ref } from "vue";
+import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
+import ErrorText from "@/components/UI/ErrorText.vue";
+import type { AxiosError } from "axios";
 
 const props = defineProps<{
     class: string;
@@ -14,16 +16,8 @@ const props = defineProps<{
     placeholder?: string;
     isFetching?: boolean;
     isError?: boolean;
+    errorMsg?: string;
 }>();
-
-const emit = defineEmits(["update:modelValue"]);
-
-const handleChange = (e: DropdownChangeEvent) => {
-    emit("update:modelValue", e.value);
-    if (props.onChange) {
-        props.onChange(e);
-    }
-};
 </script>
 
 <template>
@@ -33,17 +27,20 @@ const handleChange = (e: DropdownChangeEvent) => {
         "
     >
         <label v-if="props.labelText" :for="props.name">{{ labelText }}</label>
+        <InputSkeleton v-if="props.isFetching" />
+
         <Dropdown
-            v-if="!props.isFetching"
+            v-if="!props.isFetching && !props.isError"
             :id="props.id ?? `${props.name}-id`"
             :name="props.name"
-            @change="handleChange"
+            @change="props.onChange"
             :options="props.options"
             :optionLabel="props.optionLabel"
             placeholder="Choose an application to manage permissions"
             class="fam-dropdown"
             :model-value="props.value"
         />
+        <ErrorText v-if="props.isError" :error-msg="errorMsg" show-icon />
     </div>
 </template>
 
