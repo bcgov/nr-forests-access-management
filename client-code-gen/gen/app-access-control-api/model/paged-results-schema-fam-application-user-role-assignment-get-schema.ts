@@ -16,6 +16,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { FamApplicationUserRoleAssignmentGetSchema } from './fam-application-user-role-assignment-get-schema';
+// May contain unused imports in some cases
+// @ts-ignore
+import { PageResultMetaSchema } from './page-result-meta-schema';
 
 /**
  * 
@@ -24,29 +27,11 @@ import { FamApplicationUserRoleAssignmentGetSchema } from './fam-application-use
  */
 export interface PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema {
     /**
-     * Total records counts for query conditions
-     * @type {number}
+     * 
+     * @type {PageResultMetaSchema}
      * @memberof PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema
      */
-    'total': number;
-    /**
-     * Total pages for query records
-     * @type {number}
-     * @memberof PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema
-     */
-    'number_of_pages': number;
-    /**
-     * Page number
-     * @type {number}
-     * @memberof PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema
-     */
-    'page_number': number;
-    /**
-     * Number of records per page
-     * @type {number}
-     * @memberof PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema
-     */
-    'page_size': number;
+    'meta': PageResultMetaSchema;
     /**
      * Paged results
      * @type {Array<FamApplicationUserRoleAssignmentGetSchema>}

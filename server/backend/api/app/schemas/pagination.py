@@ -54,13 +54,17 @@ class UserRolePageParamsSchema(PageParamsSchema):
     sort_by: UserRoleSortByEnum | None = Field(Query(default=UserRoleSortByEnum.USER_NAME, description="Column to be sorted by", alias="sortBy"))
 
 
+class PageResultMetaSchema(BaseModel):
+    total: int = Field(description='Total records counts for query conditions')
+    number_of_pages: int = Field(description='Total pages for query records')
+    page_number: int = Field(description='Page number')
+    page_size: int = Field(description='Number of records per page')
+
+
 class PagedResultsSchema(BaseModel, Generic[T]):
     """
     API pagination return schema.
     Use Python generice type for return type.
     """
-    total: int = Field(description='Total records counts for query conditions')
-    number_of_pages: int = Field(description='Total pages for query records')
-    page_number: int = Field(description='Page number')
-    page_size: int = Field(description='Number of records per page')
+    meta: PageResultMetaSchema
     results: List[T] = Field(description='Paged results')

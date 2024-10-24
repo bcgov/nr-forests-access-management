@@ -2,7 +2,8 @@
 import logging
 
 from api.app.constants import T
-from api.app.schemas.pagination import PagedResultsSchema, PageParamsSchema
+from api.app.schemas.pagination import (PagedResultsSchema, PageParamsSchema,
+                                        PageResultMetaSchema)
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement, Select, UnaryExpression, func, select
 from sqlalchemy.orm import Session
@@ -62,10 +63,12 @@ class PaginateService:
         paged_query = paged_query.offset(self.offset).limit(self.limit)
         total_counts = self.__get_total_count()
         results = PagedResultsSchema[ResultSchema](
-            total=total_counts,
-            number_of_pages=self.__get_number_of_pages(total_counts),
-            page_number=self.page,
-            page_size=self.size,
+            meta = PageResultMetaSchema(
+                total=total_counts,
+                number_of_pages=self.__get_number_of_pages(total_counts),
+                page_number=self.page,
+                page_size=self.size
+            ),
             results=[ResultSchema.model_validate(item) for item in self.db.scalars(paged_query)]
         )
         return results

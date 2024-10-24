@@ -21,7 +21,7 @@
           "FAM Applications"
         ],
         "summary": "Get Fam Application User Role Assignment",
-        "description": "gets the roles assignment associated with an application",
+        "description": "Gets paged users/roles assignment records associated with an application.",
         "operationId": "get_fam_application_user_role_assignment",
         "security": [
           {
@@ -39,7 +39,7 @@
             }
           },
           {
-            "name": "page_number",
+            "name": "pageNumber",
             "in": "query",
             "required": false,
             "schema": {
@@ -54,19 +54,19 @@
               ],
               "description": "Page number",
               "default": 1,
-              "title": "Page Number"
+              "title": "Pagenumber"
             },
             "description": "Page number"
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
                   "type": "integer",
-                  "maximum": 100,
+                  "maximum": 100000,
                   "minimum": 10
                 },
                 {
@@ -75,9 +75,67 @@
               ],
               "description": "Number of records per page",
               "default": 50,
-              "title": "Page Size"
+              "title": "Pagesize"
             },
             "description": "Number of records per page"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 30
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by keyword",
+              "title": "Search"
+            },
+            "description": "Search by keyword"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SortOrderEnum"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column sorting order by",
+              "default": "asc",
+              "title": "Sortorder"
+            },
+            "description": "Column sorting order by"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/UserRoleSortByEnum"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column to be sorted by",
+              "default": "user_name",
+              "title": "Sortby"
+            },
+            "description": "Column to be sorted by"
           }
         ],
         "responses": {
@@ -1416,7 +1474,7 @@
         ],
         "title": "IdimProxyIdirInfoSchema"
       },
-      "PagedResultsSchema_FamApplicationUserRoleAssignmentGetSchema_": {
+      "PageResultMetaSchema": {
         "properties": {
           "total": {
             "type": "integer",
@@ -1437,6 +1495,21 @@
             "type": "integer",
             "title": "Page Size",
             "description": "Number of records per page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "number_of_pages",
+          "page_number",
+          "page_size"
+        ],
+        "title": "PageResultMetaSchema"
+      },
+      "PagedResultsSchema_FamApplicationUserRoleAssignmentGetSchema_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PageResultMetaSchema"
           },
           "results": {
             "items": {
@@ -1449,10 +1522,7 @@
         },
         "type": "object",
         "required": [
-          "total",
-          "number_of_pages",
-          "page_number",
-          "page_size",
+          "meta",
           "results"
         ],
         "title": "PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]"
@@ -1692,6 +1762,26 @@
           "C"
         ],
         "title": "RoleType"
+      },
+      "SortOrderEnum": {
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ],
+        "title": "SortOrderEnum"
+      },
+      "UserRoleSortByEnum": {
+        "type": "string",
+        "enum": [
+          "user_name",
+          "user_type_code",
+          "email",
+          "full_name",
+          "role_display_name",
+          "forest_client_number"
+        ],
+        "title": "UserRoleSortByEnum"
       },
       "UserType": {
         "type": "string",
