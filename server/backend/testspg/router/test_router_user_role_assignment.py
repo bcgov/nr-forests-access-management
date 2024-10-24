@@ -273,6 +273,7 @@ def test_create_user_role_assignment_many_with_concrete_role(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     """
     test assign a concrete role to a user
@@ -303,8 +304,9 @@ def test_create_user_role_assignment_many_with_concrete_role(
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=detail["role"]["application"]["application_id"],
-        requester=requester
-    )
+        requester=requester,
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_concrete) == 1
     assert (
         assignment_user_role_concrete[0].user_role_xref_id
@@ -404,6 +406,7 @@ def test_create_user_role_assignment_many_with_abstract_role(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     """
     test assign an abscrate role to a user with multiple forest client numbers
@@ -436,7 +439,8 @@ def test_create_user_role_assignment_many_with_abstract_role(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_abstract) == 2
     assert assignment_user_role_abstract[0].user_role_xref_id in [
         data[0]["detail"]["user_role_xref_id"],
@@ -477,6 +481,7 @@ def test_create_user_role_assignment_many_with_same_username(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -514,7 +519,8 @@ def test_create_user_role_assignment_many_with_same_username(
         db=db_pg_session,
         application_id=assignment_one["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 3
 
     # cleanup
@@ -544,6 +550,7 @@ def test_assign_same_application_roles_for_different_environments(
     fom_test_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -591,7 +598,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -607,7 +615,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -626,13 +635,15 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
 
     # cleanup
@@ -647,7 +658,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
 
 
@@ -1056,6 +1068,7 @@ def test_delete_user_role_assignment(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -1077,7 +1090,8 @@ def test_delete_user_role_assignment(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -1096,7 +1110,8 @@ def test_delete_user_role_assignment(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
 
 

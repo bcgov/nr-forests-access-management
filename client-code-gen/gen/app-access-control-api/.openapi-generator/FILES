@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 api/bcscproxy-api.ts
@@ -36,6 +35,8 @@ model/idim-proxy-bceid-info-schema.ts
 model/idim-proxy-idir-info-schema.ts
 model/index.ts
 model/location-inner.ts
+model/page-result-meta-schema.ts
+model/paged-results-schema-fam-application-user-role-assignment-get-schema.ts
 model/permission-audit-history-res.ts
 model/privilege-change-performer-schema.ts
 model/privilege-change-type-enum.ts
@@ -45,6 +46,8 @@ model/privilege-details-schema.ts
 model/privilege-details-scope-schema.ts
 model/privilege-details-scope-type-enum.ts
 model/role-type.ts
+model/sort-order-enum.ts
+model/user-role-sort-by-enum.ts
 model/user-type.ts
 model/validation-error.ts
 package.json

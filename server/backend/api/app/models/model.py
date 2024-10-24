@@ -5,6 +5,7 @@ from sqlalchemy import (BigInteger, Column, ForeignKey, ForeignKeyConstraint,
                         Identity, Index, Integer, PrimaryKeyConstraint, String,
                         UniqueConstraint, func, text)
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import (Mapped, declarative_base, mapped_column,
                             relationship)
 
@@ -419,6 +420,14 @@ class FamUser(Base):
             "schema": "app_fam",
         },
     )
+
+    # --- as hybrid Mapped attributes
+    @hybrid_property
+    def full_name(self):
+        if self.first_name is not None:
+            return self.first_name + " " + self.last_name
+        else:
+            return self.last_name
 
     def __str__(self):
         return f"FamUser({self.user_id}, {self.user_name}, {self.user_type_code})"
