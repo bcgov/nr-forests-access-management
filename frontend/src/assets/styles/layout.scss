@@ -34,7 +34,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type='number'] {
+input[type="number"] {
     -moz-appearance: textfield;
 }
 
@@ -76,10 +76,6 @@ input[type='number'] {
     width: 100%;
 }
 
-.data-table-container {
-    z-index: -1;
-}
-
 .custom-data-table {
     background: transparent;
     border-radius: 0 0.25rem 0.25rem 0.25rem;
@@ -94,33 +90,18 @@ input[type='number'] {
     }
 }
 
-@media (max-width: 390px) {
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-}
-
 @media (min-width: 768px) {
     .main {
         padding: 2.5rem 2.5rem 0 2.5rem;
         width: 100vw;
     }
+
     .form-container {
         width: 38rem;
     }
 
     .custom-card {
         width: $card-width;
-    }
-
-    .data-table-container {
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-app-selected {
-        margin: 0 14rem;
     }
 }
 
@@ -132,24 +113,5 @@ input[type='number'] {
     .main {
         left: 16rem;
         width: calc(100vw - 16rem);
-    }
-}
-
-@media (min-width: 1280px) {
-    .no-app-selected {
-        margin: 0 25rem;
-    }
-}
-
-@media (min-width: 1536px) {
-    .no-app-selected {
-        margin: 0 33rem;
-    }
-}
-
-@media (min-width: 1920px) {
-    .no-app-selected {
-        margin: 0 43.3rem;
-        width: auto;
     }
 }

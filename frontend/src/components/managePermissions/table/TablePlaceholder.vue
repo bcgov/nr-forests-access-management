@@ -29,9 +29,9 @@ import { IconSize } from "@/enum/IconEnum";
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 21.745rem);
+    height: calc(100vh - 19rem);
     min-height: 12.5rem;
-    margin: 0 5rem;
+    margin: 0 auto;
 
     svg {
         width: 3rem;

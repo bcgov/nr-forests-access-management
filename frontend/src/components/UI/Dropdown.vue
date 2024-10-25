@@ -2,7 +2,6 @@
 import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
 import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
-import type { AxiosError } from "axios";
 
 const props = defineProps<{
     class: string;
