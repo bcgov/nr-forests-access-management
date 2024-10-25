@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconSize } from '@/enum/IconEnum';
+import { IconSize } from "@/enum/IconEnum";
 </script>
 
 <template>
@@ -13,14 +13,15 @@ import { IconSize } from '@/enum/IconEnum';
         />
         <p class="no-app-selected-title">Nothing to show yet!</p>
         <p class="no-app-selected-text">
-            Choose an application to show a list of users with access to it. The
-            list will display here.
+            Choose an application to view its users.
+            <br />
+            The list will display here.
         </p>
     </div>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 .no-app-selected {
     text-align: center;
@@ -32,7 +33,7 @@ import { IconSize } from '@/enum/IconEnum';
     min-height: 12.5rem;
     margin: 0 5rem;
 
-    SVG {
+    svg {
         width: 3rem;
         height: 3rem;
     }
