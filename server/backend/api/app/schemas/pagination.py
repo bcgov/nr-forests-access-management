@@ -47,11 +47,21 @@ class PageParamsSchema(BaseModel, ABC):
         default=None, min_length=SEARCH_FIELD_MIN_LENGTH, max_length=SEARCH_FIELD_MAX_LENGTH, description="Search by keyword"
     ))
 
-    sort_order: SortOrderEnum | None = Field(Query(default=SortOrderEnum.ASC, description="Column sorting order by", alias="sortOrder"))
+    sort_order: SortOrderEnum | None = Field(Query(
+        default=SortOrderEnum.ASC, alias="sortOrder",
+        description=(
+            f'Column sorting order by <br>Possible values: [{", ".join([enum for enum in SortOrderEnum])}]<br>&nbsp;'
+        )
+    ))
 
 
 class UserRolePageParamsSchema(PageParamsSchema):
-    sort_by: UserRoleSortByEnum | None = Field(Query(default=UserRoleSortByEnum.USER_NAME, description="Column to be sorted by", alias="sortBy"))
+    sort_by: UserRoleSortByEnum | None = Field(Query(
+        default=UserRoleSortByEnum.USER_NAME, alias="sortBy",
+        description=(
+            f'Column to be sorted by <br>Possible values: [{", ".join([enum for enum in UserRoleSortByEnum])}]<br>&nbsp;'
+        )
+    ))
 
 
 class PageResultMetaSchema(BaseModel):
