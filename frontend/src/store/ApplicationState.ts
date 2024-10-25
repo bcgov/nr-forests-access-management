@@ -1,8 +1,9 @@
-import { AppEnv, type FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import { computed, ref } from 'vue';
+import { AppEnv, type FamApplicationDto } from "fam-admin-mgmt-api/model";
+import { computed, ref } from "vue";
 
-export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
+export const CURRENT_SELECTED_APPLICATION_KEY = "CURRENT_SELECTED_APPLICATION";
 
+// TODO: REMOVE
 export const selectedApplication = ref<FamApplicationDto | null>(
     localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
         ? JSON.parse(
@@ -34,10 +35,17 @@ export const selectedApplicationDisplayText = computed(() => {
     if (selectedApplication.value) {
         return `${selectedApplication.value.description}`;
     } else {
-        return '';
+        return "";
     }
 });
 
 export const isSelectedAppProd = computed(() => {
     return selectedApplication.value?.env == AppEnv.Prod;
 });
+
+export const selectedApp = ref<FamApplicationDto>();
+
+// Optional: Helper function to update selectedApp
+export const setSelectedApp = (app: FamApplicationDto) => {
+    selectedApp.value = app;
+};

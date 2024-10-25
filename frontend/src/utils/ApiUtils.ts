@@ -1,5 +1,6 @@
 import type { AxiosError } from "axios";
 import type {
+    AdminRoleAuthGroup,
     AdminUserAccessResponse,
     FamApplicationDto,
 } from "fam-admin-mgmt-api/model";
@@ -14,7 +15,9 @@ export const formatAxiosError = (err: AxiosError): string =>
     `${err.response?.status}: ${err.message}`;
 
 /**
- * Extracts unique applications from the AdminUserAccessResponse.
+ * Extracts unique applications from the AdminUserAccessResponse, filtering by `auth_key`.
+ *
+ * - Only adds applications with `auth_key === "FAM_ADMIN"` if `id === 1`.
  *
  * @param {AdminUserAccessResponse} data - The response containing user access information.
  * @returns {FamApplicationDto[]} An array of unique FamApplicationDto objects.
@@ -25,12 +28,49 @@ export const getUniqueApplications = (
     if (!data) {
         return [];
     }
+
     return Array.from(
         data.access
-            .flatMap((authGrant) =>
-                authGrant.grants.map((grant) => grant.application)
-            )
+            .flatMap((authGrant) => {
+                // Only include applications under FAM_ADMIN if the application ID is 1
+                if (
+                    authGrant.auth_key === "FAM_ADMIN" &&
+                    authGrant.grants.some((grant) => grant.application.id === 1)
+                ) {
+                    return authGrant.grants
+                        .filter((grant) => grant.application.id === 1)
+                        .map((grant) => grant.application);
+                }
+                // Otherwise, include all other applications under other auth_keys
+                return authGrant.grants.map((grant) => grant.application);
+            })
             .reduce((acc, app) => acc.set(app.id, app), new Map())
             .values()
+    );
+};
+
+/**
+ * Checks if the selected application has the specified authorization key.
+ *
+ * @param {number} selectedAppId - The ID of the selected application to check.
+ * @param {AdminRoleAuthGroup} authKey - The authorization key to check ("APP_ADMIN", "DELEGATED_ADMIN", etc.).
+ * @param {AdminUserAccessResponse} data - The response containing user access information.
+ * @returns {boolean} True if the selected application ID is under the specified authorization key; otherwise, false.
+ */
+export const isSelectedAppAuthorized = (
+    selectedAppId: number,
+    authKey: AdminRoleAuthGroup,
+    data?: AdminUserAccessResponse
+): boolean => {
+    if (!data) {
+        return false;
+    }
+
+    return data.access.some(
+        (authGrant) =>
+            authGrant.auth_key === authKey &&
+            authGrant.grants.some(
+                (grant) => grant.application.id === selectedAppId
+            )
     );
 };

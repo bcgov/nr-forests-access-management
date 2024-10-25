@@ -29,7 +29,7 @@ import { IconSize } from "@/enum/IconEnum";
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 19rem);
+    flex-grow: 1;
     min-height: 12.5rem;
     margin: 0 auto;
 

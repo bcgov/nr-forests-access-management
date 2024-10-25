@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/vue-query";
 import type { DropdownChangeEvent } from "primevue/dropdown";
-import type { FamApplicationDto } from "fam-admin-mgmt-api/model";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 
 import PageTitle from "@/components/common/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
+import {
+    formatAxiosError,
+    getUniqueApplications,
+    isSelectedAppAuthorized,
+} from "@/utils/ApiUtils";
 import TablePlaceholder from "@/components/managePermissions/table/TablePlaceholder.vue";
-
-const selectedApp = ref<FamApplicationDto>();
+import { selectedApp, setSelectedApp } from "@/store/ApplicationState";
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
-    selectedApp.value = e.value;
-    console.log(selectedApp.value);
+    setSelectedApp(e.value);
 };
 
 const adminUserAccessQuery = useQuery({
@@ -52,9 +54,39 @@ const adminUserAccessQuery = useQuery({
             "
         />
 
-        <div class="tab-container">
+        <div class="content-container">
             <TablePlaceholder v-if="!selectedApp" />
-            <div v-else class="tables-container"></div>
+            <div v-else class="tab-view-container">
+                <TabView>
+                    <TabPanel
+                        header="Application admins"
+                        v-if="selectedApp.id === 1"
+                    >
+                    </TabPanel>
+                    <TabPanel
+                        header="Users"
+                        v-if="
+                            isSelectedAppAuthorized(
+                                selectedApp.id,
+                                'APP_ADMIN',
+                                adminUserAccessQuery.data.value
+                            )
+                        "
+                    >
+                    </TabPanel>
+                    <TabPanel
+                        header="Delegated admins"
+                        v-if="
+                            isSelectedAppAuthorized(
+                                selectedApp.id,
+                                'DELEGATED_ADMIN',
+                                adminUserAccessQuery.data.value
+                            )
+                        "
+                    >
+                    </TabPanel>
+                </TabView>
+            </div>
         </div>
     </div>
 </template>
@@ -65,9 +97,13 @@ const adminUserAccessQuery = useQuery({
         margin-top: 2.5rem;
     }
 
-    .tab-container {
+    .content-container {
+        display: flex;
+        flex-direction: column;
         margin: 2.5rem -2.5rem 0 -2.5rem;
         background: var(--layer-01);
+        min-height: calc(100vh - 19rem);
+        padding: 2.5rem;
     }
 }
 </style>
