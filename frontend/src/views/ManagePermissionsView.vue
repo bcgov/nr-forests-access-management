@@ -54,6 +54,7 @@ const adminUserAccessQuery = useQuery({
 
         <div class="tab-container">
             <TablePlaceholder v-if="!selectedApp" />
+            <div v-else class="tables-container"></div>
         </div>
     </div>
 </template>

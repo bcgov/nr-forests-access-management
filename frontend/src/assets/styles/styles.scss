@@ -6,9 +6,6 @@
 
 @import "base";
 
-// Components
-@import "@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss";
-
 :root {
     --font-family: map.get(typeFamily.$type-family, "sans");
     --primevue-striped-row-color: rgba(0, 0, 0, 0.05);
