@@ -38,6 +38,9 @@ def __get_number_of_pages(count: int, page_size) -> int:
     quotient = count // page_size
     return quotient if not rest else quotient + 1
 
+def __get_existing_testdb_seeded_users(db_pg_session: Session):
+    return db_pg_session.scalars(select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))).all()
+
 # -------------------------------------------------------------------------------------------------------------------------
 
 def test_get_paginated_results__users_paged_with_default_pagination(db_pg_session: Session, load_test_users):
@@ -47,7 +50,7 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
     """
     # this 'load_test_users' fixture loads bunch of users into db session for testing.
     mock_user_data_load = load_test_users
-    existing_testdb_users = db_pg_session.scalars(select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))).all()
+    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
     default_page_params = TestUserPageParamsSchema(
         page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None, sort_by=None, sort_order=None
     )
@@ -59,7 +62,7 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
     result_data = paged_result.results
     meta = paged_result.meta
     assert result_data is not None
-    total_db_user_rows = len(mock_user_data_load) + len(existing_testdb_users)
+    total_db_user_rows = len(mock_user_data_load) + len(existing_testdb_seeded_users)
     assert meta.total == total_db_user_rows
     assert meta.page_number == MIN_PAGE
     assert meta.page_size == DEFAULT_PAGE_SIZE
@@ -90,7 +93,7 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     This case tests on 'PaginateService.get_paginated_results' for non-default page_params.
     """
     mock_user_data_load = load_test_users
-    existing_testdb_users = db_pg_session.scalars(select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))).all()
+    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
 
     paginated_service = PaginateService(db_pg_session, test_base_query, None, None, test_page_params)
     paged_result = paginated_service.get_paginated_results(FamUserInfoSchema)
@@ -99,11 +102,10 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     result_data = paged_result.results
     meta = paged_result.meta
     assert result_data is not None
-    total_db_user_rows = len(mock_user_data_load) + len(existing_testdb_users)
+    total_db_user_rows = len(mock_user_data_load) + len(existing_testdb_seeded_users)
     assert meta.total == total_db_user_rows
     assert meta.page_number == test_page_params.page
     assert meta.page_size == test_page_params.size
     assert len(result_data) == expected_results_size
     expected_num_of_pages = __get_number_of_pages(total_db_user_rows, test_page_params.size)
     assert meta.number_of_pages == expected_num_of_pages
-
