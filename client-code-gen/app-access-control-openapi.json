@@ -112,11 +112,11 @@
                   "type": "null"
                 }
               ],
-              "description": "Column sorting order by",
+              "description": "Column sorting order by \u003Cbr\u003EPossible values: [asc, desc]\u003Cbr\u003E&nbsp;",
               "default": "asc",
               "title": "Sortorder"
             },
-            "description": "Column sorting order by"
+            "description": "Column sorting order by \u003Cbr\u003EPossible values: [asc, desc]\u003Cbr\u003E&nbsp;"
           },
           {
             "name": "sortBy",
@@ -131,11 +131,11 @@
                   "type": "null"
                 }
               ],
-              "description": "Column to be sorted by",
+              "description": "Column to be sorted by \u003Cbr\u003EPossible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;",
               "default": "user_name",
               "title": "Sortby"
             },
-            "description": "Column to be sorted by"
+            "description": "Column to be sorted by \u003Cbr\u003EPossible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;"
           }
         ],
         "responses": {
