@@ -52,17 +52,17 @@ export const getUniqueApplications = (
 /**
  * Checks if the selected application has the specified authorization key.
  *
- * @param {number} selectedAppId - The ID of the selected application to check.
  * @param {AdminRoleAuthGroup} authKey - The authorization key to check ("APP_ADMIN", "DELEGATED_ADMIN", etc.).
+ * @param {number} selectedAppId - The ID of the selected application to check.
  * @param {AdminUserAccessResponse} data - The response containing user access information.
  * @returns {boolean} True if the selected application ID is under the specified authorization key; otherwise, false.
  */
 export const isSelectedAppAuthorized = (
-    selectedAppId: number,
     authKey: AdminRoleAuthGroup,
+    selectedAppId?: number,
     data?: AdminUserAccessResponse
 ): boolean => {
-    if (!data) {
+    if (!data || !selectedAppId) {
         return false;
     }
 

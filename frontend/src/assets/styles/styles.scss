@@ -69,3 +69,14 @@ body {
         max-width: 40rem;
     }
 }
+
+.fam-table {
+    p {
+        margin: 0;
+    }
+
+    background: var(--layer-02, #fff);
+
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 0.0625rem solid var(--border-subtle-00);
+}

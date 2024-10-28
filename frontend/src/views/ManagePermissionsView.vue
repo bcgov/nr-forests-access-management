@@ -1,20 +1,30 @@
 <script setup lang="ts">
+import { computed, ref, watch, type Component } from "vue";
 import { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/vue-query";
 import type { DropdownChangeEvent } from "primevue/dropdown";
-import TabView from "primevue/tabview";
+import TabView, { type TabViewChangeEvent } from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
+import UserIcon from "@carbon/icons-vue/es/user/16";
+
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 
 import PageTitle from "@/components/common/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import Dropdown from "@/components/UI/Dropdown.vue";
+import TablePlaceholder from "@/components/managePermissions/table/TablePlaceholder.vue";
+import { selectedApp, setSelectedApp } from "@/store/ApplicationState";
 import {
     formatAxiosError,
     getUniqueApplications,
     isSelectedAppAuthorized,
 } from "@/utils/ApiUtils";
-import TablePlaceholder from "@/components/managePermissions/table/TablePlaceholder.vue";
-import { selectedApp, setSelectedApp } from "@/store/ApplicationState";
+import ManagePermissionsTable from "@/components/managePermissions/ManagePermissionsTable.vue";
+import type {
+    ManagePermissionsTabHeaderType,
+    ManagePermissionsTabTypes,
+} from "@/types/ManagePermissionsTypes";
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
@@ -27,6 +37,60 @@ const adminUserAccessQuery = useQuery({
             .adminUserAccessPrivilege()
             .then((res) => res.data),
 });
+
+// Available tab keys and their visibility conditions
+const tabs: ManagePermissionsTabTypes[] = [
+    {
+        key: AdminRoleAuthGroup.FamAdmin,
+        visible: computed(() => selectedApp.value?.id === 1),
+        icon: UserIcon as Component,
+    },
+    {
+        key: AdminRoleAuthGroup.AppAdmin,
+        visible: computed(() =>
+            isSelectedAppAuthorized(
+                "APP_ADMIN",
+                selectedApp.value?.id,
+                adminUserAccessQuery.data.value
+            )
+        ),
+        icon: UserIcon as Component,
+    },
+    {
+        key: AdminRoleAuthGroup.DelegatedAdmin,
+        visible: computed(() =>
+            isSelectedAppAuthorized(
+                "DELEGATED_ADMIN",
+                selectedApp.value?.id,
+                adminUserAccessQuery.data.value
+            )
+        ),
+        icon: EnterpriseIcon as Component,
+    },
+];
+
+// Computed property to filter visible tabs dynamically
+const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
+
+const activeIndex = ref(0);
+
+// Function to set `activeIndex` to the first visible tab
+const updateActiveIndex = () => {
+    activeIndex.value = 0;
+};
+
+// Watch `selectedApp` and call `updateActiveIndex`
+watch(selectedApp, updateActiveIndex, { immediate: true });
+
+const onTabChange = (event: TabViewChangeEvent) => {
+    activeIndex.value = event.index;
+};
+
+const tabHeaders: ManagePermissionsTabHeaderType = {
+    FAM_ADMIN: "Application admins",
+    APP_ADMIN: "Users",
+    DELEGATED_ADMIN: "Delegated admins",
+};
 </script>
 
 <template>
@@ -57,33 +121,23 @@ const adminUserAccessQuery = useQuery({
         <div class="content-container">
             <TablePlaceholder v-if="!selectedApp" />
             <div v-else class="tab-view-container">
-                <TabView>
+                <TabView :active-index="activeIndex" @tab-change="onTabChange">
                     <TabPanel
-                        header="Application admins"
-                        v-if="selectedApp.id === 1"
+                        v-for="tab in visibleTabs"
+                        :key="tab.key"
+                        :header="tabHeaders[tab.key]"
                     >
-                    </TabPanel>
-                    <TabPanel
-                        header="Users"
-                        v-if="
-                            isSelectedAppAuthorized(
-                                selectedApp.id,
-                                'APP_ADMIN',
-                                adminUserAccessQuery.data.value
-                            )
-                        "
-                    >
-                    </TabPanel>
-                    <TabPanel
-                        header="Delegated admins"
-                        v-if="
-                            isSelectedAppAuthorized(
-                                selectedApp.id,
-                                'DELEGATED_ADMIN',
-                                adminUserAccessQuery.data.value
-                            )
-                        "
-                    >
+                        <template #header>
+                            <component :is="tab.icon" />
+                        </template>
+                        <ManagePermissionsTable
+                            class="tab-table"
+                            :auth-group="tab.key"
+                            :app-name="
+                                selectedApp.description ?? selectedApp.name
+                            "
+                            :app-id="selectedApp.id"
+                        />
                     </TabPanel>
                 </TabView>
             </div>
@@ -104,6 +158,15 @@ const adminUserAccessQuery = useQuery({
         background: var(--layer-01);
         min-height: calc(100vh - 19rem);
         padding: 2.5rem;
+    }
+
+    .p-tabview-header {
+        .p-tabview-nav-link {
+            height: 3rem;
+        }
+    }
+    .tab-table {
+        margin-top: -0.0625rem;
     }
 }
 </style>
