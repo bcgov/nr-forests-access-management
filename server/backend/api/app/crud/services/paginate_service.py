@@ -32,13 +32,13 @@ class PaginateService:
             db: Session,
             base_query: Select,
             filter_by_criteria: ColumnElement[bool] | None,
-            column_mapping: dict[StrEnum, any],
+            sort_by_column_mapping: dict[StrEnum, any],
             page_param: PageParamsSchema
         ):
         self.db = db  # SqlAlchemy session.
         self.base_query = base_query  # 'Select' base query.
         self.__filter_by_criteria = filter_by_criteria
-        self.column_mapping = column_mapping
+        self.order_by_column_mapping = sort_by_column_mapping
         self.__page_params = page_param
         self.page = page_param.page
         self.size = page_param.size
@@ -95,9 +95,9 @@ class PaginateService:
         sort_by = self.__page_params.sort_by
         sort_order = self.__page_params.sort_order
         mapped_column = (
-            list(self.column_mapping.values())[0]  # default sort_by column
+            list(self.order_by_column_mapping.values())[0]  # default sort_by column
             if sort_by is None
-            else self.column_mapping.get(sort_by)
+            else self.order_by_column_mapping.get(sort_by)
         )
 
         order_by_criteria = asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
