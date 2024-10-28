@@ -1,14 +1,14 @@
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from '@/services/ApiServiceFactory';
+import { selectedApplicationId } from '@/store/ApplicationState';
+import FamLoginUserState from '@/store/FamLoginUserState';
 import type {
-    FamAppAdminGetResponse,
     FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
 } from 'fam-admin-mgmt-api/model';
 import type { FamApplicationUserRoleAssignmentGetSchema } from 'fam-app-acsctl-api';
-import {
-    AppActlApiService,
-    AdminMgmtApiService,
-} from '@/services/ApiServiceFactory';
-import FamLoginUserState from '@/store/FamLoginUserState';
-import { selectedApplicationId } from '@/store/ApplicationState';
 import { isNewAccess } from './utils';
 
 // --- Fetching data (from backend)
@@ -25,7 +25,7 @@ export const fetchUserRoleAssignments = async (
         await AppActlApiService.applicationsApi.getFamApplicationUserRoleAssignment(
             applicationId
         )
-    ).data;
+    ).data.results;
 
     userRoleAssignments.sort((first, second) => {
         const firstIsNew = isNewAccess(

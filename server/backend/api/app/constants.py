@@ -1,5 +1,6 @@
 # User Type
 from enum import Enum
+from typing import TypeVar
 
 # FAM application name in database
 APPLICATION_FAM = "FAM"
@@ -103,6 +104,19 @@ ROLE_NAME_MAX_LEN = 100
 APPLICATION_NAME_MAX_LEN = 100
 APPLICATION_DESC_MAX_LEN = 200
 CREATE_USER_MAX_LEN = 100
+MIN_PAGE = 1
+DEFAULT_PAGE_SIZE = 50
+MIN_PAGE_SIZE = 10
+
+# The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
+# and let frontend do the pagination, we could set it to 100000.
+# >> MAX_PAGE_SIZE = 100
+MAX_PAGE_SIZE = 100000
+SEARCH_FIELD_MIN_LENGTH = 3
+SEARCH_FIELD_MAX_LENGTH = 30
+
+# ----------------------- Generic Type Variable Declaration ----------------------- #
+T = TypeVar('T')
 
 # --------------------------------- Schema Enums --------------------------------- #
 class PrivilegeChangeTypeEnum(str, Enum):
@@ -122,3 +136,16 @@ class PrivilegeDetailsPermissionTypeEnum(str, Enum):
     END_USER = "End User"
     DELEGATED_ADMIN = "Delegated Admin"
     APPLICATION_ADMIN = "Application Admin"
+
+class SortOrderEnum(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+class UserRoleSortByEnum(str, Enum):
+    # Note: this is not the exact model column name, requires table column mapping.
+    USER_NAME = "user_name"
+    DOMAIN = "user_type_code"
+    EMAIL = "email"
+    FULL_NAME = "full_name"  # special case: first_name + last_name
+    ROLE_DISPLAY_NAME = "role_display_name"
+    FOREST_CLIENT_NUMBER = "forest_client_number"
