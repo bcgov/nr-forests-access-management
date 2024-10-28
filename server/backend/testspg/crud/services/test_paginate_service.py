@@ -1,12 +1,13 @@
 import logging
 from enum import Enum
+from typing import Optional
 
 import pytest
-from api.app.constants import DEFAULT_PAGE_SIZE, MIN_PAGE
+from api.app.constants import DEFAULT_PAGE_SIZE, MIN_PAGE, SortOrderEnum
 from api.app.crud.services.paginate_service import PaginateService
 from api.app.models.model import FamUser
-from api.app.schemas.fam_user_info import FamUserInfoSchema
 from api.app.schemas.pagination import PageParamsSchema
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Select, not_, select
 from sqlalchemy.orm import Session
 
@@ -29,6 +30,18 @@ class TestUserSortByEnum(str, Enum):
 class TestUserPageParamsSchema(PageParamsSchema):
     sort_by: TestUserSortByEnum | None
 
+# test schema type used only in this test file.
+class TestFamUserInfoSchema(BaseModel):
+    user_name: str
+    user_type_code: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
 USER_SORT_BY_MAPPED_COLUMN = {
     TestUserSortByEnum.USER_NAME: FamUser.user_name,  # default
     TestUserSortByEnum.DOMAIN: FamUser.user_type_code,
@@ -47,6 +60,18 @@ def __get_number_of_pages(count: int, page_size) -> int:
 def __get_existing_testdb_seeded_users(db_pg_session: Session):
     return db_pg_session.scalars(select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))).all()
 
+def __is_sorted(o1, o2, attribute: str, order: SortOrderEnum) -> bool:
+    a1 = getattr(o1, attribute)
+    a2 = getattr(o2, attribute)
+    if a1 is None and a2 is None:
+        return True
+    if a1 is None:
+        return order == SortOrderEnum.DESC
+    elif a2 is None:
+        return order == SortOrderEnum.ASC
+    else:
+        return (a1 <= a2 if order == SortOrderEnum.ASC else a1 >= a2)
+
 # -------------------------------------------------------------------------------------------------------------------------
 
 def test_get_paginated_results__users_paged_with_default_pagination(db_pg_session: Session, load_test_users):
@@ -62,7 +87,7 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
     )
 
     paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, default_page_params)
-    paged_result = paginated_service.get_paginated_results(FamUserInfoSchema)
+    paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
 
     assert paged_result is not None
     result_data = paged_result.results
@@ -102,7 +127,7 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
 
     paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
-    paged_result = paginated_service.get_paginated_results(FamUserInfoSchema)
+    paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
 
     assert paged_result is not None
     result_data = paged_result.results
@@ -115,3 +140,56 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     assert len(result_data) == expected_results_size
     expected_num_of_pages = __get_number_of_pages(total_db_user_rows, test_page_params.size)
     assert meta.number_of_pages == expected_num_of_pages
+
+
+@pytest.mark.parametrize(
+    "test_page_params, sort_by_attribute",
+    [
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.USER_NAME, sort_order=SortOrderEnum.ASC
+        ), "user_name"),
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.USER_NAME, sort_order=SortOrderEnum.DESC
+        ), "user_name"),
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.DOMAIN, sort_order=SortOrderEnum.ASC
+        ), "user_type_code"),
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.DOMAIN, sort_order=SortOrderEnum.DESC
+        ), "user_type_code"),
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.EMAIL, sort_order=SortOrderEnum.ASC
+        ), "email"),
+        (TestUserPageParamsSchema(
+            page=1, size=10, search=None, sort_by=TestUserSortByEnum.EMAIL, sort_order=SortOrderEnum.DESC
+        ), "email")
+    ],
+)
+def test_get_paginated_results__users_paged_with_sorting(
+    test_page_params: TestUserPageParamsSchema, sort_by_attribute: str, db_pg_session: Session, load_test_users
+):
+    """
+    This case tests on 'PaginateService.get_paginated_results' for sorting.
+    """
+    mock_user_data_load = load_test_users
+    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+
+    paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
+    paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
+
+    assert None == None
+
+    assert paged_result is not None
+    result_data = paged_result.results
+    meta = paged_result.meta
+    assert result_data is not None
+    total_db_user_rows = len(mock_user_data_load) + len(existing_testdb_seeded_users)
+    assert meta.total == total_db_user_rows
+    assert meta.page_number == test_page_params.page
+    assert meta.page_size == test_page_params.size
+    # verify sorting
+    sort_order = test_page_params.sort_order
+    assert all(
+        __is_sorted(result_data[i], result_data[i+1], sort_by_attribute, sort_order)
+        for i in range(len(result_data) - 1)
+    )
