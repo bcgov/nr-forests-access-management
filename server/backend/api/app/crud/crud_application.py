@@ -1,6 +1,6 @@
 import logging
 
-from api.app.constants import SortOrderEnum, UserRoleSortByEnum, UserType
+from api.app.constants import UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
@@ -33,24 +33,6 @@ def get_application(db: Session, application_id: int):
         .one_or_none()
     )
     return application
-
-
-def __build_order_by_criteria(page_params: UserRolePageParamsSchema):
-    """
-    Based on 'sort_by' and 'sort_order' page_params to build SQL "ORDER BY"
-    clause, e.g., ("ORDER BY app_fam.fam_user.user_name ASC") to return
-    for the query.
-    """
-    # currently only sorting on 1 column at a time from frontend.
-    sort_by = page_params.sort_by
-    sort_order = page_params.sort_order
-    mapped_column = (
-        USER_ROLE_SORT_BY_MAPPED_COLUMN.get(UserRoleSortByEnum.USER_NAME)
-        if sort_by is None # default
-        else USER_ROLE_SORT_BY_MAPPED_COLUMN.get(sort_by)
-    )
-
-    return asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
 
 
 def __build_filter_criteria(page_params: UserRolePageParamsSchema):
@@ -142,7 +124,7 @@ def get_application_role_assignments(
     paginated_service = PaginateService(
         db, q,
         __build_filter_criteria(page_params),
-        __build_order_by_criteria(page_params),
+        USER_ROLE_SORT_BY_MAPPED_COLUMN,
         page_params
     )
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)

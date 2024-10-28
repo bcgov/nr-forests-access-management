@@ -1,5 +1,6 @@
 
 from abc import ABC
+from enum import StrEnum
 from typing import Generic, List
 
 from api.app.constants import (DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE,
@@ -34,7 +35,8 @@ Ref: https://stackoverflow.com/questions/75998227/how-to-define-query-parameters
 class PageParamsSchema(BaseModel, ABC):
     """
     Abstract class for request query params for backend API pagination, sorting and filtering.
-    This is the base schema for common fields. Endpoints need to extend this class for specific needs.
+    This is the base schema for common fields. Endpoints need to extend this class and override
+    'sort_by' for specific needs.
     """
     page: int | None = Field(Query(
         default=MIN_PAGE, ge=MIN_PAGE, description="Page number", alias="pageNumber"
@@ -48,6 +50,8 @@ class PageParamsSchema(BaseModel, ABC):
     ))
 
     sort_order: SortOrderEnum | None = Field(Query(default=SortOrderEnum.ASC, description="Column sorting order by", alias="sortOrder"))
+
+    sort_by: StrEnum | None = None
 
 
 class UserRolePageParamsSchema(PageParamsSchema):

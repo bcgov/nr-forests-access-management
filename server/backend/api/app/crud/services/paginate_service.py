@@ -1,11 +1,12 @@
 
 import logging
+from enum import StrEnum
 
-from api.app.constants import T
+from api.app.constants import SortOrderEnum, T
 from api.app.schemas.pagination import (PagedResultsSchema, PageParamsSchema,
                                         PageResultMetaSchema)
 from pydantic import BaseModel
-from sqlalchemy import ColumnElement, Select, UnaryExpression, func, select
+from sqlalchemy import ColumnElement, Select, asc, desc, func, select
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -31,14 +32,14 @@ class PaginateService:
             db: Session,
             base_query: Select,
             filter_by_criteria: ColumnElement[bool] | None,
-            order_by_criteria: UnaryExpression | None,
+            column_mapping: dict[StrEnum, any],
             page_param: PageParamsSchema
         ):
         self.db = db  # SqlAlchemy session.
         self.base_query = base_query  # 'Select' base query.
         self.__filter_by_criteria = filter_by_criteria
-        self.__order_by_criteria = order_by_criteria
-        self.__page_params__ = page_param
+        self.column_mapping = column_mapping
+        self.__page_params = page_param
         self.page = page_param.page
         self.size = page_param.size
         self.limit = self.size
@@ -57,7 +58,7 @@ class PaginateService:
             Paged result with Generic type 'PagedResultsSchema[T]'. Other than paged results,
             the pagniation metadata are also returned.
         """
-        LOGGER.debug(f"Obtaining paginated results with page params: {self.__page_params__}")
+        LOGGER.debug(f"Obtaining paginated results with page params: {self.__page_params}")
         paged_query = self.__apply_filter_by(self.base_query)
         paged_query = self.__apply_order_by(paged_query)
         paged_query = paged_query.offset(self.offset).limit(self.limit)
@@ -86,9 +87,24 @@ class PaginateService:
         return quotient if not rest else quotient + 1
 
     def __apply_order_by(self, q: Select) -> Select:
-        LOGGER.debug(f"Applying order_by criteria: {self.__order_by_criteria}")
-        if self.__order_by_criteria is not None:
-              q = q.order_by(self.__order_by_criteria)
+        """
+        Based on 'sort_by' and 'sort_order' page_params to build SQL "ORDER BY"
+        clause, e.g., ("ORDER BY app_fam.fam_user.user_name ASC") to return
+        for the query.
+        """
+        sort_by = self.__page_params.sort_by
+        sort_order = self.__page_params.sort_order
+        mapped_column = (
+            list(self.column_mapping.values())[0]  # default sort_by column
+            if sort_by is None
+            else self.column_mapping.get(sort_by)
+        )
+
+        order_by_criteria = asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
+
+        LOGGER.debug(f"Applying order_by criteria: {order_by_criteria}")
+        if order_by_criteria is not None:
+            q = q.order_by(order_by_criteria)
         return q
 
     def __apply_filter_by(self, q: Select) -> Select:

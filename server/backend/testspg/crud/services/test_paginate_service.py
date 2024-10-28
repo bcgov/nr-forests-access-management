@@ -29,6 +29,12 @@ class TestUserSortByEnum(str, Enum):
 class TestUserPageParamsSchema(PageParamsSchema):
     sort_by: TestUserSortByEnum | None
 
+USER_SORT_BY_MAPPED_COLUMN = {
+    TestUserSortByEnum.USER_NAME: FamUser.user_name,  # default
+    TestUserSortByEnum.DOMAIN: FamUser.user_type_code,
+    TestUserSortByEnum.EMAIL: FamUser.email
+}
+
 # base_query to be used only within this suites of tests.
 test_base_query = Select(FamUser)
 TEST_USER_NAME_PREFIX = "TEST_USER_"
@@ -55,7 +61,7 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
         page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None, sort_by=None, sort_order=None
     )
 
-    paginated_service = PaginateService(db_pg_session, test_base_query, None, None, default_page_params)
+    paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, default_page_params)
     paged_result = paginated_service.get_paginated_results(FamUserInfoSchema)
 
     assert paged_result is not None
@@ -95,7 +101,7 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     mock_user_data_load = load_test_users
     existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
 
-    paginated_service = PaginateService(db_pg_session, test_base_query, None, None, test_page_params)
+    paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
     paged_result = paginated_service.get_paginated_results(FamUserInfoSchema)
 
     assert paged_result is not None
