@@ -99,7 +99,7 @@ const adminUserAccessQuery = useQuery({
                     <p class="profile-admin-level">
                         Granted:&nbsp;
                         <PSkeleton
-                            v-if="adminUserAccessQuery.isFetching.value"
+                            v-if="adminUserAccessQuery.isLoading.value"
                         />
                         <strong v-else>
                             {{ adminUserAccessQuery.data.value }}

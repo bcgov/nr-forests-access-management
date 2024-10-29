@@ -25,6 +25,7 @@ import type {
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
+import { HALF_HOUR } from "@/constants/TimeUnits";
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
@@ -36,6 +37,8 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
+    refetchOnMount: true,
+    staleTime: HALF_HOUR,
 });
 
 // Available tab keys and their visibility conditions
@@ -109,7 +112,7 @@ const tabHeaders: ManagePermissionsTabHeaderType = {
             :options="getUniqueApplications(adminUserAccessQuery.data.value)"
             option-label="description"
             placeholder="Choose an application to manage permissions"
-            :is-fetching="adminUserAccessQuery.isFetching.value"
+            :is-fetching="adminUserAccessQuery.isLoading.value"
             :is-error="adminUserAccessQuery.isError.value"
             :error-msg="
                 isAxiosError(adminUserAccessQuery.error.value)
@@ -125,7 +128,7 @@ const tabHeaders: ManagePermissionsTabHeaderType = {
                     <TabPanel
                         v-for="tab in visibleTabs"
                         :key="tab.key"
-                        :header="tabHeaders[tab.key]"
+                        :header="tabHeaders[tab.key as AdminRoleAuthGroup]"
                     >
                         <template #header>
                             <component :is="tab.icon" />

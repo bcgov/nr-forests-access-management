@@ -14,7 +14,6 @@ import { isLoading } from "@/store/LoadingState";
 import { setNotificationMsg } from "@/store/NotificationState";
 import LoginUserState from "@/store/FamLoginUserState";
 import { setCurrentTabState } from "@/store/CurrentTabState";
-import { routeItems } from "@/router/routes";
 import { UserType } from "fam-app-acsctl-api/model";
 
 const defaultFormData = {
@@ -22,7 +21,7 @@ const defaultFormData = {
     userGuid: "",
     application: null,
 };
-const formData = ref(JSON.parse(JSON.stringify(defaultFormData))); // clone default input
+const formData = ref(structuredClone(defaultFormData));
 const formValidationSchema = object({
     userId: string()
         .required("User ID is required")

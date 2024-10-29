@@ -2,11 +2,13 @@
 import { useRoute } from "vue-router";
 import { router } from "@/router";
 import Button from "primevue/button";
+
 import UserSummaryCard from "@/components/UserSummaryCard";
 import PageTitle from "@/components/common/PageTitle.vue";
 import UserPermissionHistoryTable from "@/components/UserPermissionHistoryTable";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
+import { ManagePermissionsRoute } from "@/router/routes";
 
 const route = useRoute();
 
@@ -27,7 +29,7 @@ const navigateBack = () => {
 const crumbs: BreadCrumbType[] = [
     {
         label: "Manage permissions",
-        path: "/",
+        routeName: ManagePermissionsRoute.name!,
     },
 ];
 </script>

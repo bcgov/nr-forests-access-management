@@ -11,12 +11,8 @@ import { IconSize } from "@/enum/IconEnum";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { routeItems } from "@/router/routes";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
-import {
-    formValidationSchema,
-    isProdAppSelectedOnProdEnv,
-} from "@/services/utils";
+import { isProdAppSelectedOnProdEnv } from "@/services/utils";
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
@@ -34,6 +30,7 @@ import {
     type FamUserRoleAssignmentCreateSchema,
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api/model";
+import { validateAppAndDeAdminForm } from "@/components/grantaccess/utils";
 
 const defaultDomain =
     FamLoginUserState.getUserIdpProvider() === IdpProvider.IDIR
@@ -233,7 +230,7 @@ function toRequestPayload(formData: any) {
     <VeeForm
         ref="form"
         v-slot="{ meta }"
-        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
+        :validation-schema="validateAppAndDeAdminForm(isAbstractRoleSelected())"
         as="div"
     >
         <div class="page-body">

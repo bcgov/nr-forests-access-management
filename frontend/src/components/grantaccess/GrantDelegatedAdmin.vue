@@ -5,12 +5,9 @@ import Button from "@/components/common/Button.vue";
 import { IconSize } from "@/enum/IconEnum";
 import { ErrorCode, GrantPermissionType, Severity } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
-import { ManagePermissionsRoute, routeItems } from "@/router/routes";
+import { ManagePermissionsRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import {
-    formValidationSchema,
-    isProdAppSelectedOnProdEnv,
-} from "@/services/utils";
+import { isProdAppSelectedOnProdEnv } from "@/services/utils";
 import {
     selectedApplicationDisplayText,
     selectedApplicationId,
@@ -31,6 +28,7 @@ import { UserType } from "fam-app-acsctl-api";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { Form as VeeForm } from "vee-validate";
+import { validateAppAndDeAdminForm } from "@/components/grantaccess/utils";
 
 const confirm = useConfirm();
 
@@ -243,7 +241,7 @@ function handleSubmit() {
     <VeeForm
         ref="form"
         v-slot="{ meta }"
-        :validation-schema="formValidationSchema(isAbstractRoleSelected())"
+        :validation-schema="validateAppAndDeAdminForm(isAbstractRoleSelected())"
         as="div"
     >
         <div class="page-body">

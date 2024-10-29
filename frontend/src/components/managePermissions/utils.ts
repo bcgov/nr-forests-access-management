@@ -73,3 +73,42 @@ export const getGrantButtonLabel = (authGroup: AdminRoleAuthGroup): string => {
             return "";
     }
 };
+
+/**
+ * Generates a list of headers based on the authorization group used for skeleton.
+ */
+export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
+    switch (authGroup) {
+        case "FAM_ADMIN":
+            return [
+                "User Name",
+                "Domain",
+                "Full Name",
+                "Email",
+                "Application",
+                "Environment",
+                "Role",
+                "Action",
+            ];
+        case "APP_ADMIN":
+            return [
+                "User Name",
+                "Domain",
+                "Full Name",
+                "Email",
+                "Role",
+                "Action",
+            ];
+        case "DELEGATED_ADMIN":
+            return [
+                "User Name",
+                "Domain",
+                "Full Name",
+                "Email",
+                "Role Enabled To Assign",
+                "Action",
+            ];
+        default:
+            return [];
+    }
+};

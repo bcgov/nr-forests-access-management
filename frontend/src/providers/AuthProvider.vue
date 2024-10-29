@@ -12,7 +12,7 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
 import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
-import { FOUR_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
+import { THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
@@ -20,7 +20,7 @@ import { useRouter } from "vue-router";
 import Spinner from "@/components/UI/Spinner.vue";
 
 const environmentSettings = new EnvironmentSettings();
-const REFRESH_INTERVAL = FOUR_MINUTES;
+const REFRESH_INTERVAL = THREE_MINUTES;
 const INACTIVITY_TIMEOUT = HALF_HOUR;
 
 let refreshIntervalId: number | null = null;
@@ -237,7 +237,7 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
             console.error("Silent refresh failed:", error);
             logout();
         }
-    }, 60000) as unknown as number;
+    }, REFRESH_INTERVAL) as unknown as number;
 };
 
 /**

@@ -3,6 +3,7 @@ import type {
     AdminRoleAuthGroup,
     AdminUserAccessResponse,
     FamApplicationDto,
+    HTTPValidationError,
 } from "fam-admin-mgmt-api/model";
 
 /**
@@ -11,8 +12,22 @@ import type {
  * @param {AxiosError} err - The Axios error object.
  * @returns {string} A formatted error string in the format "status: message".
  */
-export const formatAxiosError = (err: AxiosError): string =>
-    `${err.response?.status}: ${err.message}`;
+export const formatAxiosError = (err: AxiosError): string => {
+    let errMsg = err.message;
+
+    if (err.response) {
+        // Use 'any' because we don't have this type exported.
+        const detail = (err.response.data as any).detail;
+
+        // Check if detail is an array or an object
+        const description = Array.isArray(detail) ? null : detail?.description;
+
+        if (description) {
+            errMsg = `${err.response.status}: ${description}`;
+        }
+    }
+    return errMsg;
+};
 
 /**
  * Extracts unique applications from the AdminUserAccessResponse, filtering by `auth_key`.

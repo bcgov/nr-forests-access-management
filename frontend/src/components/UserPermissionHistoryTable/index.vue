@@ -7,7 +7,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
 import { router } from "@/router";
-import TableSkeleton from "@/components/TableSkeleton";
+import TableSkeleton from "@/components/Table/TableSkeleton.vue";
 import DateCol from "@/components/UserPermissionHistoryTable/DateCol.vue";
 import PermissionDetailsCol from "@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue";
 import ChangePerformerCol from "@/components/UserPermissionHistoryTable/ChangePerformerCol.vue";

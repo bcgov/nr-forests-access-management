@@ -13,15 +13,26 @@ import {
     getTableHeaderTitle,
     getGrantButtonLabel,
     filterList,
+    getHeaders,
 } from "@/components/managePermissions/utils";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
-import TableHeaderTitle from "@/components/managePermissions/TableHeaderTitle.vue";
+import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import Chip from "@/components/UI/Chip.vue";
 import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import {
+    DEFAULT_ROW_PER_PAGE,
+    TABLE_ROWS_PER_PAGE,
+    TABLE_PAGINATOR_TEMPLATE,
+    TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
+} from "@/store/Constants";
+import TableSkeleton from "../Table/TableSkeleton.vue";
+import ErrorText from "../UI/ErrorText.vue";
+import { isAxiosError } from "axios";
+import { formatAxiosError } from "@/utils/ApiUtils";
 
 const props = defineProps<{
     authGroup: AdminRoleAuthGroup;
@@ -35,7 +46,7 @@ const appAdminQuery = useQuery({
         AdminMgmtApiService.applicationAdminApi
             .getApplicationAdmins()
             .then((res) => res.data),
-    refetchOnMount: true,
+    refetchOnMount: "always",
     enabled: props.authGroup === "FAM_ADMIN",
 });
 
@@ -45,7 +56,7 @@ const appUserQuery = useQuery({
         AppActlApiService.applicationsApi
             .getFamApplicationUserRoleAssignment(props.appId)
             .then((res) => res.data),
-    refetchOnMount: true,
+    refetchOnMount: "always",
     enabled: props.authGroup === "APP_ADMIN",
 });
 
@@ -55,7 +66,7 @@ const delegatedAdminQuery = useQuery({
         AdminMgmtApiService.delegatedAdminApi
             .getAccessControlPrivilegesByApplicationId(props.appId)
             .then((res) => res.data),
-    refetchOnMount: true,
+    refetchOnMount: "always",
     enabled: props.authGroup === "DELEGATED_ADMIN",
 });
 
@@ -79,6 +90,56 @@ const getTableRows = () => {
             return [];
     }
 };
+
+// Get the query loading status
+const isQueryLoading = (): boolean => {
+    switch (props.authGroup) {
+        case "FAM_ADMIN":
+            return appAdminQuery.isFetching.value;
+        case "APP_ADMIN":
+            return appUserQuery.isFetching.value;
+        case "DELEGATED_ADMIN":
+            return delegatedAdminQuery.isFetching.value;
+        default:
+            return false;
+    }
+};
+
+// Get the query fetching status
+const isQueryError = (): boolean => {
+    switch (props.authGroup) {
+        case "FAM_ADMIN":
+            return appAdminQuery.isError.value;
+        case "APP_ADMIN":
+            return appUserQuery.isError.value;
+        case "DELEGATED_ADMIN":
+            return delegatedAdminQuery.isError.value;
+        default:
+            return false;
+    }
+};
+
+const getQueryErrorValue = () => {
+    let error = null;
+    switch (props.authGroup) {
+        case "FAM_ADMIN":
+            error = appAdminQuery.error.value;
+            break;
+        case "APP_ADMIN":
+            error = appUserQuery.error.value;
+            break;
+        case "DELEGATED_ADMIN":
+            error = delegatedAdminQuery.error.value;
+            break;
+    }
+    if (error) {
+        return isAxiosError(error)
+            ? `Failed to fetch data. ${formatAxiosError(error)}`
+            : "Failed to fetch data.";
+    }
+
+    return undefined;
+};
 </script>
 
 <template>
@@ -96,13 +157,26 @@ const getTableRows = () => {
             @change="handleSearchChange"
         />
 
+        <TableSkeleton
+            v-if="isQueryLoading()"
+            :headers="getHeaders(authGroup)"
+            :row-amount="5"
+        />
+        <ErrorText v-if="isQueryError()" :error-msg="getQueryErrorValue()" />
         <DataTable
+            v-if="!isQueryLoading() && !isQueryError()"
             :value="getTableRows()"
+            :total-records="getTableRows().length"
             removableSort
             stripedRows
             v-model:filters="tableFilter"
             filterDisplay="menu"
             :globalFilterFields="filterList"
+            paginator
+            :rows="DEFAULT_ROW_PER_PAGE"
+            :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
+            :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+            :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
         >
             <template #empty> No user found. </template>
 
@@ -205,7 +279,11 @@ const getTableRows = () => {
         </DataTable>
     </div>
 </template>
-<style lang="scss" scoped>
-.table-title-container {
+<style lang="scss">
+.fam-table {
+    .error-text-container {
+        height: 2rem;
+        padding: 1rem;
+    }
 }
 </style>
