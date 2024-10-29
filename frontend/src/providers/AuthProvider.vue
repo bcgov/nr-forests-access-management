@@ -237,7 +237,7 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
             console.error("Silent refresh failed:", error);
             logout();
         }
-    }, REFRESH_INTERVAL) as unknown as number;
+    }, 60000) as unknown as number;
 };
 
 /**

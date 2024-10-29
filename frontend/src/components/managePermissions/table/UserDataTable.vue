@@ -20,7 +20,7 @@ import { isNewAccess } from "@/services/utils";
 
 import NewUserTag from "@/components/common/NewUserTag.vue";
 import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
-import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
+import DataTableHeader from "@/components/managePermissions/ManagePermissionTableToolbar.vue";
 import { navigateToUserDetails } from "@/components/managePermissions/table/utils";
 
 type emit = (

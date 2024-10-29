@@ -10,7 +10,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import { IconSize } from "@/enum/IconEnum";
 import { routeItems } from "@/router/routes";
 import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
-import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
+import DataTableHeader from "@/components/Table/TableToolbar.vue";
 import NewUserTag from "@/components/common/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
@@ -88,12 +88,12 @@ const highlightNewAppAdminAccesRow = (rowData: any) => {
     </ConfirmDialog>
     <div class="data-table-container">
         <div class="custom-data-table">
-            <DataTableHeader
+            <!-- <DataTableHeader
                 btnLabel="Add application admin"
                 btnRoute="TODO"
                 :filter="adminFilters['global'].value"
                 @change="adminSearchChange"
-            />
+            /> -->
             <DataTable
                 v-model:filters="adminFilters"
                 :value="props.applicationAdmins"

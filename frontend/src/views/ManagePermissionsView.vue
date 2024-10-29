@@ -13,7 +13,7 @@ import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import PageTitle from "@/components/common/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import TablePlaceholder from "@/components/managePermissions/table/TablePlaceholder.vue";
+import TablePlaceholder from "@/components/managePermissions/TablePlaceholder.vue";
 import { selectedApp, setSelectedApp } from "@/store/ApplicationState";
 import {
     formatAxiosError,
@@ -131,6 +131,7 @@ const tabHeaders: ManagePermissionsTabHeaderType = {
                             <component :is="tab.icon" />
                         </template>
                         <ManagePermissionsTable
+                            :key="selectedApp.id"
                             class="tab-table"
                             :auth-group="tab.key"
                             :app-name="

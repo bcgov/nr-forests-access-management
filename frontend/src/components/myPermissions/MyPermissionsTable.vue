@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import ProgressSpinner from 'primevue/progressspinner';
-import DataTableHeader from '@/components/managePermissions/table/DataTableHeader.vue';
-import { FilterMatchMode } from 'primevue/api';
+import { ref } from "vue";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import ProgressSpinner from "primevue/progressspinner";
+import TableToolbar from "@/components/Table/TableToolbar.vue";
+import { FilterMatchMode } from "primevue/api";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
-} from '@/store/Constants';
-import { isLoading } from '@/store/LoadingState';
+} from "@/store/Constants";
+import { isLoading } from "@/store/LoadingState";
 
-import FamLoginUserState from '@/store/FamLoginUserState';
+import FamLoginUserState from "@/store/FamLoginUserState";
 
 const myPermissiosFilters = ref({
-    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     application: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
@@ -41,8 +41,7 @@ const myPermissionsSearchChange = (newvalue: string) => {
 
 <template>
     <div class="my-permissions-table-wrapper">
-        <DataTableHeader
-            :hasHeader="false"
+        <TableToolbar
             input-placeholder="search by application, environment, client numbers, company name, role, status, and more"
             @change="myPermissionsSearchChange"
             :filter="myPermissiosFilters['global'].value"

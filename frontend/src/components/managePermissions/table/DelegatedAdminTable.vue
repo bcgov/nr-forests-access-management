@@ -16,7 +16,7 @@ import {
     TABLE_ROWS_PER_PAGE,
     NEW_ACCESS_STYLE_IN_TABLE,
 } from "@/store/Constants";
-import DataTableHeader from "@/components/managePermissions/table/DataTableHeader.vue";
+import DataTableHeader from "@/components/Table/TableToolbar.vue";
 import { IconSize } from "@/enum/IconEnum";
 import type { FamAccessControlPrivilegeGetResponse } from "fam-admin-mgmt-api/model";
 import { navigateToUserDetails } from "@/components/managePermissions/table/utils";

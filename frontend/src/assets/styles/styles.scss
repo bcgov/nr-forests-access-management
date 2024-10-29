@@ -1,5 +1,6 @@
 @use "sass:map";
 @use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
+@use "@carbon/type" as type;
 
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
@@ -79,4 +80,19 @@ body {
 
     border-radius: 0 0.25rem 0.25rem 0.25rem;
     border: 0.0625rem solid var(--border-subtle-00);
+
+    .p-datatable-thead {
+        .p-column-title {
+            padding: 1rem 1rem 1rem 0;
+            color: var(--text-primary);
+        }
+        svg {
+            margin: 0;
+        }
+    }
+
+    .p-datatable-tbody {
+        @include type.type-style("body-01");
+        color: var(--text-primary);
+    }
 }
