@@ -1,14 +1,15 @@
 import logging
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 import pytest
-from api.app.constants import DEFAULT_PAGE_SIZE, MIN_PAGE, SortOrderEnum
+from api.app.constants import (DEFAULT_PAGE_SIZE, MIN_PAGE, SortOrderEnum,
+                               UserType)
 from api.app.crud.services.paginate_service import PaginateService
 from api.app.models.model import FamUser
 from api.app.schemas.pagination import PageParamsSchema
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import Select, not_, select
+from sqlalchemy import Select, not_, or_, select
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ class TestUserPageParamsSchema(PageParamsSchema):
 
 # test schema type used only in this test file.
 class TestFamUserInfoSchema(BaseModel):
+    user_id: int
     user_name: str
     user_type_code: str
     first_name: Optional[str] = None
@@ -51,6 +53,9 @@ USER_SORT_BY_MAPPED_COLUMN = {
 # base_query to be used only within this suites of tests.
 test_base_query = Select(FamUser)
 TEST_USER_NAME_PREFIX = "TEST_USER_"
+TEST_USER_NAME_IDIR_PREFIX = "TEST_USER_IDIR_"
+TEST_USER_NAME_BCEID_PREFIX = "TEST_USER_BCEID_"
+TEST_USER_EMAIL_SUFFIX = "fam.test.com"
 
 def __get_number_of_pages(count: int, page_size) -> int:
     rest = count % page_size
@@ -58,9 +63,29 @@ def __get_number_of_pages(count: int, page_size) -> int:
     return quotient if not rest else quotient + 1
 
 def __get_existing_testdb_seeded_users(db_pg_session: Session):
-    return db_pg_session.scalars(select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))).all()
+    return db_pg_session.scalars(
+        select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))
+    ).all()
 
-def __is_sorted(o1, o2, attribute: str, order: SortOrderEnum) -> bool:
+def __build_test_filter_criteria(page_params: TestUserPageParamsSchema):
+    search_keyword = page_params.search
+    filter_on_columns = USER_SORT_BY_MAPPED_COLUMN.values()
+    return (
+        or_(
+            *list(map(lambda column: column.ilike(f"%{search_keyword}%"), filter_on_columns))
+        )
+        if search_keyword is not None
+        else None
+    )
+
+def __get_number_of_pages(count: int, page_size: int) -> int:
+    rest = count % page_size
+    quotient = count // page_size
+    return quotient if not rest else quotient + 1
+
+def __is_sorted_with(o1, o2, attribute: str, order: SortOrderEnum) -> bool:
+    # helper function to compare o1, o2 according to the sorting 'order' on attribute.
+
     a1 = getattr(o1, attribute)
     a2 = getattr(o2, attribute)
     if a1 is None and a2 is None:
@@ -71,6 +96,28 @@ def __is_sorted(o1, o2, attribute: str, order: SortOrderEnum) -> bool:
         return order == SortOrderEnum.ASC
     else:
         return (a1 <= a2 if order == SortOrderEnum.ASC else a1 >= a2)
+
+def __contains_any_insensitive(obj, search_attributes: List[str], keyword: str) -> bool:
+    # helper function to check if 'keyword' is substring of 'attr' value insensitive.
+
+    def contains_keyword_insensitive(attr: str, keyword: str):
+        if attr is None:
+            return False
+        else:
+            return keyword.lower() in attr.lower()
+
+    # return True as long as there is one attribute contains keyword
+    is_any = any(
+        contains_keyword_insensitive(getattr(obj, attr_name), keyword)
+        for attr_name in search_attributes)
+    return is_any
+
+def sort_list(list: List[FamUser], sort_by, sort_order):
+    def by_key(e):
+        return getattr(e, sort_by)
+
+    list.sort(reverse=(sort_order == SortOrderEnum.DESC), key=by_key)
+    return list
 
 # -------------------------------------------------------------------------------------------------------------------------
 
@@ -177,8 +224,6 @@ def test_get_paginated_results__users_paged_with_sorting(
     paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
     paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
 
-    assert None == None
-
     assert paged_result is not None
     result_data = paged_result.results
     meta = paged_result.meta
@@ -190,6 +235,86 @@ def test_get_paginated_results__users_paged_with_sorting(
     # verify sorting
     sort_order = test_page_params.sort_order
     assert all(
-        __is_sorted(result_data[i], result_data[i+1], sort_by_attribute, sort_order)
+        __is_sorted_with(result_data[i], result_data[i+1], sort_by_attribute, sort_order)
         for i in range(len(result_data) - 1)
     )
+
+
+@pytest.mark.parametrize(
+    "test_page_params",
+    [
+        TestUserPageParamsSchema(
+            page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search="NOT_EXISTS", sort_by=None, sort_order=None
+        ),
+        TestUserPageParamsSchema(
+            page=MIN_PAGE, size=5, search=TEST_USER_NAME_PREFIX, sort_by=TestUserSortByEnum.USER_NAME, sort_order=SortOrderEnum.ASC
+        ),
+        TestUserPageParamsSchema(
+            page=MIN_PAGE, size=5, search=UserType.BCEID.lower(), sort_by=TestUserSortByEnum.USER_NAME, sort_order=SortOrderEnum.ASC
+        ),
+        TestUserPageParamsSchema(
+            page=MIN_PAGE, size=5, search=TEST_USER_EMAIL_SUFFIX.upper(), sort_by=TestUserSortByEnum.USER_NAME, sort_order=SortOrderEnum.ASC
+        ),
+        TestUserPageParamsSchema(
+            page=3, size=5, search=TEST_USER_NAME_IDIR_PREFIX, sort_by=TestUserSortByEnum.EMAIL, sort_order=SortOrderEnum.ASC
+        ),
+        TestUserPageParamsSchema(
+            page=3, size=5, search=TEST_USER_NAME_BCEID_PREFIX, sort_by=TestUserSortByEnum.EMAIL, sort_order=SortOrderEnum.DESC
+        ),
+    ],
+)
+def test_get_paginated_results__users_paged_with_filtering(
+    test_page_params: TestUserPageParamsSchema, db_pg_session: Session, load_test_users, mocker
+):
+    """
+    This case tests on 'PaginateService.get_paginated_results' for filtering.
+    Filtering is based on provided 'filter_by_criteria' for the service which search with keyword
+    contained in "user_name", "user_type" or "email"
+    """
+    mock_user_data_load = load_test_users
+    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+    search_keyword = test_page_params.search
+
+    paginated_service = PaginateService(
+        db_pg_session, test_base_query,
+        __build_test_filter_criteria(test_page_params), USER_SORT_BY_MAPPED_COLUMN, test_page_params
+    )
+    paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
+
+    assert paged_result is not None
+    result_data = paged_result.results
+    meta = paged_result.meta
+    assert result_data is not None
+
+    search_attributes = list(map(lambda item: item.value, TestUserSortByEnum))
+    db_filtered_users = list(filter(
+        lambda user: user if __contains_any_insensitive(user, search_attributes, search_keyword) else None,
+        mock_user_data_load + existing_testdb_seeded_users
+    ))
+    assert meta.total == len(db_filtered_users)
+    assert meta.page_number == test_page_params.page
+    assert meta.page_size == test_page_params.size
+
+    if meta.total > 0:
+        # verify filtering: checks all of 'result_data' item has at least one attribute value
+        # contains filtering keyword.
+        assert all(
+            __contains_any_insensitive(result_data[i], search_attributes, search_keyword)
+            for i in range(len(result_data) - 1)
+        )
+
+        assert meta.number_of_pages == __get_number_of_pages(meta.total, meta.page_size)
+
+        if test_page_params.sort_by:
+            db_filtered_users = sort_list(
+                db_filtered_users, sort_by=test_page_params.sort_by, sort_order=test_page_params.sort_order
+            )
+        offset = (meta.page_number - 1) * meta.page_size
+        db_paged_users = []
+        if meta.total > offset:
+            max_range = offset + meta.page_size
+            max_range = meta.total if max_range >= meta.total else max_range
+            db_paged_users = [db_filtered_users[i] for i in range(offset, max_range)]
+        db_paged_users_id_set = { du.user_id for du in db_paged_users}
+        result_users_id_set = { rd.user_id for rd in result_data}
+        assert len(result_users_id_set.difference(db_paged_users_id_set)) == 0
