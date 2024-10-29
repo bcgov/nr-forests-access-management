@@ -1,6 +1,7 @@
 import logging
 from http import HTTPStatus
 
+import pytest
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
@@ -8,6 +9,8 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
+from api.app.routers.router_guards import (
+    authorize_by_app_id, enforce_bceid_terms_conditions_guard)
 from sqlalchemy import insert
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
@@ -23,6 +26,8 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ROLE_NAME_FOM_SUBMITTER_00000001,
                                ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
                                TEST_USER_ID, USER_NAME_BCEID_LOAD_3_TEST)
+from testspg.fixture.app_user_roles_mock_data import \
+    APP_USER_ROLE_PAGED_RESULT_2_RECORDS
 
 LOGGER = logging.getLogger(__name__)
 end_point = f"{apiPrefix}/fam-applications"
@@ -38,7 +43,6 @@ TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
 TEST_APPLICATION_ROLES_FOM_DEV = ["FOM_SUBMITTER", "FOM_REVIEWER"]
 TEST_APPLICATION_ID_NOT_FOUND = 0
 ACCESS_ROLES_FOM_DEV_ONLY = ["FOM_DEV_ADMIN"]
-
 
 def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
@@ -619,3 +623,57 @@ def test_get_application_user_by_id_application_authorization(
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+@pytest.fixture(scope="function")
+def get_fam_application_user_role_assignment_dependencies_override(test_client_fixture):
+    # Helper fixture for overriding dependencies for endpoint 'get_fam_application_user_role_assignment'
+    app = test_client_fixture.app
+    app.dependency_overrides[authorize_by_app_id] = lambda: None
+    app.dependency_overrides[enforce_bceid_terms_conditions_guard] = lambda: None
+    yield test_client_fixture
+
+@pytest.mark.parametrize(
+    "invalid_page_params",
+    [
+        {"pageNumber":0, "pageSize": 10},
+        {"pageNumber":1, "pageSize": 10000000},
+        {"pageNumber":"invalid"},
+        {"pageSize":"invalid"},
+        {"sortBy": "invalid_column", "sortOrder": "asc"},
+        {"sortBy": "user_name", "sortOrder": "invalid_sort_order"},
+        {"search":"long_search_string_exceeds_maximum_search_length"},
+    ]
+)
+def test_get_fam_application_user_role_assignment__pagining_with_invalid_page_params(
+    mocker, test_client_fixture,
+    get_fam_application_user_role_assignment_dependencies_override,
+    test_rsa_key, invalid_page_params
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments",
+        return_value=[],
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token),
+        params=invalid_page_params
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_get_fam_application_user_role_assignment__pagining_with_valid_page_params_result_success(
+    mocker, test_client_fixture,
+    get_fam_application_user_role_assignment_dependencies_override,
+    test_rsa_key
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments",
+        return_value=APP_USER_ROLE_PAGED_RESULT_2_RECORDS,
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token),
+        params={"pageNumber":1, "pageSize": 10}  # valid page_params
+    )
+    assert response.status_code == HTTPStatus.OK
