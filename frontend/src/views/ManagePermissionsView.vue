@@ -25,7 +25,6 @@ import type {
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
-import { HALF_HOUR } from "@/constants/TimeUnits";
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
@@ -37,8 +36,6 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    refetchOnMount: true,
-    staleTime: HALF_HOUR,
 });
 
 // Available tab keys and their visibility conditions

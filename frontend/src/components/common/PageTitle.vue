@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router';
-import Breadcrumb from 'primevue/breadcrumb';
-import { breadcrumbState } from '@/store/BreadcrumbState';
+import { RouterLink, useRoute } from "vue-router";
+import Breadcrumb from "primevue/breadcrumb";
+import { breadcrumbState } from "@/store/BreadcrumbState";
 
 const props = defineProps({
     title: {
@@ -28,28 +28,27 @@ const route = useRoute();
                 </RouterLink>
             </template>
         </Breadcrumb>
-        <h1 class="title">{{ props.title }}</h1>
-        <p v-if="props.subtitle" class="subtitle" aria-roledescription="subtitle">
+        <h5 class="title">{{ props.title }}</h5>
+        <p
+            v-if="props.subtitle"
+            class="subtitle"
+            aria-roledescription="subtitle"
+        >
             {{ props.subtitle }}
         </p>
     </div>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 .title {
-    font-size: 2rem;
-    line-height: 2.5rem;
-    color: colors.$gray-100;
-    font-weight: 400;
+    @include type.type-style("heading-05");
+    color: var(--text-primary);
 }
 
 .subtitle {
-    font-size: 0.875rem;
-    line-height: 1.125rem;
-    letter-spacing: 0.01rem;
-    color: $light-text-secondary;
-    margin-bottom: 0.5rem;
+    @include type.type-style("body-01");
+    color: var(--text-secondary);
 }
 </style>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -33,6 +34,9 @@ import TableSkeleton from "../Table/TableSkeleton.vue";
 import ErrorText from "../UI/ErrorText.vue";
 import { isAxiosError } from "axios";
 import { formatAxiosError } from "@/utils/ApiUtils";
+import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
+
+const router = useRouter();
 
 const props = defineProps<{
     authGroup: AdminRoleAuthGroup;
@@ -140,6 +144,28 @@ const getQueryErrorValue = () => {
 
     return undefined;
 };
+
+const handleAddButton = () => {
+    if (props.authGroup === "FAM_ADMIN") {
+        router.push({ name: AddFamPermissionRoute.name });
+    } else if (props.authGroup === "APP_ADMIN") {
+        router.push({
+            name: AddAppPermissionRoute.name,
+            query: {
+                requestType: "addUserPermission",
+                applicationId: props.appId,
+            },
+        });
+    } else if (props.authGroup === "DELEGATED_ADMIN") {
+        router.push({
+            name: AddAppPermissionRoute.name,
+            query: {
+                requestType: "addDelegatedAdmin",
+                applicationId: props.appId,
+            },
+        });
+    }
+};
 </script>
 
 <template>
@@ -152,7 +178,7 @@ const getQueryErrorValue = () => {
         <TableToolbar
             :filter="tableFilter['global'].value"
             :btn-label="getGrantButtonLabel(authGroup)"
-            :btn-on-click="() => {}"
+            :btn-on-click="handleAddButton"
             input-placeholder="Search by keyword"
             @change="handleSearchChange"
         />

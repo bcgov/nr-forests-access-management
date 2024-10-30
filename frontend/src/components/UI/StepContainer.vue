@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <div class="step-container">
-        <h2 class="title">{{ title }}</h2>
+        <h3 class="title">{{ title }}</h3>
         <p v-if="subtitle" class="subtitle" aria-roledescription="subtitle">
             {{ subtitle }}
         </p>
@@ -28,16 +28,12 @@ defineProps<{
     }
 
     .title {
-        font-size: 1.25rem;
-        line-height: 1.75rem;
+        @include type.type-style("heading-03");
         color: var(--text-primary);
-        font-weight: 400;
     }
 
     .subtitle {
-        font-size: 0.875rem;
-        line-height: 1.125rem;
-        letter-spacing: 0.01rem;
+        @include type.type-style("body-01");
         color: var(--text-secondary);
     }
 }

@@ -6,25 +6,34 @@ import { sideNavItems } from "@/constants/SideNavConfig";
 
 const router = useRouter();
 
+const getRoutePathByName = (routeName: RouteRecordName): string | undefined => {
+    const route = router.getRoutes().find((r) => r.name === routeName);
+    return route ? route.path : undefined;
+};
+
 /**
- * Determines if a menu item is highlighted based on the current route.
+ * Checks if a menu item should be highlighted based on the current route path.
  *
- * @param {RouteRecordName} itemRouteName - The route name associated with the menu item.
- * @param {RouteRecordName[]} [subRouteNames] - Optional. An array of sub-route names that should be considered for highlighting.
- * @returns {boolean} True if the menu item or any of its sub-route names match the current route; otherwise, false.
+ * @param {RouteRecordName} itemRouteName - The route name for the primary menu item.
+ * @param {RouteRecordName[]} [subRouteNames] - Optional. Array of sub-route names to check for highlighting.
+ * @returns {boolean} True if the current route matches the side nav item path or any of the sub-route paths; otherwise, false.
  */
 const isMenuItemHighlighted = (
     itemRouteName: RouteRecordName,
     subRouteNames?: RouteRecordName[]
 ): boolean => {
-    const currentRouteName = router.currentRoute.value.name;
+    const currentRoutePath = router.currentRoute.value.path;
+    const sideNavPath = getRoutePathByName(itemRouteName as string);
 
-    // Check if the current route matches the item route or any sub-routes
+    // Resolve paths of subRouteNames and check if the current route matches any of them
+    const subRoutePaths = subRouteNames
+        ? subRouteNames.map((name) => getRoutePathByName(name))
+        : [];
+
+    // Check if the current route matches the side nav item's route or any sub-route
     return (
-        currentRouteName === itemRouteName ||
-        (subRouteNames
-            ? subRouteNames.includes(currentRouteName as RouteRecordName)
-            : false)
+        currentRoutePath === sideNavPath ||
+        subRoutePaths.includes(currentRoutePath)
     );
 };
 </script>

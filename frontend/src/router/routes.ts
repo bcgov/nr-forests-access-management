@@ -6,6 +6,8 @@
  4. Each route must have a name defined.
 */
 import type { RouteRecordRaw } from "vue-router";
+import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
+import { authGuard } from "./RouteGuards";
 
 const protectedLayoutMeta = { layout: "ProtectedLayout" };
 
@@ -15,45 +17,37 @@ export const LandingRoute: RouteRecordRaw = {
     component: () => import("@/views/LandingView.vue"),
 };
 
-export const GrantAccessRoute: RouteRecordRaw = {
-    path: "grant",
-    component: () => import("@/views/GrantAccessView.vue"),
-    name: "GrantAccess",
-    meta: protectedLayoutMeta,
-};
-
-export const GrantAppAdminRoute: RouteRecordRaw = {
-    path: "grant-app-admin",
-    component: () => import("@/views/GrantApplicationAdminView.vue"),
-    name: "GrantAppAdmin",
-    meta: protectedLayoutMeta,
-};
-
-export const GrantDelegatedAdminRoute: RouteRecordRaw = {
-    path: "grant-delegated-admin",
-    component: () => import("@/views/GrantDelegatedAdminView.vue"),
-    name: "GrantDelegatedAdmin",
-    meta: protectedLayoutMeta,
-};
-
-export const UserDetailsRoute: RouteRecordRaw = {
-    path: "user-details/applications/:applicationId/users/:userId",
-    component: () => import("@/views/UserDetails"),
-    name: "UserDetails",
-    meta: protectedLayoutMeta,
-};
-
 export const ManagePermissionsRoute: RouteRecordRaw = {
     path: "/manage-permissions",
     name: "ManagePermissions",
     component: () => import("@/views/ManagePermissionsView.vue"),
     meta: protectedLayoutMeta,
-    children: [
-        GrantAccessRoute,
-        GrantAppAdminRoute,
-        GrantDelegatedAdminRoute,
-        UserDetailsRoute,
-    ],
+};
+
+export const AddAppPermissionRoute: RouteRecordRaw = {
+    path: "/manage-permissions/add-app-permission",
+    component: () => import("@/views/AddAppPermission"),
+    props: (route): AddAppPermissionRouteProps => ({
+        requestType: route.query
+            .requestType as AddAppPermissionRouteProps["requestType"],
+        applicationId: Number(route.query.applicationId),
+    }),
+    name: "AddAppPermission",
+    meta: protectedLayoutMeta,
+};
+
+export const AddFamPermissionRoute: RouteRecordRaw = {
+    path: "/manage-permissions/add-fam-permission",
+    component: () => import("@/views/AddFamPermission.vue"),
+    name: "AddFamPermission",
+    meta: protectedLayoutMeta,
+};
+
+export const UserDetailsRoute: RouteRecordRaw = {
+    path: "/manage-permissions/user-details/applications/:applicationId/users/:userId",
+    component: () => import("@/views/UserDetails"),
+    name: "UserDetails",
+    meta: protectedLayoutMeta,
 };
 
 export const MyPermissionsRoute: RouteRecordRaw = {
@@ -71,6 +65,9 @@ export const UnkownRoute: RouteRecordRaw = {
 export const routeItems: RouteRecordRaw[] = [
     LandingRoute,
     ManagePermissionsRoute,
+    AddAppPermissionRoute,
+    AddFamPermissionRoute,
+    UserDetailsRoute,
     MyPermissionsRoute,
     UnkownRoute,
 ];

@@ -7,3 +7,8 @@ export type RouteConfigType = {
     meta?: Record<string, unknown>;
     children?: Record<string, RouteConfigType>;
 };
+
+export type AddAppPermissionRouteProps = {
+    requestType: "addUserPermission" | "addDelegatedAdmin";
+    applicationId: number;
+};
