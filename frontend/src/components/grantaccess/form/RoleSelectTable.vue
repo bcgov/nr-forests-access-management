@@ -1,30 +1,33 @@
 <script setup lang="ts">
-import type { FamRoleDto } from 'fam-admin-mgmt-api/model';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import ProgressSpinner from 'primevue/progressspinner';
-import RadioButton from 'primevue/radiobutton';
-import { ErrorMessage, Field } from 'vee-validate';
-import { computed } from 'vue';
+import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import ProgressSpinner from "primevue/progressspinner";
+import RadioButton from "primevue/radiobutton";
+import { ErrorMessage, Field } from "vee-validate";
+import { computed } from "vue";
 
-const props = defineProps({
-    roleId: { type: Number, default: 0 },
-    roleOptions: {
-        type: [Array<FamRoleDto>],
-        default: [],
-    },
-    label: { type: String, default: 'Assign a role to the user' },
-    fieldId: { type: String, default: 'roleId' },
-});
+const props = withDefaults(
+    defineProps<{
+        role: FamRoleDto | null;
+        roleOptions: FamRoleDto[];
+        label?: string;
+        fieldId?: string;
+    }>(),
+    {
+        label: "Assign a role to the user",
+        fieldId: "role",
+    }
+);
 
-const emit = defineEmits(['change', 'resetVerifiedForestClients']);
+const emit = defineEmits(["change", "clearForestClients"]);
 
-const computedRoleId = computed({
+const computedRole = computed({
     get() {
-        return props.roleId;
+        return props.role;
     },
-    set(newRoleId: number) {
-        emit('change', newRoleId);
+    set(selectedRole: FamRoleDto | null) {
+        emit("change", selectedRole);
     },
 });
 </script>
@@ -32,7 +35,12 @@ const computedRoleId = computed({
 <template>
     <div class="form-field">
         <label :for="props.fieldId">{{ props.label }}</label>
-        <Field :name="props.fieldId" aria-label="Role Select" v-slot="{ field, errorMessage }" v-model="computedRoleId">
+        <Field
+            :name="props.fieldId"
+            aria-label="Role Select"
+            v-slot="{ errorMessage }"
+            v-model="computedRole"
+        >
             <DataTable :value="roleOptions">
                 <template #empty> No role found. </template>
                 <template #loading>
@@ -40,17 +48,23 @@ const computedRoleId = computed({
                 </template>
                 <Column field="roleSelect">
                     <template #body="{ data }">
-                        <RadioButton v-model="computedRoleId" :value="data.id"
-                            @change="emit('resetVerifiedForestClients')" :class="{
+                        <RadioButton
+                            v-model="computedRole"
+                            :value="data"
+                            @change="emit('clearForestClients')"
+                            :class="{
                                 'is-invalid': errorMessage,
-                            }"></RadioButton>
+                            }"
+                        ></RadioButton>
                     </template>
                 </Column>
-                <Column field="roleName" header="Role"><template #body="{ data }">
+                <Column field="roleName" header="Role"
+                    ><template #body="{ data }">
                         <span>
                             {{ data.name }}
                         </span>
-                    </template></Column>
+                    </template></Column
+                >
                 <Column field="roleDescription" header="Description">
                     <template #body="{ data }">
                         <span>
@@ -70,7 +84,7 @@ const computedRoleId = computed({
         padding: 0;
     }
 
-    .p-datatable-tbody>tr>td {
+    .p-datatable-tbody > tr > td {
         padding: 1rem;
     }
 }

@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
-import Card from 'primevue/card';
-import Tag from 'primevue/tag';
-import { IconSize } from '@/enum/IconEnum';
-import type { FamForestClientSchema } from 'fam-app-acsctl-api';
+import Card from "primevue/card";
+import Tag from "primevue/tag";
+import { IconSize } from "@/enum/IconEnum";
+import type { FamForestClientSchema } from "fam-app-acsctl-api";
 
-const props = defineProps({
-    forestClientData: {
-        type: Object as PropType<FamForestClientSchema[]>,
-    },
-});
+const props = defineProps<{
+    forestClientData: FamForestClientSchema[];
+}>();
 </script>
 <template>
     <div>
@@ -21,7 +18,7 @@ const props = defineProps({
             <template #content>
                 <div class="w-100">
                     <div
-                        v-for="(forestItem, index) in props.forestClientData"
+                        v-for="client in props.forestClientData"
                         class="content-wrapper"
                     >
                         <p class="icon-wrapper">
@@ -29,7 +26,7 @@ const props = defineProps({
                                 class="flex-grow-0 custom-carbon-icon-checkmark--filled"
                                 icon="checkmark--filled"
                                 :size="IconSize.small"
-                                v-if="forestItem.status?.status_code == 'A'"
+                                v-if="client.status?.status_code == 'A'"
                             />
 
                             <Icon
@@ -59,7 +56,7 @@ const props = defineProps({
                                 id="forest-client-number"
                                 name="forest-client-number"
                             >
-                                {{ forestItem.forest_client_number }}
+                                {{ client.forest_client_number }}
                             </span>
                         </p>
                         <p
@@ -74,7 +71,7 @@ const props = defineProps({
                                 name="forest-client-name"
                                 class="organization-name"
                             >
-                                {{ forestItem.client_name }}
+                                {{ client.client_name }}
                             </span>
                         </p>
                         <p
@@ -89,11 +86,11 @@ const props = defineProps({
                                 name="forest-client-status"
                                 class="custom-tag"
                                 :severity="
-                                    forestItem.status?.status_code == 'A'
+                                    client.status?.status_code == 'A'
                                         ? 'success'
                                         : 'danger'
                                 "
-                                :value="forestItem.status?.description"
+                                :value="client.status?.description"
                             />
                         </p>
                         <Button class="btn-trash">
@@ -103,7 +100,12 @@ const props = defineProps({
                                 icon="trash-can"
                                 :size="IconSize.small"
                                 title="Remove client"
-                                @click="$emit('removeItem', index)"
+                                @click="
+                                    $emit(
+                                        'removeItem',
+                                        client.forest_client_number
+                                    )
+                                "
                             />
                         </Button>
                     </div>
@@ -114,7 +116,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
+@import "@/assets/styles/styles.scss";
 
 p > label {
     margin-top: 0.25rem;

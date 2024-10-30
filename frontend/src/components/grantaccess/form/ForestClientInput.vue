@@ -1,123 +1,199 @@
 <script setup lang="ts">
-import ForestClientCard from '@/components/grantaccess/ForestClientCard.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { selectedApplicationId } from '@/store/ApplicationState';
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from '@/store/Constants';
-import { isLoading } from '@/store/LoadingState';
+import Button from "@/components/common/Button.vue";
+import Icon from "@/components/common/Icon.vue";
+import ForestClientCard from "@/components/grantaccess/ForestClientCard.vue";
+import Spinner from "@/components/UI/Spinner.vue";
+import { IconSize } from "@/enum/IconEnum";
+import { AppActlApiService } from "@/services/ApiServiceFactory";
+import { selectedApplicationId } from "@/store/ApplicationState";
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
 import {
-    FamForestClientStatusType,
-    type FamForestClientSchema,
-} from 'fam-app-acsctl-api';
-import InputText from 'primevue/inputtext';
-import { ErrorMessage, Field } from 'vee-validate';
-import { ref, watch } from 'vue';
+    useMutation,
+    useQueries,
+    useQuery,
+    type QueryObserverResult,
+} from "@tanstack/vue-query";
+import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import { type FamForestClientSchema } from "fam-app-acsctl-api";
+import InputText from "primevue/inputtext";
+import { ErrorMessage, Field } from "vee-validate";
+import { computed, ref, watch } from "vue";
 
-const props = defineProps({
-    userId: { type: String, required: true },
-    roleId: Number,
-    fieldId: { type: String, default: 'forestClientNumbers' }, // field id used in the form validation
-});
+const props = withDefaults(
+    defineProps<{
+        userId: string;
+        role: FamRoleDto | null;
+        appId: number;
+        fieldId?: string;
+    }>(),
+    {
+        fieldId: "forestClientNumbers",
+    }
+);
 
-const emit = defineEmits([
-    'setVerifiedForestClients',
-    'removeVerifiedForestClients',
-    'resetVerifiedForestClients',
-]);
+const emit = defineEmits(["setVerifiedForestClients"]);
 
-const forestClientNumbersInput = ref('');
+const setVerifiedForestClients = (ids: string[]) =>
+    emit("setVerifiedForestClients", ids);
+
+const forestClientNumbersInput = ref("");
+const numbersToVerify = ref<string[]>([]);
+
 const forestClientData = ref<FamForestClientSchema[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
-const verifyForestClientNumber = async (forestClientNumbers: string) => {
-    forestClientNumberVerifyErrors.value = [];
+// const verifyForestClientNumber = async (forestClientNumbers: string) => {
+//     forestClientNumberVerifyErrors.value = [];
 
-    // split by commas and spaces
-    let forestNumbers = forestClientNumbers.split(',').map((num) => num.trim());
+//     // split by commas and spaces
+//     let forestNumbers = forestClientNumbers.split(",").map((num) => num.trim());
 
-    for (const forestClientNumber of forestNumbers) {
-        if (isForestClientNumberAdded(forestClientNumber)) {
-            forestClientNumberVerifyErrors.value.push(
-                `Client Number ${forestClientNumber} has already been added.`
-            );
+//     for (const forestClientNumber of forestNumbers) {
+//         if (isForestClientNumberAdded(forestClientNumber)) {
+//             forestClientNumberVerifyErrors.value.push(
+//                 `Client Number ${forestClientNumber} has already been added.`
+//             );
 
-            continue;
-        }
-        await AppActlApiService.forestClientsApi
-            .search(forestClientNumber, selectedApplicationId.value!)
-            .then((result) => {
-                if (!result.data[0]) {
-                    forestClientNumberVerifyErrors.value.push(
-                        `Client Number ${forestClientNumber} is invalid and cannot be added.`
-                    );
-                    return;
-                }
-                if (
-                    result.data[0].status?.status_code !==
-                    FamForestClientStatusType.A
-                ) {
-                    forestClientNumberVerifyErrors.value.push(
-                        `Client Number ${forestClientNumber} is inactive and cannot be added.`
-                    );
-                    return;
-                }
+//             continue;
+//         }
+//         await AppActlApiService.forestClientsApi
+//             .search(forestClientNumber, selectedApplicationId.value!)
+//             .then((result) => {
+//                 if (!result.data[0]) {
+//                     forestClientNumberVerifyErrors.value.push(
+//                         `Client Number ${forestClientNumber} is invalid and cannot be added.`
+//                     );
+//                     return;
+//                 }
+//                 if (
+//                     result.data[0].status?.status_code !==
+//                     FamForestClientStatusType.A
+//                 ) {
+//                     forestClientNumberVerifyErrors.value.push(
+//                         `Client Number ${forestClientNumber} is inactive and cannot be added.`
+//                     );
+//                     return;
+//                 }
 
-                forestClientData.value.push(result.data[0]);
-                emit(
-                    'setVerifiedForestClients',
-                    result.data[0].forest_client_number
-                );
-                forestNumbers = forestNumbers.filter(
-                    (number) => number !== forestClientNumber
-                ); //Remove successfully added numbers so the user can edit in the input only errored ones
-            })
-            .catch(() => {
-                forestClientNumberVerifyErrors.value.push(
-                    `An error has occurred. Client Number ${forestClientNumber} could not be added.`
-                );
-            });
-    }
+//                 forestClientData.value.push(result.data[0]);
+//                 emit(
+//                     "setVerifiedForestClients",
+//                     result.data[0].forest_client_number
+//                 );
+//                 forestNumbers = forestNumbers.filter(
+//                     (number) => number !== forestClientNumber
+//                 ); //Remove successfully added numbers so the user can edit in the input only errored ones
+//             })
+//             .catch(() => {
+//                 forestClientNumberVerifyErrors.value.push(
+//                     `An error has occurred. Client Number ${forestClientNumber} could not be added.`
+//                 );
+//             });
+//     }
 
-    //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
-    forestClientNumbersInput.value = forestNumbers.toString();
+//     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
+//     forestClientNumbersInput.value = forestNumbers.toString();
+// };
+
+const cleanupForestClientSection = () => {
+    // remove the verified forest client numbers which already added to form data
+    setVerifiedForestClients([]);
+
+    // remove the forest client card data
+    forestClientData.value = [];
 };
 
-const isForestClientNumberAdded = (forestClientNumber: string) => {
-    return forestClientData.value.find(
-        (item) => forestClientNumber === item.forest_client_number
+const clientSearchMutation = useMutation({
+    mutationFn: (clientNumber: string) => {
+        return AppActlApiService.forestClientsApi
+            .search(clientNumber, props.appId)
+            .then((res) => res.data);
+    },
+    onMutate: (clientNumber) => {
+        // Store the client number in context so it’s available in onSuccess and onError
+        return { clientNumber };
+    },
+    onSuccess: (data, _variables, context) => {
+        if (data.length) {
+            forestClientData.value.push(data[0]);
+        } else {
+            forestClientNumberVerifyErrors.value.push(
+                `An error has occurred. Client Number ${context.clientNumber} could not be added.`
+            );
+        }
+    },
+    onError: (_error, _variables, context) => {
+        // Access clientNumber from context
+        if (context?.clientNumber) {
+            forestClientNumberVerifyErrors.value.push(
+                `An error has occurred. Client Number ${context.clientNumber} could not be added.`
+            );
+        }
+    },
+});
+
+const isVerifying = ref<boolean>(false);
+
+const handleVerifyClients = async () => {
+    if (!isVerifying.value) {
+        isVerifying.value = true;
+        cleanupForestClientSection();
+        const verifyPromises = numbersToVerify.value.map((clientNumber) =>
+            clientSearchMutation.mutateAsync(clientNumber)
+        );
+        await Promise.allSettled(verifyPromises);
+
+        isVerifying.value = false;
+        setVerifiedForestClients(
+            forestClientData.value.map((fc) => fc.forest_client_number)
+        );
+    }
+};
+
+const removeForestClientFromList = (clientNumber: string) => {
+    // remove the verified forest client from card
+    forestClientData.value = forestClientData.value.filter(
+        (client) => client.forest_client_number !== clientNumber
+    );
+
+    // remove the verified forest client number from form data
+    setVerifiedForestClients(
+        forestClientData.value.map((client) => client.forest_client_number)
     );
 };
 
-const removeForestClientFromList = (index: number) => {
-    // remove the verified forest client from card
-    forestClientData.value.splice(index, 1);
-    // remove the verified forest client number from form data
-    emit('removeVerifiedForestClients', index);
-};
-
 const cleanupForestClientNumberInput = () => {
-    forestClientNumbersInput.value = '';
+    forestClientNumbersInput.value = "";
     forestClientNumberVerifyErrors.value = [];
 };
 
-const cleanupForestClientSection = () => {
-    // cleanup the forest client number input field and verification errors
-    cleanupForestClientNumberInput();
-    // remove the forest client card data
-    forestClientData.value = [];
-    // remove the verified forest client numbers which already added to form data
-    emit('resetVerifiedForestClients');
-};
-
-// whenever user id or abstract role id changed, cleanup the forest client section
+// whenever user id or abstract role changed, cleanup the forest client section
 watch(
     () => props.userId,
     () => cleanupForestClientSection()
 );
 watch(
-    () => props.roleId,
+    () => props.role,
     () => cleanupForestClientSection()
 );
+
+const parseAndCleanNumbers = (input: string): string[] => {
+    return Array.from(
+        new Set(
+            input
+                .split(",")
+                .map((num) => num.trim()) // Remove any surrounding spaces
+                .filter((num) => num) // Remove empty strings if there are multiple commas
+        )
+    );
+};
+
+const handleFcInput = () => {
+    numbersToVerify.value = parseAndCleanNumbers(
+        forestClientNumbersInput.value
+    );
+    handleVerifyClients();
+};
 </script>
 
 <template>
@@ -127,7 +203,7 @@ watch(
         </label>
         <Field
             :name="props.fieldId"
-            v-slot="{ field, errorMessage }"
+            v-slot="{ errorMessage }"
             v-model="forestClientNumbersInput"
         >
             <div class="input-with-verify-button">
@@ -135,15 +211,13 @@ watch(
                     <InputText
                         id="forestClientInput"
                         placeholder="Enter and verify the client number"
-                        v-bind="field"
                         class="w-100 custom-height"
-                        @input="cleanupForestClientNumberInput()"
+                        v-model="forestClientNumbersInput"
+                        @blur="handleFcInput"
                         @keydown.enter.prevent="
-                            field.value &&
+                            forestClientNumbersInput.length &&
                                 !errorMessage &&
-                                verifyForestClientNumber(
-                                    forestClientNumbersInput
-                                )
+                                handleFcInput()
                         "
                         :class="{
                             'is-invalid':
@@ -180,15 +254,14 @@ watch(
                     aria-label="Add Client Numbers"
                     name="verifyFC"
                     label="Add Client Numbers"
-                    @click="verifyForestClientNumber(forestClientNumbersInput)"
+                    @click="handleVerifyClients"
                     v-bind:disabled="
                         forestClientNumbersInput?.length <
-                            FOREST_CLIENT_INPUT_MAX_LENGTH ||
-                        !!errorMessage ||
-                        isLoading()
+                            FOREST_CLIENT_INPUT_MAX_LENGTH || !!errorMessage
                     "
                 >
-                    <Icon icon="add" :size="IconSize.small" />
+                    <Spinner v-if="isVerifying" small is-white />
+                    <Icon v-else icon="add" :size="IconSize.small" />
                 </Button>
             </div>
         </Field>
@@ -204,6 +277,6 @@ watch(
 
 <style lang="scss">
 .fores-client-card-container {
-    @import '@/assets/styles/card.scss';
+    @import "@/assets/styles/card.scss";
 }
 </style>

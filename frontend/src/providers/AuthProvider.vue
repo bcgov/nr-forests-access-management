@@ -104,7 +104,7 @@ const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
         username: decodedIdToken["custom:idp_username"],
         displayName: decodedIdToken["custom:idp_display_name"],
         email: decodedIdToken["email"],
-        idpProvider: decodedIdToken["identities"][0]["providerName"],
+        idpProvider: decodedIdToken["custom:idp_name"]?.toLowerCase(),
         organization: decodedIdToken["custom:idp_business_name"],
     };
 };

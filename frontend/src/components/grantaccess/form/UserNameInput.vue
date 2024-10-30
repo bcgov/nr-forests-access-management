@@ -1,117 +1,140 @@
 <script setup lang="ts">
-import UserIdentityCard from '@/components/grantaccess/UserIdentityCard.vue';
-import { IconSize } from '@/enum/IconEnum';
-import { IdpProvider } from '@/enum/IdpEnum';
-import { AppActlApiService } from '@/services/ApiServiceFactory';
-import { selectedApplicationId } from '@/store/ApplicationState';
-import FamLoginUserState from '@/store/FamLoginUserState';
-import { isLoading } from '@/store/LoadingState';
-import type { IdimProxyBceidInfoSchema, IdimProxyIdirInfoSchema } from 'fam-app-acsctl-api';
-import { UserType } from 'fam-app-acsctl-api';
-import InputText from 'primevue/inputtext';
-import { ErrorMessage, Field } from 'vee-validate';
-import { computed, ref, watch } from 'vue';
+import Button from "@/components/common/Button.vue";
+import UserIdentityCard from "@/components/grantaccess/UserIdentityCard.vue";
+import useAuth from "@/composables/useAuth";
+import { IconSize } from "@/enum/IconEnum";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { AppActlApiService } from "@/services/ApiServiceFactory";
+import { useMutation } from "@tanstack/vue-query";
+import type {
+    IdimProxyBceidInfoSchema,
+    IdimProxyIdirInfoSchema,
+} from "fam-app-acsctl-api";
+import { UserType } from "fam-app-acsctl-api";
+import InputText from "primevue/inputtext";
+import { ErrorMessage, Field } from "vee-validate";
+import { computed, ref, watch } from "vue";
 
-const props = defineProps({
-    domain: { type: String, required: true },
-    userId: { type: String, default: '' },
-    fieldId: { type: String, default: 'userId' },
-    helperText: { type: String },
-});
+const auth = useAuth();
 
-const PERMISSION_REQUIRED_FOR_OPERATION = 'permission_required_for_operation';
+const props = withDefaults(
+    defineProps<{
+        domain: UserType;
+        userId: string;
+        appId: number;
+        fieldId?: string;
+        helperText?: string;
+    }>(),
+    {
+        fieldId: "userId",
+    }
+);
 
-const emit = defineEmits(['change', 'setVerifyResult']);
+const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
+
+const emit = defineEmits(["change", "setVerifyResult"]);
 
 const computedUserId = computed({
     get() {
         return props.userId;
     },
     set(newUserId: string) {
-        emit('change', newUserId);
-        resetVerifiedUserIdentity();
+        emit("change", newUserId);
+        resetsearchResult();
     },
 });
 
-const errorMsg = ref('');
+const errorMsg = ref("");
 
-const verifiedUserIdentity = ref<IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null>(
-    null
-);
+const searchResult = ref<
+    IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null
+>(null);
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
  */
- const isCurrentUser = (): boolean => {
+const isCurrentUser = (): boolean => {
     const userId = computedUserId.value?.toLowerCase();
-    const loggedInUserId = FamLoginUserState.state.value.famLoginUser?.username?.toLowerCase();
+    const loggedInUserId = auth.authState.famLoginUser?.username?.toLowerCase();
 
     return userId === loggedInUserId;
 };
 
-const verifyUserId = async () => {
-    if (!computedUserId.value) {
-        return;
-    }
-    // Guard to forbid users to look up themselves
-    if (isCurrentUser()) {
-        verifiedUserIdentity.value = {
-            found: false,
-            userId: computedUserId.value
-        }
-        errorMsg.value = 'You cannot grant permissions to yourself.';
-        return;
-    }
+const handleMutationError = (error: any) => {
+    searchResult.value = {
+        userId: computedUserId.value,
+        found: false,
+    };
 
-    try {
-        if (props.domain == UserType.B) {
-            verifiedUserIdentity.value = (
-                await AppActlApiService.idirBceidProxyApi.bceidSearch(
-                    computedUserId.value,
-                    selectedApplicationId.value!,
-                )
-            ).data;
-        } else {
-            verifiedUserIdentity.value = (
-                await AppActlApiService.idirBceidProxyApi.idirSearch(
-                    computedUserId.value,
-                    selectedApplicationId.value!,
-                )
-            ).data;
-        }
-    } catch (error: any) {
-        verifiedUserIdentity.value = {
-            userId: computedUserId.value,
-            found: false,
-        };
-        if (
-            error.response.status === 403 &&
-            error.response.data.detail.code ===
-                PERMISSION_REQUIRED_FOR_OPERATION
-        ) {
-            errorMsg.value = `${
-                error.response.data.detail.description
-            }. Org name: ${
-                FamLoginUserState.state.value.famLoginUser!.organization
+    // Check if error and response properties exist
+    if (error.response && error.response.status === 403) {
+        const detail = error.response.data?.detail;
+        if (detail?.code === PERMISSION_REQUIRED_FOR_OPERATION) {
+            errorMsg.value = `${detail.description}. Org name: ${
+                auth.authState.famLoginUser?.organization ??
+                "Unknown organization"
             }`;
+        } else {
+            errorMsg.value = "An unknown error occurred.";
         }
-    } finally {
-        if (verifiedUserIdentity.value?.found) {
-            emit('setVerifyResult', true, verifiedUserIdentity.value.guid, verifiedUserIdentity.value.email);
-        }
+    } else {
+        errorMsg.value =
+            "Unable to verify the user due to a network or server error.";
     }
 };
-const resetVerifiedUserIdentity = () => {
-    verifiedUserIdentity.value = null;
-    errorMsg.value = '';
-    emit('setVerifyResult', false);
+
+const verifyIdirMutation = useMutation({
+    mutationFn: () =>
+        AppActlApiService.idirBceidProxyApi
+            .idirSearch(computedUserId.value, props.appId)
+            .then((res) => res.data),
+    onSuccess: (data) => {
+        searchResult.value = data;
+        emit("setVerifyResult", data.found, data.guid ?? "", data.email ?? "");
+    },
+    onError: (error) => handleMutationError(error),
+});
+
+const verifyBceidMutation = useMutation({
+    mutationFn: () =>
+        AppActlApiService.idirBceidProxyApi
+            .bceidSearch(computedUserId.value, props.appId)
+            .then((res) => res.data),
+    onSuccess: (data) => {
+        searchResult.value = data;
+        emit("setVerifyResult", data.found, data.guid ?? "", data.email ?? "");
+    },
+    onError: (error) => handleMutationError(error),
+});
+
+const handleVerify = (userType: UserType) => {
+    if (isCurrentUser()) {
+        searchResult.value = {
+            found: false,
+            userId: computedUserId.value,
+        };
+        errorMsg.value = "You cannot grant permissions to yourself.";
+        return;
+    }
+    if (userType === "I") {
+        verifyIdirMutation.mutate();
+    }
+    if (userType === "B") {
+        verifyBceidMutation.mutate();
+    }
+};
+
+const resetsearchResult = () => {
+    searchResult.value = null;
+    errorMsg.value = "";
+    emit("setVerifyResult", false);
 };
 
 // whenver user domain change, remove the previous user identity card
 watch(
     () => props.domain,
     () => {
-        resetVerifiedUserIdentity();
+        resetsearchResult();
     }
 );
 </script>
@@ -140,8 +163,8 @@ watch(
                         maxlength="20"
                         v-bind="field"
                         :class="{ 'is-invalid': errorMessage }"
-                        @keydown.enter.prevent="verifyUserId()"
-                        @blur="verifyUserId()"
+                        @keydown.enter.prevent="handleVerify(props.domain)"
+                        @blur="handleVerify(props.domain)"
                     />
                     <small
                         id="userIdInput-helper"
@@ -169,9 +192,10 @@ watch(
                             : 'verifyBusinessBceid'
                     "
                     label="Verify"
-                    @click="verifyUserId()"
+                    @click="handleVerify(props.domain)"
                     :disabled="
-                        isLoading() ||
+                        verifyBceidMutation.isPending.value ||
+                        verifyIdirMutation.isPending.value ||
                         !computedUserId ||
                         errorMessage !== undefined
                     "
@@ -182,12 +206,12 @@ watch(
         </Field>
 
         <div
-            v-if="verifiedUserIdentity"
+            v-if="searchResult"
             id="UserIdentityCard"
             class="user-id-card-container col-md-5 px-0"
         >
             <UserIdentityCard
-                :userIdentity="verifiedUserIdentity"
+                :userIdentity="searchResult"
                 :errorMsg="errorMsg"
             ></UserIdentityCard>
         </div>
@@ -196,6 +220,11 @@ watch(
 
 <style lang="scss">
 .user-id-card-container {
-    @import '@/assets/styles/card.scss';
+    @import "@/assets/styles/card.scss";
+    width: 100%;
+
+    .custom-card {
+        width: 100%;
+    }
 }
 </style>

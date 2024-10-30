@@ -8,7 +8,11 @@ export type RouteConfigType = {
     children?: Record<string, RouteConfigType>;
 };
 
+export type AddAppPermissionRequestType =
+    | "addUserPermission"
+    | "addDelegatedAdmin";
+
 export type AddAppPermissionRouteProps = {
-    requestType: "addUserPermission" | "addDelegatedAdmin";
+    requestType: AddAppPermissionRequestType;
     applicationId: number;
 };
