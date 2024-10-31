@@ -26,7 +26,7 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                ROLE_NAME_FOM_SUBMITTER_00000001,
                                ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
                                TEST_USER_ID, USER_NAME_BCEID_LOAD_3_TEST)
-from testspg.fixture.app_user_roles_mock_data import \
+from testspg.test_data.app_user_roles_mock_data import \
     APP_USER_ROLE_PAGED_RESULT_2_RECORDS
 
 LOGGER = logging.getLogger(__name__)

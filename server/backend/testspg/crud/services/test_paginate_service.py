@@ -11,6 +11,11 @@ from api.app.schemas.pagination import PageParamsSchema
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Select, not_, or_, select
 from sqlalchemy.orm import Session
+from testspg.constants import (TEST_USER_EMAIL_SUFFIX,
+                               TEST_USER_NAME_BCEID_PREFIX,
+                               TEST_USER_NAME_IDIR_PREFIX,
+                               TEST_USER_NAME_PREFIX)
+from testspg.utils import get_existing_testdb_seeded_users, is_sorted_with
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,20 +57,11 @@ USER_SORT_BY_MAPPED_COLUMN = {
 
 # base_query to be used only within this suites of tests.
 test_base_query = Select(FamUser)
-TEST_USER_NAME_PREFIX = "TEST_USER_"
-TEST_USER_NAME_IDIR_PREFIX = "TEST_USER_IDIR_"
-TEST_USER_NAME_BCEID_PREFIX = "TEST_USER_BCEID_"
-TEST_USER_EMAIL_SUFFIX = "fam.test.com"
 
 def __get_number_of_pages(count: int, page_size) -> int:
     rest = count % page_size
     quotient = count // page_size
     return quotient if not rest else quotient + 1
-
-def __get_existing_testdb_seeded_users(db_pg_session: Session):
-    return db_pg_session.scalars(
-        select(FamUser).filter(not_(FamUser.user_name.ilike(f"%{TEST_USER_NAME_PREFIX}%")))
-    ).all()
 
 def __build_test_filter_criteria(page_params: TestUserPageParamsSchema):
     search_keyword = page_params.search
@@ -82,20 +78,6 @@ def __get_number_of_pages(count: int, page_size: int) -> int:
     rest = count % page_size
     quotient = count // page_size
     return quotient if not rest else quotient + 1
-
-def __is_sorted_with(o1, o2, attribute: str, order: SortOrderEnum) -> bool:
-    # helper function to compare o1, o2 according to the sorting 'order' on attribute.
-
-    a1 = getattr(o1, attribute)
-    a2 = getattr(o2, attribute)
-    if a1 is None and a2 is None:
-        return True
-    if a1 is None:
-        return order == SortOrderEnum.DESC
-    elif a2 is None:
-        return order == SortOrderEnum.ASC
-    else:
-        return (a1 <= a2 if order == SortOrderEnum.ASC else a1 >= a2)
 
 def __contains_any_insensitive(obj, search_attributes: List[str], keyword: str) -> bool:
     # helper function to check if 'keyword' is substring of 'attr' value insensitive.
@@ -127,8 +109,8 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
 
     """
     # this 'load_test_users' fixture loads bunch of users into db session for testing.
-    mock_user_data_load = load_test_users
-    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+    mock_user_data_load = load_test_users["idir_users"] + load_test_users["bceid_users"]
+    existing_testdb_seeded_users = get_existing_testdb_seeded_users(db_pg_session, TEST_USER_NAME_PREFIX)
     default_page_params = TestUserPageParamsSchema(
         page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None, sort_by=None, sort_order=None
     )
@@ -158,8 +140,8 @@ def test_get_paginated_results__users_paged_with_default_pagination(db_pg_sessio
         (TestUserPageParamsSchema(
             page=3, size=25, search=None, sort_by=None, sort_order=None
         ), 25),
-        (TestUserPageParamsSchema(  # asuume page is out of range from total rows from the test setup
-            page=50, size=100, search=None, sort_by=None, sort_order=None
+        (TestUserPageParamsSchema(  # assume page is out of range from total rows from the test setup
+            page=100000, size=100, search=None, sort_by=None, sort_order=None
         ), 0),
     ],
 )
@@ -170,8 +152,8 @@ def test_get_paginated_results__users_paged_with_non_default_pagination(
     """
     This case tests on 'PaginateService.get_paginated_results' for non-default page_params.
     """
-    mock_user_data_load = load_test_users
-    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+    mock_user_data_load = load_test_users["idir_users"] + load_test_users["bceid_users"]
+    existing_testdb_seeded_users = get_existing_testdb_seeded_users(db_pg_session, TEST_USER_NAME_PREFIX)
 
     paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
     paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
@@ -218,8 +200,8 @@ def test_get_paginated_results__users_paged_with_sorting(
     """
     This case tests on 'PaginateService.get_paginated_results' for sorting.
     """
-    mock_user_data_load = load_test_users
-    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+    mock_user_data_load = load_test_users["idir_users"] + load_test_users["bceid_users"]
+    existing_testdb_seeded_users = get_existing_testdb_seeded_users(db_pg_session, TEST_USER_NAME_PREFIX)
 
     paginated_service = PaginateService(db_pg_session, test_base_query, None, USER_SORT_BY_MAPPED_COLUMN, test_page_params)
     paged_result = paginated_service.get_paginated_results(TestFamUserInfoSchema)
@@ -235,7 +217,7 @@ def test_get_paginated_results__users_paged_with_sorting(
     # verify sorting
     sort_order = test_page_params.sort_order
     assert all(
-        __is_sorted_with(result_data[i], result_data[i+1], sort_by_attribute, sort_order)
+        is_sorted_with(result_data[i], result_data[i+1], sort_by_attribute, sort_order)
         for i in range(len(result_data) - 1)
     )
 
@@ -271,8 +253,8 @@ def test_get_paginated_results__users_paged_with_filtering(
     Filtering is based on provided 'filter_by_criteria' for the service which search with keyword
     contained in "user_name", "user_type" or "email"
     """
-    mock_user_data_load = load_test_users
-    existing_testdb_seeded_users = __get_existing_testdb_seeded_users(db_pg_session)
+    mock_user_data_load = load_test_users["idir_users"] + load_test_users["bceid_users"]
+    existing_testdb_seeded_users = get_existing_testdb_seeded_users(db_pg_session, TEST_USER_NAME_PREFIX)
     search_keyword = test_page_params.search
 
     paginated_service = PaginateService(
