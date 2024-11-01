@@ -49,6 +49,10 @@ def test_get_application(db_pg_session: Session):
         {"found": True, "within_range": True, "sort_by_result_schema_attr": "role.display_name"}),
         (UserRolePageParamsSchema(page=MIN_PAGE, size=10, search="IDIR", sort_by=UserRoleSortByEnum.USER_NAME, sort_order=SortOrderEnum.DESC),
         {"found": True, "within_range": True, "sort_by_result_schema_attr": "user.user_name"}),
+        (UserRolePageParamsSchema(page=MIN_PAGE, size=100, search="submitter", sort_by=UserRoleSortByEnum.FOREST_CLIENT_NUMBER, sort_order=SortOrderEnum.DESC),
+        {"found": True, "within_range": True, "sort_by_result_schema_attr": "role.forest_client.forest_client_number"}),
+        (UserRolePageParamsSchema(page=MIN_PAGE, size=10, search="not_fund", sort_by=UserRoleSortByEnum.EMAIL, sort_order=SortOrderEnum.ASC),
+        {"found": False, "within_range": True, "sort_by_result_schema_attr": "user.email"}),
     ],
 )
 def test_get_application_role_assignments_on_pagination(
