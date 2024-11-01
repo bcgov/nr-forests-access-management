@@ -99,6 +99,7 @@ def test_get_application_role_assignments_on_pagination(
         # verify filtering: checks all of 'result_data' item has at least one attribute value
         # (within type FamApplicationUserRoleAssignmentGetSchema) contains filtering keyword.
         search_attributes = [
+            "update_date",
             "user.user_name",
             "user.user_type_relation.user_type_code",
             "user.email",

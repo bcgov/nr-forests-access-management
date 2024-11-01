@@ -1,5 +1,6 @@
 
 import operator
+from datetime import datetime
 from typing import List
 
 from api.app.constants import SortOrderEnum
@@ -57,8 +58,13 @@ def contains_any_insensitive(obj, search_attributes: List[str], keyword: str) ->
     def contains_keyword_insensitive(attr: str, keyword: str):
         if attr is None:
             return False
-        else:
+        elif isinstance(attr, str):
             return keyword.lower() in attr.lower()
+        elif isinstance(attr, datetime):
+            format_string = '%Y-%m-%d %H:%M:%S'
+            return keyword.lower() in attr.strftime(format_string)
+        else:
+            return False
 
     # return True as long as there is one attribute containing keyword value
     is_any = any(

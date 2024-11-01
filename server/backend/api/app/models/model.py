@@ -715,7 +715,7 @@ class FamUserRoleXref(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        server_default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -725,7 +725,8 @@ class FamUserRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        server_default=func.utcnow(),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 

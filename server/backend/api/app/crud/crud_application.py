@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from api.app.constants import UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
@@ -7,7 +8,7 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
 from api.app.schemas.pagination import (PagedResultsSchema,
                                         UserRolePageParamsSchema)
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import Column, asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 from . import crud_utils as crud_utils
@@ -17,6 +18,7 @@ LOGGER = logging.getLogger(__name__)
 # Local constant only, for application user/role sorting/filtering query,
 # provides mapping for sortBy/filtered columns mapped to model columns.
 USER_ROLE_SORT_BY_MAPPED_COLUMN = {
+    UserRoleSortByEnum.UPDATED_DATE: models.FamUserRoleXref.update_date,
     UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,  # default
     UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
     UserRoleSortByEnum.EMAIL: models.FamUser.email,
@@ -48,10 +50,19 @@ def __build_filter_criteria(page_params: UserRolePageParamsSchema):
     """
     search_keyword = page_params.search
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
+
+    def operate_on_column(column: Column):
+        column_type = column.type.python_type
+        if column_type is str:
+            return column.ilike(f"%{search_keyword}%")
+        elif column_type is datetime:
+            return func.to_char(column, 'YYYY-MM-DD HH24:MI:SS').ilike(f"%{search_keyword}%")
+
+
     return (
         or_(
             # build where ... "OR" conditions for all mapped columns.
-            *list(map(lambda column: column.ilike(f"%{search_keyword}%"), filter_on_columns))
+            *list(map(lambda column: operate_on_column(column), filter_on_columns))
         )
         if search_keyword is not None
         else None

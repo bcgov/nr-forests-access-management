@@ -61,7 +61,7 @@ class PageParamsSchema(BaseModel, ABC):
 
 class UserRolePageParamsSchema(PageParamsSchema):
     sort_by: UserRoleSortByEnum | None = Field(Query(
-        default=UserRoleSortByEnum.USER_NAME, alias="sortBy",
+        default=UserRoleSortByEnum.UPDATED_DATE, alias="sortBy",
         description=(
             f'Column to be sorted by <br>Possible values: [{", ".join([enum for enum in UserRoleSortByEnum])}]<br>&nbsp;'
         )

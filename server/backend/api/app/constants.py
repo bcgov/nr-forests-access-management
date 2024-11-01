@@ -143,6 +143,7 @@ class SortOrderEnum(str, Enum):
 
 class UserRoleSortByEnum(str, Enum):
     # Note: this is not the exact model column name, requires table column mapping.
+    UPDATED_DATE = "update_date"  # first one is the default sort field
     USER_NAME = "user_name"
     DOMAIN = "user_type_code"
     EMAIL = "email"
