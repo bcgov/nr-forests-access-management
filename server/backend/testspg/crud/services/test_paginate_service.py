@@ -15,7 +15,8 @@ from testspg.constants import (TEST_USER_EMAIL_SUFFIX,
                                TEST_USER_NAME_BCEID_PREFIX,
                                TEST_USER_NAME_IDIR_PREFIX,
                                TEST_USER_NAME_PREFIX)
-from testspg.utils import get_existing_testdb_seeded_users, is_sorted_with
+from testspg.utils import (contains_any_insensitive,
+                           get_existing_testdb_seeded_users, is_sorted_with)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -78,21 +79,6 @@ def __get_number_of_pages(count: int, page_size: int) -> int:
     rest = count % page_size
     quotient = count // page_size
     return quotient if not rest else quotient + 1
-
-def __contains_any_insensitive(obj, search_attributes: List[str], keyword: str) -> bool:
-    # helper function to check if 'keyword' is substring of 'attr' value insensitive.
-
-    def contains_keyword_insensitive(attr: str, keyword: str):
-        if attr is None:
-            return False
-        else:
-            return keyword.lower() in attr.lower()
-
-    # return True as long as there is one attribute contains keyword
-    is_any = any(
-        contains_keyword_insensitive(getattr(obj, attr_name), keyword)
-        for attr_name in search_attributes)
-    return is_any
 
 def sort_list(list: List[FamUser], sort_by, sort_order):
     def by_key(e):
@@ -270,7 +256,7 @@ def test_get_paginated_results__users_paged_with_filtering(
 
     search_attributes = list(map(lambda item: item.value, TestUserSortByEnum))
     db_filtered_users = list(filter(
-        lambda user: user if __contains_any_insensitive(user, search_attributes, search_keyword) else None,
+        lambda user: user if contains_any_insensitive(user, search_attributes, search_keyword) else None,
         mock_user_data_load + existing_testdb_seeded_users
     ))
     assert meta.total == len(db_filtered_users)
@@ -281,7 +267,7 @@ def test_get_paginated_results__users_paged_with_filtering(
         # verify filtering: checks all of 'result_data' item has at least one attribute value
         # contains filtering keyword.
         assert all(
-            __contains_any_insensitive(result_data[i], search_attributes, search_keyword)
+            contains_any_insensitive(result_data[i], search_attributes, search_keyword)
             for i in range(len(result_data) - 1)
         )
 
