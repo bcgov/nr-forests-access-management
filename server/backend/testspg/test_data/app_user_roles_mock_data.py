@@ -39,7 +39,8 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
           "role_purpose": "Provides the privilege to review all FOMs in the system",
           "client_number": None,
           "parent_role": None
-        }
+        },
+        "update_date": "2024-11-01T19:44:47.497785Z"
       },
       {
         "user_role_xref_id": 12,
@@ -79,8 +80,9 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
               "application_name": "FOM_DEV",
               "application_description": "Forest Operations Map (DEV)"
             }
-          }
-        }
+          },
+        },
+        "update_date": "2024-11-01T19:45:20.702148Z"
       }
     ]
   }
