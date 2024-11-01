@@ -56,5 +56,11 @@ export interface FamApplicationUserRoleAssignmentGetSchema {
      * @memberof FamApplicationUserRoleAssignmentGetSchema
      */
     'role': FamRoleWithClientSchema;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationUserRoleAssignmentGetSchema
+     */
+    'update_date': string;
 }
 

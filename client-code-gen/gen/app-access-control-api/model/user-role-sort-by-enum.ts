@@ -21,6 +21,7 @@
  */
 
 export const UserRoleSortByEnum = {
+    UpdateDate: 'update_date',
     UserName: 'user_name',
     UserTypeCode: 'user_type_code',
     Email: 'email',

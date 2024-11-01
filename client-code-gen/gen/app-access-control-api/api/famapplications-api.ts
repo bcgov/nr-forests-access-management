@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Forest Access Management - FAM - API
- *  Forest Access Management API used by the Forest Access Management application to Define who has access to what apps, and what roles they will operate under  once access is granted.
+ *  Forest Access Management API used by the Forest Access Management application to Define who has access to what apps, and what roles they will operate under  once access is granted. 
  *
  * The version of the OpenAPI document: 0.0.1
  * Contact: SIBIFSAF@victoria1.gov.bc.ca
@@ -13,17 +13,18 @@
  */
 
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
-import globalAxios from 'axios';
 import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, createRequestFunction, setOAuthToObject, setSearchParams, toPathString } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, BaseAPI, RequestArgs, RequiredError, operationServerMap } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import { FamUserInfoSchema } from '../model';
 // @ts-ignore
+import { HTTPValidationError } from '../model';
 // @ts-ignore
 import { PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema } from '../model';
 // @ts-ignore
@@ -39,8 +40,8 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         /**
          * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
          * @summary Retrieve User Information by User ID under an application
-         * @param {number} userId
-         * @param {number} applicationId
+         * @param {number} userId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -68,7 +69,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
 
 
-
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -81,12 +82,12 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
         /**
          * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
-         * @param {number} applicationId
+         * @param {number} applicationId 
          * @param {number | null} [pageNumber] Page number
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -131,7 +132,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             }
 
 
-
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -154,8 +155,8 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
         /**
          * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
          * @summary Retrieve User Information by User ID under an application
-         * @param {number} userId
-         * @param {number} applicationId
+         * @param {number} userId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -168,12 +169,12 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
         /**
          * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
-         * @param {number} applicationId
+         * @param {number} applicationId 
          * @param {number | null} [pageNumber] Page number
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -196,8 +197,8 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
         /**
          * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
          * @summary Retrieve User Information by User ID under an application
-         * @param {number} userId
-         * @param {number} applicationId
+         * @param {number} userId 
+         * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -207,12 +208,12 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
         /**
          * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
-         * @param {number} applicationId
+         * @param {number} applicationId 
          * @param {number | null} [pageNumber] Page number
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -231,8 +232,8 @@ export interface FAMApplicationsApiInterface {
     /**
      * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
      * @summary Retrieve User Information by User ID under an application
-     * @param {number} userId
-     * @param {number} applicationId
+     * @param {number} userId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
@@ -242,12 +243,12 @@ export interface FAMApplicationsApiInterface {
     /**
      * Gets paged users/roles assignment records associated with an application.
      * @summary Get Fam Application User Role Assignment
-     * @param {number} applicationId
+     * @param {number} applicationId 
      * @param {number | null} [pageNumber] Page number
      * @param {number | null} [pageSize] Number of records per page
      * @param {string | null} [search] Search by keyword
      * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
@@ -266,8 +267,8 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     /**
      * Retrieve the user data for a given user id under an authorized application.  Args:     userId (int): The ID of the user.     applicationId (int): The ID of the application the user has access to.  Returns:     FamUserInfoSchema: The user information corresponding to the provided userId.
      * @summary Retrieve User Information by User ID under an application
-     * @param {number} userId
-     * @param {number} applicationId
+     * @param {number} userId 
+     * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi
@@ -279,12 +280,12 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     /**
      * Gets paged users/roles assignment records associated with an application.
      * @summary Get Fam Application User Role Assignment
-     * @param {number} applicationId
+     * @param {number} applicationId 
      * @param {number | null} [pageNumber] Page number
      * @param {number | null} [pageSize] Number of records per page
      * @param {string | null} [search] Search by keyword
      * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi

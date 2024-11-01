@@ -131,11 +131,11 @@
                   "type": "null"
                 }
               ],
-              "description": "Column to be sorted by \u003Cbr\u003EPossible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;",
-              "default": "user_name",
+              "description": "Column to be sorted by \u003Cbr\u003EPossible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;",
+              "default": "update_date",
               "title": "Sortby"
             },
-            "description": "Column to be sorted by \u003Cbr\u003EPossible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;"
+            "description": "Column to be sorted by \u003Cbr\u003EPossible values: [update_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]\u003Cbr\u003E&nbsp;"
           }
         ],
         "responses": {
@@ -903,6 +903,11 @@
           },
           "role": {
             "$ref": "#/components/schemas/FamRoleWithClientSchema"
+          },
+          "update_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Update Date"
           }
         },
         "type": "object",
@@ -911,7 +916,8 @@
           "user_id",
           "role_id",
           "user",
-          "role"
+          "role",
+          "update_date"
         ],
         "title": "FamApplicationUserRoleAssignmentGetSchema"
       },
@@ -1774,6 +1780,7 @@
       "UserRoleSortByEnum": {
         "type": "string",
         "enum": [
+          "update_date",
           "user_name",
           "user_type_code",
           "email",
