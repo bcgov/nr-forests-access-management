@@ -61,6 +61,6 @@ export interface FamApplicationUserRoleAssignmentGetSchema {
      * @type {string}
      * @memberof FamApplicationUserRoleAssignmentGetSchema
      */
-    'update_date': string;
+    'create_date': string;
 }
 
