@@ -25,6 +25,11 @@ def get_user_role_by_cognito_user_id_and_role_id(
 
 
 def get_existing_testdb_seeded_users(db_pg_session: Session, excluded_user_name_prefix):
+    """
+    Testcontainer db is up with some existing users (from flyway). If the tests loaded with
+    some large amount of test users in db session with name prefixed, this helps to find
+    test users exclude pre-existing ones.
+    """
     return db_pg_session.scalars(
         select(models.FamUser).filter(not_(models.FamUser.user_name.ilike(f"%{excluded_user_name_prefix}%")))
     ).all()
@@ -66,7 +71,7 @@ def contains_any_insensitive(obj, search_attributes: List[str], keyword: str) ->
         else:
             return False
 
-    # return True as long as there is one attribute containing keyword value
+    # return True as long as there is one attribute in the instance containing keyword value
     is_any = any(
         contains_keyword_insensitive(operator.attrgetter(attr_name)(obj), keyword)
         for attr_name in search_attributes)

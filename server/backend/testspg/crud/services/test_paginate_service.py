@@ -24,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 These suites of tests use FamUser (fam_user table) for easy testing on the 'PaginateService'
 to avoid complicated test data setup.
 Note:
-For testing on pagination some mock data are added to the session (no committed). However, due to
+For testing on pagination some mock data are added to the session (rollback). However, due to
 existing testcontainer database already has some seeding from local test flyway, it has to be
 taken into consideration for tests cases to verify the correct results.
 """
@@ -74,11 +74,6 @@ def __build_test_filter_criteria(page_params: TestUserPageParamsSchema):
         if search_keyword is not None
         else None
     )
-
-def __get_number_of_pages(count: int, page_size: int) -> int:
-    rest = count % page_size
-    quotient = count // page_size
-    return quotient if not rest else quotient + 1
 
 def sort_list(list: List[FamUser], sort_by, sort_order):
     def by_key(e):
