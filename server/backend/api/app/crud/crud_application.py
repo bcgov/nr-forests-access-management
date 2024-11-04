@@ -18,8 +18,8 @@ LOGGER = logging.getLogger(__name__)
 # Local constant only, for application user/role sorting/filtering query,
 # provides mapping for sortBy/filtered columns mapped to model columns.
 USER_ROLE_SORT_BY_MAPPED_COLUMN = {
-    UserRoleSortByEnum.UPDATED_DATE: models.FamUserRoleXref.update_date,
-    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,  # default
+    UserRoleSortByEnum.CREATE_DATE: models.FamUserRoleXref.create_date, # default
+    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,
     UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
     UserRoleSortByEnum.EMAIL: models.FamUser.email,
     UserRoleSortByEnum.FULL_NAME: models.FamUser.full_name,  # this is a hybrid column

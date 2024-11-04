@@ -360,7 +360,7 @@ sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreat
 		role=FamRoleWithClientSchema(role_name='FOM_REVIEWER', role_type_code='C',
 		application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
 		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', client_number=None, parent_role=None),
-		update_date=datetime(2024, 11, 1, 19, 44, 47)),
+		create_date=datetime(2024, 11, 1, 19, 44, 47)),
 		'error_message': None
 	}
  )
@@ -378,7 +378,7 @@ sample_end_user_permission_granted_with_scope_details = FamUserRoleAssignmentCre
 		client_number=FamForestClientSchema(client_name=None, forest_client_number="00001012", status=None),
 		parent_role=FamRoleMinSchema(role_name="FOM_SUBMITTER", role_type_code="A",
 			application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
-		update_date=datetime(2024, 11, 1, 19, 44, 47)),
+		create_date=datetime(2024, 11, 1, 19, 44, 47)),
 		'error_message': None
 	}
  )

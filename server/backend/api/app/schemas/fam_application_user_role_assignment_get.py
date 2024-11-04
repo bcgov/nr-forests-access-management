@@ -14,7 +14,7 @@ class FamApplicationUserRoleAssignmentGetSchema(BaseModel):
     role_id: int
     user: FamUserInfoSchema
     role: FamRoleWithClientSchema
-    update_date: datetime
+    create_date: datetime
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
     model_config = ConfigDict(from_attributes=True)

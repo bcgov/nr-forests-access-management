@@ -40,7 +40,7 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
           "client_number": None,
           "parent_role": None
         },
-        "update_date": "2024-11-01T19:44:47.497785Z"
+        "create_date": "2024-11-01T19:44:47.497785Z"
       },
       {
         "user_role_xref_id": 12,
@@ -82,7 +82,7 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
             }
           },
         },
-        "update_date": "2024-11-01T19:45:20.702148Z"
+        "create_date": "2024-11-01T19:45:20.702148Z"
       }
     ]
   }
