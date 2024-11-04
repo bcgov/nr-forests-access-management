@@ -3,6 +3,7 @@ from datetime import datetime
 
 from api.app.constants import UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
+from api.app.datetime_format import TIMESTAMP_FORMAT_DEFAULT
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
@@ -52,11 +53,14 @@ def __build_filter_criteria(page_params: UserRolePageParamsSchema):
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
 
     def operate_on_column(column: Column):
+        """
+        Determines column type to apply sql operator/function for filtering.
+        """
         column_type = column.type.python_type
         if column_type is str:
             return column.ilike(f"%{search_keyword}%")
         elif column_type is datetime:
-            return func.to_char(column, 'YYYY-MM-DD HH24:MI:SS').ilike(f"%{search_keyword}%")
+            return func.to_char(column, TIMESTAMP_FORMAT_DEFAULT).ilike(f"%{search_keyword}%")
 
 
     return (
