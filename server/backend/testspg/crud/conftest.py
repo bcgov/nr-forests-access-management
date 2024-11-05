@@ -4,17 +4,16 @@ import random
 from typing import List
 
 import pytest
-from api.app.constants import UserType
+from api.app.constants import RoleType, UserType
 from api.app.models.model import (FamApplication, FamForestClient, FamRole,
                                   FamUser, FamUserRoleXref)
 from sqlalchemy import Select
 from sqlalchemy.orm import Session
 from testspg.constants import (BUSINESS_GUID_BCEID_LOAD_2_TEST,
-                               BUSINESS_GUID_BCEID_LOAD_3_TEST)
+                               BUSINESS_GUID_BCEID_LOAD_3_TEST, TEST_CREATOR)
 
 LOGGER = logging.getLogger(__name__)
 
-TEST_APPLICATION_NAME = "APP_TEST"
 
 @pytest.fixture(scope="function")
 def load_test_users(db_pg_session: Session):
@@ -34,7 +33,7 @@ def load_test_users(db_pg_session: Session):
         random_string = ''.join(random.choices(sample_str, k = length_of_string))
         idir_users.append(
             FamUser(
-                user_type_code=UserType.IDIR, user_name=f"TEST_USER_IDIR_{i}", create_user="system_tester",
+                user_type_code=UserType.IDIR, user_name=f"TEST_USER_IDIR_{i}", create_user=TEST_CREATOR,
                 first_name=f"First_Name_{i}", last_name=f"Last_Name_{i}", email=f"email_{i}_{random_string}@fam.test.com"
             )
         )
@@ -44,7 +43,7 @@ def load_test_users(db_pg_session: Session):
         random_string = ''.join(random.choices(sample_str, k = length_of_string))
         bceid_users.append(
             FamUser(
-                user_type_code=UserType.BCEID, user_name=f"TEST_USER_BCEID_{i}", create_user="system_tester",
+                user_type_code=UserType.BCEID, user_name=f"TEST_USER_BCEID_{i}", create_user=TEST_CREATOR,
                 first_name=f"First_Name_{i}", last_name=f"Last_Name_{i}", email=f"email_{i}_{random_string}@fam.test.com",
                 business_guid=f"{BUSINESS_GUID_BCEID_LOAD_3_TEST if i % 5 == 0 else BUSINESS_GUID_BCEID_LOAD_2_TEST}"
             )
@@ -74,18 +73,18 @@ def load_fom_dev_user_role_test_data(db_pg_session: Session, load_test_users):
         FamUserRoleXref(
             user=user,
             role=fom_dev_reviewer_role,
-            create_user="system_tester"
+            create_user=TEST_CREATOR
         ) for user in idir_test_users  # assign IDIR users: reviewer role
     ]
     session.add_all(test_reviewer_user_roles)
 
     # create some temporary testing forest client number (do not use them to validate)
     test_forest_clients = [
-        FamForestClient(forest_client_number="99009901", create_user="system_tester"),
-        FamForestClient(forest_client_number="99009902", create_user="system_tester"),
-        FamForestClient(forest_client_number="99009903", create_user="system_tester"),
-        FamForestClient(forest_client_number="99009904", create_user="system_tester"),
-        FamForestClient(forest_client_number="99009905", create_user="system_tester"),
+        FamForestClient(forest_client_number="99009901", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009902", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009903", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009904", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009905", create_user=TEST_CREATOR),
     ]
     session.add_all(test_forest_clients)
 
@@ -97,8 +96,8 @@ def load_fom_dev_user_role_test_data(db_pg_session: Session, load_test_users):
                 application=fom_dev_submitter_role.application,
                 client_number=fc,
                 parent_role=fom_dev_submitter_role,
-                create_user="system_tester",
-                role_type_code="C"
+                create_user=TEST_CREATOR,
+                role_type_code=RoleType.ROLE_TYPE_CONCRETE
         )
         for fc in test_forest_clients
     ]
@@ -109,7 +108,7 @@ def load_fom_dev_user_role_test_data(db_pg_session: Session, load_test_users):
         FamUserRoleXref(
             user=user,
             role=test_submiter_roles_with_client_number[user.user_id % len(test_submiter_roles_with_client_number)],
-            create_user="system_tester"
+            create_user=TEST_CREATOR
         ) for user in bceid_test_users  # assign BCeID users: submitter role
     ]
     session.add_all(test_submitter_user_roles)
