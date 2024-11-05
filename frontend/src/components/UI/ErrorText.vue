@@ -21,12 +21,12 @@ defineProps<{
 
     p {
         margin: 0;
-        color: colors.$red-60;
+        color: var(--support-error);
     }
 
     svg {
         margin-right: 0.5rem;
-        stroke: colors.$red-60;
+        stroke: var(--support-error);
     }
 }
 </style>

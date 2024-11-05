@@ -33,7 +33,7 @@ const computedRole = computed({
 </script>
 
 <template>
-    <div class="form-field">
+    <div class="role-select-table-container">
         <label :for="props.fieldId">{{ props.label }}</label>
         <Field
             :name="props.fieldId"
@@ -61,7 +61,7 @@ const computedRole = computed({
                 <Column field="roleName" header="Role"
                     ><template #body="{ data }">
                         <span>
-                            {{ data.name }}
+                            {{ data.display_name }}
                         </span>
                     </template></Column
                 >
@@ -79,13 +79,15 @@ const computedRole = computed({
     </div>
 </template>
 <style lang="scss">
-.p-datatable {
-    .p-column-header-content .p-column-title {
-        padding: 0;
-    }
+.role-select-table-container {
+    .p-datatable {
+        .p-column-header-content .p-column-title {
+            padding: 0;
+        }
 
-    .p-datatable-tbody > tr > td {
-        padding: 1rem;
+        .p-datatable-tbody > tr > td {
+            padding: 1rem;
+        }
     }
 }
 </style>

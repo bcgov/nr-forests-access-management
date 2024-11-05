@@ -4,7 +4,7 @@ import { Form as VeeForm } from "vee-validate";
 import { computed, ref } from "vue";
 
 import Button from "@/components/common/Button.vue";
-import ForestClientInput from "@/components/grantaccess/form/ForestClientInput.vue";
+import ForestClientInput from "@/components/grantaccess/ForestClientSection.vue";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
 import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
 import { IconSize } from "@/enum/IconEnum";

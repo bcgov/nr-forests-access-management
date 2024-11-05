@@ -35,7 +35,6 @@ const spinnerClass = computed(() => ({
     align-items: center;
 
     .default-loading-spinner {
-        width: 2rem; // Default size
         .p-progress-spinner-svg circle {
             stroke: colors.$blue-60;
             animation: none;

@@ -7,12 +7,7 @@ import { IconSize } from "@/enum/IconEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { selectedApplicationId } from "@/store/ApplicationState";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
-import {
-    useMutation,
-    useQueries,
-    useQuery,
-    type QueryObserverResult,
-} from "@tanstack/vue-query";
+import { useMutation } from "@tanstack/vue-query";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
@@ -99,6 +94,8 @@ const cleanupForestClientSection = () => {
     // remove the verified forest client numbers which already added to form data
     setVerifiedForestClients([]);
 
+    forestClientNumberVerifyErrors.value = [];
+
     // remove the forest client card data
     forestClientData.value = [];
 };
@@ -160,11 +157,6 @@ const removeForestClientFromList = (clientNumber: string) => {
     setVerifiedForestClients(
         forestClientData.value.map((client) => client.forest_client_number)
     );
-};
-
-const cleanupForestClientNumberInput = () => {
-    forestClientNumbersInput.value = "";
-    forestClientNumberVerifyErrors.value = [];
 };
 
 // whenever user id or abstract role changed, cleanup the forest client section
@@ -267,12 +259,12 @@ const handleFcInput = () => {
         </Field>
     </div>
 
-    <ForestClientCard
+    <!-- <ForestClientCard
         v-if="forestClientData.length > 0"
         class="fores-client-card-container px-0"
         :forestClientData="forestClientData"
         @remove-item="removeForestClientFromList"
-    />
+    /> -->
 </template>
 
 <style lang="scss">

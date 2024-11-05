@@ -23,9 +23,9 @@ import {
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
 import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
-import RoleSelectTable from "@/components/grantaccess/form/RoleSelectTable.vue";
+import RoleSelectTable from "@/components/grantaccess/RoleSelectTable.vue";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
-import ForestClientInput from "@/components/grantaccess/form/ForestClientInput.vue";
+import ForestClientSection from "@/components/grantaccess/ForestClientSection.vue";
 
 const router = useRouter();
 const auth = useAuth();
@@ -136,13 +136,13 @@ const handleRoleChange = (role: FamRoleDto) => {
 
 const clearForestClients = () => {
     if (formData.value) {
-        formData.value.forestClientIds = [];
+        formData.value.forestClientIds = new Set();
     }
 };
 
-const setForestClients = (forestClientIds: string[]) => {
+const setVerifiedForestClients = (fcIdSet: Set<string>) => {
     if (formData.value) {
-        formData.value.forestClientIds = forestClientIds;
+        formData.value.forestClientIds = fcIdSet;
     }
     console.log(formData.value?.forestClientIds);
 };
@@ -194,11 +194,11 @@ const setForestClients = (forestClientIds: string[]) => {
                         title="Organization information"
                         :divider="false"
                     >
-                        <ForestClientInput
+                        <ForestClientSection
                             :userId="formData.userId"
                             :role="formData.role"
                             :app-id="props.applicationId"
-                            @setVerifiedForestClients="setForestClients"
+                            @setVerifiedForestClients="setVerifiedForestClients"
                         />
                     </StepContainer>
                 </form>

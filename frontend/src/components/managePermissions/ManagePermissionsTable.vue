@@ -274,14 +274,12 @@ const handleAddButton = () => {
                         :label="
                             authGroup === 'FAM_ADMIN'
                                 ? 'Admin'
-                                : data.role.parent_role
-                                ? data.role.parent_role.role_name
                                 : data.role.display_name
                         "
                     />
                 </template>
             </Column>
-
+            <Column header="Created on" />
             <Column header="Action">
                 <template #body>
                     <button

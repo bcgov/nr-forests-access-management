@@ -7,7 +7,7 @@ export type AppPermissionFormType = {
     userId: string;
     userGuid: string;
     userEmail: string;
-    forestClientIds: string[];
+    forestClientIds: Set<string>;
     role: FamRoleDto | null;
     sendUserEmail: boolean;
 };
@@ -17,7 +17,7 @@ const defaultFormData: AppPermissionFormType = {
     userId: "",
     userGuid: "",
     userEmail: "",
-    forestClientIds: [],
+    forestClientIds: new Set<string>(),
     role: null,
     sendUserEmail: false,
 };
