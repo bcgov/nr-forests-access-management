@@ -12,7 +12,7 @@ import { ErrorMessage, Field, Form } from "vee-validate";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import { computed, ref, watch } from "vue";
 import useAuth from "@/composables/useAuth";
-import { UserType } from "fam-app-acsctl-api/model";
+import { UserType, type FamForestClientSchema } from "fam-app-acsctl-api/model";
 import {
     getDefaultFormData,
     type AppPermissionFormType,
@@ -136,15 +136,17 @@ const handleRoleChange = (role: FamRoleDto) => {
 
 const clearForestClients = () => {
     if (formData.value) {
-        formData.value.forestClientIds = new Set();
+        formData.value.forestClients = [];
     }
 };
 
-const setVerifiedForestClients = (fcIdSet: Set<string>) => {
+const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
     if (formData.value) {
-        formData.value.forestClientIds = fcIdSet;
+        formData.value.forestClients = forestClients;
     }
-    console.log(formData.value?.forestClientIds);
+    console.log(
+        formData.value?.forestClients.map((fc) => fc.forest_client_number)
+    );
 };
 </script>
 
@@ -198,6 +200,7 @@ const setVerifiedForestClients = (fcIdSet: Set<string>) => {
                             :userId="formData.userId"
                             :role="formData.role"
                             :app-id="props.applicationId"
+                            :verified-clients="formData.forestClients"
                             @setVerifiedForestClients="setVerifiedForestClients"
                         />
                     </StepContainer>

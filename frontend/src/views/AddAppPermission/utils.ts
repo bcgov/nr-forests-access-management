@@ -1,4 +1,4 @@
-import { UserType } from "fam-app-acsctl-api/model";
+import { UserType, type FamForestClientSchema } from "fam-app-acsctl-api/model";
 import type { AddAppPermissionRequestType } from "../../types/RouteTypes";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 
@@ -7,7 +7,7 @@ export type AppPermissionFormType = {
     userId: string;
     userGuid: string;
     userEmail: string;
-    forestClientIds: Set<string>;
+    forestClients: FamForestClientSchema[];
     role: FamRoleDto | null;
     sendUserEmail: boolean;
 };
@@ -17,7 +17,7 @@ const defaultFormData: AppPermissionFormType = {
     userId: "",
     userGuid: "",
     userEmail: "",
-    forestClientIds: new Set<string>(),
+    forestClients: [],
     role: null,
     sendUserEmail: false,
 };

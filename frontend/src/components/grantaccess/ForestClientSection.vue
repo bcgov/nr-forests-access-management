@@ -19,6 +19,7 @@ const props = withDefaults(
         userId: string;
         role: FamRoleDto | null;
         appId: number;
+        verifiedClients: FamForestClientSchema[]; // The verified forest client numbers in the form data
         fieldId?: string;
     }>(),
     {
@@ -28,13 +29,12 @@ const props = withDefaults(
 
 const emit = defineEmits(["setVerifiedForestClients"]);
 
-const setVerifiedForestClients = (ids: string[]) =>
-    emit("setVerifiedForestClients", ids);
+const setVerifiedForestClients = (clients: FamForestClientSchema[]) =>
+    emit("setVerifiedForestClients", clients);
 
 const forestClientNumbersInput = ref("");
 const numbersToVerify = ref<string[]>([]);
 
-const forestClientData = ref<FamForestClientSchema[]>([]);
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
 
 // const verifyForestClientNumber = async (forestClientNumbers: string) => {
@@ -90,14 +90,15 @@ const forestClientNumberVerifyErrors = ref([] as Array<string>);
 //     forestClientNumbersInput.value = forestNumbers.toString();
 // };
 
+const clearError = () => {
+    forestClientNumberVerifyErrors.value = [];
+};
+
 const cleanupForestClientSection = () => {
     // remove the verified forest client numbers which already added to form data
     setVerifiedForestClients([]);
 
-    forestClientNumberVerifyErrors.value = [];
-
-    // remove the forest client card data
-    forestClientData.value = [];
+    clearError();
 };
 
 const clientSearchMutation = useMutation({
@@ -111,9 +112,7 @@ const clientSearchMutation = useMutation({
         return { clientNumber };
     },
     onSuccess: (data, _variables, context) => {
-        if (data.length) {
-            forestClientData.value.push(data[0]);
-        } else {
+        if (!data.length) {
             forestClientNumberVerifyErrors.value.push(
                 `An error has occurred. Client Number ${context.clientNumber} could not be added.`
             );
@@ -134,29 +133,35 @@ const isVerifying = ref<boolean>(false);
 const handleVerifyClients = async () => {
     if (!isVerifying.value) {
         isVerifying.value = true;
-        cleanupForestClientSection();
+        clearError();
         const verifyPromises = numbersToVerify.value.map((clientNumber) =>
             clientSearchMutation.mutateAsync(clientNumber)
         );
-        await Promise.allSettled(verifyPromises);
+
+        const settledPromise = await Promise.allSettled(verifyPromises);
 
         isVerifying.value = false;
+
+        const verifiedClientsFromQuery: FamForestClientSchema[] = settledPromise
+            .filter((promise) => promise.status === "fulfilled")
+            .map((data) => (data.value.length ? data.value[0] : null))
+            .filter((fc) => fc !== null);
+
         setVerifiedForestClients(
-            forestClientData.value.map((fc) => fc.forest_client_number)
+            verifiedClientsFromQuery.concat(props.verifiedClients)
         );
     }
 };
 
 const removeForestClientFromList = (clientNumber: string) => {
+    let fcList = [...props.verifiedClients];
     // remove the verified forest client from card
-    forestClientData.value = forestClientData.value.filter(
+    fcList = fcList.filter(
         (client) => client.forest_client_number !== clientNumber
     );
 
-    // remove the verified forest client number from form data
-    setVerifiedForestClients(
-        forestClientData.value.map((client) => client.forest_client_number)
-    );
+    // Emit the updated list
+    setVerifiedForestClients(fcList);
 };
 
 // whenever user id or abstract role changed, cleanup the forest client section
@@ -180,7 +185,7 @@ const parseAndCleanNumbers = (input: string): string[] => {
     );
 };
 
-const handleFcInput = () => {
+const addClientNumbers = () => {
     numbersToVerify.value = parseAndCleanNumbers(
         forestClientNumbersInput.value
     );
@@ -189,6 +194,7 @@ const handleFcInput = () => {
 </script>
 
 <template>
+    <!-- Input section -->
     <div>
         <label for="forestClientInput"
             >Add one or more client numbers (8 digits)
@@ -205,11 +211,10 @@ const handleFcInput = () => {
                         placeholder="Enter and verify the client number"
                         class="w-100 custom-height"
                         v-model="forestClientNumbersInput"
-                        @blur="handleFcInput"
+                        @blur="addClientNumbers"
                         @keydown.enter.prevent="
                             forestClientNumbersInput.length &&
-                                !errorMessage &&
-                                handleFcInput()
+                                addClientNumbers()
                         "
                         :class="{
                             'is-invalid':
@@ -246,10 +251,10 @@ const handleFcInput = () => {
                     aria-label="Add Client Numbers"
                     name="verifyFC"
                     label="Add Client Numbers"
-                    @click="handleVerifyClients"
+                    @click="addClientNumbers"
                     v-bind:disabled="
                         forestClientNumbersInput?.length <
-                            FOREST_CLIENT_INPUT_MAX_LENGTH || !!errorMessage
+                        FOREST_CLIENT_INPUT_MAX_LENGTH
                     "
                 >
                     <Spinner v-if="isVerifying" small is-white />
@@ -259,16 +264,19 @@ const handleFcInput = () => {
         </Field>
     </div>
 
-    <!-- <ForestClientCard
-        v-if="forestClientData.length > 0"
-        class="fores-client-card-container px-0"
-        :forestClientData="forestClientData"
+    <!-- Verified Card Section -->
+
+    <ForestClientCard
+        v-if="verifiedClients.length > 0"
+        class="fores-client-card-container custom-card px-0"
+        :forestClientData="verifiedClients"
         @remove-item="removeForestClientFromList"
-    /> -->
+    />
 </template>
 
 <style lang="scss">
+@import "@/assets/styles/card.scss";
 .fores-client-card-container {
-    @import "@/assets/styles/card.scss";
+    margin-top: 2rem;
 }
 </style>

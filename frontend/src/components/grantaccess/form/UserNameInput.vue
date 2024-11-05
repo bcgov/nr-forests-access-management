@@ -116,10 +116,10 @@ const handleVerify = (userType: UserType) => {
         errorMsg.value = "You cannot grant permissions to yourself.";
         return;
     }
-    if (userType === "I") {
+    if (userType === "I" && computedUserId.value.length) {
         verifyIdirMutation.mutate();
     }
-    if (userType === "B") {
+    if (userType === "B" && computedUserId.value.length) {
         verifyBceidMutation.mutate();
     }
 };
@@ -205,26 +205,12 @@ watch(
             </div>
         </Field>
 
-        <div
+        <UserIdentityCard
             v-if="searchResult"
-            id="UserIdentityCard"
-            class="user-id-card-container col-md-5 px-0"
-        >
-            <UserIdentityCard
-                :userIdentity="searchResult"
-                :errorMsg="errorMsg"
-            ></UserIdentityCard>
-        </div>
+            :userIdentity="searchResult"
+            :errorMsg="errorMsg"
+        />
     </div>
 </template>
 
-<style lang="scss">
-.user-id-card-container {
-    @import "@/assets/styles/card.scss";
-    width: 100%;
-
-    .custom-card {
-        width: 100%;
-    }
-}
-</style>
+<style lang="scss"></style>

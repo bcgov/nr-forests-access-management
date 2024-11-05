@@ -42,6 +42,10 @@ body {
     }
 }
 
+p {
+    margin: 0;
+}
+
 // when screen width < 390px
 @media (max-width: 390px) {
     .input-with-verify-button {
