@@ -161,6 +161,31 @@ const handlePostLogin = async () => {
     }
 };
 
+const refreshUserSession = (
+    cognitoUser: CognitoUser,
+    refreshToekn: CognitoRefreshToken
+) => {
+    cognitoUser.refreshSession(
+        refreshToekn,
+        (err, session: CognitoUserSession) => {
+            if (err) {
+                console.error("Token refresh failed:", err);
+                logout();
+            } else {
+                authState.value = {
+                    ...authState.value,
+                    accessToken: session.getAccessToken(),
+                    idToken: session.getIdToken(),
+                };
+                setAxiosAuthorizationHeader(
+                    session.getAccessToken().getJwtToken()
+                );
+                console.log("Tokens refreshed successfully.");
+            }
+        }
+    );
+};
+
 /**
  * Restores the user's session on page reload if the user is already authenticated.
  */
@@ -185,7 +210,9 @@ const restoreSession = async () => {
             refreshToken,
             isAuthRestored: true,
         };
+
         setAxiosAuthorizationHeader(accessToken.getJwtToken());
+        refreshUserSession(cognitoUser, refreshToken);
         startSilentRefresh(cognitoUser);
         resetInactivityTimeout();
     } catch (error) {
@@ -213,25 +240,7 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
     refreshIntervalId = setInterval(async () => {
         try {
             if (authState.value.refreshToken) {
-                cognitoUser.refreshSession(
-                    authState.value.refreshToken,
-                    (err, session: CognitoUserSession) => {
-                        if (err) {
-                            console.error("Token refresh failed:", err);
-                            logout();
-                        } else {
-                            authState.value = {
-                                ...authState.value,
-                                accessToken: session.getAccessToken(),
-                                idToken: session.getIdToken(),
-                            };
-                            setAxiosAuthorizationHeader(
-                                session.getAccessToken().getJwtToken()
-                            );
-                            console.log("Tokens refreshed successfully.");
-                        }
-                    }
-                );
+                refreshUserSession(cognitoUser, authState.value.refreshToken);
             }
         } catch (error) {
             console.error("Silent refresh failed:", error);

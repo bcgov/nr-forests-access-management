@@ -13,6 +13,7 @@ import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
 import { computed, ref, watch } from "vue";
+import NotificationMessage from "../common/NotificationMessage.vue";
 
 const props = withDefaults(
     defineProps<{
@@ -36,59 +37,6 @@ const forestClientNumbersInput = ref("");
 const numbersToVerify = ref<string[]>([]);
 
 const forestClientNumberVerifyErrors = ref([] as Array<string>);
-
-// const verifyForestClientNumber = async (forestClientNumbers: string) => {
-//     forestClientNumberVerifyErrors.value = [];
-
-//     // split by commas and spaces
-//     let forestNumbers = forestClientNumbers.split(",").map((num) => num.trim());
-
-//     for (const forestClientNumber of forestNumbers) {
-//         if (isForestClientNumberAdded(forestClientNumber)) {
-//             forestClientNumberVerifyErrors.value.push(
-//                 `Client Number ${forestClientNumber} has already been added.`
-//             );
-
-//             continue;
-//         }
-//         await AppActlApiService.forestClientsApi
-//             .search(forestClientNumber, selectedApplicationId.value!)
-//             .then((result) => {
-//                 if (!result.data[0]) {
-//                     forestClientNumberVerifyErrors.value.push(
-//                         `Client Number ${forestClientNumber} is invalid and cannot be added.`
-//                     );
-//                     return;
-//                 }
-//                 if (
-//                     result.data[0].status?.status_code !==
-//                     FamForestClientStatusType.A
-//                 ) {
-//                     forestClientNumberVerifyErrors.value.push(
-//                         `Client Number ${forestClientNumber} is inactive and cannot be added.`
-//                     );
-//                     return;
-//                 }
-
-//                 forestClientData.value.push(result.data[0]);
-//                 emit(
-//                     "setVerifiedForestClients",
-//                     result.data[0].forest_client_number
-//                 );
-//                 forestNumbers = forestNumbers.filter(
-//                     (number) => number !== forestClientNumber
-//                 ); //Remove successfully added numbers so the user can edit in the input only errored ones
-//             })
-//             .catch(() => {
-//                 forestClientNumberVerifyErrors.value.push(
-//                     `An error has occurred. Client Number ${forestClientNumber} could not be added.`
-//                 );
-//             });
-//     }
-
-//     //The input is updated with only the numbers that have errored out. The array is converted to a string values comma separated
-//     forestClientNumbersInput.value = forestNumbers.toString();
-// };
 
 const clearError = () => {
     forestClientNumberVerifyErrors.value = [];
@@ -116,6 +64,12 @@ const clientSearchMutation = useMutation({
             forestClientNumberVerifyErrors.value.push(
                 `An error has occurred. Client Number ${context.clientNumber} could not be added.`
             );
+        } else if (data[0].status?.status_code !== "A") {
+            forestClientNumberVerifyErrors.value.push(
+                `Client Number ${
+                    context.clientNumber
+                } is  ${data[0].status?.description.toLocaleLowerCase()} and cannot be added.`
+            );
         }
     },
     onError: (_error, _variables, context) => {
@@ -130,10 +84,13 @@ const clientSearchMutation = useMutation({
 
 const isVerifying = ref<boolean>(false);
 
+const duplicateClientNumbers = ref<string[]>([]);
+
 const handleVerifyClients = async () => {
     if (!isVerifying.value) {
         isVerifying.value = true;
         clearError();
+        duplicateClientNumbers.value = [];
         const verifyPromises = numbersToVerify.value.map((clientNumber) =>
             clientSearchMutation.mutateAsync(clientNumber)
         );
@@ -141,15 +98,55 @@ const handleVerifyClients = async () => {
         const settledPromise = await Promise.allSettled(verifyPromises);
 
         isVerifying.value = false;
+        forestClientNumbersInput.value = "";
 
         const verifiedClientsFromQuery: FamForestClientSchema[] = settledPromise
-            .filter((promise) => promise.status === "fulfilled")
-            .map((data) => (data.value.length ? data.value[0] : null))
-            .filter((fc) => fc !== null);
+            .filter(
+                (
+                    promise
+                ): promise is PromiseFulfilledResult<FamForestClientSchema[]> =>
+                    promise.status === "fulfilled"
+            )
+            .map((data) =>
+                data.value.length && data.value[0].status?.status_code === "A"
+                    ? data.value[0]
+                    : null
+            )
+            .filter((fc): fc is FamForestClientSchema => fc !== null);
 
-        setVerifiedForestClients(
-            verifiedClientsFromQuery.concat(props.verifiedClients)
-        );
+        // Combine the two lists
+        const allClients = [
+            ...verifiedClientsFromQuery,
+            ...props.verifiedClients,
+        ];
+
+        // Create a map to track occurrences
+        const clientMap = new Map<string, FamForestClientSchema[]>();
+
+        allClients.forEach((client) => {
+            const key = client.forest_client_number;
+            if (!clientMap.has(key)) {
+                clientMap.set(key, [client]);
+            } else {
+                clientMap.get(key)!.push(client);
+            }
+        });
+
+        // Extract unique clients
+        const uniqueVerifiedClients = [
+            ...Array.from(clientMap.values())
+                .filter((clients) => clients.length)
+                .map((clients) => clients[0]),
+        ];
+
+        // Extract duplicates
+        const duppedClientNumbers = Array.from(clientMap.entries())
+            .filter(([, clients]) => clients.length > 1)
+            .map(([forest_client_number]) => forest_client_number);
+
+        duplicateClientNumbers.value = duppedClientNumbers;
+
+        setVerifiedForestClients(uniqueVerifiedClients);
     }
 };
 
@@ -196,6 +193,16 @@ const addClientNumbers = () => {
 <template>
     <!-- Input section -->
     <div>
+        <NotificationMessage
+            v-if="duplicateClientNumbers.length"
+            :msg-text="`Client number ${duplicateClientNumbers.join(', ')} ${
+                duplicateClientNumbers.length > 1 ? 'have' : 'has'
+            } already been added`"
+            severity="warn"
+            class="forest-client-warn-notification"
+            hide-severity-text
+            :closable="false"
+        />
         <label for="forestClientInput"
             >Add one or more client numbers (8 digits)
         </label>
@@ -211,7 +218,6 @@ const addClientNumbers = () => {
                         placeholder="Enter and verify the client number"
                         class="w-100 custom-height"
                         v-model="forestClientNumbersInput"
-                        @blur="addClientNumbers"
                         @keydown.enter.prevent="
                             forestClientNumbersInput.length &&
                                 addClientNumbers()
@@ -235,13 +241,11 @@ const addClientNumbers = () => {
                     <ErrorMessage
                         class="invalid-feedback"
                         :name="props.fieldId"
-                        style="display: block"
                     />
                     <small
                         id="forestClientInputValidationError"
                         class="invalid-feedback"
                         v-for="error in forestClientNumberVerifyErrors"
-                        style="display: block"
                     >
                         {{ error }}
                     </small>
@@ -278,5 +282,10 @@ const addClientNumbers = () => {
 @import "@/assets/styles/card.scss";
 .fores-client-card-container {
     margin-top: 2rem;
+}
+.forest-client-warn-notification {
+    .p-message {
+        position: relative;
+    }
 }
 </style>

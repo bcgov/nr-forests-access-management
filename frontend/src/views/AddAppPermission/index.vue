@@ -211,6 +211,7 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
 </template>
 <style lang="scss">
 .add-app-permission-container {
+    padding-bottom: 2.5rem;
     .form-container {
         margin-top: 3rem;
         width: 60%; // Temporary until we implement the grid system

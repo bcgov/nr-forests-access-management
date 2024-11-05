@@ -1,30 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Message from 'primevue/message';
+import { ref } from "vue";
+import Message from "primevue/message";
 
 import {
     clearNotification,
     showFullNotificationMsg,
-} from '@/store/NotificationState';
-import { IconSize } from '@/enum/IconEnum';
-import type { Severity } from '@/enum/SeverityEnum';
+} from "@/store/NotificationState";
+import { IconSize } from "@/enum/IconEnum";
+import type { SeverityType } from "@/enum/SeverityEnum";
 
-const props = defineProps({
-    msgText: {
-        type: String,
-        required: true,
-    },
-    severity: {
-        type: String,
-        required: true,
-    },
-    hasFullMsg: {
-        type: Boolean,
-        required: false,
-    },
-});
+const props = defineProps<{
+    msgText: string;
+    severity: SeverityType;
+    hasFullMsg?: boolean;
+    hideSeverityText?: boolean;
+    closable?: boolean;
+}>();
 
-const showSeeAll = ref(props.hasFullMsg as boolean);
+const showSeeAll = ref(props.hasFullMsg);
 
 const closeNotification = () => {
     clearNotification(props.severity);
@@ -38,6 +31,7 @@ const closeNotification = () => {
             :class="props.severity"
             :severity="props.severity"
             :sticky="true"
+            :closable="props.closable === undefined ? true : props.closable"
             @close="closeNotification()"
         >
             <Icon
@@ -51,15 +45,17 @@ const closeNotification = () => {
                 :size="IconSize.medium"
             />
             <span class="custom-message-text">
-                <strong>{{ props.severity }}</strong>
+                <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
                 {{ props.msgText }}
                 <button
                     v-if="hasFullMsg && showSeeAll"
                     class="btn-see-all"
-                    @click="() => {
-                        showFullNotificationMsg(props.severity as Severity);
-                        showSeeAll = false
-                    }"
+                    @click="
+                        () => {
+                            showFullNotificationMsg(props.severity);
+                            showSeeAll = false;
+                        }
+                    "
                 >
                     See all
                 </button>
@@ -69,7 +65,7 @@ const closeNotification = () => {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
+@import "@/assets/styles/styles.scss";
 .message-container {
     position: relative;
     align-items: center;

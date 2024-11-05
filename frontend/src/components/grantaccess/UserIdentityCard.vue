@@ -3,6 +3,7 @@ import Card from "primevue/card";
 import Icon from "@/components/common/Icon.vue";
 import { IconSize } from "@/enum/IconEnum";
 import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
+import CardColumn from "@/components/CardColumn";
 
 const props = defineProps<{
     userIdentity: IdimProxyBceidInfoSchema;
@@ -29,61 +30,42 @@ const props = defineProps<{
                 />
                 <p>Verified user information</p>
             </template>
-            <template #content>
-                <div
-                    v-if="props.errorMsg == ''"
-                    class="col"
-                    style="margin-left: 2rem"
-                >
-                    <label for="userId" class="row">Username</label>
-                    <span id="userId" name="userId" class="row">
-                        {{ props.userIdentity.userId }}
-                    </span>
-                </div>
-                <div class="col" v-if="props.userIdentity.found">
-                    <label for="firstName" class="row">First Name</label>
-                    <span class="row" id="firstName" name="firstName">
-                        {{ props.userIdentity.firstName }}
-                    </span>
-                </div>
-                <div class="col" v-if="props.userIdentity.found">
-                    <label for="lastName" class="row"> Last Name </label>
-                    <span id="lastName" name="lastName" class="row">
-                        {{ props.userIdentity.lastName }}
-                    </span>
-                </div>
-                <div
-                    class="col"
+
+            <template #content v-if="!props.errorMsg">
+                <CardColumn
+                    :id="`user-card-id-${props.userIdentity.userId}`"
+                    label="Username"
+                    :description="props.userIdentity.userId"
+                />
+                <CardColumn
+                    v-if="props.userIdentity.found"
+                    :id="`user-card-first-name-${props.userIdentity.userId}`"
+                    label="First Name"
+                    :description="props.userIdentity.firstName"
+                />
+                <CardColumn
+                    v-if="props.userIdentity.found"
+                    :id="`user-card-last-name-${props.userIdentity.userId}`"
+                    label="Last Name"
+                    :description="props.userIdentity.lastName"
+                />
+                <CardColumn
                     v-if="
                         props.userIdentity.found &&
                         props.userIdentity.businessLegalName
                     "
-                >
-                    <label for="organizationName" class="row">
-                        Organization Name
-                    </label>
-                    <span
-                        id="organizationName"
-                        name="organizationName"
-                        class="row"
-                    >
-                        {{ props.userIdentity.businessLegalName }}
-                    </span>
-                </div>
-                <div
-                    class="col-6 d-flex"
-                    v-if="!props.userIdentity.found && props.errorMsg == ''"
-                >
-                    <span class="px-0 invalid" id="userNotExist">
-                        User does not exist
-                    </span>
-                </div>
-                <div class="col d-flex" v-if="props.errorMsg != ''">
-                    <span class="px-0 invalid" id="errorMsg">
-                        {{ props.errorMsg }}
-                    </span>
+                    :id="`user-card-org-name-${props.userIdentity.userId}`"
+                    label="Organization Name"
+                    :description="props.userIdentity.businessLegalName"
+                />
+                <div v-if="!props.userIdentity.found" class="invalid">
+                    User does not exist
                 </div>
             </template>
+            <template #content v-else-if="props.errorMsg">
+                <div>props.errorMsg</div>
+            </template>
+            <
         </Card>
     </div>
 </template>
@@ -92,5 +74,11 @@ const props = defineProps<{
 @import "@/assets/styles/card.scss";
 .user-id-card {
     margin-top: 2rem;
+
+    .p-card-content {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+    }
 }
 </style>

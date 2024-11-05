@@ -69,6 +69,8 @@ input[type="number"] {
 .invalid {
     font-size: 0.875em;
     color: $light-text-error;
+    display: flex;
+    align-items: center;
 }
 
 .custom-data-table {

@@ -27,7 +27,6 @@
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "luxon": "^3.5.0",
-        "primeflex": "^3.3.1",
         "primevue": "3.46.0",
         "vee-validate": "^4.12.6",
         "vue": "^3.4.23",

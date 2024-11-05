@@ -9,7 +9,7 @@ const props = withDefaults(
         domain: UserType;
     }>(),
     {
-        domain: UserType.I,
+        domain: UserType.B,
     }
 );
 
@@ -51,7 +51,9 @@ const computedDomain = computed({
     </div>
 </template>
 <style lang="scss" scoped>
-label {
-    margin-bottom: 0px;
+.form-field {
+    label {
+        margin-bottom: 0px;
+    }
 }
 </style>

@@ -6,7 +6,7 @@ import Icon from "@/components/common/Icon.vue";
 import { IconSize } from "@/enum/IconEnum";
 import type { FamForestClientSchema } from "fam-app-acsctl-api";
 
-import CardTextCol from "@/components/CardTextCol";
+import CardColumn from "@/components/CardColumn";
 
 defineProps<{
     forestClientData: FamForestClientSchema[];
@@ -23,41 +23,35 @@ defineProps<{
             </template>
             <template #content>
                 <div v-for="client in forestClientData" class="client-row">
-                    <p class="icon-wrapper">
+                    <div class="icon-name-wrapper medium-col">
                         <Icon
                             class="custom-carbon-icon-checkmark--filled"
                             icon="checkmark--filled"
                             :size="IconSize.small"
                             v-if="client.status?.status_code == 'A'"
                         />
-
-                        <Icon
-                            class="custom-carbon-icon-misuse"
-                            icon="misuse"
-                            style="margin-right: 1rem"
-                            :size="IconSize.small"
-                            v-else
+                        <CardColumn
+                            :id="`forest-client-number-${client.forest_client_number}`"
+                            label="Client Number:"
+                            :description="client.forest_client_number"
                         />
-                    </p>
+                    </div>
 
-                    <CardTextCol
-                        :id="`forest-client-number-${client.forest_client_number}`"
-                        label="Client Number:"
-                        :description="client.forest_client_number"
-                    />
-
-                    <CardTextCol
+                    <CardColumn
+                        class="large-col"
                         :id="`forest-client-name-${client.forest_client_number}`"
-                        label="Organization name:"
+                        label="Name:"
                         :description="client.client_name"
                     />
 
-                    <CardTextCol
+                    <CardColumn
+                        class="small-col"
                         :id="`forest-client-status-${client.forest_client_number}`"
-                        label="Organization status:"
+                        label="Status:"
                         hide-description
                     >
                         <Tag
+                            class="forest-client-status-tag"
                             name="forest-client-status"
                             :severity="
                                 client.status?.status_code == 'A'
@@ -66,20 +60,25 @@ defineProps<{
                             "
                             :value="client.status?.description"
                         />
-                    </CardTextCol>
+                    </CardColumn>
 
-                    <Button class="btn-trash">
-                        <Icon
-                            id="btn-trash-can"
-                            class="custom-carbon-icon--trash-can"
-                            icon="trash-can"
-                            :size="IconSize.small"
-                            title="Remove client"
-                            @click="
-                                $emit('removeItem', client.forest_client_number)
-                            "
-                        />
-                    </Button>
+                    <div class="small-col">
+                        <Button class="btn-trash">
+                            <Icon
+                                id="btn-trash-can"
+                                class="custom-carbon-icon--trash-can"
+                                icon="trash-can"
+                                :size="IconSize.small"
+                                title="Remove client"
+                                @click="
+                                    $emit(
+                                        'removeItem',
+                                        client.forest_client_number
+                                    )
+                                "
+                            />
+                        </Button>
+                    </div>
                 </div>
             </template>
         </Card>
@@ -94,17 +93,54 @@ defineProps<{
     .client-row {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        width: 100%;
+        gap: 2rem;
+
+        margin-bottom: 1.5rem;
+
+        &:last-child {
+            margin-bottom: 0; // Remove gap after the last row
+        }
+
+        .small-col {
+            flex: 0 0 10%; // Fixed width for small columns
+            max-width: 10%;
+        }
+
+        .medium-col {
+            flex: 0 0 20%; // Fixed width for medium columns
+            max-width: 20%;
+        }
+
+        .large-col {
+            flex: 0 0 40%; // Fixed width for large columns
+            max-width: 40%;
+        }
+
+        .icon-name-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            svg {
+                margin-right: 1rem;
+            }
+        }
+
         .btn-trash {
             display: block;
             padding: 0;
             border: none;
-            margin-bottom: 2rem;
-            max-width: 2rem;
+            width: 2rem;
         }
 
         .btn-trash,
         .btn-trash:hover {
             background-color: transparent;
+        }
+
+        .forest-client-status-tag {
+            width: fit-content;
         }
     }
 }

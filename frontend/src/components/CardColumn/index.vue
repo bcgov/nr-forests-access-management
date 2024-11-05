@@ -1,5 +1,5 @@
 <!--
-  CardTextCol Component
+  CardColumn Component
   This component is used to display a label and a description in a column format.
   It can show a loading skeleton when data is being fetched or processed.
 -->
