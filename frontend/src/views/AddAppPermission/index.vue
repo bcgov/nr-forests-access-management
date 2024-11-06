@@ -26,6 +26,7 @@ import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
 import RoleSelectTable from "@/components/grantaccess/RoleSelectTable.vue";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import ForestClientSection from "@/components/grantaccess/ForestClientSection.vue";
+import BoolCheckbox from "@/components/common/BoolCheckbox.vue";
 
 const router = useRouter();
 const auth = useAuth();
@@ -181,7 +182,7 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
                     <StepContainer
                         :title="getRoleSectionTitle(props.requestType)"
                         :subtitle="getRoleSectionSubtitle(props.requestType)"
-                        :divider="isAbstractRoleSelected()"
+                        divider
                         v-if="selectedApp?.roles"
                     >
                         <RoleSelectTable
@@ -194,7 +195,7 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
                     <StepContainer
                         v-if="isAbstractRoleSelected()"
                         title="Organization information"
-                        :divider="false"
+                        divider
                     >
                         <ForestClientSection
                             :userId="formData.userId"
@@ -202,6 +203,13 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
                             :app-id="props.applicationId"
                             :verified-clients="formData.forestClients"
                             @setVerifiedForestClients="setVerifiedForestClients"
+                        />
+                    </StepContainer>
+                    <StepContainer :divider="false">
+                        <BoolCheckbox
+                            class="email-checkbox"
+                            v-model="formData.sendUserEmail"
+                            label="Send email to notify user"
                         />
                     </StepContainer>
                 </form>
@@ -218,6 +226,10 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
     }
 
     .domain-select {
+        margin-top: 2.5rem;
+    }
+
+    .email-checkbox {
         margin-top: 2.5rem;
     }
 }

@@ -2,7 +2,7 @@
 import Divider from "@/components/UI/Divider.vue";
 
 defineProps<{
-    title: string;
+    title?: string;
     subtitle?: string;
     divider?: boolean;
 }>();
@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <div class="step-container">
-        <h3 class="title">{{ title }}</h3>
+        <h3 v-if="title" class="title">{{ title }}</h3>
         <p v-if="subtitle" class="subtitle" aria-roledescription="subtitle">
             {{ subtitle }}
         </p>

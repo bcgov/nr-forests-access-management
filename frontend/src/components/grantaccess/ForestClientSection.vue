@@ -12,7 +12,7 @@ import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed, ref, watch } from "vue";
+import { computed, h, ref, watch } from "vue";
 import NotificationMessage from "../common/NotificationMessage.vue";
 
 const props = withDefaults(
@@ -33,20 +33,50 @@ const emit = defineEmits(["setVerifiedForestClients"]);
 const setVerifiedForestClients = (clients: FamForestClientSchema[]) =>
     emit("setVerifiedForestClients", clients);
 
+const isVerifying = ref<boolean>(false);
 const forestClientNumbersInput = ref("");
 const numbersToVerify = ref<string[]>([]);
 
-const forestClientNumberVerifyErrors = ref([] as Array<string>);
+const errorClientNumbers = ref<string[]>([]);
+const notExistClientNumbers = ref<string[]>([]);
+const duplicateClientNumbers = ref<string[]>([]);
+const notActiveClientNumbers = ref<string[]>([]);
 
-const clearError = () => {
-    forestClientNumberVerifyErrors.value = [];
+const notifications = computed(() => [
+    {
+        type: "Duplicate",
+        severity: "warn",
+        clientNumbers: duplicateClientNumbers.value,
+    },
+    {
+        type: "Error",
+        severity: "error",
+        clientNumbers: errorClientNumbers.value,
+    },
+    {
+        type: "NotExist",
+        severity: "error",
+        clientNumbers: notExistClientNumbers.value,
+    },
+    {
+        type: "NotActive",
+        severity: "error",
+        clientNumbers: notActiveClientNumbers.value,
+    },
+]);
+
+const clearNotifications = () => {
+    errorClientNumbers.value = [];
+    notExistClientNumbers.value = [];
+    duplicateClientNumbers.value = [];
+    notActiveClientNumbers.value = [];
 };
 
 const cleanupForestClientSection = () => {
     // remove the verified forest client numbers which already added to form data
     setVerifiedForestClients([]);
 
-    clearError();
+    clearNotifications();
 };
 
 const clientSearchMutation = useMutation({
@@ -61,35 +91,23 @@ const clientSearchMutation = useMutation({
     },
     onSuccess: (data, _variables, context) => {
         if (!data.length) {
-            forestClientNumberVerifyErrors.value.push(
-                `An error has occurred. Client Number ${context.clientNumber} could not be added.`
-            );
+            notExistClientNumbers.value.push(context.clientNumber);
         } else if (data[0].status?.status_code !== "A") {
-            forestClientNumberVerifyErrors.value.push(
-                `Client Number ${
-                    context.clientNumber
-                } is  ${data[0].status?.description.toLocaleLowerCase()} and cannot be added.`
-            );
+            notActiveClientNumbers.value.push(context.clientNumber);
         }
     },
     onError: (_error, _variables, context) => {
         // Access clientNumber from context
         if (context?.clientNumber) {
-            forestClientNumberVerifyErrors.value.push(
-                `An error has occurred. Client Number ${context.clientNumber} could not be added.`
-            );
+            errorClientNumbers.value.push(context.clientNumber);
         }
     },
 });
 
-const isVerifying = ref<boolean>(false);
-
-const duplicateClientNumbers = ref<string[]>([]);
-
 const handleVerifyClients = async () => {
     if (!isVerifying.value) {
         isVerifying.value = true;
-        clearError();
+        clearNotifications();
         duplicateClientNumbers.value = [];
         const verifyPromises = numbersToVerify.value.map((clientNumber) =>
             clientSearchMutation.mutateAsync(clientNumber)
@@ -188,21 +206,60 @@ const addClientNumbers = () => {
     );
     handleVerifyClients();
 };
+
+const generateNotificationMsg = (
+    type: "NotExist" | "NotActive" | "Duplicate" | "Error"
+) => {
+    let clientNumbers: string[];
+    let message: string;
+
+    // Determine the appropriate client numbers and message for each type
+    switch (type) {
+        case "NotExist":
+            clientNumbers = notExistClientNumbers.value;
+            message =
+                clientNumbers.length > 1 ? "do not exist" : "does not exist";
+            break;
+        case "NotActive":
+            clientNumbers = notActiveClientNumbers.value;
+            message =
+                clientNumbers.length > 1 ? "are not active" : "is not active";
+            break;
+        case "Duplicate":
+            clientNumbers = duplicateClientNumbers.value;
+            message =
+                clientNumbers.length > 1
+                    ? "have already been added"
+                    : "has already been added";
+            break;
+        case "Error":
+            clientNumbers = errorClientNumbers.value;
+            message = "encountered an error while being added";
+            break;
+        default:
+            clientNumbers = [];
+            message = "encountered an error while being added";
+            break;
+    }
+
+    // Map and format the client numbers
+    const numberText = clientNumbers.map((number, index) => [
+        h("b", number),
+        index < clientNumbers.length - 1 ? ", " : "",
+    ]);
+
+    return h("p", {}, [
+        "Client number",
+        clientNumbers.length > 1 ? "s " : " ",
+        ...numberText,
+        ` ${message}`,
+    ]);
+};
 </script>
 
 <template>
     <!-- Input section -->
     <div>
-        <NotificationMessage
-            v-if="duplicateClientNumbers.length"
-            :msg-text="`Client number ${duplicateClientNumbers.join(', ')} ${
-                duplicateClientNumbers.length > 1 ? 'have' : 'has'
-            } already been added`"
-            severity="warn"
-            class="forest-client-warn-notification"
-            hide-severity-text
-            :closable="false"
-        />
         <label for="forestClientInput"
             >Add one or more client numbers (8 digits)
         </label>
@@ -224,17 +281,13 @@ const addClientNumbers = () => {
                         "
                         :class="{
                             'is-invalid':
-                                errorMessage ||
-                                forestClientNumberVerifyErrors.length > 0,
+                                errorMessage || errorClientNumbers.length > 0,
                         }"
                     />
                     <small
                         id="forestClientInput-help"
                         class="helper-text"
-                        v-if="
-                            !errorMessage &&
-                            forestClientNumberVerifyErrors.length === 0
-                        "
+                        v-if="!errorMessage && errorClientNumbers.length === 0"
                         >Add and verify the Client Numbers. Add multiple numbers
                         by separating them with commas</small
                     >
@@ -245,13 +298,13 @@ const addClientNumbers = () => {
                     <small
                         id="forestClientInputValidationError"
                         class="invalid-feedback"
-                        v-for="error in forestClientNumberVerifyErrors"
+                        v-for="error in errorClientNumbers"
                     >
                         {{ error }}
                     </small>
                 </div>
                 <Button
-                    class="w-100 custom-height"
+                    class="custom-height"
                     aria-label="Add Client Numbers"
                     name="verifyFC"
                     label="Add Client Numbers"
@@ -266,6 +319,18 @@ const addClientNumbers = () => {
                 </Button>
             </div>
         </Field>
+    </div>
+
+    <div v-for="notification in notifications">
+        <NotificationMessage
+            v-if="notification.clientNumbers.length"
+            :key="notification.type"
+            :message="generateNotificationMsg(notification.type)"
+            :severity="notification.severity"
+            class="forest-client-warn-notification"
+            hide-severity-text
+            :closable="false"
+        />
     </div>
 
     <!-- Verified Card Section -->

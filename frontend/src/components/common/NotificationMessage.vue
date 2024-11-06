@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, type VNode } from "vue";
 import Message from "primevue/message";
 
 import {
@@ -10,7 +10,7 @@ import { IconSize } from "@/enum/IconEnum";
 import type { SeverityType } from "@/enum/SeverityEnum";
 
 const props = defineProps<{
-    msgText: string;
+    message: string | VNode | (() => VNode);
     severity: SeverityType;
     hasFullMsg?: boolean;
     hideSeverityText?: boolean;
@@ -46,7 +46,21 @@ const closeNotification = () => {
             />
             <span class="custom-message-text">
                 <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
-                {{ props.msgText }}
+                <span class="message-content">
+                    <!-- Check message type and render accordingly -->
+                    <component
+                        :is="typeof message === 'function' ? message : null"
+                        v-if="typeof message === 'function'"
+                    />
+                    <template v-else-if="typeof message === 'object'">
+                        <!-- Render VNode directly -->
+                        <component :is="message" />
+                    </template>
+                    <template v-else>
+                        <!-- Render string message directly -->
+                        {{ message }}
+                    </template>
+                </span>
                 <button
                     v-if="hasFullMsg && showSeeAll"
                     class="btn-see-all"

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Card from "primevue/card";
-import Tag from "primevue/tag";
 import Button from "primevue/button";
 import Icon from "@/components/common/Icon.vue";
 import { IconSize } from "@/enum/IconEnum";
 import type { FamForestClientSchema } from "fam-app-acsctl-api";
 
 import CardColumn from "@/components/CardColumn";
+import Chip from "@/components/UI/Chip.vue";
 
 defineProps<{
     forestClientData: FamForestClientSchema[];
@@ -50,19 +50,13 @@ defineProps<{
                         label="Status:"
                         hide-description
                     >
-                        <Tag
-                            class="forest-client-status-tag"
-                            name="forest-client-status"
-                            :severity="
-                                client.status?.status_code == 'A'
-                                    ? 'success'
-                                    : 'danger'
-                            "
-                            :value="client.status?.description"
+                        <Chip
+                            :label="client.status?.description"
+                            color="green"
                         />
                     </CardColumn>
 
-                    <div class="small-col">
+                    <div class="xsmall-col">
                         <Button class="btn-trash">
                             <Icon
                                 id="btn-trash-can"
@@ -103,18 +97,37 @@ defineProps<{
             margin-bottom: 0; // Remove gap after the last row
         }
 
+        .xsmall-col,
+        .small-col,
+        .medium-col,
+        .large-col {
+            min-width: 5%;
+            max-width: 5%;
+            overflow: scroll;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+
+            p,
+            span {
+                overflow: scroll;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
         .small-col {
-            flex: 0 0 10%; // Fixed width for small columns
-            max-width: 10%;
+            min-width: 15%;
+            max-width: 15%;
         }
 
         .medium-col {
-            flex: 0 0 20%; // Fixed width for medium columns
+            min-width: 20%;
             max-width: 20%;
         }
 
         .large-col {
-            flex: 0 0 40%; // Fixed width for large columns
+            min-width: 40%;
             max-width: 40%;
         }
 
@@ -141,6 +154,9 @@ defineProps<{
 
         .forest-client-status-tag {
             width: fit-content;
+            p {
+                margin: 0;
+            }
         }
     }
 }
