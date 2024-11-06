@@ -2,9 +2,40 @@
 from enum import Enum
 from typing import TypeVar
 
-# FAM application name in database
-APPLICATION_FAM = "FAM"
+# ----------------------- Generic Type Variable Declaration ----------------------- #
+T = TypeVar('T')
 
+# --------------------------------- Schema Enums ---------------------------------- #
+class PrivilegeChangeTypeEnum(str, Enum):
+    GRANT = "GRANT"
+    REVOKE = "REVOKE"
+    UPDATE = "UPDATE"
+
+# Note! There is an issue for openapi generator to generate an enum with only 1 constant.
+# Since in future we plan to use "District", it is added (and can be used later) here
+# so openapi can generate it with no prolbme but for now it is a holder.
+class PrivilegeDetailsScopeTypeEnum(str, Enum):
+    CLIENT = "Client"
+    DISTRICT = "District"
+
+
+class PrivilegeDetailsPermissionTypeEnum(str, Enum):
+    END_USER = "End User"
+    DELEGATED_ADMIN = "Delegated Admin"
+    APPLICATION_ADMIN = "Application Admin"
+
+class SortOrderEnum(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+class UserRoleSortByEnum(str, Enum):
+    # Note: this is not the exact model column name, requires table column mapping.
+    USER_NAME = "user_name"
+    DOMAIN = "user_type_code"
+    EMAIL = "email"
+    FULL_NAME = "full_name"  # special case: first_name + last_name
+    ROLE_DISPLAY_NAME = "role_display_name"
+    FOREST_CLIENT_NUMBER = "forest_client_number"
 
 class UserType(str, Enum):
     IDIR = "I"
@@ -45,25 +76,6 @@ class FamForestClientStatusType(str, Enum):
     ACTIVE = "A"
     INACTIVE = "I"
 
-
-DESCRIPTION_ACTIVE = "Active"
-DESCRIPTION_INACTIVE = "Inactive"
-
-# Constans for FAM to coneniently refer to Forest Client API return json object
-# keys/values.
-FOREST_CLIENT_STATUS = {"KEY": "clientStatusCode", "CODE_ACTIVE": "ACT"}
-
-FAM_PROXY_API_USER = "fam_proxy_api"
-
-COGNITO_USERNAME_KEY = "username"
-
-# The most current terms and conditions. Note, when terms and conditions gets updated
-# at frontend, this also needs to be updated and in-sync.
-CURRENT_TERMS_AND_CONDITIONS_VERSION = "1"
-
-IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
-
-
 class IdimSearchUserParamType(str, Enum):
     USER_GUID = "userGuid"
     USER_ID = "userId"
@@ -76,23 +88,7 @@ class EmailSendingStatus(str, Enum):
     )
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
-
-# ------- Error/Exception Code Constant -------
-
-# Note, this is default error code but better use specific code category if possible.
-ERROR_CODE_INVALID_OPERATION = "invalid_operation"
-ERROR_CODE_INVALID_APPLICATION_ID = "invalid_application_id"
-ERROR_CODE_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
-ERROR_CODE_INVALID_ROLE_ID = "invalid_role_id"
-ERROR_CODE_REQUESTER_NOT_EXISTS = "requester_not_exists"
-ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
-ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
-ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
-ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
-ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
-ERROR_CODE_UNKNOWN_STATE = "unknown_state"
-
-# ------------------------------- Schema Constants ------------------------------- #
+# -------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
 FIRST_NAME_MAX_LEN = 50
@@ -115,37 +111,36 @@ MAX_PAGE_SIZE = 100000
 SEARCH_FIELD_MIN_LENGTH = 3
 SEARCH_FIELD_MAX_LENGTH = 30
 
-# ----------------------- Generic Type Variable Declaration ----------------------- #
-T = TypeVar('T')
+# FAM application name in database
+APPLICATION_FAM = "FAM"
 
-# --------------------------------- Schema Enums --------------------------------- #
-class PrivilegeChangeTypeEnum(str, Enum):
-    GRANT = "GRANT"
-    REVOKE = "REVOKE"
-    UPDATE = "UPDATE"
+DESCRIPTION_ACTIVE = "Active"
+DESCRIPTION_INACTIVE = "Inactive"
 
-# Note! There is an issue for openapi generator to generate an enum with only 1 constant.
-# Since in future we plan to use "District", it is added (and can be used later) here
-# so openapi can generate it with no prolbme but for now it is a holder.
-class PrivilegeDetailsScopeTypeEnum(str, Enum):
-    CLIENT = "Client"
-    DISTRICT = "District"
+# Constans for FAM to coneniently refer to Forest Client API return json object
+# keys/values.
+FOREST_CLIENT_STATUS = {"KEY": "clientStatusCode", "CODE_ACTIVE": "ACT"}
 
+FAM_PROXY_API_USER = "fam_proxy_api"
 
-class PrivilegeDetailsPermissionTypeEnum(str, Enum):
-    END_USER = "End User"
-    DELEGATED_ADMIN = "Delegated Admin"
-    APPLICATION_ADMIN = "Application Admin"
+COGNITO_USERNAME_KEY = "username"
 
-class SortOrderEnum(str, Enum):
-    ASC = "asc"
-    DESC = "desc"
+# The most current terms and conditions. Note, when terms and conditions gets updated
+# at frontend, this also needs to be updated and in-sync.
+CURRENT_TERMS_AND_CONDITIONS_VERSION = "1"
 
-class UserRoleSortByEnum(str, Enum):
-    # Note: this is not the exact model column name, requires table column mapping.
-    USER_NAME = "user_name"
-    DOMAIN = "user_type_code"
-    EMAIL = "email"
-    FULL_NAME = "full_name"  # special case: first_name + last_name
-    ROLE_DISPLAY_NAME = "role_display_name"
-    FOREST_CLIENT_NUMBER = "forest_client_number"
+IDIM_PROXY_ACCOUNT_TYPE_MAP = {UserType.IDIR: "Internal", UserType.BCEID: "Business"}
+
+# ------------------------- Error/Exception Code Constant ------------------------- #
+# Note, this is default error code but better use specific code category if possible.
+ERROR_CODE_INVALID_OPERATION = "invalid_operation"
+ERROR_CODE_INVALID_APPLICATION_ID = "invalid_application_id"
+ERROR_CODE_SELF_GRANT_PROHIBITED = "self_grant_prohibited"
+ERROR_CODE_INVALID_ROLE_ID = "invalid_role_id"
+ERROR_CODE_REQUESTER_NOT_EXISTS = "requester_not_exists"
+ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED = "external_user_action_prohibited"
+ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED = "different_org_grant_prohibited"
+ERROR_CODE_MISSING_KEY_ATTRIBUTE = "missing_key_attribute"
+ERROR_CODE_INVALID_REQUEST_PARAMETER = "invalid_request_parameter"
+ERROR_CODE_TERMS_CONDITIONS_REQUIRED = "terms_condition_required"
+ERROR_CODE_UNKNOWN_STATE = "unknown_state"
