@@ -8,6 +8,8 @@ from api.app.integration.forest_client_integration import \
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
+from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
+                                        PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
                                      FamAccessControlPrivilegeCreateRequest,
                                      FamAccessControlPrivilegeCreateResponse,
@@ -34,6 +36,26 @@ class AccessControlPrivilegeService:
         self.role_service = RoleService(db)
         self.permission_audit_service = PermissionAuditService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
+
+    def get_paged_delegated_admin_assignment_by_application_id(
+        self, application_id: int, page_params: DelegatedAdminPageParamsSchema
+    ) -> PagedResultsSchema[FamAccessControlPrivilegeGetResponse]:
+        """
+        Service method to get access control privilege (a.k.a Delegated Admin) by application id.
+        Arguments:
+            application_id (int): The application's id, to find out the delegated admins
+            belong to this application.
+
+            page_params (DelegatedAdminPageParamsSchema): pagination parameters for query to
+            return paged results.
+
+        Returns:
+            PagedResultsSchema[FamAccessControlPrivilegeGetResponse]: A paged results containing
+            pagination metadata and a list of delegated admins assigned to this application.
+        """
+        return self.access_control_privilege_repository.get_paged_acp_by_application_id(
+            application_id=application_id, page_params=page_params
+        )
 
     def get_acp_by_user_id_and_role_id(self, user_id: int, role_id: int):
         return self.access_control_privilege_repository.get_acp_by_user_id_and_role_id(
