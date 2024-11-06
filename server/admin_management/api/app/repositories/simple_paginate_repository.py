@@ -22,12 +22,12 @@ class SimplePaginateRepository(ABC):
 
     @abstractmethod
     def get_sort_by_column_mapping(self) -> dict[StrEnum, any]:
-        """ Abstract methods, implement this. """
+        """ Abstract methods, subclass needs to implement this. """
         pass
 
     @abstractmethod
     def get_filter_by_criteria(self, page_params: PageParamsSchema) -> ColumnElement[bool] | None:
-        """ Abstract methods, implement this. """
+        """ Abstract methods, subclass needs to implement this. """
         pass
 
     def get_paginated_results(

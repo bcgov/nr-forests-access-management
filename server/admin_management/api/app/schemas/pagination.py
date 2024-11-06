@@ -52,7 +52,7 @@ class PageParamsSchema(BaseModel, ABC):
     sort_order: SortOrderEnum | None = Field(Query(
         default=SortOrderEnum.ASC, alias="sortOrder",
         description=(
-            f'Column sorting order by <br>Possible values: [{", ".join([enum for enum in SortOrderEnum])}]<br>&nbsp;'
+            f'Column sorting order by <br>Possible values: [{", ".join([enum for enum in SortOrderEnum])}]'
         )
     ))
 
@@ -66,7 +66,7 @@ class DelegatedAdminPageParamsSchema(PageParamsSchema):
     sort_by: DelegatedAdminSortByEnum | None = Field(Query(
         default=DelegatedAdminSortByEnum.CREATE_DATE, alias="sortBy",
         description=(
-            f'Column to be sorted by <br>Possible values: [{", ".join([enum for enum in DelegatedAdminSortByEnum])}]<br>&nbsp;'
+            f'Column to be sorted by <br>Possible values: [{", ".join([enum for enum in DelegatedAdminSortByEnum])}]'
         )
     ))
 

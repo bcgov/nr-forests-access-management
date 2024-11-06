@@ -124,7 +124,7 @@ def create_access_control_privilege_many(
     response_model=PagedResultsSchema[FamAccessControlPrivilegeGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_app_id)],  # only app admin can do this
-    description="Get Delegated Admin Privileges For an Application",
+    description="Get 'Delegated Admin Privileges' for an application with pagination.",
 )
 def get_access_control_privileges_by_application_id(
     application_id: int,
