@@ -121,7 +121,7 @@ export const fetchDelegatedAdmins = async (
         await AdminMgmtApiService.delegatedAdminApi.getAccessControlPrivilegesByApplicationId(
             applicationId
         )
-    ).data;
+    ).data.results;
 
     delegatedAdmins.sort((first, second) => {
         const firstIsNew = isNewAccess(

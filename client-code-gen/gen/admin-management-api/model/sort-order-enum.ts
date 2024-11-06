@@ -17,20 +17,15 @@
 /**
  * 
  * @export
- * @interface FamForestClientBase
+ * @enum {string}
  */
-export interface FamForestClientBase {
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClientBase
-     */
-    'client_name'?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClientBase
-     */
-    'forest_client_number': string;
-}
+
+export const SortOrderEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type SortOrderEnum = typeof SortOrderEnum[keyof typeof SortOrderEnum];
+
+
 
