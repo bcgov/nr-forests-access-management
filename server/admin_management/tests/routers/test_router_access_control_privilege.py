@@ -142,7 +142,7 @@ def test_get_access_control_privileges_by_application_id(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    origin_admins_length = len(response.json())
+    origin_admins_length = len(response.json()["results"])
 
     # override router guard dependencies
     override_get_verified_target_user()
@@ -162,7 +162,7 @@ def test_get_access_control_privileges_by_application_id(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
-    admins_length = len(response.json())
+    admins_length = len(response.json()["results"])
     assert admins_length == origin_admins_length + 1
 
     # test get with non exists application id

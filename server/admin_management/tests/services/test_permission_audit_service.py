@@ -1,5 +1,6 @@
 import copy
 import logging
+from datetime import datetime
 from http import HTTPStatus
 from typing import List
 
@@ -345,7 +346,8 @@ sample_delegated_admin_permission_granted_no_scope_details = FamAccessControlPri
 			user_type_relation=FamUserTypeDto(user_type_code=UserType.BCEID, description='BCEID')),
 		role=FamRoleWithClientDto(role_name='FOM_REVIEWER',
 		application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', client_number=None, parent_role=None)),
+		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', client_number=None, parent_role=None),
+		create_date=datetime(2024, 11, 1, 19, 44, 47)),
 		'error_message': None
 	}
  )
@@ -362,7 +364,8 @@ sample_delegated_admin_permission_granted_with_scope_details = FamAccessControlP
 		role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
 		client_number=FamForestClientBase(client_name=None, forest_client_number="00001012", status=None),
 		parent_role=FamRoleBase(role_name="FOM_SUBMITTER", role_type_code="A",
-			application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)')))),
+			application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
+			create_date=datetime(2024, 11, 1, 19, 44, 47)),
 		'error_message': None
 	}
  )
