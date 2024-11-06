@@ -49,7 +49,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
         createAccessControlPrivilegeMany: async (famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famAccessControlPrivilegeCreateRequest' is not null or undefined
             assertParamExists('createAccessControlPrivilegeMany', 'famAccessControlPrivilegeCreateRequest', famAccessControlPrivilegeCreateRequest)
-            const localVarPath = `/access_control_privileges`;
+            const localVarPath = `/access-control-privileges`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -89,7 +89,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
         deleteAccessControlPrivilege: async (accessControlPrivilegeId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'accessControlPrivilegeId' is not null or undefined
             assertParamExists('deleteAccessControlPrivilege', 'accessControlPrivilegeId', accessControlPrivilegeId)
-            const localVarPath = `/access_control_privileges/{access_control_privilege_id}`
+            const localVarPath = `/access-control-privileges/{access_control_privilege_id}`
                 .replace(`{${"access_control_privilege_id"}}`, encodeURIComponent(String(accessControlPrivilegeId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -132,7 +132,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
         getAccessControlPrivilegesByApplicationId: async (applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getAccessControlPrivilegesByApplicationId', 'applicationId', applicationId)
-            const localVarPath = `/access_control_privileges`;
+            const localVarPath = `/access-control-privileges`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

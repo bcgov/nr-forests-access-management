@@ -22,7 +22,7 @@ from tests.constants import (INVALID_APPLICATION_ID,
                              TEST_USER_BUSINESS_GUID_BCEID)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/access_control_privileges"
+endPoint = f"{apiPrefix}/access-control-privileges"
 
 
 def test_create_access_control_privilege_many(
