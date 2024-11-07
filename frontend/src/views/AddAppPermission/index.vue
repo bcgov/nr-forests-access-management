@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-
+import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
@@ -8,7 +8,7 @@ import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import PageTitle from "@/components/common/PageTitle.vue";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import { ErrorMessage, Field, Form } from "vee-validate";
+import { Form } from "vee-validate";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import { computed, ref, watch } from "vue";
 import useAuth from "@/composables/useAuth";
@@ -148,12 +148,9 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
     }
 };
 
-const onSubmit = (isValid: boolean) => {
-    if (!isValid) {
-        return;
-    }
+const onSubmit = () => {
     const plainObject = { ...formData.value };
-    console.log(isValid, "Form submitted with:", plainObject);
+    console.log("Form submitted with:", plainObject);
 };
 </script>
 
@@ -166,7 +163,7 @@ const onSubmit = (isValid: boolean) => {
         />
         <div class="form-container">
             <Form
-                v-slot="{ meta, handleSubmit }"
+                v-slot="{ handleSubmit }"
                 ref="form"
                 as="div"
                 v-if="formData"
@@ -228,13 +225,13 @@ const onSubmit = (isValid: boolean) => {
                             label="Send email to notify user"
                         />
                     </StepContainer>
-                    <div>
+                    <div class="button-group">
+                        <Button label="Back" @click="" severity="secondary" />
                         <Button
-                            name="Create Application Admin"
                             label="Create Application Admin"
-                            @click="handleSubmit"
-                        >
-                        </Button>
+                            @click="handleSubmit(onSubmit)"
+                            :icon="CheckmarkIcon"
+                        />
                     </div>
                 </form>
             </Form>
@@ -258,6 +255,21 @@ const onSubmit = (isValid: boolean) => {
 
     .email-checkbox {
         margin-top: 2.5rem;
+    }
+
+    .button-group {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        margin-top: 3rem;
+        .fam-button {
+            width: 15.1875rem;
+            height: 3rem;
+
+            .button-label {
+                @include type.type-style("body-compact-01");
+            }
+        }
     }
 }
 </style>

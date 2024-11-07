@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import Button from "@/components/common/Button.vue";
+import LoginIcon from "@carbon/icons-vue/es/login/16";
+import Button from "primevue/button";
 import { IconSize } from "@/enum/IconEnum";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
@@ -27,14 +28,21 @@ const auth = useAuth();
                 <p id="landing-desc" class="landing-desc">
                     Grant access to your users
                 </p>
+
                 <Button
                     class="landing-button"
                     :label="`Login with ${IdpProvider.IDIR}`"
                     id="login-idir-button"
                     @click="auth.login(IdpProvider.IDIR)"
                 >
-                    <Icon icon="login" :size="IconSize.medium" />
+                    <div class="button-content">
+                        <span>
+                            {{ `Login with ${IdpProvider.IDIR}` }}
+                        </span>
+                        <LoginIcon />
+                    </div>
                 </Button>
+
                 <Button
                     class="landing-button"
                     outlined
@@ -43,7 +51,12 @@ const auth = useAuth();
                     id="login-business-bceid-button"
                     @click="auth.login(IdpProvider.BCEIDBUSINESS)"
                 >
-                    <Icon icon="login" :size="IconSize.medium" />
+                    <div class="button-content">
+                        <span>
+                            {{ `Login with ${IdpProvider.BCEIDBUSINESS}` }}
+                        </span>
+                        <LoginIcon />
+                    </div>
                 </Button>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-5 landing-img-column">
@@ -61,5 +74,14 @@ const auth = useAuth();
 @import "@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss";
 .landing-img {
     width: 100%;
+}
+.landing-button {
+    .button-content {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
 }
 </style>

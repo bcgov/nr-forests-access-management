@@ -199,7 +199,7 @@ watch(
                             : 'verifyBusinessBceid'
                     "
                     label="Verify"
-                    kind="primary-tertiary"
+                    outlined
                     :icon="SearchLocateIcon"
                     @click="handleVerify(props.domain)"
                     :is-loading="

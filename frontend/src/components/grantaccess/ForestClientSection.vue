@@ -296,7 +296,7 @@ const generateNotificationMsg = (
                     />
                 </div>
                 <Button
-                    kind="primary-tertiary"
+                    outlined
                     aria-label="verify organizations"
                     name="verify organizations"
                     label="Verify"

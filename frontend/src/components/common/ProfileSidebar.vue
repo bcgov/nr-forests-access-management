@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import Button from "@/components/common/Button.vue";
-import { IconPosition, IconSize } from "@/enum/IconEnum";
+import Button from "primevue/button";
+import { default as FamButton } from "@/components/common/Button.vue";
+import LogoutIcon from "@carbon/icons-vue/es/logout/16";
+import CloseIcon from "@carbon/icons-vue/es/close/16";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { showTermsForRead } from "@/store/TermsAndConditionsState";
 import Avatar from "primevue/avatar";
@@ -20,8 +22,10 @@ const famLoginUser = auth.authState.famLoginUser;
 const loading = ref(false);
 
 const logout = () => {
-    auth.logout();
-    loading.value = true;
+    if (!loading.value) {
+        auth.logout();
+        loading.value = true;
+    }
 };
 
 const showTermsAndConditions = () => {
@@ -62,13 +66,16 @@ const adminUserAccessQuery = useQuery({
         <div class="profile-container" v-if="profileSidebarState.isVisible">
             <div class="profile-header">
                 <h2>Profile</h2>
-                <button
-                    class="btn-icon"
+                <FamButton
+                    class-name="btn-icon"
                     @click="profileSidebarState.toggleVisible()"
                     aria-label="Close profile sidebar"
+                    :icon="CloseIcon"
+                    severity="secondary"
+                    text
+                    icon-only
                 >
-                    <Icon icon="close" :size="IconSize.small"></Icon>
-                </button>
+                </FamButton>
             </div>
             <div class="sidebar-body">
                 <Avatar
@@ -127,25 +134,21 @@ const adminUserAccessQuery = useQuery({
             </Button> -->
             <Button
                 class="profile-sidebar-btn"
-                title="Sign out"
                 aria-expanded="false"
                 aria-label="sign out"
-                :iconPosition="IconPosition.left"
                 :label="buttonLabel"
                 @click="logout"
-                :disabled="loading ? true : false"
             >
-                <Logout
-                    title="Sign out"
-                    class="custom-carbon-icon-user--follow"
-                />
+                <template #default>
+                    <LogoutIcon />
+                    <span>{{ buttonLabel }}</span>
+                </template>
             </Button>
         </div>
     </Transition>
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
 @import "@/assets/styles/base.scss";
 
 .profile-container {
@@ -177,6 +180,10 @@ const adminUserAccessQuery = useQuery({
     .btn-icon {
         border: none;
         background-color: transparent;
+
+        &:enabled:hover {
+            background-color: transparent;
+        }
     }
 }
 
@@ -222,9 +229,9 @@ const adminUserAccessQuery = useQuery({
     padding: 0;
 }
 
-.profile-sidebar-btn:hover,
-.profile-sidebar-btn:active,
-.profile-sidebar-btn:focus {
+.profile-sidebar-btn:enabled:hover,
+.profile-sidebar-btn:enabled:active,
+.profile-sidebar-btn:enabled:focus {
     background-color: $light-border-subtle-00;
     box-shadow: none;
     outline: none;
@@ -259,8 +266,9 @@ const adminUserAccessQuery = useQuery({
     padding-left: 1rem;
     margin-left: -1rem;
 
-    i {
+    svg {
         margin-right: 1.125rem;
+        fill: colors.$blue-60;
     }
 }
 
