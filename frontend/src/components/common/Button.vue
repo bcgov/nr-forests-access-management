@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
 import { type Component } from "vue";
 import Spinner from "@/components/UI/Spinner.vue";
 
@@ -15,6 +14,7 @@ const props = defineProps<{
     disabled?: boolean;
     icon?: Component;
     iconPos?: "left" | "right"; // affects loading icon only
+    type?: "button" | "submit" | "reset";
 }>();
 
 // Define emits for 'click'
@@ -36,6 +36,7 @@ const kindClass = props.kind
 <template>
     <div :class="`${kindClass} fam-button`">
         <Button
+            :type="type ?? 'button'"
             :name="name"
             :label="label"
             :loading="isLoading"
@@ -45,9 +46,9 @@ const kindClass = props.kind
             :icon-pos="iconPos ?? 'right'"
         >
             <component
-                :is="icon || SearchLocateIcon"
+                :is="icon"
                 class="button-icon"
-                v-if="iconPos === 'left' && !isLoading"
+                v-if="icon && iconPos === 'left' && !isLoading"
             />
 
             <Spinner v-if="isLoading && iconPos === 'left'" small />
@@ -55,9 +56,9 @@ const kindClass = props.kind
             <span class="button-label">{{ label }}</span>
 
             <component
-                :is="icon || SearchLocateIcon"
+                :is="icon"
                 class="button-icon"
-                v-if="iconPos !== 'left' && !isLoading"
+                v-if="icon && iconPos !== 'left' && !isLoading"
             />
             <Spinner v-if="isLoading && iconPos !== 'left'" small />
         </Button>

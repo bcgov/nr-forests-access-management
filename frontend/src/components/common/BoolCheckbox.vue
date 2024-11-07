@@ -1,10 +1,10 @@
 <!-- This is a boolean checkbox (true/false) -->
 
 <script setup lang="ts">
-import Checkbox from 'primevue/checkbox';
+import Checkbox from "primevue/checkbox";
 
 // value to bind parent model.
-const model = defineModel()
+const model = defineModel();
 
 // configurable options and defaults for props
 interface CheckboxProps {
@@ -12,9 +12,8 @@ interface CheckboxProps {
     label?: string;
 }
 const props = withDefaults(defineProps<CheckboxProps>(), {
-    id: "checkbox"
-})
-
+    id: "checkbox",
+});
 </script>
 
 <template>
@@ -29,7 +28,7 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/base.scss';
+@import "@/assets/styles/base.scss";
 
 .fam-checkbox {
     .p-checkbox {
@@ -43,6 +42,7 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
         font-weight: 600;
         color: $light-text-secondary;
         margin-bottom: 0;
+        cursor: pointer;
     }
 }
 </style>

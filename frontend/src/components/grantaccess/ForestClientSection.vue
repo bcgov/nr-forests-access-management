@@ -21,7 +21,7 @@ const props = withDefaults(
         fieldId?: string;
     }>(),
     {
-        fieldId: "forestClientNumbers",
+        fieldId: "forestClients",
     }
 );
 
@@ -266,7 +266,7 @@ const generateNotificationMsg = (
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
-            v-model="forestClientNumbersInput"
+            v-model="props.verifiedClients"
         >
             <div class="input-with-verify-button">
                 <div>

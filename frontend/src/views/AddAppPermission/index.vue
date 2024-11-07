@@ -19,6 +19,7 @@ import {
     getPageTitle,
     getRoleSectionTitle,
     getRoleSectionSubtitle,
+    validateAppPermissionForm,
 } from "@/views/AddAppPermission/utils";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
@@ -27,6 +28,7 @@ import RoleSelectTable from "@/components/grantaccess/RoleSelectTable.vue";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import ForestClientSection from "@/components/grantaccess/ForestClientSection.vue";
 import BoolCheckbox from "@/components/common/BoolCheckbox.vue";
+import Button from "@/components/common/Button.vue";
 
 const router = useRouter();
 const auth = useAuth();
@@ -129,7 +131,6 @@ const isAbstractRoleSelected = (): boolean =>
     formData.value?.role?.type_code === "A";
 
 const handleRoleChange = (role: FamRoleDto) => {
-    console.log(role);
     if (formData.value) {
         formData.value.role = role;
     }
@@ -145,9 +146,14 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
     if (formData.value) {
         formData.value.forestClients = forestClients;
     }
-    console.log(
-        formData.value?.forestClients.map((fc) => fc.forest_client_number)
-    );
+};
+
+const onSubmit = (isValid: boolean) => {
+    if (!isValid) {
+        return;
+    }
+    const plainObject = { ...formData.value };
+    console.log(isValid, "Form submitted with:", plainObject);
 };
 </script>
 
@@ -159,7 +165,16 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
             :subtitle="`Adding user permission to ${selectedApp?.application.description}. All fields are mandatory`"
         />
         <div class="form-container">
-            <Form ref="form" v-slot="{ meta }" as="div" v-if="formData">
+            <Form
+                v-slot="{ meta, handleSubmit }"
+                ref="form"
+                as="div"
+                v-if="formData"
+                :validation-schema="
+                    validateAppPermissionForm(isAbstractRoleSelected())
+                "
+                validate-on-submit
+            >
                 <form id="add-app-permission-form-id">
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
@@ -213,6 +228,14 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
                             label="Send email to notify user"
                         />
                     </StepContainer>
+                    <div>
+                        <Button
+                            name="Create Application Admin"
+                            label="Create Application Admin"
+                            @click="handleSubmit"
+                        >
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </div>

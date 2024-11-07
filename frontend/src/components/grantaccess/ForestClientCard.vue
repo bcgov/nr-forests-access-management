@@ -18,7 +18,7 @@ defineProps<{
             <template #header>
                 <div class="card-header">
                     <Icon icon="checkmark--filled" :size="IconSize.small" />
-                    <p>Verified Client Number information</p>
+                    <p>Verified organization information</p>
                 </div>
             </template>
             <template #content>
@@ -32,7 +32,7 @@ defineProps<{
                         />
                         <CardColumn
                             :id="`forest-client-number-${client.forest_client_number}`"
-                            label="Client Number:"
+                            label="Client number:"
                             :description="client.forest_client_number"
                         />
                     </div>
@@ -51,7 +51,7 @@ defineProps<{
                         hide-description
                     >
                         <Chip
-                            :label="client.status?.description"
+                            :label="client.status?.description ?? 'Active'"
                             color="green"
                         />
                     </CardColumn>
