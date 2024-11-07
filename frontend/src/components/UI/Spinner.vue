@@ -5,13 +5,11 @@ import { computed } from "vue";
 const props = defineProps<{
     ariaLabel?: string;
     loadingText?: string;
-    isWhite?: boolean;
     small?: boolean;
 }>();
 
 const spinnerClass = computed(() => ({
     "small-spinner": props.small,
-    "white-spinner": props.isWhite,
 }));
 </script>
 
@@ -43,10 +41,6 @@ const spinnerClass = computed(() => ({
 
     .small-spinner {
         width: 1rem; // Smaller size if "small" is true
-    }
-
-    .white-spinner .p-progress-spinner-svg circle {
-        stroke: colors.$white; // White color if "isWhite" is true
     }
 
     .loading-text {

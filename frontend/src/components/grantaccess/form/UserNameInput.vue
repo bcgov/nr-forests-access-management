@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
 import Button from "@/components/common/Button.vue";
 import UserIdentityCard from "@/components/grantaccess/UserIdentityCard.vue";
 import useAuth from "@/composables/useAuth";
@@ -108,6 +109,13 @@ const verifyBceidMutation = useMutation({
 });
 
 const handleVerify = (userType: UserType) => {
+    if (
+        verifyBceidMutation.isPending.value ||
+        verifyIdirMutation.isPending.value ||
+        !computedUserId.value
+    ) {
+        return;
+    }
     if (isCurrentUser()) {
         searchResult.value = {
             found: false,
@@ -180,7 +188,6 @@ watch(
                 </div>
 
                 <Button
-                    class="w-100 custom-height"
                     :aria-label="`Verify user ${
                         props.domain === UserType.I
                             ? IdpProvider.IDIR
@@ -192,12 +199,12 @@ watch(
                             : 'verifyBusinessBceid'
                     "
                     label="Verify"
+                    kind="primary-tertiary"
+                    :icon="SearchLocateIcon"
                     @click="handleVerify(props.domain)"
-                    :disabled="
+                    :is-loading="
                         verifyBceidMutation.isPending.value ||
-                        verifyIdirMutation.isPending.value ||
-                        !computedUserId ||
-                        errorMessage !== undefined
+                        verifyIdirMutation.isPending.value
                     "
                 >
                     <Icon icon="search--locate" :size="IconSize.small" />

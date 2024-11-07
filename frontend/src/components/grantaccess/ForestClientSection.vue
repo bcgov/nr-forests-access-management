@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import Button from "@/components/common/Button.vue";
-import Icon from "@/components/common/Icon.vue";
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
 import ForestClientCard from "@/components/grantaccess/ForestClientCard.vue";
-import Spinner from "@/components/UI/Spinner.vue";
-import { IconSize } from "@/enum/IconEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
-import { selectedApplicationId } from "@/store/ApplicationState";
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
 import { useMutation } from "@tanstack/vue-query";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import { type FamForestClientSchema } from "fam-app-acsctl-api";
@@ -14,6 +10,7 @@ import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
 import { computed, h, ref, watch } from "vue";
 import NotificationMessage from "../common/NotificationMessage.vue";
+import type { ForestClientNotificationType } from "@/types/NotificationTypes";
 
 const props = withDefaults(
     defineProps<{
@@ -42,7 +39,7 @@ const notExistClientNumbers = ref<string[]>([]);
 const duplicateClientNumbers = ref<string[]>([]);
 const notActiveClientNumbers = ref<string[]>([]);
 
-const notifications = computed(() => [
+const notifications = computed<ForestClientNotificationType[]>(() => [
     {
         type: "Duplicate",
         severity: "warn",
@@ -79,6 +76,16 @@ const cleanupForestClientSection = () => {
     clearNotifications();
 };
 
+// whenever user id or abstract role changed, cleanup the forest client section
+watch(
+    () => props.userId,
+    () => cleanupForestClientSection()
+);
+watch(
+    () => props.role,
+    () => cleanupForestClientSection()
+);
+
 const clientSearchMutation = useMutation({
     mutationFn: (clientNumber: string) => {
         return AppActlApiService.forestClientsApi
@@ -104,7 +111,7 @@ const clientSearchMutation = useMutation({
     },
 });
 
-const handleVerifyClients = async () => {
+const verifyClients = async () => {
     if (!isVerifying.value) {
         isVerifying.value = true;
         clearNotifications();
@@ -179,16 +186,6 @@ const removeForestClientFromList = (clientNumber: string) => {
     setVerifiedForestClients(fcList);
 };
 
-// whenever user id or abstract role changed, cleanup the forest client section
-watch(
-    () => props.userId,
-    () => cleanupForestClientSection()
-);
-watch(
-    () => props.role,
-    () => cleanupForestClientSection()
-);
-
 const parseAndCleanNumbers = (input: string): string[] => {
     return Array.from(
         new Set(
@@ -201,10 +198,13 @@ const parseAndCleanNumbers = (input: string): string[] => {
 };
 
 const addClientNumbers = () => {
+    if (!forestClientNumbersInput.value) {
+        return;
+    }
     numbersToVerify.value = parseAndCleanNumbers(
         forestClientNumbersInput.value
     );
-    handleVerifyClients();
+    verifyClients();
 };
 
 const generateNotificationMsg = (
@@ -260,8 +260,8 @@ const generateNotificationMsg = (
 <template>
     <!-- Input section -->
     <div>
-        <label for="forestClientInput"
-            >Add one or more client numbers (8 digits)
+        <label for="forestClientInput">
+            Organization's client number (8 digits)
         </label>
         <Field
             :name="props.fieldId"
@@ -287,36 +287,23 @@ const generateNotificationMsg = (
                     <small
                         id="forestClientInput-help"
                         class="helper-text"
-                        v-if="!errorMessage && errorClientNumbers.length === 0"
-                        >Add and verify the Client Numbers. Add multiple numbers
-                        by separating them with commas</small
+                        v-if="!errorMessage"
+                        >Add one or more separated by commas</small
                     >
                     <ErrorMessage
                         class="invalid-feedback"
                         :name="props.fieldId"
                     />
-                    <small
-                        id="forestClientInputValidationError"
-                        class="invalid-feedback"
-                        v-for="error in errorClientNumbers"
-                    >
-                        {{ error }}
-                    </small>
                 </div>
                 <Button
-                    class="custom-height"
-                    aria-label="Add Client Numbers"
-                    name="verifyFC"
-                    label="Add Client Numbers"
+                    kind="primary-tertiary"
+                    aria-label="verify organizations"
+                    name="verify organizations"
+                    label="Verify"
                     @click="addClientNumbers"
-                    v-bind:disabled="
-                        forestClientNumbersInput?.length <
-                        FOREST_CLIENT_INPUT_MAX_LENGTH
-                    "
-                >
-                    <Spinner v-if="isVerifying" small is-white />
-                    <Icon v-else icon="add" :size="IconSize.small" />
-                </Button>
+                    :icon="SearchLocateIcon"
+                    :is-loading="isVerifying"
+                />
             </div>
         </Field>
     </div>

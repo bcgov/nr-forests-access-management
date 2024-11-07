@@ -50,6 +50,12 @@ const props = defineProps<{
                     :description="props.userIdentity.lastName"
                 />
                 <CardColumn
+                    v-if="props.userIdentity.found && props.userIdentity.email"
+                    :id="`user-card-email-${props.userIdentity.userId}`"
+                    label="email"
+                    :description="props.userIdentity.email"
+                />
+                <CardColumn
                     v-if="
                         props.userIdentity.found &&
                         props.userIdentity.businessLegalName

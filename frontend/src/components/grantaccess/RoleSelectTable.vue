@@ -81,6 +81,10 @@ const computedRole = computed({
 <style lang="scss">
 .role-select-table-container {
     .p-datatable {
+        .p-datatable-thead > tr > th {
+            background: var(--layer-accent-01);
+        }
+
         .p-column-header-content .p-column-title {
             padding: 0;
         }

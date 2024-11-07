@@ -1,80 +1,129 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
-import { ref, type PropType, watchEffect } from 'vue';
-import { IconPosition } from '@/enum/IconEnum';
-import { isLoading } from '@/store/LoadingState';
+import Button from "primevue/button";
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
+import { type Component } from "vue";
+import Spinner from "@/components/UI/Spinner.vue";
 
-const props = defineProps({
-    label: {
-        type: String,
-        default: 'Click',
-    },
-    loadingLabel: {
-        type: String,
-        default: 'Loading...',
-    },
-    iconPosition: {
-        type: String as PropType<IconPosition>,
-        default: IconPosition.right,
-    },
-    // Give a name if the parent component has more than 1 button
-    // and need to identify which button being clicked.
-    name: {
-        type: String,
-        default: '',
-    },
-});
+const props = defineProps<{
+    label: string;
+    name: string;
+    // The current styles does not support all kinds, add your own if needed
+    kind?: "primary" | "secondary" | "danger" | "primary-tertiary";
+    link?: boolean;
+    ariaLabel?: string;
+    isLoading?: boolean;
+    disabled?: boolean;
+    icon?: Component;
+    iconPos?: "left" | "right"; // affects loading icon only
+}>();
 
-const tLabel = ref(props.label); // for this template dynamic labeling.
-let targetButtonClicked = false; // target button.
-watchEffect(() => {
-    if (targetButtonClicked && isLoading()) {
-        tLabel.value = props.loadingLabel;
+// Define emits for 'click'
+const emit = defineEmits<{
+    (e: "click", event: MouseEvent | KeyboardEvent): void;
+}>();
+
+// Function to handle the Enter key press
+const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+        emit("click", event);
     }
+};
 
-    // reset when loading is done.
-    if (!isLoading()) {
-        targetButtonClicked = false;
-        tLabel.value = props.label;
-    }
-});
-
-function onClicked(event: any) {
-    // determine this is the target button being clicked by
-    // utlizing html "data-" dataset attribute ("data-target-btn")
-    if (event['target']['dataset']['targetBtn'] == props.name) {
-        targetButtonClicked = true;
-    }
-}
+const kindClass = props.kind
+    ? `fam-button-${props.kind}`
+    : "fam-button-primary";
 </script>
 <template>
-    <Button
-        class="nr-button"
-        :name="props.name"
-        :data-target-btn="props.name"
-        @click="onClicked($event)"
-    >
-        <slot
-            class="icon"
-            v-if="props.iconPosition === IconPosition.left"
-        ></slot>
-        <span>{{ tLabel }}</span>
-        <slot
-            class="icon"
-            v-if="props.iconPosition === IconPosition.right"
-        ></slot>
-    </Button>
+    <div :class="`${kindClass} fam-button`">
+        <Button
+            :name="name"
+            :label="label"
+            :loading="isLoading"
+            @click="(event) => emit('click', event)"
+            @keydown="handleKeyDown"
+            :disabled="disabled"
+            :icon-pos="iconPos ?? 'right'"
+        >
+            <component
+                :is="icon || SearchLocateIcon"
+                class="button-icon"
+                v-if="iconPos === 'left' && !isLoading"
+            />
+
+            <Spinner v-if="isLoading && iconPos === 'left'" small />
+
+            <span class="button-label">{{ label }}</span>
+
+            <component
+                :is="icon || SearchLocateIcon"
+                class="button-icon"
+                v-if="iconPos !== 'left' && !isLoading"
+            />
+            <Spinner v-if="isLoading && iconPos !== 'left'" small />
+        </Button>
+    </div>
 </template>
 <style lang="scss">
-.nr-button {
-    gap: 2rem;
-    white-space: nowrap;
-}
-.nr-button .icon {
-    margin-right: auto;
+.fam-button {
+    .p-button {
+        white-space: nowrap;
+        min-width: fit-content;
+        height: 2.5rem;
+        width: 7.875rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .button-label {
+        @include type.type-style("body-compact-02");
+    }
+
+    .button-icon {
+        width: 1rem;
+        height: 1rem;
+    }
 }
 
-.nr-button span {
-    margin-right: auto;
+.fam-button-primary-tertiary {
+    .p-button {
+        border: 0.0625rem solid colors.$blue-70;
+        background-color: transparent;
+        color: colors.$blue-70;
+
+        .p-progress-spinner-svg circle {
+            stroke: colors.$blue-70;
+        }
+    }
+
+    .p-button:hover {
+        border-color: colors.$blue-75;
+        background-color: colors.$blue-75;
+        color: colors.$white;
+
+        .p-progress-spinner-svg circle {
+            stroke: colors.$white;
+        }
+    }
+
+    .p-button:active {
+        border-color: colors.$blue-80;
+        background-color: colors.$blue-80;
+        color: colors.$white;
+
+        .p-progress-spinner-svg circle {
+            stroke: colors.$white;
+        }
+    }
+
+    .p-button:focus {
+        border-color: colors.$blue-60;
+        background-color: colors.$blue-60;
+        color: colors.$white;
+
+        .p-progress-spinner-svg circle {
+            stroke: colors.$white;
+        }
+    }
 }
 </style>
