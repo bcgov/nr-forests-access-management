@@ -102,7 +102,7 @@ class AccessControlPrivilegeRepository(SimplePaginateRepository):
             .all()
         )
 
-    def get_paged_acp_by_application_id(
+    def get_paged_delegated_admins_assignment_by_application_id(
         self, application_id: int, page_params: DelegatedAdminPageParamsSchema
     ) -> PagedResultsSchema[FamAccessControlPrivilegeGetResponse]:
         """

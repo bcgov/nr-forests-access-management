@@ -53,7 +53,7 @@ class AccessControlPrivilegeService:
             PagedResultsSchema[FamAccessControlPrivilegeGetResponse]: A paged results containing
             pagination metadata and a list of delegated admins assigned to this application.
         """
-        return self.access_control_privilege_repository.get_paged_acp_by_application_id(
+        return self.access_control_privilege_repository.get_paged_delegated_admins_assignment_by_application_id(
             application_id=application_id, page_params=page_params
         )
 
