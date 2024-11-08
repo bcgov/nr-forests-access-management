@@ -1,31 +1,14 @@
 <script setup lang="ts">
-import { selectedApplicationDisplayText } from '@/store/ApplicationState';
-const props = defineProps({
-    role: {
-        type: String,
-        required: true
-    },
-    userName: {
-        type: String,
-        required: true
-    },
-    customMsg: {
-        type: String,
-        required: false,
-        default: 'access'
-    }
-});
+import type { ConfirmTextType } from "./utils";
+
+withDefaults(defineProps<ConfirmTextType>(), { customMsg: "access" });
 </script>
 
 <template>
     <p>
         Are you sure you want to remove
-        <strong>{{ props.role }}</strong> {{ props.customMsg }} from
-        <strong>{{ props.userName }}</strong> in
-        <strong>{{ selectedApplicationDisplayText }}</strong>?
+        <strong>{{ role }}</strong> {{ customMsg }} from
+        <strong>{{ userName }}</strong> in <strong>{{ appName }}</strong
+        >?
     </p>
 </template>
-
-<style lang="scss">
-
-</style>

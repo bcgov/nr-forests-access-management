@@ -3,6 +3,13 @@ import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 export const DeleteSuccessQueryKey = "delete-permission-success";
 export const DeleteErrorQueryKey = "delete-permission-error";
 
+export type ConfirmTextType = {
+    role: string;
+    userName: string;
+    appName: string;
+    customMsg?: string;
+};
+
 export const filterList = [
     "application.app_environment",
     "application.application_name",
