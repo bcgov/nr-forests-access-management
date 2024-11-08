@@ -25,15 +25,19 @@ const isMenuItemHighlighted = (
     const currentRoutePath = router.currentRoute.value.path;
     const sideNavPath = getRoutePathByName(itemRouteName as string);
 
+    if (!sideNavPath) {
+        return false;
+    }
+
     // Resolve paths of subRouteNames and check if the current route matches any of them
     const subRoutePaths = subRouteNames
         ? subRouteNames.map((name) => getRoutePathByName(name))
         : [];
 
-    // Check if the current route matches the side nav item's route or any sub-route
+    // Check if the current route starts with the side nav item's route or matches any sub-route
     return (
-        currentRoutePath === sideNavPath ||
-        subRoutePaths.includes(currentRoutePath)
+        currentRoutePath.startsWith(sideNavPath) ||
+        subRoutePaths.some((path) => path && currentRoutePath.startsWith(path))
     );
 };
 </script>

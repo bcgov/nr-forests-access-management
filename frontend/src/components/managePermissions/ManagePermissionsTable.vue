@@ -34,8 +34,13 @@ import TableSkeleton from "../Table/TableSkeleton.vue";
 import ErrorText from "../UI/ErrorText.vue";
 import { isAxiosError } from "axios";
 import { formatAxiosError } from "@/utils/ApiUtils";
-import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
+import {
+    AddAppPermissionRoute,
+    AddFamPermissionRoute,
+    UserDetailsRoute,
+} from "@/router/routes";
 import { date } from "yup";
+import { selectedApp } from "@/store/ApplicationState";
 
 const router = useRouter();
 
@@ -167,6 +172,16 @@ const handleAddButton = () => {
         });
     }
 };
+
+const navigateToUserDetails = (userId: string) => {
+    router.push({
+        name: UserDetailsRoute.name,
+        params: {
+            applicationId: selectedApp.value?.id,
+            userId,
+        },
+    });
+};
 </script>
 
 <template>
@@ -293,12 +308,12 @@ const handleAddButton = () => {
             </Column>
 
             <Column header="Action">
-                <template #body>
+                <template #body="{ data }">
                     <button
                         v-if="authGroup !== 'FAM_ADMIN'"
                         title="User permission history"
                         class="btn btn-icon"
-                        @click="() => {}"
+                        @click="navigateToUserDetails(data.user_id)"
                     >
                         <RecentlyViewedIcon />
                     </button>
