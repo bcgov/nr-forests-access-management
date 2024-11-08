@@ -101,6 +101,7 @@ const handleVerify = (userType: UserType) => {
         return;
     }
     if (isCurrentUser()) {
+        console.log("hahah");
         emit("setVerifyResult", null);
         errorMsg.value = "You cannot grant permissions to yourself.";
         return;
@@ -152,15 +153,21 @@ watch(
                         type="text"
                         maxlength="20"
                         v-model="userIdInput"
-                        :class="{ 'is-invalid': errorMessage }"
+                        :class="{ 'is-invalid': errorMessage || errorMsg }"
                         @keydown.enter.prevent="handleVerify(props.domain)"
                         @blur="handleVerify(props.domain)"
                     />
                     <small
                         id="userIdInput-helper"
                         class="helper-text"
-                        v-if="helperText && !errorMessage"
+                        v-if="helperText && !errorMessage && !errorMsg"
                         >{{ helperText }}</small
+                    >
+                    <small
+                        id="userIdInput-err-msg"
+                        class="invalid-feedback"
+                        v-if="errorMsg"
+                        >{{ errorMsg }}</small
                     >
                     <ErrorMessage
                         class="invalid-feedback"
