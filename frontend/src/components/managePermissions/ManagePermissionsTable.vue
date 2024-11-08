@@ -4,8 +4,11 @@ import { useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { useQuery } from "@tanstack/vue-query";
-import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type {
+    AdminRoleAuthGroup,
+    FamAppAdminGetResponse,
+} from "fam-admin-mgmt-api/model";
 import RecentlyViewedIcon from "@carbon/icons-vue/es/recently-viewed/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 
@@ -39,8 +42,8 @@ import {
     AddFamPermissionRoute,
     UserDetailsRoute,
 } from "@/router/routes";
-import { date } from "yup";
 import { selectedApp } from "@/store/ApplicationState";
+import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
 
 const router = useRouter();
 
@@ -182,6 +185,47 @@ const navigateToUserDetails = (userId: string) => {
         },
     });
 };
+
+const notifications = ref<PermissionNotificationType[]>([]);
+
+const deleteAppAdminMutation = useMutation({
+    mutationFn: (admin: FamAppAdminGetResponse) =>
+        AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
+            admin.application_admin_id
+        ),
+    onMutate: (variables) => {
+        return { variables };
+    },
+    onSuccess: (_data, variables) => {
+        notifications.value.push({
+            serverity: "success",
+            message: `
+            You removed ${variables.roleName} access from ${formatUserNameAndId(
+                variables.userId,
+                variables.userFirstName,
+                variables.userLastName
+            )}
+        `,
+            hasFullMsg: false,
+        });
+    },
+    onError: (_error, variables) => {
+        notifications.value.push({
+            serverity: "success",
+            message: `
+            Failed to remove ${
+                variables.roleName
+            } access from ${formatUserNameAndId(
+                variables.userId,
+                variables.userFirstName,
+                variables.userLastName
+            )}
+        `,
+            hasFullMsg: false,
+        });
+    },
+    onSettled: () => appUserQuery.refetch(),
+});
 </script>
 
 <template>

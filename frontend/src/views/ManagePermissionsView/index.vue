@@ -100,17 +100,6 @@ const tabs: ManagePermissionsTabTypes[] = [
     },
     {
         key: AdminRoleAuthGroup.AppAdmin,
-        visible: computed(() =>
-            isSelectedAppAuthorized(
-                "APP_ADMIN",
-                selectedApp.value?.id,
-                adminUserAccessQuery.data.value
-            )
-        ),
-        icon: UserIcon as Component,
-    },
-    {
-        key: AdminRoleAuthGroup.DelegatedAdmin,
         visible: computed(
             () =>
                 isSelectedAppAuthorized(
@@ -123,6 +112,17 @@ const tabs: ManagePermissionsTabTypes[] = [
                     selectedApp.value?.id,
                     adminUserAccessQuery.data.value
                 )
+        ),
+        icon: UserIcon as Component,
+    },
+    {
+        key: AdminRoleAuthGroup.DelegatedAdmin,
+        visible: computed(() =>
+            isSelectedAppAuthorized(
+                "APP_ADMIN",
+                selectedApp.value?.id,
+                adminUserAccessQuery.data.value
+            )
         ),
         icon: EnterpriseIcon as Component,
     },

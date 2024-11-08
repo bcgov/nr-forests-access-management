@@ -78,12 +78,6 @@ const adminUserAccessQuery = useQuery({
             .then((res) => res.data),
     select: (data) => {
         if (props.requestType === "addUserPermission") {
-            return (
-                data.access.find(
-                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
-                )?.grants ?? []
-            );
-        } else {
             const delegatedAdminGrants =
                 data.access.find(
                     (authGrantDto) =>
@@ -95,6 +89,12 @@ const adminUserAccessQuery = useQuery({
                 )?.grants ?? [];
 
             return delegatedAdminGrants.concat(appAdminGrants);
+        } else {
+            return (
+                data.access.find(
+                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
+                )?.grants ?? []
+            );
         }
     },
 });
