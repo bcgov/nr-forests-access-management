@@ -23,7 +23,7 @@ import { isLoading } from "@/store/LoadingState";
 import {
     composeAndPushGrantPermissionNotification,
     setNotificationMsg,
-} from "@/store/NotificationState";
+} from "@/store/ManagePermissionNotificationState";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import {
     EmailSendingStatus,

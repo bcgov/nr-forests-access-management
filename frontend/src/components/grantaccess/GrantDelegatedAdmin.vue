@@ -18,7 +18,7 @@ import { isLoading } from "@/store/LoadingState";
 import {
     composeAndPushGrantPermissionNotification,
     setNotificationMsg,
-} from "@/store/NotificationState";
+} from "@/store/ManagePermissionNotificationState";
 import {
     EmailSendingStatus,
     type FamAccessControlPrivilegeCreateRequest,

@@ -15,57 +15,43 @@ import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
 import { computed, ref, watch } from "vue";
+import Icon from "@/components/common/Icon.vue";
 
 const auth = useAuth();
 
 const props = withDefaults(
     defineProps<{
         domain: UserType;
-        userId: string;
+        user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
         appId: number;
         fieldId?: string;
         helperText?: string;
     }>(),
     {
-        fieldId: "userId",
+        fieldId: "user",
     }
 );
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
-const emit = defineEmits(["change", "setVerifyResult"]);
+const emit = defineEmits(["setVerifyResult"]);
 
-const computedUserId = computed({
-    get() {
-        return props.userId;
-    },
-    set(newUserId: string) {
-        emit("change", newUserId);
-        resetsearchResult();
-    },
-});
+const userIdInput = ref<string>("");
 
 const errorMsg = ref("");
-
-const searchResult = ref<
-    IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null
->(null);
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
  */
 const isCurrentUser = (): boolean => {
-    const userId = computedUserId.value?.toLowerCase();
+    const userId = userIdInput.value?.toLowerCase();
     const loggedInUserId = auth.authState.famLoginUser?.username?.toLowerCase();
 
     return userId === loggedInUserId;
 };
 
 const handleMutationError = (error: any) => {
-    searchResult.value = {
-        userId: computedUserId.value,
-        found: false,
-    };
+    emit("setVerifyResult", null);
 
     // Check if error and response properties exist
     if (error.response && error.response.status === 403) {
@@ -87,11 +73,10 @@ const handleMutationError = (error: any) => {
 const verifyIdirMutation = useMutation({
     mutationFn: () =>
         AppActlApiService.idirBceidProxyApi
-            .idirSearch(computedUserId.value, props.appId)
+            .idirSearch(userIdInput.value, props.appId)
             .then((res) => res.data),
     onSuccess: (data) => {
-        searchResult.value = data;
-        emit("setVerifyResult", data.found, data.guid ?? "", data.email ?? "");
+        emit("setVerifyResult", data, UserType.I);
     },
     onError: (error) => handleMutationError(error),
 });
@@ -99,11 +84,10 @@ const verifyIdirMutation = useMutation({
 const verifyBceidMutation = useMutation({
     mutationFn: () =>
         AppActlApiService.idirBceidProxyApi
-            .bceidSearch(computedUserId.value, props.appId)
+            .bceidSearch(userIdInput.value, props.appId)
             .then((res) => res.data),
     onSuccess: (data) => {
-        searchResult.value = data;
-        emit("setVerifyResult", data.found, data.guid ?? "", data.email ?? "");
+        emit("setVerifyResult", data, UserType.B);
     },
     onError: (error) => handleMutationError(error),
 });
@@ -112,36 +96,34 @@ const handleVerify = (userType: UserType) => {
     if (
         verifyBceidMutation.isPending.value ||
         verifyIdirMutation.isPending.value ||
-        !computedUserId.value
+        !userIdInput.value
     ) {
         return;
     }
     if (isCurrentUser()) {
-        searchResult.value = {
-            found: false,
-            userId: computedUserId.value,
-        };
+        emit("setVerifyResult", null);
         errorMsg.value = "You cannot grant permissions to yourself.";
         return;
     }
-    if (userType === "I" && computedUserId.value.length) {
+    errorMsg.value = "";
+    if (userType === "I") {
         verifyIdirMutation.mutate();
     }
-    if (userType === "B" && computedUserId.value.length) {
+    if (userType === "B") {
         verifyBceidMutation.mutate();
     }
 };
 
 const resetsearchResult = () => {
-    searchResult.value = null;
     errorMsg.value = "";
-    emit("setVerifyResult", false);
+    emit("setVerifyResult", null);
 };
 
 // whenver user domain change, remove the previous user identity card
 watch(
     () => props.domain,
     () => {
+        userIdInput.value = "";
         resetsearchResult();
     }
 );
@@ -153,8 +135,8 @@ watch(
         <Field
             :name="props.fieldId"
             :validateOnChange="true"
-            v-model="computedUserId"
-            v-slot="{ errorMessage, field }"
+            v-slot="{ errorMessage }"
+            v-model="props.user"
         >
             <div class="input-with-verify-button">
                 <div>
@@ -169,7 +151,7 @@ watch(
                         class="w-100 custom-height"
                         type="text"
                         maxlength="20"
-                        v-bind="field"
+                        v-model="userIdInput"
                         :class="{ 'is-invalid': errorMessage }"
                         @keydown.enter.prevent="handleVerify(props.domain)"
                         @blur="handleVerify(props.domain)"
@@ -213,8 +195,8 @@ watch(
         </Field>
 
         <UserIdentityCard
-            v-if="searchResult"
-            :userIdentity="searchResult"
+            v-if="user"
+            :userIdentity="user"
             :errorMsg="errorMsg"
         />
     </div>

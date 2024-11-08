@@ -1,20 +1,29 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Component } from "vue";
+import {
+    computed,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch,
+    type Component,
+} from "vue";
 import { isAxiosError } from "axios";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import TabView, { type TabViewChangeEvent } from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
 import UserIcon from "@carbon/icons-vue/es/user/16";
-
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-
 import PageTitle from "@/components/common/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import TablePlaceholder from "@/components/managePermissions/TablePlaceholder.vue";
-import { selectedApp, setSelectedApp } from "@/store/ApplicationState";
+import {
+    selectedApp,
+    setSelectedApp,
+    activeIndex,
+} from "@/store/ApplicationState";
 import {
     formatAxiosError,
     getUniqueApplications,
@@ -22,12 +31,42 @@ import {
 } from "@/utils/ApiUtils";
 import ManagePermissionsTable from "@/components/managePermissions/ManagePermissionsTable.vue";
 import type {
+    PermissionNotificationType,
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
+import NotificationStack from "@/components/common/NotificationStack.vue";
+import {
+    AppAdminErrorQuerykey,
+    AppAdminSuccessQuerykey,
+    DelegatedAdminErrorQueryKey,
+    DelegatedAdminSuccessQueryKey,
+    type AppPermissionQueryErrorType,
+} from "../AddAppPermission/utils";
+import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
+import { generateAppSuccessNotifications } from "./utils";
+
+const queryClient = useQueryClient();
+
+// Fetch notification Data
+const appAdminSuccessData = queryClient.getQueryData<FamUserRoleAssignmentRes>([
+    AppAdminSuccessQuerykey,
+]);
+const appAdminErrorData = queryClient.getQueryData<AppPermissionQueryErrorType>(
+    [AppAdminErrorQuerykey]
+);
+const delegatedAdminSuccessData =
+    queryClient.getQueryData<FamUserRoleAssignmentRes>([
+        DelegatedAdminSuccessQueryKey,
+    ]);
+const delegatedAdminErrorData =
+    queryClient.getQueryData<AppPermissionQueryErrorType>([
+        DelegatedAdminErrorQueryKey,
+    ]);
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
+    clearNotifications();
 };
 
 const adminUserAccessQuery = useQuery({
@@ -75,21 +114,59 @@ const tabs: ManagePermissionsTabTypes[] = [
     },
 ];
 
+const notifications = ref<PermissionNotificationType[]>([
+    ...(appAdminSuccessData
+        ? generateAppSuccessNotifications(
+              "addUserPermission",
+              appAdminSuccessData
+          )
+        : []),
+    ...(delegatedAdminSuccessData
+        ? generateAppSuccessNotifications(
+              "addUserPermission",
+              delegatedAdminSuccessData
+          )
+        : []),
+]);
+
+const clearNotifications = () => {
+    queryClient.removeQueries({
+        queryKey: [AppAdminSuccessQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AppAdminErrorQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [DelegatedAdminSuccessQueryKey],
+    });
+    queryClient.removeQueries({
+        queryKey: [DelegatedAdminErrorQueryKey],
+    });
+    notifications.value = [];
+};
+
 // Computed property to filter visible tabs dynamically
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
-const activeIndex = ref(0);
-
 // Function to set `activeIndex` to the first visible tab
 const updateActiveIndex = () => {
-    activeIndex.value = 0;
+    if (activeIndex.value >= visibleTabs.value.length) {
+        activeIndex.value = 0;
+    }
 };
 
 // Watch `selectedApp` and call `updateActiveIndex`
-watch(selectedApp, updateActiveIndex, { immediate: true });
+watch(
+    selectedApp,
+    () => {
+        updateActiveIndex();
+    },
+    { immediate: true }
+);
 
 const onTabChange = (event: TabViewChangeEvent) => {
     activeIndex.value = event.index;
+    clearNotifications();
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
@@ -97,6 +174,15 @@ const tabHeaders: ManagePermissionsTabHeaderType = {
     APP_ADMIN: "Users",
     DELEGATED_ADMIN: "Delegated admins",
 };
+
+const onNotificationClose = (idx: number) => {
+    notifications.value.splice(idx, 1);
+};
+
+// Clear notifications data
+onUnmounted(() => {
+    clearNotifications();
+});
 </script>
 
 <template>
@@ -125,6 +211,10 @@ const tabHeaders: ManagePermissionsTabHeaderType = {
         />
 
         <div class="content-container">
+            <NotificationStack
+                :permission-notifications="notifications"
+                :on-close="onNotificationClose"
+            />
             <TablePlaceholder v-if="!selectedApp" />
             <div v-else class="tab-view-container">
                 <TabView :active-index="activeIndex" @tab-change="onTabChange">

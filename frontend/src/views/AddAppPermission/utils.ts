@@ -1,23 +1,38 @@
-import { array, mixed, number, object, string } from "yup";
-import { UserType, type FamForestClientSchema } from "fam-app-acsctl-api/model";
+import { array, mixed, object } from "yup";
+import {
+    UserType,
+    type FamForestClientSchema,
+    type FamUserRoleAssignmentCreateSchema,
+    type IdimProxyBceidInfoSchema,
+    type IdimProxyIdirInfoSchema,
+} from "fam-app-acsctl-api/model";
 import type { AddAppPermissionRequestType } from "../../types/RouteTypes";
-import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import type {
+    FamAccessControlPrivilegeCreateRequest,
+    FamRoleDto,
+} from "fam-admin-mgmt-api/model";
+
+export const AppAdminSuccessQuerykey = "app-admin-mutation-success";
+export const AppAdminErrorQuerykey = "app-admin-mutation-error";
+export const DelegatedAdminSuccessQueryKey = "delegated-admin-mutation-success";
+export const DelegatedAdminErrorQueryKey = "delegated-admin-mutation-error";
 
 export type AppPermissionFormType = {
     domain: UserType;
-    userId: string;
-    userGuid: string;
-    userEmail: string;
+    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
     forestClients: FamForestClientSchema[];
     role: FamRoleDto | null;
     sendUserEmail: boolean;
 };
 
+export type AppPermissionQueryErrorType = {
+    error: Error;
+    formData: AppPermissionFormType;
+};
+
 const defaultFormData: AppPermissionFormType = {
     domain: UserType.B,
-    userId: "",
-    userGuid: "",
-    userEmail: "",
+    user: null,
     forestClients: [],
     role: null,
     sendUserEmail: false,
@@ -59,10 +74,11 @@ export const getRoleSectionSubtitle = (
  */
 export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
     return object({
-        userId: string()
-            .required("User ID is required")
-            .min(2, "User ID must be at least 2 characters")
-            .nullable(),
+        user: mixed<IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema>()
+            .required("A valid user is required")
+            .test("is-user-found", "A valid user ID is required", (value) => {
+                return value?.found === true;
+            }),
         role: mixed<FamRoleDto>().required("Please select a role"),
         forestClients: array()
             .of(
@@ -78,9 +94,31 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
                 is: () => isAbstractRoleSelected,
                 then: (schema) =>
                     schema
-                        .min(1, "At least one Forest Client is required")
+                        .min(1, "At least one organization is required")
                         .nullable(),
                 otherwise: (schema) => schema.nullable(),
             }),
     });
 };
+
+/**
+ * Generates a payload for creating a user role assignment or access control privilege request.
+ *
+ * @param {AppPermissionFormType} formData - The complete form data containing user and role details.
+ * @returns {FamUserRoleAssignmentCreateSchema | FamAccessControlPrivilegeCreateRequest} a payload object.
+ *
+ */
+export const generatePayload = (
+    formData: AppPermissionFormType
+):
+    | FamUserRoleAssignmentCreateSchema
+    | FamAccessControlPrivilegeCreateRequest => ({
+    user_name: formData.user?.userId ?? "",
+    user_guid: formData.user?.guid ?? "",
+    user_type_code: formData.domain,
+    role_id: formData.role?.id ?? -1,
+    forest_client_numbers: formData.forestClients.map(
+        (fc) => fc.forest_client_number
+    ),
+    requires_send_user_email: formData.sendUserEmail,
+});

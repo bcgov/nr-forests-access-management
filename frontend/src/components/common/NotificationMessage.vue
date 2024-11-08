@@ -1,27 +1,31 @@
 <script setup lang="ts">
-import { ref, type VNode } from "vue";
-import Message from "primevue/message";
+import { computed, ref, type VNode } from "vue";
+import Message, { type MessageProps } from "primevue/message";
 
-import {
-    clearNotification,
-    showFullNotificationMsg,
-} from "@/store/NotificationState";
+import {} from "@/store/ManagePermissionNotificationState";
 import { IconSize } from "@/enum/IconEnum";
-import type { SeverityType } from "@/enum/SeverityEnum";
 
 const props = defineProps<{
     message: string | VNode | (() => VNode);
-    severity: SeverityType;
+    severity: MessageProps["severity"];
     hasFullMsg?: boolean;
+    fullMessage?: string | VNode | (() => VNode);
     hideSeverityText?: boolean;
     closable?: boolean;
+    onClose?: Function;
 }>();
 
-const showSeeAll = ref(props.hasFullMsg);
+const showAll = ref(false);
 
-const closeNotification = () => {
-    clearNotification(props.severity);
-};
+const displayMessage = computed(() => {
+    if (showAll.value) {
+        return props.fullMessage;
+    } else {
+        return props.message;
+    }
+});
+
+const closeEvents = props.onClose ? { close: props.onClose } : {};
 </script>
 
 <template>
@@ -32,7 +36,7 @@ const closeNotification = () => {
             :severity="props.severity"
             :sticky="true"
             :closable="props.closable === undefined ? true : props.closable"
-            @close="closeNotification()"
+            v-bind="closeEvents"
         >
             <Icon
                 :icon="
@@ -47,27 +51,30 @@ const closeNotification = () => {
             <span class="custom-message-text">
                 <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
                 <span class="message-content">
-                    <!-- Check message type and render accordingly -->
+                    <!-- Render displayMessage based on type -->
                     <component
-                        :is="typeof message === 'function' ? message : null"
-                        v-if="typeof message === 'function'"
+                        :is="
+                            typeof displayMessage === 'function'
+                                ? displayMessage
+                                : null
+                        "
+                        v-if="typeof displayMessage === 'function'"
                     />
-                    <template v-else-if="typeof message === 'object'">
+                    <template v-else-if="typeof displayMessage === 'object'">
                         <!-- Render VNode directly -->
-                        <component :is="message" />
+                        <component :is="displayMessage" />
                     </template>
                     <template v-else>
                         <!-- Render string message directly -->
-                        {{ message }}
+                        {{ displayMessage }}
                     </template>
                 </span>
                 <button
-                    v-if="hasFullMsg && showSeeAll"
+                    v-if="hasFullMsg && !showAll"
                     class="btn-see-all"
                     @click="
                         () => {
-                            showFullNotificationMsg(props.severity);
-                            showSeeAll = false;
+                            showAll = true;
                         }
                     "
                 >

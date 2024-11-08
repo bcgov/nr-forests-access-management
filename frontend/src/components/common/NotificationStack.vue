@@ -1,28 +1,38 @@
 <script setup lang="ts">
-import { notifications } from '@/store/NotificationState';
+import NotificationMessage from "./NotificationMessage.vue";
+import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+
+defineProps<{
+    permissionNotifications: PermissionNotificationType[];
+    onClose: Function;
+}>();
 </script>
 
 <template>
     <TransitionGroup name="fade" tag="div">
-        <template v-for="(value, key) in notifications" :key="key">
+        <template
+            v-for="(value, index) in permissionNotifications"
+            :key="index"
+        >
             <NotificationMessage
-                v-if="value.msg !== ''"
-                :severity="key.toString()"
-                :msg-text="value.msg"
-                :hasFullMsg="value.fullMsg !== ''"
+                :severity="value.serverity"
+                :message="value.message"
+                :has-full-msg="value.hasFullMsg"
+                :full-message="value.fullMessage"
                 class="notification-stack"
+                :on-close="() => onClose(index)"
             />
         </template>
     </TransitionGroup>
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/styles.scss';
+@import "@/assets/styles/styles.scss";
 .notification-stack {
-    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+
     &:deep(.p-message) {
         position: relative;
-        margin-bottom: -1rem;
     }
 }
 

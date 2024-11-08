@@ -6,13 +6,22 @@ import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import PageTitle from "@/components/common/PageTitle.vue";
-import { useQuery } from "@tanstack/vue-query";
-import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from "@/services/ApiServiceFactory";
 import { Form } from "vee-validate";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import { computed, ref, watch } from "vue";
 import useAuth from "@/composables/useAuth";
-import { UserType, type FamForestClientSchema } from "fam-app-acsctl-api/model";
+import {
+    UserType,
+    type FamForestClientSchema,
+    type FamUserRoleAssignmentCreateSchema,
+    type IdimProxyBceidInfoSchema,
+    type IdimProxyIdirInfoSchema,
+} from "fam-app-acsctl-api/model";
 import {
     getDefaultFormData,
     type AppPermissionFormType,
@@ -20,6 +29,11 @@ import {
     getRoleSectionTitle,
     getRoleSectionSubtitle,
     validateAppPermissionForm,
+    generatePayload,
+    AppAdminSuccessQuerykey,
+    AppAdminErrorQuerykey,
+    DelegatedAdminSuccessQueryKey,
+    DelegatedAdminErrorQueryKey,
 } from "@/views/AddAppPermission/utils";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
@@ -29,6 +43,9 @@ import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import ForestClientSection from "@/components/grantaccess/ForestClientSection.vue";
 import BoolCheckbox from "@/components/common/BoolCheckbox.vue";
 import Button from "@/components/common/Button.vue";
+import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
+import ConfirmDialog from "primevue/confirmdialog";
+import { useConfirm } from "primevue/useconfirm";
 
 const router = useRouter();
 const auth = useAuth();
@@ -59,21 +76,34 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    select: (data) =>
-        props.requestType === "addUserPermission"
-            ? data.access.find(
-                  (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
-              )
-            : data.access.find(
-                  (authGrantDto) => authGrantDto.auth_key === "DELEGATED_ADMIN"
-              ),
+    select: (data) => {
+        if (props.requestType === "addUserPermission") {
+            return (
+                data.access.find(
+                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
+                )?.grants ?? []
+            );
+        } else {
+            const delegatedAdminGrants =
+                data.access.find(
+                    (authGrantDto) =>
+                        authGrantDto.auth_key === "DELEGATED_ADMIN"
+                )?.grants ?? [];
+            const appAdminGrants =
+                data.access.find(
+                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
+                )?.grants ?? [];
+
+            return delegatedAdminGrants.concat(appAdminGrants);
+        }
+    },
 });
 
 const selectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
     return (
-        adminUserAccessQuery.data.value.grants.find(
+        adminUserAccessQuery.data.value.find(
             (famGrantDetail) =>
                 famGrantDetail.application.id === props.applicationId
         ) ?? null
@@ -101,29 +131,18 @@ watch(
 const handleDomainChange = (userType: UserType) => {
     if (formData.value) {
         formData.value.domain = userType;
-        formData.value.userId = "";
-        formData.value.userGuid = "";
+        formData.value.user = null;
     }
 };
-
-const handleUserIdChange = (userId: string) => {
-    if (formData.value) {
-        formData.value.userId = userId;
-        formData.value.userGuid = "";
-    }
-};
-
-const isUserIdVerified = ref(false);
 
 const handleUserVerification = (
-    isVerfied: boolean,
-    userGuid: string = "",
-    userEmail: string = ""
+    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema,
+    domain?: UserType
 ) => {
     if (formData.value) {
-        isUserIdVerified.value = isVerfied;
-        formData.value.userGuid = userGuid;
-        formData.value.userEmail = userEmail;
+        formData.value.user = user;
+        // Prevent user from chaning domain while it's verifying
+        formData.value.domain = domain ?? formData.value.domain;
     }
 };
 
@@ -148,14 +167,94 @@ const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
     }
 };
 
+const queryClient = useQueryClient();
+
+const appAdminMutation = useMutation({
+    mutationFn: (payload: FamUserRoleAssignmentCreateSchema) =>
+        AppActlApiService.userRoleAssignmentApi.createUserRoleAssignmentMany(
+            payload
+        ),
+    onSuccess: (res) => {
+        queryClient.setQueryData([AppAdminSuccessQuerykey], res.data);
+    },
+    onError: (error) => {
+        queryClient.setQueryData([AppAdminErrorQuerykey], {
+            error,
+            formData: formData.value,
+        });
+    },
+    onSettled: () => {
+        isSubmitting.value = false;
+        router.push({ name: ManagePermissionsRoute.name });
+    },
+    retry: 0,
+});
+
+const delegatedAdminMutation = useMutation({
+    mutationFn: (payload: FamAccessControlPrivilegeCreateRequest) =>
+        AdminMgmtApiService.delegatedAdminApi.createAccessControlPrivilegeMany(
+            payload
+        ),
+    onSuccess: (res) => {
+        queryClient.setQueryData([DelegatedAdminSuccessQueryKey], res.data);
+    },
+    onError: (error) => {
+        queryClient.setQueryData([DelegatedAdminErrorQueryKey], {
+            error,
+            formData: formData.value,
+        });
+    },
+    onSettled: () => {
+        isSubmitting.value = false;
+        router.push({ name: ManagePermissionsRoute.name });
+    },
+    retry: 0,
+});
+
+const isSubmitting = ref<boolean>(false);
+
+const confirm = useConfirm();
+
 const onSubmit = () => {
-    const plainObject = { ...formData.value };
-    console.log("Form submitted with:", plainObject);
+    if (formData.value) {
+        const payload = generatePayload(formData.value);
+
+        if (props.requestType === "addUserPermission") {
+            isSubmitting.value = true;
+            appAdminMutation.mutate(payload);
+        } else if (props.requestType === "addDelegatedAdmin") {
+            confirm.require({
+                group: "addDelegatedAdmin",
+                header: "Add a delegated admin",
+                rejectLabel: "Cancel",
+                acceptLabel: "Submit delegated admin",
+                acceptClass: "dialog-accept-button",
+                accept: () => {
+                    isSubmitting.value = true;
+                    delegatedAdminMutation.mutate(payload);
+                },
+            });
+        }
+    }
 };
 </script>
 
 <template>
     <div class="add-app-permission-container">
+        <ConfirmDialog
+            group="addDelegatedAdmin"
+            class="delegated-admin-confrim-dialog"
+        >
+            <template #message>
+                <p>
+                    Are you sure you want to add
+                    <strong>{{ formData?.user?.userId.toUpperCase() }}</strong>
+                    as a delegated admin? As a delegated admin
+                    <strong>{{ formData?.user?.userId.toUpperCase() }}</strong>
+                    will be able to add, edit or delete users
+                </p>
+            </template>
+        </ConfirmDialog>
         <BreadCrumbs :crumbs="crumbs" />
         <PageTitle
             :title="getPageTitle(props.requestType)"
@@ -186,9 +285,8 @@ const onSubmit = () => {
                         <UserNameInput
                             class="user-name-text-input"
                             :domain="formData.domain"
-                            :userId="formData.userId"
+                            :user="formData.user"
                             :app-id="applicationId"
-                            @change="handleUserIdChange"
                             @setVerifyResult="handleUserVerification"
                         />
                     </StepContainer>
@@ -211,7 +309,7 @@ const onSubmit = () => {
                         divider
                     >
                         <ForestClientSection
-                            :userId="formData.userId"
+                            :userId="formData.user?.userId ?? ''"
                             :role="formData.role"
                             :app-id="props.applicationId"
                             :verified-clients="formData.forestClients"
@@ -226,11 +324,25 @@ const onSubmit = () => {
                         />
                     </StepContainer>
                     <div class="button-group">
-                        <Button label="Back" @click="" severity="secondary" />
                         <Button
-                            label="Create Application Admin"
+                            label="Back"
+                            severity="secondary"
+                            @click="
+                                () =>
+                                    router.push({
+                                        name: ManagePermissionsRoute.name,
+                                    })
+                            "
+                        />
+                        <Button
+                            :label="`Create ${
+                                props.requestType === 'addUserPermission'
+                                    ? 'Application'
+                                    : 'Delegated'
+                            } Admin`"
                             @click="handleSubmit(onSubmit)"
                             :icon="CheckmarkIcon"
+                            :is-loading="isSubmitting"
                         />
                     </div>
                 </form>
@@ -270,6 +382,18 @@ const onSubmit = () => {
                 @include type.type-style("body-compact-01");
             }
         }
+    }
+}
+
+.delegated-admin-confrim-dialog {
+    .p-confirm-dialog-accept {
+        border: 0.0625rem solid colors.$blue-60;
+        background-color: colors.$blue-60;
+    }
+
+    .dialog-accept-button:hover {
+        border: 0.0625rem solid colors.$blue-65;
+        background-color: colors.$blue-65;
     }
 }
 </style>

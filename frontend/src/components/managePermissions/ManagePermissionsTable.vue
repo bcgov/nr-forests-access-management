@@ -35,6 +35,7 @@ import ErrorText from "../UI/ErrorText.vue";
 import { isAxiosError } from "axios";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
+import { date } from "yup";
 
 const router = useRouter();
 
@@ -260,6 +261,17 @@ const handleAddButton = () => {
             />
 
             <Column
+                v-if="authGroup !== 'FAM_ADMIN'"
+                :field="
+                    authGroup === 'APP_ADMIN'
+                        ? 'role.forest_client.forest_client_number'
+                        : 'role.client_number.forest_client_number'
+                "
+                header="Client Number"
+                sortable
+            ></Column>
+
+            <Column
                 :header="
                     authGroup === 'DELEGATED_ADMIN'
                         ? 'Role Enabled To Assign'
@@ -279,7 +291,7 @@ const handleAddButton = () => {
                     />
                 </template>
             </Column>
-            <Column header="Created on" />
+
             <Column header="Action">
                 <template #body>
                     <button

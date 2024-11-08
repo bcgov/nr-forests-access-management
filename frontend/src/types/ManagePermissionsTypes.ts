@@ -1,5 +1,6 @@
-import type { Component, ComputedRef } from "vue";
+import type { Component, ComputedRef, VNode } from "vue";
 import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import type { MessageProps } from "primevue/message";
 
 export type ManagePermissionsTabTypes = {
     key: AdminRoleAuthGroup;
@@ -9,4 +10,11 @@ export type ManagePermissionsTabTypes = {
 
 export type ManagePermissionsTabHeaderType = {
     [key in AdminRoleAuthGroup]: string;
+};
+
+export type PermissionNotificationType = {
+    serverity: MessageProps["severity"];
+    message: string | VNode | (() => VNode);
+    hasFullMsg: boolean;
+    fullMessage?: string | VNode | (() => VNode);
 };

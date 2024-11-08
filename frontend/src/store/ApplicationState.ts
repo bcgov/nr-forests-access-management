@@ -49,3 +49,5 @@ export const selectedApp = ref<FamApplicationDto>();
 export const setSelectedApp = (app: FamApplicationDto) => {
     selectedApp.value = app;
 };
+
+export const activeIndex = ref(0);

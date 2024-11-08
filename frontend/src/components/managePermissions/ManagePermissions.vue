@@ -33,7 +33,7 @@ import { isLoading } from "@/store/LoadingState";
 import {
     resetNotification,
     setNotificationMsg,
-} from "@/store/NotificationState";
+} from "@/store/ManagePermissionNotificationState";
 import type {
     FamAccessControlPrivilegeGetResponse,
     FamAppAdminGetResponse,

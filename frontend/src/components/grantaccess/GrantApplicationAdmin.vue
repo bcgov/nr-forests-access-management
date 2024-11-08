@@ -11,7 +11,7 @@ import { IconSize } from "@/enum/IconEnum";
 import { Severity, ErrorDescription } from "@/enum/SeverityEnum";
 import { TabKey } from "@/enum/TabEnum";
 import { isLoading } from "@/store/LoadingState";
-import { setNotificationMsg } from "@/store/NotificationState";
+import { setNotificationMsg } from "@/store/ManagePermissionNotificationState";
 import LoginUserState from "@/store/FamLoginUserState";
 import { setCurrentTabState } from "@/store/CurrentTabState";
 import { UserType } from "fam-app-acsctl-api/model";

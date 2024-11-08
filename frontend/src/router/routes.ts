@@ -7,7 +7,6 @@
 */
 import type { RouteRecordRaw } from "vue-router";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
-import { authGuard } from "./RouteGuards";
 
 const protectedLayoutMeta = { layout: "ProtectedLayout" };
 
@@ -20,7 +19,7 @@ export const LandingRoute: RouteRecordRaw = {
 export const ManagePermissionsRoute: RouteRecordRaw = {
     path: "/manage-permissions",
     name: "ManagePermissions",
-    component: () => import("@/views/ManagePermissionsView.vue"),
+    component: () => import("@/views/ManagePermissionsView"),
     meta: protectedLayoutMeta,
 };
 
@@ -38,7 +37,7 @@ export const AddAppPermissionRoute: RouteRecordRaw = {
 
 export const AddFamPermissionRoute: RouteRecordRaw = {
     path: "/manage-permissions/add-fam-permission",
-    component: () => import("@/views/AddFamPermission.vue"),
+    component: () => import("@/views/AddFamPermission"),
     name: "AddFamPermission",
     meta: protectedLayoutMeta,
 };
