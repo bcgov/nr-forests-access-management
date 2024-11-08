@@ -44,7 +44,15 @@ import {
     type AppPermissionQueryErrorType,
 } from "../AddAppPermission/utils";
 import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
-import { generateAppSuccessNotifications } from "./utils";
+import {
+    generateAppErrorNotifications,
+    generateAppSuccessNotifications,
+    generateFamNotification,
+} from "./utils";
+import {
+    FamPermissionErrorQueryKey,
+    FamPermissionSuccessQueryKey,
+} from "../AddFamPermission/utils";
 
 const queryClient = useQueryClient();
 
@@ -63,6 +71,12 @@ const delegatedAdminErrorData =
     queryClient.getQueryData<AppPermissionQueryErrorType>([
         DelegatedAdminErrorQueryKey,
     ]);
+const FamPermissionSuccessData = queryClient.getQueryData<string>([
+    FamPermissionSuccessQueryKey,
+]);
+const FamPermissionErrorData = queryClient.getQueryData<string>([
+    FamPermissionErrorQueryKey,
+]);
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
@@ -127,6 +141,18 @@ const notifications = ref<PermissionNotificationType[]>([
               delegatedAdminSuccessData
           )
         : []),
+    ...(appAdminErrorData
+        ? [generateAppErrorNotifications(appAdminErrorData)]
+        : []),
+    ...(delegatedAdminErrorData
+        ? [generateAppErrorNotifications(delegatedAdminErrorData)]
+        : []),
+    ...(FamPermissionSuccessData
+        ? [generateFamNotification(true, FamPermissionSuccessData)]
+        : []),
+    ...(FamPermissionErrorData
+        ? [generateFamNotification(false, FamPermissionErrorData)]
+        : []),
 ]);
 
 const clearNotifications = () => {
@@ -141,6 +167,12 @@ const clearNotifications = () => {
     });
     queryClient.removeQueries({
         queryKey: [DelegatedAdminErrorQueryKey],
+    });
+    queryClient.removeQueries({
+        queryKey: [FamPermissionSuccessQueryKey],
+    });
+    queryClient.removeQueries({
+        queryKey: [FamPermissionErrorQueryKey],
     });
     notifications.value = [];
 };

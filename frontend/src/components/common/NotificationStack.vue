@@ -21,6 +21,7 @@ defineProps<{
                 :full-message="value.fullMessage"
                 class="notification-stack"
                 :on-close="() => onClose(index)"
+                closable
             />
         </template>
     </TransitionGroup>
