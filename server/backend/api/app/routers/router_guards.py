@@ -12,8 +12,8 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_MISSING_KEY_ATTRIBUTE,
                                ERROR_CODE_REQUESTER_NOT_EXISTS,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, RoleType,
-                               UserType)
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+                               ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
 from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
                           crud_user_role, crud_utils)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
@@ -392,7 +392,7 @@ async def enforce_self_grant_guard(
         )
 
 
-async def get_verified_target_user(
+def get_verified_target_user(
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
     role: FamRole = Depends(get_request_role_from_id),
@@ -412,21 +412,46 @@ async def enforce_bceid_by_same_org_guard(
     # forbid business bceid user (requester) manage idir user's access
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_verified_target_user),
+    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    role: FamRole = Depends(get_request_role_from_id)
 ):
     """
-    When requester is a BCeID user, enforce requester can only manage target
-    user from the same organization.
-    :param _enforce_user_type_auth: call the authorize_by_user_type method
-            to ensure that this enforce_bceid_by_same_org_guard method only
-            checks when business bceid user grants access to another business
-            bceid user
+    When requester is a BCeID user, enforce requester can only manage target user from the same organization.
+    """
+    """
+    Initially this guard was using dependency validation: "Depends(get_verified_target_user)" to retrieve
+    information from IDP(IDIM service) for this guard for checking.
+    But due to special case for - deleting user/role assignment when target user is no longer available from IDP
+    (inactive or removed for some reason), we still like to be able to delete the target user from db, however,
+    we won't be able to verify user from IDIM in this case.
+    For this case we won't be able to use "get_verified_target_user" as a guard; moving it from router guard
+    dependency to be in this method's body for special handling. So:
+
+    - For IDIR requester, there is no need to get "verified target user" as IDIR user can remove any IDIR user
+      and any BCeID user.
+
+    - For BCeID requester, get "verified target user" is still needed for BCeID target user to check if they
+      are from the same organization. But, in the case if target user cannot be verified, then raise exception
+      for this case.
     """
     LOGGER.debug(
         f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
         "is allowed to manage BCeID target user for the same organization."
     )
+
     if requester.user_type_code == UserType.BCEID:
+        try:
+            target_user = get_verified_target_user(requester=requester, target_user=target_user, role=role)
+        except Exception as e:
+            LOGGER.error(f"Target user could not be verified: {e}.")
+            app_name = role.application.application_name
+            error_msg = f"Unable to verify user {target_user.user_name}. Please contact {app_name} administrator for the action."
+            utils.raise_http_exception(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                error_code=ERROR_CODE_UNKNOWN_STATE,
+                error_msg=error_msg,
+            )
+
         requester_business_guid = requester.business_guid
         target_user_business_guid = target_user.business_guid
 
