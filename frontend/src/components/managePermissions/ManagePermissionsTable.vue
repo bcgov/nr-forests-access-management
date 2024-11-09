@@ -75,7 +75,7 @@ const appAdminQuery = useQuery({
     refetchOnMount: "always",
     enabled: props.authGroup === "FAM_ADMIN",
 });
-console.log(props.authGroup);
+
 const appUserQuery = useQuery({
     queryKey: ["fam_applications", props.appId, "user_role_assignment"],
     queryFn: () =>

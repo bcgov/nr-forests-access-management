@@ -2,11 +2,9 @@
 import ManagePermissionsTitle from "@/components/managePermissions/ManagePermissionsTitle.vue";
 import ApplicationAdminTable from "@/components/managePermissions/table/ApplicationAdminTable.vue";
 import DelegatedAdminTable from "@/components/managePermissions/table/DelegatedAdminTable.vue";
-import TermsAndConditions from "@/components/common/TermsAndConditions.vue";
 import UserDataTable from "@/components/managePermissions/table/UserDataTable.vue";
 import { IconSize } from "@/enum/IconEnum";
 import { Severity } from "@/enum/SeverityEnum";
-import { TabKey } from "@/enum/TabEnum";
 import { router } from "@/router";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import {
@@ -207,7 +205,6 @@ const getCurrentTab = () => {
 </script>
 
 <template>
-    <!-- TODO <TermsAndConditions /> -->
     <ManagePermissionsTitle :isApplicationSelected="isApplicationSelected" />
     <div class="page-body">
         <div class="application-group">

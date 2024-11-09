@@ -7,6 +7,8 @@ import {
     isTermsVisible,
 } from "@/store/TermsAndConditionsState";
 import Dialog from "primevue/dialog";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import Button from "./Button.vue";
 
 const auth = useAuth();
 
@@ -18,13 +20,25 @@ Note: about Terms and Conditions used in coding.
     frontend and the backend (GC Notify email sending for delegated admin has T&C as a link)
 */
 
-const acceptTermsAndConditions = async () => {
-    try {
-        await AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions();
+const queryClient = useQueryClient();
+
+const acceptTermsAndConditionsMutation = useMutation({
+    mutationFn: () =>
+        AppActlApiService.userTermsAndConditionsApi.createUserTermsAndConditions(),
+    onSuccess: () => {
+        queryClient.refetchQueries({
+            queryKey: ["user_terms_conditions", "user:validate"],
+        });
         hideTerms();
-    } catch (error: any) {
+    },
+    onError: (error) => {
+        console.error("Accept terms and conditions failed: ", error);
         auth.logout();
-    }
+    },
+});
+
+const acceptTermsAndConditions = () => {
+    acceptTermsAndConditionsMutation.mutate();
 };
 </script>
 
@@ -90,6 +104,7 @@ const acceptTermsAndConditions = async () => {
                     <li>
                         “Business BCeID Terms” means the terms found at:
                         <a
+                            target="_blank"
                             href="https://www.bceid.ca/aboutbceid/agreements.aspx"
                             >https://www.bceid.ca/aboutbceid/agreements.aspx</a
                         >;
@@ -482,18 +497,21 @@ const acceptTermsAndConditions = async () => {
             </ol>
         </div>
         <template #footer v-if="!isTermsCloseable">
-            <Button
-                class="btn"
-                label="Cancel and logout"
-                severity="secondary"
-                @click="auth.logout()"
-            />
+            <div class="button-group">
+                <Button
+                    label="Cancel and logout"
+                    severity="secondary"
+                    @click="auth.logout()"
+                />
 
-            <Button
-                label="I accept the terms of use"
-                @click="acceptTermsAndConditions()"
-                autofocus
-            />
+                <Button
+                    label="I accept the terms of use"
+                    @click="acceptTermsAndConditions()"
+                    :is-loading="
+                        acceptTermsAndConditionsMutation.isPending.value
+                    "
+                />
+            </div>
         </template>
     </Dialog>
 </template>
@@ -532,9 +550,13 @@ li {
     margin-top: 0.5rem;
 }
 
-.btn,
-.btn:hover {
-    margin-right: 1rem;
-    color: #fff;
+.button-group {
+    width: 100%;
+    gap: 2rem;
+    display: flex;
+    flex-direction: row;
+    .fam-button {
+        width: 45%;
+    }
 }
 </style>

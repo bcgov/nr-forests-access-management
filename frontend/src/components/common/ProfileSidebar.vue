@@ -3,6 +3,7 @@ import Button from "primevue/button";
 import { default as FamButton } from "@/components/common/Button.vue";
 import LogoutIcon from "@carbon/icons-vue/es/logout/16";
 import CloseIcon from "@carbon/icons-vue/es/close/16";
+import DocumentIcon from "@carbon/icons-vue/es/document/16";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { showTermsForRead } from "@/store/TermsAndConditionsState";
 import Avatar from "primevue/avatar";
@@ -10,12 +11,12 @@ import { computed, ref } from "vue";
 import useAuth from "@/composables/useAuth";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import Logout from "@carbon/icons-vue/es/logout/16";
 import PSkeleton from "@/components/Skeletons/PSkeleton.vue";
 
 const auth = useAuth();
 
 const famLoginUser = auth.authState.famLoginUser;
+console.log(famLoginUser?.idpProvider);
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.
@@ -115,23 +116,25 @@ const adminUserAccessQuery = useQuery({
                 </div>
             </div>
             <Divider class="profile-divider" />
-            <!-- <Button
-                v-if="LoginUserState.isExternalDelegatedAdmin()"
+            <Button
+                v-if="
+                    famLoginUser?.idpProvider === 'bceidbusiness' &&
+                    adminUserAccessQuery.data.value
+                        ?.toLowerCase()
+                        .includes('delegated admin')
+                "
                 class="profile-sidebar-btn"
                 title="Terms of use"
                 aria-expanded="false"
                 aria-label="show terms of use"
-                :iconPosition="IconPosition.left"
                 label="Terms of use"
                 @click="showTermsAndConditions()"
             >
-                <Icon
-                    title="terms of use"
-                    icon="document"
-                    :size="IconSize.small"
-                    class="custom-carbon-icon-document"
-                />
-            </Button> -->
+                <template #default>
+                    <DocumentIcon />
+                    <span>Terms of use</span>
+                </template>
+            </Button>
             <Button
                 class="profile-sidebar-btn"
                 aria-expanded="false"
