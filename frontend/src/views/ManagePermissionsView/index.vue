@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import {
-    computed,
-    onMounted,
-    onUnmounted,
-    ref,
-    watch,
-    type Component,
-} from "vue";
+import { computed, onUnmounted, ref, watch, type Component } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { isAxiosError } from "axios";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { DropdownChangeEvent } from "primevue/dropdown";
@@ -55,6 +49,9 @@ import {
 } from "../AddFamPermission/utils";
 
 const queryClient = useQueryClient();
+const route = useRoute();
+const router = useRouter();
+const appIdFromQueryParam = ref(route.query.appId);
 
 // Fetch notification Data
 const appAdminSuccessData = queryClient.getQueryData<FamUserRoleAssignmentRes>([
@@ -80,6 +77,7 @@ const FamPermissionErrorData = queryClient.getQueryData<string>([
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
+    router.replace({ query: { appId: e.value.id } });
     clearNotifications();
 };
 
@@ -89,7 +87,26 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
+    refetchOnMount: true,
 });
+
+watch(
+    [appIdFromQueryParam, selectedApp, adminUserAccessQuery.isFetched],
+    ([appId, currentApp, isFetched]) => {
+        // If `appIdFromQueryParam` exists and `selectedApp` is undefined, set the selected app
+        if (appId && !currentApp && isFetched) {
+            const foundApp = getUniqueApplications(
+                adminUserAccessQuery.data.value
+            ).find(
+                (famApplicationDto) => famApplicationDto.id === Number(appId)
+            );
+            if (foundApp) {
+                setSelectedApp(foundApp);
+            }
+        }
+    },
+    { immediate: true } // Run immediately to catch initial load
+);
 
 // Available tab keys and their visibility conditions
 const tabs: ManagePermissionsTabTypes[] = [
@@ -175,6 +192,10 @@ const clearNotifications = () => {
         queryKey: [FamPermissionErrorQueryKey],
     });
     notifications.value = [];
+};
+
+const addNotifications = (newNotifications: PermissionNotificationType[]) => {
+    notifications.value.push(...newNotifications);
 };
 
 // Computed property to filter visible tabs dynamically
@@ -266,6 +287,7 @@ onUnmounted(() => {
                                 selectedApp.description ?? selectedApp.name
                             "
                             :app-id="selectedApp.id"
+                            :add-notifications="addNotifications"
                         />
                     </TabPanel>
                 </TabView>

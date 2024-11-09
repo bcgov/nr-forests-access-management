@@ -14,7 +14,6 @@ import type { ForestClientNotificationType } from "@/types/NotificationTypes";
 
 const props = withDefaults(
     defineProps<{
-        userId: string;
         role: FamRoleDto | null;
         appId: number;
         verifiedClients: FamForestClientSchema[]; // The verified forest client numbers in the form data
@@ -78,10 +77,6 @@ const cleanupForestClientSection = () => {
 
 // whenever user id or abstract role changed, cleanup the forest client section
 watch(
-    () => props.userId,
-    () => cleanupForestClientSection()
-);
-watch(
     () => props.role,
     () => cleanupForestClientSection()
 );
@@ -92,21 +87,16 @@ const clientSearchMutation = useMutation({
             .search(clientNumber, props.appId)
             .then((res) => res.data);
     },
-    onMutate: (clientNumber) => {
-        // Store the client number in context so it’s available in onSuccess and onError
-        return { clientNumber };
-    },
-    onSuccess: (data, _variables, context) => {
+    onSuccess: (data, clientNumber) => {
         if (!data.length) {
-            notExistClientNumbers.value.push(context.clientNumber);
+            notExistClientNumbers.value.push(clientNumber);
         } else if (data[0].status?.status_code !== "A") {
-            notActiveClientNumbers.value.push(context.clientNumber);
+            notActiveClientNumbers.value.push(clientNumber);
         }
     },
-    onError: (_error, _variables, context) => {
-        // Access clientNumber from context
-        if (context?.clientNumber) {
-            errorClientNumbers.value.push(context.clientNumber);
+    onError: (_error, clientNumber) => {
+        if (clientNumber) {
+            errorClientNumbers.value.push(clientNumber);
         }
     },
 });

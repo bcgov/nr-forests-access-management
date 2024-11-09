@@ -79,6 +79,13 @@ const famPermissionMutation = useMutation({
         const appName = formData.value.application?.description;
         const successMsg = `Admin privilege has been added to ${userFullName} for application ${appName}`;
         queryClient.setQueryData([FamPermissionSuccessQueryKey], successMsg);
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: {
+                appId: 1,
+                newFamAdminIds: [res.data.application_admin_id],
+            },
+        });
     },
     onError: (error) => {
         let errMsg = "";
@@ -89,15 +96,17 @@ const famPermissionMutation = useMutation({
         );
         const appName = formData.value.application?.description;
 
-        if (isAxiosError(error) && error.status === 409) {
+        if (isAxiosError(error) && error.response?.status === 409) {
             errMsg = `${userFullName} is already a ${appName} admin`;
+        } else {
+            errMsg = `Failed to add ${userFullName} as a ${appName} admin`;
         }
-        errMsg = `Failed to add ${userFullName} as a ${appName} admin`;
+
         queryClient.setQueryData([FamPermissionErrorQueryKey], errMsg);
+        router.push({ name: ManagePermissionsRoute.name, query: { appId: 1 } });
     },
     onSettled: () => {
         isSubmitting.value = false;
-        router.push({ name: ManagePermissionsRoute.name });
     },
     retry: 0,
 });
@@ -182,6 +191,7 @@ const onSubmit = () => {
                                 () =>
                                     router.push({
                                         name: ManagePermissionsRoute.name,
+                                        query: { appId: 1 },
                                     })
                             "
                         />

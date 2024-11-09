@@ -1,7 +1,13 @@
-import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-
-export const DeleteSuccessQueryKey = "delete-permission-success";
-export const DeleteErrorQueryKey = "delete-permission-error";
+import { isAxiosError } from "axios";
+import type {
+    AdminRoleAuthGroup,
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
+} from "fam-admin-mgmt-api/model";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import { formatAxiosError } from "@/utils/ApiUtils";
+import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 
 export type ConfirmTextType = {
     role: string;
@@ -121,4 +127,110 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
         default:
             return [];
     }
+};
+
+// Allow customized message templates for success and error cases
+type NotificationContext<T> = {
+    action: string;
+    entityName: string;
+    successTemplate: (variables: T) => string;
+    errorTemplate: (variables: T, error: Error) => string;
+};
+
+// For deleteAppAdminMutation
+export const deleteAppAdminContext: NotificationContext<FamApplicationUserRoleAssignmentGetSchema> =
+    {
+        action: "remove",
+        entityName: "access",
+        successTemplate: (variables) => `
+        You removed ${
+            variables.role?.display_name || ""
+        } access from ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}
+    `,
+        errorTemplate: (variables, error) => `
+        Failed to remove ${
+            variables.role?.display_name || ""
+        } access from ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}. Error: ${
+            isAxiosError(error) ? formatAxiosError(error) : error.message
+        }
+    `,
+    };
+
+// For deleteDelegatedAdminMutation
+export const deleteDelegatedAdminContext: NotificationContext<FamAccessControlPrivilegeGetResponse> =
+    {
+        action: "remove",
+        entityName: "privilege",
+        successTemplate: (variables) => `
+        You removed ${
+            variables.role?.display_name || ""
+        } privilege from ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}
+    `,
+        errorTemplate: (variables, error) => `
+        Failed to remove ${
+            variables.role?.display_name || ""
+        } privilege from ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}. Error: ${
+            isAxiosError(error) ? formatAxiosError(error) : error.message
+        }
+    `,
+    };
+
+// For deleteFamPermissionMutation (different format)
+export const deleteFamPermissionContext: NotificationContext<FamAppAdminGetResponse> =
+    {
+        action: "remove",
+        entityName: "admin privilege",
+        successTemplate: (variables) => `
+        You removed ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}'s admin privilege for ${
+            variables.application.application_description
+        }
+    `,
+        errorTemplate: (variables, error) => `
+        Failed to remove ${formatUserNameAndId(
+            variables.user.user_name,
+            variables.user.first_name,
+            variables.user.last_name
+        )}'s admin privilege for ${
+            variables.application.application_description
+        }. Error: ${
+            isAxiosError(error) ? formatAxiosError(error) : error.message
+        }
+    `,
+    };
+
+export const createNotification = <T>(
+    success: boolean,
+    variables: T,
+    error: Error | null,
+    context: NotificationContext<T>
+): PermissionNotificationType => {
+    const message = success
+        ? context.successTemplate(variables)
+        : context.errorTemplate(variables, error as Error);
+
+    return {
+        serverity: success ? "success" : "error",
+        message,
+        hasFullMsg: false,
+    };
 };

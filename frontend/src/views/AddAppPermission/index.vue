@@ -34,6 +34,7 @@ import {
     AppAdminErrorQuerykey,
     DelegatedAdminSuccessQueryKey,
     DelegatedAdminErrorQueryKey,
+    getApplicationWithUniqueRoles,
 } from "@/views/AddAppPermission/utils";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
@@ -87,7 +88,7 @@ const adminUserAccessQuery = useQuery({
                 data.access.find(
                     (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
                 )?.grants ?? [];
-
+            console.log(delegatedAdminGrants.concat(appAdminGrants));
             return delegatedAdminGrants.concat(appAdminGrants);
         } else {
             return (
@@ -102,11 +103,15 @@ const adminUserAccessQuery = useQuery({
 const selectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
-    return (
-        adminUserAccessQuery.data.value.find(
-            (famGrantDetail) =>
-                famGrantDetail.application.id === props.applicationId
-        ) ?? null
+    // return (
+    //     adminUserAccessQuery.data.value.find(
+    //         (famGrantDetail) =>
+    //             famGrantDetail.application.id === props.applicationId
+    //     ) ?? null
+    // );
+    return getApplicationWithUniqueRoles(
+        adminUserAccessQuery.data.value,
+        props.applicationId
     );
 });
 
@@ -176,16 +181,31 @@ const appAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([AppAdminSuccessQuerykey], res.data);
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: {
+                appId: props.applicationId,
+                newAppAdminIds: res.data.assignments_detail
+                    .filter((assignment) => assignment.status_code === 200)
+                    .map((assignment) => assignment.detail.user_role_xref_id)
+                    .join(","),
+            },
+        });
     },
     onError: (error) => {
         queryClient.setQueryData([AppAdminErrorQuerykey], {
             error,
             formData: formData.value,
         });
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: {
+                appId: props.applicationId,
+            },
+        });
     },
     onSettled: () => {
         isSubmitting.value = false;
-        router.push({ name: ManagePermissionsRoute.name });
     },
     retry: 0,
 });
@@ -197,16 +217,34 @@ const delegatedAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([DelegatedAdminSuccessQueryKey], res.data);
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: {
+                appId: props.applicationId,
+                newDelegatedAdminIds: res.data.assignments_detail
+                    .filter((assignment) => assignment.status_code === 200)
+                    .map(
+                        (assignment) =>
+                            assignment.detail.access_control_privilege_id
+                    )
+                    .join(","),
+            },
+        });
     },
     onError: (error) => {
         queryClient.setQueryData([DelegatedAdminErrorQueryKey], {
             error,
             formData: formData.value,
         });
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: {
+                appId: props.applicationId,
+            },
+        });
     },
     onSettled: () => {
         isSubmitting.value = false;
-        router.push({ name: ManagePermissionsRoute.name });
     },
     retry: 0,
 });
@@ -309,7 +347,6 @@ const onSubmit = () => {
                         divider
                     >
                         <ForestClientSection
-                            :userId="formData.user?.userId ?? ''"
                             :role="formData.role"
                             :app-id="props.applicationId"
                             :verified-clients="formData.forestClients"
@@ -331,6 +368,9 @@ const onSubmit = () => {
                                 () =>
                                     router.push({
                                         name: ManagePermissionsRoute.name,
+                                        query: {
+                                            appId: props.applicationId,
+                                        },
                                     })
                             "
                         />

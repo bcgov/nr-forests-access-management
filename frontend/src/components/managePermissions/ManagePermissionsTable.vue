@@ -1,27 +1,27 @@
 <script setup lang="ts">
+// Package imports
 import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import ConfirmDialog from "primevue/confirmdialog";
 import { FilterMatchMode } from "primevue/api";
+import ConfirmDialog from "primevue/confirmdialog";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import RecentlyViewedIcon from "@carbon/icons-vue/es/recently-viewed/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
+import { isAxiosError } from "axios";
+import { useConfirm } from "primevue/useconfirm";
+import type {
+    AdminRoleAuthGroup,
+    FamAccessControlPrivilegeGetResponse,
+    FamAppAdminGetResponse,
+} from "fam-admin-mgmt-api/model";
+import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 
-import {
-    getTableHeaderDescription,
-    getTableHeaderTitle,
-    getGrantButtonLabel,
-    filterList,
-    getHeaders,
-    DeleteSuccessQueryKey,
-    DeleteErrorQueryKey,
-    type ConfirmTextType,
-} from "@/components/managePermissions/utils";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
+import TableSkeleton from "@/components/Table/TableSkeleton.vue";
+import ErrorText from "@/components/UI/ErrorText.vue";
 import Chip from "@/components/UI/Chip.vue";
 import {
     AdminMgmtApiService,
@@ -34,9 +34,6 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
 } from "@/store/Constants";
-import TableSkeleton from "../Table/TableSkeleton.vue";
-import ErrorText from "../UI/ErrorText.vue";
-import { isAxiosError } from "axios";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import {
     AddAppPermissionRoute,
@@ -45,10 +42,20 @@ import {
 } from "@/router/routes";
 import { selectedApp } from "@/store/ApplicationState";
 import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
-import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 
 import ConfirmDialogText from "./ConfirmDialogText.vue";
-import { useConfirm } from "primevue/useconfirm";
+import {
+    getTableHeaderDescription,
+    getTableHeaderTitle,
+    getGrantButtonLabel,
+    filterList,
+    getHeaders,
+    type ConfirmTextType,
+    createNotification,
+    deleteAppAdminContext,
+    deleteDelegatedAdminContext,
+    deleteFamPermissionContext,
+} from "./utils";
 
 const router = useRouter();
 
@@ -56,6 +63,7 @@ const props = defineProps<{
     authGroup: AdminRoleAuthGroup;
     appName: string;
     appId: number;
+    addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
 const appAdminQuery = useQuery({
@@ -67,7 +75,7 @@ const appAdminQuery = useQuery({
     refetchOnMount: "always",
     enabled: props.authGroup === "FAM_ADMIN",
 });
-
+console.log(props.authGroup);
 const appUserQuery = useQuery({
     queryKey: ["fam_applications", props.appId, "user_role_assignment"],
     queryFn: () =>
@@ -191,7 +199,6 @@ const navigateToUserDetails = (userId: string) => {
     });
 };
 
-const queryClient = useQueryClient();
 const confirm = useConfirm();
 
 const confirmTextProps = ref<ConfirmTextType>();
@@ -201,69 +208,150 @@ const deleteAppAdminMutation = useMutation({
         AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
             admin.user_role_xref_id
         ),
-    onMutate: (variables) => {
-        return { variables };
-    },
     onSuccess: (_data, variables) => {
-        queryClient.setQueryData(
-            [DeleteSuccessQueryKey],
-            `
-            You removed ${
-                variables.role.display_name
-            } access from ${formatUserNameAndId(
-                variables.user.user_name,
-                variables.user.first_name,
-                variables.user.last_name
-            )}
-        `
-        );
+        props.addNotifications([
+            createNotification(true, variables, null, deleteAppAdminContext),
+        ]);
     },
-    onError: (_error, variables) => {
-        queryClient.setQueryData(
-            [DeleteErrorQueryKey],
-            `
-            Failed to remove ${
-                variables.role.display_name
-            } access from ${formatUserNameAndId(
-                variables.user.user_name,
-                variables.user.first_name,
-                variables.user.last_name
-            )}
-        `
-        );
+    onError: (error, variables) => {
+        props.addNotifications([
+            createNotification(false, variables, error, deleteAppAdminContext),
+        ]);
     },
     onSettled: () => appUserQuery.refetch(),
 });
 
-const handleDelete = (
-    userToRemove: FamApplicationUserRoleAssignmentGetSchema
-) => {
-    if (props.authGroup === "APP_ADMIN") {
-        confirmTextProps.value = {
-            userName: formatUserNameAndId(
-                userToRemove.user.user_name,
-                userToRemove.user.first_name,
-                userToRemove.user.last_name
+const deleteDelegatedAdminMutation = useMutation({
+    mutationFn: (admin: FamAccessControlPrivilegeGetResponse) =>
+        AdminMgmtApiService.delegatedAdminApi.deleteAccessControlPrivilege(
+            admin.access_control_privilege_id
+        ),
+    onSuccess: (_data, variables) => {
+        props.addNotifications([
+            createNotification(
+                true,
+                variables,
+                null,
+                deleteDelegatedAdminContext
             ),
-            role: userToRemove.role.display_name ?? "",
-            appName: props.appName,
-            customMsg: undefined,
-        };
-        // Prevent double dialogs
-        nextTick(() =>
-            confirm.require({
-                group: "deleteAppPermission",
-                header: "Remove Access",
-                rejectLabel: "Cancel",
-                acceptLabel: "Remove",
-                accept: () => {
-                    deleteAppAdminMutation.mutate(userToRemove);
-                    confirmTextProps.value = undefined;
-                },
-                reject: () => {
-                    confirmTextProps.value = undefined;
-                },
-            })
+        ]);
+    },
+    onError: (error, variables) => {
+        props.addNotifications([
+            createNotification(
+                false,
+                variables,
+                error,
+                deleteDelegatedAdminContext
+            ),
+        ]);
+    },
+    onSettled: () => delegatedAdminQuery.refetch(),
+});
+
+const deleteFamPermissionMutation = useMutation({
+    mutationFn: (admin: FamAppAdminGetResponse) =>
+        AdminMgmtApiService.applicationAdminApi.deleteApplicationAdmin(
+            admin.application_admin_id
+        ),
+    onSuccess: (_data, variables) => {
+        props.addNotifications([
+            createNotification(
+                true,
+                variables,
+                null,
+                deleteFamPermissionContext
+            ),
+        ]);
+    },
+    onError: (error, variables) => {
+        props.addNotifications([
+            createNotification(
+                false,
+                variables,
+                error,
+                deleteFamPermissionContext
+            ),
+        ]);
+    },
+    onSettled: () => appAdminQuery.refetch(),
+});
+
+const setConfirmTextProps = (
+    userName: string,
+    role: string,
+    appName: string
+) => {
+    confirmTextProps.value = {
+        userName,
+        role,
+        appName,
+        customMsg: undefined,
+    };
+};
+
+const showConfirmDialog = (header: string, onAccept: () => void) => {
+    // Next tick is used to prevent the dialog showing twice, not sure why
+    nextTick(() =>
+        confirm.require({
+            group: "deleteAppPermission",
+            header,
+            rejectLabel: "Cancel",
+            acceptLabel: "Remove",
+            accept: () => {
+                onAccept();
+                confirmTextProps.value = undefined;
+            },
+            reject: () => {
+                confirmTextProps.value = undefined;
+            },
+        })
+    );
+};
+
+const handleDelete = (
+    privilegeObject:
+        | FamApplicationUserRoleAssignmentGetSchema
+        | FamAccessControlPrivilegeGetResponse
+        | FamAppAdminGetResponse
+) => {
+    const userName = formatUserNameAndId(
+        privilegeObject.user.user_name,
+        privilegeObject.user.first_name,
+        privilegeObject.user.last_name
+    );
+
+    if (props.authGroup === "APP_ADMIN") {
+        const admin =
+            privilegeObject as FamApplicationUserRoleAssignmentGetSchema;
+        setConfirmTextProps(
+            userName,
+            admin.role.display_name ?? "",
+            props.appName
+        );
+        showConfirmDialog("Remove Access", () =>
+            deleteAppAdminMutation.mutate(admin)
+        );
+    }
+
+    if (props.authGroup === "DELEGATED_ADMIN") {
+        const delegatedAdmin =
+            privilegeObject as FamAccessControlPrivilegeGetResponse;
+        setConfirmTextProps(
+            userName,
+            delegatedAdmin.role.display_name ?? "",
+            props.appName
+        );
+        showConfirmDialog("Remove Privilege", () =>
+            deleteDelegatedAdminMutation.mutate(delegatedAdmin)
+        );
+    }
+
+    if (props.authGroup === "FAM_ADMIN") {
+        const famAdmin = privilegeObject as FamAppAdminGetResponse;
+        setConfirmTextProps(userName, "Admin", props.appName);
+        showConfirmDialog("Remove Access", () =>
+            deleteFamPermissionMutation.mutate(famAdmin)
         );
     }
 };

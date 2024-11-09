@@ -22,7 +22,10 @@ if (!userId || !applicationId) {
 }
 
 const navigateBack = () => {
-    router.push("/");
+    router.push({
+        name: ManagePermissionsRoute.name,
+        query: { appId: applicationId },
+    });
 };
 
 // Breadcrumb configuration
