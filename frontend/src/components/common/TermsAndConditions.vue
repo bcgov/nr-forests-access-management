@@ -84,7 +84,7 @@ const acceptTermsAndConditions = async () => {
                         “Business BCeID” means the Master Login ID and User
                         Login IDs (both as defined in the Business BCeID Terms)
                         issued to the Subscriber and individuals within the
-                        Subscriber’s organization pursuant to the Business BCeID
+                        Subscriber's organization pursuant to the Business BCeID
                         Terms;
                     </li>
                     <li>
@@ -96,7 +96,7 @@ const acceptTermsAndConditions = async () => {
                     </li>
                     <li>
                         “Delegated Administrator” means the individual within
-                        the Subscriber’s organization who is responsible for
+                        the Subscriber's organization who is responsible for
                         granting Users access to Applications through FAM;
                     </li>
                     <li>
@@ -114,7 +114,7 @@ const acceptTermsAndConditions = async () => {
                         replaced from time to time;
                     </li>
                     <li>
-                        “Users” means individuals within the Subscriber’s
+                        “Users” means individuals within the Subscriber's
                         organization who have been granted access to any
                         Application by the Delegated Administrator through FAM;
                         and
@@ -159,7 +159,7 @@ const acceptTermsAndConditions = async () => {
                     </li>
                     <li>
                         the Subscriber takes such steps as are necessary to
-                        ensure that any individual that leaves the Subscriber’s
+                        ensure that any individual that leaves the Subscriber's
                         organization no longer has access to FAM or any
                         Application;
                     </li>
@@ -205,10 +205,10 @@ const acceptTermsAndConditions = async () => {
                         promptly revoking access for any User who:
                         <ol type="i">
                             <li>
-                                no longer requires access to perform the User’s
+                                no longer requires access to perform the User's
                                 job functions,
                             </li>
-                            <li>leaves the Subscriber’s organization, or</li>
+                            <li>leaves the Subscriber's organization, or</li>
                             <li>
                                 fails to comply with any term of this Agreement
                                 applicable to Users; and
@@ -226,7 +226,7 @@ const acceptTermsAndConditions = async () => {
                 <ol type="a" class="subsection">
                     <li>
                         the Delegated Administrator and Users will use the
-                        Subscriber’s Business BCeID to authenticate their
+                        Subscriber's Business BCeID to authenticate their
                         identity before access is granted to FAM (in the case of
                         the Delegated Administrator) or any Application (in the
                         case of Users);
@@ -252,7 +252,7 @@ const acceptTermsAndConditions = async () => {
                     the Applications. Any information automatically collected
                     from individuals through the website through which FAM and
                     the Applications are accessed is collected in accordance
-                    with the Province’s general Privacy Policy.
+                    with the Province's general Privacy Policy.
                 </li>
 
                 <h3>Ownership and License</h3>
@@ -271,20 +271,20 @@ const acceptTermsAndConditions = async () => {
                     Agreement.
                 </li>
                 <li>
-                    A User’s right to access and use the Applications and the
-                    Documentation automatically terminates if the User’s access
+                    A User's right to access and use the Applications and the
+                    Documentation automatically terminates if the User's access
                     is revoked by the Delegated Administrator pursuant to
-                    section 4. The Delegated Administrator’s right to access and
+                    section 4. The Delegated Administrator's right to access and
                     use FAM is:
                 </li>
                 <ol type="a">
                     <li>
-                        automatically suspended if the Delegated Administrator’s
+                        automatically suspended if the Delegated Administrator's
                         access to FAM is suspended pursuant to section 11; and
                     </li>
                     <li>
                         automatically terminated if the Delegated
-                        Administrator’s access to FAM is terminated by the
+                        Administrator's access to FAM is terminated by the
                         Province pursuant to section 11.
                     </li>
                 </ol>
@@ -335,7 +335,7 @@ const acceptTermsAndConditions = async () => {
                 <li>The Province may, in its sole discretion:</li>
                 <ol class="subsection">
                     <li>
-                        immediately suspend the Delegated Administrator’s access
+                        immediately suspend the Delegated Administrator's access
                         to FAM if:
                         <ol type="i">
                             <li>
@@ -347,25 +347,25 @@ const acceptTermsAndConditions = async () => {
                                 the Province determines, in its sole discretion
                                 that such suspension is necessary to maintain
                                 the security, integrity, or availability of FAM
-                                or any other aspect of the Province’s systems;
+                                or any other aspect of the Province's systems;
                             </li>
                         </ol>
                     </li>
                     <li>
-                        restore the Delegated Administrator’s access if the
+                        restore the Delegated Administrator's access if the
                         reason for the suspension is resolved to the Province's
                         satisfaction; and
                     </li>
                     <li>
-                        terminate the Delegated Administrator’s access if:
+                        terminate the Delegated Administrator's access if:
                         <ol type="i">
                             <li>
                                 the reason for the suspension is not resolved to
-                                the Province’s satisfaction, or
+                                the Province's satisfaction, or
                             </li>
                             <li>
                                 the Delegated Administrator leaves the
-                                Subscriber’s organization.
+                                Subscriber's organization.
                             </li>
                         </ol>
                     </li>
@@ -375,11 +375,11 @@ const acceptTermsAndConditions = async () => {
                 <div class="terms-list">
                     <li>
                         The Subscriber must indemnify and save harmless the
-                        Province and the Province’s employees and agents from
+                        Province and the Province's employees and agents from
                         any loss, claim (including any claim of infringement of
                         third-party intellectual property rights), damage award,
                         action, cause of action, cost or expense that the
-                        Province or any of the Province’s employees or agents
+                        Province or any of the Province's employees or agents
                         may sustain, incur, suffer or be put to at any time,
                         either before or after this Agreement ends (each a
                         “Loss”), to the extent the Loss is directly or
@@ -404,9 +404,9 @@ const acceptTermsAndConditions = async () => {
                         completeness of the Works or any information or data
                         contained within the Works, that FAM or the Applications
                         will function without error, failure, or interruption,
-                        or that the Works will meet the Subscriber’s
+                        or that the Works will meet the Subscriber's
                         expectations or requirements. This disclaimer applies in
-                        addition to the Province’s general Warranty Disclaimer.
+                        addition to the Province's general Warranty Disclaimer.
                     </li>
 
                     <h3>Limitation of Liability</h3>
@@ -427,7 +427,7 @@ const acceptTermsAndConditions = async () => {
                         even if the Province has been specifically advised of
                         the possibility of any such loss, claim, injury or
                         damage. This limitation of liability applies in addition
-                        to the Province’s general Limitation of Liabilities.
+                        to the Province's general Limitation of Liabilities.
                     </li>
 
                     <h3>Changes to FAM and/or this Agreement</h3>
