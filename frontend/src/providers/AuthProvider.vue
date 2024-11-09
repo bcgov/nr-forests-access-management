@@ -115,7 +115,9 @@ const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
 const handlePostLogin = async () => {
     try {
         isLoading.value = true;
-        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
+        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
+            bypassCache: true,
+        });
         const session: CognitoUserSession = await Auth.currentSession();
 
         const accessToken: CognitoAccessToken = session.getAccessToken();
@@ -192,7 +194,9 @@ const refreshUserSession = (
 const restoreSession = async () => {
     try {
         isLoading.value = true;
-        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
+        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
+            bypassCache: true,
+        });
         const session: CognitoUserSession = await Auth.currentSession();
 
         const accessToken: CognitoAccessToken = session.getAccessToken();
