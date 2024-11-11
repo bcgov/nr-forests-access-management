@@ -2,6 +2,7 @@ import copy
 import logging
 from http import HTTPStatus
 
+import pytest
 import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
@@ -14,6 +15,7 @@ from api.app.crud.services.permission_audit_service import \
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.models.model import FamPrivilegeChangeAudit, FamUser
+from api.app.schemas.target_user import TargetUserSchema
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
@@ -39,6 +41,20 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
 
+@pytest.fixture(scope="function")
+def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mocker):
+    # Delete user/role assignment related to "get_verified_target_user" is a
+    # special case (not as FastAPI dependency), and needs to be mocked
+    # individually at function.
+    mocker.patch(
+        "api.app.routers.router_guards.get_verified_target_user",
+        return_value=TargetUserSchema(
+            **{
+                **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
+            }
+        )
+    )
 
 # ------------------ test create user role assignment ----------------------- #
 
@@ -229,20 +245,14 @@ def test_create_user_role_assignment_many_bceid_cannot_grant_idir_access(
 def test_create_user_role_assignment_many_bceid_cannot_grant_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
     override_enforce_bceid_terms_conditions_guard,
+    mock_verified_target_user_BCEID_L4T_for_user_role_deletion
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
     # override router guard dependencies
     override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
-        {
-            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
-        }
-    )
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
@@ -1002,11 +1012,13 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
 
 
 def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
+    mocker,
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
     override_get_verified_target_user,
     override_enforce_bceid_terms_conditions_guard,
+    mock_verified_target_user_BCEID_L4T_for_user_role_deletion
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
@@ -1019,6 +1031,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
             "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
         }
     )
+
 
     # create a user role assignment for a business bceid user from diff organization as the user COGNITO_USERNAME_BCEID
     user_role_xref_id = create_test_user_role_assignment(

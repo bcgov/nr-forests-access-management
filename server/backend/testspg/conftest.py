@@ -190,7 +190,8 @@ def get_current_requester_by_token(db_pg_session):
 
 @pytest.fixture(scope="function")
 def override_get_verified_target_user(test_client_fixture):
-    # mock the return result for idim validation of the target user, to avoid calling external idim-proxy
+    # Override FastAPI dependency "get_verified_target_user".
+    # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
     def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
         app.dependency_overrides[get_verified_target_user] = lambda: TargetUserSchema(
