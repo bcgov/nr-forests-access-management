@@ -101,10 +101,24 @@ defineProps<{
             white-space: nowrap;
             display: inline-block;
 
+            /* Hide scrollbar but keep scroll functionality */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+            &::-webkit-scrollbar {
+                display: none; /* WebKit browsers */
+            }
+
             p,
             span {
+                /* Apply the same scrollbar-hiding styles */
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
                 overflow: scroll;
-                text-overflow: ellipsis;
                 white-space: nowrap;
             }
         }
@@ -139,6 +153,9 @@ defineProps<{
             padding: 0;
             border: none;
             width: 2rem;
+            svg {
+                fill: var(--icon-primary);
+            }
         }
 
         .btn-trash,
