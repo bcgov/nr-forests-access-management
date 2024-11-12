@@ -9,17 +9,19 @@ const auth = useAuth();
 
 <template>
     <div class="no-access-container">
-        <NotificationMessage
-            severity="error"
-            message="You do not have access in FAM"
-        />
-        <Button
-            class-name="logout-button"
-            outlined
-            label="logout"
-            :icon="LogoutIcon"
-            @click="() => auth.logout()"
-        />
+        <div class="no-access-content">
+            <NotificationMessage
+                severity="error"
+                message=" You do not have access in FAM"
+            />
+            <Button
+                class-name="logout-button"
+                outlined
+                label="logout"
+                :icon="LogoutIcon"
+                @click="() => auth.logout()"
+            />
+        </div>
     </div>
 </template>
 
