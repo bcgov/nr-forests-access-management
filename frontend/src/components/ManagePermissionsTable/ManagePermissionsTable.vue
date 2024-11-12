@@ -19,7 +19,7 @@ import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-a
 
 import TableToolbar from "@/components/Table/TableToolbar.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
-import TableSkeleton from "@/components/Table/TableSkeleton.vue";
+import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Chip from "@/components/UI/Chip.vue";
 import {

@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { IconSize } from "@/enum/IconEnum";
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/32";
 </script>
 
 <template>
     <div class="no-app-selected">
-        <Icon
-            role="presentation"
-            icon="search--locate"
-            :size="IconSize.xLarge"
-            class="placeholder-icon"
-            title="Search-locate Icon"
-        />
+        <SearchLocateIcon />
         <p class="no-app-selected-title">Nothing to show yet!</p>
         <p class="no-app-selected-text">
             Choose an application to view its users.
@@ -36,6 +30,7 @@ import { IconSize } from "@/enum/IconEnum";
     svg {
         width: 3rem;
         height: 3rem;
+        fill: colors.$blue-60;
     }
 }
 

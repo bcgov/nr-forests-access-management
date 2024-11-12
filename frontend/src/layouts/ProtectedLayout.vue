@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TermsAndConditions from "@/components/common/TermsAndConditions.vue";
-import Header from "@/components/UI/Header.vue";
-import SideNav from "@/components/UI/SideNav.vue";
+import TermsAndConditions from "@/components/TermsAndConditions.vue";
+import Header from "@/layouts/Header.vue";
+import SideNav from "@/layouts/SideNav.vue";
 import Spinner from "@/components/UI/Spinner.vue";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { showTermsForAcceptance } from "@/store/TermsAndConditionsState";

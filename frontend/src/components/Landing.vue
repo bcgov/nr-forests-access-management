@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LoginIcon from "@carbon/icons-vue/es/login/16";
 import Button from "primevue/button";
-import { IconSize } from "@/enum/IconEnum";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from "vue-router";
-import Breadcrumb from "primevue/breadcrumb";
-import { breadcrumbState } from "@/store/BreadcrumbState";
+import { useRoute } from "vue-router";
 
 const props = defineProps({
     title: {
@@ -19,15 +17,6 @@ const route = useRoute();
 
 <template>
     <div>
-        <Breadcrumb v-if="route.meta.hasBreadcrumb" :model="breadcrumbState">
-            <template #item="{ item }">
-                <RouterLink v-if="item.path" :to="item.path">
-                    <span>
-                        {{ item.label }}
-                    </span>
-                </RouterLink>
-            </template>
-        </Breadcrumb>
         <h5 class="title">{{ props.title }}</h5>
         <p
             v-if="props.subtitle"

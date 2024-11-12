@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
-import Button from "@/components/common/Button.vue";
-import UserIdentityCard from "@/components/grantaccess/UserIdentityCard.vue";
+import Button from "@/components/Button.vue";
+import UserIdentityCard from "@/components/AddPermissions/UserIdentityCard.vue";
 import useAuth from "@/composables/useAuth";
-import { IconSize } from "@/enum/IconEnum";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { useMutation } from "@tanstack/vue-query";
@@ -14,8 +14,6 @@ import type {
 import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed, ref, watch } from "vue";
-import Icon from "@/components/common/Icon.vue";
 
 const auth = useAuth();
 
@@ -196,7 +194,6 @@ watch(
                         verifyIdirMutation.isPending.value
                     "
                 >
-                    <Icon icon="search--locate" :size="IconSize.small" />
                 </Button>
             </div>
         </Field>

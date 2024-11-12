@@ -9,10 +9,10 @@ import TabPanel from "primevue/tabpanel";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
 import UserIcon from "@carbon/icons-vue/es/user/16";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-import PageTitle from "@/components/common/PageTitle.vue";
+import PageTitle from "@/components/UI/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import TablePlaceholder from "@/components/managePermissions/TablePlaceholder.vue";
+import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
 import {
     selectedApp,
     setSelectedApp,
@@ -23,13 +23,13 @@ import {
     getUniqueApplications,
     isSelectedAppAuthorized,
 } from "@/utils/ApiUtils";
-import ManagePermissionsTable from "@/components/managePermissions/ManagePermissionsTable.vue";
+import ManagePermissionsTable from "@/components/ManagePermissionsTable/ManagePermissionsTable.vue";
 import type {
     PermissionNotificationType,
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
-import NotificationStack from "@/components/common/NotificationStack.vue";
+import NotificationStack from "@/components/NotificationStack.vue";
 import {
     AppAdminErrorQuerykey,
     AppAdminSuccessQuerykey,

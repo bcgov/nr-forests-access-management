@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { AxiosError } from "axios";
 import ErrorOutline from "@carbon/icons-vue/es/error--outline/16";
 
 defineProps<{

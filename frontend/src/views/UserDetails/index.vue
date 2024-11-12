@@ -4,7 +4,7 @@ import { router } from "@/router";
 import Button from "primevue/button";
 
 import UserSummaryCard from "@/components/UserSummaryCard";
-import PageTitle from "@/components/common/PageTitle.vue";
+import PageTitle from "@/components/UI/PageTitle.vue";
 import UserPermissionHistoryTable from "@/components/UserPermissionHistoryTable";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";

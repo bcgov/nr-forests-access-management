@@ -31,7 +31,7 @@ const props = defineProps<{
                 <Chip :label="role.role" />
             </div>
             <OrganizationsList
-                v-if="role.scopes?.find((scope: string) => scope !== null)"
+                v-if="role.scopes?.find((scope) => scope !== null)"
                 :scopes="role.scopes"
             />
         </div>
@@ -65,7 +65,7 @@ const props = defineProps<{
                 </p>
             </div>
             <OrganizationsList
-                v-if="role.scopes?.find((scope: string) => scope !== null)"
+                v-if="role.scopes?.find((scope) => scope !== null)"
                 :scopes="role.scopes"
             />
         </div>

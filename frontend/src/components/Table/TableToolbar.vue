@@ -2,8 +2,8 @@
 import { computed } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { IconSize } from "@/enum/IconEnum";
-import Icon from "@/components/common/Icon.vue";
+import AddIcon from "@carbon/icons-vue/es/add/16";
+import SearchIcon from "@carbon/icons-vue/es/search/16";
 
 const props = defineProps<{
     filter: string;
@@ -33,10 +33,12 @@ const computedFilter = computed({
             @click="btnOnClick!"
         >
             {{ btnLabel }}
-            <Icon icon="add" :size="IconSize.small" />
+            <template #icon>
+                <AddIcon />
+            </template>
         </Button>
         <span class="p-input-icon-left">
-            <Icon icon="search" :size="IconSize.small" />
+            <SearchIcon />
             <InputText
                 id="dashboardSearch"
                 class="dash-search"

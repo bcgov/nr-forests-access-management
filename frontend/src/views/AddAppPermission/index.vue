@@ -5,7 +5,7 @@ import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
-import PageTitle from "@/components/common/PageTitle.vue";
+import PageTitle from "@/components/UI/PageTitle.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import {
     AdminMgmtApiService,
@@ -39,13 +39,13 @@ import {
     NewAppAdminQueryParamKey,
 } from "@/views/AddAppPermission/utils";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
-import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
-import RoleSelectTable from "@/components/grantaccess/RoleSelectTable.vue";
+import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
+import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
+import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
-import ForestClientSection from "@/components/grantaccess/ForestClientSection.vue";
-import BoolCheckbox from "@/components/common/BoolCheckbox.vue";
-import Button from "@/components/common/Button.vue";
+import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
+import BoolCheckbox from "@/components/BoolCheckbox.vue";
+import Button from "@/components/Button.vue";
 import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";

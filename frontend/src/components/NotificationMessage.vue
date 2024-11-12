@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, type VNode } from "vue";
 import Message, { type MessageProps } from "primevue/message";
-
-import {} from "@/store/ManagePermissionNotificationState";
-import { IconSize } from "@/enum/IconEnum";
+import CheckMarkIcon from "@carbon/icons-vue/es/checkmark--filled/20";
+import MisuseIcon from "@carbon/icons-vue/es/misuse/20";
+import WarnIcon from "@carbon/icons-vue/es/warning--filled/20";
 
 const props = defineProps<{
     message: string | VNode | (() => VNode);
@@ -38,16 +38,10 @@ const closeEvents = props.onClose ? { close: props.onClose } : {};
             :closable="props.closable === undefined ? true : props.closable"
             v-bind="closeEvents"
         >
-            <Icon
-                :icon="
-                    props.severity === 'success'
-                        ? 'checkmark--filled'
-                        : props.severity === 'error'
-                        ? 'misuse'
-                        : 'warning--filled'
-                "
-                :size="IconSize.medium"
-            />
+            <CheckMarkIcon v-if="props.severity === 'success'" />
+            <MisuseIcon v-else-if="props.severity === 'error'" />
+            <WarnIcon v-else />
+
             <span class="custom-message-text">
                 <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
                 <span class="message-content">

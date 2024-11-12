@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Card from "primevue/card";
+import CheckMarkFilledIcon from "@carbon/icons-vue/es/checkmark--filled/16";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import Button from "primevue/button";
-import Icon from "@/components/common/Icon.vue";
-import { IconSize } from "@/enum/IconEnum";
 import type { FamForestClientSchema } from "fam-app-acsctl-api";
 
 import CardColumn from "@/components/CardColumn";
@@ -17,17 +17,14 @@ defineProps<{
         <Card class="fores-client-card">
             <template #header>
                 <div class="card-header">
-                    <Icon icon="checkmark--filled" :size="IconSize.small" />
+                    <CheckMarkFilledIcon />
                     <p>Verified organization information</p>
                 </div>
             </template>
             <template #content>
                 <div v-for="client in forestClientData" class="client-row">
                     <div class="icon-name-wrapper medium-col">
-                        <Icon
-                            class="custom-carbon-icon-checkmark--filled"
-                            icon="checkmark--filled"
-                            :size="IconSize.small"
+                        <CheckMarkFilledIcon
                             v-if="client.status?.status_code == 'A'"
                         />
                         <CardColumn
@@ -57,20 +54,16 @@ defineProps<{
                     </CardColumn>
 
                     <div class="xsmall-col">
-                        <Button class="btn-trash">
-                            <Icon
-                                id="btn-trash-can"
-                                class="custom-carbon-icon--trash-can"
-                                icon="trash-can"
-                                :size="IconSize.small"
-                                title="Remove client"
-                                @click="
-                                    $emit(
-                                        'removeItem',
-                                        client.forest_client_number
-                                    )
-                                "
-                            />
+                        <Button
+                            class="btn-trash"
+                            @click="
+                                $emit('removeItem', client.forest_client_number)
+                            "
+                            aria-label="Remove client"
+                        >
+                            <template #icon>
+                                <TrashIcon />
+                            </template>
                         </Button>
                     </div>
                 </div>

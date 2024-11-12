@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Button from "@/components/common/Button.vue";
+import Button from "@/components/Button.vue";
 import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
-import ForestClientCard from "@/components/grantaccess/ForestClientCard.vue";
+import ForestClientCard from "@/components/AddPermissions/ForestClientCard.vue";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { useMutation } from "@tanstack/vue-query";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
@@ -9,7 +9,7 @@ import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
 import { computed, h, ref, watch } from "vue";
-import NotificationMessage from "../common/NotificationMessage.vue";
+import NotificationMessage from "../NotificationMessage.vue";
 import type { ForestClientNotificationType } from "@/types/NotificationTypes";
 
 const props = withDefaults(

@@ -52,7 +52,7 @@ export const UserDetailsRoute: RouteRecordRaw = {
 export const MyPermissionsRoute: RouteRecordRaw = {
     path: "/my-permissions",
     name: "MyPermissions",
-    component: () => import("@/views/MyPermissionsView.vue"),
+    component: () => import("@/views/MyPermissions"),
     meta: protectedLayoutMeta,
 };
 

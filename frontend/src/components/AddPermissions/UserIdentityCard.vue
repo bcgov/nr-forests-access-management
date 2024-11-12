@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Card from "primevue/card";
-import Icon from "@/components/common/Icon.vue";
-import { IconSize } from "@/enum/IconEnum";
-import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
 import CardColumn from "@/components/CardColumn";
+import CheckMarkFilledIcon from "@carbon/icons-vue/es/checkmark--filled/16";
+import ErrorIcon from "@carbon/icons-vue/es/misuse/16";
+import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
 
 const props = defineProps<{
     userIdentity: IdimProxyBceidInfoSchema;
@@ -15,19 +15,8 @@ const props = defineProps<{
     <div class="custom-card-container user-id-card">
         <Card>
             <template #header>
-                <Icon
-                    id="checkmarkIcon"
-                    icon="checkmark--filled"
-                    :size="IconSize.small"
-                    v-if="props.userIdentity.found"
-                />
-                <Icon
-                    id="errorIcon"
-                    class="custom-carbon-icon-misuse"
-                    icon="misuse"
-                    :size="IconSize.small"
-                    v-else
-                />
+                <CheckMarkFilledIcon v-if="props.userIdentity.found" />
+                <ErrorIcon v-else />
                 <p>Verified user information</p>
             </template>
 

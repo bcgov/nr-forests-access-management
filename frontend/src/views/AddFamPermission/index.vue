@@ -8,7 +8,7 @@ import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
-import PageTitle from "@/components/common/PageTitle.vue";
+import PageTitle from "@/components/UI/PageTitle.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
@@ -17,10 +17,10 @@ import {
     type FamAppAdminCreateRequest,
 } from "fam-admin-mgmt-api/model";
 import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
-import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
+import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import Button from "@/components/common/Button.vue";
+import Button from "@/components/Button.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     FamPermissionErrorQueryKey,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import ProfileSidebar from "@/components/common/ProfileSidebar.vue";
-import Icon from "@/components/common/Icon.vue";
-import { IconSize } from "@/enum/IconEnum";
+import MenuIcon from "@carbon/icons-vue/es/menu/20";
+import ProfileSidebar from "@/layouts/ProfileSidebar.vue";
+import UserIcon from "@carbon/icons-vue/es/user--avatar/20";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { sideNavState } from "@/store/SideNavState";
@@ -35,11 +35,7 @@ const props = defineProps({
                 @click="sideNavState.toggleVisible()"
                 aria-label="Toggle Side Navigation"
             >
-                <Icon
-                    class="custom-carbon-icon--menu"
-                    icon="menu"
-                    :size="IconSize.medium"
-                />
+                <MenuIcon />
             </Button>
             <span class="header-title">
                 {{ props.title }}
@@ -59,7 +55,7 @@ const props = defineProps({
                 v-if="auth.authState.isAuthenticated"
                 @click="profileSidebarState.toggleVisible()"
             >
-                <Icon icon="user--avatar" :size="IconSize.medium" />
+                <UserIcon />
             </Button>
         </nav>
         <teleport to=".modals">
