@@ -18,7 +18,7 @@ import { routeItems } from "@/router/routes";
 import { IconSize } from "@/enum/IconEnum";
 import { isNewAccess } from "@/services/utils";
 
-import NewUserTag from "@/components/common/NewUserTag.vue";
+import NewUserTag from "@/components/managePermissions/NewUserTag.vue";
 import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
 import DataTableHeader from "@/components/managePermissions/ManagePermissionTableToolbar.vue";
 import { navigateToUserDetails } from "@/components/managePermissions/table/utils";

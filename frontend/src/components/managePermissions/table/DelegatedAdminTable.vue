@@ -9,7 +9,7 @@ import { isNewAccess } from "@/services/utils";
 import ProgressSpinner from "primevue/progressspinner";
 
 import { routeItems } from "@/router/routes";
-import NewUserTag from "@/components/common/NewUserTag.vue";
+import NewUserTag from "@/components/managePermissions/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,

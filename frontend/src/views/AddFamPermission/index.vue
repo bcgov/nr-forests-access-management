@@ -1,22 +1,17 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { Field, Form } from "vee-validate";
+import { isAxiosError } from "axios";
+import { useRouter } from "vue-router";
+import type { DropdownChangeEvent } from "primevue/dropdown";
+import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
-import { useRouter } from "vue-router";
 import PageTitle from "@/components/common/PageTitle.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
-import { ref } from "vue";
-import {
-    FamPermissionErrorQueryKey,
-    FamPermissionSuccessQueryKey,
-    generatePayload,
-    getDefaultFormData,
-    validateFamPermissionForm,
-    type FamPermissionFormType,
-} from "./utils";
-import { Field, Form } from "vee-validate";
 import {
     UserType,
     type FamAppAdminCreateRequest,
@@ -25,10 +20,16 @@ import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
 import UserNameInput from "@/components/grantaccess/form/UserNameInput.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import { isAxiosError } from "axios";
-import type { DropdownChangeEvent } from "primevue/dropdown";
 import Button from "@/components/common/Button.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import {
+    FamPermissionErrorQueryKey,
+    FamPermissionSuccessQueryKey,
+    generatePayload,
+    getDefaultFormData,
+    validateFamPermissionForm,
+    type FamPermissionFormType,
+} from "./utils";
 
 const router = useRouter();
 
@@ -198,6 +199,7 @@ const onSubmit = () => {
                         <Button
                             :label="`Create Application Admin`"
                             @click="handleSubmit(onSubmit)"
+                            :icon="CheckmarkIcon"
                             :is-loading="isSubmitting"
                         />
                     </div>

@@ -9,6 +9,8 @@ import { mixed, object } from "yup";
 export const FamPermissionSuccessQueryKey = "fam-permission-success";
 export const FamPermissionErrorQueryKey = "fam-permission-error";
 
+export const NewFamAdminQueryParamKey = "newFamAdminIds";
+
 export type FamPermissionFormType = {
     user: IdimProxyIdirInfoSchema | null;
     application: FamApplicationDto | null;

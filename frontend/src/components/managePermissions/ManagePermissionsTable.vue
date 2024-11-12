@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// Package imports
 import { ref, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
 import ConfirmDialog from "primevue/confirmdialog";
 import Column from "primevue/column";
@@ -42,7 +41,13 @@ import {
 } from "@/router/routes";
 import { selectedApp } from "@/store/ApplicationState";
 import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
+import {
+    NewAppAdminQueryParamKey,
+    NewDelegatedAddminQueryParamKey,
+} from "@/views/AddAppPermission/utils";
 
+import NewUserTag from "./NewUserTag.vue";
 import ConfirmDialogText from "./ConfirmDialogText.vue";
 import {
     getTableHeaderDescription,
@@ -55,9 +60,25 @@ import {
     deleteAppAdminContext,
     deleteDelegatedAdminContext,
     deleteFamPermissionContext,
+    NEW_ACCESS_STYLE_IN_TABLE,
 } from "./utils";
 
 const router = useRouter();
+const route = useRoute();
+
+const newFamAdminIds = route.query[NewFamAdminQueryParamKey]
+    ? String(route.query[NewFamAdminQueryParamKey]).split(",").map(Number)
+    : [];
+
+const newAppUserIds = route.query[NewAppAdminQueryParamKey]
+    ? String(route.query[NewAppAdminQueryParamKey]).split(",").map(Number)
+    : [];
+
+const newDelegatedAdminIds = route.query[NewDelegatedAddminQueryParamKey]
+    ? String(route.query[NewDelegatedAddminQueryParamKey])
+          .split(",")
+          .map(Number)
+    : [];
 
 const props = defineProps<{
     authGroup: AdminRoleAuthGroup;
@@ -66,6 +87,7 @@ const props = defineProps<{
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
+// Fam App Admins data query
 const appAdminQuery = useQuery({
     queryKey: ["application_admins"],
     queryFn: () =>
@@ -74,8 +96,20 @@ const appAdminQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled: props.authGroup === "FAM_ADMIN",
+    select: (data) => {
+        // Move matching IDs to the start of the array
+        return [
+            ...data.filter((item) =>
+                newFamAdminIds.includes(item.application_admin_id)
+            ),
+            ...data.filter(
+                (item) => !newFamAdminIds.includes(item.application_admin_id)
+            ),
+        ];
+    },
 });
 
+// App users data query
 const appUserQuery = useQuery({
     queryKey: ["fam_applications", props.appId, "user_role_assignment"],
     queryFn: () =>
@@ -84,8 +118,20 @@ const appUserQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled: props.authGroup === "APP_ADMIN",
+    select: (data) => {
+        // Move matching IDs to the start of the array
+        return [
+            ...data.filter((item) =>
+                newAppUserIds.includes(item.user_role_xref_id)
+            ),
+            ...data.filter(
+                (item) => !newAppUserIds.includes(item.user_role_xref_id)
+            ),
+        ];
+    },
 });
 
+// Delegated admin data query
 const delegatedAdminQuery = useQuery({
     queryKey: ["access_control_privileges", { application_id: props.appId }],
     queryFn: () =>
@@ -94,6 +140,20 @@ const delegatedAdminQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled: props.authGroup === "DELEGATED_ADMIN",
+    select: (data) => {
+        // Move matching IDs to the start of the array
+        return [
+            ...data.filter((item) =>
+                newDelegatedAdminIds.includes(item.access_control_privilege_id)
+            ),
+            ...data.filter(
+                (item) =>
+                    !newDelegatedAdminIds.includes(
+                        item.access_control_privilege_id
+                    )
+            ),
+        ];
+    },
 });
 
 const tableFilter = ref({
@@ -355,6 +415,43 @@ const handleDelete = (
         );
     }
 };
+
+// New tag logic
+const highlightNewUserAccessRow = (
+    rowData:
+        | FamApplicationUserRoleAssignmentGetSchema
+        | FamAccessControlPrivilegeGetResponse
+        | FamAppAdminGetResponse
+): object | undefined => {
+    switch (props.authGroup) {
+        case "FAM_ADMIN":
+            const famAdin = rowData as FamAppAdminGetResponse;
+            if (newFamAdminIds.includes(famAdin.application_admin_id)) {
+                return NEW_ACCESS_STYLE_IN_TABLE;
+            }
+            return undefined;
+        case "APP_ADMIN":
+            const appAdmin =
+                rowData as FamApplicationUserRoleAssignmentGetSchema;
+            if (newAppUserIds.includes(appAdmin.user_role_xref_id)) {
+                return NEW_ACCESS_STYLE_IN_TABLE;
+            }
+            return undefined;
+        case "DELEGATED_ADMIN":
+            const delegatedAdmin =
+                rowData as FamAccessControlPrivilegeGetResponse;
+            if (
+                newDelegatedAdminIds.includes(
+                    delegatedAdmin.access_control_privilege_id
+                )
+            ) {
+                return NEW_ACCESS_STYLE_IN_TABLE;
+            }
+            return undefined;
+        default:
+            return undefined;
+    }
+};
 </script>
 
 <template>
@@ -402,19 +499,13 @@ const handleDelete = (
             :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
+            :rowStyle="highlightNewUserAccessRow"
         >
             <template #empty> No user found. </template>
 
             <Column header="User Name" field="user.user_name" sortable>
                 <template #body="{ data }">
-                    <!-- <NewUserTag
-                        v-if="
-                            isNewAccess(
-                                newUserAccessIds,
-                                data.user_role_xref_id
-                            )
-                        "
-                    /> -->
+                    <NewUserTag v-if="highlightNewUserAccessRow(data)" />
                     <span>{{ data.user.user_name }}</span>
                 </template>
             </Column>

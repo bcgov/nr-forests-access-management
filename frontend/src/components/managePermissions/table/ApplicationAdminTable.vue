@@ -11,7 +11,7 @@ import { IconSize } from "@/enum/IconEnum";
 import { routeItems } from "@/router/routes";
 import ConfirmDialogtext from "@/components/managePermissions/ConfirmDialogText.vue";
 import DataTableHeader from "@/components/Table/TableToolbar.vue";
-import NewUserTag from "@/components/common/NewUserTag.vue";
+import NewUserTag from "@/components/managePermissions/NewUserTag.vue";
 import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,

@@ -234,3 +234,8 @@ export const createNotification = <T>(
         hasFullMsg: false,
     };
 };
+
+export const NEW_ACCESS_STYLE_IN_TABLE = {
+    "background-color": "#C2E0FF",
+    "box-shadow": "inset 0 0 0 0.063rem #85C2FF",
+};

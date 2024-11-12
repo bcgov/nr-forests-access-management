@@ -14,9 +14,7 @@ import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import PSkeleton from "@/components/Skeletons/PSkeleton.vue";
 
 const auth = useAuth();
-
 const famLoginUser = auth.authState.famLoginUser;
-console.log(famLoginUser?.idpProvider);
 
 // use local loading state, can't use LoadingState instance
 // due to logout() is handled by library.

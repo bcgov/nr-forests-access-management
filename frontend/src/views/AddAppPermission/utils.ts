@@ -18,6 +18,10 @@ export const AppAdminErrorQuerykey = "app-admin-mutation-error";
 export const DelegatedAdminSuccessQueryKey = "delegated-admin-mutation-success";
 export const DelegatedAdminErrorQueryKey = "delegated-admin-mutation-error";
 
+// Query Param keys for new ids
+export const NewAppAdminQueryParamKey = "newAppAdminIds";
+export const NewDelegatedAddminQueryParamKey = "newDelegatedAdminIds";
+
 export type AppPermissionFormType = {
     domain: UserType;
     user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;

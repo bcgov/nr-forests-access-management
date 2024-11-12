@@ -35,6 +35,8 @@ import {
     DelegatedAdminSuccessQueryKey,
     DelegatedAdminErrorQueryKey,
     getApplicationWithUniqueRoles,
+    NewDelegatedAddminQueryParamKey,
+    NewAppAdminQueryParamKey,
 } from "@/views/AddAppPermission/utils";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/grantaccess/form/UserDomainSelect.vue";
@@ -103,12 +105,6 @@ const adminUserAccessQuery = useQuery({
 const selectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
-    // return (
-    //     adminUserAccessQuery.data.value.find(
-    //         (famGrantDetail) =>
-    //             famGrantDetail.application.id === props.applicationId
-    //     ) ?? null
-    // );
     return getApplicationWithUniqueRoles(
         adminUserAccessQuery.data.value,
         props.applicationId
@@ -185,7 +181,7 @@ const appAdminMutation = useMutation({
             name: ManagePermissionsRoute.name,
             query: {
                 appId: props.applicationId,
-                newAppAdminIds: res.data.assignments_detail
+                [NewAppAdminQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
                     .map((assignment) => assignment.detail.user_role_xref_id)
                     .join(","),
@@ -221,7 +217,7 @@ const delegatedAdminMutation = useMutation({
             name: ManagePermissionsRoute.name,
             query: {
                 appId: props.applicationId,
-                newDelegatedAdminIds: res.data.assignments_detail
+                [NewDelegatedAddminQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
                     .map(
                         (assignment) =>
