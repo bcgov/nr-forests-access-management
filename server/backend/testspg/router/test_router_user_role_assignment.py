@@ -87,8 +87,8 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
     db_pg_session: Session,
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
     mocker
 ):
     """
@@ -99,8 +99,8 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
     able to grant FOM_REVIEWER access to a business bceid user from same org
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
@@ -146,8 +146,8 @@ def test_create_user_role_assignment_many_with_concrete_role_authorize_by_delega
 def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to grant access
@@ -158,8 +158,8 @@ def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delega
     will not be able to grant access with other forest client numbers like FOM_SUBMITTER_00001011
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
@@ -209,15 +209,15 @@ def test_create_user_role_assignment_many_with_abstract_role_authorize_by_delega
 def test_create_user_role_assignment_many_bceid_cannot_grant_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot grant idir user access
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user()
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user()
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
@@ -245,14 +245,14 @@ def test_create_user_role_assignment_many_bceid_cannot_grant_idir_access(
 def test_create_user_role_assignment_many_bceid_cannot_grant_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__enforce_bceid_terms_conditions_guard,
     mock_verified_target_user_BCEID_L4T_for_user_role_deletion
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
+    override_depends__enforce_bceid_terms_conditions_guard()
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
     # this user has delegated admin privilege which is granted in the local sql
@@ -282,13 +282,13 @@ def test_create_user_role_assignment_many_with_concrete_role(
     db_pg_session: Session,
     fom_dev_access_admin_token,
     get_current_requester_by_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     test assign a concrete role to a user
     """
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -345,13 +345,13 @@ def test_create_user_role_assignment_many_with_concrete_role(
 def test_create_user_role_assignment_many_with_concrete_role_duplicate(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     test assign same role for the same user
     """
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # create user role assignment the first time
     response = test_client_fixture.post(
@@ -384,13 +384,13 @@ def test_create_user_role_assignment_many_with_concrete_role_duplicate(
 def test_create_user_role_assignment_many_with_abstract_role_without_forestclient(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     test assign an abscrate role to a user without forest client number
     """
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT = copy.deepcopy(
         ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID
@@ -413,13 +413,13 @@ def test_create_user_role_assignment_many_with_abstract_role(
     db_pg_session: Session,
     fom_dev_access_admin_token,
     get_current_requester_by_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     test assign an abscrate role to a user with multiple forest client numbers
     """
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -486,10 +486,10 @@ def test_create_user_role_assignment_many_with_same_username(
     db_pg_session: Session,
     fom_dev_access_admin_token,
     get_current_requester_by_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # create a user role assignment
     response = test_client_fixture.post(
@@ -553,10 +553,10 @@ def test_assign_same_application_roles_for_different_environments(
     fom_dev_access_admin_token,
     fom_test_access_admin_token,
     get_current_requester_by_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # create a user role assignment
     response = test_client_fixture.post(
@@ -664,14 +664,14 @@ def test_assign_same_application_roles_for_different_environments(
 def test_user_role_forest_client_number_not_exist_bad_request(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     Test assign user role with none-existing forest client number should be
     rejected.
     """
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     client_number_not_exists = FC_NUMBER_NOT_EXISTS
     invalid_request = {
@@ -694,14 +694,14 @@ def test_user_role_forest_client_number_not_exist_bad_request(
 def test_user_role_forest_client_number_inactive_bad_request(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     Test assign user role with inactive forest client number should be
     rejected.
     """
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
     invalid_request = {
         **ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         "forest_client_numbers": [
@@ -726,7 +726,7 @@ def test_self_grant_fail(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     db_pg_session: Session,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # Setup challenge: The user in the json sent to the service must match the user
     # in the JWT security token.
@@ -738,7 +738,7 @@ def test_self_grant_fail(
     }
 
     # override router guard dependencies
-    override_get_verified_target_user(user_role_assignment_request_data)
+    override_depends__get_verified_target_user(user_role_assignment_request_data)
 
     response = test_client_fixture.post(
         f"{endPoint}",
@@ -757,7 +757,7 @@ def test_self_grant_fail(
 def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     test_client_fixture: starlette.testclient.TestClient,
     db_pg_session: Session,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
     fom_dev_access_admin_token,
 ):
     ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
@@ -768,7 +768,7 @@ def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     }
 
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER)
 
     # verify user does not exist before creation.
     user = crud_user.get_user_by_domain_and_name(
@@ -784,7 +784,7 @@ def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
         "business_guid": "mockedbusinessguid5D4ACA9FA901EE",
     }
     # override it for test to avoid calling external idim-proxy
-    override_get_verified_target_user(mocked_data)
+    override_depends__get_verified_target_user(mocked_data)
 
     # create BCeID user/role assignment. Expecting it will save business_guid
     # from mocked_data.business_guid
@@ -813,7 +813,7 @@ def test_delete_user_role_assignment_not_authorized(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     """
     test if user is not app admin, and not app delegated admin, can not remove user role assginments of the application
@@ -822,7 +822,7 @@ def test_delete_user_role_assignment_not_authorized(
     test if user is not app admin and not delegated admin of FOM DEV, cannot remove FOM DEV user role assginments
     """
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # create a user role assignment
     user_role_xref_id = create_test_user_role_assignment(
@@ -851,8 +851,8 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     test if user is not app admin, but is delegated admin with the correct privilege, will be able to remove access
@@ -862,8 +862,8 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     able to remove FOM_REVIEWER access for business bceid user from same org
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
@@ -896,8 +896,8 @@ def test_delete_user_role_assignment_with_forest_client_number(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
     mocker
 ):
     """
@@ -909,8 +909,8 @@ def test_delete_user_role_assignment_with_forest_client_number(
     will not be able to remove access with other forest client numbers like FOM_SUBMITTER_00001011
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_3_TEST,
@@ -972,15 +972,15 @@ def test_delete_user_role_assignment_bceid_cannot_delete_idir_access(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     test business bceid user cannnot delete idir user access
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user()
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user()
 
     # create a user role assignment for IDIR user
     user_role_xref_id = create_test_user_role_assignment(
@@ -1016,16 +1016,16 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     test_rsa_key,
-    override_get_verified_target_user,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__get_verified_target_user,
+    override_depends__enforce_bceid_terms_conditions_guard,
     mock_verified_target_user_BCEID_L4T_for_user_role_deletion
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
     """
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
-    override_get_verified_target_user(
+    override_depends__enforce_bceid_terms_conditions_guard()
+    override_depends__get_verified_target_user(
         {
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
@@ -1068,10 +1068,10 @@ def test_delete_user_role_assignment(
     db_pg_session: Session,
     fom_dev_access_admin_token,
     get_current_requester_by_token,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # create a user role assignment
     response = test_client_fixture.post(
@@ -1145,7 +1145,7 @@ def test_self_remove_grant_fail(
 
 
 def test_create_user_role_assignment_many_enforce_bceid_terms_conditions(
-    test_client_fixture, test_rsa_key, override_get_verified_target_user
+    test_client_fixture, test_rsa_key, override_depends__get_verified_target_user
 ):
     """
     Test this endpoint can "enforce_bceid_terms_conditions" on BCeID
@@ -1178,7 +1178,7 @@ def test_create_user_role_assignment_many_enforce_bceid_terms_conditions(
         username=jwt_utils.COGNITO_USERNAME_IDIR_DELEGATED_ADMIN,
     )
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
     response = test_client_fixture.post(
         f"{endPoint}",
         json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,

@@ -189,7 +189,7 @@ def get_current_requester_by_token(db_pg_session):
 
 
 @pytest.fixture(scope="function")
-def override_get_verified_target_user(test_client_fixture):
+def override_depends__get_verified_target_user(test_client_fixture):
     # Override FastAPI dependency "get_verified_target_user".
     # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
     def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
@@ -203,7 +203,7 @@ def override_get_verified_target_user(test_client_fixture):
 
 @pytest.fixture(scope="function")
 def create_test_user_role_assignments(
-    test_client_fixture, override_get_verified_target_user
+    test_client_fixture, override_depends__get_verified_target_user
 ):
     """
     Convenient function to assign multipe users to an application.
@@ -216,7 +216,7 @@ def create_test_user_role_assignments(
     def _create_test_user_role_assignments(requester_token, request_bodies: List[dict]):
         created_users = []
         for request_body in request_bodies:
-            override_get_verified_target_user(request_body)
+            override_depends__get_verified_target_user(request_body)
             created_users.append(
                 create_test_user_role_assignment(
                     test_client_fixture=test_client_fixture,
@@ -244,7 +244,7 @@ def create_test_user_role_assignment(
 
 
 @pytest.fixture(scope="function")
-def override_enforce_bceid_terms_conditions_guard(test_client_fixture):
+def override_depends__enforce_bceid_terms_conditions_guard(test_client_fixture):
     # Override T&C checks based on test cases scenarios.
     def _override_enforce_bceid_terms_conditions_guard(mocked_tc_accepted=True):
         app = test_client_fixture.app

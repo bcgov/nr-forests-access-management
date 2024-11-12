@@ -3,35 +3,26 @@ from http import HTTPStatus
 
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (
-    CURRENT_TERMS_AND_CONDITIONS_VERSION,
-    ERROR_CODE_INVALID_APPLICATION_ID,
-    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-    UserType,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               ERROR_CODE_INVALID_APPLICATION_ID,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
 from sqlalchemy import insert
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    FOM_DEV_APPLICATION_ID,
-    ROLE_NAME_FOM_REVIEWER,
-    ROLE_NAME_FOM_SUBMITTER_00000001,
-    ROLE_NAME_FOM_SUBMITTER_00001018,
-    TEST_CREATOR,
-    USER_NAME_BCEID_LOAD_3_TEST,
-    TEST_USER_ID,
-    NOT_EXIST_TEST_USER_ID,
-    NOT_EXIST_ROLE_NAME,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_APPLICATION_ID, NOT_EXIST_ROLE_NAME,
+                               NOT_EXIST_TEST_USER_ID, ROLE_NAME_FOM_REVIEWER,
+                               ROLE_NAME_FOM_SUBMITTER_00000001,
+                               ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
+                               TEST_USER_ID, USER_NAME_BCEID_LOAD_3_TEST)
 
 LOGGER = logging.getLogger(__name__)
 end_point = f"{apiPrefix}/fam_applications"
@@ -78,10 +69,10 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
 def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # test user role assignment
     # create
@@ -113,10 +104,10 @@ def test_get_fam_application_user_role_assignment_concrete_role(
 def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     # test user role assignment for abstract role
     # create
@@ -388,7 +379,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     test_rsa_key,
     create_test_user_role_assignments,
     fom_dev_access_admin_token,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     The test focus on filtering of the GET endpoint for application's user/role
@@ -429,7 +420,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     )
 
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
+    override_depends__enforce_bceid_terms_conditions_guard()
 
     # Call GET endpoint with FOM_DEV DELEGATED_ADMIN user level to
     # obtain access grants for FOM_DEV application.
