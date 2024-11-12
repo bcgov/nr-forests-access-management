@@ -70,6 +70,8 @@ const props = defineProps<{
 @import "@/assets/styles/card.scss";
 .user-id-card {
     margin-top: 2rem;
+    width: 100%;
+    min-width: fit-content;
 
     .p-card-content {
         display: flex;

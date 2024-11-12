@@ -371,11 +371,11 @@ const onSubmit = () => {
                             "
                         />
                         <Button
-                            :label="`Create ${
+                            :label="`${
                                 props.requestType === 'addUserPermission'
-                                    ? 'Application'
-                                    : 'Delegated'
-                            } Admin`"
+                                    ? 'Grant Access'
+                                    : 'Create Delegated Admin'
+                            } `"
                             @click="handleSubmit(onSubmit)"
                             :icon="CheckmarkIcon"
                             :is-loading="isSubmitting"
