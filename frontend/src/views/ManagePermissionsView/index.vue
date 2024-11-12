@@ -201,7 +201,7 @@ const clearNotifications = () => {
 };
 
 const addNotifications = (newNotifications: PermissionNotificationType[]) => {
-    notifications.value.push(...newNotifications);
+    notifications.value = newNotifications;
 };
 
 // Computed property to filter visible tabs dynamically

@@ -77,7 +77,6 @@ const login = async (idP: IdpTypes) => {
  * Logs the user out and resets authentication state.
  */
 const logout = async () => {
-    await Auth.signOut();
     stopSilentRefresh();
 
     delete axios.defaults.headers.common["Authorization"];
@@ -91,6 +90,8 @@ const logout = async () => {
         refreshToken: null,
         isAuthRestored: true,
     };
+
+    await Auth.signOut();
 };
 
 /**

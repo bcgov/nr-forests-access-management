@@ -84,6 +84,9 @@ const closeEvents = props.onClose ? { close: props.onClose } : {};
 .message-container {
     position: relative;
     align-items: center;
+    .p-message {
+        position: inherit;
+    }
 }
 
 .custom-message-text {

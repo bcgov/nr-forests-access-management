@@ -101,11 +101,14 @@ const appAdminQuery = useQuery({
     enabled: props.authGroup === "FAM_ADMIN",
     select: (data) => {
         // Move matching IDs to the start of the array
+        const sortedByUserName = data.sort((a, b) =>
+            a.user.user_name.localeCompare(b.user.user_name)
+        );
         return [
-            ...data.filter((item) =>
+            ...sortedByUserName.filter((item) =>
                 newFamAdminIds.includes(item.application_admin_id)
             ),
-            ...data.filter(
+            ...sortedByUserName.filter(
                 (item) => !newFamAdminIds.includes(item.application_admin_id)
             ),
         ];
@@ -122,12 +125,15 @@ const appUserQuery = useQuery({
     refetchOnMount: "always",
     enabled: props.authGroup === "APP_ADMIN",
     select: (data) => {
+        const sortedByUserName = data.sort((a, b) =>
+            a.user.user_name.localeCompare(b.user.user_name)
+        );
         // Move matching IDs to the start of the array
         return [
-            ...data.filter((item) =>
+            ...sortedByUserName.filter((item) =>
                 newAppUserIds.includes(item.user_role_xref_id)
             ),
-            ...data.filter(
+            ...sortedByUserName.filter(
                 (item) => !newAppUserIds.includes(item.user_role_xref_id)
             ),
         ];
@@ -147,12 +153,15 @@ const delegatedAdminQuery = useQuery({
         // DelegatedAdminFeatureFlag
         !environment.isProdEnvironment(),
     select: (data) => {
+        const sortedByUserName = data.sort((a, b) =>
+            a.user.user_name.localeCompare(b.user.user_name)
+        );
         // Move matching IDs to the start of the array
         return [
-            ...data.filter((item) =>
+            ...sortedByUserName.filter((item) =>
                 newDelegatedAdminIds.includes(item.access_control_privilege_id)
             ),
-            ...data.filter(
+            ...sortedByUserName.filter(
                 (item) =>
                     !newDelegatedAdminIds.includes(
                         item.access_control_privilege_id

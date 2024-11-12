@@ -13,7 +13,7 @@ const protectedLayoutMeta = { layout: "ProtectedLayout" };
 export const LandingRoute: RouteRecordRaw = {
     path: "/",
     name: "Landing",
-    component: () => import("@/views/LandingView.vue"),
+    component: () => import("@/views/LandingView"),
 };
 
 export const ManagePermissionsRoute: RouteRecordRaw = {
@@ -56,9 +56,15 @@ export const MyPermissionsRoute: RouteRecordRaw = {
     meta: protectedLayoutMeta,
 };
 
+export const NoAccessRoute: RouteRecordRaw = {
+    path: "/no-access",
+    name: "NoAccess",
+    component: () => import("@/views/NoAccess"),
+};
+
 export const UnkownRoute: RouteRecordRaw = {
     path: "/:catchAll(.*)",
-    component: () => import("@/views/NotFound.vue"),
+    component: () => import("@/views/NotFound/index.vue"),
 };
 
 export const routeItems: RouteRecordRaw[] = [
@@ -68,5 +74,6 @@ export const routeItems: RouteRecordRaw[] = [
     AddFamPermissionRoute,
     UserDetailsRoute,
     MyPermissionsRoute,
+    NoAccessRoute,
     UnkownRoute,
 ];
