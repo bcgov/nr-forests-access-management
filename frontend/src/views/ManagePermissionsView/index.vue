@@ -11,6 +11,7 @@ import UserIcon from "@carbon/icons-vue/es/user/16";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
 import {
@@ -23,13 +24,13 @@ import {
     getUniqueApplications,
     isSelectedAppAuthorized,
 } from "@/utils/ApiUtils";
-import ManagePermissionsTable from "@/components/ManagePermissionsTable/ManagePermissionsTable.vue";
+import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import type {
     PermissionNotificationType,
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
-import NotificationStack from "@/components/NotificationStack.vue";
+import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
 import {
     AppAdminErrorQuerykey,
     AppAdminSuccessQuerykey,
@@ -52,6 +53,8 @@ const queryClient = useQueryClient();
 const route = useRoute();
 const router = useRouter();
 const appIdFromQueryParam = ref(route.query.appId);
+
+const environment = new EnvironmentSettings();
 
 // Fetch notification Data
 const appAdminSuccessData = queryClient.getQueryData<FamUserRoleAssignmentRes>([
@@ -134,12 +137,15 @@ const tabs: ManagePermissionsTabTypes[] = [
     },
     {
         key: AdminRoleAuthGroup.DelegatedAdmin,
-        visible: computed(() =>
-            isSelectedAppAuthorized(
-                "APP_ADMIN",
-                selectedApp.value?.id,
-                adminUserAccessQuery.data.value
-            )
+        visible: computed(
+            () =>
+                // DelegatedAdminFeatureFlag
+                !environment.isProdEnvironment() &&
+                isSelectedAppAuthorized(
+                    "APP_ADMIN",
+                    selectedApp.value?.id,
+                    adminUserAccessQuery.data.value
+                )
         ),
         icon: EnterpriseIcon as Component,
     },

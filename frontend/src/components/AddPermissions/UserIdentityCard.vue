@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Card from "primevue/card";
-import CardColumn from "@/components/CardColumn";
 import CheckMarkFilledIcon from "@carbon/icons-vue/es/checkmark--filled/16";
 import ErrorIcon from "@carbon/icons-vue/es/misuse/16";
 import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
+
+import CardColumn from "@/components/CardColumn";
 
 const props = defineProps<{
     userIdentity: IdimProxyBceidInfoSchema;

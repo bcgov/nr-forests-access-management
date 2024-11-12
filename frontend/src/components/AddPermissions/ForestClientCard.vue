@@ -130,6 +130,7 @@ defineProps<{
             align-items: center;
             svg {
                 margin-right: 1rem;
+                fill: var(--support-success-inverse);
             }
         }
 

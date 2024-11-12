@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NotificationMessage from "./NotificationMessage.vue";
+import NotificationMessage from "@/components/UI/NotificationMessage.vue";
 import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
 
 defineProps<{

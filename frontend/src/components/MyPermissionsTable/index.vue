@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isAxiosError } from "axios";
 import { ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -6,6 +7,10 @@ import TableToolbar from "@/components/Table/TableToolbar.vue";
 import { FilterMatchMode } from "primevue/api";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+
+import TableSkeleton from "../Skeletons/TableSkeleton.vue";
+import { formatAxiosError } from "@/utils/ApiUtils";
+import ErrorText from "../UI/ErrorText.vue";
 import {
     DEFAULT_ROW_PER_PAGE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
@@ -47,6 +52,13 @@ const adminUserAccessQuery = useQuery({
     select: (data) => getPermissionTableData(data.access),
     refetchOnMount: true,
 });
+
+const headers: string[] = [
+    "Application",
+    "Environment",
+    "Client Number",
+    "Role",
+];
 </script>
 
 <template>
@@ -56,7 +68,23 @@ const adminUserAccessQuery = useQuery({
             @change="myPermissionsSearchChange"
             :filter="myPermissiosFilters['global'].value"
         />
+        <TableSkeleton
+            v-if="adminUserAccessQuery.isLoading.value"
+            :headers="headers"
+            :row-amount="5"
+        />
+        <ErrorText
+            v-else-if="adminUserAccessQuery.isError.value"
+            :error-msg="
+                isAxiosError(adminUserAccessQuery.error.value)
+                    ? `Failed to fetch data. ${formatAxiosError(
+                          adminUserAccessQuery.error.value
+                      )}`
+                    : 'Failed to fetch data.'
+            "
+        />
         <DataTable
+            v-else
             v-model:filters="myPermissiosFilters"
             :value="adminUserAccessQuery.data.value"
             paginator
@@ -70,16 +98,16 @@ const adminUserAccessQuery = useQuery({
             removableSort
         >
             <template #empty> You have no accesses in FAM. </template>
-            <Column header="Application" field="application" sortable>
+            <Column :header="headers[0]" field="application" sortable>
                 <template #body="{ data }">
                     <span>
                         {{ data.application }}
                     </span>
                 </template>
             </Column>
-            <Column field="env" header="Environment" sortable></Column>
-            <Column field="clientId" header="Client Number" sortable> </Column>
-            <Column header="Role" field="role" sortable>
+            <Column field="env" :header="headers[1]" sortable></Column>
+            <Column field="clientId" :header="headers[2]" sortable> </Column>
+            <Column :header="headers[3]" field="role" sortable>
                 <template #body="{ data }">
                     {{ data.role }}
                 </template>

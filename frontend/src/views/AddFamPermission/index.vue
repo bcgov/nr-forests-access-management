@@ -20,7 +20,7 @@ import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
-import Button from "@/components/Button.vue";
+import Button from "@/components/UI/Button.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     FamPermissionErrorQueryKey,

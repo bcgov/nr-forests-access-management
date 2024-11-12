@@ -58,7 +58,7 @@ export const MyPermissionsRoute: RouteRecordRaw = {
 
 export const UnkownRoute: RouteRecordRaw = {
     path: "/:catchAll(.*)",
-    component: () => import("@/components/NotFound.vue"),
+    component: () => import("@/views/NotFound.vue"),
 };
 
 export const routeItems: RouteRecordRaw[] = [

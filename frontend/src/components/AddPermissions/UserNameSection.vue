@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
-import Button from "@/components/Button.vue";
+import Button from "@/components/UI/Button.vue";
 import UserIdentityCard from "@/components/AddPermissions/UserIdentityCard.vue";
 import useAuth from "@/composables/useAuth";
 import { IdpProvider } from "@/enum/IdpEnum";

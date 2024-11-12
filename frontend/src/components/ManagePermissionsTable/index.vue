@@ -26,6 +26,7 @@ import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     DEFAULT_ROW_PER_PAGE,
@@ -65,6 +66,8 @@ import {
 
 const router = useRouter();
 const route = useRoute();
+
+const environment = new EnvironmentSettings();
 
 const newFamAdminIds = route.query[NewFamAdminQueryParamKey]
     ? String(route.query[NewFamAdminQueryParamKey]).split(",").map(Number)
@@ -139,7 +142,10 @@ const delegatedAdminQuery = useQuery({
             .getAccessControlPrivilegesByApplicationId(props.appId)
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.authGroup === "DELEGATED_ADMIN",
+    enabled:
+        props.authGroup === "DELEGATED_ADMIN" &&
+        // DelegatedAdminFeatureFlag
+        !environment.isProdEnvironment(),
     select: (data) => {
         // Move matching IDs to the start of the array
         return [
@@ -484,9 +490,12 @@ const highlightNewUserAccessRow = (
             :headers="getHeaders(authGroup)"
             :row-amount="5"
         />
-        <ErrorText v-if="isQueryError()" :error-msg="getQueryErrorValue()" />
+        <ErrorText
+            v-else-if="isQueryError()"
+            :error-msg="getQueryErrorValue()"
+        />
         <DataTable
-            v-if="!isQueryLoading() && !isQueryError()"
+            v-else
             :value="getTableRows()"
             :total-records="getTableRows().length"
             removableSort

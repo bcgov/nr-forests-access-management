@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import { default as FamButton } from "@/components/Button.vue";
+import { default as FamButton } from "@/components/UI/Button.vue";
 import LogoutIcon from "@carbon/icons-vue/es/logout/16";
 import CloseIcon from "@carbon/icons-vue/es/close/16";
 import DocumentIcon from "@carbon/icons-vue/es/document/16";

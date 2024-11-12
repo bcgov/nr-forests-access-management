@@ -29,13 +29,10 @@ const computedFilter = computed({
         <Button
             v-if="btnOnClick && btnLabel"
             class="action-button"
-            :label="btnLabel"
             @click="btnOnClick!"
         >
-            {{ btnLabel }}
-            <template #icon>
-                <AddIcon />
-            </template>
+            <span>{{ btnLabel }}</span>
+            <AddIcon />
         </Button>
         <span class="p-input-icon-left">
             <SearchIcon />
@@ -56,7 +53,6 @@ const computedFilter = computed({
 
     .action-button {
         width: 16rem;
-        z-index: 2;
         border-radius: 0rem;
         display: flex;
         flex-direction: row;

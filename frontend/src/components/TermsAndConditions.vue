@@ -8,7 +8,7 @@ import {
 } from "@/store/TermsAndConditionsState";
 import Dialog from "primevue/dialog";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import Button from "./Button.vue";
+import Button from "@/components/UI/Button.vue";
 
 const auth = useAuth();
 
