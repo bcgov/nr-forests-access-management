@@ -15,6 +15,8 @@ import PageTitle from "@/components/UI/PageTitle.vue";
 
 <style lang="scss">
 .my-permissions-container {
+    padding-bottom: 2.5rem;
+
     .my-permissions-table-container {
         margin-top: 3rem;
     }
