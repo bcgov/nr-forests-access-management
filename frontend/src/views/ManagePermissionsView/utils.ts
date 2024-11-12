@@ -3,6 +3,7 @@ import type {
     FamAccessControlPrivilegeResponse,
     FamForestClientBase,
     FamRoleWithClientDto,
+    FamAccessControlPrivilegeCreateResponse,
 } from "fam-admin-mgmt-api/model";
 import type {
     FamForestClientSchema,
@@ -39,32 +40,30 @@ export const generateAppSuccessNotifications = (
     }
 
     const successRoleList: FamRoleWithClientSchema[] | FamRoleWithClientDto[] =
-        data.assignments_detail
+        (data.assignments_detail as FamAccessControlPrivilegeCreateResponse[])
             .filter((createRes) => createRes.status_code === 200)
             .map((filtered) => filtered.detail.role);
 
-    const successClientList: FamForestClientSchema[] | FamForestClientBase[] =
-        successRoleList
-            .map((role) =>
-                isFamRoleWithClientSchema(role)
-                    ? role.forest_client
-                    : role.client_number
-            )
-            .filter((client) => client !== undefined && client !== null);
+    const successClientList = successRoleList
+        .map((role) =>
+            isFamRoleWithClientSchema(role)
+                ? role.forest_client
+                : role.client_number
+        )
+        .filter((client) => client !== undefined && client !== null);
 
     const conflictRoleList: FamRoleWithClientSchema[] | FamRoleWithClientDto[] =
-        data.assignments_detail
+        (data.assignments_detail as FamAccessControlPrivilegeCreateResponse[])
             .filter((createRes) => createRes.status_code === 409)
             .map((filtered) => filtered.detail.role);
 
-    const conflictClientList: FamForestClientSchema[] | FamForestClientBase[] =
-        conflictRoleList
-            .map((role) =>
-                isFamRoleWithClientSchema(role)
-                    ? role.forest_client
-                    : role.client_number
-            )
-            .filter((client) => client !== undefined && client !== null);
+    const conflictClientList = conflictRoleList
+        .map((role) =>
+            isFamRoleWithClientSchema(role)
+                ? role.forest_client
+                : role.client_number
+        )
+        .filter((client) => client !== undefined && client !== null);
 
     const famUser = data.assignments_detail[0].detail.user;
     const formattedUserName = formatUserNameAndId(
@@ -92,8 +91,8 @@ export const generateAppSuccessNotifications = (
                           .slice(0, 2)
                           .map((client) =>
                               formatForestClientDisplayName(
-                                  client.forest_client_number,
-                                  client.client_name
+                                  client?.forest_client_number,
+                                  client?.client_name
                               )
                           )
                           .join(", ") +
@@ -101,8 +100,8 @@ export const generateAppSuccessNotifications = (
                     : successClientList
                           .map((client) =>
                               formatForestClientDisplayName(
-                                  client.forest_client_number,
-                                  client.client_name
+                                  client?.forest_client_number,
+                                  client?.client_name
                               )
                           )
                           .join(", ")
@@ -116,8 +115,8 @@ export const generateAppSuccessNotifications = (
                         ${successClientList
                             .map((client) =>
                                 formatForestClientDisplayName(
-                                    client.forest_client_number,
-                                    client.client_name
+                                    client?.forest_client_number,
+                                    client?.client_name
                                 )
                             )
                             .join(", ")}
@@ -155,8 +154,8 @@ export const generateAppSuccessNotifications = (
                           .slice(0, 2)
                           .map((client) =>
                               formatForestClientDisplayName(
-                                  client.forest_client_number,
-                                  client.client_name
+                                  client?.forest_client_number,
+                                  client?.client_name
                               )
                           )
                           .join(", ") +
@@ -164,8 +163,8 @@ export const generateAppSuccessNotifications = (
                     : conflictClientList
                           .map((client) =>
                               formatForestClientDisplayName(
-                                  client.forest_client_number,
-                                  client.client_name
+                                  client?.forest_client_number,
+                                  client?.client_name
                               )
                           )
                           .join(", ")
@@ -179,8 +178,8 @@ export const generateAppSuccessNotifications = (
                         ${conflictClientList
                             .map((client) =>
                                 formatForestClientDisplayName(
-                                    client.forest_client_number,
-                                    client.client_name
+                                    client?.forest_client_number,
+                                    client?.client_name
                                 )
                             )
                             .join(", ")}
@@ -225,16 +224,16 @@ export const generateAppErrorNotifications = (
                       .slice(0, 2)
                       .map((client) =>
                           formatForestClientDisplayName(
-                              client.forest_client_number,
-                              client.client_name
+                              client?.forest_client_number,
+                              client?.client_name
                           )
                       )
                       .join(", ") + `, and ${forestClients.length - 2} more...`
                 : forestClients
                       .map((client) =>
                           formatForestClientDisplayName(
-                              client.forest_client_number,
-                              client.client_name
+                              client?.forest_client_number,
+                              client?.client_name
                           )
                       )
                       .join(", ")
@@ -248,8 +247,8 @@ export const generateAppErrorNotifications = (
                     ${forestClients
                         .map((client) =>
                             formatForestClientDisplayName(
-                                client.forest_client_number,
-                                client.client_name
+                                client?.forest_client_number,
+                                client?.client_name
                             )
                         )
                         .join(", ")}
