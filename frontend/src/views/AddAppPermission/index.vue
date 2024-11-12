@@ -90,7 +90,6 @@ const adminUserAccessQuery = useQuery({
                 data.access.find(
                     (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
                 )?.grants ?? [];
-            console.log(delegatedAdminGrants.concat(appAdminGrants));
             return delegatedAdminGrants.concat(appAdminGrants);
         } else {
             return (

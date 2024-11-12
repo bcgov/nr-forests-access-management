@@ -99,7 +99,6 @@ const handleVerify = (userType: UserType) => {
         return;
     }
     if (isCurrentUser()) {
-        console.log("hahah");
         emit("setVerifyResult", null);
         errorMsg.value = "You cannot grant permissions to yourself.";
         return;
