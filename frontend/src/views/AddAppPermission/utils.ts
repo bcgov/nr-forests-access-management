@@ -71,7 +71,7 @@ export const getRoleSectionSubtitle = (
     requestType: AddAppPermissionRequestType
 ) =>
     requestType === "addUserPermission"
-        ? "User roles"
+        ? undefined
         : "Assign a role the delgated admin can manage";
 
 /**

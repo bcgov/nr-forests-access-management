@@ -17,7 +17,7 @@ const auth = useAuth();
             <Button
                 class-name="logout-button"
                 outlined
-                label="logout"
+                label="Sign out"
                 :icon="LogoutIcon"
                 @click="() => auth.logout()"
             />
