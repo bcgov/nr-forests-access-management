@@ -273,6 +273,11 @@ const generateNotificationMsg = (
                             'is-invalid':
                                 errorMessage || errorClientNumbers.length > 0,
                         }"
+                        @blur="
+                            forestClientNumbersInput.length &&
+                                addClientNumbers()
+                        "
+                        :disabled="isVerifying"
                     />
                     <small
                         id="forestClientInput-help"
