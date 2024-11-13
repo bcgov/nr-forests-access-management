@@ -7,7 +7,7 @@ export const Severity = {
 } as const;
 
 export type ForestClientNotificationType = {
-    type: "Duplicate" | "Error" | "NotExist" | "NotActive";
+    type: "Duplicate" | "Error" | "NotExist" | "NotActive" | "Invalid";
     severity: SeverityType;
     clientNumbers: string[];
 };

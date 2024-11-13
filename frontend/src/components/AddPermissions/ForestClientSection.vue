@@ -11,6 +11,7 @@ import { ErrorMessage, Field } from "vee-validate";
 import { computed, h, ref, watch } from "vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import type { ForestClientNotificationType } from "@/types/NotificationTypes";
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
 
 const props = withDefaults(
     defineProps<{
@@ -33,9 +34,19 @@ const isVerifying = ref<boolean>(false);
 const forestClientNumbersInput = ref("");
 const numbersToVerify = ref<string[]>([]);
 
+// Numbers that aren't exactly FOREST_CLIENT_INPUT_MAX_LENGTH long
+const invalidClientNumbers = ref<string[]>([]);
+
+// Numbers that encountered error while validating
 const errorClientNumbers = ref<string[]>([]);
+
+// Numbers that don't exist in Forest Client directory
 const notExistClientNumbers = ref<string[]>([]);
+
+// Numbers that have already been added
 const duplicateClientNumbers = ref<string[]>([]);
+
+// Numbers that are associated with an inactive forest client
 const notActiveClientNumbers = ref<string[]>([]);
 
 const notifications = computed<ForestClientNotificationType[]>(() => [
@@ -59,6 +70,11 @@ const notifications = computed<ForestClientNotificationType[]>(() => [
         severity: "error",
         clientNumbers: notActiveClientNumbers.value,
     },
+    {
+        type: "Invalid",
+        severity: "error",
+        clientNumbers: invalidClientNumbers.value,
+    },
 ]);
 
 const clearNotifications = () => {
@@ -66,6 +82,7 @@ const clearNotifications = () => {
     notExistClientNumbers.value = [];
     duplicateClientNumbers.value = [];
     notActiveClientNumbers.value = [];
+    invalidClientNumbers.value = [];
 };
 
 const cleanupForestClientSection = () => {
@@ -194,11 +211,29 @@ const addClientNumbers = () => {
     numbersToVerify.value = parseAndCleanNumbers(
         forestClientNumbersInput.value
     );
+
+    const invalidNumbers = numbersToVerify.value.filter(
+        (clientNumber) => clientNumber.length !== FOREST_CLIENT_INPUT_MAX_LENGTH
+    );
+
+    if (invalidNumbers.length) {
+        invalidClientNumbers.value = invalidNumbers.map((clientNumber) =>
+            clientNumber.length > FOREST_CLIENT_INPUT_MAX_LENGTH
+                ? `${clientNumber.substring(
+                      0,
+                      FOREST_CLIENT_INPUT_MAX_LENGTH
+                  )}...`
+                : clientNumber
+        );
+
+        return;
+    }
+
     verifyClients();
 };
 
 const generateNotificationMsg = (
-    type: "NotExist" | "NotActive" | "Duplicate" | "Error"
+    type: ForestClientNotificationType["type"]
 ) => {
     let clientNumbers: string[];
     let message: string;
@@ -226,6 +261,14 @@ const generateNotificationMsg = (
             clientNumbers = errorClientNumbers.value;
             message = "encountered an error while being added";
             break;
+        case "Invalid":
+            clientNumbers = invalidClientNumbers.value;
+            message = `
+            ${clientNumbers.length > 1 ? "are" : "is"}
+            not
+            ${FOREST_CLIENT_INPUT_MAX_LENGTH} digits long
+             `;
+            break;
         default:
             clientNumbers = [];
             message = "encountered an error while being added";
@@ -244,6 +287,20 @@ const generateNotificationMsg = (
         ...numberText,
         ` ${message}`,
     ]);
+};
+
+const enforceNumberAndComma = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    let newValue = "";
+
+    for (const char of target.value) {
+        if ((char >= "0" && char <= "9") || char === "," || char === " ") {
+            newValue += char;
+        }
+    }
+
+    target.value = newValue;
+    forestClientNumbersInput.value = newValue;
 };
 </script>
 
@@ -265,6 +322,7 @@ const generateNotificationMsg = (
                         placeholder="Enter and verify the client number"
                         class="w-100 custom-height"
                         v-model="forestClientNumbersInput"
+                        @input="enforceNumberAndComma"
                         @keydown.enter.prevent="
                             forestClientNumbersInput.length &&
                                 addClientNumbers()
