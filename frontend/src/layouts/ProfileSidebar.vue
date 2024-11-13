@@ -90,7 +90,16 @@ const adminUserAccessQuery = useQuery({
                 <div class="profile-info">
                     <p class="profile-name">{{ famLoginUser?.displayName }}</p>
                     <p class="profile-userid">
-                        {{ famLoginUser?.idpProvider }}:
+                        {{
+                            `${
+                                famLoginUser?.idpProvider === "idir"
+                                    ? "IDIR: "
+                                    : famLoginUser?.idpProvider ===
+                                      "bceidbusiness"
+                                    ? "BCeID: "
+                                    : null
+                            }`
+                        }}
                         {{ famLoginUser?.username }}
                     </p>
                     <p
