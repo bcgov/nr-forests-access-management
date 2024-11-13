@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import MenuIcon from "@carbon/icons-vue/es/menu/20";
 import ProfileSidebar from "@/layouts/ProfileSidebar.vue";
@@ -7,8 +8,10 @@ import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { sideNavState } from "@/store/SideNavState";
 import useAuth from "@/composables/useAuth";
+import { ManagePermissionsRoute } from "@/router/routes";
 
 const auth = useAuth();
+const router = useRouter();
 
 const environmentSettings = new EnvironmentSettings();
 const environmentLabel = environmentSettings
@@ -25,6 +28,8 @@ const props = defineProps({
         required: true,
     },
 });
+
+const navigateToMain = () => router.push({ name: ManagePermissionsRoute.name });
 </script>
 
 <template>
@@ -37,7 +42,7 @@ const props = defineProps({
             >
                 <MenuIcon />
             </Button>
-            <span class="header-title">
+            <span class="header-title" @click="navigateToMain">
                 {{ props.title }}
                 <strong class="subtitle"
                     >{{ props.subtitle }} {{ environmentLabel }}</strong
@@ -100,6 +105,7 @@ li {
     z-index: 1;
     color: $text-on-color;
     .header-title {
+        cursor: pointer;
         margin: 0 auto 0 0;
     }
 
