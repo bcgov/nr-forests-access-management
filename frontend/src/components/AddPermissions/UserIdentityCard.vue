@@ -17,7 +17,7 @@ const props = defineProps<{
         <Card>
             <template #header>
                 <CheckMarkFilledIcon v-if="props.userIdentity.found" />
-                <ErrorIcon v-else />
+                <ErrorIcon class="error-icon" v-else />
                 <p>Verified user information</p>
             </template>
 
