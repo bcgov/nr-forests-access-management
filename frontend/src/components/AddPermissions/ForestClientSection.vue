@@ -322,6 +322,7 @@ const enforceNumberAndComma = (event: Event) => {
                         placeholder="Enter and verify the client number"
                         class="w-100 custom-height"
                         v-model="forestClientNumbersInput"
+                        :maxlength="200"
                         @input="enforceNumberAndComma"
                         @keydown.enter.prevent="
                             forestClientNumbersInput.length &&
