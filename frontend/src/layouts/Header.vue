@@ -8,7 +8,6 @@ import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
 import { sideNavState } from "@/store/SideNavState";
 import useAuth from "@/composables/useAuth";
-import { ManagePermissionsRoute } from "@/router/routes";
 
 const auth = useAuth();
 const router = useRouter();
@@ -29,7 +28,7 @@ const props = defineProps({
     },
 });
 
-const navigateToMain = () => router.push({ name: ManagePermissionsRoute.name });
+const navigateToMain = () => router.push("/");
 </script>
 
 <template>
