@@ -196,11 +196,11 @@ const getTableRows = () => {
 const isQueryLoading = (): boolean => {
     switch (props.authGroup) {
         case "FAM_ADMIN":
-            return appAdminQuery.isFetching.value;
+            return appAdminQuery.isLoading.value;
         case "APP_ADMIN":
-            return appUserQuery.isFetching.value;
+            return appUserQuery.isLoading.value;
         case "DELEGATED_ADMIN":
-            return delegatedAdminQuery.isFetching.value;
+            return delegatedAdminQuery.isLoading.value;
         default:
             return false;
     }
