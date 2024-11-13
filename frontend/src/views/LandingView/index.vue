@@ -30,7 +30,6 @@ const auth = useAuth();
 
                 <div class="landing-content">
                     <div class="button-group">
-                        <v-slot />
                         <Button
                             class="landing-button"
                             :label="`Login with ${IdpProvider.IDIR}`"
