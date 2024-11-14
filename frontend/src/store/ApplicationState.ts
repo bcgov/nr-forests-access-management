@@ -8,4 +8,7 @@ export const setSelectedApp = (app: FamApplicationDto) => {
     selectedApp.value = app;
 };
 
-export const activeIndex = ref(0);
+/**
+ * The active tab index under a selected app
+ */
+export const activeTabIndex = ref(0);

@@ -17,7 +17,7 @@ import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlacehold
 import {
     selectedApp,
     setSelectedApp,
-    activeIndex,
+    activeTabIndex,
 } from "@/store/ApplicationState";
 import {
     formatAxiosError,
@@ -207,10 +207,10 @@ const addNotifications = (newNotifications: PermissionNotificationType[]) => {
 // Computed property to filter visible tabs dynamically
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
-// Function to set `activeIndex` to the first visible tab
+// Function to set `activeTabIndex` to the first visible tab
 const updateActiveIndex = () => {
-    if (activeIndex.value >= visibleTabs.value.length) {
-        activeIndex.value = 0;
+    if (activeTabIndex.value >= visibleTabs.value.length) {
+        activeTabIndex.value = 0;
     }
 };
 
@@ -224,7 +224,7 @@ watch(
 );
 
 const onTabChange = (event: TabViewChangeEvent) => {
-    activeIndex.value = event.index;
+    activeTabIndex.value = event.index;
     clearNotifications();
 };
 
@@ -276,7 +276,10 @@ onUnmounted(() => {
             />
             <TablePlaceholder v-if="!selectedApp" />
             <div v-else class="tab-view-container">
-                <TabView :active-index="activeIndex" @tab-change="onTabChange">
+                <TabView
+                    :active-index="activeTabIndex"
+                    @tab-change="onTabChange"
+                >
                     <TabPanel
                         v-for="tab in visibleTabs"
                         :key="tab.key"
