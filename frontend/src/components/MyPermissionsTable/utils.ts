@@ -1,8 +1,9 @@
-import type {
-    AppEnv,
-    FamAuthGrantDto,
-    FamGrantDetailDto,
-    FamRoleDto,
+import {
+    AdminRoleAuthGroup,
+    type AppEnv,
+    type FamAuthGrantDto,
+    type FamGrantDetailDto,
+    type FamRoleDto,
 } from "fam-admin-mgmt-api/model";
 
 type MyPermissionsRowType = {
@@ -77,17 +78,17 @@ export const getPermissionTableData = (
 
     userAccess.forEach((access: FamAuthGrantDto) => {
         switch (access.auth_key) {
-            case "FAM_ADMIN":
+            case AdminRoleAuthGroup.FamAdmin:
                 myPermissions = myPermissions.concat(
                     getFamAdminPermission(access)
                 );
                 break;
-            case "APP_ADMIN":
+            case AdminRoleAuthGroup.AppAdmin:
                 myPermissions = myPermissions.concat(
                     getAppAdminPermission(access)
                 );
                 break;
-            case "DELEGATED_ADMIN":
+            case AdminRoleAuthGroup.DelegatedAdmin:
                 myPermissions = myPermissions.concat(
                     getDelegatedAdminPermission(access)
                 );

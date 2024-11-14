@@ -10,10 +10,10 @@ import RecentlyViewedIcon from "@carbon/icons-vue/es/recently-viewed/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import { isAxiosError } from "axios";
 import { useConfirm } from "primevue/useconfirm";
-import type {
+import {
     AdminRoleAuthGroup,
-    FamAccessControlPrivilegeGetResponse,
-    FamAppAdminGetResponse,
+    type FamAccessControlPrivilegeGetResponse,
+    type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 
@@ -98,7 +98,7 @@ const appAdminQuery = useQuery({
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.authGroup === "FAM_ADMIN",
+    enabled: props.authGroup === AdminRoleAuthGroup.FamAdmin,
     select: (data) => {
         // Move matching IDs to the start of the array
         const sortedByUserName = data.sort((a, b) =>
@@ -123,7 +123,7 @@ const appUserQuery = useQuery({
             .getFamApplicationUserRoleAssignment(props.appId)
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.authGroup === "APP_ADMIN",
+    enabled: props.authGroup === AdminRoleAuthGroup.AppAdmin,
     select: (data) => {
         const sortedByUserName = data.sort((a, b) =>
             a.user.user_name.localeCompare(b.user.user_name)
@@ -149,7 +149,7 @@ const delegatedAdminQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled:
-        props.authGroup === "DELEGATED_ADMIN" &&
+        props.authGroup === AdminRoleAuthGroup.DelegatedAdmin &&
         // DelegatedAdminFeatureFlag
         !environment.isProdEnvironment(),
     select: (data) => {
@@ -181,11 +181,11 @@ const handleSearchChange = (newValue: string) => {
 
 const getTableRows = () => {
     switch (props.authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return appAdminQuery.data.value ?? [];
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return appUserQuery.data.value ?? [];
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return delegatedAdminQuery.data.value ?? [];
         default:
             return [];
@@ -195,11 +195,11 @@ const getTableRows = () => {
 // Get the query loading status
 const isQueryLoading = (): boolean => {
     switch (props.authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return appAdminQuery.isLoading.value;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return appUserQuery.isLoading.value;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return delegatedAdminQuery.isLoading.value;
         default:
             return false;
@@ -209,11 +209,11 @@ const isQueryLoading = (): boolean => {
 // Get the query fetching status
 const isQueryError = (): boolean => {
     switch (props.authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return appAdminQuery.isError.value;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return appUserQuery.isError.value;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return delegatedAdminQuery.isError.value;
         default:
             return false;
@@ -223,13 +223,13 @@ const isQueryError = (): boolean => {
 const getQueryErrorValue = () => {
     let error = null;
     switch (props.authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             error = appAdminQuery.error.value;
             break;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             error = appUserQuery.error.value;
             break;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             error = delegatedAdminQuery.error.value;
             break;
     }
@@ -243,9 +243,9 @@ const getQueryErrorValue = () => {
 };
 
 const handleAddButton = () => {
-    if (props.authGroup === "FAM_ADMIN") {
+    if (props.authGroup === AdminRoleAuthGroup.FamAdmin) {
         router.push({ name: AddFamPermissionRoute.name });
-    } else if (props.authGroup === "APP_ADMIN") {
+    } else if (props.authGroup === AdminRoleAuthGroup.AppAdmin) {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -253,7 +253,7 @@ const handleAddButton = () => {
                 applicationId: props.appId,
             },
         });
-    } else if (props.authGroup === "DELEGATED_ADMIN") {
+    } else if (props.authGroup === AdminRoleAuthGroup.DelegatedAdmin) {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -396,7 +396,7 @@ const handleDelete = (
         privilegeObject.user.last_name
     );
 
-    if (props.authGroup === "APP_ADMIN") {
+    if (props.authGroup === AdminRoleAuthGroup.AppAdmin) {
         const admin =
             privilegeObject as FamApplicationUserRoleAssignmentGetSchema;
         setConfirmTextProps(
@@ -409,7 +409,7 @@ const handleDelete = (
         );
     }
 
-    if (props.authGroup === "DELEGATED_ADMIN") {
+    if (props.authGroup === AdminRoleAuthGroup.DelegatedAdmin) {
         const delegatedAdmin =
             privilegeObject as FamAccessControlPrivilegeGetResponse;
         setConfirmTextProps(
@@ -422,7 +422,7 @@ const handleDelete = (
         );
     }
 
-    if (props.authGroup === "FAM_ADMIN") {
+    if (props.authGroup === AdminRoleAuthGroup.FamAdmin) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -439,20 +439,20 @@ const highlightNewUserAccessRow = (
         | FamAppAdminGetResponse
 ): object | undefined => {
     switch (props.authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             const famAdin = rowData as FamAppAdminGetResponse;
             if (newFamAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             const appAdmin =
                 rowData as FamApplicationUserRoleAssignmentGetSchema;
             if (newAppUserIds.includes(appAdmin.user_role_xref_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             const delegatedAdmin =
                 rowData as FamAccessControlPrivilegeGetResponse;
             if (

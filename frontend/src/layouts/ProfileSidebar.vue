@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import { default as FamButton } from "@/components/UI/Button.vue";
 import LogoutIcon from "@carbon/icons-vue/es/logout/16";
 import CloseIcon from "@carbon/icons-vue/es/close/16";
@@ -45,7 +46,7 @@ const adminUserAccessQuery = useQuery({
     select: (data) => {
         const accessList = data.access.map((grantDto) => grantDto.auth_key);
 
-        const famAdminIndex = accessList.indexOf("FAM_ADMIN");
+        const famAdminIndex = accessList.indexOf(AdminRoleAuthGroup.FamAdmin);
         if (famAdminIndex !== -1) {
             const famAdmin = accessList.splice(famAdminIndex, 1)[0];
             accessList.unshift(famAdmin);

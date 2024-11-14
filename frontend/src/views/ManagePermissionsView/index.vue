@@ -123,12 +123,12 @@ const tabs: ManagePermissionsTabTypes[] = [
         visible: computed(
             () =>
                 isSelectedAppAuthorized(
-                    "APP_ADMIN",
+                    AdminRoleAuthGroup.AppAdmin,
                     selectedApp.value?.id,
                     adminUserAccessQuery.data.value
                 ) ||
                 isSelectedAppAuthorized(
-                    "DELEGATED_ADMIN",
+                    AdminRoleAuthGroup.DelegatedAdmin,
                     selectedApp.value?.id,
                     adminUserAccessQuery.data.value
                 )
@@ -142,7 +142,7 @@ const tabs: ManagePermissionsTabTypes[] = [
                 // DelegatedAdminFeatureFlag
                 !environment.isProdEnvironment() &&
                 isSelectedAppAuthorized(
-                    "APP_ADMIN",
+                    AdminRoleAuthGroup.AppAdmin,
                     selectedApp.value?.id,
                     adminUserAccessQuery.data.value
                 )

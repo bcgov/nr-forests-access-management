@@ -1,8 +1,8 @@
 import { isAxiosError } from "axios";
-import type {
+import {
     AdminRoleAuthGroup,
-    FamAccessControlPrivilegeGetResponse,
-    FamAppAdminGetResponse,
+    type FamAccessControlPrivilegeGetResponse,
+    type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatAxiosError } from "@/utils/ApiUtils";
@@ -38,11 +38,11 @@ export const getTableHeaderTitle = (
     authGroup: AdminRoleAuthGroup
 ): string => {
     switch (authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return `${appName} users`;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return `${appName} users`;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return `${appName} delegated administrators`;
         default:
             return `${appName} users`;
@@ -57,15 +57,15 @@ export const getTableHeaderDescription = (
     authGroup: AdminRoleAuthGroup
 ): string => {
     switch (authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return `
             This table shows all the delegated administrators in ${appName} and the roles they are allowed to manage for their users
             `;
@@ -79,11 +79,11 @@ export const getTableHeaderDescription = (
  */
 export const getGrantButtonLabel = (authGroup: AdminRoleAuthGroup): string => {
     switch (authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return "Add application admin";
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return "Add user permission";
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return "Create delegated admin";
         default:
             return "";
@@ -95,7 +95,7 @@ export const getGrantButtonLabel = (authGroup: AdminRoleAuthGroup): string => {
  */
 export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
     switch (authGroup) {
-        case "FAM_ADMIN":
+        case AdminRoleAuthGroup.FamAdmin:
             return [
                 "User Name",
                 "Domain",
@@ -106,7 +106,7 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
                 "Role",
                 "Action",
             ];
-        case "APP_ADMIN":
+        case AdminRoleAuthGroup.AppAdmin:
             return [
                 "User Name",
                 "Domain",
@@ -115,7 +115,7 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
                 "Role",
                 "Action",
             ];
-        case "DELEGATED_ADMIN":
+        case AdminRoleAuthGroup.DelegatedAdmin:
             return [
                 "User Name",
                 "Domain",

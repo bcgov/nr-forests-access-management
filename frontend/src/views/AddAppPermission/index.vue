@@ -42,7 +42,7 @@ import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
-import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import { AdminRoleAuthGroup, type FamRoleDto } from "fam-admin-mgmt-api/model";
 import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import Button from "@/components/UI/Button.vue";
@@ -84,17 +84,20 @@ const adminUserAccessQuery = useQuery({
             const delegatedAdminGrants =
                 data.access.find(
                     (authGrantDto) =>
-                        authGrantDto.auth_key === "DELEGATED_ADMIN"
+                        authGrantDto.auth_key ===
+                        AdminRoleAuthGroup.DelegatedAdmin
                 )?.grants ?? [];
             const appAdminGrants =
                 data.access.find(
-                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
+                    (authGrantDto) =>
+                        authGrantDto.auth_key === AdminRoleAuthGroup.AppAdmin
                 )?.grants ?? [];
             return delegatedAdminGrants.concat(appAdminGrants);
         } else {
             return (
                 data.access.find(
-                    (authGrantDto) => authGrantDto.auth_key === "APP_ADMIN"
+                    (authGrantDto) =>
+                        authGrantDto.auth_key === AdminRoleAuthGroup.AppAdmin
                 )?.grants ?? []
             );
         }

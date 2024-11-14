@@ -1,9 +1,8 @@
 import type { AxiosError } from "axios";
-import type {
+import {
     AdminRoleAuthGroup,
-    AdminUserAccessResponse,
-    FamApplicationDto,
-    HTTPValidationError,
+    type AdminUserAccessResponse,
+    type FamApplicationDto,
 } from "fam-admin-mgmt-api/model";
 
 /**
@@ -49,7 +48,7 @@ export const getUniqueApplications = (
             .flatMap((authGrant) => {
                 // Only include applications under FAM_ADMIN if the application ID is 1
                 if (
-                    authGrant.auth_key === "FAM_ADMIN" &&
+                    authGrant.auth_key === AdminRoleAuthGroup.FamAdmin &&
                     authGrant.grants.some((grant) => grant.application.id === 1)
                 ) {
                     return authGrant.grants
