@@ -113,7 +113,7 @@
                 }
               ],
               "description": "Column sorting order by \u003Cbr\u003EPossible values: [asc, desc]\u003Cbr\u003E&nbsp;",
-              "default": "asc",
+              "default": "desc",
               "title": "Sortorder"
             },
             "description": "Column sorting order by \u003Cbr\u003EPossible values: [asc, desc]\u003Cbr\u003E&nbsp;"
