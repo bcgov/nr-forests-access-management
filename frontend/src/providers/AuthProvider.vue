@@ -117,6 +117,8 @@ const handlePostLogin = async () => {
     try {
         isLoading.value = true;
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
+            // retrieve the latest user attributes after they are changed
+            // this will bypass the local cache without needing the user to sign out and sign back in
             bypassCache: true,
         });
         const session: CognitoUserSession = await Auth.currentSession();
@@ -196,6 +198,8 @@ const restoreSession = async () => {
     try {
         isLoading.value = true;
         const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
+            // retrieve the latest user attributes after they are changed
+            // this will bypass the local cache without needing the user to sign out and sign back in
             bypassCache: true,
         });
         const session: CognitoUserSession = await Auth.currentSession();
