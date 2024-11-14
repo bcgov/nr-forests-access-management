@@ -61,7 +61,6 @@ const props = defineProps<{
             <template #content v-else-if="props.errorMsg">
                 <div>props.errorMsg</div>
             </template>
-            <
         </Card>
     </div>
 </template>
