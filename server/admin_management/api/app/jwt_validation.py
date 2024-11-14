@@ -180,7 +180,6 @@ def authorize(claims: dict = Depends(validate_token)) -> dict:
 
 def get_access_roles(claims: dict = Depends(authorize)):
     groups = claims[JWT_GROUPS_KEY]
-    groups.append("SPAR_TEST_ADMIN")
     return groups
 
 
