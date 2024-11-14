@@ -60,12 +60,10 @@ watch(termsAndConditionQuery.status, () => {
         <SideNav />
         <div class="main">
             <main>
-                <div
+                <Spinner
                     v-if="termsAndConditionQuery.isLoading.value"
-                    class="page-loading-spinner"
-                >
-                    <Spinner loading-text="Page loading" />
-                </div>
+                    loading-text="Page loading"
+                />
                 <router-view
                     v-if="termsAndConditionQuery.data.value === false"
                 />
@@ -74,7 +72,7 @@ watch(termsAndConditionQuery.status, () => {
     </div>
 </template>
 <style lang="scss" scoped>
-.page-loading-spinner {
+.spinner-container {
     display: flex;
     width: 100%;
     height: 80vh;
