@@ -13,41 +13,36 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { AppEnv } from './app-env';
 
 /**
  * 
  * @export
- * @interface FamApplicationBase
+ * @interface PageResultMetaSchema
  */
-export interface FamApplicationBase {
+export interface PageResultMetaSchema {
     /**
-     * 
+     * Total records counts for query conditions
      * @type {number}
-     * @memberof FamApplicationBase
+     * @memberof PageResultMetaSchema
      */
-    'application_id': number;
+    'total': number;
     /**
-     * 
-     * @type {string}
-     * @memberof FamApplicationBase
+     * Total pages for query records
+     * @type {number}
+     * @memberof PageResultMetaSchema
      */
-    'application_name': string;
+    'number_of_pages': number;
     /**
-     * 
-     * @type {string}
-     * @memberof FamApplicationBase
+     * Page number
+     * @type {number}
+     * @memberof PageResultMetaSchema
      */
-    'application_description': string;
+    'page_number': number;
     /**
-     * 
-     * @type {AppEnv}
-     * @memberof FamApplicationBase
+     * Number of records per page
+     * @type {number}
+     * @memberof PageResultMetaSchema
      */
-    'app_environment'?: AppEnv | null;
+    'page_size': number;
 }
-
-
 

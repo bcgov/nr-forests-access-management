@@ -43,6 +43,18 @@ export interface FamRoleWithClientDto {
     'role_name': string;
     /**
      * 
+     * @type {string}
+     * @memberof FamRoleWithClientDto
+     */
+    'display_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamRoleWithClientDto
+     */
+    'description': string | null;
+    /**
+     * 
      * @type {FamForestClientBase}
      * @memberof FamRoleWithClientDto
      */

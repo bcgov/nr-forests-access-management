@@ -14,6 +14,7 @@ index.ts
 model/admin-role-auth-group.ts
 model/admin-user-access-response.ts
 model/app-env.ts
+model/delegated-admin-sort-by-enum.ts
 model/email-sending-status.ts
 model/fam-access-control-privilege-create-request.ts
 model/fam-access-control-privilege-create-response.ts
@@ -34,7 +35,10 @@ model/fam-user-type-dto.ts
 model/httpvalidation-error.ts
 model/index.ts
 model/location-inner.ts
+model/page-result-meta-schema.ts
+model/paged-results-schema-fam-access-control-privilege-get-response.ts
 model/role-type.ts
+model/sort-order-enum.ts
 model/user-type.ts
 model/validation-error.ts
 package.json
