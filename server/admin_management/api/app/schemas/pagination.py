@@ -50,7 +50,7 @@ class PageParamsSchema(BaseModel, ABC):
     ))
 
     sort_order: SortOrderEnum | None = Field(Query(
-        default=SortOrderEnum.ASC, alias="sortOrder",
+        default=SortOrderEnum.DESC, alias="sortOrder",
         description=(
             f'Column sorting order by <br>Possible values: [{", ".join([enum for enum in SortOrderEnum])}]'
         )
