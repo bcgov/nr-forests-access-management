@@ -129,7 +129,18 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
     }
 };
 
-// Allow customized message templates for success and error cases
+/**
+ * Defines a customizable context for generating notifications with success and error message templates.
+ *
+ * @template T - The shape of the `variables` object passed to the templates, allowing flexible
+ * substitution of values within the message strings.
+ *
+ * @property {string} action - Action type for the notification, e.g., "add", "remove".
+ * @property {string} entityName - The name of the entity affected, e.g., "access", "privilege".
+ * @property {function(T): string} successTemplate - A template function that generates the success message.
+ * @property {function(T, Error): string} errorTemplate - A template function that generates the error message.
+ */
+
 type NotificationContext<T> = {
     action: string;
     entityName: string;
@@ -218,6 +229,24 @@ export const deleteFamPermissionNotificationContext: NotificationContext<FamAppA
     `,
     };
 
+/**
+ * Creates a notification message based on the operation's success or failure.
+ *
+ * @template T - The shape of the `variables` object passed to the templates. This generic type allows
+ * `createNotification` to accept various structures for `variables`, ensuring flexibility and type safety
+ * across different types of notification contexts.
+ *
+ * Possible types for `T`:
+ *  - `FamApplicationUserRoleAssignmentGetSchema`: For App user role assignment notifications.
+ *  - `FamAccessControlPrivilegeGetResponse`: For Delegated Admin notifications.
+ *  - `FamAppAdminGetResponse`: For FAM App Admin privilege notifications.
+ *
+ * @param {boolean} success - Indicates whether the operation was successful.
+ * @param {T} variables - Variables used to customize the success or error message template.
+ * @param {Error | null} error - The error object to pass to the error template if the operation failed.
+ * @param {NotificationContext<T>} context - The context defining the message templates and entity details.
+ * @returns {PermissionNotificationType} - An object representing the notification to be displayed.
+ */
 export const createNotification = <T>(
     success: boolean,
     variables: T,
