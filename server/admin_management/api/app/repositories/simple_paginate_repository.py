@@ -7,8 +7,8 @@ from api.app.constants import SortOrderEnum
 from api.app.schemas.pagination import (PagedResultsSchema, PageParamsSchema,
                                         PageResultMetaSchema)
 from pydantic import BaseModel
-from pytest import Session
 from sqlalchemy import ColumnElement, Select, asc, desc, func, select
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
