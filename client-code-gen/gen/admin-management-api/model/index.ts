@@ -1,6 +1,7 @@
 export * from './admin-role-auth-group';
 export * from './admin-user-access-response';
 export * from './app-env';
+export * from './delegated-admin-sort-by-enum';
 export * from './email-sending-status';
 export * from './fam-access-control-privilege-create-request';
 export * from './fam-access-control-privilege-create-response';
@@ -20,6 +21,9 @@ export * from './fam-user-info-dto';
 export * from './fam-user-type-dto';
 export * from './httpvalidation-error';
 export * from './location-inner';
+export * from './page-result-meta-schema';
+export * from './paged-results-schema-fam-access-control-privilege-get-response';
 export * from './role-type';
+export * from './sort-order-enum';
 export * from './user-type';
 export * from './validation-error';

@@ -17,20 +17,20 @@
 /**
  * 
  * @export
- * @interface FamForestClientBase
+ * @enum {string}
  */
-export interface FamForestClientBase {
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClientBase
-     */
-    'client_name'?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamForestClientBase
-     */
-    'forest_client_number': string;
-}
+
+export const DelegatedAdminSortByEnum = {
+    CreateDate: 'create_date',
+    UserName: 'user_name',
+    UserTypeCode: 'user_type_code',
+    Email: 'email',
+    FullName: 'full_name',
+    RoleDisplayName: 'role_display_name',
+    ForestClientNumber: 'forest_client_number'
+} as const;
+
+export type DelegatedAdminSortByEnum = typeof DelegatedAdminSortByEnum[keyof typeof DelegatedAdminSortByEnum];
+
+
 

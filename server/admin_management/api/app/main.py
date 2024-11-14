@@ -1,13 +1,6 @@
 import logging.config
 import os.path
 
-from fastapi import APIRouter, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
-from pydantic import ValidationError
-from requests import HTTPError
-from starlette.responses import RedirectResponse
-
 from api.app.exception_handlers import (requests_http_error_handler,
                                         unhandled_exception_handler,
                                         validation_exception_handler)
@@ -15,6 +8,12 @@ from api.app.routers import (router_access_control_privilege,
                              router_admin_user_accesses,
                              router_application_admin, router_smoke_test)
 from api.config.config import get_allow_origins, get_root_path
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+from pydantic import ValidationError
+from requests import HTTPError
+from starlette.responses import RedirectResponse
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -82,7 +81,7 @@ app.include_router(
 )
 app.include_router(
     router_access_control_privilege.router,
-    prefix=apiPrefix + "/access_control_privileges",
+    prefix=apiPrefix + "/access-control-privileges",
     tags=["FAM Access Control Privileges"],
 )
 app.include_router(
