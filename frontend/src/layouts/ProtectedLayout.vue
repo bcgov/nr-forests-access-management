@@ -15,6 +15,13 @@ import { NoAccessRoute } from "@/router/routes";
 const auth = useAuth();
 const router = useRouter();
 
+/**
+ * This request verifies whether the user needs to accept FAM's terms and conditions
+ * before continuing in the app.
+ *
+ * Currently, if the user is a BCeID user and a delegated admin, they are required to accept
+ * the terms and conditions.
+ */
 const termsAndConditionQuery = useQuery({
     queryKey: ["user_terms_conditions", "user:validate"],
     queryFn: () =>
