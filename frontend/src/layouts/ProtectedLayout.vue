@@ -53,7 +53,7 @@ watch(termsAndConditionQuery.status, () => {
 </script>
 
 <template>
-    <div>
+    <div class="proctected-layout-container">
         <!-- Show layout and content -->
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
@@ -71,12 +71,14 @@ watch(termsAndConditionQuery.status, () => {
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
-.spinner-container {
-    display: flex;
-    width: 100%;
-    height: 80vh;
-    justify-content: center;
-    align-items: center;
+<style lang="scss">
+.proctected-layout-container {
+    .spinner-container {
+        display: flex;
+        width: 100%;
+        height: 80vh;
+        justify-content: center;
+        align-items: center;
+    }
 }
 </style>
