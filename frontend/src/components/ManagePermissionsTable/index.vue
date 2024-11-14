@@ -58,9 +58,9 @@ import {
     getHeaders,
     type ConfirmTextType,
     createNotification,
-    deleteAppAdminContext,
-    deleteDelegatedAdminContext,
-    deleteFamPermissionContext,
+    deleteAppAdminNotificationContext,
+    deleteDelegatedAdminNotificationContext,
+    deleteFamPermissionNotificationContext,
     NEW_ACCESS_STYLE_IN_TABLE,
 } from "./utils";
 
@@ -285,12 +285,22 @@ const deleteAppAdminMutation = useMutation({
         ),
     onSuccess: (_data, variables) => {
         props.addNotifications([
-            createNotification(true, variables, null, deleteAppAdminContext),
+            createNotification(
+                true,
+                variables,
+                null,
+                deleteAppAdminNotificationContext
+            ),
         ]);
     },
     onError: (error, variables) => {
         props.addNotifications([
-            createNotification(false, variables, error, deleteAppAdminContext),
+            createNotification(
+                false,
+                variables,
+                error,
+                deleteAppAdminNotificationContext
+            ),
         ]);
     },
     onSettled: () => appUserQuery.refetch(),
@@ -307,7 +317,7 @@ const deleteDelegatedAdminMutation = useMutation({
                 true,
                 variables,
                 null,
-                deleteDelegatedAdminContext
+                deleteDelegatedAdminNotificationContext
             ),
         ]);
     },
@@ -317,7 +327,7 @@ const deleteDelegatedAdminMutation = useMutation({
                 false,
                 variables,
                 error,
-                deleteDelegatedAdminContext
+                deleteDelegatedAdminNotificationContext
             ),
         ]);
     },
@@ -335,7 +345,7 @@ const deleteFamPermissionMutation = useMutation({
                 true,
                 variables,
                 null,
-                deleteFamPermissionContext
+                deleteFamPermissionNotificationContext
             ),
         ]);
     },
@@ -345,7 +355,7 @@ const deleteFamPermissionMutation = useMutation({
                 false,
                 variables,
                 error,
-                deleteFamPermissionContext
+                deleteFamPermissionNotificationContext
             ),
         ]);
     },

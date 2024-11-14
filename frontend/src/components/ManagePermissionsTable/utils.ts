@@ -138,7 +138,7 @@ type NotificationContext<T> = {
 };
 
 // For deleteAppAdminMutation
-export const deleteAppAdminContext: NotificationContext<FamApplicationUserRoleAssignmentGetSchema> =
+export const deleteAppAdminNotificationContext: NotificationContext<FamApplicationUserRoleAssignmentGetSchema> =
     {
         action: "remove",
         entityName: "access",
@@ -165,7 +165,7 @@ export const deleteAppAdminContext: NotificationContext<FamApplicationUserRoleAs
     };
 
 // For deleteDelegatedAdminMutation
-export const deleteDelegatedAdminContext: NotificationContext<FamAccessControlPrivilegeGetResponse> =
+export const deleteDelegatedAdminNotificationContext: NotificationContext<FamAccessControlPrivilegeGetResponse> =
     {
         action: "remove",
         entityName: "privilege",
@@ -192,7 +192,7 @@ export const deleteDelegatedAdminContext: NotificationContext<FamAccessControlPr
     };
 
 // For deleteFamPermissionMutation (different format)
-export const deleteFamPermissionContext: NotificationContext<FamAppAdminGetResponse> =
+export const deleteFamPermissionNotificationContext: NotificationContext<FamAppAdminGetResponse> =
     {
         action: "remove",
         entityName: "admin privilege",
