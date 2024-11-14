@@ -81,7 +81,7 @@ class SortOrderEnum(str, Enum):
 
 class DelegatedAdminSortByEnum(str, Enum):
     # Note: this is not the exact model column name, requires table column mapping.
-    CREATE_DATE = "create_date"  # first one is the default sort field
+    CREATE_DATE = "create_date"
     USER_NAME = "user_name"
     DOMAIN = "user_type_code"
     EMAIL = "email"
