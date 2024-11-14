@@ -729,7 +729,7 @@ def test_get_fam_application_user_role_assignment__no_params_in_request_then_use
     # validate defaults are provided when no request param is in the request.
     assert mock_fn_call_args[1]["page_params"] == UserRolePageParamsSchema(
         page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None,
-        sort_order=SortOrderEnum.ASC, sort_by=UserRoleSortByEnum.CREATE_DATE
+        sort_order=SortOrderEnum.DESC, sort_by=UserRoleSortByEnum.CREATE_DATE
     )
 
     # !! Below line is very important (to restor the method from mock) for not to interfere subsequent tests cases.
