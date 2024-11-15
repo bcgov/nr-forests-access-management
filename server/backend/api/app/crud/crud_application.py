@@ -1,13 +1,15 @@
 import logging
+from datetime import datetime
 
-from api.app.constants import SortOrderEnum, UserRoleSortByEnum, UserType
+from api.app.constants import UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
+from api.app.datetime_format import TIMESTAMP_FORMAT_DEFAULT
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
 from api.app.schemas.pagination import (PagedResultsSchema,
                                         UserRolePageParamsSchema)
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import Column, asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 from . import crud_utils as crud_utils
@@ -17,7 +19,8 @@ LOGGER = logging.getLogger(__name__)
 # Local constant only, for application user/role sorting/filtering query,
 # provides mapping for sortBy/filtered columns mapped to model columns.
 USER_ROLE_SORT_BY_MAPPED_COLUMN = {
-    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,  # default
+    UserRoleSortByEnum.CREATE_DATE: models.FamUserRoleXref.create_date, # default
+    UserRoleSortByEnum.USER_NAME: models.FamUser.user_name,
     UserRoleSortByEnum.DOMAIN: models.FamUser.user_type_code,
     UserRoleSortByEnum.EMAIL: models.FamUser.email,
     UserRoleSortByEnum.FULL_NAME: models.FamUser.full_name,  # this is a hybrid column
@@ -35,24 +38,6 @@ def get_application(db: Session, application_id: int):
     return application
 
 
-def __build_order_by_criteria(page_params: UserRolePageParamsSchema):
-    """
-    Based on 'sort_by' and 'sort_order' page_params to build SQL "ORDER BY"
-    clause, e.g., ("ORDER BY app_fam.fam_user.user_name ASC") to return
-    for the query.
-    """
-    # currently only sorting on 1 column at a time from frontend.
-    sort_by = page_params.sort_by
-    sort_order = page_params.sort_order
-    mapped_column = (
-        USER_ROLE_SORT_BY_MAPPED_COLUMN.get(UserRoleSortByEnum.USER_NAME)
-        if sort_by is None # default
-        else USER_ROLE_SORT_BY_MAPPED_COLUMN.get(sort_by)
-    )
-
-    return asc(mapped_column) if sort_order == SortOrderEnum.ASC else desc(mapped_column)
-
-
 def __build_filter_criteria(page_params: UserRolePageParamsSchema):
     """
     Based on 'search' keyword from page_params to build additional 'where'
@@ -66,10 +51,22 @@ def __build_filter_criteria(page_params: UserRolePageParamsSchema):
     """
     search_keyword = page_params.search
     filter_on_columns = USER_ROLE_SORT_BY_MAPPED_COLUMN.values()
+
+    def operate_on_column(column: Column):
+        """
+        Determines column type to apply sql operator/function for filtering.
+        """
+        column_type = column.type.python_type
+        if column_type is str:
+            return column.ilike(f"%{search_keyword}%")
+        elif column_type is datetime:
+            return func.to_char(column, TIMESTAMP_FORMAT_DEFAULT).ilike(f"%{search_keyword}%")
+
+
     return (
         or_(
             # build where ... "OR" conditions for all mapped columns.
-            *list(map(lambda column: column.ilike(f"%{search_keyword}%"), filter_on_columns))
+            *list(map(lambda column: operate_on_column(column), filter_on_columns))
         )
         if search_keyword is not None
         else None
@@ -142,7 +139,7 @@ def get_application_role_assignments(
     paginated_service = PaginateService(
         db, q,
         __build_filter_criteria(page_params),
-        __build_order_by_criteria(page_params),
+        USER_ROLE_SORT_BY_MAPPED_COLUMN,
         page_params
     )
     qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)

@@ -88,6 +88,17 @@ class EmailSendingStatus(str, Enum):
     )
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
+
+class UserRoleSortByEnum(str, Enum):
+    # Note: this is not the exact model column name, requires table column mapping.
+    CREATE_DATE = "create_date"  # first one is the default sort field
+    USER_NAME = "user_name"
+    DOMAIN = "user_type_code"
+    EMAIL = "email"
+    FULL_NAME = "full_name"  # special case: first_name + last_name
+    ROLE_DISPLAY_NAME = "role_display_name"
+    FOREST_CLIENT_NUMBER = "forest_client_number"
+
 # -------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20

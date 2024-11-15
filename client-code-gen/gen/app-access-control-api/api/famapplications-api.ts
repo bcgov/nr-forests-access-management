@@ -87,7 +87,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -174,7 +174,7 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -213,7 +213,7 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
          * @param {number | null} [pageSize] Number of records per page
          * @param {string | null} [search] Search by keyword
          * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -248,7 +248,7 @@ export interface FAMApplicationsApiInterface {
      * @param {number | null} [pageSize] Number of records per page
      * @param {string | null} [search] Search by keyword
      * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
@@ -285,7 +285,7 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
      * @param {number | null} [pageSize] Number of records per page
      * @param {string | null} [search] Search by keyword
      * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
-     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi

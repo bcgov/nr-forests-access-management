@@ -3,8 +3,8 @@ import logging
 from http import HTTPStatus
 
 import starlette.testclient
-import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
+import testspg.utils as utils
 from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
@@ -748,7 +748,7 @@ def test_self_grant_fail(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
-    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
         db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is None, "Expected user role assignment not to be created"
@@ -1138,7 +1138,7 @@ def test_self_remove_grant_fail(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
-    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
         db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is not None, "Expected user role assignment not to be deleted"
