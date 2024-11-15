@@ -6,8 +6,8 @@ import { UserType } from "fam-app-acsctl-api";
 import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
 import { mixed, object } from "yup";
 
-export const FamPermissionSuccessQueryKey = "fam-permission-success";
-export const FamPermissionErrorQueryKey = "fam-permission-error";
+export const AddFamPermissionSuccessQueryKey = "fam-permission-success";
+export const AddFamPermissionErrorQueryKey = "fam-permission-error";
 
 export const NewFamAdminQueryParamKey = "newFamAdminIds";
 

@@ -30,10 +30,10 @@ import {
     getRoleSectionSubtitle,
     validateAppPermissionForm,
     generatePayload,
-    AppAdminSuccessQuerykey,
-    AppAdminErrorQuerykey,
-    DelegatedAdminSuccessQueryKey,
-    DelegatedAdminErrorQueryKey,
+    AddAppUserPermissionSuccessQuerykey,
+    AddAppUserPermissionErrorQuerykey,
+    AddDelegatedAdminSuccessQuerykey,
+    AddDelegatedAdminErrorQuerykey,
     getApplicationWithUniqueRoles,
     NewDelegatedAddminQueryParamKey,
     NewAppAdminQueryParamKey,
@@ -178,7 +178,10 @@ const appAdminMutation = useMutation({
             payload
         ),
     onSuccess: (res) => {
-        queryClient.setQueryData([AppAdminSuccessQuerykey], res.data);
+        queryClient.setQueryData(
+            [AddAppUserPermissionSuccessQuerykey],
+            res.data
+        );
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -191,7 +194,7 @@ const appAdminMutation = useMutation({
         });
     },
     onError: (error) => {
-        queryClient.setQueryData([AppAdminErrorQuerykey], {
+        queryClient.setQueryData([AddAppUserPermissionErrorQuerykey], {
             error,
             formData: formData.value,
         });
@@ -214,7 +217,7 @@ const delegatedAdminMutation = useMutation({
             payload
         ),
     onSuccess: (res) => {
-        queryClient.setQueryData([DelegatedAdminSuccessQueryKey], res.data);
+        queryClient.setQueryData([AddDelegatedAdminSuccessQuerykey], res.data);
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -230,7 +233,7 @@ const delegatedAdminMutation = useMutation({
         });
     },
     onError: (error) => {
-        queryClient.setQueryData([DelegatedAdminErrorQueryKey], {
+        queryClient.setQueryData([AddDelegatedAdminErrorQuerykey], {
             error,
             formData: formData.value,
         });

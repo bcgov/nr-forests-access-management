@@ -21,7 +21,7 @@ function isFamRoleWithClientSchema(
     return (role as FamRoleWithClientSchema).forest_client !== undefined;
 }
 
-export const generateAppSuccessNotifications = (
+export const generateAppPermissionSuccessNotifications = (
     requestType: AddAppPermissionRequestType,
     data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse
 ): PermissionNotificationType[] => {
@@ -201,7 +201,7 @@ export const generateAppSuccessNotifications = (
     return notifications;
 };
 
-export const generateAppErrorNotifications = (
+export const generateAppPermissionErrorNotifications = (
     errData: AppPermissionQueryErrorType
 ): PermissionNotificationType => {
     const { user, forestClients, role } = errData.formData;

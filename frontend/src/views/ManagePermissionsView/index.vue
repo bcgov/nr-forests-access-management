@@ -32,21 +32,21 @@ import type {
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
 import {
-    AppAdminErrorQuerykey,
-    AppAdminSuccessQuerykey,
-    DelegatedAdminErrorQueryKey,
-    DelegatedAdminSuccessQueryKey,
+    AddAppUserPermissionErrorQuerykey,
+    AddAppUserPermissionSuccessQuerykey,
+    AddDelegatedAdminErrorQuerykey,
+    AddDelegatedAdminSuccessQuerykey,
     type AppPermissionQueryErrorType,
 } from "../AddAppPermission/utils";
 import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
 import {
-    generateAppErrorNotifications,
-    generateAppSuccessNotifications,
+    generateAppPermissionErrorNotifications,
+    generateAppPermissionSuccessNotifications,
     generateFamNotification,
 } from "./utils";
 import {
-    FamPermissionErrorQueryKey,
-    FamPermissionSuccessQueryKey,
+    AddFamPermissionErrorQueryKey,
+    AddFamPermissionSuccessQueryKey,
 } from "../AddFamPermission/utils";
 
 const queryClient = useQueryClient();
@@ -57,25 +57,27 @@ const appIdFromQueryParam = ref(route.query.appId);
 const environment = new EnvironmentSettings();
 
 // Fetch notification Data
-const appAdminSuccessData = queryClient.getQueryData<FamUserRoleAssignmentRes>([
-    AppAdminSuccessQuerykey,
-]);
-const appAdminErrorData = queryClient.getQueryData<AppPermissionQueryErrorType>(
-    [AppAdminErrorQuerykey]
-);
-const delegatedAdminSuccessData =
+const addAppUserPermissionSuccessData =
     queryClient.getQueryData<FamUserRoleAssignmentRes>([
-        DelegatedAdminSuccessQueryKey,
+        AddAppUserPermissionSuccessQuerykey,
     ]);
-const delegatedAdminErrorData =
+const addAppUserPermissionErrorData =
     queryClient.getQueryData<AppPermissionQueryErrorType>([
-        DelegatedAdminErrorQueryKey,
+        AddAppUserPermissionErrorQuerykey,
     ]);
-const FamPermissionSuccessData = queryClient.getQueryData<string>([
-    FamPermissionSuccessQueryKey,
+const addDelegatedAdminSuccessData =
+    queryClient.getQueryData<FamUserRoleAssignmentRes>([
+        AddDelegatedAdminSuccessQuerykey,
+    ]);
+const addDelegatedAdminErrorData =
+    queryClient.getQueryData<AppPermissionQueryErrorType>([
+        AddDelegatedAdminErrorQuerykey,
+    ]);
+const addFamPermissionSuccessData = queryClient.getQueryData<string>([
+    AddFamPermissionSuccessQueryKey,
 ]);
-const FamPermissionErrorData = queryClient.getQueryData<string>([
-    FamPermissionErrorQueryKey,
+const addFamPermissionErrorData = queryClient.getQueryData<string>([
+    AddFamPermissionErrorQueryKey,
 ]);
 
 const handleApplicatoinChange = (e: DropdownChangeEvent) => {
@@ -152,50 +154,54 @@ const tabs: ManagePermissionsTabTypes[] = [
 ];
 
 const notifications = ref<PermissionNotificationType[]>([
-    ...(appAdminSuccessData
-        ? generateAppSuccessNotifications(
+    ...(addAppUserPermissionSuccessData
+        ? generateAppPermissionSuccessNotifications(
               "addUserPermission",
-              appAdminSuccessData
+              addAppUserPermissionSuccessData
           )
         : []),
-    ...(delegatedAdminSuccessData
-        ? generateAppSuccessNotifications(
+    ...(addDelegatedAdminSuccessData
+        ? generateAppPermissionSuccessNotifications(
               "addUserPermission",
-              delegatedAdminSuccessData
+              addDelegatedAdminSuccessData
           )
         : []),
-    ...(appAdminErrorData
-        ? [generateAppErrorNotifications(appAdminErrorData)]
+    ...(addAppUserPermissionErrorData
+        ? [
+              generateAppPermissionErrorNotifications(
+                  addAppUserPermissionErrorData
+              ),
+          ]
         : []),
-    ...(delegatedAdminErrorData
-        ? [generateAppErrorNotifications(delegatedAdminErrorData)]
+    ...(addDelegatedAdminErrorData
+        ? [generateAppPermissionErrorNotifications(addDelegatedAdminErrorData)]
         : []),
-    ...(FamPermissionSuccessData
-        ? [generateFamNotification(true, FamPermissionSuccessData)]
+    ...(addFamPermissionSuccessData
+        ? [generateFamNotification(true, addFamPermissionSuccessData)]
         : []),
-    ...(FamPermissionErrorData
-        ? [generateFamNotification(false, FamPermissionErrorData)]
+    ...(addFamPermissionErrorData
+        ? [generateFamNotification(false, addFamPermissionErrorData)]
         : []),
 ]);
 
 const clearNotifications = () => {
     queryClient.removeQueries({
-        queryKey: [AppAdminSuccessQuerykey],
+        queryKey: [AddAppUserPermissionSuccessQuerykey],
     });
     queryClient.removeQueries({
-        queryKey: [AppAdminErrorQuerykey],
+        queryKey: [AddAppUserPermissionErrorQuerykey],
     });
     queryClient.removeQueries({
-        queryKey: [DelegatedAdminSuccessQueryKey],
+        queryKey: [AddDelegatedAdminSuccessQuerykey],
     });
     queryClient.removeQueries({
-        queryKey: [DelegatedAdminErrorQueryKey],
+        queryKey: [AddDelegatedAdminErrorQuerykey],
     });
     queryClient.removeQueries({
-        queryKey: [FamPermissionSuccessQueryKey],
+        queryKey: [AddFamPermissionSuccessQueryKey],
     });
     queryClient.removeQueries({
-        queryKey: [FamPermissionErrorQueryKey],
+        queryKey: [AddFamPermissionErrorQueryKey],
     });
     notifications.value = [];
 };

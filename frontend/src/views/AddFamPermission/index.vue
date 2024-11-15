@@ -23,8 +23,8 @@ import Dropdown from "@/components/UI/Dropdown.vue";
 import Button from "@/components/UI/Button.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
-    FamPermissionErrorQueryKey,
-    FamPermissionSuccessQueryKey,
+    AddFamPermissionErrorQueryKey,
+    AddFamPermissionSuccessQueryKey,
     generatePayload,
     getDefaultFormData,
     validateFamPermissionForm,
@@ -79,7 +79,7 @@ const famPermissionMutation = useMutation({
         );
         const appName = formData.value.application?.description;
         const successMsg = `Admin privilege has been added to ${userFullName} for application ${appName}`;
-        queryClient.setQueryData([FamPermissionSuccessQueryKey], successMsg);
+        queryClient.setQueryData([AddFamPermissionSuccessQueryKey], successMsg);
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -103,7 +103,7 @@ const famPermissionMutation = useMutation({
             errMsg = `Failed to add ${userFullName} as a ${appName} admin`;
         }
 
-        queryClient.setQueryData([FamPermissionErrorQueryKey], errMsg);
+        queryClient.setQueryData([AddFamPermissionErrorQueryKey], errMsg);
         router.push({ name: ManagePermissionsRoute.name, query: { appId: 1 } });
     },
     onSettled: () => {
