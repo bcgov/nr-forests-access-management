@@ -23,6 +23,9 @@ export const ManagePermissionsRoute: RouteRecordRaw = {
     meta: protectedLayoutMeta,
 };
 
+/**
+ * Route to a page for granting access to app user and delegated admin
+ */
 export const AddAppPermissionRoute: RouteRecordRaw = {
     path: "/manage-permissions/add-app-permission",
     component: () => import("@/views/AddAppPermission"),
