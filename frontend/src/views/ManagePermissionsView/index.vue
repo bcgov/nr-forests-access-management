@@ -153,6 +153,10 @@ const tabs: ManagePermissionsTabTypes[] = [
     },
 ];
 
+// This computed property dynamically adjusts the displayed tabs to align with the available permissions
+// and the app’s setup for different user roles and environments.
+const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
+
 const notifications = ref<PermissionNotificationType[]>([
     ...(addAppUserPermissionSuccessData
         ? generateAppPermissionSuccessNotifications(
@@ -209,9 +213,6 @@ const clearNotifications = () => {
 const addNotifications = (newNotifications: PermissionNotificationType[]) => {
     notifications.value = newNotifications;
 };
-
-// Computed property to filter visible tabs dynamically
-const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
 // Function to set `activeTabIndex` to the first visible tab
 const updateActiveIndex = () => {
