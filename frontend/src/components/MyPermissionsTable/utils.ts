@@ -98,9 +98,11 @@ export const getPermissionTableData = (
         }
     });
 
+    // Remove any text within parentheses (e.g., "FOM (DEV)" -> "FOM ") , including the parentheses themselves,
+    // from the `application` string, then trim any extra whitespace.
     return myPermissions.map((permission) => {
-        permission.application = permission
-            .application!.replace(/\([^()]*\)/g, "")
+        permission.application = permission.application
+            ?.replace(/\([^()]*\)/g, "")
             .trim();
         return permission;
     });
