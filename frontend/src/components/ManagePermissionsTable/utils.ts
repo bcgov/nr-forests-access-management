@@ -1,6 +1,5 @@
 import { isAxiosError } from "axios";
 import {
-    AdminRoleAuthGroup,
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
@@ -9,6 +8,7 @@ import { formatAxiosError } from "@/utils/ApiUtils";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 import { Severity } from "../../types/NotificationTypes";
+import type { ManagePermissionsTableType } from "../../types/ManagePermissionsTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -36,14 +36,14 @@ export const filterList = [
  */
 export const getTableHeaderTitle = (
     appName: string,
-    authGroup: AdminRoleAuthGroup
+    tableType: ManagePermissionsTableType
 ): string => {
-    switch (authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (tableType) {
+        case "FAM_APP_ADMIN":
             return `${appName} users`;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return `${appName} users`;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return `${appName} delegated administrators`;
         default:
             return `${appName} users`;
@@ -55,18 +55,18 @@ export const getTableHeaderTitle = (
  */
 export const getTableHeaderDescription = (
     appName: string,
-    authGroup: AdminRoleAuthGroup
+    tableType: ManagePermissionsTableType
 ): string => {
-    switch (authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (tableType) {
+        case "FAM_APP_ADMIN":
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return `
             This table shows all the delegated administrators in ${appName} and the roles they are allowed to manage for their users
             `;
@@ -78,13 +78,15 @@ export const getTableHeaderDescription = (
 /**
  * Generates the label for a grant button based on the authorization group.
  */
-export const getGrantButtonLabel = (authGroup: AdminRoleAuthGroup): string => {
-    switch (authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+export const getGrantButtonLabel = (
+    tableType: ManagePermissionsTableType
+): string => {
+    switch (tableType) {
+        case "FAM_APP_ADMIN":
             return "Add application admin";
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return "Add user permission";
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return "Create delegated admin";
         default:
             return "";
@@ -94,9 +96,9 @@ export const getGrantButtonLabel = (authGroup: AdminRoleAuthGroup): string => {
 /**
  * Generates a list of headers based on the authorization group used for skeleton.
  */
-export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
-    switch (authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+export const getHeaders = (tableType: ManagePermissionsTableType): string[] => {
+    switch (tableType) {
+        case "FAM_APP_ADMIN":
             return [
                 "User Name",
                 "Domain",
@@ -107,7 +109,7 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
                 "Role",
                 "Action",
             ];
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return [
                 "User Name",
                 "Domain",
@@ -116,7 +118,7 @@ export const getHeaders = (authGroup: AdminRoleAuthGroup): string[] => {
                 "Role",
                 "Action",
             ];
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return [
                 "User Name",
                 "Domain",
@@ -149,8 +151,8 @@ type NotificationContext<T> = {
     errorTemplate: (variables: T, error: Error) => string;
 };
 
-// For deleteAppAdminMutation
-export const deleteAppAdminNotificationContext: NotificationContext<FamApplicationUserRoleAssignmentGetSchema> =
+// For deleteAppUserRoleMutation
+export const deleteAppUserRoleNotificationContext: NotificationContext<FamApplicationUserRoleAssignmentGetSchema> =
     {
         action: "remove",
         entityName: "access",

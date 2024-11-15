@@ -11,7 +11,6 @@ import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import { isAxiosError } from "axios";
 import { useConfirm } from "primevue/useconfirm";
 import {
-    AdminRoleAuthGroup,
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
@@ -58,11 +57,12 @@ import {
     getHeaders,
     type ConfirmTextType,
     createNotification,
-    deleteAppAdminNotificationContext,
+    deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
     NEW_ACCESS_STYLE_IN_TABLE,
 } from "./utils";
+import type { ManagePermissionsTableType } from "@/types/ManagePermissionsTypes";
 
 const router = useRouter();
 const route = useRoute();
@@ -84,7 +84,7 @@ const newDelegatedAdminIds = route.query[NewDelegatedAddminQueryParamKey]
     : [];
 
 const props = defineProps<{
-    authGroup: AdminRoleAuthGroup;
+    tableType: ManagePermissionsTableType;
     appName: string;
     appId: number;
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
@@ -98,7 +98,7 @@ const appAdminQuery = useQuery({
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.authGroup === AdminRoleAuthGroup.FamAdmin,
+    enabled: props.tableType === "FAM_APP_ADMIN",
     select: (data) => {
         // Move matching IDs to the start of the array
         const sortedByUserName = data.sort((a, b) =>
@@ -123,7 +123,7 @@ const appUserQuery = useQuery({
             .getFamApplicationUserRoleAssignment(props.appId)
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.authGroup === AdminRoleAuthGroup.AppAdmin,
+    enabled: props.tableType === "APP_USER",
     select: (data) => {
         const sortedByUserName = data.sort((a, b) =>
             a.user.user_name.localeCompare(b.user.user_name)
@@ -149,7 +149,7 @@ const delegatedAdminQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled:
-        props.authGroup === AdminRoleAuthGroup.DelegatedAdmin &&
+        props.tableType === "DELEGATED_ADMIN" &&
         // DelegatedAdminFeatureFlag
         !environment.isProdEnvironment(),
     select: (data) => {
@@ -180,12 +180,12 @@ const handleSearchChange = (newValue: string) => {
 };
 
 const getTableRows = () => {
-    switch (props.authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (props.tableType) {
+        case "FAM_APP_ADMIN":
             return appAdminQuery.data.value ?? [];
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return appUserQuery.data.value ?? [];
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return delegatedAdminQuery.data.value ?? [];
         default:
             return [];
@@ -194,12 +194,12 @@ const getTableRows = () => {
 
 // Get the query loading status
 const isQueryLoading = (): boolean => {
-    switch (props.authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (props.tableType) {
+        case "FAM_APP_ADMIN":
             return appAdminQuery.isLoading.value;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return appUserQuery.isLoading.value;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return delegatedAdminQuery.isLoading.value;
         default:
             return false;
@@ -208,12 +208,12 @@ const isQueryLoading = (): boolean => {
 
 // Get the query fetching status
 const isQueryError = (): boolean => {
-    switch (props.authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (props.tableType) {
+        case "FAM_APP_ADMIN":
             return appAdminQuery.isError.value;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             return appUserQuery.isError.value;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             return delegatedAdminQuery.isError.value;
         default:
             return false;
@@ -222,14 +222,14 @@ const isQueryError = (): boolean => {
 
 const getQueryErrorValue = () => {
     let error = null;
-    switch (props.authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (props.tableType) {
+        case "FAM_APP_ADMIN":
             error = appAdminQuery.error.value;
             break;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             error = appUserQuery.error.value;
             break;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             error = delegatedAdminQuery.error.value;
             break;
     }
@@ -243,9 +243,9 @@ const getQueryErrorValue = () => {
 };
 
 const handleAddButton = () => {
-    if (props.authGroup === AdminRoleAuthGroup.FamAdmin) {
+    if (props.tableType === "FAM_APP_ADMIN") {
         router.push({ name: AddFamPermissionRoute.name });
-    } else if (props.authGroup === AdminRoleAuthGroup.AppAdmin) {
+    } else if (props.tableType === "APP_USER") {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -253,7 +253,7 @@ const handleAddButton = () => {
                 applicationId: props.appId,
             },
         });
-    } else if (props.authGroup === AdminRoleAuthGroup.DelegatedAdmin) {
+    } else if (props.tableType === "DELEGATED_ADMIN") {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -278,7 +278,7 @@ const confirm = useConfirm();
 
 const confirmTextProps = ref<ConfirmTextType>();
 
-const deleteAppAdminMutation = useMutation({
+const deleteAppUserRoleMutation = useMutation({
     mutationFn: (admin: FamApplicationUserRoleAssignmentGetSchema) =>
         AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
             admin.user_role_xref_id
@@ -289,7 +289,7 @@ const deleteAppAdminMutation = useMutation({
                 true,
                 variables,
                 null,
-                deleteAppAdminNotificationContext
+                deleteAppUserRoleNotificationContext
             ),
         ]);
     },
@@ -299,7 +299,7 @@ const deleteAppAdminMutation = useMutation({
                 false,
                 variables,
                 error,
-                deleteAppAdminNotificationContext
+                deleteAppUserRoleNotificationContext
             ),
         ]);
     },
@@ -406,7 +406,7 @@ const handleDelete = (
         privilegeObject.user.last_name
     );
 
-    if (props.authGroup === AdminRoleAuthGroup.AppAdmin) {
+    if (props.tableType === "APP_USER") {
         const admin =
             privilegeObject as FamApplicationUserRoleAssignmentGetSchema;
         setConfirmTextProps(
@@ -415,11 +415,11 @@ const handleDelete = (
             props.appName
         );
         showConfirmDialog("Remove Access", () =>
-            deleteAppAdminMutation.mutate(admin)
+            deleteAppUserRoleMutation.mutate(admin)
         );
     }
 
-    if (props.authGroup === AdminRoleAuthGroup.DelegatedAdmin) {
+    if (props.tableType === "DELEGATED_ADMIN") {
         const delegatedAdmin =
             privilegeObject as FamAccessControlPrivilegeGetResponse;
         setConfirmTextProps(
@@ -432,7 +432,7 @@ const handleDelete = (
         );
     }
 
-    if (props.authGroup === AdminRoleAuthGroup.FamAdmin) {
+    if (props.tableType === "FAM_APP_ADMIN") {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -448,21 +448,21 @@ const highlightNewUserAccessRow = (
         | FamAccessControlPrivilegeGetResponse
         | FamAppAdminGetResponse
 ): object | undefined => {
-    switch (props.authGroup) {
-        case AdminRoleAuthGroup.FamAdmin:
+    switch (props.tableType) {
+        case "FAM_APP_ADMIN":
             const famAdin = rowData as FamAppAdminGetResponse;
             if (newFamAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case AdminRoleAuthGroup.AppAdmin:
+        case "APP_USER":
             const appAdmin =
                 rowData as FamApplicationUserRoleAssignmentGetSchema;
             if (newAppUserIds.includes(appAdmin.user_role_xref_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case AdminRoleAuthGroup.DelegatedAdmin:
+        case "DELEGATED_ADMIN":
             const delegatedAdmin =
                 rowData as FamAccessControlPrivilegeGetResponse;
             if (
@@ -492,13 +492,13 @@ const highlightNewUserAccessRow = (
             </template>
         </ConfirmDialog>
         <TableHeaderTitle
-            :title="getTableHeaderTitle(appName, authGroup)"
-            :description="getTableHeaderDescription(appName, authGroup)"
+            :title="getTableHeaderTitle(appName, tableType)"
+            :description="getTableHeaderDescription(appName, tableType)"
         />
 
         <TableToolbar
             :filter="tableFilter['global'].value"
-            :btn-label="getGrantButtonLabel(authGroup)"
+            :btn-label="getGrantButtonLabel(tableType)"
             :btn-on-click="handleAddButton"
             input-placeholder="Search by keyword"
             @change="handleSearchChange"
@@ -506,7 +506,7 @@ const highlightNewUserAccessRow = (
 
         <TableSkeleton
             v-if="isQueryLoading()"
-            :headers="getHeaders(authGroup)"
+            :headers="getHeaders(tableType)"
             :row-amount="5"
         />
         <ErrorText
@@ -564,23 +564,23 @@ const highlightNewUserAccessRow = (
             <Column header="Email" field="user.email" sortable />
 
             <Column
-                v-if="authGroup === 'FAM_ADMIN'"
+                v-if="tableType === 'FAM_APP_ADMIN'"
                 header="Application"
                 field="application.application_description"
                 sortable
             />
 
             <Column
-                v-if="authGroup === 'FAM_ADMIN'"
+                v-if="tableType === 'FAM_APP_ADMIN'"
                 header="Environment"
                 field="application.app_environment"
                 sortable
             />
 
             <Column
-                v-if="authGroup !== 'FAM_ADMIN'"
+                v-if="tableType !== 'FAM_APP_ADMIN'"
                 :field="
-                    authGroup === 'APP_ADMIN'
+                    tableType === 'APP_USER'
                         ? 'role.forest_client.forest_client_number'
                         : 'role.client_number.forest_client_number'
                 "
@@ -590,18 +590,18 @@ const highlightNewUserAccessRow = (
 
             <Column
                 :header="
-                    authGroup === 'DELEGATED_ADMIN'
+                    tableType === 'DELEGATED_ADMIN'
                         ? 'Role Enabled To Assign'
                         : 'Role'
                 "
                 field="roleDisplay"
-                :sortable="authGroup !== 'FAM_ADMIN'"
+                :sortable="tableType !== 'FAM_APP_ADMIN'"
                 sort-field="role.display_name"
             >
                 <template #body="{ data }">
                     <Chip
                         :label="
-                            authGroup === 'FAM_ADMIN'
+                            tableType === 'FAM_APP_ADMIN'
                                 ? 'Admin'
                                 : data.role.display_name
                         "
@@ -612,7 +612,7 @@ const highlightNewUserAccessRow = (
             <Column header="Action">
                 <template #body="{ data }">
                     <button
-                        v-if="authGroup !== 'FAM_ADMIN'"
+                        v-if="tableType !== 'FAM_APP_ADMIN'"
                         title="User permission history"
                         class="btn btn-icon"
                         @click="navigateToUserDetails(data.user_id)"

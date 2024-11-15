@@ -27,7 +27,8 @@ import {
 import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import type {
     ManagePermissionsTabHeaderType,
-    ManagePermissionsTabTypes,
+    ManagePermissionsTableType,
+    ManagePermissionsTabType,
 } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
@@ -114,14 +115,16 @@ watch(
 );
 
 // Available tab keys and their visibility conditions
-const tabs: ManagePermissionsTabTypes[] = [
+const tabs: ManagePermissionsTabType[] = [
     {
-        key: AdminRoleAuthGroup.FamAdmin,
+        // Fam Application Admins Table
+        key: "FAM_APP_ADMIN",
         visible: computed(() => selectedApp.value?.id === 1),
         icon: UserIcon as Component,
     },
     {
-        key: AdminRoleAuthGroup.AppAdmin,
+        // App Specific User Table
+        key: "APP_USER",
         visible: computed(
             () =>
                 isSelectedAppAuthorized(
@@ -138,7 +141,8 @@ const tabs: ManagePermissionsTabTypes[] = [
         icon: UserIcon as Component,
     },
     {
-        key: AdminRoleAuthGroup.DelegatedAdmin,
+        // Delegated Admin table
+        key: "DELEGATED_ADMIN",
         visible: computed(
             () =>
                 // DelegatedAdminFeatureFlag
@@ -236,8 +240,8 @@ const onTabChange = (event: TabViewChangeEvent) => {
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
-    FAM_ADMIN: "Application admins",
-    APP_ADMIN: "Users",
+    FAM_APP_ADMIN: "Application admins",
+    APP_USER: "Users",
     DELEGATED_ADMIN: "Delegated admins",
 };
 
@@ -290,7 +294,7 @@ onUnmounted(() => {
                     <TabPanel
                         v-for="tab in visibleTabs"
                         :key="tab.key"
-                        :header="tabHeaders[tab.key as AdminRoleAuthGroup]"
+                        :header="tabHeaders[tab.key as ManagePermissionsTableType]"
                     >
                         <template #header>
                             <component :is="tab.icon" />
@@ -298,7 +302,7 @@ onUnmounted(() => {
                         <ManagePermissionsTable
                             :key="selectedApp.id"
                             class="tab-table"
-                            :auth-group="tab.key"
+                            :table-type="tab.key"
                             :app-name="
                                 selectedApp.description ?? selectedApp.name
                             "

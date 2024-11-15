@@ -1,12 +1,16 @@
 import type { Component, ComputedRef } from "vue";
-import type { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 
-export type ManagePermissionsTabTypes = {
-    key: AdminRoleAuthGroup;
+export type ManagePermissionsTableType =
+    | "FAM_APP_ADMIN"
+    | "APP_USER"
+    | "DELEGATED_ADMIN";
+
+export type ManagePermissionsTabType = {
+    key: ManagePermissionsTableType;
     visible: ComputedRef<boolean>;
     icon: Component;
 };
 
 export type ManagePermissionsTabHeaderType = {
-    [key in AdminRoleAuthGroup]: string;
+    [key in ManagePermissionsTableType]: string;
 };
