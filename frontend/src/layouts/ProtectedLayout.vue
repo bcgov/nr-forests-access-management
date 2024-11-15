@@ -30,6 +30,7 @@ const termsAndConditionQuery = useQuery({
                 .validateUserRequiresAcceptTermsAndConditions()
                 .then((res) => res.data);
         } else {
+            // IDIR user does not need to be validated
             return false;
         }
     },
