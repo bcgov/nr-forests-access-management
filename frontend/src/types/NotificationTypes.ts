@@ -2,7 +2,7 @@ export type SeverityType = "success" | "warn" | "error";
 
 export const Severity = {
     Success: "success" as SeverityType,
-    Warning: "warn" as SeverityType,
+    Warn: "warn" as SeverityType,
     Error: "error" as SeverityType,
 } as const;
 

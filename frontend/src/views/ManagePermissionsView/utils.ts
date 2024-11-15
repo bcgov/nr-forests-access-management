@@ -14,6 +14,7 @@ import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes"
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
+import { Severity } from "../../types/NotificationTypes";
 
 // Define a type guard to check if the role is FamRoleWithClientSchema
 function isFamRoleWithClientSchema(
@@ -32,7 +33,7 @@ export const generateAppSuccessNotifications = (
 
     if (data.email_sending_status === "SENT_TO_EMAIL_SERVICE_FAILURE") {
         notifications.push({
-            serverity: "error",
+            serverity: Severity.Error,
             message: `
             Failed to send email to ${email}. Contact them and tell them permissions have been granted.`,
             hasFullMsg: false,
@@ -80,7 +81,7 @@ export const generateAppSuccessNotifications = (
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
         notifications.push({
-            serverity: "success",
+            serverity: Severity.Success,
             message: `
             ${formattedUserName} was successfully ${actionTerm} organization${
                 successClientList.length > 1 ? "s" : ""
@@ -127,7 +128,7 @@ export const generateAppSuccessNotifications = (
     // Success notifications for concrete roles
     if (!successClientList.length && successRoleList.length) {
         notifications.push({
-            serverity: "success",
+            serverity: Severity.Success,
             message: `
             ${formattedUserName} was successfully ${actionTerm} the role ${successRoleList[0].display_name}
             `,
@@ -143,7 +144,7 @@ export const generateAppSuccessNotifications = (
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
         notifications.push({
-            serverity: "error",
+            serverity: Severity.Error,
             message: `
             ${formattedUserName} ${actionTerm} organization${
                 conflictClientList.length > 1 ? "s" : ""
@@ -191,7 +192,7 @@ export const generateAppSuccessNotifications = (
     // Conflict notifications for Concrete roles
     if (!conflictClientList.length && conflictRoleList.length) {
         notifications.push({
-            serverity: "error",
+            serverity: Severity.Error,
             message: `
             ${formattedUserName} ${actionTerm} the role ${conflictRoleList[0].display_name}
             `,
@@ -214,7 +215,7 @@ export const generateAppErrorNotifications = (
     const roleName = role?.display_name;
 
     return {
-        serverity: "error",
+        serverity: Severity.Error,
         message: `
         Failed to add ${userFullName} with ${roleName} for organization${
             forestClients.length > 1 ? "s" : ""
@@ -261,7 +262,7 @@ export const generateFamNotification = (
     isSuccess: boolean,
     message: string
 ): PermissionNotificationType => ({
-    serverity: isSuccess ? "success" : "error",
+    serverity: isSuccess ? Severity.Success : Severity.Error,
     message,
     hasFullMsg: false,
 });

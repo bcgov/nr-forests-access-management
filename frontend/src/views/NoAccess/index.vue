@@ -3,6 +3,7 @@ import LogoutIcon from "@carbon/icons-vue/es/logout/16";
 import Button from "@/components/UI/Button.vue";
 import useAuth from "@/composables/useAuth";
 import NotificationMessage from "@/components/UI/NotificationMessage.vue";
+import { Severity } from "@/types/NotificationTypes";
 
 const auth = useAuth();
 </script>
@@ -11,7 +12,7 @@ const auth = useAuth();
     <div class="no-access-container">
         <div class="no-access-content">
             <NotificationMessage
-                severity="error"
+                :severity="Severity.Error"
                 message=" You do not have access in FAM"
             />
             <Button

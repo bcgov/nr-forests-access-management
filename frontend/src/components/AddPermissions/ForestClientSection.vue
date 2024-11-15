@@ -10,7 +10,10 @@ import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
 import { computed, h, ref, watch } from "vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
-import type { ForestClientNotificationType } from "@/types/NotificationTypes";
+import {
+    Severity,
+    type ForestClientNotificationType,
+} from "@/types/NotificationTypes";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
 
 const props = withDefaults(
@@ -52,27 +55,27 @@ const notActiveClientNumbers = ref<string[]>([]);
 const notifications = computed<ForestClientNotificationType[]>(() => [
     {
         type: "Duplicate",
-        severity: "warn",
+        severity: Severity.Warn,
         clientNumbers: duplicateClientNumbers.value,
     },
     {
         type: "Error",
-        severity: "error",
+        severity: Severity.Error,
         clientNumbers: errorClientNumbers.value,
     },
     {
         type: "NotExist",
-        severity: "error",
+        severity: Severity.Error,
         clientNumbers: notExistClientNumbers.value,
     },
     {
         type: "NotActive",
-        severity: "error",
+        severity: Severity.Error,
         clientNumbers: notActiveClientNumbers.value,
     },
     {
         type: "Invalid",
-        severity: "error",
+        severity: Severity.Error,
         clientNumbers: invalidClientNumbers.value,
     },
 ]);

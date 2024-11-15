@@ -8,6 +8,7 @@ import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
+import { Severity } from "../../types/NotificationTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -258,7 +259,7 @@ export const createNotification = <T>(
         : context.errorTemplate(variables, error as Error);
 
     return {
-        serverity: success ? "success" : "error",
+        serverity: success ? Severity.Success : Severity.Error,
         message,
         hasFullMsg: false,
     };
