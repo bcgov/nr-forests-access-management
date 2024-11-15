@@ -24,10 +24,15 @@ const router = useRouter();
  */
 const termsAndConditionQuery = useQuery({
     queryKey: ["user_terms_conditions", "user:validate"],
-    queryFn: () =>
-        AppActlApiService.userTermsAndConditionsApi
-            .validateUserRequiresAcceptTermsAndConditions()
-            .then((res) => res.data),
+    queryFn: () => {
+        if (auth.authState.famLoginUser?.idpProvider === "bceidbusiness") {
+            return AppActlApiService.userTermsAndConditionsApi
+                .validateUserRequiresAcceptTermsAndConditions()
+                .then((res) => res.data);
+        } else {
+            return false;
+        }
+    },
 });
 
 watch(termsAndConditionQuery.status, () => {
