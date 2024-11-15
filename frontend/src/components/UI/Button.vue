@@ -6,7 +6,7 @@ import Spinner from "@/components/UI/Spinner.vue";
 defineProps<{
     label?: string;
     name?: string;
-    className?: string;
+    className?: string; // Custom class to replace default class
     severity?: ButtonProps["severity"];
     outlined?: boolean;
     link?: boolean;
