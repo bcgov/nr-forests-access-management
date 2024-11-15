@@ -42,19 +42,16 @@ endPoint = f"{apiPrefix}/user_role_assignment"
 ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
 
 @pytest.fixture(scope="function")
-def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mocker):
+def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mock_verified_target_user):
     # Delete user/role assignment related to "get_verified_target_user" is a
     # special case (not as FastAPI dependency), and needs to be mocked
     # individually at function.
-    mocker.patch(
-        "api.app.routers.router_guards.get_verified_target_user",
-        return_value=TargetUserSchema(
-            **{
-                **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-                "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
-            }
-        )
-    )
+    mock_verified_target_user(TargetUserSchema(
+        **{
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
+        }
+    ))
 
 # ------------------ test create user role assignment ----------------------- #
 

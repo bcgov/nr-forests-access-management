@@ -202,6 +202,27 @@ def override_depends__get_verified_target_user(test_client_fixture):
 
 
 @pytest.fixture(scope="function")
+def mock_verified_target_user(mocker):
+    """
+    This fixture has the same purpose but different than similar fixture 'override_depends__get_verified_target_user'
+    on testing usage.
+    It mocks the return result from idim validation of the target user. However, this is not overriding the FastAPI
+    dependency.
+    For example:
+    Delete user/role assignment related to "get_verified_target_user" is a special case (not as FastAPI dependency),
+    and needs to be mocked individually at function.
+    """
+
+    def _mock_verified_target_user(mocked_user: TargetUserSchema):
+        mocker.patch(
+            "api.app.routers.router_guards.get_verified_target_user",
+            return_value=mocked_user
+        )
+
+    return _mock_verified_target_user
+
+
+@pytest.fixture(scope="function")
 def create_test_user_role_assignments(
     test_client_fixture, override_depends__get_verified_target_user
 ):
