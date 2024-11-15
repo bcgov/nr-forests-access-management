@@ -33,7 +33,7 @@ import {
     TABLE_ROWS_PER_PAGE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
-} from "@/store/Constants";
+} from "@/constants/constants";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import {
     AddAppPermissionRoute,

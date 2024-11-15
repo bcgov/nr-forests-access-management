@@ -16,7 +16,7 @@ import {
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
-} from "@/store/Constants";
+} from "@/constants/constants";
 import { getPermissionTableData } from "./utils";
 
 const myPermissiosFilters = ref({

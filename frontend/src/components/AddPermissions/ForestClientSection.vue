@@ -14,7 +14,7 @@ import {
     Severity,
     type ForestClientNotificationType,
 } from "@/types/NotificationTypes";
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/store/Constants";
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
 
 const props = withDefaults(
     defineProps<{
