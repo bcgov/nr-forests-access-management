@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Skeleton for <p> elements
+
 import Skeleton from "primevue/skeleton";
 </script>
 <template>
