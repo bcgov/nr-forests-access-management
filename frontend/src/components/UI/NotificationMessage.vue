@@ -24,8 +24,6 @@ const displayMessage = computed(() => {
         return props.message;
     }
 });
-
-const closeEvents = props.onClose ? { close: props.onClose } : {};
 </script>
 
 <template>
@@ -36,7 +34,7 @@ const closeEvents = props.onClose ? { close: props.onClose } : {};
             :severity="props.severity"
             :sticky="true"
             :closable="props.closable === undefined ? true : props.closable"
-            v-bind="closeEvents"
+            @close="props.onClose ?? undefined"
         >
             <CheckMarkIcon v-if="props.severity === 'success'" />
             <MisuseIcon v-else-if="props.severity === 'error'" />
