@@ -7,6 +7,7 @@ import starlette.testclient
 import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
@@ -16,6 +17,7 @@ from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.models.model import FamPrivilegeChangeAudit, FamUser
 from api.app.schemas.target_user import TargetUserSchema
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from testspg.conftest import create_test_user_role_assignment
@@ -46,7 +48,7 @@ def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mock_verified_tar
     # Delete user/role assignment related to "get_verified_target_user" is a
     # special case (not as FastAPI dependency), and needs to be mocked
     # individually at function.
-    mock_verified_target_user(TargetUserSchema(
+    mock_verified_target_user(mocked_user=TargetUserSchema(
         **{
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
             "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
@@ -1214,3 +1216,64 @@ def test_delete_user_role_assignment_enforce_bceid_terms_conditions(
     assert (
         str(response.json()["detail"]).find(ERROR_CODE_TERMS_CONDITIONS_REQUIRED) != -1
     )
+
+@pytest.mark.parametrize(
+    "target_user_to_test",
+    [
+        ({"user_type": UserType.IDIR, "user_name": "inactive_user", "user_guid": "DUMMYF39B35B4861DUMMY0582B63B112"}),
+        ({"user_type": UserType.BCEID, "user_name": "inactive_user", "user_guid": "DUMMYF39B35B4861DUMMY0582B63B112"})
+    ],
+)
+def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_user(
+    test_client_fixture: starlette.testclient.TestClient,
+    db_pg_session: Session,
+    target_user_to_test,
+    fom_dev_access_admin_token,
+    create_test_user_role_assignments,
+    setup_new_user,
+    mock_verified_target_user,
+    mocker
+):
+    """
+    This tests on scenarios for IDIR requester is able to delete user grant (fam_user_role_xref)
+    on both inactive IDIR users and inactive BCeID users.
+    - The delete user_role_assigment endpoint does not need to verify user identity with IDIM service
+      in this case because the rule for the IDIR app_admin or delegated_admin user is allowed to
+      delete any type of users.
+    """
+    # setup user target user temporarily in db session (to be deleted) .
+    new_target_user: FamUser = setup_new_user(**target_user_to_test)
+
+    # Create users' access grant (fam_user_role_xref) for FOM_DEV application
+    # reviewer role temporary in db session.
+    target_user_schema = TargetUserSchema.model_validate(new_target_user)
+    access_grants_created = create_test_user_role_assignments(
+        fom_dev_access_admin_token, [{
+            "user_name": target_user_schema.user_name,
+            "user_guid": target_user_schema.user_guid,
+            "user_type_code": target_user_schema.user_type_code,
+            "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+        }]
+    )
+    user_role_xref_id = access_grants_created[0]
+
+    # override idim return (as inactive user search) with simulating not_found to raise exceptoin from validator.
+    mocked_verified_target_fn = mock_verified_target_user(mocked_side_effect=HTTPException(
+        status_code=HTTPStatus.BAD_REQUEST,
+        detail={
+            "code": ERROR_CODE_INVALID_REQUEST_PARAMETER,
+            "description": f"Invalid request, cannot find user {target_user_schema.user_name} ",
+        }
+    ))
+    db_delete_fn_spy = mocker.spy(db_pg_session, "delete")
+
+    # execute Delete
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role_xref_id}",
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+
+    assert response.status_code == HTTPStatus.NO_CONTENT  # delete success
+    # verify IDIR app/delegated admin does not need to verify target user with IDIM service.
+    assert mocked_verified_target_fn.call_count == 0
+    assert db_delete_fn_spy.call_count == 1  # db.delete() is called.
