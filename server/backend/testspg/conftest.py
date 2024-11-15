@@ -213,11 +213,17 @@ def mock_verified_target_user(mocker):
     and needs to be mocked individually at function.
     """
 
-    def _mock_verified_target_user(mocked_user: TargetUserSchema):
-        mocker.patch(
-            "api.app.routers.router_guards.get_verified_target_user",
-            return_value=mocked_user
-        )
+    def _mock_verified_target_user(
+        mocked_user: Optional[TargetUserSchema] = None,
+        mocked_side_effect: Optional[Exception] = None
+    ):
+        patch_fn_path = "api.app.routers.router_guards.get_verified_target_user"
+        if mocked_user:
+            return mocker.patch(patch_fn_path, return_value=mocked_user)
+        elif mocked_side_effect:
+            return mocker.patch(patch_fn_path, side_effect=mocked_side_effect)
+        else:
+            raise Exception("Programming Error. Missing arguments")
 
     return _mock_verified_target_user
 
