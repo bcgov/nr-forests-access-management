@@ -5,6 +5,8 @@ import CheckMarkIcon from "@carbon/icons-vue/es/checkmark--filled/20";
 import MisuseIcon from "@carbon/icons-vue/es/misuse/20";
 import WarnIcon from "@carbon/icons-vue/es/warning--filled/20";
 
+// Define the properties, allowing `message` and `fullMessage` to support a VNode,
+// a function that returns a VNode, or a string for flexible content rendering.
 const props = defineProps<{
     message: string | VNode | (() => VNode);
     severity: MessageProps["severity"];
@@ -42,8 +44,9 @@ const displayMessage = computed(() => {
 
             <span class="custom-message-text">
                 <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
+                <!-- Render `displayMessage` based on its type -->
                 <span class="message-content">
-                    <!-- Render displayMessage based on type -->
+                    <!-- If `displayMessage` is a function, invoke it to get the VNode -->
                     <component
                         :is="
                             typeof displayMessage === 'function'
@@ -52,8 +55,8 @@ const displayMessage = computed(() => {
                         "
                         v-if="typeof displayMessage === 'function'"
                     />
+                    <!-- If `displayMessage` is a VNode object, render it directly -->
                     <template v-else-if="typeof displayMessage === 'object'">
-                        <!-- Render VNode directly -->
                         <component :is="displayMessage" />
                     </template>
                     <template v-else>
