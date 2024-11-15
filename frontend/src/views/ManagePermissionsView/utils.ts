@@ -1,16 +1,14 @@
 import type { AddAppPermissionRequestType } from "@/types/RouteTypes";
 import type {
     FamAccessControlPrivilegeResponse,
-    FamForestClientBase,
     FamRoleWithClientDto,
     FamAccessControlPrivilegeCreateResponse,
 } from "fam-admin-mgmt-api/model";
 import type {
-    FamForestClientSchema,
     FamRoleWithClientSchema,
     FamUserRoleAssignmentRes,
 } from "fam-app-acsctl-api/model";
-import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";

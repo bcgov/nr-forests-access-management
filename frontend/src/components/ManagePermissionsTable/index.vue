@@ -41,7 +41,7 @@ import {
     UserDetailsRoute,
 } from "@/router/routes";
 import { selectedApp } from "@/store/ApplicationState";
-import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
 import {
     NewAppAdminQueryParamKey,

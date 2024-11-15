@@ -6,7 +6,7 @@ import {
 } from "fam-admin-mgmt-api/model";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatAxiosError } from "@/utils/ApiUtils";
-import type { PermissionNotificationType } from "@/types/ManagePermissionsTypes";
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
 import { Severity } from "../../types/NotificationTypes";
 

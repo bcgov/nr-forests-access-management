@@ -26,10 +26,10 @@ import {
 } from "@/utils/ApiUtils";
 import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import type {
-    PermissionNotificationType,
     ManagePermissionsTabHeaderType,
     ManagePermissionsTabTypes,
 } from "@/types/ManagePermissionsTypes";
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
 import {
     AppAdminErrorQuerykey,
