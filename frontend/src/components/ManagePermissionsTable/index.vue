@@ -21,6 +21,7 @@ import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Chip from "@/components/UI/Chip.vue";
+import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import {
     AdminMgmtApiService,
     AppActlApiService,
@@ -62,7 +63,6 @@ import {
     deleteFamPermissionNotificationContext,
     NEW_ACCESS_STYLE_IN_TABLE,
 } from "./utils";
-import type { ManagePermissionsTableType } from "@/types/ManagePermissionsTypes";
 
 const router = useRouter();
 const route = useRoute();
@@ -84,7 +84,7 @@ const newDelegatedAdminIds = route.query[NewDelegatedAddminQueryParamKey]
     : [];
 
 const props = defineProps<{
-    tableType: ManagePermissionsTableType;
+    tableType: ManagePermissionsTableEnum;
     appName: string;
     appId: number;
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
@@ -98,7 +98,7 @@ const appAdminQuery = useQuery({
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === "FAM_APP_ADMIN",
+    enabled: props.tableType === ManagePermissionsTableEnum.FamAppAdmin,
     select: (data) => {
         // Move matching IDs to the start of the array
         const sortedByUserName = data.sort((a, b) =>
@@ -123,7 +123,7 @@ const appUserQuery = useQuery({
             .getFamApplicationUserRoleAssignment(props.appId)
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === "APP_USER",
+    enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
     select: (data) => {
         const sortedByUserName = data.sort((a, b) =>
             a.user.user_name.localeCompare(b.user.user_name)
@@ -149,7 +149,7 @@ const delegatedAdminQuery = useQuery({
             .then((res) => res.data),
     refetchOnMount: "always",
     enabled:
-        props.tableType === "DELEGATED_ADMIN" &&
+        props.tableType === ManagePermissionsTableEnum.DelegatedAdmin &&
         // DelegatedAdminFeatureFlag
         !environment.isProdEnvironment(),
     select: (data) => {
@@ -181,11 +181,11 @@ const handleSearchChange = (newValue: string) => {
 
 const getTableRows = () => {
     switch (props.tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.data.value ?? [];
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value ?? [];
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value ?? [];
         default:
             return [];
@@ -195,11 +195,11 @@ const getTableRows = () => {
 // Get the query loading status
 const isQueryLoading = (): boolean => {
     switch (props.tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.isLoading.value;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isLoading.value;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.isLoading.value;
         default:
             return false;
@@ -209,11 +209,11 @@ const isQueryLoading = (): boolean => {
 // Get the query fetching status
 const isQueryError = (): boolean => {
     switch (props.tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.isError.value;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isError.value;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.isError.value;
         default:
             return false;
@@ -223,13 +223,13 @@ const isQueryError = (): boolean => {
 const getQueryErrorValue = () => {
     let error = null;
     switch (props.tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             error = appAdminQuery.error.value;
             break;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             error = appUserQuery.error.value;
             break;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             error = delegatedAdminQuery.error.value;
             break;
     }
@@ -243,9 +243,9 @@ const getQueryErrorValue = () => {
 };
 
 const handleAddButton = () => {
-    if (props.tableType === "FAM_APP_ADMIN") {
+    if (props.tableType === ManagePermissionsTableEnum.FamAppAdmin) {
         router.push({ name: AddFamPermissionRoute.name });
-    } else if (props.tableType === "APP_USER") {
+    } else if (props.tableType === ManagePermissionsTableEnum.AppUser) {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -253,7 +253,7 @@ const handleAddButton = () => {
                 applicationId: props.appId,
             },
         });
-    } else if (props.tableType === "DELEGATED_ADMIN") {
+    } else if (props.tableType === ManagePermissionsTableEnum.DelegatedAdmin) {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
@@ -279,9 +279,9 @@ const confirm = useConfirm();
 const confirmTextProps = ref<ConfirmTextType>();
 
 const deleteAppUserRoleMutation = useMutation({
-    mutationFn: (admin: FamApplicationUserRoleAssignmentGetSchema) =>
+    mutationFn: (appUser: FamApplicationUserRoleAssignmentGetSchema) =>
         AppActlApiService.userRoleAssignmentApi.deleteUserRoleAssignment(
-            admin.user_role_xref_id
+            appUser.user_role_xref_id
         ),
     onSuccess: (_data, variables) => {
         props.addNotifications([
@@ -406,20 +406,20 @@ const handleDelete = (
         privilegeObject.user.last_name
     );
 
-    if (props.tableType === "APP_USER") {
-        const admin =
+    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+        const appUser =
             privilegeObject as FamApplicationUserRoleAssignmentGetSchema;
         setConfirmTextProps(
             userName,
-            admin.role.display_name ?? "",
+            appUser.role.display_name ?? "",
             props.appName
         );
         showConfirmDialog("Remove Access", () =>
-            deleteAppUserRoleMutation.mutate(admin)
+            deleteAppUserRoleMutation.mutate(appUser)
         );
     }
 
-    if (props.tableType === "DELEGATED_ADMIN") {
+    if (props.tableType === ManagePermissionsTableEnum.DelegatedAdmin) {
         const delegatedAdmin =
             privilegeObject as FamAccessControlPrivilegeGetResponse;
         setConfirmTextProps(
@@ -432,7 +432,7 @@ const handleDelete = (
         );
     }
 
-    if (props.tableType === "FAM_APP_ADMIN") {
+    if (props.tableType === ManagePermissionsTableEnum.FamAppAdmin) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -449,20 +449,20 @@ const highlightNewUserAccessRow = (
         | FamAppAdminGetResponse
 ): object | undefined => {
     switch (props.tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             const famAdin = rowData as FamAppAdminGetResponse;
             if (newFamAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             const appAdmin =
                 rowData as FamApplicationUserRoleAssignmentGetSchema;
             if (newAppUserIds.includes(appAdmin.user_role_xref_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             const delegatedAdmin =
                 rowData as FamAccessControlPrivilegeGetResponse;
             if (

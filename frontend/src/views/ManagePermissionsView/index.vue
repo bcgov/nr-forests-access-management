@@ -25,10 +25,10 @@ import {
     isSelectedAppAuthorized,
 } from "@/utils/ApiUtils";
 import ManagePermissionsTable from "@/components/ManagePermissionsTable";
-import type {
-    ManagePermissionsTabHeaderType,
-    ManagePermissionsTableType,
-    ManagePermissionsTabType,
+import {
+    ManagePermissionsTableEnum,
+    type ManagePermissionsTabHeaderType,
+    type ManagePermissionsTabType,
 } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
@@ -118,13 +118,13 @@ watch(
 const tabs: ManagePermissionsTabType[] = [
     {
         // Fam Application Admins Table
-        key: "FAM_APP_ADMIN",
+        key: ManagePermissionsTableEnum.FamAppAdmin,
         visible: computed(() => selectedApp.value?.id === 1),
         icon: UserIcon as Component,
     },
     {
         // App Specific User Table
-        key: "APP_USER",
+        key: ManagePermissionsTableEnum.AppUser,
         visible: computed(
             () =>
                 isSelectedAppAuthorized(
@@ -142,7 +142,7 @@ const tabs: ManagePermissionsTabType[] = [
     },
     {
         // Delegated Admin table
-        key: "DELEGATED_ADMIN",
+        key: ManagePermissionsTableEnum.DelegatedAdmin,
         visible: computed(
             () =>
                 // DelegatedAdminFeatureFlag
@@ -240,9 +240,9 @@ const onTabChange = (event: TabViewChangeEvent) => {
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
-    FAM_APP_ADMIN: "Application admins",
-    APP_USER: "Users",
-    DELEGATED_ADMIN: "Delegated admins",
+    [ManagePermissionsTableEnum.FamAppAdmin]: "Application admins",
+    [ManagePermissionsTableEnum.AppUser]: "Users",
+    [ManagePermissionsTableEnum.DelegatedAdmin]: "Delegated admins",
 };
 
 const onNotificationClose = (idx: number) => {
@@ -294,7 +294,7 @@ onUnmounted(() => {
                     <TabPanel
                         v-for="tab in visibleTabs"
                         :key="tab.key"
-                        :header="tabHeaders[tab.key as ManagePermissionsTableType]"
+                        :header="tabHeaders[tab.key]"
                     >
                         <template #header>
                             <component :is="tab.icon" />

@@ -7,8 +7,8 @@ import { formatUserNameAndId } from "@/utils/UserUtils";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
-import { Severity } from "../../types/NotificationTypes";
-import type { ManagePermissionsTableType } from "../../types/ManagePermissionsTypes";
+import { Severity } from "@/types/NotificationTypes";
+import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -36,14 +36,14 @@ export const filterList = [
  */
 export const getTableHeaderTitle = (
     appName: string,
-    tableType: ManagePermissionsTableType
+    tableType: ManagePermissionsTableEnum
 ): string => {
     switch (tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return `${appName} users`;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return `${appName} users`;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return `${appName} delegated administrators`;
         default:
             return `${appName} users`;
@@ -55,18 +55,18 @@ export const getTableHeaderTitle = (
  */
 export const getTableHeaderDescription = (
     appName: string,
-    tableType: ManagePermissionsTableType
+    tableType: ManagePermissionsTableEnum
 ): string => {
     switch (tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return `
             This table shows all the delegated administrators in ${appName} and the roles they are allowed to manage for their users
             `;
@@ -79,14 +79,14 @@ export const getTableHeaderDescription = (
  * Generates the label for a grant button based on the authorization group.
  */
 export const getGrantButtonLabel = (
-    tableType: ManagePermissionsTableType
+    tableType: ManagePermissionsTableEnum
 ): string => {
     switch (tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return "Add application admin";
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return "Add user permission";
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return "Create delegated admin";
         default:
             return "";
@@ -96,9 +96,9 @@ export const getGrantButtonLabel = (
 /**
  * Generates a list of headers based on the authorization group used for skeleton.
  */
-export const getHeaders = (tableType: ManagePermissionsTableType): string[] => {
+export const getHeaders = (tableType: ManagePermissionsTableEnum): string[] => {
     switch (tableType) {
-        case "FAM_APP_ADMIN":
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return [
                 "User Name",
                 "Domain",
@@ -109,7 +109,7 @@ export const getHeaders = (tableType: ManagePermissionsTableType): string[] => {
                 "Role",
                 "Action",
             ];
-        case "APP_USER":
+        case ManagePermissionsTableEnum.AppUser:
             return [
                 "User Name",
                 "Domain",
@@ -118,7 +118,7 @@ export const getHeaders = (tableType: ManagePermissionsTableType): string[] => {
                 "Role",
                 "Action",
             ];
-        case "DELEGATED_ADMIN":
+        case ManagePermissionsTableEnum.DelegatedAdmin:
             return [
                 "User Name",
                 "Domain",

@@ -1,16 +1,17 @@
 import type { Component, ComputedRef } from "vue";
 
-export type ManagePermissionsTableType =
-    | "FAM_APP_ADMIN"
-    | "APP_USER"
-    | "DELEGATED_ADMIN";
+export enum ManagePermissionsTableEnum {
+    FamAppAdmin = "FAM_APP_ADMIN",
+    AppUser = "APP_USER",
+    DelegatedAdmin = "DELEGATED_ADMIN",
+}
 
 export type ManagePermissionsTabType = {
-    key: ManagePermissionsTableType;
+    key: ManagePermissionsTableEnum;
     visible: ComputedRef<boolean>;
     icon: Component;
 };
 
 export type ManagePermissionsTabHeaderType = {
-    [key in ManagePermissionsTableType]: string;
+    [key in ManagePermissionsTableEnum]: string;
 };

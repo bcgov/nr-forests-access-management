@@ -1,17 +1,15 @@
 import type { MessageProps } from "primevue/message";
 import type { VNode } from "vue";
 
-export type SeverityType = "success" | "warn" | "error";
-
-export const Severity = {
-    Success: "success" as SeverityType,
-    Warn: "warn" as SeverityType,
-    Error: "error" as SeverityType,
-} as const;
+export enum Severity {
+    Success = "success",
+    Warn = "warn",
+    Error = "error",
+}
 
 export type ForestClientNotificationType = {
     type: "Duplicate" | "Error" | "NotExist" | "NotActive" | "Invalid";
-    severity: SeverityType;
+    severity: Severity;
     clientNumbers: string[];
 };
 
