@@ -98,7 +98,7 @@ const appAdminQuery = useQuery({
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === ManagePermissionsTableEnum.FamAppAdmin,
+    enabled: props.tableType === ManagePermissionsTableEnum.AppAdmin,
     select: (data) => {
         // Move matching IDs to the start of the array
         const sortedByUserName = data.sort((a, b) =>
@@ -181,7 +181,7 @@ const handleSearchChange = (newValue: string) => {
 
 const getTableRows = () => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.FamAppAdmin:
+        case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value ?? [];
@@ -195,7 +195,7 @@ const getTableRows = () => {
 // Get the query loading status
 const isQueryLoading = (): boolean => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.FamAppAdmin:
+        case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.isLoading.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isLoading.value;
@@ -209,7 +209,7 @@ const isQueryLoading = (): boolean => {
 // Get the query fetching status
 const isQueryError = (): boolean => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.FamAppAdmin:
+        case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.isError.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isError.value;
@@ -223,7 +223,7 @@ const isQueryError = (): boolean => {
 const getQueryErrorValue = () => {
     let error = null;
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.FamAppAdmin:
+        case ManagePermissionsTableEnum.AppAdmin:
             error = appAdminQuery.error.value;
             break;
         case ManagePermissionsTableEnum.AppUser:
@@ -243,7 +243,7 @@ const getQueryErrorValue = () => {
 };
 
 const handleAddButton = () => {
-    if (props.tableType === ManagePermissionsTableEnum.FamAppAdmin) {
+    if (props.tableType === ManagePermissionsTableEnum.AppAdmin) {
         router.push({ name: AddFamPermissionRoute.name });
     } else if (props.tableType === ManagePermissionsTableEnum.AppUser) {
         router.push({
@@ -432,7 +432,7 @@ const handleDelete = (
         );
     }
 
-    if (props.tableType === ManagePermissionsTableEnum.FamAppAdmin) {
+    if (props.tableType === ManagePermissionsTableEnum.AppAdmin) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -449,7 +449,7 @@ const highlightNewUserAccessRow = (
         | FamAppAdminGetResponse
 ): object | undefined => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.FamAppAdmin:
+        case ManagePermissionsTableEnum.AppAdmin:
             const famAdin = rowData as FamAppAdminGetResponse;
             if (newFamAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;

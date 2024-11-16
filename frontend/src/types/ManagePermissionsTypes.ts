@@ -1,7 +1,7 @@
 import type { Component, ComputedRef } from "vue";
 
 export enum ManagePermissionsTableEnum {
-    FamAppAdmin = "FAM_APP_ADMIN",
+    AppAdmin = "APP_ADMIN",
     AppUser = "APP_USER",
     DelegatedAdmin = "DELEGATED_ADMIN",
 }

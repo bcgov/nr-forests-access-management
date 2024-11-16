@@ -118,7 +118,7 @@ watch(
 const tabs: ManagePermissionsTabType[] = [
     {
         // Fam Application Admins Table
-        key: ManagePermissionsTableEnum.FamAppAdmin,
+        key: ManagePermissionsTableEnum.AppAdmin,
         visible: computed(() => selectedApp.value?.id === 1),
         icon: UserIcon as Component,
     },
@@ -240,7 +240,7 @@ const onTabChange = (event: TabViewChangeEvent) => {
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
-    [ManagePermissionsTableEnum.FamAppAdmin]: "Application admins",
+    [ManagePermissionsTableEnum.AppAdmin]: "Application admins",
     [ManagePermissionsTableEnum.AppUser]: "Users",
     [ManagePermissionsTableEnum.DelegatedAdmin]: "Delegated admins",
 };
