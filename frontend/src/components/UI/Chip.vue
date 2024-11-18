@@ -16,7 +16,8 @@ const customColorClass =
 <style lang="scss">
 .fam-chip {
     width: fit-content;
-    max-height: 1.5rem;
+    height: 1.5rem;
+    min-height: fit-content;
     display: flex;
     flex-direction: row;
     justify-content: center;
