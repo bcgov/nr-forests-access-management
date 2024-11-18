@@ -59,12 +59,12 @@ watch(termsAndConditionQuery.status, () => {
 </script>
 
 <template>
-    <div class="proctected-layout-container">
+    <div id="proctected-layout-container">
         <!-- Show layout and content -->
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
         <SideNav />
-        <div class="main" id="main">
+        <div class="main">
             <main>
                 <Spinner
                     v-if="termsAndConditionQuery.isLoading.value"
@@ -78,7 +78,7 @@ watch(termsAndConditionQuery.status, () => {
     </div>
 </template>
 <style lang="scss">
-.proctected-layout-container {
+#proctected-layout-container {
     .spinner-container {
         display: flex;
         width: 100%;

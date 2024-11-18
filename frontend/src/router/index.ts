@@ -12,8 +12,16 @@ export const router = createRouter({
             return { ...route, beforeEnter: authGuard }; // Apply auth guard to all other routes
         }
     }),
-    scrollBehavior() {
-        // Scroll to top on all route navigation
-        return { top: 100, el: "#main" };
+    scrollBehavior(to) {
+        // Check if the route has the `protectedLayoutMeta`
+        if (to.meta?.layout === "ProtectedLayout") {
+            return {
+                top: 0,
+                behavior: "smooth",
+                el: "#proctected-layout-container",
+            };
+        }
+        // Default behavior (no scrolling for other routes)
+        return false;
     },
 });

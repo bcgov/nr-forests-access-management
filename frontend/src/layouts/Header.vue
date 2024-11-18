@@ -101,7 +101,7 @@ li {
     background: $light-background-brand;
 
     padding: 0;
-    z-index: 1;
+    z-index: 10;
     color: $text-on-color;
     .header-title {
         cursor: pointer;
