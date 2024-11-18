@@ -64,7 +64,7 @@ watch(termsAndConditionQuery.status, () => {
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
         <SideNav />
-        <div class="main">
+        <div class="main" id="main">
             <main>
                 <Spinner
                     v-if="termsAndConditionQuery.isLoading.value"

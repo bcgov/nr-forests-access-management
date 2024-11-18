@@ -12,4 +12,8 @@ export const router = createRouter({
             return { ...route, beforeEnter: authGuard }; // Apply auth guard to all other routes
         }
     }),
+    scrollBehavior() {
+        // Scroll to top on all route navigation
+        return { top: 100, el: "#main" };
+    },
 });
