@@ -9,7 +9,8 @@ import testspg.jwt_utils as jwt_utils
 from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_INVALID_REQUEST_PARAMETER,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
-                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
+                               ERROR_CODE_UNKNOWN_STATE, UserType)
 from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
@@ -1219,7 +1220,7 @@ def test_delete_user_role_assignment_enforce_bceid_terms_conditions(
 
 @pytest.mark.parametrize(
     "target_user_to_test",
-    [
+    [   # target on both IDIR/BCeID user types.
         ({"user_type": UserType.IDIR, "user_name": "inactive_user", "user_guid": "DUMMYF39B35B4861DUMMY0582B63B112"}),
         ({"user_type": UserType.BCEID, "user_name": "inactive_user", "user_guid": "DUMMYF39B35B4861DUMMY0582B63B112"})
     ],
@@ -1235,11 +1236,11 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
     mocker
 ):
     """
-    This tests on scenarios for IDIR requester is able to delete user grant (fam_user_role_xref)
-    on both inactive IDIR users and inactive BCeID users.
+    This tests on scenarios for IDIR requester (with appropriate privilege) is able to delete
+    user grant (fam_user_role_xref) on both inactive IDIR users and inactive BCeID users.
     - The delete user_role_assigment endpoint does not need to verify user identity with IDIM service
-      in this case because the rule for the IDIR app_admin or delegated_admin user is allowed to
-      delete any type of users.
+      in this case because the rule for the IDIR app_admin or delegated_admin user is that it is
+      allowed to delete any type of users.
     """
     # setup user target user temporarily in db session (to be deleted) .
     new_target_user: FamUser = setup_new_user(**target_user_to_test)
@@ -1267,13 +1268,72 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
     ))
     db_delete_fn_spy = mocker.spy(db_pg_session, "delete")
 
-    # execute Delete
+    # execute Delete: IDIR requester should be able to delete successfully.
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
     assert response.status_code == HTTPStatus.NO_CONTENT  # delete success
-    # verify IDIR app/delegated admin does not need to verify target user with IDIM service.
+    # verify IDIR app admin DOES NOT need to verify target user with IDIM service.
     assert mocked_verified_target_fn.call_count == 0
     assert db_delete_fn_spy.call_count == 1  # db.delete() is called.
+
+
+def test_delete_user_role_assignment__bceid_requester_cannot_delete_inactive_target_user(
+    test_client_fixture: starlette.testclient.TestClient,
+    db_pg_session: Session,
+    test_rsa_key,
+    fom_dev_access_admin_token,
+    override_depends__enforce_bceid_terms_conditions_guard,
+    create_test_user_role_assignments,
+    setup_new_user,
+    mock_idim_proxy_integratioin_service,
+    mocker
+):
+    """
+    This tests on scenarios for BCeID requester should not be able to delete user grant (fam_user_role_xref)
+    on inactive BCeID users.
+    - In this case, due to rule BCeID delegated admin shuld only be able to manage BCeID users within its
+      organization, the deletion process need to verify target BCeID user's identity with IDIM service
+      (specifically verify if they are the same organization). However, IDIM service will return not found
+      for the already inactive user, our system is intended to raise exception during user verify validation.
+    """
+    dummy_bceid_user_info = {
+        "user_type": UserType.BCEID, "user_name": "inactive_user", "user_guid": "DUMMYF39B35B4861DUMMY0582B63B112"
+    }
+    # setup user target user temporarily in db session (to be deleted) .
+    new_target_user: FamUser = setup_new_user(**dummy_bceid_user_info)
+
+    # Create target users' access grant (fam_user_role_xref) for FOM_DEV application
+    # reviewer role temporary in db session.
+    target_user_schema = TargetUserSchema.model_validate(new_target_user)
+    access_grants_created = create_test_user_role_assignments(
+        fom_dev_access_admin_token, [{
+            "user_name": target_user_schema.user_name,
+            "user_guid": target_user_schema.user_guid,
+            "user_type_code": target_user_schema.user_type_code,
+            "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+        }]
+    )
+    user_role_xref_id = access_grants_created[0]
+
+    override_depends__enforce_bceid_terms_conditions_guard()
+    mock_idim_proxy_integratioin_service.search_business_bceid.return_value = {
+        'found': False, 'userId': new_target_user.user_name
+    }
+    db_delete_fn_spy = mocker.spy(db_pg_session, "delete")
+
+    # execute Delete: BCeID requester is trying to delete inactive user/role should have exception raised.
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key,
+        roles=[],
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+    )
+    response = test_client_fixture.delete(f"{endPoint}/{user_role_xref_id}", headers=jwt_utils.headers(token))
+
+    assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+    assert response.json() is not None
+    assert response.json()["detail"]["code"] == ERROR_CODE_UNKNOWN_STATE
+    assert f"Unable to verify user {target_user_schema.user_name}" in response.json()["detail"]["description"]
+    assert db_delete_fn_spy.call_count == 0  # db.delete() should not be called.

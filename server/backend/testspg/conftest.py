@@ -346,3 +346,13 @@ def mock_forest_client_integration_service():
         autospec=True,
     ) as m:
         yield m.return_value  # Very important to get instance of mocked class.
+
+
+@pytest.fixture(scope="function", autouse=True)
+def mock_idim_proxy_integratioin_service():
+    # Mocked dependency class object
+    with patch(
+        "api.app.integration.idim_proxy.IdimProxyService",
+        autospec=True,
+    ) as m:
+        yield m.return_value  # Very important to get instance of mocked class.

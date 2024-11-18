@@ -1,27 +1,22 @@
-import os
 import copy
 import logging
+import os
 
 import pytest
 from api.app.constants import IdimSearchUserParamType
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (
-    IdimProxyBceidSearchParamSchema,
-    IdimProxySearchParamSchema,
-    RequesterSchema,
-)
+from api.app.schemas import (IdimProxyBceidSearchParamSchema,
+                             IdimProxySearchParamSchema, RequesterSchema)
 from fastapi import HTTPException
 from requests import HTTPError
-from testspg.constants import (
-    TEST_BCEID_REQUESTER_DICT,
-    TEST_IDIR_REQUESTER_DICT,
-    USER_GUID_BCEID_LOAD_3_TEST,
-    USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
-    USER_NAME_BCEID_LOAD_2_TEST,
-    USER_NAME_BCEID_LOAD_3_TEST,
-    USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
-)
+from testspg.constants import (TEST_BCEID_REQUESTER_DICT,
+                               TEST_IDIR_REQUESTER_DICT,
+                               USER_GUID_BCEID_LOAD_3_TEST,
+                               USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+                               USER_NAME_BCEID_LOAD_2_TEST,
+                               USER_NAME_BCEID_LOAD_3_TEST,
+                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -110,14 +105,24 @@ class TestIdimProxyServiceClass(object):
 
     # --- Performs search_business_bceid user (IDIR Requester/BCeID Requester) ---
 
-    def test_search_bceid__user_not_exist_not_found(self):
+    def test_search_bceid__idir_requester_user_not_exist_not_found(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
-        not_exists_idir_user = "USERNOTEXISTS"
-        search_params.searchValue = not_exists_idir_user
+        search_params.searchValue = "USERNOTEXISTS"
         search_result = idim_proxy_api.search_business_bceid(search_params)
 
         assert search_result["found"] == False
+        assert search_result["userId"] == search_params.searchValue
+
+    def test_search_bceid__bceid_requester_user_not_exist_not_found(self):
+        # test bceid search for unknow bceid
+        idim_proxy_api = IdimProxyService(self.requester_business_bceid)
+        search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
+        search_params.searchValue = "USERNOTEXISTS"
+        search_result = idim_proxy_api.search_business_bceid(search_params)
+
+        assert search_result["found"] == False
+        assert search_result["userId"] == search_params.searchValue
 
     def test_search_bceid__idir_requester_by_userid_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
