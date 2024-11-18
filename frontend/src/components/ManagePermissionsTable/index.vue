@@ -564,23 +564,23 @@ const highlightNewUserAccessRow = (
             <Column header="Email" field="user.email" sortable />
 
             <Column
-                v-if="tableType === 'FAM_APP_ADMIN'"
+                v-if="tableType === ManagePermissionsTableEnum.AppAdmin"
                 header="Application"
                 field="application.application_description"
                 sortable
             />
 
             <Column
-                v-if="tableType === 'FAM_APP_ADMIN'"
+                v-if="tableType === ManagePermissionsTableEnum.AppAdmin"
                 header="Environment"
                 field="application.app_environment"
                 sortable
             />
 
             <Column
-                v-if="tableType !== 'FAM_APP_ADMIN'"
+                v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
                 :field="
-                    tableType === 'APP_USER'
+                    tableType === ManagePermissionsTableEnum.AppUser
                         ? 'role.forest_client.forest_client_number'
                         : 'role.client_number.forest_client_number'
                 "
@@ -590,18 +590,18 @@ const highlightNewUserAccessRow = (
 
             <Column
                 :header="
-                    tableType === 'DELEGATED_ADMIN'
+                    tableType === ManagePermissionsTableEnum.DelegatedAdmin
                         ? 'Role Enabled To Assign'
                         : 'Role'
                 "
                 field="roleDisplay"
-                :sortable="tableType !== 'FAM_APP_ADMIN'"
+                :sortable="tableType !== ManagePermissionsTableEnum.AppAdmin"
                 sort-field="role.display_name"
             >
                 <template #body="{ data }">
                     <Chip
                         :label="
-                            tableType === 'FAM_APP_ADMIN'
+                            tableType === ManagePermissionsTableEnum.AppAdmin
                                 ? 'Admin'
                                 : data.role.display_name
                         "
@@ -612,7 +612,7 @@ const highlightNewUserAccessRow = (
             <Column header="Action">
                 <template #body="{ data }">
                     <button
-                        v-if="tableType !== 'FAM_APP_ADMIN'"
+                        v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
                         title="User permission history"
                         class="btn btn-icon"
                         @click="navigateToUserDetails(data.user_id)"
