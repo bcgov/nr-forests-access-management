@@ -10,7 +10,7 @@ defineProps<{
 <template>
     <div class="breadcrumbs-container">
         <template v-for="crumb in crumbs">
-            <RouterLink class="crumb-label" :to="crumb.path">
+            <RouterLink class="crumb-label" :to="{ name: crumb.routeName }">
                 <span>
                     {{ crumb.label }}
                 </span>

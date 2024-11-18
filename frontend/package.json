@@ -18,6 +18,7 @@
     "dependencies": {
         "@bcgov-nr/nr-theme": "^1.8.9",
         "@carbon/icons-vue": "^10.99.1",
+        "@carbon/themes": "^11.43.0",
         "@carbon/type": "^11.31.0",
         "@tanstack/vue-query": "^5.56.2",
         "aws-amplify": "^5.3.21",
@@ -26,7 +27,6 @@
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "luxon": "^3.5.0",
-        "primeflex": "^3.3.1",
         "primevue": "3.46.0",
         "vee-validate": "^4.12.6",
         "vue": "^3.4.23",

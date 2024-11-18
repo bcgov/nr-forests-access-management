@@ -5,7 +5,7 @@ import {
     PrivilegeDetailsPermissionTypeEnum,
 } from "fam-app-acsctl-api/model";
 import type { PrivilegeDetailsSchema } from "fam-app-acsctl-api/model/privilege-details-schema";
-import Chip from "primevue/chip";
+import Chip from "@/components/UI/Chip.vue";
 
 const props = defineProps<{
     permissionDetails: PrivilegeDetailsSchema;
@@ -77,15 +77,8 @@ const props = defineProps<{
     display: flex;
     flex-direction: row;
 
-    .p-chip {
-        max-height: 1.5rem;
-        background: colors.$blue-10;
+    .fam-chip {
         margin-left: 0.5rem;
-    }
-
-    .p-chip-text {
-        @include type.type-style("label-01");
-        color: colors.$blue-80;
     }
 }
 

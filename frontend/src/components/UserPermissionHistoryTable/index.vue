@@ -7,10 +7,12 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
 import { router } from "@/router";
-import TableSkeleton from "@/components/TableSkeleton";
+import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import DateCol from "@/components/UserPermissionHistoryTable/DateCol.vue";
 import PermissionDetailsCol from "@/components/UserPermissionHistoryTable/PermissionDetailsCol.vue";
 import ChangePerformerCol from "@/components/UserPermissionHistoryTable/ChangePerformerCol.vue";
+import { formatAxiosError } from "@/utils/ApiUtils";
+import ErrorText from "../UI/ErrorText.vue";
 
 const props = defineProps<{
     userId: string;
@@ -56,15 +58,16 @@ const headers = ["Date", "Activity", "Details", "Performed by"];
         v-if="auditHistoryQuery.isFetching.value"
     />
 
-    <!-- Simple error display -->
-    <div v-else-if="auditHistoryQuery.isError.value">
-        Something went wrong.
-        {{
+    <ErrorText
+        v-else-if="auditHistoryQuery.isError.value"
+        :error-msg="
             isAxiosError(auditHistoryQuery.error.value)
-                ? `${auditHistoryQuery.error.value.status}: ${auditHistoryQuery.error.value.message}`
-                : auditHistoryQuery.error.value
-        }}
-    </div>
+                ? `Failed to fetch data. ${formatAxiosError(
+                      auditHistoryQuery.error.value
+                  )}`
+                : 'Failed to fetch data.'
+        "
+    />
 
     <!-- Table with values -->
     <DataTable

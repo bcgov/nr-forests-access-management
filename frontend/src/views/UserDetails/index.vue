@@ -2,11 +2,13 @@
 import { useRoute } from "vue-router";
 import { router } from "@/router";
 import Button from "primevue/button";
+
 import UserSummaryCard from "@/components/UserSummaryCard";
-import PageTitle from "@/components/common/PageTitle.vue";
+import PageTitle from "@/components/UI/PageTitle.vue";
 import UserPermissionHistoryTable from "@/components/UserPermissionHistoryTable";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
+import { ManagePermissionsRoute } from "@/router/routes";
 
 const route = useRoute();
 
@@ -20,14 +22,17 @@ if (!userId || !applicationId) {
 }
 
 const navigateBack = () => {
-    router.push("/");
+    router.push({
+        name: ManagePermissionsRoute.name,
+        query: { appId: applicationId },
+    });
 };
 
 // Breadcrumb configuration
 const crumbs: BreadCrumbType[] = [
     {
         label: "Manage permissions",
-        path: "/",
+        routeName: ManagePermissionsRoute.name!,
     },
 ];
 </script>
@@ -35,10 +40,7 @@ const crumbs: BreadCrumbType[] = [
 <template>
     <div class="user-detail-page-container">
         <BreadCrumbs :crumbs="crumbs" />
-        <PageTitle
-            class="user-detail-page-title"
-            title="User Permissions History"
-        />
+        <PageTitle class="user-detail-page-title" title="Permissions History" />
         <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
         <div class="gray-container">
             <UserPermissionHistoryTable

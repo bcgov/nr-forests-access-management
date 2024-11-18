@@ -1,17 +1,22 @@
 <script setup lang="ts">
-// The default loading spinner.
 import ProgressSpinner from "primevue/progressspinner";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
     ariaLabel?: string;
     loadingText?: string;
+    small?: boolean;
 }>();
+
+const spinnerClass = computed(() => ({
+    "small-spinner": props.small,
+}));
 </script>
 
 <template>
     <div class="spinner-container">
         <ProgressSpinner
-            class="default-loading-spinner"
+            :class="['default-loading-spinner', spinnerClass]"
             :aria-label="ariaLabel ?? 'Page Loading'"
             animationDuration="1s"
             stroke-width="3"
@@ -32,6 +37,10 @@ defineProps<{
             stroke: colors.$blue-60;
             animation: none;
         }
+    }
+
+    .small-spinner {
+        width: 1rem; // Smaller size if "small" is true
     }
 
     .loading-text {

@@ -25,8 +25,8 @@ const layoutComponent = computed(() => {
 </template>
 
 <style lang="scss">
-@import "primeflex/primeflex.css";
 @import "@/assets/styles/styles.scss";
+@import "@/assets/styles/themes.scss";
 @import "primevue/resources/primevue.min.css";
 @import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
 </style>
