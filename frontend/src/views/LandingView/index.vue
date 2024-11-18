@@ -9,7 +9,7 @@ import TreeLogs from "@/assets/images/tree-logs.jpg";
 import useAuth from "@/composables/useAuth";
 
 const environmentSettings = new EnvironmentSettings();
-const isDevEnvironment = environmentSettings.isDevEnvironment();
+const isProdEnvironment = environmentSettings.isProdEnvironment();
 
 const auth = useAuth();
 </script>
@@ -47,7 +47,7 @@ const auth = useAuth();
                         <Button
                             class="landing-button"
                             outlined
-                            :disabled="!isDevEnvironment"
+                            :disabled="isProdEnvironment"
                             :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
                             id="login-business-bceid-button"
                             @click="auth.login(IdpProvider.BCEIDBUSINESS)"
