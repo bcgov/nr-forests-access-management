@@ -422,6 +422,11 @@ const onSubmit = () => {
             .button-label {
                 @include type.type-style("body-compact-01");
             }
+
+            .p-progress-spinner-svg circle {
+                stroke: colors.$white;
+                animation: none;
+            }
         }
     }
 }
