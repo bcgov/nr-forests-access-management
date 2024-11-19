@@ -433,7 +433,7 @@ const acceptTermsAndConditions = () => {
                             target="_blank"
                             href="https://www2.gov.bc.ca/gov/content/home/disclaimer"
                         >
-                            Warranty Disclaimer </a
+                            Warranty Disclaimer</a
                         >.
                     </li>
 
