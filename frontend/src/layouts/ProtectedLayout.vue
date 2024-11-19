@@ -63,7 +63,7 @@ watch(termsAndConditionQuery.status, () => {
         <!-- Show layout and content -->
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
-        <SideNav />
+        <SideNav v-if="termsAndConditionQuery.data.value === false" />
         <div class="main">
             <main>
                 <Spinner
@@ -81,10 +81,11 @@ watch(termsAndConditionQuery.status, () => {
 #proctected-layout-container {
     .spinner-container {
         display: flex;
-        width: 100%;
-        height: 80vh;
+        width: 100vw;
+        height: 85vh;
         justify-content: center;
         align-items: center;
+        margin-left: -18.5rem; // counter the sidenav offset
     }
 }
 </style>
