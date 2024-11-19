@@ -69,15 +69,15 @@ const acceptTermsAndConditions = () => {
             "
         >
             <p>
-                This Forest Access Management application (“FAM”) terms of use
+                This Forest Access Management application ("FAM") terms of use
                 agreement (the "Agreement") is entered into between the legal
                 entity that has received approval for Delegated Administrator
-                access to FAM (the “Subscriber”) and His Majesty the King in
+                access to FAM (the "Subscriber") and His Majesty the King in
                 right of the Province of British Columbia as represented by the
-                Minister of Forests (the “Province").
+                Minister of Forests (the "Province").
             </p>
             <p>
-                By clicking the “I Accept” button (or any similar button or
+                By clicking the "I Accept" button (or any similar button or
                 mechanism), and in consideration of the Province granting the
                 Delegated Administrator access to FAM, the Subscriber, and the
                 Delegated Administrator on behalf of the Subscriber, agree (and
@@ -92,19 +92,19 @@ const acceptTermsAndConditions = () => {
                 </li>
                 <ol type="a">
                     <li>
-                        "Applications” means any applications to which Users may
+                        "Applications" means any applications to which Users may
                         be granted access by the Delegated Administrator through
                         FAM;
                     </li>
                     <li>
-                        “Business BCeID” means the Master Login ID and User
+                        "Business BCeID" means the Master Login ID and User
                         Login IDs (both as defined in the Business BCeID Terms)
                         issued to the Subscriber and individuals within the
                         Subscriber's organization pursuant to the Business BCeID
                         Terms;
                     </li>
                     <li>
-                        “Business BCeID Terms” means the terms found at:
+                        "Business BCeID Terms" means the terms found at:
                         <a
                             target="_blank"
                             href="https://www.bceid.ca/aboutbceid/agreements.aspx"
@@ -112,33 +112,33 @@ const acceptTermsAndConditions = () => {
                         >;
                     </li>
                     <li>
-                        “Delegated Administrator” means the individual within
+                        "Delegated Administrator" means the individual within
                         the Subscriber's organization who is responsible for
                         granting Users access to Applications through FAM;
                     </li>
                     <li>
-                        “Device” means a computer, mobile device or any other
+                        "Device" means a computer, mobile device or any other
                         device capable of accessing FAM or any Application;
                     </li>
                     <li>
-                        “Documentation” means documentation for FAM or an
+                        "Documentation" means documentation for FAM or an
                         Application that describes the features and
                         functionality of FAM or the Application;
                     </li>
                     <li>
-                        “FOIPPA” means the Freedom of Information and Protection
+                        "FOIPPA" means the Freedom of Information and Protection
                         of Privacy Act, R.S.B.C. 1996, c. 165, as amended or
                         replaced from time to time;
                     </li>
                     <li>
-                        “Users” means individuals within the Subscriber's
+                        "Users" means individuals within the Subscriber's
                         organization who have been granted access to any
                         Application by the Delegated Administrator through FAM;
                         and
                     </li>
                     <ol type="i">
                         <li>
-                            “Works” means, collectively, FAM, the Applications
+                            "Works" means, collectively, FAM, the Applications
                             and the Documentation.
                         </li>
                     </ol>
@@ -404,7 +404,7 @@ const acceptTermsAndConditions = () => {
                         Province or any of the Province's employees or agents
                         may sustain, incur, suffer or be put to at any time,
                         either before or after this Agreement ends (each a
-                        “Loss”), to the extent the Loss is directly or
+                        "Loss"), to the extent the Loss is directly or
                         indirectly caused or contributed to by any act or
                         omission by the Subscriber, the Delegated Administrator,
                         any User or any other employee, officer, agent or
@@ -414,7 +414,7 @@ const acceptTermsAndConditions = () => {
 
                     <h3>Disclaimer</h3>
                     <li>
-                        The Works are provided “as is”, and the Province
+                        The Works are provided "as is", and the Province
                         disclaims all representations, warranties, conditions,
                         obligations and liabilities of any kind, whether express
                         or implied, in relation to the Works, including but not
@@ -471,7 +471,7 @@ const acceptTermsAndConditions = () => {
                         Administrator will be notified upon sign in to FAM if
                         changes have been made to the terms and conditions of
                         this Agreement, and must accept the updated terms and
-                        conditions by clicking the “I Accept” button (or similar
+                        conditions by clicking the "I Accept" button (or similar
                         button or mechanism) in order to proceed. By proceeding,
                         the Subscriber, and the Delegated Administrator on
                         behalf of the Subscriber, will be conclusively deemed to
@@ -485,7 +485,7 @@ const acceptTermsAndConditions = () => {
                             words expressed in the singular include the plural
                             and vice versa; and
                         </li>
-                        <li>“including” is not intended to be limiting.</li>
+                        <li>"including" is not intended to be limiting.</li>
                     </ol>
                     <li>
                         This Agreement, and any terms for which links are
@@ -523,7 +523,7 @@ const acceptTermsAndConditions = () => {
                 />
 
                 <Button
-                    label="I accept the terms of use"
+                    label="I accept the Terms of Use"
                     @click="acceptTermsAndConditions()"
                     :is-loading="
                         acceptTermsAndConditionsMutation.isPending.value
@@ -558,18 +558,19 @@ const acceptTermsAndConditions = () => {
         padding-left: 0;
     }
 
-    ol {
-        padding-left: 1.2rem;
-    }
-
     .terms-list {
         padding-left: 0;
         margin: 0;
         list-style-position: inside;
-    }
 
-    li {
-        margin-top: 0.5rem;
+        ol {
+            padding-left: 1.2rem;
+        }
+
+        li {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
     }
 
     .button-group {
