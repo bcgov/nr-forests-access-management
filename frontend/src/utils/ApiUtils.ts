@@ -22,7 +22,7 @@ export const formatAxiosError = (err: AxiosError): string => {
         const description = Array.isArray(detail) ? null : detail?.description;
 
         if (description) {
-            errMsg = `${err.response.status}: ${description}`;
+            errMsg = description ?? err.response.status.toString();
         }
     }
     return errMsg;

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import CheckIcon from "@carbon/icons-vue/es/checkmark/16";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import useAuth from "@/composables/useAuth";
 import {
@@ -44,6 +45,7 @@ const acceptTermsAndConditions = () => {
 
 <template>
     <Dialog
+        class="terms-and-conditions-container"
         v-model:visible="isTermsVisible"
         header="FAM Terms of use"
         :closable="isTermsCloseable"
@@ -267,7 +269,12 @@ const acceptTermsAndConditions = () => {
                     the Applications. Any information automatically collected
                     from individuals through the website through which FAM and
                     the Applications are accessed is collected in accordance
-                    with the Province's general Privacy Policy.
+                    with the Province's general
+                    <a
+                        target="_blank"
+                        href="https://www2.gov.bc.ca/gov/content/home/privacy"
+                        >Privacy Policy</a
+                    >.
                 </li>
 
                 <h3>Ownership and License</h3>
@@ -421,7 +428,13 @@ const acceptTermsAndConditions = () => {
                         will function without error, failure, or interruption,
                         or that the Works will meet the Subscriber's
                         expectations or requirements. This disclaimer applies in
-                        addition to the Province's general Warranty Disclaimer.
+                        addition to the Province's general
+                        <a
+                            target="_blank"
+                            href="https://www2.gov.bc.ca/gov/content/home/disclaimer"
+                        >
+                            Warranty Disclaimer </a
+                        >.
                     </li>
 
                     <h3>Limitation of Liability</h3>
@@ -442,7 +455,12 @@ const acceptTermsAndConditions = () => {
                         even if the Province has been specifically advised of
                         the possibility of any such loss, claim, injury or
                         damage. This limitation of liability applies in addition
-                        to the Province's general Limitation of Liabilities.
+                        to the Province's general
+                        <a
+                            target="_blank"
+                            href="https://www2.gov.bc.ca/gov/content/home/disclaimer"
+                            >Limitation of Liabilities</a
+                        >.
                     </li>
 
                     <h3>Changes to FAM and/or this Agreement</h3>
@@ -510,53 +528,65 @@ const acceptTermsAndConditions = () => {
                     :is-loading="
                         acceptTermsAndConditionsMutation.isPending.value
                     "
+                    :icon="CheckIcon"
                 />
             </div>
         </template>
     </Dialog>
 </template>
 
-<style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
+<style lang="scss">
+.terms-and-conditions-container {
+    a {
+        color: var(--link-primary);
+    }
 
-h3,
-p {
-    font-size: 0.875rem;
-}
+    h3,
+    p {
+        font-size: 0.875rem;
+    }
 
-p,
-li {
-    line-height: 1.25rem;
-}
+    p,
+    li {
+        line-height: 1.25rem;
+    }
 
-h3 {
-    font-weight: bold;
-    margin-top: 1.5rem;
-    margin-left: 0;
-    padding-left: 0;
-}
+    h3 {
+        font-weight: bold;
+        margin-top: 1.5rem;
+        margin-left: 0;
+        padding-left: 0;
+    }
 
-ol {
-    padding-left: 1.2rem;
-}
+    ol {
+        padding-left: 1.2rem;
+    }
 
-.terms-list {
-    padding-left: 0;
-    margin: 0;
-    list-style-position: inside;
-}
+    .terms-list {
+        padding-left: 0;
+        margin: 0;
+        list-style-position: inside;
+    }
 
-li {
-    margin-top: 0.5rem;
-}
+    li {
+        margin-top: 0.5rem;
+    }
 
-.button-group {
-    width: 100%;
-    gap: 2rem;
-    display: flex;
-    flex-direction: row;
-    .fam-button {
-        width: 45%;
+    .button-group {
+        width: 100%;
+        gap: 2rem;
+        display: flex;
+        flex-direction: row;
+        .fam-button {
+            width: 45%;
+            height: 3rem;
+
+            .button-content {
+                .button-label {
+                    @include type.type-style("body-compact-01");
+                }
+            }
+        }
     }
 }
 </style>
