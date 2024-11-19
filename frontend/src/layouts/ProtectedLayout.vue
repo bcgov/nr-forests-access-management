@@ -66,10 +66,12 @@ watch(termsAndConditionQuery.status, () => {
         <SideNav v-if="termsAndConditionQuery.data.value === false" />
         <div class="main">
             <main>
-                <Spinner
-                    v-if="termsAndConditionQuery.isLoading.value"
-                    loading-text="Page loading"
-                />
+                <div class="terms-and-condition-spinner-container">
+                    <Spinner
+                        v-if="termsAndConditionQuery.isLoading.value"
+                        loading-text="Page loading"
+                    />
+                </div>
                 <router-view
                     v-if="termsAndConditionQuery.data.value === false"
                 />
@@ -79,13 +81,15 @@ watch(termsAndConditionQuery.status, () => {
 </template>
 <style lang="scss">
 #proctected-layout-container {
-    .spinner-container {
-        display: flex;
-        width: 100vw;
-        height: 85vh;
-        justify-content: center;
-        align-items: center;
-        margin-left: -18.5rem; // counter the sidenav offset
+    .terms-and-condition-spinner-container {
+        .spinner-container {
+            display: flex;
+            width: 100vw;
+            height: 85vh;
+            justify-content: center;
+            align-items: center;
+            margin-left: -18.5rem; // counter the sidenav offset
+        }
     }
 }
 </style>
