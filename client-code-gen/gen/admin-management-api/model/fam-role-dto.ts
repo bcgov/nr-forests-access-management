@@ -40,7 +40,13 @@ export interface FamRoleDto {
      * @type {string}
      * @memberof FamRoleDto
      */
-    'description': string;
+    'display_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamRoleDto
+     */
+    'description': string | null;
     /**
      * 
      * @type {RoleType}

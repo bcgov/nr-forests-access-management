@@ -25,6 +25,12 @@ import { AppEnv } from './app-env';
 export interface FamApplicationBase {
     /**
      * 
+     * @type {number}
+     * @memberof FamApplicationBase
+     */
+    'application_id': number;
+    /**
+     * 
      * @type {string}
      * @memberof FamApplicationBase
      */

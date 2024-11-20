@@ -1,50 +1,34 @@
-@use 'sass:map';
-@use '@bcgov-nr/nr-theme/design-tokens/light-theme.scss' as lightTheme;
+@use "sass:map";
+@use "@bcgov-nr/nr-theme/design-tokens/light-theme.scss" as lightTheme;
 
-.p-card .p-card-header {
-    display: flex;
-    padding: 1.5rem;
-    align-items: center;
+.custom-card-container {
+    .p-card {
+        .p-card-header {
+            display: flex;
+            padding: 1.5rem;
+            align-items: center;
 
-    svg {
-        color: map.get(lightTheme.$light-theme, 'support-success');
-        margin-bottom: 0.1rem;
-    }
+            svg {
+                color: map.get(lightTheme.$light-theme, "support-success");
+                margin-bottom: 0.1rem;
+            }
 
-    p {
-        margin: 0;
-        padding: 0 0 0 1rem;
-        display: inline-flex;
-        margin-bottom: 0;
-        color: map.get(lightTheme.$light-theme, 'text-primary');
-        font-size: 0.875rem;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 1.125rem; /* 128.571% */
-        letter-spacing: 0.01rem;
-    }
-}
+            p {
+                margin: 0;
+                padding: 0 0 0 1rem;
+                display: inline-flex;
+                margin-bottom: 0;
+                color: map.get(lightTheme.$light-theme, "text-primary");
+                font-size: 0.875rem;
+                font-style: normal;
+                font-weight: 700;
+                line-height: 1.125rem; /* 128.571% */
+                letter-spacing: 0.01rem;
+            }
+        }
 
-.p-card .p-card-content {
-    display: flex;
-    padding: 0;
-    margin: 0;
-
-    div {
-        display: flex;
-        flex-direction: column;
-        align-self: center;
-    }
-
-    label {
-        color: map.get(lightTheme.$light-theme, 'text-primary');
-        margin: 0 0 0.75rem;
-    }
-
-    span {
-        margin: 0;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        letter-spacing: 0.01rem;
+        .custom-carbon-icon-misuse {
+            fill: var(--support-error);
+        }
     }
 }

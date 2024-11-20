@@ -1,0 +1,17 @@
+@use "sass:map";
+@use "@bcgov-nr/nr-theme/design-tokens/light-theme.scss" as light;
+@use "@bcgov-nr/nr-theme/design-tokens/dark-theme.scss" as dark;
+
+@use "@carbon/themes/scss/themes";
+@use "@carbon/themes/scss/theme" with (
+    $theme: light.$light-theme,
+    $fallback: themes.$white
+);
+
+@forward "@carbon/themes/scss/theme";
+
+:root {
+    @each $key, $value in light.$light-theme {
+        --#{$key}: #{$value};
+    }
+}
