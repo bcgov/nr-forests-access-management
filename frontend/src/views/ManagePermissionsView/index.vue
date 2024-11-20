@@ -1,37 +1,38 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch, type Component } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { isAxiosError } from "axios";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { DropdownChangeEvent } from "primevue/dropdown";
-import TabView, { type TabViewChangeEvent } from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
-import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
-import UserIcon from "@carbon/icons-vue/es/user/16";
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import ManagePermissionsTable from "@/components/ManagePermissionsTable";
+import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
+import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import Dropdown from "@/components/UI/Dropdown.vue";
-import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
 import {
+    activeTabIndex,
     selectedApp,
     setSelectedApp,
-    activeTabIndex,
 } from "@/store/ApplicationState";
-import {
-    formatAxiosError,
-    getUniqueApplications,
-    isSelectedAppAuthorized,
-} from "@/utils/ApiUtils";
-import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import {
     ManagePermissionsTableEnum,
     type ManagePermissionsTabHeaderType,
     type ManagePermissionsTabType,
 } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
+import {
+    formatAxiosError,
+    getUniqueApplications,
+    isSelectedAppAuthorized,
+} from "@/utils/ApiUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
+import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
+import UserIcon from "@carbon/icons-vue/es/user/16";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
+import type { DropdownChangeEvent } from "primevue/dropdown";
+import TabPanel from "primevue/tabpanel";
+import TabView, { type TabViewChangeEvent } from "primevue/tabview";
+import { computed, onUnmounted, ref, watch, type Component } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import {
     AddAppUserPermissionErrorQuerykey,
     AddAppUserPermissionSuccessQuerykey,
@@ -39,16 +40,15 @@ import {
     AddDelegatedAdminSuccessQuerykey,
     type AppPermissionQueryErrorType,
 } from "../AddAppPermission/utils";
-import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
+import {
+    AddFamPermissionErrorQueryKey,
+    AddFamPermissionSuccessQueryKey,
+} from "../AddFamPermission/utils";
 import {
     generateAppPermissionErrorNotifications,
     generateAppPermissionSuccessNotifications,
     generateFamNotification,
 } from "./utils";
-import {
-    AddFamPermissionErrorQueryKey,
-    AddFamPermissionSuccessQueryKey,
-} from "../AddFamPermission/utils";
 
 const queryClient = useQueryClient();
 const route = useRoute();
@@ -143,15 +143,12 @@ const tabs: ManagePermissionsTabType[] = [
     {
         // Delegated Admin table
         key: ManagePermissionsTableEnum.DelegatedAdmin,
-        visible: computed(
-            () =>
-                // DelegatedAdminFeatureFlag
-                !environment.isProdEnvironment() &&
-                isSelectedAppAuthorized(
-                    AdminRoleAuthGroup.AppAdmin,
-                    selectedApp.value?.id,
-                    adminUserAccessQuery.data.value
-                )
+        visible: computed(() =>
+            isSelectedAppAuthorized(
+                AdminRoleAuthGroup.AppAdmin,
+                selectedApp.value?.id,
+                adminUserAccessQuery.data.value
+            )
         ),
         icon: EnterpriseIcon as Component,
     },

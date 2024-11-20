@@ -1,20 +1,43 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
-import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
-import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
-import { ManagePermissionsRoute } from "@/router/routes";
+import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
+import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
+import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
+import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
+import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
+import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import StepContainer from "@/components/UI/StepContainer.vue";
+import useAuth from "@/composables/useAuth";
+import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
-import { Form } from "vee-validate";
-import StepContainer from "@/components/UI/StepContainer.vue";
-import { computed, ref, watch } from "vue";
-import useAuth from "@/composables/useAuth";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { isProdAppSelectedOnProdEnv } from "@/services/utils";
+import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
+import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
+import {
+    AddAppUserPermissionErrorQuerykey,
+    AddAppUserPermissionSuccessQuerykey,
+    AddDelegatedAdminErrorQuerykey,
+    AddDelegatedAdminSuccessQuerykey,
+    generatePayload,
+    getApplicationWithUniqueRoles,
+    getDefaultFormData,
+    getPageTitle,
+    getRoleSectionSubtitle,
+    getRoleSectionTitle,
+    NewAppAdminQueryParamKey,
+    NewDelegatedAddminQueryParamKey,
+    validateAppPermissionForm,
+    type AppPermissionFormType,
+} from "@/views/AddAppPermission/utils";
+import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
+import { AdminRoleAuthGroup, type FamRoleDto } from "fam-admin-mgmt-api/model";
 import {
     UserType,
     type FamForestClientSchema,
@@ -22,33 +45,11 @@ import {
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
-import {
-    getDefaultFormData,
-    type AppPermissionFormType,
-    getPageTitle,
-    getRoleSectionTitle,
-    getRoleSectionSubtitle,
-    validateAppPermissionForm,
-    generatePayload,
-    AddAppUserPermissionSuccessQuerykey,
-    AddAppUserPermissionErrorQuerykey,
-    AddDelegatedAdminSuccessQuerykey,
-    AddDelegatedAdminErrorQuerykey,
-    getApplicationWithUniqueRoles,
-    NewDelegatedAddminQueryParamKey,
-    NewAppAdminQueryParamKey,
-} from "@/views/AddAppPermission/utils";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
-import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
-import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
-import { AdminRoleAuthGroup, type FamRoleDto } from "fam-admin-mgmt-api/model";
-import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
-import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
-import Button from "@/components/UI/Button.vue";
-import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
+import { Form } from "vee-validate";
+import { computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const auth = useAuth();
@@ -123,8 +124,7 @@ watch(
                 auth.authState.famLoginUser?.idpProvider === "idir"
                     ? UserType.I
                     : UserType.B,
-                env.isProdEnvironment() &&
-                    selectedApp.value!.application.env === "PROD"
+                isProdAppSelectedOnProdEnv()
             );
         }
     },
