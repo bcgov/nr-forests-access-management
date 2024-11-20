@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.24.0...v1.25.0) (2024-11-20)
+
+
+### Features
+
+* frontend stability refactor ([#1658](https://github.com/bcgov/nr-forests-access-management/issues/1658)) ([4e5583a](https://github.com/bcgov/nr-forests-access-management/commit/4e5583afaa0467dfa6fb39505cfac7902fc50520))
+
 ## [1.24.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.23.1...v1.24.0) (2024-10-16)
 
 
