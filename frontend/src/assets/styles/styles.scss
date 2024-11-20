@@ -1,28 +1,22 @@
-@use 'sass:map';
-@use '@bcgov-nr/nr-theme/design-tokens/type-family.scss' as typeFamily;
+@use "sass:map";
+@use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
+@use "@carbon/type" as type;
 
 // Import all of Bootstrap's CSS
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";
 
-@import 'base';
-
-// Components
-@import '@bcgov-nr/nr-theme/style-sheets/primevue-components-overrides.scss';
+@import "base";
 
 :root {
-    --font-family: map.get(typeFamily.$type-family, 'sans');
+    --font-family: map.get(typeFamily.$type-family, "sans");
     --primevue-striped-row-color: rgba(0, 0, 0, 0.05);
 }
 
 body {
-    font-family: map.get(typeFamily.$type-family, 'sans');
+    font-family: map.get(typeFamily.$type-family, "sans");
 }
 
 /* ----------------- form input styles --------------------------- */
-.form-field {
-    margin-bottom: 1.5rem;
-}
-
 .input-with-verify-button {
     padding: 0;
     width: 100%;
@@ -31,7 +25,7 @@ body {
 }
 
 .custom-height {
-    max-height: 2.813rem !important;
+    max-height: 2.5rem;
 }
 
 .button-stack {
@@ -44,8 +38,12 @@ body {
     grid-template-columns: 1fr 1fr;
 
     Button {
-        width: auto !important;
+        width: auto;
     }
+}
+
+p {
+    margin: 0;
 }
 
 // when screen width < 390px
@@ -63,12 +61,42 @@ body {
         width: 38rem;
 
         Button {
-            width: 15rem !important;
+            width: 15rem;
             gap: 2rem;
             white-space: nowrap;
         }
     }
     .p-dialog {
-        max-width: 40rem !important;
+        max-width: 40rem;
     }
+}
+
+.fam-table {
+    p {
+        margin: 0;
+    }
+
+    background: var(--layer-02, #fff);
+
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border: 0.0625rem solid var(--border-subtle-00);
+
+    .p-datatable-thead {
+        .p-column-title {
+            padding: 1rem 1rem 1rem 0;
+            color: var(--text-primary);
+        }
+        svg {
+            margin: 0;
+        }
+    }
+
+    .p-datatable-tbody {
+        @include type.type-style("body-01");
+        color: var(--text-primary);
+    }
+}
+
+.error-icon {
+    fill: var(--support-error);
 }

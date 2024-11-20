@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { formatForestClientDisplayName } from '@/utils/ForestClientUtils';
-import type { PrivilegeDetailsScopeSchema } from 'fam-app-acsctl-api/model';
-import { PrivilegeDetailsScopeTypeEnum } from 'fam-app-acsctl-api/model';
+import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
+import type { PrivilegeDetailsScopeSchema } from "fam-app-acsctl-api";
+import { PrivilegeDetailsScopeTypeEnum } from "fam-app-acsctl-api/model";
 
 const props = defineProps<{
     scopes: PrivilegeDetailsScopeSchema[];
@@ -13,8 +13,19 @@ const props = defineProps<{
         <p>Organizations:</p>
         <div class="organizations-list">
             <div v-for="(scope, index) in props.scopes" :key="index">
-                <div v-if="scope && scope.scope_type === PrivilegeDetailsScopeTypeEnum.Client">
-                    {{ formatForestClientDisplayName(scope.client_id, scope.client_name) }}
+                <div
+                    v-if="
+                        scope &&
+                        scope.scope_type ===
+                            PrivilegeDetailsScopeTypeEnum.Client
+                    "
+                >
+                    {{
+                        formatForestClientDisplayName(
+                            scope.client_id,
+                            scope.client_name
+                        )
+                    }}
                 </div>
             </div>
         </div>

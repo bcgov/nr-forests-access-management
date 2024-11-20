@@ -1,43 +1,14 @@
-import { AppEnv, type FamApplicationDto } from 'fam-admin-mgmt-api/model';
-import { computed, ref } from 'vue';
+import { type FamApplicationDto } from "fam-admin-mgmt-api/model";
+import { ref } from "vue";
 
-export const CURRENT_SELECTED_APPLICATION_KEY = 'CURRENT_SELECTED_APPLICATION';
+export const selectedApp = ref<FamApplicationDto>();
 
-export const selectedApplication = ref<FamApplicationDto | null>(
-    localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY)
-        ? JSON.parse(
-              localStorage.getItem(CURRENT_SELECTED_APPLICATION_KEY) as string
-          )
-        : null
-);
-
-// --- Setter
-
-export const setSelectedApplication = (newValue: string | null) => {
-    selectedApplication.value = JSON.parse(newValue as string);
-    if (newValue)
-        localStorage.setItem(CURRENT_SELECTED_APPLICATION_KEY, newValue);
-    else localStorage.removeItem(CURRENT_SELECTED_APPLICATION_KEY);
+// Optional: Helper function to update selectedApp
+export const setSelectedApp = (app: FamApplicationDto) => {
+    selectedApp.value = app;
 };
 
-// --- Getter
-
-export const isApplicationSelected = computed(() => {
-    return selectedApplication.value != undefined;
-});
-
-export const selectedApplicationId = computed(() => {
-    return selectedApplication.value?.id;
-});
-
-export const selectedApplicationDisplayText = computed(() => {
-    if (selectedApplication.value) {
-        return `${selectedApplication.value.description}`;
-    } else {
-        return '';
-    }
-});
-
-export const isSelectedAppProd = computed(() => {
-    return selectedApplication.value?.env == AppEnv.Prod;
-});
+/**
+ * The active tab index under a selected app
+ */
+export const activeTabIndex = ref(0);

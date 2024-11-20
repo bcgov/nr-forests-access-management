@@ -247,583 +247,694 @@
           },
           "required": true
         },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FamUserRoleAssignmentRes"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ]
-      }
+        "version": "0.0.1"
     },
-    "/user_role_assignment/{user_role_xref_id}": {
-      "delete": {
-        "tags": [
-          "FAM User Role Assignment"
-        ],
-        "summary": "Delete User Role Assignment",
-        "description": "Remove a specific application's role from user's access.",
-        "operationId": "delete_user_role_assignment",
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_role_xref_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "User Role Xref Id"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+    "paths": {
+        "/fam_applications/{application_id}/user_role_assignment": {
+            "get": {
+                "tags": ["FAM Applications"],
+                "summary": "Get Fam Application User Role Assignment",
+                "description": "gets the roles assignment associated with an application",
+                "operationId": "get_fam_application_user_role_assignment",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FamApplicationUserRoleAssignmentGetSchema"
+                                    },
+                                    "title": "Response Get Fam Application User Role Assignment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      }
-    },
-    "/forest_clients/search": {
-      "get": {
-        "tags": [
-          "FAM Forest Clients"
-        ],
-        "summary": "Search",
-        "description": "Forest Client(s) search (by defined query parameter(s)).\nparam: 'client_number=[query_value]'\n       Note! Current Forest Client API limits it to exact search for a whole 8-digits number.\nreturn: List of found FamForestClient. However, currently only 1 exact match returns.",
-        "operationId": "search",
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "client_number",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 3,
-              "maxLength": 8,
-              "title": "Client Number"
-            }
-          },
-          {
-            "name": "application_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Application Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FamForestClientSchema"
-                  },
-                  "title": "Response Search"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity_search/idir": {
-      "get": {
-        "tags": [
-          "IDIR/BCeID Proxy"
-        ],
-        "summary": "Idir Search",
-        "operationId": "idir_search",
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 20,
-              "title": "User Id"
-            }
-          },
-          {
-            "name": "application_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Application Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IdimProxyIdirInfoSchema"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity_search/bceid": {
-      "get": {
-        "tags": [
-          "IDIR/BCeID Proxy"
-        ],
-        "summary": "Bceid Search",
-        "operationId": "bceid_search",
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 20,
-              "title": "User Id"
-            }
-          },
-          {
-            "name": "application_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Application Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IdimProxyBceidInfoSchema"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/user_terms_conditions/user:validate": {
-      "post": {
-        "tags": [
-          "FAM User Terms and Conditions"
-        ],
-        "summary": "Validate User Requires Accept Terms And Conditions",
-        "operationId": "validate_user_requires_accept_terms_and_conditions",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "title": "Response Validate User Requires Accept Terms And Conditions"
-                }
-              }
-            }
-          }
         },
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ]
-      }
-    },
-    "/user_terms_conditions": {
-      "post": {
-        "tags": [
-          "FAM User Terms and Conditions"
-        ],
-        "summary": "Create User Terms And Conditions",
-        "description": "Create a record for terms and conditions acceptance. \n\nIf no version is provided, we store the 1st version of the terms and conditions.",
-        "operationId": "create_user_terms_and_conditions",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
+        "/fam_applications/{application_id}/users/{user_id}": {
+            "get": {
+                "tags": ["FAM Applications"],
+                "summary": "Retrieve User Information by User ID under an application",
+                "description": "Retrieve the user data for a given user id under an authorized application.\n\nArgs:\n    userId (int): The ID of the user.\n    applicationId (int): The ID of the application the user has access to.\n\nReturns:\n    FamUserInfoSchema: The user information corresponding to the provided userId.",
+                "operationId": "get_application_user_by_id",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FamUserInfoSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "detail": "User not found"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         },
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ]
-      }
-    },
-    "/users/users-information": {
-      "put": {
-        "tags": [
-          "FAM User"
-        ],
-        "summary": "Update User Information From Idim Source",
-        "description": "Call IDIM web service to grab latest user information and update records in FAM database for IDIR and Business BCeID users",
-        "operationId": "update_user_information_from_idim_source",
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1,
-              "title": "Page"
+        "/user_role_assignment": {
+            "post": {
+                "tags": ["FAM User Role Assignment"],
+                "summary": "Create User Role Assignment Many",
+                "description": "Grant User Access to an application's role.",
+                "operationId": "create_user_role_assignment_many",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FamUserRoleAssignmentCreateSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FamUserRoleAssignmentRes"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ]
             }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Per Page"
-            }
-          },
-          {
-            "name": "use_pagination",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false,
-              "title": "Use Pagination"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FamUserUpdateResponseSchema"
+        },
+        "/user_role_assignment/{user_role_xref_id}": {
+            "delete": {
+                "tags": ["FAM User Role Assignment"],
+                "summary": "Delete User Role Assignment",
+                "description": "Remove a specific application's role from user's access.",
+                "operationId": "delete_user_role_assignment",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user_role_xref_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "User Role Xref Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+        },
+        "/forest_clients/search": {
+            "get": {
+                "tags": ["FAM Forest Clients"],
+                "summary": "Search",
+                "description": "Forest Client(s) search (by defined query parameter(s)).\nparam: 'client_number=[query_value]'\n       Note! Current Forest Client API limits it to exact search for a whole 8-digits number.\nreturn: List of found FamForestClient. However, currently only 1 exact match returns.",
+                "operationId": "search",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "client_number",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 8,
+                            "title": "Client Number"
+                        }
+                    },
+                    {
+                        "name": "application_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FamForestClientSchema"
+                                    },
+                                    "title": "Response Search"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
+        },
+        "/identity_search/idir": {
+            "get": {
+                "tags": ["IDIR/BCeID Proxy"],
+                "summary": "Idir Search",
+                "operationId": "idir_search",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 20,
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "application_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IdimProxyIdirInfoSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/identity_search/bceid": {
+            "get": {
+                "tags": ["IDIR/BCeID Proxy"],
+                "summary": "Bceid Search",
+                "operationId": "bceid_search",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 20,
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "application_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IdimProxyBceidInfoSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user_terms_conditions/user:validate": {
+            "post": {
+                "tags": ["FAM User Terms and Conditions"],
+                "summary": "Validate User Requires Accept Terms And Conditions",
+                "operationId": "validate_user_requires_accept_terms_and_conditions",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean",
+                                    "title": "Response Validate User Requires Accept Terms And Conditions"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ]
+            }
+        },
+        "/user_terms_conditions": {
+            "post": {
+                "tags": ["FAM User Terms and Conditions"],
+                "summary": "Create User Terms And Conditions",
+                "description": "Create a record for terms and conditions acceptance. \n\nIf no version is provided, we store the 1st version of the terms and conditions.",
+                "operationId": "create_user_terms_and_conditions",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ]
+            }
+        },
+        "/users/users-information": {
+            "put": {
+                "tags": ["FAM User"],
+                "summary": "Update User Information From Idim Source",
+                "description": "Call IDIM web service to grab latest user information and update records in FAM database for IDIR and Business BCeID users",
+                "operationId": "update_user_information_from_idim_source",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "title": "Page"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 100,
+                            "title": "Per Page"
+                        }
+                    },
+                    {
+                        "name": "use_pagination",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "Use Pagination"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FamUserUpdateResponseSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/permission-audit-history": {
+            "get": {
+                "tags": ["Permission Audit"],
+                "summary": "Get Permission Audit History By User And Application",
+                "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.",
+                "operationId": "get_permission_audit_history_by_user_and_application",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "application_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PermissionAuditHistoryRes"
+                                    },
+                                    "title": "Response Get Permission Audit History By User And Application"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/token/dev": {
+            "post": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Token Dev",
+                "operationId": "bcsc_token_dev",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/token/test": {
+            "post": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Token Test",
+                "operationId": "bcsc_token_test",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/token/prod": {
+            "post": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Token Prod",
+                "operationId": "bcsc_token_prod",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/userinfo/dev": {
+            "get": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Userinfo Dev",
+                "operationId": "bcsc_userinfo_dev",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/userinfo/test": {
+            "get": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Userinfo Test",
+                "operationId": "bcsc_userinfo_test",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/userinfo/prod": {
+            "get": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Userinfo Prod",
+                "operationId": "bcsc_userinfo_prod",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bcsc/jwks.json": {
+            "get": {
+                "tags": ["BCSC Proxy"],
+                "summary": "Bcsc Jwks",
+                "operationId": "bcsc_jwks",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/smoke_test": {
+            "get": {
+                "tags": ["Smoke Test"],
+                "summary": "Smoke Test",
+                "description": "List of different applications that are administered by FAM",
+                "operationId": "smoke_test",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    },
-    "/permission-audit-history": {
-      "get": {
-        "tags": [
-          "Permission Audit"
-        ],
-        "summary": "Get Permission Audit History By User And Application",
-        "description": "Retrieve the permission audit history for a given user and application.\n\nArgs:\n    userId (int): The ID of the user for whom the audit history is being requested.\n    applicationId (int): The ID of the application associated with the audit history.\n\nReturns:\n    List[PermissionAuditHistoryRes]: A list of audit history records for the given user and application.",
-        "operationId": "get_permission_audit_history_by_user_and_application",
-        "security": [
-          {
-            "6jfveou69mgford233or30hmta": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "User Id"
-            }
-          },
-          {
-            "name": "application_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Application Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PermissionAuditHistoryRes"
-                  },
-                  "title": "Response Get Permission Audit History By User And Application"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/token/dev": {
-      "post": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Token Dev",
-        "operationId": "bcsc_token_dev",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/token/test": {
-      "post": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Token Test",
-        "operationId": "bcsc_token_test",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/token/prod": {
-      "post": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Token Prod",
-        "operationId": "bcsc_token_prod",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/userinfo/dev": {
-      "get": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Userinfo Dev",
-        "operationId": "bcsc_userinfo_dev",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/userinfo/test": {
-      "get": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Userinfo Test",
-        "operationId": "bcsc_userinfo_test",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/userinfo/prod": {
-      "get": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Userinfo Prod",
-        "operationId": "bcsc_userinfo_prod",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bcsc/jwks.json": {
-      "get": {
-        "tags": [
-          "BCSC Proxy"
-        ],
-        "summary": "Bcsc Jwks",
-        "operationId": "bcsc_jwks",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          }
-        }
-      }
     },
     "/smoke_test": {
       "get": {
@@ -1026,294 +1137,363 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Display Name"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 300
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "forest_client": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FamForestClientSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "parent_role": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FamRoleMinSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "required": [
-          "role_name",
-          "role_type_code",
-          "application",
-          "role_id",
-          "description",
-          "forest_client"
-        ],
-        "title": "FamRoleWithClientSchema"
-      },
-      "FamUserInfoSchema": {
-        "properties": {
-          "user_name": {
-            "type": "string",
-            "maxLength": 20,
-            "title": "User Name"
-          },
-          "user_type": {
-            "$ref": "#/components/schemas/FamUserTypeSchema"
-          },
-          "first_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "First Name"
-          },
-          "last_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Name"
-          },
-          "email": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 250
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Email"
-          }
-        },
-        "type": "object",
-        "required": [
-          "user_name",
-          "user_type"
-        ],
-        "title": "FamUserInfoSchema"
-      },
-      "FamUserRoleAssignmentCreateRes": {
-        "properties": {
-          "status_code": {
-            "type": "integer",
-            "title": "Status Code"
-          },
-          "detail": {
-            "$ref": "#/components/schemas/FamApplicationUserRoleAssignmentGetSchema"
-          },
-          "error_message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Error Message"
-          }
-        },
-        "type": "object",
-        "required": [
-          "status_code",
-          "detail"
-        ],
-        "title": "FamUserRoleAssignmentCreateRes"
-      },
-      "FamUserRoleAssignmentCreateSchema": {
-        "properties": {
-          "user_name": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 3,
-            "title": "User Name"
-          },
-          "user_guid": {
-            "type": "string",
-            "maxLength": 32,
-            "minLength": 32,
-            "title": "User Guid"
-          },
-          "user_type_code": {
-            "$ref": "#/components/schemas/UserType"
-          },
-          "role_id": {
-            "type": "integer",
-            "title": "Role Id"
-          },
-          "forest_client_numbers": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string",
-                  "maxLength": 8,
-                  "minLength": 1
+                "enum": [
+                    "NOT_REQUIRED",
+                    "SENT_TO_EMAIL_SERVICE_SUCCESS",
+                    "SENT_TO_EMAIL_SERVICE_FAILURE"
+                ],
+                "title": "EmailSendingStatus"
+            },
+            "FamApplicationSchema": {
+                "properties": {
+                    "application_id": {
+                        "type": "integer",
+                        "title": "Application Id"
+                    },
+                    "application_name": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "title": "Application Name"
+                    },
+                    "application_description": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "title": "Application Description"
+                    }
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forest Client Numbers"
-          },
-          "requires_send_user_email": {
-            "type": "boolean",
-            "title": "Requires Send User Email",
-            "default": false
-          }
-        },
-        "type": "object",
-        "required": [
-          "user_name",
-          "user_guid",
-          "user_type_code",
-          "role_id"
-        ],
-        "title": "FamUserRoleAssignmentCreateSchema"
-      },
-      "FamUserRoleAssignmentRes": {
-        "properties": {
-          "email_sending_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EmailSendingStatus"
-              }
-            ],
-            "default": "NOT_REQUIRED"
-          },
-          "assignments_detail": {
-            "items": {
-              "$ref": "#/components/schemas/FamUserRoleAssignmentCreateRes"
+                "type": "object",
+                "required": [
+                    "application_id",
+                    "application_name",
+                    "application_description"
+                ],
+                "title": "FamApplicationSchema"
             },
-            "type": "array",
-            "title": "Assignments Detail"
-          }
-        },
-        "type": "object",
-        "required": [
-          "assignments_detail"
-        ],
-        "title": "FamUserRoleAssignmentRes"
-      },
-      "FamUserTypeSchema": {
-        "properties": {
-          "code": {
-            "$ref": "#/components/schemas/UserType"
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 35,
-            "title": "Description"
-          }
-        },
-        "type": "object",
-        "required": [
-          "code",
-          "description"
-        ],
-        "title": "FamUserTypeSchema"
-      },
-      "FamUserUpdateResponseSchema": {
-        "properties": {
-          "total_db_users_count": {
-            "type": "integer",
-            "title": "Total Db Users Count"
-          },
-          "current_page": {
-            "type": "integer",
-            "title": "Current Page"
-          },
-          "users_count_on_page": {
-            "type": "integer",
-            "title": "Users Count On Page"
-          },
-          "success_user_id_list": {
-            "items": {
-              "type": "integer"
+            "FamApplicationUserRoleAssignmentGetSchema": {
+                "properties": {
+                    "user_role_xref_id": {
+                        "type": "integer",
+                        "title": "User Role Xref Id"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "title": "Role Id"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/FamUserInfoSchema"
+                    },
+                    "role": {
+                        "$ref": "#/components/schemas/FamRoleWithClientSchema"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_role_xref_id",
+                    "user_id",
+                    "role_id",
+                    "user",
+                    "role"
+                ],
+                "title": "FamApplicationUserRoleAssignmentGetSchema"
             },
-            "type": "array",
-            "title": "Success User Id List"
-          },
-          "failed_user_id_list": {
-            "items": {
-              "type": "integer"
+            "FamForestClientSchema": {
+                "properties": {
+                    "client_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 60
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Name"
+                    },
+                    "forest_client_number": {
+                        "type": "string",
+                        "maxLength": 8,
+                        "title": "Forest Client Number"
+                    },
+                    "status": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FamForestClientStatusSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": ["forest_client_number"],
+                "title": "FamForestClientSchema"
             },
-            "type": "array",
-            "title": "Failed User Id List"
-          },
-          "ignored_user_id_list": {
-            "items": {
-              "type": "integer"
+            "FamForestClientStatusSchema": {
+                "properties": {
+                    "status_code": {
+                        "$ref": "#/components/schemas/FamForestClientStatusType"
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 10,
+                        "title": "Description"
+                    }
+                },
+                "type": "object",
+                "required": ["status_code", "description"],
+                "title": "FamForestClientStatusSchema"
             },
-            "type": "array",
-            "title": "Ignored User Id List"
-          },
-          "mismatch_user_list": {
-            "items": {
-              "type": "integer"
+            "FamForestClientStatusType": {
+                "type": "string",
+                "enum": ["A", "I"],
+                "title": "FamForestClientStatusType"
             },
-            "type": "array",
-            "title": "Mismatch User List"
-          }
-        },
-        "type": "object",
-        "required": [
-          "total_db_users_count",
-          "current_page",
-          "users_count_on_page",
-          "success_user_id_list",
-          "failed_user_id_list",
-          "ignored_user_id_list",
-          "mismatch_user_list"
-        ],
-        "title": "FamUserUpdateResponseSchema"
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
+            "FamRoleMinSchema": {
+                "properties": {
+                    "role_name": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "title": "Role Name"
+                    },
+                    "role_type_code": {
+                        "$ref": "#/components/schemas/RoleType"
+                    },
+                    "application": {
+                        "$ref": "#/components/schemas/FamApplicationSchema"
+                    }
+                },
+                "type": "object",
+                "required": ["role_name", "role_type_code", "application"],
+                "title": "FamRoleMinSchema"
+            },
+            "FamRoleWithClientSchema": {
+                "properties": {
+                    "role_name": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "title": "Role Name"
+                    },
+                    "role_type_code": {
+                        "$ref": "#/components/schemas/RoleType"
+                    },
+                    "application": {
+                        "$ref": "#/components/schemas/FamApplicationSchema"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "title": "Role Id"
+                    },
+                    "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 100
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Display Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 300
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "forest_client": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FamForestClientSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "parent_role": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FamRoleMinSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "role_name",
+                    "role_type_code",
+                    "application",
+                    "role_id",
+                    "description",
+                    "forest_client"
+                ],
+                "title": "FamRoleWithClientSchema"
+            },
+            "FamUserInfoSchema": {
+                "properties": {
+                    "user_name": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "title": "User Name"
+                    },
+                    "user_type": {
+                        "$ref": "#/components/schemas/FamUserTypeSchema"
+                    },
+                    "first_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 50
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 50
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Last Name"
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 250
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Email"
+                    }
+                },
+                "type": "object",
+                "required": ["user_name", "user_type"],
+                "title": "FamUserInfoSchema"
+            },
+            "FamUserRoleAssignmentCreateRes": {
+                "properties": {
+                    "status_code": {
+                        "type": "integer",
+                        "title": "Status Code"
+                    },
+                    "detail": {
+                        "$ref": "#/components/schemas/FamApplicationUserRoleAssignmentGetSchema"
+                    },
+                    "error_message": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Error Message"
+                    }
+                },
+                "type": "object",
+                "required": ["status_code", "detail"],
+                "title": "FamUserRoleAssignmentCreateRes"
+            },
+            "FamUserRoleAssignmentCreateSchema": {
+                "properties": {
+                    "user_name": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "minLength": 3,
+                        "title": "User Name"
+                    },
+                    "user_guid": {
+                        "type": "string",
+                        "maxLength": 32,
+                        "minLength": 32,
+                        "title": "User Guid"
+                    },
+                    "user_type_code": {
+                        "$ref": "#/components/schemas/UserType"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "title": "Role Id"
+                    },
+                    "forest_client_numbers": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string",
+                                    "maxLength": 8,
+                                    "minLength": 1
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Forest Client Numbers"
+                    },
+                    "requires_send_user_email": {
+                        "type": "boolean",
+                        "title": "Requires Send User Email",
+                        "default": false
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_name",
+                    "user_guid",
+                    "user_type_code",
+                    "role_id"
+                ],
+                "title": "FamUserRoleAssignmentCreateSchema"
+            },
+            "FamUserRoleAssignmentRes": {
+                "properties": {
+                    "email_sending_status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/EmailSendingStatus"
+                            }
+                        ],
+                        "default": "NOT_REQUIRED"
+                    },
+                    "assignments_detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/FamUserRoleAssignmentCreateRes"
+                        },
+                        "type": "array",
+                        "title": "Assignments Detail"
+                    }
+                },
+                "type": "object",
+                "required": ["assignments_detail"],
+                "title": "FamUserRoleAssignmentRes"
             },
             "type": "array",
             "title": "Detail"
@@ -1616,127 +1796,105 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Name"
-          },
-          "email": {
-            "anyOf": [
-              {
+                "enum": ["GRANT", "REVOKE", "UPDATE"],
+                "title": "PrivilegeChangeTypeEnum"
+            },
+            "PrivilegeDetailsPermissionTypeEnum": {
                 "type": "string",
-                "maxLength": 250
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Email"
-          }
-        },
-        "type": "object",
-        "required": [
-          "username"
-        ],
-        "title": "PrivilegeChangePerformerSchema",
-        "description": "This schema represents the structure of the `change_user_details` JSON field used in fam_privilege_change_audit.\n\nThe `change_user_details` field captures information about the user who performed a change, including\nthe `username`, `first_name`, `last_name`, and `email`. It is used to record the user details at the time\nof the audit event, ensuring that changes to these details later do not affect the integrity of the audit log.\n\nFor regular users, all fields (`username`, `first_name`, `last_name`, and `email`) are included. However,\nwhen the change is performed by a system account, only the `username` field is present, and it is set to\n\"system\". The schema includes validation logic to enforce this rule.\n\nAttributes:\n    username (str): The username of the user performing the change. For system accounts, this is \"system\".\n    first_name (str, optional): The first name of the user. Not present for system accounts.\n    last_name (str, optional): The last name of the user. Not present for system accounts.\n    email (str, optional): The email address of the user. Not present for system accounts.\n\nValidation:\n    The schema includes a validator to ensure that for system accounts (where `username` is \"system\"),\n    no other fields (`first_name`, `last_name`, `email`) are populated."
-      },
-      "PrivilegeChangeTypeEnum": {
-        "type": "string",
-        "enum": [
-          "GRANT",
-          "REVOKE",
-          "UPDATE"
-        ],
-        "title": "PrivilegeChangeTypeEnum"
-      },
-      "PrivilegeDetailsPermissionTypeEnum": {
-        "type": "string",
-        "enum": [
-          "End User",
-          "Delegated Admin",
-          "Application Admin"
-        ],
-        "title": "PrivilegeDetailsPermissionTypeEnum"
-      },
-      "PrivilegeDetailsRoleSchema": {
-        "properties": {
-          "role": {
-            "type": "string",
-            "maxLength": 100,
-            "title": "Role"
-          },
-          "scopes": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/PrivilegeDetailsScopeSchema"
+                "enum": ["End User", "Delegated Admin", "Application Admin"],
+                "title": "PrivilegeDetailsPermissionTypeEnum"
+            },
+            "PrivilegeDetailsRoleSchema": {
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "title": "Role"
+                    },
+                    "scopes": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/PrivilegeDetailsScopeSchema"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Scopes"
+                    }
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scopes"
-          }
-        },
-        "type": "object",
-        "required": [
-          "role"
-        ],
-        "title": "PrivilegeDetailsRoleSchema"
-      },
-      "PrivilegeDetailsSchema": {
-        "properties": {
-          "permission_type": {
-            "$ref": "#/components/schemas/PrivilegeDetailsPermissionTypeEnum"
-          },
-          "roles": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/PrivilegeDetailsRoleSchema"
+                "type": "object",
+                "required": ["role"],
+                "title": "PrivilegeDetailsRoleSchema"
+            },
+            "PrivilegeDetailsSchema": {
+                "properties": {
+                    "permission_type": {
+                        "$ref": "#/components/schemas/PrivilegeDetailsPermissionTypeEnum"
+                    },
+                    "roles": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/PrivilegeDetailsRoleSchema"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Roles"
+                    }
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Roles"
-          }
-        },
-        "type": "object",
-        "required": [
-          "permission_type"
-        ],
-        "title": "PrivilegeDetailsSchema",
-        "description": "This schema represents the structure of the `privilege_details` JSON field used in the `fam_privilege_change_audit` table.\n\nThe `privilege_details` field captures the details of the privileges being changed during a privilege audit event.\nIt includes information about the `permission_type` and, types of permissions, the associated roles and scopes.\n\nAttributes:\n    permission_type (PrivilegeDetailsPermissionTypeEnum): The type of permission being changed.\n    roles (List[PrivilegeDetailsRoleSchema], optional): A list of roles associated with the permission.\n          Required for `END_USER` and `DELEGATED_ADMIN` permission types, and should be omitted for `APPLICATION_ADMIN`.\n\nValidation:\n    The schema includes a validator to ensure that roles are appropriately present or absent based on the `permission_type`."
-      },
-      "PrivilegeDetailsScopeSchema": {
-        "properties": {
-          "scope_type": {
-            "$ref": "#/components/schemas/PrivilegeDetailsScopeTypeEnum"
-          },
-          "client_id": {
-            "anyOf": [
-              {
+                "type": "object",
+                "required": ["permission_type"],
+                "title": "PrivilegeDetailsSchema",
+                "description": "This schema represents the structure of the `privilege_details` JSON field used in the `fam_privilege_change_audit` table.\n\nThe `privilege_details` field captures the details of the privileges being changed during a privilege audit event.\nIt includes information about the `permission_type` and, types of permissions, the associated roles and scopes.\n\nAttributes:\n    permission_type (PrivilegeDetailsPermissionTypeEnum): The type of permission being changed.\n    roles (List[PrivilegeDetailsRoleSchema], optional): A list of roles associated with the permission.\n          Required for `END_USER` and `DELEGATED_ADMIN` permission types, and should be omitted for `APPLICATION_ADMIN`.\n\nValidation:\n    The schema includes a validator to ensure that roles are appropriately present or absent based on the `permission_type`."
+            },
+            "PrivilegeDetailsScopeSchema": {
+                "properties": {
+                    "scope_type": {
+                        "$ref": "#/components/schemas/PrivilegeDetailsScopeTypeEnum"
+                    },
+                    "client_id": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 8
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Id"
+                    },
+                    "client_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 60
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Name"
+                    }
+                },
+                "type": "object",
+                "required": ["scope_type"],
+                "title": "PrivilegeDetailsScopeSchema"
+            },
+            "PrivilegeDetailsScopeTypeEnum": {
                 "type": "string",
-                "maxLength": 8
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Client Id"
-          },
-          "client_name": {
-            "anyOf": [
-              {
+                "enum": ["Client", "District"],
+                "title": "PrivilegeDetailsScopeTypeEnum"
+            },
+            "RoleType": {
                 "type": "string",
                 "maxLength": 60
               },
@@ -1806,56 +1964,33 @@
                 {
                   "type": "string"
                 },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          }
+                "type": "object",
+                "required": ["loc", "msg", "type"],
+                "title": "ValidationError"
+            }
         },
-        "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
-        "title": "ValidationError"
-      }
-    },
-    "securitySchemes": {
-      "6jfveou69mgford233or30hmta": {
-        "type": "oauth2",
-        "flows": {
-          "authorizationCode": {
-            "scopes": {
-
+        "securitySchemes": {
+            "6jfveou69mgford233or30hmta": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "scopes": {},
+                        "authorizationUrl": "https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/authorize",
+                        "tokenUrl": "https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/token"
+                    }
+                }
             },
-            "authorizationUrl": "https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/authorize",
-            "tokenUrl": "https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/token"
-          }
+            "APIKeyHeader": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key"
+            }
         }
-      },
-      "APIKeyHeader": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-API-Key"
-      }
-    }
-  },
-  "tags": [
-    {
-      "name": "Forest Access Management - FAM",
-      "description": "Controls the user access to different Forest basedapplications and what roles different users will have once logged in"
-    }
-  ]
+    },
+    "tags": [
+        {
+            "name": "Forest Access Management - FAM",
+            "description": "Controls the user access to different Forest basedapplications and what roles different users will have once logged in"
+        }
+    ]
 }

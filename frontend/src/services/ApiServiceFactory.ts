@@ -1,11 +1,10 @@
-import { EnvironmentSettings } from '@/services/EnvironmentSettings';
-import httpInstance from '@/services/http/HttpCommon';
-import type { AxiosInstance } from 'axios';
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import axios, { type AxiosInstance } from "axios";
 import {
     AdminUserAccessesApi,
     FAMAccessControlPrivilegesApi,
     FAMApplicationAdminApi,
-} from 'fam-admin-mgmt-api/api';
+} from "fam-admin-mgmt-api/api";
 import {
     Configuration,
     FAMApplicationsApi,
@@ -13,8 +12,9 @@ import {
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
     FAMUserTermsAndConditionsApi,
-    PermissionAuditApi
-} from 'fam-app-acsctl-api';
+    PermissionAuditApi,
+} from "fam-app-acsctl-api";
+import { TEN_SECONDS } from "@/constants/TimeUnits";
 
 type AppAccessControlApiType = {
     applicationsApi: FAMApplicationsApi;
@@ -22,7 +22,7 @@ type AppAccessControlApiType = {
     forestClientsApi: FAMForestClientsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
     userTermsAndConditionsApi: FAMUserTermsAndConditionsApi;
-    permissionAuditApi: PermissionAuditApi
+    permissionAuditApi: PermissionAuditApi;
 };
 
 type AdminManagementApiType = {
@@ -30,6 +30,9 @@ type AdminManagementApiType = {
     delegatedAdminApi: FAMAccessControlPrivilegesApi;
     adminUserAccessesApi: AdminUserAccessesApi;
 };
+
+axios.defaults.headers.common["Content-Type"] = "application/json";
+axios.defaults.timeout = TEN_SECONDS;
 
 export default class ApiServiceFactory {
     private static instance: ApiServiceFactory;
@@ -73,7 +76,7 @@ export default class ApiServiceFactory {
             permissionAuditApi: this.createApiInstance(
                 PermissionAuditApi,
                 appAccessControlBaseURL
-            )
+            ),
         };
 
         this.adminManagementApiService = {
@@ -129,7 +132,7 @@ export default class ApiServiceFactory {
         const configuration = baseURL
             ? ({ baseOptions: { baseURL } } as Configuration)
             : undefined;
-        return new c(configuration, '', httpInstance);
+        return new c(configuration, "", axios);
     }
 }
 
