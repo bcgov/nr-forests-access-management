@@ -25,6 +25,12 @@ export interface FamForestClientBase {
      * @type {string}
      * @memberof FamForestClientBase
      */
+    'client_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamForestClientBase
+     */
     'forest_client_number': string;
 }
 

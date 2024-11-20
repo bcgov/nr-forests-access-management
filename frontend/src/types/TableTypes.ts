@@ -7,4 +7,4 @@ export type ColumnType = {
     sortable?: boolean;
     filterable?: boolean;
     width?: string;
-}
+};

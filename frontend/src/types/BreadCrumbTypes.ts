@@ -1,4 +1,6 @@
+import type { RouteRecordName } from "vue-router";
+
 export type BreadCrumbType = {
-    path: string,
-    label: string
-}
+    routeName: RouteRecordName;
+    label: string;
+};

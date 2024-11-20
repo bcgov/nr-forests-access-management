@@ -1,0 +1,90 @@
+<script setup lang="ts">
+import type { FamRoleDto } from "fam-admin-mgmt-api/model";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import RadioButton from "primevue/radiobutton";
+import { ErrorMessage, Field } from "vee-validate";
+import { computed } from "vue";
+
+const props = withDefaults(
+    defineProps<{
+        role: FamRoleDto | null;
+        roleOptions: FamRoleDto[];
+        label?: string;
+        fieldId?: string;
+    }>(),
+    {
+        label: "Assign a role to the user",
+        fieldId: "role",
+    }
+);
+
+const emit = defineEmits(["change", "clearForestClients"]);
+
+// Emit role selection to parent
+const computedRole = computed({
+    get() {
+        return props.role;
+    },
+    set(selectedRole: FamRoleDto | null) {
+        emit("change", selectedRole);
+        emit("clearForestClients");
+    },
+});
+</script>
+
+<template>
+    <div class="role-select-table-container">
+        <label :for="props.fieldId">{{ props.label }}</label>
+        <ErrorMessage
+            class="table-error invalid-feedback"
+            :name="props.fieldId"
+        />
+        <!-- Field validation with v-model bound to computedRole -->
+        <Field
+            :name="props.fieldId"
+            aria-label="Role Select"
+            v-model="computedRole"
+        >
+            <DataTable :value="roleOptions">
+                <template #empty> No role found. </template>
+                <Column field="roleSelect">
+                    <template #body="{ data }">
+                        <RadioButton v-model="computedRole" :value="data" />
+                    </template>
+                </Column>
+                <Column field="roleName" header="Role">
+                    <template #body="{ data }">
+                        <span>{{ data.display_name }}</span>
+                    </template>
+                </Column>
+                <Column field="roleDescription" header="Description">
+                    <template #body="{ data }">
+                        <span>{{ data.description }}</span>
+                    </template>
+                </Column>
+            </DataTable>
+        </Field>
+    </div>
+</template>
+<style lang="scss">
+.role-select-table-container {
+    .p-datatable {
+        .p-datatable-thead > tr > th {
+            background: var(--layer-accent-01);
+        }
+
+        .p-column-header-content .p-column-title {
+            padding: 0;
+        }
+
+        .p-datatable-tbody > tr > td {
+            padding: 1rem;
+        }
+    }
+
+    .table-error {
+        display: block;
+    }
+}
+</style>
