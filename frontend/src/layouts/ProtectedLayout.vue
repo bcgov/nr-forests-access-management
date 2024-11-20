@@ -59,7 +59,7 @@ watch(termsAndConditionQuery.status, () => {
 </script>
 
 <template>
-    <div id="proctected-layout-container">
+    <div id="protected-layout-container">
         <!-- Show layout and content -->
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
@@ -80,7 +80,7 @@ watch(termsAndConditionQuery.status, () => {
     </div>
 </template>
 <style lang="scss">
-#proctected-layout-container {
+#protected-layout-container {
     .terms-and-condition-spinner-container {
         .spinner-container {
             display: flex;
