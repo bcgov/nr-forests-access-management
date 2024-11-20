@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.26.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.25.0...v1.26.0) (2024-11-20)
+
+
+### Features
+
+* Enable delegated admin feature. ([#1663](https://github.com/bcgov/nr-forests-access-management/issues/1663)) ([0667a7e](https://github.com/bcgov/nr-forests-access-management/commit/0667a7e8defdf8685c78a1b25985f0196c74e056))
+
+
+### Bug Fixes
+
+* [#1653](https://github.com/bcgov/nr-forests-access-management/issues/1653) add new callback and sign-out urls for silva ([#1667](https://github.com/bcgov/nr-forests-access-management/issues/1667)) ([b09de70](https://github.com/bcgov/nr-forests-access-management/commit/b09de7039b0abe7fbb19274be985cb2b29e974d2))
+* [#1665](https://github.com/bcgov/nr-forests-access-management/issues/1665) prod release fixes ([#1666](https://github.com/bcgov/nr-forests-access-management/issues/1666)) ([98ae7ff](https://github.com/bcgov/nr-forests-access-management/commit/98ae7ffeeb43f627131cca0b2c73c9837d6899a2))
+
 ## [1.25.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.24.0...v1.25.0) (2024-11-20)
 
 
