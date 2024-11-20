@@ -1,15 +1,11 @@
 <script setup lang="ts">
+import { IdpProvider } from "@/enum/IdpEnum";
 import LoginIcon from "@carbon/icons-vue/es/login/16";
 import Button from "primevue/button";
-import { IdpProvider } from "@/enum/IdpEnum";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 
 import logo from "@/assets/images/bc-gov-logo.png";
 import TreeLogs from "@/assets/images/tree-logs.jpg";
 import useAuth from "@/composables/useAuth";
-
-const environmentSettings = new EnvironmentSettings();
-const isProdEnvironment = environmentSettings.isProdEnvironment();
 
 const auth = useAuth();
 </script>
@@ -47,7 +43,6 @@ const auth = useAuth();
                         <Button
                             class="landing-button"
                             outlined
-                            :disabled="isProdEnvironment"
                             :label="`Login with ${IdpProvider.BCEIDBUSINESS}`"
                             id="login-business-bceid-button"
                             @click="auth.login(IdpProvider.BCEIDBUSINESS)"

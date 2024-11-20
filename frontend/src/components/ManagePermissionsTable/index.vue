@@ -1,67 +1,67 @@
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { FilterMatchMode } from "primevue/api";
-import ConfirmDialog from "primevue/confirmdialog";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import { useMutation, useQuery } from "@tanstack/vue-query";
 import RecentlyViewedIcon from "@carbon/icons-vue/es/recently-viewed/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
-import { useConfirm } from "primevue/useconfirm";
 import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
+import { FilterMatchMode } from "primevue/api";
+import Column from "primevue/column";
+import ConfirmDialog from "primevue/confirmdialog";
+import DataTable from "primevue/datatable";
+import { useConfirm } from "primevue/useconfirm";
+import { nextTick, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import TableToolbar from "@/components/Table/TableToolbar.vue";
-import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
-import ErrorText from "@/components/UI/ErrorText.vue";
+import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
+import TableToolbar from "@/components/Table/TableToolbar.vue";
 import Chip from "@/components/UI/Chip.vue";
-import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
-import {
-    AdminMgmtApiService,
-    AppActlApiService,
-} from "@/services/ApiServiceFactory";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import { formatUserNameAndId } from "@/utils/UserUtils";
+import ErrorText from "@/components/UI/ErrorText.vue";
 import {
     DEFAULT_ROW_PER_PAGE,
-    TABLE_ROWS_PER_PAGE,
-    TABLE_PAGINATOR_TEMPLATE,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
+    TABLE_PAGINATOR_TEMPLATE,
+    TABLE_ROWS_PER_PAGE,
 } from "@/constants/constants";
-import { formatAxiosError } from "@/utils/ApiUtils";
 import {
     AddAppPermissionRoute,
     AddFamPermissionRoute,
     UserDetailsRoute,
 } from "@/router/routes";
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from "@/services/ApiServiceFactory";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { selectedApp } from "@/store/ApplicationState";
+import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
-import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
+import { formatAxiosError } from "@/utils/ApiUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
 } from "@/views/AddAppPermission/utils";
+import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
 
-import NewUserTag from "./NewUserTag.vue";
 import ConfirmDialogText from "./ConfirmDialogText.vue";
+import NewUserTag from "./NewUserTag.vue";
 import {
-    getTableHeaderDescription,
-    getTableHeaderTitle,
-    getGrantButtonLabel,
-    filterList,
-    getHeaders,
-    type ConfirmTextType,
     createNotification,
     deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
+    filterList,
+    getGrantButtonLabel,
+    getHeaders,
+    getTableHeaderDescription,
+    getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
+    type ConfirmTextType,
 } from "./utils";
 
 const router = useRouter();
@@ -148,10 +148,7 @@ const delegatedAdminQuery = useQuery({
             .getAccessControlPrivilegesByApplicationId(props.appId)
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled:
-        props.tableType === ManagePermissionsTableEnum.DelegatedAdmin &&
-        // DelegatedAdminFeatureFlag
-        !environment.isProdEnvironment(),
+    enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
     select: (data) => {
         const sortedByUserName = data.sort((a, b) =>
             a.user.user_name.localeCompare(b.user.user_name)
