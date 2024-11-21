@@ -13,15 +13,16 @@ export const router = createRouter({
         }
     }),
     scrollBehavior(to) {
-        // Check if the route has the `protectedLayoutMeta`
         if (to.meta?.layout === "ProtectedLayout") {
-            return {
-                top: 0,
-                behavior: "smooth",
-                el: "#proctected-layout-container",
-            };
+            const mainElement = document.querySelector(".main");
+            if (mainElement) {
+                mainElement.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+            }
+            return false; // Prevent default Vue Router scrolling behavior
         }
-        // Default behavior (no scrolling for other routes)
-        return false;
+        return false; // Default behavior for other routes
     },
 });
