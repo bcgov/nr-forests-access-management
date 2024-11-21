@@ -22,11 +22,15 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { FamApplicationUserRoleAssignmentGetSchema } from '../model';
-// @ts-ignore
 import { FamUserInfoSchema } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
+// @ts-ignore
+import { PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema } from '../model';
+// @ts-ignore
+import { SortOrderEnum } from '../model';
+// @ts-ignore
+import { UserRoleSortByEnum } from '../model';
 /**
  * FAMApplicationsApi - axios parameter creator
  * @export
@@ -46,7 +50,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             assertParamExists('getApplicationUserById', 'userId', userId)
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getApplicationUserById', 'applicationId', applicationId)
-            const localVarPath = `/fam_applications/{application_id}/users/{user_id}`
+            const localVarPath = `/fam-applications/{application_id}/users/{user_id}`
                 .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)))
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -76,16 +80,21 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             };
         },
         /**
-         * gets the roles assignment associated with an application
+         * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationUserRoleAssignment: async (applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFamApplicationUserRoleAssignment: async (applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: UserRoleSortByEnum | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getFamApplicationUserRoleAssignment', 'applicationId', applicationId)
-            const localVarPath = `/fam_applications/{application_id}/user_role_assignment`
+            const localVarPath = `/fam-applications/{application_id}/user-role-assignment`
                 .replace(`{${"application_id"}}`, encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -101,6 +110,26 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
             // authentication 6jfveou69mgford233or30hmta required
             // oauth required
             await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
+
+            if (pageNumber !== undefined) {
+                localVarQueryParameter['pageNumber'] = pageNumber;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (sortOrder !== undefined) {
+                localVarQueryParameter['sortOrder'] = sortOrder;
+            }
+
+            if (sortBy !== undefined) {
+                localVarQueryParameter['sortBy'] = sortBy;
+            }
 
 
     
@@ -138,14 +167,19 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * gets the roles assignment associated with an application
+         * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationUserRoleAssignment(applicationId, options);
+        async getFamApplicationUserRoleAssignment(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: UserRoleSortByEnum | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFamApplicationUserRoleAssignment(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMApplicationsApi.getFamApplicationUserRoleAssignment']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -172,14 +206,19 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
             return localVarFp.getApplicationUserById(userId, applicationId, options).then((request) => request(axios, basePath));
         },
         /**
-         * gets the roles assignment associated with an application
+         * Gets paged users/roles assignment records associated with an application.
          * @summary Get Fam Application User Role Assignment
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
+         * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFamApplicationUserRoleAssignment(applicationId: number, options?: any): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>> {
-            return localVarFp.getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(axios, basePath));
+        getFamApplicationUserRoleAssignment(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: UserRoleSortByEnum | null, options?: any): AxiosPromise<PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema> {
+            return localVarFp.getFamApplicationUserRoleAssignment(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -202,14 +241,19 @@ export interface FAMApplicationsApiInterface {
     getApplicationUserById(userId: number, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<FamUserInfoSchema>;
 
     /**
-     * gets the roles assignment associated with an application
+     * Gets paged users/roles assignment records associated with an application.
      * @summary Get Fam Application User Role Assignment
      * @param {number} applicationId 
+     * @param {number | null} [pageNumber] Page number
+     * @param {number | null} [pageSize] Number of records per page
+     * @param {string | null} [search] Search by keyword
+     * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApiInterface
      */
-    getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamApplicationUserRoleAssignmentGetSchema>>;
+    getFamApplicationUserRoleAssignment(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: UserRoleSortByEnum | null, options?: RawAxiosRequestConfig): AxiosPromise<PagedResultsSchemaFamApplicationUserRoleAssignmentGetSchema>;
 
 }
 
@@ -234,15 +278,20 @@ export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInt
     }
 
     /**
-     * gets the roles assignment associated with an application
+     * Gets paged users/roles assignment records associated with an application.
      * @summary Get Fam Application User Role Assignment
      * @param {number} applicationId 
+     * @param {number | null} [pageNumber] Page number
+     * @param {number | null} [pageSize] Number of records per page
+     * @param {string | null} [search] Search by keyword
+     * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]&lt;br&gt;&amp;nbsp;
+     * @param {UserRoleSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]&lt;br&gt;&amp;nbsp;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMApplicationsApi
      */
-    public getFamApplicationUserRoleAssignment(applicationId: number, options?: RawAxiosRequestConfig) {
-        return FAMApplicationsApiFp(this.configuration).getFamApplicationUserRoleAssignment(applicationId, options).then((request) => request(this.axios, this.basePath));
+    public getFamApplicationUserRoleAssignment(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: UserRoleSortByEnum | null, options?: RawAxiosRequestConfig) {
+        return FAMApplicationsApiFp(this.configuration).getFamApplicationUserRoleAssignment(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

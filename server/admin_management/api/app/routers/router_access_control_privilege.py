@@ -10,6 +10,8 @@ from api.app.routers.router_guards import (
 from api.app.routers.router_utils import (
     access_control_privilege_service_instance, role_service_instance,
     user_service_instance)
+from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
+                                        PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateRequest,
                                      FamAccessControlPrivilegeGetResponse,
                                      FamAccessControlPrivilegeResponse,
@@ -119,18 +121,21 @@ def create_access_control_privilege_many(
 
 @router.get(
     "",
-    response_model=List[FamAccessControlPrivilegeGetResponse],
+    response_model=PagedResultsSchema[FamAccessControlPrivilegeGetResponse],
     status_code=200,
     dependencies=[Depends(authorize_by_app_id)],  # only app admin can do this
-    description="Get Delegated Admin Privileges For an Application",
+    description="Get 'Delegated Admin Privileges' for an application with pagination.",
 )
 def get_access_control_privileges_by_application_id(
     application_id: int,
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
         access_control_privilege_service_instance
     ),
+    page_params: DelegatedAdminPageParamsSchema = Depends(),
 ):
-    return access_control_privilege_service.get_acp_by_application_id(application_id)
+    return access_control_privilege_service.get_paged_delegated_admin_assignment_by_application_id(
+        application_id, page_params
+    )
 
 
 @router.delete(
