@@ -22,13 +22,17 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { FamAccessControlPrivilegeCreateRequest } from '../model';
+import { DelegatedAdminSortByEnum } from '../model';
 // @ts-ignore
-import { FamAccessControlPrivilegeGetResponse } from '../model';
+import { FamAccessControlPrivilegeCreateRequest } from '../model';
 // @ts-ignore
 import { FamAccessControlPrivilegeResponse } from '../model';
 // @ts-ignore
 import { HTTPValidationError } from '../model';
+// @ts-ignore
+import { PagedResultsSchemaFamAccessControlPrivilegeGetResponse } from '../model';
+// @ts-ignore
+import { SortOrderEnum } from '../model';
 /**
  * FAMAccessControlPrivilegesApi - axios parameter creator
  * @export
@@ -45,7 +49,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
         createAccessControlPrivilegeMany: async (famAccessControlPrivilegeCreateRequest: FamAccessControlPrivilegeCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famAccessControlPrivilegeCreateRequest' is not null or undefined
             assertParamExists('createAccessControlPrivilegeMany', 'famAccessControlPrivilegeCreateRequest', famAccessControlPrivilegeCreateRequest)
-            const localVarPath = `/access_control_privileges`;
+            const localVarPath = `/access-control-privileges`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -85,7 +89,7 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
         deleteAccessControlPrivilege: async (accessControlPrivilegeId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'accessControlPrivilegeId' is not null or undefined
             assertParamExists('deleteAccessControlPrivilege', 'accessControlPrivilegeId', accessControlPrivilegeId)
-            const localVarPath = `/access_control_privileges/{access_control_privilege_id}`
+            const localVarPath = `/access-control-privileges/{access_control_privilege_id}`
                 .replace(`{${"access_control_privilege_id"}}`, encodeURIComponent(String(accessControlPrivilegeId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -114,16 +118,21 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
             };
         },
         /**
-         * Get Delegated Admin Privileges For an Application
+         * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]
+         * @param {DelegatedAdminSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccessControlPrivilegesByApplicationId: async (applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccessControlPrivilegesByApplicationId: async (applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getAccessControlPrivilegesByApplicationId', 'applicationId', applicationId)
-            const localVarPath = `/access_control_privileges`;
+            const localVarPath = `/access-control-privileges`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -141,6 +150,26 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
 
             if (applicationId !== undefined) {
                 localVarQueryParameter['application_id'] = applicationId;
+            }
+
+            if (pageNumber !== undefined) {
+                localVarQueryParameter['pageNumber'] = pageNumber;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (sortOrder !== undefined) {
+                localVarQueryParameter['sortOrder'] = sortOrder;
+            }
+
+            if (sortBy !== undefined) {
+                localVarQueryParameter['sortBy'] = sortBy;
             }
 
 
@@ -191,14 +220,19 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get Delegated Admin Privileges For an Application
+         * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]
+         * @param {DelegatedAdminSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccessControlPrivilegesByApplicationId(applicationId, options);
+        async getAccessControlPrivilegesByApplicationId(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PagedResultsSchemaFamAccessControlPrivilegeGetResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccessControlPrivilegesByApplicationId(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.getAccessControlPrivilegesByApplicationId']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -234,14 +268,19 @@ export const FAMAccessControlPrivilegesApiFactory = function (configuration?: Co
             return localVarFp.deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get Delegated Admin Privileges For an Application
+         * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
+         * @param {number | null} [pageNumber] Page number
+         * @param {number | null} [pageSize] Number of records per page
+         * @param {string | null} [search] Search by keyword
+         * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]
+         * @param {DelegatedAdminSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccessControlPrivilegesByApplicationId(applicationId: number, options?: any): AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>> {
-            return localVarFp.getAccessControlPrivilegesByApplicationId(applicationId, options).then((request) => request(axios, basePath));
+        getAccessControlPrivilegesByApplicationId(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options?: any): AxiosPromise<PagedResultsSchemaFamAccessControlPrivilegeGetResponse> {
+            return localVarFp.getAccessControlPrivilegesByApplicationId(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -273,14 +312,19 @@ export interface FAMAccessControlPrivilegesApiInterface {
     deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
-     * Get Delegated Admin Privileges For an Application
+     * Get \'Delegated Admin Privileges\' for an application with pagination.
      * @summary Get Access Control Privileges By Application Id
      * @param {number} applicationId 
+     * @param {number | null} [pageNumber] Page number
+     * @param {number | null} [pageSize] Number of records per page
+     * @param {string | null} [search] Search by keyword
+     * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]
+     * @param {DelegatedAdminSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
-    getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<FamAccessControlPrivilegeGetResponse>>;
+    getAccessControlPrivilegesByApplicationId(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options?: RawAxiosRequestConfig): AxiosPromise<PagedResultsSchemaFamAccessControlPrivilegeGetResponse>;
 
 }
 
@@ -316,15 +360,20 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
     }
 
     /**
-     * Get Delegated Admin Privileges For an Application
+     * Get \'Delegated Admin Privileges\' for an application with pagination.
      * @summary Get Access Control Privileges By Application Id
      * @param {number} applicationId 
+     * @param {number | null} [pageNumber] Page number
+     * @param {number | null} [pageSize] Number of records per page
+     * @param {string | null} [search] Search by keyword
+     * @param {SortOrderEnum | null} [sortOrder] Column sorting order by &lt;br&gt;Possible values: [asc, desc]
+     * @param {DelegatedAdminSortByEnum | null} [sortBy] Column to be sorted by &lt;br&gt;Possible values: [create_date, user_name, user_type_code, email, full_name, role_display_name, forest_client_number]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMAccessControlPrivilegesApi
      */
-    public getAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig) {
-        return FAMAccessControlPrivilegesApiFp(this.configuration).getAccessControlPrivilegesByApplicationId(applicationId, options).then((request) => request(this.axios, this.basePath));
+    public getAccessControlPrivilegesByApplicationId(applicationId: number, pageNumber?: number | null, pageSize?: number | null, search?: string | null, sortOrder?: SortOrderEnum | null, sortBy?: DelegatedAdminSortByEnum | null, options?: RawAxiosRequestConfig) {
+        return FAMAccessControlPrivilegesApiFp(this.configuration).getAccessControlPrivilegesByApplicationId(applicationId, pageNumber, pageSize, search, sortOrder, sortBy, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

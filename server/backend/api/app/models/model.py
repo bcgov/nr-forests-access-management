@@ -5,6 +5,7 @@ from sqlalchemy import (BigInteger, Column, ForeignKey, ForeignKeyConstraint,
                         Identity, Index, Integer, PrimaryKeyConstraint, String,
                         UniqueConstraint, func, text)
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import (Mapped, declarative_base, mapped_column,
                             relationship)
 
@@ -420,6 +421,14 @@ class FamUser(Base):
         },
     )
 
+    # --- as hybrid Mapped attributes
+    @hybrid_property
+    def full_name(self):
+        if self.first_name is not None:
+            return self.first_name + " " + self.last_name
+        else:
+            return self.last_name
+
     def __str__(self):
         return f"FamUser({self.user_id}, {self.user_name}, {self.user_type_code})"
 
@@ -706,7 +715,7 @@ class FamUserRoleXref(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        server_default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -716,7 +725,8 @@ class FamUserRoleXref(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        server_default=func.utcnow(),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 

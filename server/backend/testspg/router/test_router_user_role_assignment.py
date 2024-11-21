@@ -3,8 +3,8 @@ import logging
 from http import HTTPStatus
 
 import starlette.testclient
-import testspg.db_test_utils as db_test_utils
 import testspg.jwt_utils as jwt_utils
+import testspg.utils as utils
 from api.app.constants import (ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, UserType)
@@ -273,6 +273,7 @@ def test_create_user_role_assignment_many_with_concrete_role(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     """
     test assign a concrete role to a user
@@ -303,8 +304,9 @@ def test_create_user_role_assignment_many_with_concrete_role(
     assignment_user_role_concrete = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=detail["role"]["application"]["application_id"],
-        requester=requester
-    )
+        requester=requester,
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_concrete) == 1
     assert (
         assignment_user_role_concrete[0].user_role_xref_id
@@ -404,6 +406,7 @@ def test_create_user_role_assignment_many_with_abstract_role(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     """
     test assign an abscrate role to a user with multiple forest client numbers
@@ -436,7 +439,8 @@ def test_create_user_role_assignment_many_with_abstract_role(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_abstract) == 2
     assert assignment_user_role_abstract[0].user_role_xref_id in [
         data[0]["detail"]["user_role_xref_id"],
@@ -477,6 +481,7 @@ def test_create_user_role_assignment_many_with_same_username(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -514,7 +519,8 @@ def test_create_user_role_assignment_many_with_same_username(
         db=db_pg_session,
         application_id=assignment_one["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 3
 
     # cleanup
@@ -544,6 +550,7 @@ def test_assign_same_application_roles_for_different_environments(
     fom_test_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -591,7 +598,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -607,7 +615,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -626,13 +635,15 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_DEV_APPLICATION_ID,
         requester=fom_dev_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
     assignment_user_role_items = crud_application.get_application_role_assignments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
 
     # cleanup
@@ -647,7 +658,8 @@ def test_assign_same_application_roles_for_different_environments(
         db=db_pg_session,
         application_id=FOM_TEST_APPLICATION_ID,
         requester=fom_test_access_admin_requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
 
 
@@ -736,7 +748,7 @@ def test_self_grant_fail(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
-    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
         db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is None, "Expected user role assignment not to be created"
@@ -1056,6 +1068,7 @@ def test_delete_user_role_assignment(
     fom_dev_access_admin_token,
     get_current_requester_by_token,
     override_get_verified_target_user,
+    default_app_role_assignment_page_Params
 ):
     # override router guard dependencies
     override_get_verified_target_user()
@@ -1077,7 +1090,8 @@ def test_delete_user_role_assignment(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 1
     assert (
         assignment_user_role_items[0].user_role_xref_id
@@ -1096,7 +1110,8 @@ def test_delete_user_role_assignment(
         db=db_pg_session,
         application_id=data[0]["detail"]["role"]["application"]["application_id"],
         requester=requester,
-    )
+        page_params=default_app_role_assignment_page_Params
+    ).results
     assert len(assignment_user_role_items) == 0
 
 
@@ -1123,7 +1138,7 @@ def test_self_remove_grant_fail(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
-    row = db_test_utils.get_user_role_by_cognito_user_id_and_role_id(
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
         db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
     )
     assert row is not None, "Expected user role assignment not to be deleted"

@@ -1,34 +1,25 @@
 import logging.config
 import os.path
 
-from pydantic import ValidationError
-
-from api.app.exception_handlers import (
-    requests_http_error_handler,
-    unhandled_exception_handler,
-    validation_exception_handler,
-)
-from api.config.config import get_allow_origins, get_root_path, is_bcsc_key_enabled
+from api.app.exception_handlers import (requests_http_error_handler,
+                                        unhandled_exception_handler,
+                                        validation_exception_handler)
+from api.config.config import (get_allow_origins, get_root_path,
+                               is_bcsc_key_enabled)
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
+from pydantic import ValidationError
 from requests import HTTPError
 from starlette.responses import RedirectResponse
 
 from .jwt_validation import init_jwks
 from .kms_lookup import init_bcsc_public_key
-from .routers import (
-    router_application,
-    router_bcsc_proxy,
-    router_forest_client,
-    router_idim_proxy,
-    router_smoke_test,
-    router_user_role_assignment,
-    router_user_terms_conditions,
-    router_guards,
-    router_user,
-    router_permission_audit
-)
+from .routers import (router_application, router_bcsc_proxy,
+                      router_forest_client, router_guards, router_idim_proxy,
+                      router_permission_audit, router_smoke_test, router_user,
+                      router_user_role_assignment,
+                      router_user_terms_conditions)
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -105,7 +96,7 @@ def main():
 apiPrefix = ""
 app.include_router(
     router_application.router,
-    prefix=apiPrefix + "/fam_applications",
+    prefix=apiPrefix + "/fam-applications",
     tags=["FAM Applications"],
 )
 app.include_router(

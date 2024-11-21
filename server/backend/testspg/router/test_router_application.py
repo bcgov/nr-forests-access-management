@@ -1,46 +1,47 @@
 import logging
 from http import HTTPStatus
+from unittest.mock import Mock
 
+import pytest
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
-from api.app.constants import (
-    CURRENT_TERMS_AND_CONDITIONS_VERSION,
-    ERROR_CODE_INVALID_APPLICATION_ID,
-    ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-    UserType,
-)
+from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+                               DEFAULT_PAGE_SIZE,
+                               ERROR_CODE_INVALID_APPLICATION_ID,
+                               ERROR_CODE_TERMS_CONDITIONS_REQUIRED, MIN_PAGE,
+                               SortOrderEnum, UserRoleSortByEnum, UserType)
+from api.app.crud import crud_application
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
+from api.app.routers.router_guards import (
+    authorize_by_app_id, enforce_bceid_terms_conditions_guard)
+from api.app.schemas.pagination import UserRolePageParamsSchema
 from sqlalchemy import insert
-from testspg.constants import (
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
-    ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-    ACCESS_GRANT_FOM_DEV_CR_IDIR,
-    FOM_DEV_APPLICATION_ID,
-    ROLE_NAME_FOM_REVIEWER,
-    ROLE_NAME_FOM_SUBMITTER_00000001,
-    ROLE_NAME_FOM_SUBMITTER_00001018,
-    TEST_CREATOR,
-    USER_NAME_BCEID_LOAD_3_TEST,
-    TEST_USER_ID,
-    NOT_EXIST_TEST_USER_ID,
-    NOT_EXIST_ROLE_NAME,
-)
+from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00000001_IDIR,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_AR_00001018_IDIR,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L3T,
+                               ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+                               ACCESS_GRANT_FOM_DEV_CR_IDIR,
+                               FOM_DEV_APPLICATION_ID, NOT_EXIST_ROLE_NAME,
+                               NOT_EXIST_TEST_USER_ID, ROLE_NAME_FOM_REVIEWER,
+                               ROLE_NAME_FOM_SUBMITTER_00000001,
+                               ROLE_NAME_FOM_SUBMITTER_00001018, TEST_CREATOR,
+                               TEST_USER_ID, USER_NAME_BCEID_LOAD_3_TEST)
+from testspg.test_data.app_user_roles_mock_data import \
+    APP_USER_ROLE_PAGED_RESULT_2_RECORDS
 
 LOGGER = logging.getLogger(__name__)
-end_point = f"{apiPrefix}/fam_applications"
+end_point = f"{apiPrefix}/fam-applications"
 end_point_user_by_id = f"{end_point}/{{application_id}}/users/{{user_id}}"
 
 # GET enpoint for users' access grants.
-# ("{apiPrefix}/fam_applications/{application_id}/user_role_assignment")
+# ("{apiPrefix}/fam-applications/{application_id}/user-role-assignment")
 get_application_role_assignment_end_point = (
-    end_point + f"/{FOM_DEV_APPLICATION_ID}/user_role_assignment"
+    end_point + f"/{FOM_DEV_APPLICATION_ID}/user-role-assignment"
 )
 
 TEST_APPLICATION_NAME_FOM_DEV = "FOM_DEV"
@@ -49,11 +50,23 @@ TEST_APPLICATION_ID_NOT_FOUND = 0
 ACCESS_ROLES_FOM_DEV_ONLY = ["FOM_DEV_ADMIN"]
 
 
+@pytest.fixture(scope="function")
+def get_fam_application_user_role_assignment_dependencies_override(test_client_fixture):
+    """
+    Helper fixture for unit testing to override dependencies
+    for endpoint 'get_fam_application_user_role_assignment'
+    """
+    app = test_client_fixture.app
+    app.dependency_overrides[authorize_by_app_id] = lambda: None
+    app.dependency_overrides[enforce_bceid_terms_conditions_guard] = lambda: None
+    yield test_client_fixture
+
+
 def test_get_fam_application_user_role_assignment_no_matching_application(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
 ):
     role_assignment_end_point = (
-        end_point + f"/{TEST_APPLICATION_ID_NOT_FOUND}/user_role_assignment"
+        end_point + f"/{TEST_APPLICATION_ID_NOT_FOUND}/user-role-assignment"
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -71,7 +84,7 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 0  # initially no one is assigned with FOM_DEV roles
 
 
@@ -98,7 +111,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == concrete_role_data["user_role_xref_id"]
     assert (
@@ -133,7 +146,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    data = response.json()
+    data = response.json().get("results")
     assert len(data) == 1
     assert data[0]["user_role_xref_id"] == abstract_role_data["user_role_xref_id"]
     assert (
@@ -163,9 +176,9 @@ def test_fam_application_endpoints_invlid_path_application_id_type(
     invalid_path_param = "not-int-str-application-id"
     invalid_path_router_msg = "Input should be a valid integer"
 
-    # endpont GET: /{application_id}/user_role_assignment
+    # endpont GET: /{application_id}/user-role-assignment
     application_role_assignment_endpoint = (
-        end_point + f"/{invalid_path_param}/user_role_assignment"
+        end_point + f"/{invalid_path_param}/user-role-assignment"
     )
     response = test_client_fixture.get(
         application_role_assignment_endpoint, headers=jwt_utils.headers(token)
@@ -215,7 +228,7 @@ def test_get_user_role_assignments_filtering_for_app_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # APP_ADMIN should have visibility for FOM_DEV all user access grants.
@@ -288,7 +301,7 @@ def test_get_user_role_assignments_filtering_for_idir_delegated_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # This FOM_DEV IDIR DELEGATED_ADMIN admin user with FOM_REVIEWER and
@@ -447,7 +460,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     access_grants_response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
-    response_data = access_grants_response.json()
+    response_data = access_grants_response.json().get("results")
 
     # --- Verify
     # This FOM_DEV BCEID DELEGATED_ADMIN admin user with FOM_REVIEWER and
@@ -628,3 +641,96 @@ def test_get_application_user_by_id_application_authorization(
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+@pytest.mark.parametrize(
+    "invalid_page_params",
+    [
+        {"pageNumber":0, "pageSize": 10},
+        {"pageNumber":1, "pageSize": 10000000},
+        {"pageNumber":"invalid"},
+        {"pageSize":"invalid"},
+        {"sortBy": "invalid_column", "sortOrder": "asc"},
+        {"sortBy": "user_name", "sortOrder": "invalid_sort_order"},
+        {"search":"long_search_string_exceeds_maximum_search_length"},
+    ]
+)
+def test_get_fam_application_user_role_assignment__pagining_with_invalid_page_params(
+    mocker, test_client_fixture,
+    get_fam_application_user_role_assignment_dependencies_override,
+    test_rsa_key, invalid_page_params
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments",
+        return_value=[],
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token),
+        params=invalid_page_params
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_get_fam_application_user_role_assignment__pagining_with_valid_page_params_result_success(
+    mocker, test_client_fixture,
+    get_fam_application_user_role_assignment_dependencies_override,
+    test_rsa_key
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments",
+        return_value=APP_USER_ROLE_PAGED_RESULT_2_RECORDS,
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token),
+        params={"pageNumber":1, "pageSize": 10}  # valid page_params
+    )
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_get_fam_application_user_role_assignment__no_params_in_request_then_use_defaults_result_success(
+    test_client_fixture,
+    get_fam_application_user_role_assignment_dependencies_override,
+    test_rsa_key
+):
+    """
+    This test tests a particular case when request does not provide sorting params then router should
+    automatically gets defaults values (if any). In this case of page_params should be supplied to
+    "crud_application.get_application_role_assignments()" method with "default" page_params attributes.
+
+    Python Mock library does not seem to provide an easy way (or documented) to restore back the method
+    being mocked. The easy way is to get the original method reference -> mock the method -> then
+    reassign the method reference back to original method.
+
+    Example:
+        original_fn = crud_application.get_application_role_assignments
+        crud_application.get_application_role_assignments = Mock(...)
+        ...
+        ... do some testing and verify with the mock
+        ...
+        crud_application.get_application_role_assignments = original_fn
+
+        ref: https://discuss.python.org/t/right-way-to-use-reset-mock/58427/2
+    """
+    original_fn = crud_application.get_application_role_assignments
+    crud_application.get_application_role_assignments = Mock(return_value=APP_USER_ROLE_PAGED_RESULT_2_RECORDS)
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    # pytest has somewhat difficult way to assert arguments being called at mock.
+    # see ref: https://docs.python.org/3.3/library/unittest.mock.html#unittest.mock.Mock.call_args
+    mock_fn_call_args = crud_application.get_application_role_assignments.call_args
+
+    # validate defaults are provided when no request param is in the request.
+    assert mock_fn_call_args[1]["page_params"] == UserRolePageParamsSchema(
+        page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None,
+        sort_order=SortOrderEnum.DESC, sort_by=UserRoleSortByEnum.CREATE_DATE
+    )
+
+    # !! Below line is very important (to restor the method from mock) for not to interfere subsequent tests cases.
+    crud_application.get_application_role_assignments = original_fn

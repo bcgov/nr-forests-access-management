@@ -56,5 +56,11 @@ export interface FamAccessControlPrivilegeGetResponse {
      * @memberof FamAccessControlPrivilegeGetResponse
      */
     'role': FamRoleWithClientDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamAccessControlPrivilegeGetResponse
+     */
+    'create_date': string;
 }
 

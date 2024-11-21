@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import List, Literal, Optional, Union
 
 from api.app.constants import (APPLICATION_DESC_MAX_LEN, CLIENT_NAME_MAX_LEN,
@@ -259,6 +260,7 @@ class FamAccessControlPrivilegeGetResponse(BaseModel):
     role_id: int
     user: FamUserInfoDto
     role: FamRoleWithClientDto
+    create_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

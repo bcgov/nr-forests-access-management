@@ -1,5 +1,5 @@
 from api.app.main import apiPrefix
-from testspg.fixture.permission_audit_fixture import (
+from testspg.test_data.permission_audit_fixture import (
     APPLICATION_ID_1, MOCKED_PERMISSION_HISTORY_RESPONSE, USER_ID_1)
 
 ENDPOINT_ROOT = "permission-audit-history"
