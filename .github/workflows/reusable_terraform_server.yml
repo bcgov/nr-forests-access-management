@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -80,7 +80,7 @@ jobs:
           rm -rf auth_function_packaging
 
       - name: Auth function upload zip file artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: fam-auth-function
           path: ./infrastructure/server/fam_auth_function.zip
@@ -103,7 +103,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM API
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: fam-ui-api
           path: ./infrastructure/server/fam-ui-api.zip
@@ -126,7 +126,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM Admin Management API
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: fam-admin-management-api
           path: ./infrastructure/server/fam-admin-management-api.zip
@@ -145,7 +145,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terragrunt
-        uses: autero1/action-terragrunt@v1.3.2
+        uses: autero1/action-terragrunt@v3.0.2
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 

@@ -49,7 +49,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terragrunt
-        uses: autero1/action-terragrunt@v1.3.2
+        uses: autero1/action-terragrunt@v3.0.2
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
