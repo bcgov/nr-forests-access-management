@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.27.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.26.0...v1.27.0) (2024-11-21)
+
+
+### Features
+
+* backend pagination sort search ([#1659](https://github.com/bcgov/nr-forests-access-management/issues/1659)) ([6346b46](https://github.com/bcgov/nr-forests-access-management/commit/6346b46be50ab6bba6dcf68d1869fa986adfe746))
+
+
+### Miscellaneous
+
+* update renovate.json ([#1669](https://github.com/bcgov/nr-forests-access-management/issues/1669)) ([ec348bb](https://github.com/bcgov/nr-forests-access-management/commit/ec348bb3ef9e663ac43bd8ab5e1e0ca4418517d4))
+
 ## [1.26.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.25.0...v1.26.0) (2024-11-20)
 
 
