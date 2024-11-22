@@ -21,7 +21,7 @@ from .fam_user_role_assignment_response import FamUserRoleAssignmentRes
 from .fam_user_type import FamUserTypeSchema
 from .fam_user_update_response import FamUserUpdateResponseSchema
 # ------------------------------------- Forest Client API Integraion ---------------------------------------- #
-from .forest_client_integration_find_response import \
+from .forest_client_integration import \
     ForestClientIntegrationFindResponseSchema
 # ------------------------------------- GC Notify Integraion ---------------------------------------- #
 from .gc_notify_grant_access_email_param import \

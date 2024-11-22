@@ -1,8 +1,11 @@
 import logging
 from http import HTTPStatus
+from typing import List
 
 import requests
 from api.app.constants import ApiInstanceEnv
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -23,6 +26,16 @@ class ForestClientIntegrationService():
           For FAM environment management relating to the use of external API,
           see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
+    @staticmethod
+    def construct_fc_number_search_params(
+        forest_client_numbers: List[str]
+    ):
+        # return format as e.g.: &id=00001011&id=00001012
+        return "" if not forest_client_numbers else {
+            f"&id={item}" for item in forest_client_numbers
+        }
+
+
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
@@ -55,8 +68,20 @@ class ForestClientIntegrationService():
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
 
+        return self.__make_request(url=url)
+
+    def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
+        request_params = (f"page={search_params.page}&size={search_params.size}{
+            ForestClientIntegrationService.construct_fc_number_search_params(search_params.forest_client_numbers)
+        }")
+        url = f"{self.api_clients_url}/search?{request_params}"
+        LOGGER.debug(f"ForestClientService search() - url: {url}")
+
+        return self.__make_request(url=url)
+
+    def __make_request(self, url, params=None):
         try:
-            r = self.session.get(url, timeout=self.TIMEOUT)
+            r = self.session.get(url, timeout=self.TIMEOUT, params=params)
             r.raise_for_status()
             # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
             # will create circular dependency issue. let crud to map the result.
