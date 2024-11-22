@@ -91,10 +91,10 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
 def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user()
+    override_depends__get_verified_target_user()
 
     # test user role assignment
     # create
@@ -126,10 +126,10 @@ def test_get_fam_application_user_role_assignment_concrete_role(
 def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_get_verified_target_user,
+    override_depends__get_verified_target_user,
 ):
     # override router guard dependencies
-    override_get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     # test user role assignment for abstract role
     # create
@@ -401,7 +401,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     test_rsa_key,
     create_test_user_role_assignments,
     fom_dev_access_admin_token,
-    override_enforce_bceid_terms_conditions_guard,
+    override_depends__enforce_bceid_terms_conditions_guard,
 ):
     """
     The test focus on filtering of the GET endpoint for application's user/role
@@ -442,7 +442,7 @@ def test_get_user_role_assignments_filtering_for_bceid_delegated_admin(
     )
 
     # override router guard dependencies
-    override_enforce_bceid_terms_conditions_guard()
+    override_depends__enforce_bceid_terms_conditions_guard()
 
     # Call GET endpoint with FOM_DEV DELEGATED_ADMIN user level to
     # obtain access grants for FOM_DEV application.
