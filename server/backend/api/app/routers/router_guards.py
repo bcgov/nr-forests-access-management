@@ -318,7 +318,7 @@ async def get_target_user_from_id(
         return target_new_user
 
 
-async def authorize_by_user_type(
+def authorize_by_user_type(
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
 ):
@@ -344,7 +344,7 @@ async def authorize_by_user_type(
             )
 
 
-async def internal_only_action(
+def internal_only_action(
     requester: RequesterSchema = Depends(get_current_requester),
 ):
     if requester.user_type_code is not UserType.IDIR:
@@ -366,7 +366,7 @@ def external_delegated_admin_only_action(
         )
 
 
-async def enforce_self_grant_guard(
+def enforce_self_grant_guard(
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
 ):
