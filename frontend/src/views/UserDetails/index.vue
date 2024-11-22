@@ -11,7 +11,6 @@ import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import { getApplicationById } from "@/utils/ApiUtils";
 
 const route = useRoute();
