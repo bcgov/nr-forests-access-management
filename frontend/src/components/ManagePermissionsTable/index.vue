@@ -27,16 +27,11 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from "@/constants/constants";
-import {
-    AddAppPermissionRoute,
-    AddFamPermissionRoute,
-    UserDetailsRoute,
-} from "@/router/routes";
+import { UserDetailsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
@@ -56,7 +51,6 @@ import {
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
     filterList,
-    getGrantButtonLabel,
     getHeaders,
     getTableHeaderDescription,
     getTableHeaderTitle,
@@ -66,8 +60,6 @@ import {
 
 const router = useRouter();
 const route = useRoute();
-
-const environment = new EnvironmentSettings();
 
 const newFamAdminIds = route.query[NewFamAdminQueryParamKey]
     ? String(route.query[NewFamAdminQueryParamKey]).split(",").map(Number)
@@ -237,28 +229,6 @@ const getQueryErrorValue = () => {
     }
 
     return undefined;
-};
-
-const handleAddButton = () => {
-    if (props.tableType === ManagePermissionsTableEnum.AppAdmin) {
-        router.push({ name: AddFamPermissionRoute.name });
-    } else if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        router.push({
-            name: AddAppPermissionRoute.name,
-            query: {
-                requestType: "addUserPermission",
-                applicationId: props.appId,
-            },
-        });
-    } else if (props.tableType === ManagePermissionsTableEnum.DelegatedAdmin) {
-        router.push({
-            name: AddAppPermissionRoute.name,
-            query: {
-                requestType: "addDelegatedAdmin",
-                applicationId: props.appId,
-            },
-        });
-    }
 };
 
 const navigateToUserDetails = (userId: string) => {
@@ -495,8 +465,6 @@ const highlightNewUserAccessRow = (
 
         <TableToolbar
             :filter="tableFilter['global'].value"
-            :btn-label="getGrantButtonLabel(tableType)"
-            :btn-on-click="handleAddButton"
             input-placeholder="Search by keyword"
             @change="handleSearchChange"
         />

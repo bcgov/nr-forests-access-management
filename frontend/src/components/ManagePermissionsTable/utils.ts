@@ -76,24 +76,6 @@ export const getTableHeaderDescription = (
 };
 
 /**
- * Generates the label for a grant button based on the authorization group.
- */
-export const getGrantButtonLabel = (
-    tableType: ManagePermissionsTableEnum
-): string => {
-    switch (tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
-            return "Add application admin";
-        case ManagePermissionsTableEnum.AppUser:
-            return "Add user permission";
-        case ManagePermissionsTableEnum.DelegatedAdmin:
-            return "Create delegated admin";
-        default:
-            return "";
-    }
-};
-
-/**
  * Generates a list of headers based on the authorization group used for skeleton.
  */
 export const getHeaders = (tableType: ManagePermissionsTableEnum): string[] => {
