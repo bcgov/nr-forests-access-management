@@ -219,26 +219,22 @@ const addNotifications = (newNotifications: PermissionNotificationType[]) => {
  * Handle the add permission action
  */
 const handleAddButton = () => {
+    if (!selectedApp.value?.id) {
+        return;
+    }
     // FAM application id = 1
-    if (selectedApp.value?.id === 1) {
+    else if (selectedApp.value.id === 1) {
         router.push({ name: AddFamPermissionRoute.name });
-    }
-    // App User table will have a tab index of 0
-    else if (activeTabIndex.value === 0) {
+    } else {
+        // App User table will have a tab index of 0
+        // Delegated admin table will have a tab index of 1
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
-                requestType: "addUserPermission",
-                applicationId: selectedApp.value?.id,
-            },
-        });
-    }
-    // Delegated admin table will have a tab index of 0
-    else if (activeTabIndex.value === 1) {
-        router.push({
-            name: AddAppPermissionRoute.name,
-            query: {
-                requestType: "addDelegatedAdmin",
+                requestType:
+                    activeTabIndex.value === 0
+                        ? "addUserPermission"
+                        : "addDelegatedAdmin",
                 applicationId: selectedApp.value?.id,
             },
         });
