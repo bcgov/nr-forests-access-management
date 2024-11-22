@@ -31,9 +31,9 @@ class ForestClientIntegrationService():
         forest_client_numbers: List[str]
     ):
         # return format as e.g.: &id=00001011&id=00001012
-        return "" if not forest_client_numbers else {
-            f"&id={item}" for item in forest_client_numbers
-        }
+        return "" if not forest_client_numbers else (
+            "".join(f"&id={item}" for item in forest_client_numbers)
+        )
 
 
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
@@ -71,6 +71,22 @@ class ForestClientIntegrationService():
         return self.__make_request(url=url)
 
     def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
+        """
+        Find Forest Client(s) with FC API "search"
+
+        :param search_params (ForestClientIntegrationSearchParmsSchema): search params
+            for making FC API search request.
+
+        :return (json): Search result as List for a Forest Client information object.
+            FC API will return:
+            * Not found case (e.g., &id=99999999): 200 []
+            * Found case (e.g., &id=00001011&id=00001012): 200 [
+                {"clientNumber": "00001011",...},{"clientNumber": "00001012",...}]
+            * Invalid format (e.g., &id=kfjencid): 200 []
+            * Not exact 8 digits: 200 []
+            * With mix of ids found and ids not found (e.g., &id=00001011&id=99999999):
+                [{"clientNumber": "00001011"}]
+        """
         request_params = (f"page={search_params.page}&size={search_params.size}{
             ForestClientIntegrationService.construct_fc_number_search_params(search_params.forest_client_numbers)
         }")
@@ -86,7 +102,7 @@ class ForestClientIntegrationService():
             # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
             # will create circular dependency issue. let crud to map the result.
             api_result = r.json()
-            LOGGER.debug(f"API result: {api_result}")
+            LOGGER.debug(f"FC API result: {api_result}. Took: {r.elapsed.total_seconds()} seconds")
             return [api_result]
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
