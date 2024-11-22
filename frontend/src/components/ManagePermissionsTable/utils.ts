@@ -29,6 +29,7 @@ export const filterList = [
     "user.last_name",
     "user.user_name",
     "user.user_type.description",
+    "create_date",
 ];
 
 /**
@@ -98,6 +99,7 @@ export const getHeaders = (tableType: ManagePermissionsTableEnum): string[] => {
                 "Full Name",
                 "Email",
                 "Role",
+                "Added On",
                 "Action",
             ];
         case ManagePermissionsTableEnum.DelegatedAdmin:
@@ -107,6 +109,7 @@ export const getHeaders = (tableType: ManagePermissionsTableEnum): string[] => {
                 "Full Name",
                 "Email",
                 "Role Enabled To Assign",
+                "Added On",
                 "Action",
             ];
         default:
