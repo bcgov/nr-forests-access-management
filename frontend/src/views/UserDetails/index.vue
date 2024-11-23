@@ -9,6 +9,9 @@ import UserPermissionHistoryTable from "@/components/UserPermissionHistoryTable"
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
+import { useQuery } from "@tanstack/vue-query";
+import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import { getApplicationById } from "@/utils/ApiUtils";
 
 const route = useRoute();
 
@@ -28,6 +31,19 @@ const navigateBack = () => {
     });
 };
 
+/**
+ * Get the FamApplicationDto with the applicationId,
+ * it is used to display the app name in subtitle.
+ */
+const adminUserAccessQuery = useQuery({
+    queryKey: ["admin-user-access"],
+    queryFn: () =>
+        AdminMgmtApiService.adminUserAccessesApi
+            .adminUserAccessPrivilege()
+            .then((res) => res.data),
+    select: (data) => getApplicationById(Number(applicationId), data),
+});
+
 // Breadcrumb configuration
 const crumbs: BreadCrumbType[] = [
     {
@@ -40,7 +56,11 @@ const crumbs: BreadCrumbType[] = [
 <template>
     <div class="user-detail-page-container">
         <BreadCrumbs :crumbs="crumbs" />
-        <PageTitle class="user-detail-page-title" title="Permissions History" />
+        <PageTitle
+            class="user-detail-page-title"
+            title="Permissions History"
+            :subtitle="`Check a user's ${adminUserAccessQuery.data.value?.description} permission history`"
+        />
         <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
         <div class="gray-container">
             <UserPermissionHistoryTable
