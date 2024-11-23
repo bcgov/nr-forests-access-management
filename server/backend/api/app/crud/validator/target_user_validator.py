@@ -1,19 +1,13 @@
 import copy
 import logging
 
-from api.app.constants import (
-    ERROR_CODE_INVALID_REQUEST_PARAMETER,
-    ApiInstanceEnv,
-    IdimSearchUserParamType,
-    UserType,
-)
+from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               ApiInstanceEnv, IdimSearchUserParamType,
+                               UserType)
 from api.app.integration.idim_proxy import IdimProxyService
-from api.app.schemas import (
-    IdimProxyBceidSearchParamSchema,
-    IdimProxySearchParamSchema,
-    RequesterSchema,
-    TargetUserSchema,
-)
+from api.app.schemas import (IdimProxyBceidSearchParamSchema,
+                             IdimProxySearchParamSchema, RequesterSchema,
+                             TargetUserSchema)
 from api.app.utils import utils
 
 LOGGER = logging.getLogger(__name__)
@@ -26,7 +20,7 @@ class TargetUserValidator:
         target_user: TargetUserSchema,
         api_instance_env: ApiInstanceEnv,
     ):
-        LOGGER.debug(f"Validating target env set to: {api_instance_env}")
+        LOGGER.debug(f"Validating target_user - {target_user.user_id}, target env set to: {api_instance_env}")
         self.verified_target_user = copy.deepcopy(target_user)
         self.idim_proxy_service = IdimProxyService(requester, api_instance_env)
 
@@ -96,8 +90,10 @@ class TargetUserValidator:
             self.verified_target_user.email = search_result.get("email")
 
         else:
-            error_msg = f"Invalid request, cannot find user {self.verified_target_user.user_name} "
-            f"{self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
+            error_msg = (
+                f"Invalid request, cannot find user {self.verified_target_user.user_name} "
+                f"{self.verified_target_user.user_guid} with user type {self.verified_target_user.user_type_code}"
+            )
             utils.raise_http_exception(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
                 error_msg=error_msg,

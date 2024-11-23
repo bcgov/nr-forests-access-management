@@ -63,7 +63,7 @@ def authorize_by_fam_admin(claims: dict = Depends(validate_token)):
 
 # for app admin and FAM admin, we require the access group in the token
 # the get_request_cognito_user_id will check the access in the token
-async def get_current_requester(
+def get_current_requester(
     request_cognito_user_id: str = Depends(get_request_cognito_user_id),
     access_roles=Depends(get_access_roles),
     user_service: UserService = Depends(user_service_instance),
@@ -83,7 +83,7 @@ async def get_current_requester(
 # for delegated admin, there is no access group in the token, our auth lambda function only add app admin to the token
 # get_request_cognito_user_id_without_access_check will return the requester without checking the access group in the token
 # this should only used by the get_admin_user_access API, all other APIs require admin access in the token
-async def get_current_requester_without_access_check(
+def get_current_requester_without_access_check(
     request_cognito_user_id: str = Depends(
         get_request_cognito_user_id_without_access_check
     ),
@@ -203,7 +203,7 @@ async def get_request_role_from_id(
             return None
 
 
-async def get_verified_target_user(
+def get_verified_target_user(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
     role: FamRole = Depends(get_request_role_from_id),
@@ -222,7 +222,7 @@ async def get_verified_target_user(
     return target_user_validator.verify_user_exist()
 
 
-async def enforce_self_grant_guard(
+def enforce_self_grant_guard(
     requester: Requester = Depends(get_current_requester),
     target_user: TargetUser = Depends(get_target_user_from_id),
 ):
@@ -297,7 +297,7 @@ def authorize_by_app_id(
         )
 
 
-async def validate_param_application_admin_id(
+def validate_param_application_admin_id(
     application_admin_id: int,
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
@@ -313,7 +313,7 @@ async def validate_param_application_admin_id(
         )
 
 
-async def validate_param_application_id(
+def validate_param_application_id(
     application_admin_request: FamAppAdminCreateRequest,
     application_service: ApplicationService = Depends(application_service_instance),
 ):
@@ -329,7 +329,7 @@ async def validate_param_application_id(
         )
 
 
-async def validate_param_user_type(application_admin_request: FamAppAdminCreateRequest):
+def validate_param_user_type(application_admin_request: FamAppAdminCreateRequest):
     if (
         not application_admin_request.user_type_code
         or application_admin_request.user_type_code != UserType.IDIR
@@ -342,7 +342,7 @@ async def validate_param_user_type(application_admin_request: FamAppAdminCreateR
         )
 
 
-async def validate_param_access_control_privilege_id(
+def validate_param_access_control_privilege_id(
     access_control_privilege_id: int,
     access_control_privilege_service: AccessControlPrivilegeService = Depends(
         access_control_privilege_service_instance
