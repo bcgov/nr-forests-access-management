@@ -68,7 +68,7 @@ class ForestClientIntegrationService():
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
 
-        return self.__make_request(url=url)
+        return [self.__do_request(url=url)]
 
     def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
         """
@@ -93,9 +93,9 @@ class ForestClientIntegrationService():
         url = f"{self.api_clients_url}/search?{request_params}"
         LOGGER.debug(f"ForestClientService search() - url: {url}")
 
-        return self.__make_request(url=url)
+        return self.__do_request(url=url)
 
-    def __make_request(self, url, params=None):
+    def __do_request(self, url, params=None):
         try:
             r = self.session.get(url, timeout=self.TIMEOUT, params=params)
             r.raise_for_status()
@@ -103,7 +103,7 @@ class ForestClientIntegrationService():
             # will create circular dependency issue. let crud to map the result.
             api_result = r.json()
             LOGGER.debug(f"FC API result: {api_result}. Took: {r.elapsed.total_seconds()} seconds")
-            return [api_result]
+            return api_result
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
         except requests.exceptions.HTTPError as he:
