@@ -68,7 +68,8 @@ class ForestClientIntegrationService():
         url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
 
-        return [self.__do_request(url=url)]
+        find_result = self.__do_request(url=url)
+        return [find_result] if find_result else []
 
     def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
         """

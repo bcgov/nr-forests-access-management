@@ -13,7 +13,7 @@ from api.app.schemas.pagination import PagedResultsSchema
 
 LOGGER = logging.getLogger(__name__)
 
-def post_sync_forest_clients(func):
+def post_sync_forest_clients_dec(func):
     """
     A decorator to perform post action on syncing forest client details from external Forest Client API search.
     Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'
@@ -53,12 +53,16 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
     #  FC API search). Example return:
     # [{'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'}]
     fc_search_results: List[ForestClientIntegrationFindResponseSchema] = forest_client_integration_service.search(fc_search_params)
-    # Transform FC search result (won't have duplicates) into a dict for easy indexing e.g.,: {00001011: 'AKIECA EXPLORERS LTD.'}
-    fc_search_client_name_dict = {fc["clientNumber"]: fc["clientName"] for fc in fc_search_results}
 
-    # Update client_name on each using 'fc_search_client_name_dict'
-    for item in result_list:
-        if item.role.forest_client:
-            fcn = item.role.forest_client.forest_client_number
-            item.role.forest_client.client_name = fc_search_client_name_dict[fcn]
+    # Only sync client_name when there is a FC search result
+    if fc_search_results:
+        # Transform FC search result (won't have duplicates) into a dict for easy indexing e.g.,: {00001011: 'AKIECA EXPLORERS LTD.'}
+        fc_search_client_name_dict = {fc["clientNumber"]: fc["clientName"] for fc in fc_search_results}
+
+        # Update client_name on each using 'fc_search_client_name_dict'
+        for item in result_list:
+            if item.role.forest_client:
+                fcn = item.role.forest_client.forest_client_number
+                item.role.forest_client.client_name = fc_search_client_name_dict[fcn]
+
     return result_list
