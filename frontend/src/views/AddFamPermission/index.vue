@@ -8,6 +8,8 @@ import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { ManagePermissionsRoute } from "@/router/routes";
+import NotificationMessage from "@/components/UI/NotificationMessage.vue";
+import { IDIM_DEPENDENCY_FAILURE_MESSAGE } from "@/constants/Notifications";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
@@ -123,6 +125,11 @@ const onSubmit = () => {
 
 <template>
     <div class="add-fam-permission-container">
+        <NotificationMessage
+            severity="warn"
+            :message="IDIM_DEPENDENCY_FAILURE_MESSAGE"
+            hide-severity-text
+        />
         <BreadCrumbs :crumbs="crumbs" />
         <PageTitle
             title="Add application admin"
