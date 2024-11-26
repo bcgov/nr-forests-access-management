@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.27.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.26.0...v1.27.0) (2024-11-26)
+
+
+### Features
+
+* backend pagination sort search ([#1659](https://github.com/bcgov/nr-forests-access-management/issues/1659)) ([6346b46](https://github.com/bcgov/nr-forests-access-management/commit/6346b46be50ab6bba6dcf68d1869fa986adfe746))
+
+
+### Bug Fixes
+
+* [#1641](https://github.com/bcgov/nr-forests-access-management/issues/1641) Allow delete inactive users ([#1661](https://github.com/bcgov/nr-forests-access-management/issues/1661)) ([790bd25](https://github.com/bcgov/nr-forests-access-management/commit/790bd25eb9aca27b000397cf43cdd2011c460917))
+* [#1657](https://github.com/bcgov/nr-forests-access-management/issues/1657) move the add permission button ([#1671](https://github.com/bcgov/nr-forests-access-management/issues/1671)) ([1cf9798](https://github.com/bcgov/nr-forests-access-management/commit/1cf979834ac4bf17e3941503e067a37e56122da7))
+* [#1673](https://github.com/bcgov/nr-forests-access-management/issues/1673) add IDIM warn notification message ([#1674](https://github.com/bcgov/nr-forests-access-management/issues/1674)) ([da55706](https://github.com/bcgov/nr-forests-access-management/commit/da55706d952cb9bdbff3c371966dcea09e53c22a))
+
 ## [1.26.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.25.0...v1.26.0) (2024-11-20)
 
 
