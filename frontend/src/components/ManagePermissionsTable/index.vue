@@ -487,9 +487,8 @@ const displayForestClient = (
         | FamApplicationUserRoleAssignmentGetSchema
         | FamAccessControlPrivilegeGetResponse
 ) => {
+    const forestClientData = data.role.forest_client;
     if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        const userData = data as FamApplicationUserRoleAssignmentGetSchema;
-        const forestClientData = userData.role.forest_client;
         // Display formatted forest client display name.
         return forestClientData
             ? formatForestClientDisplayName(
@@ -499,9 +498,7 @@ const displayForestClient = (
             : "";
     } else {
         // For delegated admin data.
-        // TODO: No client name available for search from backend yet, implement soon. Only display client number. # noqa NOSONAR
-        const delegatedAdminData = data as FamAccessControlPrivilegeGetResponse;
-        const forestClientData = delegatedAdminData.role.client_number;
+        // TODO: No client name available from backend yet, implement soon. Only display client number. # noqa NOSONAR
         return forestClientData?.forest_client_number;
     }
 };

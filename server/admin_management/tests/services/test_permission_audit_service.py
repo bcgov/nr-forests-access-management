@@ -300,14 +300,14 @@ def verify_delegated_admin_user_granted_privilege_details(
 	granted_role = mock_delegated_admin_permission_granted_list[0].detail.role
 	assert audit_role["role"] == granted_role.display_name
 	audit_scopes = audit_role.get("scopes")
-	if granted_role.client_number is None:
+	if granted_role.forest_client is None:
 		# "scopes" attribute is not present  in json structure if the granted role has no scope.
 		assert audit_scopes is None
 
 	else:
 		assert len(audit_scopes) == len(mock_delegated_admin_permission_granted_list)
 		org_id_list = list(map(
-			lambda item: item.detail.role.client_number.forest_client_number, mock_delegated_admin_permission_granted_list
+			lambda item: item.detail.role.forest_client.forest_client_number, mock_delegated_admin_permission_granted_list
 		))
 		for scope in audit_scopes:
 			scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.

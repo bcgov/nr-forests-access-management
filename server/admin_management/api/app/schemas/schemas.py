@@ -192,7 +192,10 @@ class FamRoleWithClientDto(BaseModel):
     description: Optional[Annotated[str, StringConstraints(max_length=300)]] = Field(
         validation_alias="role_purpose"
     )
-    client_number: Optional[FamForestClientBase] = None
+    forest_client: Optional[FamForestClientBase] = Field(
+        validation_alias="client_number",
+        serialization_alias="forest_client"
+    )
     parent_role: Optional[FamRoleBase] = None
     application: FamApplicationBase
 

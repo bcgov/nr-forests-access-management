@@ -104,11 +104,11 @@ class PermissionAuditService:
             assigned_role = item.detail.role
             return PrivilegeDetailsScopeSchema(
                 scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-                client_id=assigned_role.client_number.forest_client_number,
-                client_name=assigned_role.client_number.client_name
+                client_id=assigned_role.forest_client.forest_client_number,
+                client_name=assigned_role.forest_client.client_name
             )
 
-        is_forest_client_scoped_role = delegated_admin_privliege_list[0].detail.role.client_number is not None
+        is_forest_client_scoped_role = delegated_admin_privliege_list[0].detail.role.forest_client is not None
         scopes = list(map(__map_to_privilege_role_scope, delegated_admin_privliege_list)) if is_forest_client_scoped_role else None
         privilege_details_role = PrivilegeDetailsRoleSchema(
             role=delegated_admin_privliege_list[0].detail.role.display_name,

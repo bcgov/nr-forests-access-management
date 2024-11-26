@@ -891,7 +891,7 @@
                         ],
                         "title": "Description"
                     },
-                    "client_number": {
+                    "forest_client": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/FamForestClientBase"
@@ -920,6 +920,7 @@
                     "role_id",
                     "role_name",
                     "description",
+                    "forest_client",
                     "application"
                 ],
                 "title": "FamRoleWithClientDto"

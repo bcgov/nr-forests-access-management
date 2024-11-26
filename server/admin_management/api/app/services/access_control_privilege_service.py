@@ -174,7 +174,7 @@ class AccessControlPrivilegeService:
                 )
                 # Update response object for Forest Client Name from the forest_client_search.
                 # FAM currently does not store forest client name for easy retrieval.
-                new_delegated_admin_grant_res.detail.role.client_number = (
+                new_delegated_admin_grant_res.detail.role.forest_client = (
                     FamForestClientBase.from_api_json(forest_client_search_return[0])
                 )
                 new_delegated_admin_permission_granted_list.append(new_delegated_admin_grant_res)
@@ -270,9 +270,9 @@ class AccessControlPrivilegeService:
             gc_notify_email_service = GCNotifyEmailService()
             is_bceid_user = "yes" if target_user.user_type_code == famConstants.UserType.BCEID else "no"
             granted_role = access_control_priviliege_response[0].detail.role
-            is_forest_client_scoped_role = granted_role.client_number is not None
+            is_forest_client_scoped_role = granted_role.forest_client is not None
             granted_role_client_list = (
-                list(map(lambda item: item.detail.role.client_number, granted_roles_res))
+                list(map(lambda item: item.detail.role.forest_client, granted_roles_res))
                 if is_forest_client_scoped_role
                 else None
             )
