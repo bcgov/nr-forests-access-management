@@ -41,6 +41,7 @@ import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
+import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     NewAppAdminQueryParamKey,
@@ -474,6 +475,36 @@ const highlightNewUserAccessRow = (
             return undefined;
     }
 };
+
+/**
+ * DataTable 'Organization' column display expression.
+ * @param {FamApplicationUserRoleAssignmentGetSchema | FamAccessControlPrivilegeGetResponse} data - provided
+ *        datatable data to extract and format forest client information for the 'Organization' column. Only
+ *        user table and delegated admin table have this column.
+ */
+const displayForestClient = (
+    data:
+        | FamApplicationUserRoleAssignmentGetSchema
+        | FamAccessControlPrivilegeGetResponse
+) => {
+    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+        const userData = data as FamApplicationUserRoleAssignmentGetSchema;
+        const forestClientData = userData.role.forest_client;
+        // Display formatted forest client display name.
+        return forestClientData
+            ? formatForestClientDisplayName(
+                  forestClientData.forest_client_number,
+                  forestClientData.client_name
+              )
+            : "";
+    } else {
+        // For delegated admin data.
+        // TODO: No client name available for search from backend yet, implement soon. Only display client number. # noqa NOSONAR
+        const delegatedAdminData = data as FamAccessControlPrivilegeGetResponse;
+        const forestClientData = delegatedAdminData.role.client_number;
+        return forestClientData?.forest_client_number;
+    }
+};
 </script>
 
 <template>
@@ -581,9 +612,18 @@ const highlightNewUserAccessRow = (
                         ? 'role.forest_client.forest_client_number'
                         : 'role.client_number.forest_client_number'
                 "
-                header="Client Number"
+                :sort-field="
+                    tableType === ManagePermissionsTableEnum.AppUser
+                        ? 'role.forest_client.forest_client_number'
+                        : 'role.client_number.forest_client_number'
+                "
+                header="Organization"
                 sortable
-            ></Column>
+            >
+                <template #body="{ data }">
+                    {{ displayForestClient(data) }}
+                </template>
+            </Column>
 
             <Column
                 :header="
