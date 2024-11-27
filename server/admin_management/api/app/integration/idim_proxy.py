@@ -39,6 +39,11 @@ class IdimProxyService:
         Search on IDIR user.
         Note, current idim-proxy only does exact match.
         """
+
+        """
+        TODO: original IDIR search method. Temporarily commented out   # noqa NOSONAR
+        IDIM Consulting currently breaks the production IDIR looks up IDIR user scenario.
+
         # query_params to request to idim-proxy
         query_params = vars(search_params)
         query_params.update({"requesterUserId": self.requester.user_name})
@@ -51,6 +56,16 @@ class IdimProxyService:
         LOGGER.info(
             f"IdimProxyService search_idir() - url: {url} and param: {query_params}"
         )
+        """
+
+        # --- new temporary IDIR call to fix production issue (see above old code comment)
+        query_params = vars(search_params)
+        query_params.update({"requesterUserGuid": self.requester.user_guid})
+        url = f"{self.api_idim_proxy_url}/idir-account-detail"
+        LOGGER.info(
+            f"IdimProxyService search_idir() - url: {url} and param: {query_params}"
+        )
+        # --- end new temporary IDIR call to fix production issue
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
         r.raise_for_status()  # There is a general error handler, see: requests_http_error_handler
