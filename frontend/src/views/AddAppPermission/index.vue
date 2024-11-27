@@ -49,8 +49,6 @@ import { useConfirm } from "primevue/useconfirm";
 import { Form } from "vee-validate";
 import { computed, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import NotificationMessage from "@/components/UI/NotificationMessage.vue";
-import { IDIM_DEPENDENCY_FAILURE_MESSAGE } from "@/constants/Notifications";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 
 const router = useRouter();
@@ -268,11 +266,6 @@ const onSubmit = () => {
 
 <template>
     <div class="add-app-permission-container">
-        <NotificationMessage
-            severity="warn"
-            :message="IDIM_DEPENDENCY_FAILURE_MESSAGE"
-            hide-severity-text
-        />
         <ConfirmDialog
             group="addDelegatedAdmin"
             class="delegated-admin-confrim-dialog"
